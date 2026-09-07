@@ -57,14 +57,14 @@ and Umoria:      Copyright (c) 1989 James E. Wilson
 
 ### 1.2 変愚蛮怒の著作権者
 
-全文は `lib/help/jlicense.txt` にあります。主なものを引用します。
+全文は `lib/help/jlicense.txt` にあります。以下は原文から抜粋した氏名です。
 
 ```
 変愚蛮怒                      Mr.hoge
-日本語版 Zangband の日本語化   ヒーロ
-日本語版 Angband 2.8.3-1.2.6  いとけん（新井拓人）、エルリック、
-                              ＴＯＲＳＴ（志村隆彦）、sayu（YOKOYAMA Atsushi）、
-                              岸康永、TeO、本厚木ノ隠人（松本泰治）、VOLKO（八木イサオ）
+日本語版 Zangband の日本語化   板倉
+日本語版 Angband 2.8.3-1.2.6  しとしん(内海清秀)、エルロック、
+                              ＦＩＲＳＴ(白方健太郎)、sayu(YOKOYAMA Atsushi)、
+                              岸康司、TeO、怒涛の暇人(金光寛峯)、VOLKO(城戸イサム)
 ```
 
 ---
@@ -72,7 +72,7 @@ and Umoria:      Copyright (c) 1989 James E. Wilson
 ## 2. Sil-Q（`silq/`）
 
 Sil-Q は GPL v2 と Angband 使用許諾のどちらかを選べるデュアルライセンスです。原文は
-`silq/LICENSE.md` にあります。原著者は派生版でもこの二重の表記を残すことを求めているので、
+`silq/LICENSE.md` にあります。原文では派生版でもこの二重の表記を残すことが推奨されているため、
 `silq/LICENSE.md` をそのまま同梱しています。
 
 Sil-Q のフォント・音・画像はライセンスが本体と別なので、このリポジトリには取り込んでいません。
