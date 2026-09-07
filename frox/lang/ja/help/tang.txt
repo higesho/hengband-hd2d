@@ -1,0 +1,763 @@
+<style:title>初心者の手引き</style>
+
+<color:keyword>FrogComposband</color> へようこそ。この手引きは、このゲームのあらましを手早く示し、恐るべき混沌のサーペントを討つ道へあなたを送り出そうとするものである。
+
+<topic:Overview><style:heading>あらまし</style>
+
+FrogComposband はひとりで遊ぶロールプレイングゲームである。勇敢な冒険者であるあなたが、邪悪な敵――ついには<color:keyword>混沌のサーペント</color>――を倒して世界を救おう（あるいは征服しよう）とする。道は長く、行く手は険しい。多くの者が挑んで倒れ、ダンジョンには英雄になり損ねた者の骨が散らばっている。暗黒の神々に、あるいはドラゴンに、あるいはデーモンに、あるいは（ひとつ不名誉な例では）羊に殺されたのである。あなたにやり遂げるだけのものがあるだろうか。
+
+<topic:CreatingACharacter><style:heading>冒険者を作る</style>
+
+まずは冒険者を作ることから始まる。このゲームは初めてなので、最初の画面で<color:keyword>初心者モード</color>を選ぶとよいだろう。そうすれば冒険者を作る手順がぐっと簡素になり、<color:keyword>コーヒーブレイクモード</color>も入る。これはレベルが速く上がり荒野の無い、足取りの速い版のゲームである。何人か遊んで遊び方の見当がついたら、<color:keyword>ふつうのモード</color>で新しい冒険者を始めれば、すべての設定を見られ荒野も使える。まあ、どのみち最初の冒険者が勝つわけではないのだから。
+
+初心者モードでは、ゲームが冒険者を作る手順を案内してくれる。詳しくは <link:birth.txt#CreateAt> を見てほしいが、基本は性別・種族・職業、そして始まりの能力値を選ぶことである。性別は（ゲームの上では）大事ではないが、種族、とりわけ職業はこの先のすべてを左右する要である。
+
+初心者モードでは種族の選びに悩みすぎないこと。初心者モードの昔ながらの種族はどれもかなり強く、強みと弱みは違ってもどれでもどの職業もそこそこうまくこなせる。<color:keyword>クラッコン</color>はきわめて強い種族である。生まれつき加速の恩恵を持ち、混乱への耐性も生まれつき持つ（新しい人は混乱でよく死ぬ）。もう少し変わった選びとしては<color:keyword>人狼</color>がある。姿を変えられるようになり、装備の枠まで変わる。人狼は魔法がいくらか苦手なので、始めたばかりのメイジにはいちばん良い（少なくとも、いちばん筋の通った）選びではないかもしれない。
+
+<topic:ClassPick><color:U>職業の選び</color>
+
+ふつう、このゲームには膨大な（圧倒されるほどの）選択肢があり、数え切れないほど多彩な遊び方を差し出す。何が選べるのかを知るだけでも時間がかかる。ここではまず動き出すために、基本の道をいくつか見ておこう。
+
+いちばん易しい遊び方は（とりわけ序盤では）「斬って突く」ことであり、これが<color:keyword>戦士</color>の本質である。述べたとおりほぼどの種族でも良い戦士になれるが、突き詰めたいならハーフ・トロルという手もある。ただし用心すること。トロルは醜く愚かで、そのうえ人気も無い。これほど醜い相手に店主は物を売りたがらないので、物資を買うのがいくらか難しくなる。その分は殺戮の限りを尽くして埋め合わせればよい。その方が楽しくもある。戦士の大事な能力値は腕力・器用さ・耐久力だが、序盤を生き延びたら知能もいくらか欲しくなる。戦士でもときには魔法の道具が要るからである。
+
+もうひとつの遊び方は、こっそり進む道を選んで<color:keyword>ローグ</color>か<color:keyword>忍者</color>を遊ぶことである。どちらの職業も近接がかなり強く、それに加えていくらかの能力を持つ。忍者はレベルが上がるにつれ特別な<color:keyword>忍術</color>を身につけ、ローグは<color:keyword>魔法の系統</color>を選べる。仙術はどの冒険者にとっても強い選びだが、ローグだけのために作られた盗賊術という特別な選びもある。盗賊術は強い系統であるうえ、罠を仕掛けたり懐を探ったりといった楽しいこともできる。ローグも忍者も大事な能力値は腕力と器用さだが、盗賊術でないローグは知能にも入れるべきである。呪文を唱える上での主な能力値になるからである。
+
+あるいは魔法に賭けて<color:keyword>メイジ</color>を遊んでもよい。魔法は使いこなせるようになるまで時間がかかり、メイジは序盤かなりもろいので、この道はいくらか辛抱が要る。主な魔法の系統にはカオスかアルマゲドン、次の系統には仙術を勧めたい。カオスとアルマゲドンは敵を倒すのに要る良い攻めをくれ、仙術は使い勝手の良い呪文をくれる。メイジの大事な能力値は知能だが、見つけた良い物を運ぶだけでもそこそこの腕力が要る。
+
+<topic:PersonalityPick><color:U>性格の選び</color>
+
+いきなり<color:keyword>ふつうのモード</color>へ跳び込んで、性格も選ばねばならなくなっただろうか。
+
+たいていは選んでよいが、いくつかはおそらく<color:keyword>避けるべき</color>である。怠け者ともろいはまったくの難しさのための性格なので、これを選ぶとただでさえ険しい伸びの道のりがいっそう険しくなる。セクシーは魅力的に聞こえるが、新しい人には苦しみをもたらしがちである。カオティックとにじゅうじんかくはかなり荒れた乗り物なので、まずもう少し落ち着いたものから始めるとよいだろう。マンチキンはわざと釣り合いを壊した神の性格なので、これは選ばないこと。最後に、職業が戦士や鍛冶師のような純粋な戦い手でなければふつうも避けること。残りの性格ならどれでもうまくやれるだろう。
+
+新しい人の多くはいきなりふつうのモードを選ぶ。だがこの手引きの大部分は、<color:keyword>初心者モード</color>のままだと思って書いてある。ゲームが簡素になるだけでなく、説明も簡素になるからである。
+
+<topic:EquippingForDanger><style:heading>危地への備え</style>
+
+生まれの手順を終えると、地上の町にいることに気づくだろう。<color:keyword>初心者モード</color>を選んだので、ダンジョンはひとつだけで、歩き回る荒野は無い。冒険のほとんどはダンジョンで過ごすことになる（生きていればの話だが）。ただし、装備を売り買いし、町の依頼を果たし、我が家へアイテムを置いたり取ったりするためにこまめに地上へ戻ることになる。始まりには職業ごとに違うひと揃いの装備があり、たいていはすでに身に着けているはずである。少しの金もあるので、最初の危地への旅に向けて物資を足せる。
+
+さて、まず何が見えるだろうか。
+<style:screenshot>
+
+<color:U>#</color><color:g>.</color><color:G>#</color><color:g>..</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>.</color><color:U>######</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:U>####</color><color:G>#</color><color:g>.</color><color:s>...</color><color:g>.</color><color:G>#</color><color:U>####</color><color:b>~~</color><color:U>##########################</color><color:b>~</color><color:r>.</color><color:s>.</color> レベル<color:G>     1</color>
+<color:U>#</color><color:g>....</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>.</color><color:U>######</color><color:s>.</color><color:U>##</color><color:b>~~~~~</color><color:g>...</color><color:s>...</color><color:g>...</color><color:b>~~~~~</color><color:U>##</color><color:s>.....................</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color> 経験<color:G>      23</color>
+<color:U>##</color><color:g>.</color><color:G>#</color><color:g>.</color><color:U>#</color><color:s>.</color><color:U>#</color><color:v>+</color><color:s>....</color><color:U>#</color><color:B>+</color><color:U>#</color><color:s>.</color><color:U>###</color><color:b>~~~~~~~</color><color:s>...</color><color:b>~~~~~~~~</color><color:U>##</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color> 金  <color:G>     907</color>
+<color:U>###</color><color:g>..</color><color:U>#</color>.<color:U>##</color><color:s>.......</color>.<color:U>##########</color><color:s>...</color><color:U>##########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color> <color:W>|</color><color:d>       </color><color:U>(</color><color:d>   </color>
+<color:U>###</color><color:g>.</color><color:G>#</color><color:U>#</color>.<color:s>.........</color>..<color:U>#########</color><color:s>...</color><color:U>#########</color><color:s>..</color><color:U>####</color><color:s>2</color><color:U>####</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color> 腕力: <color:G> 18/10</color>
+<color:g>4</color><color:U>###</color><color:g>.</color><color:U>#</color>..<color:s>..</color><color:U>###</color><color:s>..</color>.........<color:U>###</color>..<color:s>.</color><color:U>###</color><color:s>............................</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color> 知能: <color:G>    18</color>
+<color:s>.</color><color:U>#</color>+<color:U>#</color><color:g>.</color><color:U>#</color>..<color:s>.</color><color:U>#####</color><color:s>.</color>..............<color:s>...................</color><color:U>######</color><color:s>..</color><color:U>####</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color> 賢さ: <color:G>     7</color>
+<color:s>.</color><color:g>....</color><color:U>#</color>...<color:U>#####</color>................<color:s>..................</color><color:U>###</color><color:y>8</color><color:U>##</color><color:s>..</color>3<color:U>###</color><color:s>.</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color> 器用: <color:G> 18/40</color>
+<color:s>.</color><color:U>#####</color>....<color:U>#</color><color:B>+</color><color:U>#</color>.................<color:s>..................</color><color:g>...</color><color:s>.</color><color:U>##</color><color:s>..</color><color:U>####</color><color:s>.</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color> 耐久: <color:G>    18</color>
+<color:s>..</color>.........................<color:U>f</color>...<color:s>..............................</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color> 魅力: <color:G>    12</color>
+<color:s>.....</color>..........................<color:s>....................................</color> AC     <color:G>    6</color>
+<color:s>........</color>..................<color:U>##</color><color:r>6</color><color:U>##</color><color:s>........</color><color:U>##</color><color:v>++</color><color:U>####</color><color:s>....</color><color:U>###+####</color><color:s>..</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color> HP <color:G>  43</color>/<color:G>  43</color>
+<color:s>.......</color><color:U>###</color>.@.............<color:U>#######</color><color:s>......</color><color:U>##########</color><color:s>...</color><color:U>########</color><color:s>..</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color> SP <color:G>  14</color>/<color:G>  14</color>
+<color:s>......</color><color:U>####</color><color:v>></color>..............<color:U>#######</color><color:s>.....</color><color:U>###</color><color:s>....</color><color:U>#####</color><color:s>..</color><color:U>########</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>#</color><color:s>....</color><color:U>#######</color>.............<color:U>#######</color><color:s>.....</color><color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>......</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>1</color><color:s>....</color><color:U>#######</color>..............<color:U>#####</color><color:s>......</color><color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>.....</color><color:r>.</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>#</color><color:s>.....</color><color:U>#####</color><color:s>..</color>............<color:U>#######</color><color:s>.....</color><color:U>###</color><color:s>....</color><color:U>#####</color><color:r>.</color><color:s>..</color><color:U>#######</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>#</color><color:s>......</color><color:U>###</color><color:s>...</color>............<color:o>+</color><color:U>#####</color><color:B>+</color><color:s>...</color><color:r>.</color><color:s>..</color><color:U>##########</color><color:s>....</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:s>.............</color>............<color:U>#######</color><color:s>....</color><color:r>..</color><color:s>.</color><color:U>##</color><color:v>++</color><color:U>####</color><color:s>.</color><color:r>..</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>#</color><color:s>..</color><color:U>##</color><color:b>5</color><color:U>##</color><color:s>..</color><color:U>#####+#####</color>.....<color:s>............</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>....</color><color:r>..</color><color:G>#</color><color:U>#</color><color:s>.</color><color:U>##</color><color:D>7</color><color:G>#</color><color:U>##</color><color:G>#</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>#</color><color:s>.</color><color:U>#######</color><color:s>.</color><color:U>##########</color><color:o>9</color><color:s>..</color>..<color:g>.....</color><color:s>......</color><color:U>##</color><color:G>0</color><color:U>##</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#</color><color:G>#</color><color:U>###</color><color:s>.</color><color:U>#######</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color> <color:B>Study (1)</color>   
+<color:U>#</color><color:s>..</color><color:U>#####</color><color:s>..</color><color:U>###########</color><color:s>....</color><color:g>.</color><color:G>#</color><color:g>.</color><color:G>#</color><color:g>.</color><color:s>......</color><color:U>#####</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#####</color><color:r>.</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:s>.........................</color><color:U>##</color><color:v>M</color><color:U>##</color><color:s>...........</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>..</color><color:s>..</color><color:r>.</color><color:s>......</color><color:r>.</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color>             
+<color:U>################################################################</color><color:b>~</color><color:r>.</color><color:s>.</color>             
+<color:U>################################################################</color><color:b>~</color><color:r>.</color><color:s>.</color>             
+Outpost                                                                         
+</style>
+まず、画面の左側にある @ があなたである。そして <color:U>#</color> の字が壁で、いろいろな店の建物の形に並んでいるのが分かる。建物にはそれぞれ入口を表す数字か '+' の字がある。そのマスへ動くだけで入れる。数字はそれぞれ違う種類の店を表す。テンキーで動き回れ、<color:keypress>l</color> か<color:keypress>*</color> のコマンドに続けてテンキーを押せば見回せる。（テンキーが無いなら、おそらく <color:keypress>=</color> の設定のメニューでローグライクのキー設定を入れた方がよい。斜めに動きたいとき、矢印キー 4 つだけに頼るのはあまりにつらい。）あの <color:U>f</color> は敵なので、<color:keypress>*</color> のコマンドで見て手強そうかどうか確かめるとよい。
+<style:screenshot> <indent>
+Monster: a Scrawny cat [r,q,t,p,o,x,j,+,-,?,<dir>]
+Name    : <color:B>Scrawny cat</color> (<color:U>f</color>)
+Level   : <color:G>Town</color><color:d>      </color>Speed: +0 <color:o>A Bit Erratic</color>
+AC      : <color:y>?</color><color:d>         </color>Type : <color:G>Natural</color>
+HP      : <color:y>?</color><color:d>         </color>
+<color:d>                    </color>
+Attacks : <color:y>?</color>
+
+Kills   : <color:G>0</color>
+Exp     : <color:G>0</color> at CL1
+
+A skinny little furball with sharp claws and a menacing look.
+</indent></style>
+ふむ、この子猫は気にしなくてよさそうである。
+
+
+画面の右下の <color:B>Study (1)</color> に目を留めてほしい。新しい呪文をひとつ覚えられるという意味である。メイジで遊んでいるなら、呪文を覚えること（<color:keypress>G</color> で覚える）を最優先にすべきである。ただし最初のレベルではひとつしか覚えられないので、よく選ぶこと。こちらの助言どおりカオスの系統を選んだなら、まずマジック・ミサイルを覚えるのを勧める。メイジは敵を倒すのにどうしても魔法を使わねばならないので、最初の呪文は攻めのものでなければならない。後で慣れてきたら、仙術の系統からモンスター感知を選ぶとよい。呪文を唱えるには魔法のコマンド（<color:keypress>m</color>）を使い、案内に従う。どの職業もすぐ呪文を覚えられるわけではない。たとえば盗賊術でないローグは、最初の呪文を覚えるのに冒険者のレベル 5（CL5）に届かねばならない。
+
+次に、装備を買いに行くべきである。錬金術の店（<$:FF_ALCHEMY_SHOP>）でテレポートやフェイズ・ドアの巻物のような逃げる手立てを買うことを勧める。また、寺院（<$:FF_TEMPLE>）で<color:B>重傷の治癒の薬</color>も欲しくなる。ローグで遊んでいるなら、武器専門店（<$:FF_WEAPON_SMITHS>）でスリングと弾（小石か鉄の弾）、そして買った弾を入れる矢筒も買うとよい。店へ入ると品揃えの一覧と、使えるコマンドの一覧が出る。案内どおりにすれば買える。
+<style:screenshot> <indent>
+          Eddie Beast-Master (Snotling)           Weapon Smiths (25000)
+
+   Item Description                                         Weight      Price
+a) <color:o>?</color> <color:u>2 Books of Kendo [Yagyuu Bugeichou]</color>                       3.0  <color:D>     1510  </color>
+b) <color:W>|</color> a Dagger (1d5) (+1,+2)                                    1.2        230
+c) <color:W>|</color> a Bastard Sword (3d5) (+0,+0)                            14.0        720
+d) <color:y>/</color> a Trident (1d10) (+0,+0)                                  7.0  <color:D>      267  </color>
+e) / a Broad Spear (1d11) (+3,+2)                             10.0  <color:D>      926  </color>
+f) <color:u>}</color> <color:u>a Sling (x2) (+0,+0)</color>                                      0.5         54
+g) <color:U>}</color> <color:u>a Short Bow (x2.50) (+0,+0)</color>                               3.0        122
+h) <color:s>}</color> <color:u>2 Light Crossbows (x3.50) (+0,+0)</color>                        11.0        489
+i) <color:s>{</color> <color:U>26 Bolts (3d5) (+0,+0)</color>                                    0.3          3
+j) <color:s>{</color> <color:U>36 Rounded Pebbles (2d3) (+0,+0)</color>                          0.4          2
+k) <color:s>{</color> <color:U>16 Iron Shots (3d3) (+0,+0)</color>                               0.5          3
+
+Gold Remaining: <color:y>907</color>
+
+<color:keypress>b</color> to buy. <color:keypress>s</color> to sell. <color:keypress>x</color> to begin examining items.
+<color:keypress>B</color> to buyout inventory. <color:keypress>S</color> to shuffle stock. <color:keypress>R</color> to reserve an item.
+<color:keypress>Esc</color> to exit. <color:keypress>?</color> to help.
+</indent></style>
+何か買うと袋に入る。袋の中を見るには <color:keypress>i</color> のコマンドを使う。
+<style:screenshot>
+<color:G>Inventory</color> <color:b>|</color> <color:D>Equipment</color>                                                           
+ a) <color:o>?</color> <color:u>a Thieves' Guide [Burglar's Handbook]</color>                  3.0 lb レベル<color:G>     1</color>
+ b) <color:U>,</color> <color:U>5 Rations of Food</color>                                      5.0 lb 経験<color:G>      23</color>
+ c) ? 2 Scrolls of Teleportation                             1.0 lb 金  <color:G>     805</color>
+ d) ? a Scroll of Word of Recall                             0.5 lb <color:W>|</color><color:d>      </color><color:u>~</color><color:U>(</color><color:d>   </color>
+ e) <color:u>~</color> <color:y>2 Wooden Torches (with 2500 turns of light)</color>            6.0 lb 腕力: <color:G> 18/10</color>
+ f) <color:u>}</color> <color:u>a Sling (x2) (+0,+0)</color>                                   0.5 lb 知能: <color:G>    18</color>
+ g) <color:s>{</color> <color:U>16 Iron Shots (3d3) (+0,+0)</color>                            8.0 lb 賢さ: <color:G>     7</color>
+                                                          <color:R>  24.0 lb</color> 器用: <color:G> 18/40</color>
+Carrying 36.2 pounds (<color:G>27%</color> capacity).                                耐久: <color:G>    18</color>
+                                                                    魅力: <color:G>    12</color>
+<color:y>Examine which item </color>(<color:o>Esc</color> to exit)<color:y>?</color>                                   AC     <color:G>    6</color>
+                                                                    HP <color:G>  43</color>/<color:G>  43</color>
+<color:s>....................................</color>............................... SP <color:G>  14</color>/<color:G>  14</color>
+<color:s>............................</color><color:U>##</color><color:r>6</color><color:U>##</color><color:s>....</color>....<color:U>##</color><color:v>++</color><color:U>####</color>....<color:U>###+####</color>..<color:U>###</color><color:b>~</color>             
+<color:s>.........</color><color:U>###</color><color:s>...............</color><color:U>#######</color><color:s>......</color><color:U>##########</color><color:s>...</color><color:U>########</color><color:s>..</color><color:U>###</color><color:b>~</color>             
+<color:s>........</color><color:U>####</color><color:v>></color><color:s>..............</color><color:U>#######</color><color:s>.....</color><color:U>###</color><color:s>....</color><color:U>#####</color><color:s>..</color><color:U>########</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>....</color><color:U>#######</color><color:s>.............</color><color:U>#######</color><color:s>.....</color><color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>......</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>##1</color><color:s>....</color><color:U>#######</color><color:s>..............</color><color:U>#####</color><color:s>......</color><color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>.....</color><color:r>.</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>.....</color><color:U>#####</color><color:s>..............</color><color:U>#######</color><color:s>.....</color><color:U>###</color><color:s>....</color><color:U>#####</color><color:r>.</color><color:s>..</color><color:U>#######</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>......</color><color:U>###</color><color:s>...............</color><color:o>+</color><color:U>#####</color><color:B>+</color><color:s>...</color><color:r>.</color><color:s>..</color><color:U>##########</color><color:s>....</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:s>...........................</color><color:U>#######</color><color:s>....</color><color:r>..</color><color:s>.</color><color:U>##</color><color:v>++</color><color:U>####</color><color:s>.</color><color:r>..</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color> <color:B>Study (1)</color>   
+<color:U>###</color><color:s>..</color><color:U>##</color><color:b>5</color><color:U>##</color><color:s>..</color><color:U>#####+#####</color><color:s>.................</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>....</color><color:r>..</color><color:G>#</color><color:U>#</color><color:s>.</color><color:U>##</color><color:D>7</color><color:G>#</color><color:U>##</color><color:G>#</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>.</color><color:U>#######</color><color:s>.</color><color:U>##########</color><color:o>9</color><color:s>....</color><color:g>.....</color><color:s>......</color><color:U>##</color><color:G>0</color><color:U>##</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#</color><color:G>#</color><color:U>###</color><color:s>.</color><color:U>#######</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>..</color><color:U>#####</color><color:s>..</color><color:U>###########</color><color:s>....</color><color:g>.</color><color:G>#</color><color:g>.</color><color:G>#</color><color:g>.</color><color:s>......</color><color:U>#####</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#####</color><color:r>.</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:s>...........................</color><color:U>##</color><color:v>M</color><color:U>##</color><color:s>...........</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>..</color><color:s>..</color><color:r>.</color><color:s>......</color><color:r>.</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color>             
+Outpost
+</style>
+こちらはスリングと鉄の弾をいくつか買った。あいにく矢筒は売っていなかった。（飛び道具の種類ごとに合う弾の種類がある。小石と鉄の弾はスリング用である。矢は弓用、クロスボウの矢はクロスボウ用なので、ここでは役に立たない。）さて、スリングは袋の中にあっても何の役にも立たない。装備せねばならないので、<color:keypress>w</color> のコマンドを使う。これで <color:keypress>e</color> を押して装備を見ると出てくる。
+<style:screenshot>
+<color:D>Inventory</color> <color:b>|</color> <color:G>Equipment</color>                                                           
+ a) <color:W>|</color> Right Hand: a Dagger (1d5) (+0,+0)                     1.2 lb レベル<color:G>     1</color>
+ b)   Left Hand :                                                   経験<color:G>      23</color>
+ c) <color:u>}</color> Shooting  : <color:u>a Sling (x2) (+0,+0)</color>                       0.5 lb 金  <color:G>     805</color>
+ d)   Quiver    :                                                   <color:W>|</color><color:d> </color><color:u>}</color><color:d>    </color><color:u>~</color><color:U>(</color><color:d>   </color>
+ e)   Right Ring:                                                   腕力: <color:G> 18/10</color>
+ f)   Left Ring :                                                   知能: <color:G>    18</color>
+ g)   Neck      :                                                   賢さ: <color:G>     7</color>
+ h) <color:u>~</color> Light     : <color:y>a Wooden Torch (with 2439 turns of ligh</color>    3.0 lb 器用: <color:G> 18/40</color>
+ i) <color:U>(</color> Body      : <color:s>Soft Leather Armour [4,+0]</color>                 8.0 lb 耐久: <color:G>    18</color>
+ j)   Cloak     :                                                   魅力: <color:G>    12</color>
+ k)   Head      :                                                   AC     <color:G>    6</color>
+ l)   Hands     :                                                   HP <color:G>  43</color>/<color:G>  43</color>
+ m)   Feet      :                                                   SP <color:G>  14</color>/<color:G>  14</color>
+                                                          <color:R>  12.7 lb</color>             
+Carrying 36.2 pounds (<color:G>27%</color> capacity).                                            
+                                                                                
+<color:y>Examine which item </color>(<color:o>Esc</color> to exit)<color:y>?</color>                                               
+                                                                                
+<color:U>###</color><color:s>.....</color><color:U>#####</color><color:s>..............</color><color:U>#######</color><color:s>.....</color><color:U>###</color><color:s>....</color><color:U>#####</color><color:r>.</color><color:s>..</color><color:U>#######</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>......</color><color:U>###</color><color:s>...............</color><color:o>+</color><color:U>#####</color><color:B>+</color><color:s>...</color><color:r>.</color><color:s>..</color><color:U>##########</color><color:s>....</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:s>...........................</color><color:U>#######</color><color:s>....</color><color:r>..</color><color:s>.</color><color:U>##</color><color:v>++</color><color:U>####</color><color:s>.</color><color:r>..</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color> <color:B>Study (1)</color>   
+<color:U>###</color><color:s>..</color><color:U>##</color><color:b>5</color><color:U>##</color><color:s>..</color><color:U>#####+#####</color><color:s>.................</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>....</color><color:r>..</color><color:G>#</color><color:U>#</color><color:s>.</color><color:U>##</color><color:D>7</color><color:G>#</color><color:U>##</color><color:G>#</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>.</color><color:U>#######</color><color:s>.</color><color:U>##########</color><color:o>9</color><color:s>....</color><color:g>.....</color><color:s>......</color><color:U>##</color><color:G>0</color><color:U>##</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#</color><color:G>#</color><color:U>###</color><color:s>.</color><color:U>#######</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>..</color><color:U>#####</color><color:s>..</color><color:U>###########</color><color:s>....</color><color:g>.</color><color:G>#</color><color:g>.</color><color:G>#</color><color:g>.</color><color:s>......</color><color:U>#####</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#####</color><color:r>.</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:s>...........................</color><color:U>##</color><color:v>M</color><color:U>##</color><color:s>...........</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>..</color><color:s>..</color><color:r>.</color><color:s>......</color><color:r>.</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color>             
+Outpost
+</style>
+何かを撃つには、<color:keypress>f</color> のコマンド（ローグライクのキー設定では<color:keypress>t</color>）で弾を撃ち、<color:keypress>*</color> を押して狙いを選び、<color:keypress>5</color> でいちばん近い敵を選んで、当たるかどうか見ればよい。
+<style:screenshot>
+The Iron Shot (3d3) (+0,+0) hits the Scrawny cat. The Scrawny cat
+mewls pitifully.                                                    レベル<color:G>     1</color>
+<color:g>...</color><color:G>#</color><color:g>..</color><color:G>#</color><color:U>#</color><color:s>...........</color><color:U>##</color><color:b>~~</color><color:U>######+++######</color><color:b>~~</color><color:U>##########################</color><color:b>~</color> 経験<color:G>      23</color>
+<color:g>..</color><color:U>#</color><color:g>.</color><color:G>#</color><color:g>..</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>.</color><color:U>######</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:U>####</color><color:G>#</color><color:g>.</color><color:s>...</color><color:g>.</color><color:G>#</color><color:U>####</color><color:b>~~</color><color:U>##########################</color><color:b>~</color> 金  <color:G>     805</color>
+<color:G>#</color><color:g>.</color><color:U>#</color><color:g>....</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>.</color><color:U>######</color><color:s>.</color><color:U>##</color><color:b>~~~~~</color><color:g>...</color><color:s>...</color><color:g>...</color><color:b>~~~~~</color><color:U>##</color><color:s>.....................</color><color:U>###</color><color:b>~</color> <color:W>|</color><color:d> </color><color:u>}</color><color:d>    </color><color:u>~</color><color:U>(</color><color:d>   </color>
+<color:g>.</color><color:U>###</color><color:g>.</color><color:G>#</color><color:g>.</color><color:U>#</color><color:s>.</color><color:U>#</color><color:v>+</color><color:s>....</color><color:U>#</color><color:B>+</color><color:U>#</color><color:s>.</color><color:U>###</color><color:b>~~~~~~~</color><color:s>...</color><color:b>~~~~~~~~</color><color:U>##</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color> 腕力: <color:G> 18/10</color>
+<color:U>#####</color><color:g>..</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>........</color><color:U>##########</color><color:s>...</color><color:U>##########</color>.<color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color> 知能: <color:G>    18</color>
+<color:U>#####</color><color:g>.</color><color:G>#</color><color:U>#</color><color:s>............</color><color:U>#########</color><color:s>...</color><color:U>#########</color>..<color:U>####</color><color:s>2</color><color:U>####</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color> 賢さ: <color:G>     7</color>
+<color:U>##</color><color:g>4</color><color:U>###</color><color:g>.</color><color:U>#</color><color:s>....</color><color:U>###</color><color:s>.....</color>......<color:U>###</color>...<color:U>###</color>.................<color:s>...........</color><color:U>##</color><color:b>~~</color> 器用: <color:G> 18/40</color>
+<color:G>+</color><color:U>#</color><color:s>.</color><color:U>#</color>+<color:U>#</color><color:g>.</color><color:U>#</color><color:s>...</color><color:U>#####</color><color:s>....</color>..............................<color:U>######</color><color:s>..</color><color:U>####</color><color:s>.</color><color:U>##</color><color:b>~~</color> 耐久: <color:G>    18</color>
+<color:g>..</color><color:s>.</color><color:g>....</color><color:U>#</color><color:s>...</color><color:U>#####</color><color:s>...</color>...............................<color:U>###</color><color:y>8</color><color:U>##</color><color:s>..</color>3<color:U>###</color><color:s>.</color><color:U>###</color><color:b>~</color> 魅力: <color:G>    12</color>
+<color:U>##</color><color:s>.</color><color:U>#####</color><color:s>....</color><color:U>#</color><color:B>+</color><color:U>#</color><color:s>....</color>....................@..........<color:g>...</color>.<color:U>##</color><color:s>..</color><color:U>####</color><color:s>.</color><color:U>###</color><color:b>~</color> AC     <color:G>    6</color>
+<color:s>...................</color>...........<color:s>{</color>.............................<color:s>...</color><color:U>###</color><color:b>~</color> HP <color:G>  43</color>/<color:G>  43</color>
+<color:s>....................</color>.........<color:U>f</color>.............................<color:s>........</color> SP <color:G>  14</color>/<color:G>  14</color>
+<color:s>....................</color>........<color:U>##</color><color:r>6</color><color:U>##</color>........<color:U>##</color><color:v>++</color><color:U>####</color>....<color:U>###+####</color><color:s>..</color><color:U>###</color><color:b>~</color>             
+<color:s>.........</color><color:U>###</color><color:s>...............</color><color:U>#######</color>......<color:U>##########</color><color:s>...</color><color:U>########</color><color:s>..</color><color:U>###</color><color:b>~</color> <color:U>f</color><color:R>[</color><color:v>*</color><color:R>--------]</color>
+<color:s>........</color><color:U>####</color><color:v>></color><color:s>..............</color><color:U>#######</color>.....<color:U>###</color><color:s>....</color><color:U>#####</color><color:s>..</color><color:U>########</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>....</color><color:U>#######</color><color:s>.............</color><color:U>#######</color>.....<color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>......</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>##1</color><color:s>....</color><color:U>#######</color><color:s>..............</color><color:U>#####</color>......<color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>.....</color><color:r>.</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>.....</color><color:U>#####</color><color:s>..............</color><color:U>#######</color>.....<color:U>###</color><color:s>....</color><color:U>#####</color><color:r>.</color><color:s>..</color><color:U>#######</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>......</color><color:U>###</color><color:s>...............</color><color:o>+</color><color:U>#####</color><color:B>+</color>...<color:u>.</color>.<color:s>.</color><color:U>##########</color><color:s>....</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:s>...........................</color><color:U>#######</color>....<color:r>..</color><color:s>.</color><color:U>##</color><color:v>++</color><color:U>####</color><color:s>.</color><color:r>..</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color> <color:B>Study (1)</color>   
+<color:U>###</color><color:s>..</color><color:U>##</color><color:b>5</color><color:U>##</color><color:s>..</color><color:U>#####+#####</color><color:s>...........</color>....<color:s>..</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>....</color><color:r>..</color><color:G>#</color><color:U>#</color><color:s>.</color><color:U>##</color><color:D>7</color><color:G>#</color><color:U>##</color><color:G>#</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>.</color><color:U>#######</color><color:s>.</color><color:U>##########</color><color:o>9</color><color:s>....</color><color:g>.....</color><color:s>.</color>.....<color:U>##</color><color:G>0</color><color:U>##</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#</color><color:G>#</color><color:U>###</color><color:s>.</color><color:U>#######</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color>             
+<color:U>###</color><color:s>..</color><color:U>#####</color><color:s>..</color><color:U>###########</color><color:s>....</color><color:g>.</color><color:G>#</color><color:g>.</color><color:G>#</color><color:g>.</color><color:s>.</color>.....<color:U>#####</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#####</color><color:r>.</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color>             
+<color:s>...........................</color><color:U>##</color><color:v>M</color><color:U>##</color>......<color:s>.....</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>..</color><color:s>..</color><color:r>.</color><color:s>......</color><color:r>.</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color>             
+Outpost
+</style>
+子猫よ、すまない。まだ死んではいないが、じきに死ぬ。いくつか目を留めてほしいことがある。まず、遊んでいる間、<color:keyword>メッセージ</color>が画面の上の方に出ることに気づくだろう。こちらが若かったころ、このゲームにはメッセージの行が 1 本しか無く、我らかわいそうな遊び手は<color:B>-more-</color> の確かめにさんざん悩まされたものである。余計なキー押しで指も痛くなった。いまでもときどき <color:B>-more-</color> は出る。出たら読み終えてから<color:keypress>SPACE</color> を押せば、次のひと組が出る。メッセージは次のコマンドを打つと自動で消えるので、キーを押す前に読み終えておくこと。メッセージはいつでも<color:keyword>前のメッセージ</color>のコマンド（<color:keypress>CTRL+P</color>）で見直せる。
+
+次に、画面の右側に状態の帯（<color:U>f</color><color:R>[</color><color:v>*</color><color:R>--------]</color>）が見える。これはたいそう大事で、いまの狙い、あるいは直前に傷つけた敵を追ってくれる。ここでは子猫の体力を示していて、かなり危うい様子が分かる。（最後の <color:v>*</color> が<color:v>紫</color>になった理由は<link:monster.txt#HealthBar> を参照。）
+
+最後に、こちらの弾（<color:s>{</color>）が子猫の隣の地面に落ちているのに目を留めてほしい。弾は当たったとき壊れることもあるが、壊れなければ戦いの後に拾い集めたくなる。アイテムはその上へ動いて拾うコマンド（<color:keypress>g</color>）で拾える。あるいは <color:keypress>=</color> の設定のメニューで<color:keyword>always_pickup</color> の入力の設定を入れれば、踏んだアイテムは自動で拾われる。
+
+ここでは <color:keypress>n</color>（ローグライクでは <color:keypress>X</color>）の直前の行いを繰り返すコマンドで子猫にとどめを刺せるだろう。だが猫を殺すことがこのゲームの主な目当てではない。先へ進むときである。金が余っているなら、雑貨屋（<color:U>1</color>）へ行ってランタンと油を買うとよい。ランタンは松明より広く照らすので、暗がりで遠くまで見える。実際に使うには必ずランタンを装備すること（<color:keypress>w</color> で身に着ける）。それでも金が残っているなら、キノコ屋（<$:FF_SHROOMERY>）で回復促進と混乱治癒のキノコを買うとよい。
+
+店はいつも同じアイテムを売っているわけではない。ときおりアイテムを入れ替え、古いアイテムを手放して新しいアイテムを仕入れる。ただし上で挙げた序盤の必需品は、遊び始めのころなら確かに手に入るはずである。
+
+町の人（<color:G>t</color>）にさほど邪魔されずに買い物を済ませられただろうか。ときには町の人が絡んでくる。酔いどれが多いのでただ煩わしいだけのこともあるが、危ないこともある。イタズラ小僧は金を盗むことで知られており、あなたはいかにも狙いやすく見える。（武器を装備していれば）敵へ動くだけで攻められるし、上で示したように撃ってもよい。ただしメイジなら攻めの呪文（<color:keypress>m</color>）を使うべきである。呪文の狙いの選び方は射撃と同じである。<color:keypress>*</color> で狙いを定める形になり、<color:keypress>*5</color> はつねにいちばん近い敵を狙う。
+
+<topic:MyFirstTripDown><style:heading>初めて潜る</style>
+
+買い物を終えたら、できることが大きく 2 つある。伯爵の城（北にある入口の多い大きな建物）へ行き、最初の<color:keyword>町の依頼</color>を求めて果たそうとしてもよい。だがここではもう一方の道を選び、まっすぐダンジョンへ向かおう。
+
+初心者モードでは、入れるダンジョンはひとつだけである。<color:v>></color> の字がダンジョンの入口を表す。> は一般に下り階段を指すが、ダンジョンの入口 <color:v>></color> と依頼の入口 <color:y>></color> は目立つように色分けされている。同じく < は上り階段を指す。宇宙のいたずらか、この字はそのまま階段を使うキーでもある。下るのが <color:keypress>></color>、上るのが <color:keypress><</color> である。これ以上覚えやすいものがあるだろうか。では<color:keyword>鉄獄</color>への下り階段まで動いて、出かけよう。
+
+歩き回るときは敵に気をつけ、見るコマンド（<color:keypress>*</color>）と思い出すコマンド（<color:keypress>r</color>）を使って敵の説明を出すとよい。たとえばこうである。
+<style:screenshot>
+Monster: a Soldier ant [r,q,t,p,o,x,j,+,-,?,<dir>]
+Name    : <color:B>Soldier ant</color> (<color:u>a</color>)                                               L <color:G>     1</color>
+Level   : <color:G>1 to 10</color><color:d>   </color>Speed: +0                                           <color:G>      23</color>
+AC      : <color:y>?</color><color:d>         </color>Type : <color:G>Natural</color>                                      <color:G>     805</color>
+HP      : <color:y>?</color><color:d>         </color>                                                    <color:d>   </color><color:u>~</color><color:U>(</color><color:d>   </color>
+<color:d>                    </color>                                                    : <color:G> 18/10</color>
+Attacks : <color:G>Type    Effects</color>                                               : <color:G>    18</color>
+          Bite    Hurt                                                  : <color:G>     7</color>
+                                                                        : <color:G> 18/40</color>
+Kills   : <color:G>0</color>                                                             : <color:G>    18</color>
+Exp     : <color:G>2</color> at CL1                                                      : <color:G>    12</color>
+                                                                           <color:G>    6</color>
+A large ant with powerful mandibles.                                    <color:G> 43</color>/<color:G>  43</color>
+                                 #.....<color:U>'</color>...                         SP <color:G>  14</color>/<color:G>  14</color>
+                                 #.@...#                                        
+                                 #<color:u>a</color>....#                            <color:u>a</color>[<color:b>*********</color>]
+                                 #.....#
+                                 #######                                        
+                                                                                
+                                                                                
+                                                                                
+                                                                    <color:B>Study (1)</color>   
+                                                                                
+                                                                                
+<color:s>Angband: L2</color></style>
+
+ここでは前の冒険者がソルジャー・アントに出会っていたので、この種類の敵について基本の知識がある。多くはないが、1 手に 1 回攻めてくることと、倒せば経験 2 になることは分かる（コーヒーブレイクモードでは経験の伸びが速いので実際はもっと多い）。これがゲームの言う<color:keyword>敵の思い出</color>である。敵と戦うほど多くを学び、ゲームがその知識を追ってくれる。記憶はすべてセーブデータに残るので、この先の冒険者もその恩恵にあずかれる。敵を倒したら、<color:keypress>~</color> のコマンド（知識のメニュー）に続けて<color:keypress>m</color> で敵の知識を選び、矢印で目当ての敵を選べば手柄の詳しい話を思い出せる。学ぶほど説明が増えていくことに目を留めてほしい。
+
+ここからは、基本はいまの階を歩き回ることになる。ふつうのモードならいま降りてきた階段を上っていつでも町へ戻れるが、コーヒーブレイクモードでは上り階段が無いので、町へ戻りたいときは<color:keyword>帰還</color>の巻物を読む。もっと深いところへ下りる新しい階段も見つかる。基本として、深く行くほど厳しくなるが、戦利品の質も良くなり、いっそう深くへと誘われる……。
+
+では少し歩き回って敵を倒そう。死ぬことをあまり気にしないこと。はじめのうちはかなりよく死ぬ。死んでも、次にこのセーブデータを読み込むと生まれの手順にこの冒険者の<color:keyword>クイックスタート</color>という選びが増える。これは生まれの手順を丸ごと飛ばして、前と同じ冒険者で始めるものである。
+
+こちらはもう少し遊んでみる。あなたは腰を下ろして見ていればよい。……おっと、まずいことになったようだ。
+<style:screenshot>
+<color:g>The Novice warrior attacks you:</color> He hits. He hits. <color:v>*** LOW HITPOINT </color>             
+<color:v>WARNING! ***</color> Press <color:y>Space</color> to continue.                               レベル<color:G>     2</color>
+                                                                    経験<color:G>      21</color>
+                                                                    金  <color:G>     805</color>
+                                                                    <color:W>|</color><color:d> </color><color:u>}</color><color:d>    </color><color:u>~</color><color:U>(</color><color:d>   </color>
+                                                                    腕力: <color:G> 18/10</color>
+                                                                    知能: <color:G>    18</color>
+                                                                    賢さ: <color:G>     7</color>
+                                                                    器用: <color:G> 18/40</color>
+                                                                    耐久: <color:G>    18</color>
+                                                                    魅力: <color:G>    12</color>
+                                      #.###                         AC     <color:G>    6</color>
+                                    #<color:s>.</color>..<color:U>p</color>.#                         HP <color:r>  10</color>/<color:G>  55</color>
+                                   #<color:s>.</color><color:D>(</color>.@...##                       SP <color:G>  18</color>/<color:G>  18</color>
+                                  #<color:s>...</color>....<color:s>..</color>#                                   
+                                  <color:s>...</color><color:D>|</color><color:s>.......</color>                                   
+                                  #<color:s>.........</color>#                                   
+                                   #<color:s>.......</color>##                                   
+                                   ##<color:s>....</color>                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                           <color:B>Study (1)</color>   
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+<color:s>Angband: L2</color>
+</style>
+HP が <color:r>10</color> なのが見えるだろうか。ヒットポイントが 0 を下回れば死ぬ。それに、たいそう大きな<color:v>*** 低ヒットポイント警告！ ***</color> にも目を留めてほしい。まずいときに必ず気づかせるためのものである。ゲームは先へ進む前に<color:keypress>SPACE</color> を押させさえする。本当に、これは死ぬところである。
+<style:screenshot>
+<color:g>The Novice warrior attacks you:</color> He hits.<color:B>-more-</color>                                  
+                                                                    レベル<color:G>     2</color>
+                                                                    経験<color:G>      21</color>
+                                                                    金  <color:G>     805</color>
+                                                                    <color:W>|</color><color:d> </color><color:u>}</color><color:d>    </color><color:u>~</color><color:U>(</color><color:d>   </color>
+                                                                    腕力: <color:G> 18/10</color>
+                                                                    知能: <color:G>    18</color>
+                                                                    賢さ: <color:G>     7</color>
+                                                                    器用: <color:G> 18/40</color>
+                                                                    耐久: <color:G>    18</color>
+                                                                    魅力: <color:G>    12</color>
+                                      #.###                         AC     <color:G>    6</color>
+                                    #<color:s>.</color>..<color:U>p</color>.#                         HP <color:r>  -2</color>/<color:G>  55</color>
+                                   #<color:s>.</color><color:D>(</color>.@...##                       SP <color:G>  18</color>/<color:G>  18</color>
+                                  #<color:s>...</color>....<color:s>..</color>#                                   
+                                  <color:s>...</color><color:D>|</color><color:s>.......</color>                                   
+                                  #<color:s>.........</color>#                                   
+                                   #<color:s>.......</color>##                                   
+                                   ##<color:s>....</color>                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                           <color:B>Study (1)</color>   
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+                                      #<color:s>.</color>#                                       
+<color:s>Angband: L2</color>
+</style>
+<color:v>痛い！</color>本当に効いた。
+<style:screenshot>
+             Goodbye, Filcher! <color:B>-more-</color>
+               _______________________
+              /                       \         ___
+             /                         \ ___   /   \      ___
+            /            RIP            \   \  :   :     /   \
+           /                             \  : _;,,,;_    :   :
+          /            Filcher            \,;_          _;,,,;_
+         |               the               |   ___
+         |           Vanquished            |  /   \
+         |                                 |  :   :
+         |              Rogue              | _;,,,;_   ____
+         |            Level: 2             |          /    \
+         |             Exp: 38             |          :    :
+         |             AU: 144             |          :    :
+         |        Killed on Level 2        |         _;,,,,;_
+         |      by a Novice warrior.       |
+         |                                 |
+         |    Thu Dec 05 07:54:18 2019     |
+        *|   *     *     *    *   *     *  | *
+________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______
+</style>
+だが恐れることはない。すぐやり直せる。いま前の冒険者のセーブデータを読み込むと、新しい選びが出る。
+
+    <color:y>q</color>) クイックスタート
+
+<color:keypress>q</color> を選ぶと、前の種族・職業・能力値・性格がすでに選ばれた状態で冒険者を作るメニューへ入る。これはまったく新しい冒険者なので、（あのスリングのような）手に入れたアイテムは消えており、経験もゼロである。ただし敵の記憶は残るので、ソルジャー・アントが何をするかをまた一から学び直さずに済む。
+
+では少し遊んでみよう。すぐダンジョンへ入ったのはおそらくいちばん良い考えではなかった。（ローグのように）じゅうぶん強い冒険者なら、最初の町の依頼（<color:keyword>盗賊の隠れ家</color>）をいきなりやると序盤で良い足がかりになる。最初の依頼は危なさの度合い 5 なので、CL 1 でやるのはいくらか危ういが、果たせば値打ちのあるアイテムが褒美にもらえ、依頼で見つかる金で混乱治癒のキノコのような大事な物資を買える。そのうえ、実りの大きい<color:keyword>駆除</color>の依頼も求められるようになる。
+
+ここで手ほどきは終わりである。あとはゲームについての基本の豆知識をいくつか挙げておく。
+
+<topic:Tidbits><style:heading>豆知識</style>
+
+敵はそれぞれ、何者かをおおよそ表す固有の ASCII の字を使う。たとえばネズミは 'r'、オークは 'o' である。分からない字を見かけたら、<color:keypress>*</color> を押して見てみること。敵なら、続けて <color:keypress>r</color> を押せばその敵についての知らせが出る。もっと詳しい説明も含まれる。'/' や '!' のようなほかの字は拾って（<color:keypress>g</color> で拾う）使えるアイテムを表す。
+
+アイテムの使い方はその種類による。よくある例を挙げる。
+<style:screenshot>
+Char  Object         Usage
+====  ============== =========================================================
+<color:U>,</color>     Food           <color:keypress>E</color> to eat it. Do this whenever you feel hungry.
+<color:B>!</color>     Potion         <color:keypress>q</color> to quaff it. Try to identify the potion first.
+?     Scroll         <color:keypress>r</color> to read it.
+<color:R>?</color>     Spellbook      <color:keypress>b</color> to browse it. <color:keypress>G</color> to gain a spell. <color:keypress>m</color> to cast.
+<color:B>-</color>     Wand           <color:keypress>a</color> to aim it.
+<color:r>-</color>     Rod            <color:keypress>z</color> to zap it.
+<color:U>_</color>     Staff          <color:keypress>u</color> to use it.
+<color:U>~</color>     Lantern        <color:keypress>w</color> to wear it. <color:keypress>F</color> to refill it with oil.
+<color:U>~</color>     Quiver         <color:keypress>w</color> to wield it. <color:keypress>w</color> again to fill it with projectiles.
+<color:u>}</color>     Ranged Weapon  <color:keypress>w</color> to wield it.
+<color:o>/</color>     Polearm        <color:keypress>w</color> to wield it.
+<color:B>\</color>     Hafted Weapon  <color:keypress>w</color> to wield it.
+|     Sword          <color:keypress>w</color> to wield it.
+<color:U>(</color>     Soft Armor     <color:keypress>w</color> to wear it.
+<color:s>[</color>     Hard Armor     <color:keypress>w</color> to wear it.
+<color:U>]</color>     Misc. Armor    <color:keypress>w</color> to wear it.
+</style>
+ある記号が何を表すか知りたければ、<color:keypress>/</color> に続けてその記号を打つ。たとえば 't' が何なのか気になったら <color:keypress>/t</color> と打てば、町の人だと教えてくれる。アイテム・地形・敵をひとつずつ調べるには<color:keypress>*</color> の狙いを定めるコマンドを使う（詳しくは <link:commdesc.txt#Targetting> を参照）。ほかに役に立つコマンドとしては、<color:keypress>Y</color>（か<color:keypress>[</color>）の敵の一覧のコマンドと、<color:keypress>O</color>（か<color:keypress>]</color>）のアイテムの一覧のコマンドがある。
+
+ここからは、ダンジョンで生き延びるための詳しい知らせを述べる。見当のつくものもあれば、何度も死なずには気づけないものもある。その痛い学びの道のりを余すところなく味わいたいなら、この先は読まないこと。だが死ぬのにうんざりしているなら、読み進めてほしい。
+ 
+<topic:MultipleBlows><style:heading>武器と攻撃回数</style>
+
+冒険者によっては、始めから 1 手に何度も武器で攻められる。何回攻められるかは職業・武器の重さ・腕力・器用さ、そして武器を両手で持っているか片手かで決まる。人物調書を見てみよう（<color:keypress>C</color> と打つ）。
+<style:screenshot>
+ Name       : <color:B>Filcher</color><color:d>                   </color>   ========== Stats ==========          
+ Sex        : <color:B>Male</color><color:d>                      </color>         STR  : <color:G>    18/10</color>               
+ Personality: <color:B>Ordinary</color><color:d>                  </color>         INT  : <color:G>       18</color>               
+ Race       : <color:B>High-Elf</color><color:d>                  </color>         WIS  : <color:G>        7</color>               
+ Subrace    : <color:B>None                      </color>         DEX  : <color:G>    18/40</color>               
+ Class      : <color:B>Rogue</color><color:d>                     </color>         CON  : <color:G>       18</color>               
+ Realm      : <color:B>Burglary</color><color:d>                  </color>         CHR  : <color:G>       12</color>               
+<color:d>                                        </color>                                        
+ Level      : <color:G>       1</color><color:d>                  </color>         HP   : <color:G>    43/43</color>               
+ Cur Exp    : <color:G>       0</color><color:d>                  </color>         SP   : <color:G>    14/14</color>               
+ Max Exp    : <color:G>       0</color><color:d>                  </color>         AC   : <color:G>        6</color>               
+ Adv Exp    : <color:G>      23</color><color:d>                  </color>         Speed: <color:U>       +0</color>               
+<color:d>                                        </color>                                        
+<color:d>                                        </color>   ========== Skills =========          
+ Gold       : <color:G>     774</color><color:d>                  </color>   Melee      : <color:y>Good</color>                    
+ Kills      : <color:G>       0</color><color:d>                  </color>   Archery    : <color:y>Good</color>                    
+ Uniques    : <color:G>       0</color><color:d>                  </color>   SavingThrow: <color:y>Good</color>                    
+ Artifacts  : <color:G>     0+0</color><color:d>                  </color>   Stealth    : <color:G>Excellent</color>               
+<color:d>                                        </color>   Perception : <color:y>Good</color>                    
+ Game Day   : <color:G>       1</color><color:d>                  </color>   Searching  : <color:o>Fair</color>                    
+ Game Time  : <color:G>    6:00</color><color:d>                  </color>   Disarming  : <color:y>Good</color>                    
+ Play Time  : <color:G>   00:00</color><color:d>                  </color>   Device     : <color:y>Good</color>
+<color:d>                                        </color>                                        
+</style>
+それから近接の節まで送るか、<color:keypress>m</color> を押して手早く飛ぶ。
+<style:screenshot>
+<color:y> Hand #1:</color> a Dagger (1d5) (+0,+0)                            <color:G>Accuracy</color>
+ Weight : 1.2 lbs                                            AC Hit
+ Profic : Beginner (+0 To Hit)                               25 75%
+ To Hit : 0 + 4 = 4                                          50 53%
+ To Dam : 0 + 2 = 2                                          75 32%
+ Blows  : 2.42                                              100 10%
+<color:G> Damage </color>                                                    125  5%
+ Crits  : 1.00x (0.5%)                                      150  5%
+ Normal : 11                                                175  5%
+                                                            200  5%
+</style>
+ここでは、まだ始まりのダガーを使っている生まれたての冒険者である。それでも 1 手に何度も攻められているのが分かる。ここでは 2.42 である。これはどういう意味だろうか。実のところ単純で、42% の割合で 1 手に 3 回、58% の割合で 2 回攻められるということである。これは新しい冒険者としては多い方である。ローグは腕力と器用さに恩恵があり、ダガーのような軽い武器は攻撃回数を増やす。ただし、2.42 回も攻められるのにダメージはまだかなり情けないことにも気づくだろう。1 手にたった 11 である。
+
+武器の知らせの画面には近接の命中も出る。もちろん、振るたびに当たるわけではない。命中はその武器の腕前と、あれば魔法の恩恵で決まる。上の人物調書の腕前の節に出る近接の腕前（ここでは <color:y>良い</color>）にも左右される。近接の腕前は能力値（腕力と器用さ）と経験（レベル）とともに上がる。これらはすべて敵の防御力（AC）と競い合う。つまり、当てにくい敵がいるということである。たとえばドラゴンは皮が硬いことで悪名高い。
+
+飛び道具の詳しい知らせも人物調書で見られる。近接の節のすぐ後に出て（実際に撃つ道具を装備していればの話だが）、<color:keypress>s</color> を押せば手早く飛べる。
+<style:screenshot>
+<color:y> Shooting</color>: <color:u>a Sling (x2) (+0,+0)</color>
+ Range   : 160'
+ Shots   : 1.39
+ Mult    : 2.04x
+ Profic  : Beginner (+0 To Hit)
+ To Hit  : 0 + 4 = 4
+ Xtra Dam: 0 (Multiplier Does Not Apply)
+
+<color:u> Ammo #1 </color>: <color:U>30 Rounded Pebbles (2d3) (+0,+0)</color><color:d>                 </color>  <color:G>AC Hit</color>            
+ Breakage: 8%<color:d>                                               </color>  25 79%            
+ Weight  : 0.4 lbs<color:d>                                          </color>  50 63%            
+ To Hit  : 0 + 4 = 4<color:d>                                        </color> 100 30%            
+ To Dam  : 0 (Multiplier Applies)<color:d>                           </color> 150  5%            
+ To Dam  : 0 (Multiplier Does Not Apply)<color:d>                    </color> 175  5%            
+ <color:G>Damage  </color><color:d>                                                   </color> 200  5%            
+ Crits   : 1.06x (4.1%)<color:d>                                     </color>
+ Normal  : 8/11<color:d>                                             </color>                    
+</style>
+ここでは何度も撃てているが、遠くからの戦いは近接とは少し違う働きをする。許された回数を 1 手でまとめて撃つのではなく、1 回ずつ撃つのだが、ゲームは 1 回あたりに満額より少ないエネルギーしか取らない。速さの仕組みはまだ説明していないが、ひとつの行いに使うエネルギーが少ないほど速く動け、近くの敵が動く前により多くをこなせるということである。
+
+この 2 つの画面、武器の知らせと撃つ道具の知らせは、遊ぶほどにいっそう役に立つようになる。いま出ているものをすべて分かっていなくても心配は要らない。
+
+<topic:OnArmorAndResistance><style:heading>防具と耐性</style>
+
+敵には防御力という性質があり、それで当てにくくなることを見たばかりである。同じく冒険者にも防御力があり、いま身に着けている防具と器用さで決まる。当てられにくくなるだけでなく、AC はいくつかの種類の近接攻撃のダメージも実際に減らすので、できるだけ高めたいたいそう大事な性質である。近接で打ちのめされていると感じたら、装備でより高い AC を探すとよい。
+
+始まりの AC が見える人物調書を出す。
+<style:screenshot>
+ Name       : <color:B>Filcher</color><color:d>                   </color>   ========== Stats ==========          
+ Sex        : <color:B>Male</color><color:d>                      </color>         STR  : <color:G>    18/10</color>               
+ Personality: <color:B>Ordinary</color><color:d>                  </color>         INT  : <color:G>       18</color>               
+ Race       : <color:B>High-Elf</color><color:d>                  </color>         WIS  : <color:G>        7</color>               
+ Subrace    : <color:B>None                      </color>         DEX  : <color:G>    18/40</color>               
+ Class      : <color:B>Rogue</color><color:d>                     </color>         CON  : <color:G>       18</color>               
+ Realm      : <color:B>Burglary</color><color:d>                  </color>         CHR  : <color:G>       12</color>               
+<color:d>                                        </color>                                        
+ Level      : <color:G>       1</color><color:d>                  </color>         HP   : <color:G>    43/43</color>               
+ Cur Exp    : <color:G>       0</color><color:d>                  </color>         SP   : <color:G>    14/14</color>               
+ Max Exp    : <color:G>       0</color><color:d>                  </color>         <color:R>AC   :         6</color>
+ Adv Exp    : <color:G>      23</color><color:d>                  </color>         Speed: <color:U>       +0</color>               
+<color:d>                                        </color>                                        
+<color:d>                                        </color>   ========== Skills =========          
+ Gold       : <color:G>     774</color><color:d>                  </color>   Melee      : <color:y>Good</color>                    
+ Kills      : <color:G>       0</color><color:d>                  </color>   Archery    : <color:y>Good</color>                    
+ Uniques    : <color:G>       0</color><color:d>                  </color>   SavingThrow: <color:y>Good</color>                    
+ Artifacts  : <color:G>     0+0</color><color:d>                  </color>   Stealth    : <color:G>Excellent</color>               
+<color:d>                                        </color>   Perception : <color:y>Good</color>                    
+ Game Day   : <color:G>       1</color><color:d>                  </color>   Searching  : <color:o>Fair</color>                    
+ Game Time  : <color:G>    6:00</color><color:d>                  </color>   Disarming  : <color:y>Good</color>                    
+ Play Time  : <color:G>   00:00</color><color:d>                  </color>   Device     : <color:y>Good</color>
+ </style>
+AC のほかに、冒険者にはたいそう大事な耐性の組がある。……というより、この場合は耐性の無さである。人物調書の装備の節まで送るか、<color:keypress>e</color> を押して手早く飛ぶ。ここで、始まりの冒険者がいかに情けなく足りていないかを生々しく見ることになる。こちらの画面を出す。
+<style:screenshot>
+                                                                                
+============================= Character <color:o>E</color>quipment ============================= 
+                                                                                
+ a) a Dagger (1d5) (+0,+0)                                                      
+ c) <color:u>a Sling (x2) (+0,+0)</color>                                                        
+ i) <color:s>Soft Leather Armour [4,+0]</color>                                                  
+                                                                                
+              <color:W>|</color> <color:u>}</color>     <color:U>(</color>    <color:d>             </color>              <color:W>|</color> <color:u>}</color>     <color:U>(</color>                 
+ <color:G>Resistances</color>  abcdefghijklm@<color:d>            </color> <color:G>Abilities  </color>  abcdefghijklm@            
+ Acid       : <color:D>..............</color>   0%<color:d>       </color> Speed      : <color:D>..............</color>            
+ Electricity: <color:D>..............</color>   0%<color:d>       </color> Free Act   : <color:D>..............</color>            
+ Fire       : <color:D>..............</color>   0%<color:d>       </color> See Invis  : <color:D>.............</color>+   1x       
+ Cold       : <color:D>..............</color>   0%<color:d>       </color> Warning    : <color:D>..............</color>            
+ Poison     : <color:D>..............</color>   0%<color:d>       </color> Slow Digest: <color:D>..............</color>            
+ Light      : <color:D>.............</color>+ <color:y> 30%</color><color:d>       </color> Regenerate : <color:D>..............</color> 100%       
+ Dark       : <color:D>..............</color>   0%<color:d>       </color> Levitation : <color:D>..............</color>            
+ Confusion  : <color:D>..............</color>   0%<color:d>       </color> Perm Lite  : <color:D>..............</color>            
+ Nether     : <color:D>..............</color>   0%<color:d>       </color> Reflection : <color:D>..............</color>            
+ Nexus      : <color:D>..............</color>   0%<color:d>       </color> Hold Life  : <color:D>..............</color>            
+ Sound      : <color:D>..............</color>   0%<color:d>       </color> Life Rating: <color:D>..............</color>            
+ Shards     : <color:D>..............</color>   0%<color:d>       </color> Dec Mana   : <color:D>..............</color>            
+ Chaos      : <color:D>..............</color>   0%<color:d>       </color> Easy Spell : <color:D>..............</color>            
+ Disenchantm: <color:D>..............</color>   0%<color:d>       </color> Anti Magic : <color:D>..............</color>            
+ Time       : <color:D>..............</color>   0%<color:d>       </color> Magic Skill: <color:D>..............</color>            
+ Blindness  : <color:D>..............</color>   0%<color:d>       </color> Spell Power: <color:D>..............</color>            
+ Fear       : <color:D>..............</color>   0x<color:d>       </color> Spell Cap  : <color:D>..............</color>            
+<color:d>                                        </color> Magic Res  : <color:D>..............</color>            
+              <color:W>|</color> <color:u>}</color>     <color:U>(</color>    <color:d>             </color> Infravision: <color:D>.............</color>+  40'       
+ <color:G>Auras      </color>  abcdefghijklm@<color:d>            </color> Stealth    : <color:D>..............</color>            
+ Aura Elec  : <color:D>..............</color><color:d>            </color> Searching  : <color:D>..............</color>            
+ Aura Fire  : <color:D>..............</color><color:d>            </color>                                        
+ Aura Cold  : <color:D>..............</color><color:d>            </color>              <color:W>|</color> <color:u>}</color>     <color:U>(</color>                 
+ Aura Shards: <color:D>..............</color><color:d>            </color> <color:G>Sustains   </color>  abcdefghijklm@            
+ Revenge    : <color:D>..............</color><color:d>            </color> Sust Str   : <color:D>..............</color>            
+<color:d>                                        </color> Sust Int   : <color:D>..............</color>            
+              <color:W>|</color> <color:u>}</color>     <color:U>(</color>    <color:d>             </color> Sust Wis   : <color:D>..............</color>            
+ <color:G>Slays      </color>  abcdefghijklm@<color:d>            </color> Sust Dex   : <color:D>..............</color>            
+ Slay Evil  : <color:D>..............</color><color:d>            </color> Sust Con   : <color:D>..............</color>            
+ Slay Undead: <color:D>..............</color><color:d>            </color> Sust Chr   : <color:D>..............</color>            
+ Slay Demon : <color:D>..............</color><color:d>            </color>                                        
+ Slay Dragon: <color:D>..............</color><color:d>            </color>              <color:W>|</color> <color:u>}</color>     <color:U>(</color>                 
+ Slay Human : <color:D>..............</color><color:d>            </color> <color:G>Detection  </color>  abcdefghijklm@            
+ Slay Animal: <color:D>..............</color><color:d>            </color> Telepathy  : <color:D>..............</color>            
+ Slay Orc   : <color:D>..............</color><color:d>            </color> ESP Evil   : <color:D>..............</color>            
+</style>
+耐性のまとまりと、そのほかの能力のまとまり、それに殺戮などのまとまりがあることに気づくだろう。ここではひとまず耐性だけを見よう。
+
+では耐性とは何で、なぜ気にすべきなのか。基本として、敵の攻めにはしばしば属性の色合いがある。そのダメージには「種類」があるのである。たとえば火を吐くドラゴンは……そう、火を吐く。そして火への耐性がその種類のダメージに耐える助けになる。ダメージの種類の多くには厄介な副作用もある。例を続ければ、火の攻めは袋の中のアイテム（とりわけ巻物・杖・魔法書）を壊しうるが、ここでも火への耐性が助けになる。よくある攻めの種類と、どんなときに耐性が欲しいかを短くまとめる（もっと詳しい一覧は <link:defend.txt#Resistances> を参照）。敵の攻めには、備えの無い者にはたいそう致命的なものがあるので気をつけること。
+<style:screenshot>
+<color:w>Type       Comment
+====       =============================================================</color>
+<color:D>Acid</color>       Destroys scrolls/staves, damages armor, can reduce CHR.
+           Resist by DL20-30.
+<color:b>Elec</color>       Destroys rings/wands, can reduce DEX.
+           Resist by DL30.
+<color:R>Fire</color>       Destroys scrolls/staves/spellbooks, can reduce STR.
+           Resist by DL20-30.
+<color:w>Cold</color>       Destroys potions, can reduce STR.
+           Resist by DL30.
+<color:G>Poison</color>     Does high damage, but with some delay.
+           Can be cured with potions or mushrooms.
+<color:R>Nexus</color>      Scrambles stats and teleports you, sometimes to
+           very unexpected places. Not very damaging.
+<color:U>Shards</color>     Destroys potions, causes wounds. Resistance not needed before
+           DL40, but becomes extremely important in late game.
+<color:r>Confusion</color>  Confuses you so you can't act normally.
+           Carry mushrooms and potions to cure. See <link:status.txt#Confusion>.
+<color:v>Paralysis</color>  Freezes the player so you lose turns.
+           Get Free Action by DL25 or Old Man Willow quest. See <link:status.txt#Paralysis>.
+</style>
+この冒険者もまったく望みが無いわけではない。ハイ・エルフなので、閃光への耐性（30%）と透明視認を持って始まる。透明視認のおかげでゴーストなど透明な敵を見られる見込みがある。見えない敵はたいそう煩わしく、そのうえ危ない。ただし透明視認は完全ではなく、見込みをくれるだけである。出どころを増やし、探索の腕前を上げればもっと当てにできるようになる。
+
+種族が耐性や能力をくれることもあるが、たいていは装備から来る。欄の上に並ぶ「abcd…」はいまの装備の組に当たり、その枠に実際にアイテムを着けていればそのアイテムの字が出る（ダガーなら <color:W>|</color>、スリングなら <color:u>}</color>）。いまの耐性と能力をここで追え、どこから来ているかも分かる。'@' の字は冒険者に当たる（@ で表されるのを覚えているだろうか）。この枠には、生まれつきの種族や職業の能力と、一時的に得た魔法の強めが並ぶ。
+
+一般に、耐性はできるだけ多く揃えたくなる。序盤ではさほど大事ではないが、深く下りるにつれ何がいつ要るかが分かってくる。能力はたいてい必須ではない。ただし麻痺知らずと透明視認だけは、できれば DL20〜25 までに欲しい。（全部の精神感知を持てるほど運が良ければ、透明視認は無くてもやっていける。）
+
+<color:G>耐性は重なることに注意。</color>2 つのアイテムが火への耐性をくれれば耐性の割合は上がる（ただし一直線にではない）。ある耐性の出どころが複数あると、さまざまなダメージの種類の厄介な副作用の多くを防ぐ助けにもなる。中盤までに、基本の 4 つの属性（酸・火炎・冷気・電撃）すべてに出どころを 2 つずつ持ちたい。直のダメージとアイテムの失いの両方を抑えるためである。アイテムが傷つくのを避ける詳しい話は<link:faq.txt#ItemLoss> を参照。
+
+さて、始まりの人物調書はどうにも見劣りすると思わずにいられない。性質の欄がひとつ残らず空だからである。前に遊んだタナーリのデーモンの冒険者から、もっと面白い例を出そう（体つきが違うのに気づいただろうか。これは<color:r>モンスターモード</color>の冒険者で、変わった体つきはよくあることである）。
+<style:screenshot>
+============================= Character <color:o>E</color>quipment ============================= 
+                                                                                
+ a) The Long Sword 'Excalibur' (5d6) (+21,+19) [+5] (+3)                        
+      {WiChDg;ShFe;SiHlWrBs|S/*UL(WiCh}                                         
+ b) The Katana 'Kusanagi-no-tsurugi' (4d4) (+15,+15) (+3)                       
+      {DxSl;AcElFiCoNtDi;SiRgLuBs/*DUZ <color:B>A:Getaway</color>}                               
+ c) <color:r>a Ring of Protection [+18] {SoShFe(StWiDxCnCh}</color>                              
+ d) <color:r>a Ring of Speed (+13) {Sp </color><color:B>A:Speed</color><color:r>}</color>                                          
+ e) <color:U>The Set of Mithril Gauntlets 'Power Shield' [5,+21] (+4) {StCn;ElCaFe;Fa~L}</color> 
+ f) The Scimitar 'Soulsword' (3d6) (+15,+15) (+3)                               
+      {InWiLf;DkNtNxCaDi;SiHlBs/*DULZ}                                          
+ g) a Lochaber Axe (Defender) (3d9) (+15,+15) [+12] {ShBl;FaSiRgLvWr(Cn}        
+ h) <color:U>a Set of Mithril Gauntlets of the Thief (+2,-3) [5,+20] (+4) {SpDxSl(Dx}</color>    
+ i) The Battle Axe of Balli Stonehand (3d9) (+15,+15) [+5] (+3)                 
+      {StCnSl;AcElFiCoBl;FaSiRgLv/oTU}                                          
+ j) The Pike 'Grassroot' (2d6) (+21,+21) (+4) {SpStDxCnSr/pZ <color:B>A:Summon Hydras</color>}   
+ k) <color:o>a Sacred Pendant [+15] (+3) {WiLf;Bs}</color>                                       
+ l) <color:y>The Feanorian Lamp 'Armageddon Stone' (+4) {In;NtBl;Wr[M(In}</color>                
+                                                                                
+              <color:W>||</color><color:g>==</color><color:B>]</color><color:W>|</color><color:D>/</color><color:B>]</color><color:s>//</color><color:y>"</color><color:o>~</color><color:d>              </color>              <color:W>||</color><color:g>==</color><color:B>]</color><color:W>|</color><color:D>/</color><color:B>]</color><color:s>//</color><color:y>"</color><color:o>~</color>              
+ <color:G>Resistances</color>  abcdefghijkl@<color:d>             </color> <color:G>Abilities  </color>  abcdefghijkl@             
+ Acid       : <color:D>.</color>+<color:D>......</color>+<color:D>....</color> <color:R> 65%</color><color:d>        </color> Speed      : <color:D>...</color>+<color:D>...</color>+<color:D>.</color>+<color:D>..</color><color:y>#</color>             
+ Electricity: <color:D>.</color>+<color:D>..</color>+<color:D>...</color>+<color:D>....</color> <color:r> 72%</color><color:d>        </color> Free Act   : <color:D>....</color>+<color:D>.</color>+<color:D>.</color>+<color:D>...</color>+   4x        
+ Fire       : <color:D>.</color>+<color:D>......</color>+<color:D>...</color>+ <color:r> 72%</color><color:d>        </color> See Invis  : ++<color:D>...</color>++<color:D>.</color>+<color:D>...</color>+   6x        
+ Cold       : <color:D>.</color>+<color:D>......</color>+<color:D>....</color> <color:R> 65%</color><color:d>        </color> Warning    : +<color:D>.....</color>+<color:D>....</color>+<color:D>.</color>             
+ Poison     : <color:D>............</color>+ <color:y> 50%</color><color:d>        </color> Slow Digest: <color:D>............</color>+             
+ Light      : <color:D>.............</color>   0%<color:d>        </color> Regenerate : <color:D>.</color>+<color:D>....</color>+<color:D>.</color>+<color:D>....</color> 400%        
+ Dark       : <color:D>.....</color>+<color:D>.......</color> <color:y> 30%</color><color:d>        </color> Levitation : <color:D>......</color>+<color:D>.</color>+<color:D>....</color>             
+ Confusion  : <color:D>............</color>+ <color:y> 30%</color><color:d>        </color> Perm Lite  : <color:D>.</color>+<color:D>...........</color>             
+ Nether     : <color:D>.</color>+<color:D>...</color>+<color:D>.....</color>++ <color:r> 47%</color><color:d>        </color> Reflection : <color:D>.............</color>             
+ Nexus      : <color:D>.....</color>+<color:D>.......</color> <color:y> 30%</color><color:d>        </color> Hold Life  : +<color:D>....</color>+<color:D>......</color>+   3x        
+ Sound      : <color:D>..</color>+<color:D>..........</color> <color:y> 30%</color><color:d>        </color> Life Rating: <color:D>.....</color>+<color:D>....</color>+<color:D>..</color> +18%
+ Shards     : +<color:D>.</color>+<color:D>...</color>+<color:D>......</color> <color:r> 45%</color><color:d>        </color> Dec Mana   : <color:D>.............</color>             
+ Chaos      : <color:D>....</color>++<color:D>......</color>+ <color:r> 45%</color><color:d>        </color> Easy Spell : <color:D>.............</color>             
+ Disenchantm: <color:D>.</color>+<color:D>...</color>+<color:D>.......</color> <color:R> 40%</color><color:d>        </color> Anti Magic : <color:D>...........</color>+<color:D>.</color>             
+ Time       : <color:D>.............</color>   0%<color:d>        </color> Magic Skill: <color:D>.............</color>             
+ Blindness  : <color:D>......</color>+<color:D>.</color>+<color:D>..</color>+<color:D>.</color> <color:r> 45%</color><color:d>        </color> Spell Power: <color:D>.............</color>             
+ Fear       : +<color:D>.</color>+<color:D>.</color>+<color:D>.......</color><color:y>#</color>   4x<color:d>        </color> Spell Cap  : <color:D>.............</color>             
+<color:d>                                        </color> Magic Res  : <color:D>.............</color>             
+              <color:W>||</color><color:g>==</color><color:B>]</color><color:W>|</color><color:D>/</color><color:B>]</color><color:s>//</color><color:y>"</color><color:o>~</color><color:d>              </color> Infravision: <color:D>............</color>+  50'        
+ <color:G>Auras      </color>  abcdefghijkl@<color:d>             </color> Stealth    : <color:D>.</color>+<color:D>.....</color>++<color:D>....</color>             
+ Aura Elec  : <color:D>.............</color><color:d>             </color> Searching  : <color:D>.........</color>+<color:D>...</color>             
+ Aura Fire  : <color:D>.............</color><color:d>             </color>                                        
+ Aura Cold  : <color:D>.............</color><color:d>             </color>              <color:W>||</color><color:g>==</color><color:B>]</color><color:W>|</color><color:D>/</color><color:B>]</color><color:s>//</color><color:y>"</color><color:o>~</color>              
+ Aura Shards: <color:D>.............</color><color:d>             </color> <color:G>Sustains   </color>  abcdefghijkl@             
+ Revenge    : <color:D>.............</color><color:d>             </color> Sust Str   : <color:D>..</color>+<color:D>..........</color>             
+</style>
+耐性が重なっていること、そしてたいていの耐性が揃っていることに目を留めてほしい。この冒険者は混沌のサーペントに挑む備えができている。
+
+<topic:Skills><style:heading>腕前について</style>
+
+人物調書には、いくつもの腕前をどれだけ極めているか（あるいは極めていないか）も出る。
+<style:screenshot>
+           ========== Skills =========
+           Melee      : <color:v>Amber[15]</color>
+           Archery    : <color:y>Good</color>
+           SavingThrow: <color:v>Amber[7]</color>
+           Stealth    : <color:g>Superb</color>
+           Perception : <color:o>Fair</color>
+           Searching  : <color:o>Fair</color>
+           Disarming  : <color:g>Superb</color>
+           Device     : <color:g>Superb</color>
+</style>
+見てのとおりの近接と射撃のほかに、6 つある。ある腕前の高さは種族・職業・性格・能力値・装備で決まり、レベルが上がれば職業ごとの恩恵も得られる。隠密を除けば、ある腕前の素質はたいてい職業で大部分が決まる。とりわけ、いくらかレベルが上がった後はそうである。
+
+冒険者の弱みを直すには耐性の方が分かりやすい見どころだが、腕前も忘れてはいけない。とりわけ<color:keyword>隠密</color>は序盤でたいそう助けになる。望まない敵に絶えず埋もれることなく、こっそり戦利品を集め、戦う相手を選べるようになる。終盤まで生き延びれば、<color:keyword>魔法の道具の腕前</color>がいっそう大事になる。（バーサーカーを除く）どの冒険者もいくらかは魔法の道具に頼るし、腕前が足りないと値打ちのある道具にきわめて使いにくいものがある。<color:keyword>魔法防御</color>も良いものである。邪悪な呪いに抗えるようになり、麻痺に対する見込みも良くなる。
+
+探索・知覚・解除はそれほど大事な腕前ではないが、使い道はある。とりわけ探索は透明な敵をよく見つけられるようにする。探索と知覚はどちらも隠し扉と罠に気づけるようにする（探索は自分から探しているとき、知覚は探していないとき）。解除の腕前は罠を作動させずに外すのを上手くし、扉の鍵を開ける力も上げ、ローグのヒット＆アウェイの失敗率にも響く。探索と知覚は近しく、探索を上げるアイテムは知覚も上げる。
+
+<topic:OnMagicalItems><style:heading>大事な魔法のアイテム</style>
+
+魔法のアイテムは、戦士であってもどの冒険者の手札にとっても大事な部分である。誰にとっても要る魔法がいくつかある。
+
+  <indent><color:B>テレポートと逃げ道</color>
+
+囲まれること、安全な退き道を断たれることはたやすく起きる。どれほど強い戦士でも数の力には押しつぶされうる。そのうえ、ほかの敵を召喚できる敵は多く、その敵がまた敵を召喚する敵を召喚したりもする……。ことは一瞬で悪くなりうるので、そうなったときのために魔法の逃げ道を用意しておきたい。
+
+<color:r>フェイズ・ドア</color> <indent>短い距離のテレポートである。狭い場所や、遠くから攻めてこない敵に対して逃げ道になり、近接を避けたいときの戦い方の道具としても役に立つ。</indent>
+
+<color:r>テレポート</color> <indent>もっと遠くへ逃げるもので、退き方の主役である。ただし、始めより悪い場所へ降り立つこともあるので、いくらか危うい逃げ道でもある。</indent>
+
+<color:r>テレポート・アウェイ</color> <indent>直線上の敵をすべて遠くへ飛ばすが、多くの敵は抗い、免疫の敵もいる。いまの居場所を保ったまま厄介な敵 1 体を追い払うのにたいてい役立つ。</indent>
+
+<color:r>階のテレポート</color> <indent>いちばん安全な逃げ道で、ダンジョンの階を丸ごと 1 つ上か下へ移る。いまの階とそこの良いアイテムをすべて捨てることになるが、新しい階の階段から戻る道が見つかることもある。</indent>
+
+<color:r>破壊</color> <indent>この強い呪文は周りの場所から（アーティファクトさえ）すべてを取り除き、あたりを吹き飛ばし、天井から岩を落とす。ひどく困ったときには良い逃げ道である。ただし破壊も万全ではない。召喚されたもの以外の敵は抵抗の判定があり、取り除かれずに済むことがある。それに破壊は、そこに天井があることを本当に求める……。破壊の巻物は最後の戦いのために取っておくことを勧める。サーペントの召喚をすべてさばくには多く要るだろう。</indent>
+</indent>
+  <indent><color:B>癒しと回復</color>
+
+冒険の間、いろいろなものがあなたを傷つける。これは避けられない。幸い、傷を癒したり、混乱や毒のような状態の害に効いたりする魔法の薬が多くある。
+
+<color:r>軽傷の治癒</color> <indent>ヒットポイントを少し、20 ほど戻す。切り傷を完全には治さないが、その効き目は弱める。（切り傷は血を流させ、1 手ごとにヒットポイントを減らす。ただし小さな切り傷は死ぬ前にたいてい治る。）</indent>
+
+<color:r>重傷の治癒</color> <indent>もう少し多く、35 か 40 ほど戻す。切り傷にもよく効く。序盤の冒険者がたいてい頼る定番の薬である。</indent>
+
+<color:r>致命傷の治癒</color> <indent>さらに良い。50〜60 ほど癒し、切り傷と朦朧を完全に治す。</indent>
+
+<color:r>治癒</color> <indent>HP はまったく戻さないが、ほぼすべての状態の害を治す。切り傷・朦朧・混乱、さらには幻覚と盲目まで治す（誰に攻められているか見えるのはつねに良いことだし、巻物や魔法書を読めるようにもなる）。ひどい毒は一部しか治らないこともある。</indent>
+
+キノコにもたいそう重宝するものがある。
+
+<color:r>混乱治癒</color> <indent>混乱をすべて治す。序盤ではきわめて役に立つ。治癒の薬より安く、確かに手に入るからである。中盤にはたいてい要らなくなる。治癒の薬の蓄えが増え、混乱への耐性をくれる装備も見つかり始めるからである。</indent>
+
+<color:r>解毒</color> <indent>毒をすべて治す。たいていの薬（や呪文でさえ）はひどい毒を一部しか治さないので、この確かな選びは終盤でたいそう便利である。とりわけ毒への耐性が低い冒険者にはそうである。</indent>
+
+<color:r>回復促進</color> <indent>ヒットポイントを少し（10 ほど）戻し、切り傷を少し弱め、回復を速める。</indent>
+
+上のアイテムは町の寺院とキノコ屋で手軽に買えるので、できるだけ蓄えておくべきである。次の薬はダンジョンか依頼で見つけるか、ブラックマーケットで買うほかない。
+
+<color:r>体力回復</color> <indent>300 ほどの大きな HP の回復である。恐怖・幻覚・毒を除くたいていの状態の害も治す。この薬はさほど珍しくはないが、最後の戦いでは多く消えるので、とりわけ近接の組み立てでは最後にじゅうぶん残るよう要るときにだけ使うこと。</indent>
+
+<color:r>*体力回復*</color> <indent>1000 ほどのさらに大きな HP の回復である。恐怖と幻覚を除くたいていの状態の害も治す。この薬はたいそう珍しく、ほとんどは最後の 2 つの戦いのために取っておくべきである。</indent>
+
+<color:r>生命の薬</color> <indent>能力値と HP をすべて戻し、恐怖を除くすべての状態の害を取り除く。この薬はたいそう珍しいので、最後の戦いのために取っておくべきである。</indent>
+</indent>
+  <indent><color:B>知ること</color>
+
+新しいアイテムを見つけても、たいていそれについて何も分からない。見つけたアイテムを知るには、何らかの知る手立てが要る。どの冒険者にも見つけたアイテムのいくつかを感じ取る生まれつきの力があり、そのアイテムの上を歩くだけで（少なくともしばらく袋に入れて持ち歩けば）その値打ちの手がかりが得られる。この力を<color:keyword>感触</color>と呼ぶ（<link:objects.txt#Quality> と<link:objects.txt#Pseudo-ID> を参照）。感触が本当に効くのは装備だけである。魔法の道具にも感触は出るが、あまり実際の助けにはならない。
+
+感触が教えてくれることは多くない。試しに使ってもっと知ろうとすることはできる。たとえば見つけたばかりのキノコを食べたり、袋の新しい薬を飲んだりである。ただしこれはたいそう危うい。キノコと薬にはひどい効き目のものがあるからである。魔法棒・ロッド・杖のような魔法の道具なら、見つけたときに試すのはまだ受け入れやすい。だが本当は<color:U>鑑定の杖</color>か、ほかに当てになる<color:keyword>鑑定</color>の出どころが欲しい。
+
+鑑定でさえアイテムのうわべしか教えてくれない。正しい名前と、魔法の戦いの恩恵か AC の恩恵、そして似たアイテムを使ってきた経験から見分けられるようになった性質が分かるだけである。薬・巻物・キノコなら鑑定でじゅうぶんである（それどころか、この先の似たアイテムを鑑定せずに見分けられるようにもなる）。だが魔法の道具、とりわけエゴやアーティファクトの装備では、大事なところが鑑定では明かされないことがある。
+
+もうひとつの深く知る手立てである<color:keyword>*鑑定*</color>は、ただの鑑定では明かされないかもしれない力と耐性をすべて含めて、そのアイテムのすべてを教えてくれる。鑑定も *鑑定* も巻物と道具の形で手に入る。どちらも（有料の）町の役務としても受けられ、アイテムを *鑑定* するのはこれがいちばんよくある道である。アイテムを売るだけでも *鑑定* できるが、そうするとそのアイテムは手元に無くなる。
+</indent>
+  <indent><color:B>感知と地図</color>
+
+脅威を感知し、周りの地形を知ることはダンジョンで何よりも大事である。<color:v>感知のロッド</color>は万能の感知の道具であり、いちど見つければ、同じことができる呪文でも持っていない限りその後ずっと持ち歩くことになるだろう。ごく序盤では代わりに<color:v>モンスター感知</color>を、ときには <color:v>罠感知</color>さえ使うことになるかもしれない。
+
+周りの地図を作る<color:U>啓蒙の杖</color>も、ほぼ最後まで持ち歩くことになるアイテムである。部屋を照らす<color:v>照明のロッド</color>もたいそう重宝する。暗がりでは危ないもの（や値打ちのあるもの）を見落としやすいからである。
+</indent>
+  <indent><color:B>町へ戻る</color>
+
+帰還（巻物）、あるいはただ帰還（道具）と呼ばれる魔法のアイテムがあり、地上とダンジョンを行き来させてくれる。これはありがたいことである。荒野を切っていると、そもそも町へ戻る道はこれしかない。荒野を入れていても、100 階ぶんの階段をいちいち上り下りしたり、同じ煩わしい荒野の旅を何度も繰り返したりせずに済む。
+</indent>
+<topic:OnWeapons><style:heading>武器・防具・殺戮</style>
+
+魔法のアイテムは薬・巻物・道具だけではない。魔法の防具と装備も見つかる。耐性は上で述べたが、その性質が見つかるのはたいてい魔法の装備である。魔法の武器は決まった敵に対してより致命的なことが多く、これを殺戮と呼ぶ。
+
+装備にはつねに、どれだけ効き目があるかを教える小さな数が付いている。防具はこの形である。
+
+  ローブ (+x,+y) [a,+b] (+c)
+
+武器はこの形である。
+
+  ロング・ソード (XdY) (+x,+y) [+b] (+c)
+
+この数はどういう意味だろうか。
+
+<color:B>(+x,+y)</color> <indent>それぞれ命中（to-hit）とダメージ（to-dam）の恩恵である。攻めるとき、ほかの恩恵に足される。この数は（0 のときでも）武器すべてに出て、防具では 0 でないときに出る。体の防具の多くは基本の AC（下を参照）の前に小さな負の数を持つ。これは命中への罰である（防具が重すぎて動きにくいのである）。ただし、ほぼつねに無視できるほど小さい。この恩恵はアイテムによって、近接だけ・射撃だけ・その両方・あるいは魔法の呪文だけに効く。</indent>
+
+<color:B>[a,+b]</color> <indent>そのアイテムの基本の防御力と、防御力への魔法の恩恵である。高いほど良い。理屈の上では武器も基本の防御力を持てるが、実際に持つものは無く、防御力への魔法の恩恵を持つ武器もごくわずかである。</indent>
+
+<color:B>(+c)</color> <indent>そのアイテムの、ほかの値への魔法の恩恵である（<color:keyword>pval</color> と呼ばれることもある）。能力値のひとつ以上（腕力・知能・賢さ・器用さ・耐久力・魅力）や、加速、隠密が当てはまりうる。探索や赤外線視力が上がることもある。ほかにもありえて、この恩恵の効き目を知るにはたいていアイテムを *鑑定* せねばならない。</indent>
+
+<color:B>(XdY)</color> <indent>近接武器のダメージのサイコロである。相手に当てると、ゲームは Y 面のサイコロを X 回振って基本のダメージを出す。この基本のダメージは、その武器の殺戮と、クリティカル（こちらの幸運な一撃）で倍になりうる。それからゲームは、上で述べた (+x,+y) の +y を含めてダメージの恩恵をすべて合計へ足す。つまり近接武器は、ダメージのサイコロが良いから（(5d6) (+0,+0) など）良いこともあれば、ダメージの恩恵が高いから（(1d5) (+5,+30) など）良いこともある。できれば両方が良いのが望ましい。(5d6) (+5,+30) である。</indent>
+
+鑑定で分かるこれらの性質に加えて、武器と防具には追加の恩恵が付くことがある。どちらも、先に述べた耐性をくれることがある。さらに武器には、決まった種類の敵を狙う殺戮が付くことが多い。殺戮は基本のダメージの目（いま述べた (XdY)）を倍にすることで働き、その倍率は殺戮の種類で変わる。たとえば対オークの武器はダメージのサイコロを 2.8 倍にし、*対オーク* の武器なら4.5 倍にもなりうる（あくまで、なりうる）。当然ながら、これは (1d5) の武器より (5d6) の武器で大きな意味を持つので、殺戮はサイコロの高い武器ほど値打ちがある。同じ殺戮を似た武器で見たことがあるのでなければ、武器の殺戮を知るにはたいてい *鑑定* が要る。アイテムについて知っていることをすべて見るには調べるコマンド（<color:keypress>I</color>）を使う。
+
+<topic:OnExploration><style:heading>ダンジョンを歩き回る</style>
+
+この初心者の手引きは、ダンジョンを歩き回るときのいくつかの心得で締めくくる。
+
+  <topic:SecretDoors><indent><color:B>隠し扉について</color>
+
+ダンジョンのあちこちで、多くの扉が目から隠されている。見つけるには <color:keypress>s</color> 探すコマンドを使う（あるいは <color:keypress>S</color>／<color:keypress>#</color> で探索モードを入れて、じっとしている）。どこを探せばよいか分かっていると助かる。たいてい、こういう場所には隠し扉がある（この例では、隠し扉のありそうな壁を<color:R>赤</color>で示す）。
+ 
+#<color:R>#</color>###  ###'###  ####<color:R>#</color>#    #<color:R>#</color>#<color:R>#</color>###
+<color:R>#</color>@...  ..'@'..  ..@'.<color:R>#</color>    ..'@...
+#<color:R>#</color>###  ###<color:R>#</color>###  ####'#    #<color:R>#</color>#<color:R>#</color>###
+ 
+一般に、通路にぽつんと扉があれば、たいてい近くにほかの扉もある。通路の角に扉が 2 つあれば、もっと探すとよい。交差点にはしばしば隠し扉がある。最後に、開けるのに斜めへ動かねばならない場所に隠し扉があることは決して無い。行き止まり（最初の例）にはたいてい隠し扉があるが、つねにではない。しばらく探して何も見つからなければ、あきらめて先へ進むこと。地図の端の近くでは、通路を続ける余地が無いために行き止まりになることがあり、そこには隠し扉が作られない。
+</indent>
+  <indent><color:B>階の感触について</color>
+
+新しい階にしばらくいると、その階がどれだけ良いかのおぼろげな見当をくれる感触が届く。一般に、恐ろしく響く感触ほどその階のアイテムは良く、あるいは敵が危ない。おそらく後者だろう……。<color:B>特別な感触</color>はほぼ必ずその階にまだ見つけていないアーティファクトがあるという意味なので、時間をかけて探し当てるとよい。
+
+階の感触が届く速さは賢さに左右される。大きくて愚かな戦士がいつまでも感触を待っているようなら、賢さを見て、次はもっと高いところから始めるとよいかもしれない。階の感触については<link:dungeon.txt#Feelings> も参照。
+</indent>
+  <indent><color:B>敵の知識について</color>
+
+ほかの多くのゲームでは、ある敵の弱み・強み・呪文などを自分で書き留めておかねばならない。だがこのゲームは、その覚え書きを自動で取ってくれる。敵について新しいこと（火を吐けるなど）が分かるたびに、その敵の知識へ足される。この知識を見る道はいくつかある。<color:keypress>'/'</color> に続けてその敵の記号を打つ（目当てのものに届くまでほかの敵の思い出を送ることになるかもしれない）、<color:keypress>'~'</color> の知識のメニューを使う、あるいは気になる敵が見えているなら見る（<color:keypress>'*'</color>）と思い出す（<color:keypress>'r'</color>）のコマンドを使う。
+
+冒険者が死ぬという嫌なことが起きたら、前の冒険者のファイルを使って新しい冒険者を作れる（ただ新しく作るのではなく、死んだ冒険者のセーブデータを開けば冒険者を作る節が出てくる）。この新しい冒険者は前の敵の思い出を引き継ぐ。
+</indent>
+  <indent><color:B>死について</color>
+
+このゲームの死は取り返しがつかない。保存は続きから遊ぶためだけのものである。死ぬとセーブデータに印が付く。次にそのセーブデータを使おうとすると、新しい冒険者を作る画面が出る。死んだ冒険者の子孫は、敵の思い出と好みを引き継ぐ。ここには「ヤッピー 14 世」のような冒険者を持つ人が多くいる。人はよく死に、死はありふれたことなので、気を落とさないこと。一般に、敵に殺されるより敵を倒す方が多いのだから。
+</indent>
+  <indent><color:B>まだよく分からないことがあるのだが……</color>
+
+ヘルプのほかのところ、とりわけ「よくある質問」を見てみるとよい。そう呼ばれているのには理由がある。Angband の系統のゲームに詳しい AI を置いている ask.band や、たいてい極めた知恵を分けてくれる気さくな人たちのいる angband.live の会話でも尋ねられる。</indent>
+
+<topic:OnBigBoyPants><style:heading>一人前になったら</style>
+
+初心者モードを卒業する用意ができたら、ゲームは膨大な種族と職業の選択肢を開き、歩き回れる荒野もそっくり差し出してくれる。これらはすべてヘルプのこの先で述べているので、先へ進む用意ができたら残りの資料にも必ず目を通してほしい。とりわけ荒野の節とさまざまな遊び方の設定に気を配ること。そして本当のごちそうが欲しくなったら、モンスターモードで遊びを起こしてサイバーデーモンを遊んでみるとよい。
+
+<color:v>幸運を、楽しんで、死なないで :)</color>
+
+<color:D>
+最初       : Chris Weisiger (TANG version 1.6.2)
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.0.11
+更新       : PosChengband 1.0.0
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.0.strawberry
+更新       : FrogComposband 7.1.liquorice
+</color>

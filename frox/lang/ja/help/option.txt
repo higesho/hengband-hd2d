@@ -1,0 +1,704 @@
+<style:title>設定と効き目</style>
+
+たいていの<color:keyword>設定</color>は<color:keypress>=</color> のコマンドで開ける。ここから冒険者が使えるさまざまな設定の組へ入れる。
+
+下の説明では、設定ごとに、設定の画面に出る文の要約と、かっこ内の内部の名前を挙げ、その後にその設定の説明を書いてある。
+
+設定の内部の名前は利用者の設定のファイルでその設定をある値へ固定するのに使えることに注意（詳しくは <link:pref.txt#Options> を参照）。
+
+下の説明ではいくつかの考え方が出てくる。<color:keyword>妨げる</color>（進んでいる走り・休息・繰り返しのコマンドを取り消す）、<color:keyword>捨てる</color>（キーの待ち行列にあるキー押しを、進んでいるマクロも含めて忘れる）、<color:keyword>描き直す</color>（待っている出力を画面へ出す）である。
+
+<topic:Birth><style:heading>生まれの設定</style>
+
+生まれの設定は新しい冒険者を作っている間しか開けない（冒険者を作るときに <color:keypress>=</color> を押す）。遊びが始まった後で切ることも入れることもできない。
+  <indent>
+
+<topic:easy_id><color:U>簡易鑑定</color> <color:D>(easy_id)</color>
+この設定を入れると、アイテムはすべて上を歩いただけで自動で完全に鑑定され、鑑定／*鑑定* のアイテム・呪文・町の役務が要らなくなる。
+
+<topic:easy_lore><color:U>簡易思い出</color> <color:D>(easy_lore)</color>
+この設定を入れると、冒険者は敵の思い出を完全に知った状態で生まれる。多くの敵が不慣れな者に見舞うさまざまな攻めと厄介な不意打ちも含めてである。これはいくらか種明かしの設定だが、このゲームに出る多くの敵をひとつずつ覚えるのが楽しくない人のために用意してある。<color:U>簡易鑑定</color>はゲームのいくつかの面を働かなく、あるいは無意味にもする。出会った敵を<color:keyword>探査</color>して学ぶ能力や、見る前に敵について学ぶ（もちろん有料の）<color:keyword>モンスター調査</color>の町の役務である。
+
+<topic:easy_damage><color:U>敵の体力とダメージを詳しく出す</color> <color:D>(easy_damage)</color>
+「Fnord モード」とも呼ばれるこの設定は、それぞれの攻めが与える正しいダメージと、ふつうなら隠れているさまざまな正しい戦いの数字を見られるようにする。百分率の状態の帯を入れていれば、<color:U>敵の体力とダメージを詳しく出す</color>設定はその帯も格上げして、敵と冒険者の正しい百分率と、より詳しい敵の状態の印を一緒に出すようにする。これは強い易しさの設定であり、使うと得点に罰が付く。
+
+<topic:display_percentages><color:U>星のバーではなく百分率で表示する</color> <color:D>(display_percentages)</color>
+いつもの星でできた冒険者と敵の状態の帯を、百分率の形の表示に置き換える。<color:U>敵の体力とダメージを詳しく出す</color>設定が無ければ、出る体力の百分率はわざと粗くしてあり、敵の状態の印も詳しく出す設定のときより限られたままである。
+
+<topic:allow_spoilers><color:U>ネタバレ資料を許可する</color> <color:D>(allow_spoilers)</color>
+この設定を入れると、<color:keypress>^Z</color> のコマンドでゲーム中にいくつかの種明かしのファイルを見られる。
+
+<topic:power_tele><color:U>強めた精神感知を使う</color> <color:D>(power_tele)</color>
+この設定を切っていると（「ぼやけた精神感知」）、精神感知は敵の「分類」（既定の表示の字）しか明かさず、色と種族は隠れる。この設定を入れると、精神感知で見つけた敵の色と種族をふつうに目で見たときと同じように見られる。
+
+<topic:easy_thalos><color:U>サロスへ簡単にテレポートできる</color> <color:D>(easy_thalos)</color>
+この設定を入れると、アナンバール・アングウィル・モリバント・テルモラのうち少なくともひとつを訪ねた時点で、宿屋が<color:keyword>サロス</color>の町へのテレポートを出すようになる。サロスは島にあるので、低レベルの冒険者が歩いて行くのはたいそう危ない。夜ならなおさらである。この設定は、遊びの早いうちに安全にサロスへ着けるようにする。
+
+<topic:never_forget><color:U>迷宮を易しくし記憶喪失を無くす</color> <color:D>(never_forget)</color>
+この設定はゲームから記憶喪失の攻めを取り除き、ふつうは地図を作れない<color:keyword>迷宮</color>のダンジョンを、ほかのダンジョンと同じように地図に描けるようにする。（この設定を入れても必ずしも易しくはならない。ふつうなら煩わしいが結局は無害な記憶喪失の呪文を使う敵が、代わりにもっと危ない別の呪文を選ぶからである。）
+
+<topic:empty_lore><color:U>ゲームをまたぐアイテムの知識は忘れる</color> <color:D>(empty_lore)</color>
+この設定を切っていると、死んだ冒険者のセーブデータを開いて始めた新しい遊びは、高級品とアーティファクトの性質を見分けるその冒険者の能力を引き継ぐ。この設定を入れるとこのアイテムの知識が空になり、遊びをまたいだ積み上げなしにセーブデータを使い回せる。
+
+<topic:smart_learn><color:U>モンスターが失敗から学ぶ</color> <color:D>(smart_learn)</color>
+敵が、こちらがどの呪文の攻めに耐性を持つかを学び、それをもとにいちばん良い呪文を選べるようにする。
+
+<topic:smart_cheat><color:U>モンスターが冒険者の弱みを突く</color> <color:D>(smart_cheat)</color>
+敵が、こちらがどの呪文の攻めに耐性を持つかを最初から知っていて、それをもとにいちばん良い呪文を選べるようにする。つまりこの設定は、敵に簡易知識を与えるものである。
+
+<topic:no_wilderness><color:U>荒野なしで遊ぶ</color> <color:D>(no_wilderness)</color>
+この設定は荒野を無くし、ひとつの特別な町の階だけで遊ばせる。使えるダンジョンは<color:keyword>鉄獄</color>だけになる。この設定を手で入れるのは<color:v>勧められない</color>。コーヒーブレイクとインスタントコーヒーのゲームの速さの設定と一緒に使うためのもので、そちらを選べば自動で入る。
+
+<topic:ironman_shops><color:U>店が永久に閉まっている</color> <color:D>(ironman_shops)</color>
+この設定はすべての店を閉め、ダンジョンで見つけたものだけで生きるよう強いる。我が家はふつうどおり働き、そのほかの町の役務も使える。
+
+<topic:ironman_downward><color:U>帰還と上り階段を使えなくする</color> <color:D>(ironman_downward)</color>
+この設定を入れると、上へ登ることも（ふつうのゲームの速さでは）家へ帰還することも許されない。階段はすべて下りになり、階のテレポートはすべて深い階へ運ぶ。（コーヒーブレイクモードとインスタントコーヒーモードはこの設定を自動で入れるが、家への帰還は許している。）
+
+<topic:ironman_empty_levels><color:U>つねに空の「闘技場」の階を作る</color> <color:D>(ironman_empty_levels)</color>
+この設定を「つねに」にすると、どのダンジョンの階も開けた「闘技場」の階になる。この階は敵とときおりの部屋を除いてほとんど空である。「ときどき」（既定）にすると、この階はまれにしか、それもいくつかのダンジョンにしか出ない。「決してしない」にすると、まったく生まれない。
+
+<topic:ironman_nightmare><color:U>ナイトメアモード（まったく公平ではない！）</color> <color:D>(ironman_nightmare)</color>
+この設定を入れると、敵がすべて並外れて強く、また速くなる。そしてさまざまな場面で信じがたいことがいろいろ起きる。さらに毎晩 12 時には本物の悪夢を見る。この設定を入れるには正気を失っていなければならない。
+
+<topic:thrall_mode><color:U>奴隷モード（極めて危ない場所から始まる）</color> <color:D>(thrall_mode)</color>
+この設定を入れると、ルルイエのレベル 90（荒野なしのモードでは鉄獄のレベル 90）から、そのダンジョンの悪魔の主たちから逃げた奴隷として始まる。細心の注意で、逃げるのに役立ちそうなアイテムをいくつか盗み出せた。だがいま見つかり、皆が警戒している。死ぬか、逃げるか、それとも戦って切り抜けるか――あなたしだいである。
+
+<topic:wacky_rooms><color:U>常にとても風変わりな部屋を生成する</color> <color:D>(wacky_rooms)</color>
+この設定を入れると、（特別な生成の決まりを持ついくつかのダンジョンを除いて）どの部屋もヴォールトになり、ヴォールトにはきわめて深みから外れた敵と床のアイテムが生まれてよくなり、きわめて小さな階も（ヴォールトを収めるために）少し大きくなる。この設定はわざと釣り合いを壊すもので、ときには釣り合いの壊れたゲームも好きだと分かった慣れた人のためのものである。
+
+<topic:melee_challenge><color:U>敵には近接でしかダメージを与えられない</color> <color:D>(melee_challenge)</color>
+この設定を入れると、敵意のある敵は冒険者の近接のダメージとオーラを除くすべてのダメージから守られる。状態の効き目と抹殺はふつうどおり効く。敵は互いに傷つけられないので、敵どうしの戦いは限られる。
+
+<topic:no_melee_challenge><color:U>敵には近接でダメージを与えられない</color> <color:D>(no_melee_challenge)</color>
+この設定を入れると、冒険者の近接が使えなくなる。武器は装備できるが、敵を攻めるのには使えない。この設定は、敵どうしの近接を含め、敵どうしの戦いには何も響かない。（近接だけの縛りと近接なしの縛りを両方入れるのは、おそらく勧められない……。）
+
+<topic:enable_virtues><color:U>徳を使う</color> <color:D>(enable_virtues)</color>
+徳の仕組みを入れる。徳は冒険者を助けもし妨げもする。とりわけ、呪文の失敗率・多くの魔法の効き目の強さ・いくつかの敵の友好さに響く。
+
+<topic:no_wanted_points><color:U>深い賞金首ほど良い報酬になる</color> <color:D>(no_wanted_points)</color>
+この設定を入れると、賞金首の死体を持ち込んだ褒美は、賞金首のユニークの一覧でのその位置で決まる（深いユニークほど良い褒美になる）。切っていると、褒美は持ち込んだ賞金首のユニークの総数で決まる。<color:keyword>reduce_uniques</color> の設定を入れているなら、この設定を切るのは勧められない。いちばん良い褒美へまったく届かなくなるからである。
+
+<topic:preserve_mode><color:U>アーティファクトを保存する</color> <color:D>(preserve_mode)</color>
+この設定を切っていると、固定アーティファクトはいちど生まれると（ダンジョンの床でも敵の落とし物でも）その遊びの間二度と生まれない。取り逃がせば永久に失われる。入れていると、まだ見つけていない固定アーティファクトは後の階でまた生まれうる。これで、すっかり歩き回る前に階を離れるのが安全になる。（いちど見つけて置いてきた固定アーティファクトは、この設定の入り切りによらず二度と生まれない。）
+
+<topic:allow_friendly_monster><color:U>友好的な敵を出す</color> <color:D>(allow_friendly_monster)</color>
+この設定は、いくつかの敵が友好的に生まれるようにする。いくつかの敵の種族は既定で友好的である。徳を入れていれば、冒険者の徳がその種類とうまく揃っているとき、決まった種類の敵がさらに友好的に生まれる。
+
+<topic:allow_hostile_monster><color:U>モンスター同士の敵対を許す</color> <color:D>(allow_hostile_monster)</color>
+この設定を切っていると、敵どうしの戦いはどちらかがペットか友好的な敵のときにしか起きない。入れていると、立場の異なる敵意のある（あるいは友好的な）敵どうしでも戦いが起きうる。
+
+<topic:allow_pets><color:U>召喚/魅了でペットにできる</color> <color:D>(allow_pets)</color>
+この設定は、冒険者がペットを召喚したり、敵意のある敵をペットに変えたりできるようにする（<link:monster.txt#Pets> を参照）。この設定を切るのは一般に勧められない。クイルスルグ・ビーストマスター・騎兵のようなペットに頼る冒険者は事実上遊べなくなる。
+
+<topic:quest_unique><color:U>ランダムクエストはユニークだけにする</color> <color:D>(quest_unique)</color>
+この設定を入れると、鉄獄の穴の 10 の<color:keyword>無作為の依頼</color>はすべてユニークの敵を倒すものになる。切っていると、そのいくつか（とりわけ早いもの）は、決まったワーグの依頼と同じようにユニークでない敵の群れになることもある。
+
+<topic:random_artifacts><color:U>固定アーティファクトをランダム化する</color> <color:D>(random_artifacts)</color>
+この設定を入れると、固定アーティファクトのいくらかが無作為のものへ置き換わる。ごく少数の固定アーティファクト（力の指輪など）は動かず、置き換わらない。固定の組を置き換えるのではなく補う追加のランダムアーティファクトは、この設定の入り切りによらず生まれうることに注意。
+
+<topic:no_artifacts><color:U>アーティファクトを決して作らない</color> <color:D>(no_artifacts)</color>
+この設定を入れると、アーティファクトがまったく生まれなくなる。ゲームはずっと難しくなる。
+
+<topic:no_egos><color:U>装身具以外のエゴのアイテムを決して作らない</color> <color:D>(no_egos)</color>
+この設定を入れると、装身具以外のエゴのアイテムが無作為に生まれなくなる。ゲームはずっと難しくなるが、依頼で指定されたエゴのアイテムは生まれうる。
+
+<topic:no_selling><color:U>売却できない代わりに金の入手が増える</color> <color:D>(no_selling)</color>
+この設定を入れると、冒険者はアイテムを売って金にできず（ただで渡すことしかできず）、錬金術でアイテムを金に変えるのも効きにくくなる。その代わり、依頼とダンジョンで出る金が増えて釣り合う。（荒野で出る金は変わらない。）
+
+<topic:reduce_uniques><color:U>ユニークの数を（ランダムに）減らす</color> <color:D>(reduce_uniques)</color>
+この設定は、ゲームからユニークのいくらかを取り除く。いくつかのユニーク（主に依頼か闘技場に出る者）は動かず、決して取り除かれない。
+
+<topic:single_pantheon><color:U>有効なパンテオン</color> <color:D>(single_pantheon)</color>
+この設定では、4 つある神々の系統のうちいくつをゲームに出すかを決められる。1 から 4 までの値を取れる。
+
+<topic:guaranteed_pantheon><color:U>必ず出るパンテオン</color> <color:D>(guaranteed_pantheon)</color>
+この設定では、4 つすべてを入れていなくてもある系統を必ずゲームに出すようにできる。（ギリシアの半神ではオリュンポスの系統がつねに約束される。ギリシアの半神でここに別の系統を指定すると、働く系統の数は 2 を下回れない。）
+
+<topic:always_small_levels><color:U>階の広さ</color> <color:D>(always_small_levels)</color>
+この設定では、階の大きさの選び方をいくつかの中から選べる。詳しくは <link:small_lv.txt> を参照。
+
+<topic:increase_density><color:U>狭い階では敵の密度を上げる</color> <color:D>(increase_density)</color>
+この設定は、小さな階の敵の密度の式を古い PosChengband 6.1.0 のものへ切り替え、新しく入った小さな階に生まれる敵の数を増やす。
+
+<topic:no_big_dungeons><color:U>闘技場以外の全ダンジョンで狭い階を許す</color> <color:D>(no_big_dungeons)</color>
+この設定を入れると、ふつうならつねに最大の大きさの階を作るダンジョンでも小さな階が生まれうる。例外は闘技場で、こちらはやはりつねに大きな階を作る。
+
+<topic:even_proportions><color:U>細長い「土管」の階をときどき整形し直す</color> <color:D>(even_proportions)</color>
+この設定を入れると、縦横の比がたいそう高い（6 対 1 以上の）階が、ときおり同じ広さのまま別の形へ組み直される。
+
+<topic:no_chris><color:U>因果混乱で別のダンジョンへは飛ばされない</color> <color:D>(no_chris)</color>
+この設定を入れると「クリス効果」が働かなくなる。これは、冒険者を別のダンジョン、それもたいそう危なく、一度も訪ねたことのないダンジョンへテレポートさせることのある因果混乱の攻めの効き目である。クリス効果の代わりに、冒険者の能力値が入れ替わる。能力値の入れ替えも切ってあれば、小さな汚れた呪い（悪名高い太古の汚れた呪いを弱めたもの）が起きる。荒野なしのモードではこの設定に効き目は無い（というより、つねに入っているのと同じである）。ダンジョンがひとつしか無いからである。
+
+<topic:no_scrambling><color:U>敵の攻撃による能力値の入れ替えを禁じる</color> <color:D>(no_scrambling)</color>
+この設定を選ぶと<color:keyword>能力値の入れ替え</color>が働かなくなる。これは冒険者の 6 つの能力値のうち 2 つを永久に入れ替える効き目である。大事な高い能力値が低くさほど要らない能力値と入れ替わると、冒険者は大きく後戻りしかねない。ふつうなら入れ替えを起こす攻め（やそのほかの効き目）は、代わりに小さな汚れた呪いを起こす。こちらは短い目では危ないが、長い目での影響は同じではない。
+
+<topic:comp_mode><color:U>種族の恒久的な変化を禁じる</color> <color:D>(comp_mode)</color>
+（敵の進化を除いて）遊びの途中で冒険者の種族を永久に変えうる効き目をすべて働かなくする。そうした効き目は代わりに小さな汚れた呪いを起こす。この設定は競技で使うため、また難しい組み立てを難しいままに保つためのものである。（易しい組み立てを易しいままに保つのにも使えるが、そんなことをする人がいるだろうか。）
+
+</indent>
+<topic:Input><style:heading>入力の設定</style>
+  <indent>
+<topic:rogue_like_commands><color:U>ローグ風キー配置を使用する</color> <color:D>(rogue_like_commands)</color>
+<color:keyword>ローグライク</color>のキー設定を入れる。これはキー押しを元のコマンドへ結びつける別のやり方である。ローグライクのキー設定は、キーボードにテンキーの無い人に勧められる（詳しくは <link:command.txt#RogueKeyset> を参照）。
+
+<topic:always_pickup><color:U>常にアイテムを拾う</color> <color:D>(always_pickup)</color>
+アイテムの上へ歩いたら拾おうとするようゲームへ伝える。そうでなければ、手で拾うには <color:keypress>g</color> のコマンドか、歩きながら <color:keypress>-</color> のコマンドを使う。この設定はモガミネーターの自動破壊の働きを止めるので、簡易自動破壊のために<color:keyword>destroy_items</color> と一緒に使うことが多い。何もかも拾うのがやりすぎに感じてきたら、<color:keyword>leave_mogaminator</color> も一緒に使うとよい。
+
+<topic:online_macros><color:U>マクロの中の走行を歩行に置き換える</color> <color:D>(online_macros)</color>
+この設定を入れると、走るマクロがすべて、ふさわしい方に応じて歩くマクロか向きのマクロとして読まれる。この設定は angband.live の変わった既定の設定を埋め合わせるもので、オフラインで遊ぶなら要らない。（Numlock を切るのもangband.live でこの困りごとを解く道であり、一般にはそちらの方が望ましいが、当てはまらないことも、別の面倒を招くこともある。）
+
+<topic:quick_messages><color:U>クイック・メッセージを使用する</color> <color:D>(quick_messages)</color>
+<color:B>-more-</color> の確かめにどのキーででも応じられるようにし、「(y/n)」の確かめでもたいていのキーが「いいえ」の意味になるようにする。
+
+<topic:command_menu><color:U>メニューによりコマンド選択を有効にする</color> <color:D>(command_menu)</color>
+コマンドを選ぶメニューは始めたばかりの人に役立つ道具である（初心者モードでは自動で入る）。この設定を入れると、遊んでいる間に <color:keypress>ENTER</color> を押すと使えるコマンドのメニューが出て、矢印キーで掘り下げていける。これで、ゲーム中のヘルプを何度も開かずに決まった行いのキー押しを見つけ、覚えられる。
+<style:screenshot>
+  +----------------------------------------------------+
+  |   魔法・特殊            > 行動                     |
+  |   アイ+----------------------------------------------------+
+  |   装備| > 休憩(R)                 罠を外す(D)              |
+  |   調べ|   探す(s)                 見る(l/x)                |
+  |   セー|   狙いを定める(*)         掘る(T/^t)               |
+  +-------|   地上へ出る(<)         階段を下る(>)              |
+          |   ペットに命じる(p)       探索モード切替(S/#)      |
+          +----------------------------------------------------+
+</style>
+
+<topic:use_old_target><color:U>常に以前のターゲットを指定する</color> <color:D>(use_old_target)</color>
+ふつうなら狙いか向きを尋ねるコマンドすべてに、前の狙いがあってその用途にまだ通じるならそれを使い回させる。この設定は <color:keyword>auto_target</color>（下を参照）と一緒に使うことが多い。
+
+<topic:auto_target><color:U>最も近いモンスターを自動でターゲットする</color> <color:D>(auto_target)</color>
+この設定を入れると、狙いを尋ねる場面で自動でいちばん近い敵を狙う。この設定は <color:keyword>use_old_target</color> の設定と一緒に使うのがいちばん良い。通じる前の狙いは自動の狙いより優先されるので、いちばん近い敵が狙いたい相手でない場面では、先に別の狙いを決めておけばよい。
+
+<topic:retry_obvious_count><color:U>明らかなコマンドの再試行回数</color> <color:D>(retry_obvious_count)</color>
+繰り返しの回数をはっきり打たなかったとき、<color:keyword>開ける</color>・<color:keyword>体当たり</color>・<color:keyword>掘る</color>・<color:keyword>罠を外す</color>、そして簡易の鍵開けといった「分かりきった」繰り返せるコマンドにゲームが与える回数を決める（<link:command.txt#CommandCounts> を参照）。0 にするとこの自動の働きが切れる。既定は 100 である。
+
+<topic:retry_item_count><color:U>失敗したアイテム使用の再試行回数</color> <color:D>(retry_item_count)</color>
+アイテムをすでに選んだ後で、巻物を読むか、道具を使うか、装備を発動するのに失敗したとき、ゲームが与える繰り返しの回数を決める。やり直すのは最初の失敗の判定だけである。前提の失敗・成功した使用・モンスター・ボールの発動はすぐ止まる。0 にするとこの自動の働きが切れる。
+
+<topic:confirm_destroy><color:U>「無価値」なアイテムを破壊する時確認する</color> <color:D>(confirm_destroy)</color>
+この設定を切っていると、値打ちが無いと分かっているアイテムを壊そうとしても確かめを求められない。入れていると、壊すコマンドはつねに確かめを求める。
+
+<topic:confirm_wear><color:U>呪われた物を装備する時確認する</color> <color:D>(confirm_wear)</color>
+この設定は、呪われていると分かっているアイテムを身に着けるか手にしようとしたときに尋ね、それがわざとかどうかを確かめる。
+
+<topic:confirm_hit_unseen><color:U>見えない敵への打撃は確認する</color> <color:D>(confirm_hit_unseen)</color>
+この設定を入れると、見えない敵へ手探りの近接攻撃をしようとしたとき、まず確かめを求める。この確かめは既定が「はい」なので、うっかりキーを押しても攻めは続くが、<color:keypress>n</color>・<color:keypress>N</color>・<color:keypress>Esc</color> で取り消せる。断るのはただではない。その敵にぶつかることに変わりはなく、半手を使い、その敵を起こす見込みもある。
+
+<topic:confirm_hit_visible><color:U>見えている敵への打撃も確認する</color> <color:D>(confirm_hit_visible)</color>
+この設定を入れると、見えている敵への近接攻撃も、<color:keyword>!?</color> と刻んだ武器を持っているときのように最初の一撃の前に確かめを求める。いちど確かめれば、その敵への続く攻撃はわざとだと見なされる。断ってもエネルギーは使わず、起こす見込みも無い。敵が見えていて、ただ手を止めるだけだからである。
+
+<topic:target_pet><color:U>ペットをターゲットにする</color> <color:D>(target_pet)</color>
+この設定を切っていると、敵の狙いを尋ねる場面でペットは狙いの候補に出ない（必要なら、自由に狙いを定める形へ切り替えればペットも狙える）。入れていると、ペットを含むすべての敵が狙いの候補に出る。
+
+<topic:easy_open><color:U>自動的にドアを開ける</color> <color:D>(easy_open)</color>
+扉を開けるのを楽にする。ただ歩いてぶつかるだけでよい。また、近くに扉がひとつしか無ければ、<color:keyword>開ける</color>のコマンドが自動で向きを選ぶ。
+
+<topic:easy_disarm><color:U>自動的に罠を解除する</color> <color:D>(easy_disarm)</color>
+見つけた罠を外すのを楽にする。ただ歩いてぶつかるだけでよい。また、近くに見つけた罠がひとつしか無ければ、<color:keyword>罠を外す</color>のコマンドが自動で向きを選ぶ。
+
+<topic:auto_get_ammo><color:U>Ctrl-G で近くの矢弾を自動で拾う</color> <color:D>(auto_get_ammo)</color>
+この設定は <color:keyword>自動で拾う</color>のコマンド（<color:keypress>^G</color>）に、近くの見えている弾のうち <color:keypress>=g</color> と刻んだものへ自動で歩いていって拾うよう指図する。この設定は、戦いの後で弾を多く拾わねばならない射撃の冒険者がよく使う。下の <color:keyword>auto_get_objects</color> と比べよ。
+
+<topic:auto_get_objects><color:U>Ctrl-G で近くの目当てのアイテムを自動で拾う</color> <color:D>(auto_get_objects)</color>
+この設定はアイテムを自動で拾うコマンド（<color:keypress>^G</color>）に、拾うか壊すかを登録してある近くの見えているアイテムへ自動で歩いていくよう指図する。<color:keypress>=g</color> と刻んだ弾は必ず自動で拾うよう登録されているので、この設定は <color:keyword>auto_get_ammo</color> の設定を含み、また広げたものである。
+
+<topic:limit_shop_prompts><color:U>店の個数入力を所持金の範囲に絞る</color> <color:D>(limit_shop_prompts)</color>
+この設定を入れると、アイテムを買うときと取り置くときの数の上限が、店にある数だけでなく実際に払える数も数え入れたものになる。
+
+<topic:auto_detect_traps><color:U>走行中に自動で罠を感知する</color> <color:D>(auto_detect_traps)</color>
+この設定を入れると、罠を感知した区画の外へ走り出るたびにゲームが自動で罠を感知しようとする。罠を感知した区画を目で分かりやすくするには<color:keyword>view_unsafe_grids</color> を使う。この設定が働くには、罠を感知できる巻物・杖・ロッドを持っていなければならない。ゲームがそのアイテムを自動で使い、巻物 1 枚か、合う道具の充填 1 回を消費する。
+
+<topic:auto_map_area><color:U>走行中に自動で周囲を地図化する</color> <color:D>(auto_map_area)</color>
+この設定を入れると、すでに地図を作った区画の外へ走り出るたびにゲームが自動で周りの地図を作ろうとする。<color:keyword>auto_detect_traps</color> と違い、地図を作った印の付いた区画とそうでない区画を目で見分ける印は無い。魔法の地図を使うと、ゲームは周りの地図を作り、その及ぶ範囲のマスすべてに印を付ける。印の付いたマスから印の無いマスへ走り出ると、ゲームは合う巻物か道具を探して使い、自動で地図を作ろうとする。この設定も <color:keyword>auto_detect_traps</color> も、移動のときつねに走るといちばんよく働く。新しい階へ入ったら、手で罠を感知し、周りの地図を作ること。移動のときつねに走るなら、その階の残りはゲームが感知の煩わしさを引き受けてくれる。
+
+<topic:numpad_as_cursorkey><color:U>エディタ内でテンキーをカーソルキーとして使う</color> <color:D>(numpad_as_cursorkey)</color>
+この設定を入れると、文字を打っている間（モガミネーターの設定やマクロの働きなど）、テンキーは数字ではなくカーソルを動かすキーとして読まれる。切っていると、テンキーは文字へ数字を足すものとして読まれる。
+
+<topic:use_pack_slots><color:U>他の入れ物でも背負い袋の札を使い続ける</color> <color:D>(use_pack_slots)</color>
+この設定を入れると、持ち物のアイテムはどのアイテムを選ぶ画面でも同じ既定の札の字を持つ。たとえば、ある巻物が袋の 9 番目のアイテムで、持ち物を出すコマンドで<color:B>i)</color> と札が付いているなら、ほかに巻物を持っていなくても巻物を読むコマンドでも<color:B>i)</color> になる。切っていると、アイテムを選ぶ画面ごとに当てはまるアイテムだけを数えて札を付け直す。例の巻物は持ち物を出すコマンドでは<color:B>i)</color> のままだが、巻物を読む画面では<color:B>a)</color> になる。切っておくと、同じコマンドを続けて呼んだときアイテムの札が思いがけず変わる危うさが減る。例の巻物が <color:B>b)</color> へ押しやられるのは別の巻物が増えたときだけで、薬や魔法書が現れても消えてもその札には響かない。（どちらにせよ、アイテムが思いどおりの枠に留まるのを完全に確かにする道は銘を刻むことだけである。詳しくは <link:objects.txt#Inscriptions> を参照。）
+</indent>
+<topic:MapScreen><style:heading>地図と画面の設定</style>
+  <indent>
+<topic:center_player><color:U>常にプレイヤーを中心に置く(*遅い*)</color> <color:D>(center_player)</color>
+この設定を入れると、歩くたびに地図の窓が自動で冒険者を真ん中に置き直す。これが良いかどうかは人によって分かれる。ひどく落ち着かないと感じる人もいれば、自然だと思う人もいる。この設定を入れると古い機械ではゲームが目に見えて遅くなることがあるが、いまどきの計算機はたいていじゅうぶん速いので問題にならない。
+
+<topic:center_running><color:U>走っている時でも中心に置く</color> <color:D>(center_running)</color>
+この設定を切っていると、ゲームは冒険者が走るか移動するかを終えるまで待ってから地図を置き直す。入れていると、1 歩ごとに地図がつねに冒険者を真ん中に置く。<color:keyword>center_player</color> の設定を入れていなければ、この設定に効き目は無い。
+
+<topic:center_stair_tele><color:U>階段と長いテレポートの後で中心へ寄せる</color> <color:D>(center_stair_tele)</color>
+この設定を入れると、階段での移動・無作為の床への配置、そして冒険者をかなり遠くへ動かすテレポートの後に地図が置き直される。ふつうの歩きと短いテレポートでは変わらない。
+
+<topic:map_edge_center><color:U>端から一定マスで地図を中心へ寄せる</color> <color:D>(map_edge_center)</color>
+見えている地図の端へどこまで近づいたらその軸で置き直すかを決める。決めた値は南北の端では 1 倍、東西の端では 2 倍で当てはまるので、10 にすると南北の端から 10 マス、東西の端から 20 マスで置き直す。値は 1 から 20 までで、端まで行くと巡って戻る。
+
+<topic:view_yellow_lite><color:U>明かりの範囲を特別な色で表示する</color> <color:D>(view_yellow_lite)</color>
+この設定を入れると、松明などの動く光源に照らされた見えている床や壁のマスが<color:y>黄色</color>で描かれる。切っておくとゲームの速さが少し上がるかもしれない。<color:keyword>view_granite_lite</color> と<color:keyword>view_special_lite</color> の両方を切っていれば、この設定に効き目は無い。
+
+<topic:view_bright_lite><color:U>視界の範囲を特別な色で表示する</color> <color:D>(view_bright_lite)</color>
+この設定を入れると、分かっているがいま視線の通っていない床や壁のマスが<color:s>濃い灰色</color>で描かれ、部屋や通路のどこに視線が通っているかがひと目で分かる。切るとゲームの速さが少し上がるかもしれない。<color:keyword>view_granite_lite</color> と<color:keyword>view_special_lite</color> の両方を切っていれば、この設定に効き目は無い。
+
+<topic:view_granite_lite><color:U>壁のマスに特別な色を使う</color> <color:D>(view_granite_lite)</color>
+この設定を入れると、<color:keyword>view_yellow_lite</color> と<color:keyword>view_bright_lite</color> の設定が壁のマスにも当てはまる。さらに、冒険者が盲目のときは壁のマスに特別な暗い色が使われる。切っておくとゲームの速さが少し上がるかもしれない。冒険者が壁の見た目を変えていると、この設定は思わぬ結果を生むことがある。
+
+<topic:view_special_lite><color:U>床のマスに特別な色を使う</color> <color:D>(view_special_lite)</color>
+この設定を入れると、<color:keyword>view_yellow_lite</color> と<color:keyword>view_bright_lite</color> の設定が開けた床のマスにも当てはまる。さらに、冒険者が盲目のときは床のマスに特別な暗い色が使われる。切るとゲームの速さが少し上がるかもしれない。冒険者が床の見た目を変えていると、この設定は思わぬ結果を生むことがある。
+
+<topic:view_perma_grids><color:U>明るい場所はそのままにする</color> <color:D>(view_perma_grids)</color>
+冒険者が見た、永久に照らされた床のマスをすべて覚える。この設定は、歩き回った床のマスのうちどれが永久に照らされていたかを追えるようにするが、暗い床のマス・まだ歩いていない床のマス・分からないマスの区別は付けない。切ると、照らされた床のマスのうちどれに視線が通っているかをつねに知れるようになるが、これは "view_bright_lite" の設定の方がうまくやってくれる。冒険者が見た床以外のマスは、この設定によらずつねに覚えられることに注意。
+
+<topic:view_torch_grids><color:U>明かりで照らした場所はそのままにする</color> <color:D>(view_torch_grids)</color>
+冒険者が見た床のマスをすべて覚える。この設定は、どの床のマスを歩いたかを追えるようにする。
+
+<topic:view_unsafe_grids><color:U>トラップ感知済みでない場所を表示する</color> <color:D>(view_unsafe_grids)</color>
+この設定を入れると、罠を感知する呪文を使っていない場所の地図に無いマスがすべて<color:s>x</color> と印され、その場所で罠感知を使ったかどうかが目で分かる。切っていると、同じ役目のために緑の <color:G>DTrap</color> の状態の印が使われる。（感知した場所にも見つけていない罠がありうることに注意。感知の後で敵の呪文や別の罠の作動によって罠が作られうるからである。）
+
+<topic:fresh_before><color:U>連続コマンド中に画面を再描画し続ける</color> <color:D>(fresh_before)</color>
+この設定は、新しいコマンドのたびにゲームに画面を描き直させる。知らせは最大限に得られるが、ゲームが少し遅くなることがある。ゲームが冒険者のキー押しを待っている間はつねに出力が描き出されるので、この設定が役立つのはマクロを使うとき・休むとき・走るか移動するとき・コマンドを繰り返すときだけであることに注意。
+
+<topic:fresh_after><color:U>コマンド後に画面を常に再描画し続ける</color> <color:D>(fresh_after)</color>
+この設定は、冒険者のコマンドのたびだけでなく、敵やアイテムを処理する 1 回ごとにもゲームに画面を描き直させる。知らせは最大限に得られるが、ゲームが少し遅くなることがある。とりわけ遅い機械ではそうである。速い機械では、この設定はたいていどちらでも大差ない。
+
+<topic:fresh_message><color:U>メッセージの後に画面を再描画する</color> <color:D>(fresh_message)</color>
+この設定は、ゲームがメッセージを出すたびに画面を描き直させる。知らせは最大限に得られるが、ゲームが少し遅くなることがある。
+
+<topic:hilite_player><color:U>プレイヤーにカーソルを合わせる</color> <color:D>(hilite_player)</color>
+見えるカーソルを冒険者の上へ置く。カーソルを *隠せる* のは一部の機械だけだが、その機械ではカーソルを隠すとゲームが速くなり、見た目も良くなることが多い。
+
+<topic:display_path><color:U>魔法や矢の軌跡を表示する</color> <color:D>(display_path)</color>
+この設定を入れると、狙いを定めている間、こちらから狙いの場所までの飛んでいく道筋がつねに出る。
+
+<topic:square_delays><color:U>マス単位の待ち時間を使う</color> <color:D>(square_delays)</color>
+この設定を入れると、動きの遅らせは基本の遅らせの係数を 3 乗ではなく 2 乗して計られる。ごく短い遅らせを細かく調えられるようになるが、長い遅らせは使えなくなる。
+
+</indent>
+<topic:TextDisplay><style:heading>文字表示の設定</style>
+  <indent>
+<topic:plain_descriptions><color:U>アイテムの記述を簡略にする</color> <color:D>(plain_descriptions)</color>
+この設定を入れると、アイテムの見かけはまだ鑑定していないときにしか説明に入らない。たとえば青い薬は、鑑定した後はただ加速の薬と出る。入れていないと見かけはつねに並び、鑑定した薬は青い加速の薬になる。
+
+<topic:depth_in_feet><color:U>ダンジョンの深さをフィートで表示する</color> <color:D>(depth_in_feet)</color>
+いまの深さを階ではなくフィートで出す。50 フィートが 1 階に当たる。
+
+<topic:effective_speed><color:U>速度を行動力の倍率で表示する</color> <color:D>(effective_speed)</color>
+冒険者と敵の速さをエネルギーの倍率で出す。この出し方はいくらか見苦しいが、ある速さがエネルギーの上で実際に何を意味するのかを分かる助けになる。
+
+<topic:equippy_chars><color:U>ステータスに文字で装備を表示する</color> <color:D>(equippy_chars)</color>
+装備を絵で表したもの（<color:B>/</color>・<color:g>(</color> など）を主な画面の脇の帯に出す。
+
+<topic:display_hp_bar><color:U>HP バーを表示する</color> <color:D>(display_hp_bar)</color>
+この設定は、いまの体力を詳しく表す状態の帯を主な画面に出す。たとえばこうである。
+  @[<color:y>*******</color>--]
+
+<topic:display_sp_bar><color:U>SP バーを表示する</color> <color:D>(display_sp_bar)</color>
+この設定は、いまのマナを詳しく表す状態の帯を主な画面に出す。たとえばこうである。
+  <color:W>?</color>[<color:r>***</color>------]
+
+<topic:display_food_bar><color:U>満腹度を詳しく表示する</color> <color:D>(display_food_bar)</color>
+この設定は、いまの空腹の具合を詳しく表す状態の帯を主な画面に出す。たとえばこうである。
+  <color:U>,</color>[<color:R>**</color>-------]
+
+<topic:decimal_stats><color:U>能力値を小数で表示する</color> <color:D>(decimal_stats)</color>
+18 を超える能力値を小数で出す（たとえば <color:G>18/217</color> の代わりに<color:G>39.7</color>）。始めたばかりの人にはこの形の方が分かりやすいと感じられることがある。
+
+<topic:percentage_life><color:U>生命力を 85% から 115% の目盛りで出す</color> <color:D>(percentage_life)</color>
+この設定を入れると、冒険者の生命力（<link:faq.txt#LifeRating> を参照）が85% から 115% の百分率の目盛り（100% から -15% ～ +15% のずれ）で出る。切っていると、元の 0 から 76 の目盛りで出る。百分率の目盛りは知らせが少なく（77 通りの生命力を 31 段の目盛りへ押し込めておきながら、働きとしては同じ値を 1 つ違いに出すことがある）、百分率の意味も直感に反する（冒険者の HP 全体に掛かるものではなく、つねに百分率で出るさまざまな本当の生命力の倍率とも関わりが無い。それに平均が 100% ではなく 102% ほどである）。ただし百分率の目盛りに慣れている人が多いので、こちらが既定である。
+
+目盛りどうしの読み替えには<color:y>P = (A + 208) / 2.45</color> の式を使う。
+
+<topic:show_rogue_keys><color:U>ローグ風の移動キーを備忘に表示する</color> <color:D>(show_rogue_keys)</color>
+ローグライクのキー設定の移動のキーを主な画面の脇の帯に出す。ただし出すだけの場所があり、ローグライクのキー設定が入っているときに限る。この設定はごく新しい人、少なくともローグライクのキー設定に不慣れな人のためのもので、初心者モードでは既定で入っている。
+
+<topic:show_energy_cost><color:U>直前の行動の行動力コストを表示する</color> <color:D>(show_energy_cost)</color>
+冒険者の直前の行いの名目のエネルギー消費を主な画面の脇の帯に出す。ただし出すだけの場所があるときに限る。エネルギーの無作為さは数え入れない。冒険者（と敵）のたいていの行いはエネルギーを 100 使い、これを 100 エネルギーの単位として「1 手」と呼ぶことが多い。
+
+<topic:compress_savefile><color:U>セーブ・ファイル中のメッセージを圧縮する</color> <color:D>(compress_savefile)</color>
+冒険者が受け取った直近のメッセージだけを保存してセーブデータを小さくする。セーブデータの大きさを大きく減らせるが、メッセージの知らせは失われる。
+
+<topic:abbrev_extra><color:U>アイテムに追加耐性/能力の略称を刻む</color> <color:D>(abbrev_extra)</color>
+この設定を入れると、アイテムに付いた追加の耐性やそのほかの特別な性質が作られた銘として説明に足される。「追加の性質」とは、そのアイテムの種類やエゴの型から必ず備わるとは限らない性質のことである。たとえば浮遊のブーツは破片への追加の耐性を持つかもしれないが、浮遊そのものは浮遊のブーツならどれも持っているので追加の性質ではない。略号の一覧は<link:objects.txt#InscriptionAbbrev> を参照。
+
+<topic:abbrev_all><color:U>アイテムに全ての耐性/能力の略称を刻む</color> <color:D>(abbrev_all)</color>
+この設定を入れると、アイテムに付いた性質がすべて作られた銘として説明に足される。略号の一覧は<link:objects.txt#InscriptionAbbrev> を参照。
+
+<topic:mark_dragon><color:U>竜のランダム耐性にも '?' を使う</color> <color:D>(mark_dragon)</color>
+この設定を切っていると、分からない装備の性質を表す印 '?' はアーティファクトとエゴのアイテムの分からない性質にだけ付き、冒険者が見分けられるようになりうる分からない性質を表す。入れていると、ドラゴンの手袋やドラゴンの靴のような、分からない無作為のドラゴンの耐性を持つアイテムにも'?' が付き、'?' がおよそすべての分からない性質を表すようになる。ドラゴンの耐性を持つアイテムは完全に鑑定するまでどのみち '?' が付くので、この設定はいくらか重なってはいる。ただし、装備を *鑑定* する要があるかどうかの目安として '?' を当てにできるようになる。アイテムに分からない性質があることは、この設定の入り切りによらずつねに調べたときに出る。
+
+<topic:exp_need><color:U>次のレベルに要る経験を出す</color> <color:D>(exp_need)</color>
+この設定を入れると、主な画面の脇の帯の経験の表示が、次の冒険者のレベルに届くのに要る経験を出す。切っていると、いまの経験の総量が出る。
+
+<topic:ignore_unview><color:U>視界外のモンスターの行動を表示しない</color> <color:D>(ignore_unview)</color>
+この設定を入れると、見えていない敵どうしが戦ってもメッセージを受け取らなくなる。
+
+<topic:display_race><color:U>冒険者の記号を種族で変える</color> <color:D>(display_race)</color>
+この設定を入れると、地図での冒険者の記号が敵の種族で決まる。たとえばクイルスルグの冒険者は<color:W>Q</color> で表される。切っていると、モンスターモードでも冒険者はつねに @ である。
+
+<topic:show_origins><color:U>調べたときアイテムの入手元を表示する</color> <color:D>(show_origins)</color>
+この設定を選ぶと、アイテムを検分したときにそのアイテムの由来（どこで見つけたか、誰から、あるいは何から得たか）が出る。
+
+<topic:show_discovery><color:U>調べたとき発見した時刻を表示する</color> <color:D>(show_discovery)</color>
+この設定を入れると、アイテムを見つけた日付と、そのときの冒険者のレベルが由来に足される。（また、この設定を切っていると、由来の違うアイテムが重なったとき由来の知らせがすべて失われる。入れていると、代わりに最初に見つけたアイテムの詳しい知らせがその山全体に当てはめられる。）
+
+<topic:final_dump_origins><color:U>最後のキャラクターダンプに入手元を載せる</color> <color:D>(final_dump_origins)</color>
+この設定を入れると、冒険者が死んでいるか勝者であるときに限り、装備の由来が人物調書の書き出しに入る。（由来に見つけた日付の詳しい知らせが入るかどうかは、<color:keyword>show_discovery</color> の入り切りで決まる。）
+
+<topic:always_dump_origins><color:U>全てのキャラクターダンプに入手元を載せる</color> <color:D>(always_dump_origins)</color>
+この設定を入れると、装備の由来がつねに人物調書の書き出しに入る。
+
+<topic:easy_mimics><color:U>物に化けたモンスターを 'x' で表示する</color> <color:D>(easy_mimics)</color>
+この設定を入れると、敵でないものと取り違えやすい敵（擬態するもの・クローカー・デス・ソード・壁の敵など）が、本来の記号ではなく 'x' の記号で出る。（物めいた敵のいくつかはそれでも元の記号のままである。デス・サイズ・キノコ・動く金貨などである。）
+
+<topic:display_skill_num><color:U>人物調書で腕前を数で出す</color> <color:D>(display_skill_num)</color>
+この設定を入れると、人物調書が腕前をいつもの言葉の説明に加えて数でも出す。たとえば <color:g>超越</color>が<color:g>超越</color> (82) になる。この形は、数の表示がつねに入っている Composband の遊び手にはなじみ深い。
+
+<topic:reforge_details><color:U>鍛え直しの前に統計を表示する</color> <color:D>(reforge_details)</color>
+この設定は、打ち直しの結果がどれだけ良くなりそうか（そしてその理由）を数で示し、とりわけ見当違いに見える打ち直しでは警告を出し、その数が気に入らなければ打ち直しを取り消せるようにする。
+
+<topic:show_damage_range><color:U>敵情報の射撃・魔法ダメージを幅で表示する</color> <color:D>(show_damage_range)</color>
+この設定を入れると、敵の思い出が、分かっている近接以外のダメージを昔ながらの平均ではなく幅かサイコロの目で出す。（出る幅は、耐性によるダメージの減りのわずかな無作為さを数え入れていない。ただしその場合は近似を表す ~ の印が付く。出る幅はまた敵の強さを 100% と見なしている。HP は、<color:topic:show_damage_hp>show_damage_hp</color> の設定と出している思い出の種類に応じて、その種族を代表する満タンの値か、生きている敵のいまの HP のどちらかに基づく。）
+
+<topic:show_damage_hp><color:U>単体へのダメージ見積りに現在 HP を使う</color> <color:D>(show_damage_hp)</color>
+この設定を入れると、見えている本物の敵 1 体を検分する画面で、分かっている近接以外のダメージの見積もりが、その種族を代表する満タンの値ではなくその敵のいまの HP に基づくようになる。まとめての思い出と、化けている敵ではやはり種族を代表する値が使われる。
+
+</indent>
+<topic:GamePlay><style:heading>遊び方の設定</style>
+  <indent>
+<topic:stack_force_notes><color:U>異なる銘のアイテムをまとめる</color> <color:D>(stack_force_notes)</color>
+ほかは同じアイテムどうしを、片方に銘があり片方に無くても重ねさせる。できた山は、銘のある方の銘を残す。
+
+<topic:stack_force_costs><color:U>異なる割引表示のアイテムをまとめる</color> <color:D>(stack_force_costs)</color>
+ほかは同じアイテムどうしを、割引が違っても重ねさせる。できた山はいちばん大きな割引を残す。この設定で「値打ち」を損なうことはあるが、袋の使い方はいちばん良くなる。
+
+<topic:expand_list><color:U>「一覧」コマンドを拡張する</color> <color:D>(expand_list)</color>
+この設定を入れると、候補を順に巡れるいくつかの画面（見る・狙いを定める画面、記号を調べる画面、敵を調べる画面）が、終わりまで来ると最初の候補へ巡って戻る。切っていると、終わりまで来た時点でその画面が閉じる。
+
+「並べる」コマンドを広げて、当てはまる一覧の「端」で「巡って戻る」ようにする。これで「見る」と「狙いを定める」のコマンドが当てはまるマスをいつまでも「巡れる」ようになり、「記号を調べる」でもある種類の敵をすべて見て回れるようになる。
+
+<topic:bound_walls_perm><color:U>ダンジョンの外壁を永久岩にする</color> <color:D>(bound_walls_perm)</color>
+この設定を入れると、ダンジョンの階の境目がはっきり永久の壁に見えるようになる。入れていないと、境目の壁はふつうの壁に見えるが、働きはやはり永久の壁である。
+
+<topic:last_words><color:U>キャラクターが死んだ時遺言をのこす</color> <color:D>(last_words)</color>
+冒険者が死ぬとき、いくらか最後の言葉を残せるようにする。この設定を入れていないと、代わりにただ「死んだ」のメッセージが出る。
+
+<topic:allow_debug_opts><color:U>デバッグ/詐欺オプションを許可する</color> <color:D>(allow_debug_opts)</color>
+デバッグのコマンド（<color:keypress>^A</color>）・ウィザードモード（<color:keypress>^W</color>）・ずるの設定（主な設定のメニューの<color:keypress>C</color>）を使えるようにする。これらを使うと冒険者に取り消せないずるの印が付く。切っておけば、うっかり起こしてしまうことは無い。
+
+</indent>
+<topic:Disturbance><style:heading>中断の設定</style>
+  <indent>
+<topic:find_ignore_stairs><color:U>階段は通過する</color> <color:D>(find_ignore_stairs)</color>
+走っている間、階段を無視するかどうかを切り替える。
+
+<topic:find_ignore_doors><color:U>ドアは通過する</color> <color:D>(find_ignore_doors)</color>
+走っている間、開いた扉を無視するかどうかを切り替える。
+
+<topic:find_ignore_veins><color:U>埋蔵金は通過する</color> <color:D>(find_ignore_veins)</color>
+走っている間、財宝の鉱脈を無視するかどうかを切り替える。
+
+<topic:find_cut><color:U>曲り角を斜めに最短距離で通過する</color> <color:D>(find_cut)</color>
+この設定を入れると、走っている間、分かっている角を鋭く曲がる。走りは速くなるが、潜んでいる敵へ飛び込んでしまう見込みが上がる。
+
+<topic:find_ignore_side><color:U>脇の地形変化は通過する</color> <color:D>(find_ignore_side)</color>
+この設定を入れると、道の脇の地形が変わっただけでは走りが止まらなくなる（壁が開けて部屋になる、開けた場所が通路へ狭まる、など）。敵・アイテム・罠・階段・閉じた扉、そして道の真上にあるものでは、走りはやはり止まる。
+
+<topic:travel_ignore_items><color:U>トラベル中は鑑定済みのアイテムを無視する</color> <color:D>(travel_ignore_items)</color>
+この設定を入れると、鑑定済みのアイテムはすべて（きわめて値打ちのあるいくつかのアイテムと、すでに持っている山へ加わるアイテムを除いて）移動の間モガミネーターに無視される。切っていると、移動の途中で踏んだ鑑定済みのアイテムをモガミネーターが拾おうとすることがある。これは良いこともあるが、しばしば移動を煩わしく妨げる。
+
+<topic:check_abort><color:U>連続コマンドはキー入力で中断する</color> <color:D>(check_abort)</color>
+この設定を切ると、休息・走り・移動・繰り返しのコマンドのような自動で処理されるコマンドを冒険者が取り消したり妨げたりできなくなる。これはいくらか危ういが、環境によってはゲームの効きが良くなる。
+
+<topic:flush_failure><color:U>様々なミス発生時に入力をクリアする</color> <color:D>(flush_failure)</color>
+この設定は、呪文を唱えるのに失敗する、魔法棒を使うのに失敗するなどさまざまな「失敗」が起きるたびに、待っている入力をすべて捨てさせる。失敗しうるコマンドと「向き」を含むマクロを使うならたいそう役に立つ。呪文が失敗したときに敵の方へ歩いていくのを防いでくれるからである。
+
+<topic:prompt_on_failure><color:U>魔道具/呪文の失敗で -続く- を出す</color> <color:D>(prompt_on_failure)</color>
+この設定は、道具を使うか呪文を唱えるのに失敗するたびに<color:B>-more-</color> の確かめを出させる。道具が失敗しないつもりで（狙いを定めるなどのために）キーを押す癖がある人には役に立つ。放っておくと、道具が失敗したときに高くつく 1 手を失いかねないからである。
+
+<topic:flush_disturb><color:U>障害発生時に入力をクリアする</color> <color:D>(flush_disturb)</color>
+この設定は、冒険者が妨げられるたびに待っている入力をすべて捨てさせる。時間の掛かるマクロを使うなら役に立つ。敵に攻められている間にマクロが続くのを防いでくれるからである。
+
+<topic:disturb_move><color:U>どこのモンスターが動いても行動を中止する</color> <color:D>(disturb_move)</color>
+見えている敵が動く・現れる・消えるときに冒険者の手を止める。これには精神感知で見えている敵も含まれるので、そうした敵の近くで休みたいときには不都合なこともある。
+
+<topic:disturb_high><color:U>レベルの高いモンスターが動いたら行動を中止する</color> <color:D>(disturb_high)</color>
+本来のレベルが冒険者のレベルより高い敵が動く・現れる・消えるときに冒険者の手を止める。これには精神感知で見えている敵も含まれる。
+
+<topic:disturb_near><color:U>視界内のモンスターが動いたら行動を中止する</color> <color:D>(disturb_near)</color>
+視線の通る敵が動くとき、そして敵が視線の中へ入るか外へ出るときに冒険者の手を止める。
+
+<topic:disturb_pets><color:U>視界内のペットが動いたら行動を中止する</color> <color:D>(disturb_pets)</color>
+この設定を入れると、友好的か敵意があるかによらず、すべての敵に同じ手を止める決まりが当てはまる。入れていないと、ペットや友好的な敵の動きでは決して手が止まらない。
+
+<topic:disturb_panel><color:U>画面スクロール時に行動を中止する</color> <color:D>(disturb_panel)</color>
+この設定は、画面の端に近づいたときに起きる地図の送りで手を止めさせる。
+
+<topic:disturb_state><color:U>自分のステータス変化時に行動を中止する</color> <color:D>(disturb_state)</color>
+この設定は、冒険者の状態が変わるたびに手を止めさせる。空腹の具合の変わり、一時の恩恵や状態の効き目が切れることなどが含まれる。
+
+<topic:disturb_minor><color:U>些細なことが起きても行動を中止する</color> <color:D>(disturb_minor)</color>
+この設定は、さまざまな細かいことで手を止めさせる。敵が扉を打ち破ること、持ち物の新しいアイテムの感触、燃料が切れかけることなどが含まれる。
+
+<topic:disturb_wakeup><color:U>既知のモンスターが目覚めたら行動を中止する</color> <color:D>(disturb_wakeup)</color>
+この設定は、いることが分かっている敵が目を覚ますたびに手を止めさせる。分かっていない敵や画面の外の敵の眠りの変わりでは手が止まらない。
+
+<topic:town_no_disturb><color:U>町のモンスターの動きでは中止しない</color> <color:D>(town_no_disturb)</color>
+この設定を入れると、町が本来の住みかである敵（傭兵・酔いどれ・イタズラ小僧など）の攻めでない動きでは決して手が止まらなくなる。
+
+<topic:ring_bell><color:U>エラー時にビープ音を鳴らす</color> <color:D>(ring_bell)</color>
+さまざまな誤りが起きたときにベルを鳴らそうとする。環境によってはベルが鳴らないことがある。
+
+<topic:disturb_trap_detect><color:U>トラップ感知範囲外に出る直前に行動を中止する</color> <color:D>(disturb_trap_detect)</color>
+この設定は、罠を感知した場所の外へ出たときに手を止めさせる。
+
+<topic:alert_item_minor><color:U>警告: 装備品が傷んだ/呪われた</color> <color:D>(alert_item_minor)</color>
+この設定は、身に着けたアイテムが永久に力を失うことなく傷ついたとき、あるいはそれが呪われていると分かったときに<color:B>-more-</color> の確かめを出させる。
+
+<topic:alert_item_major><color:U>警告: アイテムが恒久的に傷んだ/失われた</color> <color:D>(alert_item_major)</color>
+この設定は、身に着けたアイテムや持ち歩いているアイテムが壊される・盗まれる・<color:keyword>pval</color> を失うたびに<color:B>-more-</color> の確かめを出させる。
+
+<topic:alert_insc_gone><color:U>警告: 銘入りのアイテムが恒久的に傷んだ/失われた</color> <color:D>(alert_insc_gone)</color>
+この設定は、銘を刻んだアイテムが壊される・盗まれる・<color:keyword>pval</color> を失うたびに<color:B>-more-</color> の確かめを出させる。
+
+<topic:alert_device_gone><color:U>警告: 持っていた魔道具が壊れた/盗まれた</color> <color:D>(alert_device_gone)</color>
+この設定は、袋の中の魔法棒・ロッド・杖が壊されるか盗まれるたびに<color:B>-more-</color> の確かめを出させる。
+
+<topic:alert_trap_detect><color:U>トラップ感知範囲外に出る直前に警告する</color> <color:D>(alert_trap_detect)</color>
+この設定は、罠を感知した場所の外へ出たときにメッセージで知らせる。
+
+<topic:alert_wanted_kill><color:U>警告: 賞金首のユニークを倒した</color> <color:D>(alert_wanted_kill)</color>
+この設定は、首に賞金の懸かったユニークを倒したときに<color:B>-more-</color> の確かめを出させる。
+
+<topic:alert_poison><color:U>警告: 毒が危険な量まで溜まった</color> <color:D>(alert_poison)</color>
+この設定は、毒の残りがいまの HP・最大 HP の 80%・499 点のうちいちばん低いものを超えているとき、動く前にメッセージで知らせる。（同じ毒についての次の警告は、毒で死ぬ危うさが差し迫っているときにしか出ない。）
+
+</indent>
+<topic:AutoDestroyer><style:heading>簡易自動破壊の設定</style>
+  <indent>
+<topic:destroy_items><color:U>アイテムの簡易自動破壊を使用する</color> <color:D>(destroy_items)</color>
+この設定は簡易自動破壊を入れたり切ったりする。入れると、下で述べる <color:keyword>leave_*</color> の設定のどれかで守られていない限り、簡易自動破壊はアイテムをすべて壊す。
+
+<style:note>注意: <color:keyword>簡易自動破壊</color>は、<link:editor.txt> で述べる一通り揃った<color:keyword>モガミネーター</color>を簡素にしたものである。本格の方は込み入りすぎていると感じる人のために作られている。ただし、どちらか一方だけを使うべきである。モガミネーターを使っているなら、<color:keyword>always_pickup</color> の設定を入れているのでなければ簡易自動破壊も入れる<color:B>べきではない</color>。</style>
+
+<topic:destroy_feeling><color:U>簡易鑑定したとき自動破壊を適用する</color> <color:D>(destroy_feeling)</color>
+この設定を入れると、冒険者がアイテムの質を感じ取るたびに（つまり感触が働くたびに）モガミネーターも簡易自動破壊も動く。
+
+<topic:destroy_identify><color:U>鑑定したとき自動破壊を適用する</color> <color:D>(destroy_identify)</color>
+この設定を入れると、冒険者が呪文か魔法の道具でアイテムを鑑定するたびにモガミネーターも簡易自動破壊も動く。町の役務でアイテムを鑑定しても自動破壊は起きない。
+
+<topic:destroy_debug><color:U>Mogaminator の適用時に使った規則を出す</color> <color:D>(destroy_debug)</color>
+これはモガミネーターのデバッグの設定である。この設定を入れると、モガミネーターが何かしたときに当てはまった決まりがメッセージで知らされる。たとえばこうである。<style:screenshot>
+  <indent>充填はあと 26 回である。 <color:B>(AutoID</color><color:B>:</color>~?<color:G>unidentified </color><color:R>rods</color><color:B>)</color> 見えているのは<color:v>a </color>
+<color:v>ロッド: </color><color:W>フロスト・ボール</color><color:v> (</color><color:y>充填 1/3</color><color:v>)</color>. <color:B>(Destroy:</color>(!<color:R>rods</color>:frost ball$<color:B>)</color>
+自動で壊した。</indent>
+</style>
+さらに、アイテムを調べたときにも当てはまった決まりが出る。たとえばこうである。<style:screenshot>
+  <indent><color:s>法の魔法書 [法の魅力]</color>                                         3.0 lbs 
+    いつから持っているのか思い出せない。
+  <color:B>値打ち:</color> <color:D>100</color>                                           
+  <color:r>Autopick:</color> ~<color:G>first realm's first </color><color:R>spellbooks</color><color:U>#@ma!k</color>                                         </indent></style>
+
+<topic:disable_mogaminator><color:U>Mogaminator を適用しない</color> <color:D>(disable_mogaminator)</color>
+この設定はモガミネーターを止める。（そもそも働かせていなければ意味は無い。）
+
+<topic:leave_mogaminator><color:U>Mogaminator が壊したがるアイテムも床に残す</color> <color:D>(leave_mogaminator)</color>
+この設定を入れると、モガミネーターはアイテムを決して壊さなくなる（簡易自動破壊はやはり壊す）。ただし、<color:keyword>always_pickup</color> を入れていても、モガミネーターが壊したいアイテムは踏んでも自動では拾われない。
+
+<topic:check_full_pack><color:U>荷物が満杯なら拾う確認を減らす</color> <color:D>(check_full_pack)</color>
+この設定を入れると、袋がすでにいっぱいのままアイテムが複数あるマスへ歩いても拾うかどうかを尋ねられなくなる。代わりに、そのアイテムをすべて自動で拾い（そして落とす）。<color:keyword>always_pickup</color> を入れていなければ、この設定に効き目は無い。
+
+<topic:delay_autopick><color:U>自動拾いの前に手で拾える</color> <color:D>(delay_autopick)</color>
+この設定を入れると、手でアイテムを拾えるコマンドはどれも、自動の拾いより手の拾いを優先する。（切っていると、これはすでにいたマスから拾うときにしか起きない。）
+
+<topic:leave_worth><color:U>価値があるアイテムは壊さない</color> <color:D>(leave_worth)</color>
+この設定は、店で売れると分かっているアイテムを簡易自動破壊から守る。
+
+<topic:leave_equip><color:U>武器/防具は壊さない</color> <color:D>(leave_equip)</color>
+この設定は、武器と防具をすべて簡易自動破壊から守る。
+
+<topic:leave_chest><color:U>開封されていない箱は壊さない</color> <color:D>(leave_chest)</color>
+この設定は、まだ開けていない箱をすべて簡易自動破壊から守る。
+
+<topic:leave_wanted><color:U>賞金首の死体/骨は壊さない</color> <color:D>(leave_wanted)</color>
+この設定は、賞金首事務所で賞金の懸かった敵の死体を簡易自動破壊から守る。
+
+<topic:leave_corpse><color:U>死体/骨は壊さない</color> <color:D>(leave_corpse)</color>
+この設定は、死体と骨をすべて簡易自動破壊から守る。
+
+<topic:leave_junk><color:U>がらくたは壊さない</color> <color:D>(leave_junk)</color>
+この設定は、折れた棒や陶器のかけらのようながらくたをすべて簡易自動破壊から守る。アーチャーのような職業では役に立つが、<color:keyword>leave_special</color> の設定もそうした特別な場合を拾ってくれる。
+
+<topic:leave_special><color:U>自動破壊が種族・職業に要るアイテムを残す</color> <color:D>(leave_special)</color>
+この設定は、ふつうは値打ちが無いが決まった職業や種族にはたいそう大事なアイテムを守る。アーチャーの骨、忍者の暗闇のエゴの光源、ビーストマスターと騎兵のモンスター回復の魔法棒、バルログの人間型の死体など、似たような使い道を持つアイテムである。
+</indent>
+<topic:ListDisplay><style:heading>一覧表示の設定</style>
+  <indent>
+<topic:describe_slots><color:U>装備スロットの説明を表示する</color> <color:D>(describe_slots)</color>
+装備のアイテムを身に着けている枠の説明（「右手」「左手指」「首」「足」など）を出す。
+
+<topic:show_weights><color:U>アイテム一覧で重量を表示する</color> <color:D>(show_weights)</color>
+アイテムの一覧すべてで（持ち物を出す小窓も含めて）アイテムの重さを出す。
+
+<topic:show_discounts><color:U>アイテムの一覧に割引を出す</color> <color:D>(show_discounts)</color>
+アイテムに割引があれば、それを銘の一部として出す。この設定を切ってもアイテムの割引は消えない。ただ冒険者に出なくなるだけである。
+
+<topic:show_power><color:U>一覧に魔道具の強さを表示する（既知なら）</color> <color:D>(show_power)</color>
+アイテムの強さの詳しい数（<color:g>dam 158</color> や<color:U>heal 250</color> など）を一覧に出し、アイテムをひと目で比べられるようにする。
+
+<topic:show_item_graph><color:U>アイテムのシンボルを表示する</color> <color:D>(show_item_graph)</color>
+アイテムを絵で表したもの（<color:B>/</color>・<color:g>(</color> など）を一覧に出す。
+
+<topic:show_item_markers><color:U>一覧にアイテムの状態の印を表示する</color> <color:D>(show_item_markers)</color>
+この設定を入れると、持ち物・装備・矢筒・店・我が家・博物館などのアイテムの一覧で、アイテムの名前の前に短い印が付く。呪われたアイテムは <color:v>!</color>、固定アーティファクトは <color:B>*</color>、ランダムアーティファクトは <color:U>X</color>、分かってはいるがまだ完全に鑑定していないアイテムは<color:y>?</color>、まったく分からず感じ取ってもいないアイテムは<color:y>??</color> である。この印は目で分かる手がかりが増えるだけで、いつもの説明や作られた銘の決まりを置き換えるものではない。
+
+<topic:inscriptions_first><color:U>これらの銘をアイテム名の前に置く</color> <color:D>(inscriptions_first)</color>
+自分で刻んだ銘をどこへ出すかを決める。<color:keypress>なし</color>は説明の終わりに置いたままにする（既定）。<color:keypress>自分の銘</color>は自分の銘をアイテムの名前の前に出し（たとえば <color:w>{@g1}</color> マジック・ミサイルの魔法棒）、アイテムの感触や呪いのようなゲームが作った疑似の銘は終わりに残す。<color:keypress>すべて</color>は自分の銘も疑似の銘もアイテムの名前の前に出す。
+
+<topic:show_special_bags><color:U>特別な持ち物もふつうの持ち物の一覧に入れる</color> <color:D>(show_special_bags)</color>
+この設定を入れると、ふつうの <color:keypress>i</color> の持ち物の一覧に、変身の鞄やイゴールの体の部位のような種族や職業の特別な持ち物も入る。<color:keypress>I</color> の調べるコマンドは、この設定によらずつねにこれらを含む。
+
+<topic:shops_mark_unseen><color:U>店の品書きで未知の風味に印を付ける</color> <color:D>(shops_mark_unseen)</color>
+この設定を入れると、まだ見かけを鑑定していない薬・巻物・キノコが、店の品揃えで {未見} と印される。
+
+<topic:black_curses><color:U>外す一覧で呪われたアイテムを黒で表示する</color> <color:D>(black_curses)</color>
+この設定を入れると、装備を外している間、張り付くアイテムが黒で出る。
+
+<topic:monlist_range><color:U>視界内の敵は座標ではなく距離で表示する</color> <color:D>(monlist_range)</color>
+この設定を入れると、近くの敵の一覧で敵 1 体の行に、視線の通る敵の距離が出る。たとえば 4 マス離れた敵なら「Rng 4」である。切っていると、その行には代わりに冒険者から見た敵の位置が出る。
+
+<topic:monlist_range_all><color:U>一覧の敵は全て座標ではなく距離で表示する</color> <color:D>(monlist_range_all)</color>
+この設定を入れると、近くの敵の一覧で敵 1 体の行に、視線の通らない敵についても距離が出る。まとめた行では距離も位置も出ないままである。
+
+<topic:monlist_los><color:U>視界内のモンスターを一覧の先頭に分ける</color> <color:D>(monlist_los)</color>
+この設定を入れると、近くの敵の一覧が、視線の通る敵の上の節とそのほかの敵の下の節に分かれる。切っていると、分かれ目も節の見出しも消え、並んだ敵はすべて一緒に並べ替えられる。
+
+<topic:monlist_awake><color:U>起きているモンスターを一覧の先に出す</color> <color:D>(monlist_awake)</color>
+この設定を入れると、近くの敵の一覧で起きている敵が眠っている敵より前に並ぶ。種族でまとめているときは、起きているものと眠っているものが混じった行が分けられ、別々に出る。
+
+<topic:monlist_distance><color:U>モンスター一覧をレベルではなく距離順に</color> <color:D>(monlist_distance)</color>
+この設定を入れると、近くの敵の一覧で近い敵が先に並ぶ。切っていると、まず敵の基本のレベルで並べ、距離は同じときの決め手にしか使わない。
+
+<topic:monlist_ungroup><color:U>モンスター一覧でまとめずに 1 体ずつ出す</color> <color:D>(monlist_ungroup)</color>
+この設定を入れると、近くの敵の一覧が、見かけの同じ種族の敵をまとめずに1 体につき 1 行ずつ出す。
+
+<topic:monlist_zzz><color:U>眠っているこれらの敵に Zzz を付ける</color> <color:D>(monlist_zzz)</color>
+近くの敵の一覧で、すっかり眠っている行に付く Zzz の印を決める。<color:keypress>なし</color>では眠っている行に印が付かない。<color:keypress>ユニーク</color>ではユニークの敵の行にだけ付く。<color:keypress>すべて</color>ではすっかり眠っている行すべてに付く。
+
+<topic:list_stairs><color:U>アイテムの一覧に階段を出す</color> <color:D>(list_stairs)</color>
+この設定を入れると、見えているアイテムの一覧（ゲーム中で <color:keypress>O</color> か<color:keypress>]</color> を押すと開く）の「気になる地形」の節に階段が入る。（一覧の中で <color:keypress>S</color> を押せば階段を出すかどうかを切り替えられるが、この設定は既定で出すかどうかを決める。）
+
+<topic:show_future_powers><color:U>一覧に将来の種族/職業の能力も含める</color> <color:D>(show_future_powers)</color>
+この設定を入れると、<color:keypress>U</color> の力のコマンド（ローグライクのキー設定では<color:keypress>O</color>）の一覧に、この先使えるようになる分かっている力も灰色で並ぶ。この先使える力とは、レベルが上がれば使えるがいまはレベルが低くて使えないものである。レベル上がり以外に進化・突然変異・そのほか特別なことが要る力は入らない。
+
+<topic:show_future_spells><color:U>一覧に将来の職業の呪文も含める</color> <color:D>(show_future_spells)</color>
+この設定を入れると、<color:keypress>m</color> の魔法・精神の力のコマンドの一覧に、この先使えるようになる分かっている職業の呪文も灰色で並ぶ。この先使える呪文とは、レベルが上がれば使えるがいまはレベルが低くて使えないものである。本を使う術者にはこの設定の効き目は無い。本の呪文のメニューにはつねに高レベルの呪文も並ぶからである。
+
+<topic:auto_sticky_labels><color:U>能力の札を自動で固定する</color> <color:D>(auto_sticky_labels)</color>
+この設定を入れると、<color:keypress>U</color> のキー（ローグライクのキー設定では<color:keypress>O</color>）で使う力すべてに動かない永久の英字の枠が割り当てられ、マクロ・キーマップ・指の記憶を当てにできるようになる。
+
+<topic:object_list_width><color:U>アイテム一覧の最大幅</color> <color:D>(object_list_width)</color>
+この設定は、主な画面に出るアイテムの一覧の幅の上限を調える。
+
+<topic:monster_list_width><color:U>モンスター一覧の最大幅</color> <color:D>(monster_list_width)</color>
+この設定は、主な画面に出る敵の一覧の幅の上限を調える。
+</indent>
+
+<topic:BaseDelay><style:heading>基本の待ち時間</style>
+
+<color:keyword>delay_factor</color> の値が 0 でなければ、ゲームを遅くするのに使われる。ボルト・ビーム・ボールの攻めの動きを見るのに役立つ。実際の遅らせは<color:keyword>square_delays</color> の設定を入れていない限りこの係数を 3 乗したミリ秒である。
+
+<topic:Hitpoint><style:heading>HP の警告</style>
+
+<color:keyword>hitpoint_warn</color> の値が 0 でなければ、ヒットポイントが少ないという警告が出る最大 HP の割合になる。ヒットポイントとマナを<color:r>赤</color>で出す境目にも使われる。
+
+<topic:Autosave><style:heading>自動セーブの設定</style>
+
+この設定は、ゲームがいつ自動で保存されるかを決める。自動の保存は、停電やひどい異常終了のときに進み具合を救う助けになる。
+  <indent>
+<topic:autosave_l><color:U>新しい階に入る度に自動セーブする</color> <color:D>(autosave_l)</color>
+この設定を入れると、新しいダンジョンの階を作る前に毎回、冒険者を保存しようとする。
+
+<topic:autosave_t><color:U>一定ターン毎に自動セーブする</color> <color:D>(autosave_t)</color>
+冒険者を保存しようとする間隔。<color:keyword>切</color>にすると時間ごとの自動保存を止める。50 から 250 までは 50 刻み、500 から 2500 までは 250 刻み、5000 から 25000 までは 2500 刻みで決められる。矢印キーかテンキーで値を送る。
+</indent>
+<topic:Window><style:heading>サブウィンドウの割り当て</style>
+
+平台によっては<color:keyword>小窓</color>を使える。これは役に立つ知らせをつねに出しておくための、自動で更新される追加の画面である（詳しくは <link:subwin.txt> を参照）。この窓の旗で、小窓ごとにどの知らせを出すかを決められる。選べるものはおおむね見てのとおりである。
+  <indent>
+<color:U>持ち物・装備</color>
+冒険者の持ち物（と、ときには装備）を出す。<color:keypress>^I</color> を押せば持ち物と装備を切り替えられることに注意。
+
+<color:U>装備・持ち物</color>
+冒険者の装備（と、ときには持ち物）を出す。<color:keypress>^I</color> を押せば持ち物と装備を切り替えられることに注意。
+
+<color:U>呪文の一覧</color>
+冒険者が使える呪文を出す。職業の呪文・最近覚えた青魔法、そして当てはまるならいちばん最近選んだ魔法書の呪文が含まれる。
+
+<color:U>アイテムの一覧</color>
+この設定は<color:keyword>アイテムの一覧</color>のコマンド（<color:keypress>O</color>／<color:keypress>]</color>）の結果を出す。たとえばこうである。
+<style:screenshot>
+       欲しいアイテムが 1 つある:
+   <color:D>!</color> <color:B>耐性の薬                            </color> S 17 E 29
+
+        ほかにアイテムが 4 つある:
+   <color:W>|</color> ツーハンデッド・ソード               S 18 E 30
+   <color:D>\</color> 鉛詰めメイス                         S 18 E 28
+   <color:s>]</color> <color:U>鉄鋲底の靴                          </color> S 18 E 29
+   <color:s>/</color> オール・パイク                       S 19 E 29
+</style>
+<color:U>敵の一覧</color>
+この設定は<color:keyword>敵の一覧</color>のコマンド（<color:keypress>Y</color>／<color:keypress>[</color>）の結果を出す。たとえばこうである。
+<style:screenshot>
+ 4 体を把握している。うち 4 体は起きている:
+         <color:o>t</color> あてもなく歩く商人 (2 awake)
+   <color:D>t</color> ブラックマーケットのエージェント     N  9 W 54
+   <color:y>t</color> 歌う陽気な酔いどれ                   S 22 E 72
+</style>
+<color:U>メッセージの記録</color>
+直近のメッセージを出す（<color:keypress>^P</color> のコマンドと比べよ）。
+
+<color:U>全体の眺め</color>
+ダンジョン全体を上から見た眺めを出す。古い機械ではいくらか遅くなることがある。<color:keypress>M</color> のコマンドと同じものが出る。
+
+<color:U>敵の思い出</color>
+いちばん最近攻めたか、狙いを定めたか、何らかの形で調べた敵の説明を出す。
+
+<color:U>アイテムの思い出</color>
+いちばん最近拾ったか、何らかの形で調べたアイテムの説明を出す。
+
+<color:U>ダンジョンの眺め</color>
+地図の写しを出す。
+
+<topic:Cheating><style:heading>チートの設定</style>
+
+ずるの設定を使うと、冒険者に永久にずるの印が付く。ずるをした者は本当の勝ちを収められず、後でずるの設定を切っても高得点の一覧に載らない。
+
+<topic:cheat_peek><color:U>アイテムの生成をのぞき見る</color> <color:D>(cheat_peek)</color>
+ずるをする者は決して勝てない。ただしアイテムの生成を覗ける。
+
+<topic:cheat_hear><color:U>モンスターの生成をのぞき見る</color> <color:D>(cheat_hear)</color>
+ずるをする者は決して勝てない。ただし敵の生成を覗ける。
+
+<topic:cheat_room><color:U>ダンジョンの生成をのぞき見る</color> <color:D>(cheat_room)</color>
+ずるをする者は決して勝てない。ただし部屋の生成を覗ける。
+
+<topic:cheat_xtra><color:U>その他の事をのぞき見る</color> <color:D>(cheat_xtra)</color>
+ずるをする者は決して勝てない。ただしデバッグのメッセージを見られる。
+
+<topic:cheat_live><color:U>死を回避することを可能にする</color> <color:D>(cheat_live)</color>
+ずるをする者は決して勝てない。ただし死をごまかせる。
+
+<topic:cheat_save><color:U>死んだ時セーブするか確認する</color> <color:D>(cheat_save)</color>
+ずるをする者は決して勝てない。ただし死んだとき冒険者のデータを残すかどうかを選べる。
+</indent>
+<color:D>
+最初       : Ben Harrison
+更新       : Zangband 2.1.* Topi Ylinen
+更新       : Zangband 2.2.0 から 2.2.6c まで Robert Ruehlmann
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.5.2
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.0.nougat
+更新       : FrogComposband 7.1.chocolate
+更新       : FrogComposband 7.1.liquorice
+更新       : FrogComposband 7.1.salmiak
+</color>

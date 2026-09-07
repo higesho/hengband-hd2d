@@ -1,0 +1,154 @@
+# アイテム（アイテム）の説明文
+#
+# **この表が説明文の定義の置き場。** 作り直しは `python tools/frox/fc_build_ja_desc.py --write`、
+# ここから `edit/k_info.ja.txt` の `D:` を組むのは `fc_build_ja_names.py --write`。
+#
+# 欄はタブ区切りで idx / name / dep / src / ratio / en / ja。
+#   src=変愚   … 英語原文が変愚と一致。訳をそのまま採った
+#   src=変愚≒  … ほぼ一致（ratio が材料）。**目で確かめること**
+#   src=当方   … 人が書いた。**作り直しでも消さない**
+#   src=未訳   … 空欄。英語のまま出る（制約 4）
+#
+# ja を書き替えれば src は次の作り直しで自動的に `当方` になる。
+# name と en は**人が読むため**で、突き合わせには使わない（突き合わせは idx）。
+idx	name	dep	src	ratio	en	ja
+1	Poison	5	変愚	1.000	It poisons you when you eat it.	それは食べると毒に冒される。
+2	Blindness	5	変愚	1.000	It blinds you when you eat it.	それは食べると盲目になる。
+3	Paranoia	5	変愚	1.000	It scares you when you eat it.	それは食べると恐怖する。
+4	Confusion	5	変愚	1.000	It confuses you when you eat it.	それは食べると混乱する。
+5	Hallucination	10	変愚	1.000	It makes you hallucinate when you eat it.	それは食べると幻覚に侵される。
+6	Paralysis	20	変愚	1.000	It paralyzes you when you eat it.	それは食べると麻痺する。
+7	Weakness	10	変愚	1.000	You take 6d6 damage and it decreases your strength when you eat it.	それは食べると6d6のダメージを受け、腕力の現在値が下がる。
+8	Sickness	10	変愚	1.000	You take 6d6 damage and it decreases your constitution when you eat it.	それは食べると6d6のダメージを受け、耐久力の現在値が下がる。
+9	Stupidity	15	変愚	1.000	You take 8d8 damage and it decreases your intelligence when you eat it.	それは食べると8d8のダメージを受け、知能の現在値が下がる。
+10	Naivety	15	変愚	1.000	You take 8d8 damage and it decreases your wisdom when you eat it.	それは食べると8d8のダメージを受け、賢さの現在値が下がる。
+11	Unhealth	15	変愚	1.000	You take 10d10 damage and it decreases your constitution when you eat it.	それは食べると10d10のダメージを受け、耐久力の現在値が下がる。
+12	Disease	20	変愚	1.000	You take 10d10 damage and it decreases your strength when you eat it.	それは食べると10d10のダメージを受け、腕力の現在値が下がる。
+13	Cure Poison	10	変愚	1.000	It cures poison when you eat it.	それは食べると毒を癒す。
+14	Cure Blindness	10	変愚	1.000	It cures blindness when you eat it.	それは食べると盲目を癒す。
+15	Cure Paranoia	10	変愚	1.000	It removes fear when you eat it.	それは食べると恐怖を取り除く。
+16	Cure Confusion	10	変愚	1.000	It cures confusion when you eat it.	それは食べると混乱から立ち直る。
+17	Restore Constitution	20	変愚	1.000	It restores your constitution when you eat it.	それは食べると耐久力が回復する。
+18	Restoring	20	変愚	1.000	It restores all your stats when you eat it.	それは食べると全ステータスが回復する。
+19	Restore Strength	20	変愚	1.000	It restores your strength when you eat it.	それは食べると腕力が回復する。
+20	Fast Recovery	15	当方		It speeds your recovery when you eat it.	それは食べると回復が早くなる。
+32	& Ration~ of Food	0	変愚	1.000	This nutritious but fairly bland food is familiar to anyone contemplating long journeys.	栄養はあるが味気ないこの食料は長旅を考える冒険者に良く合う。
+33	& Hard Biscuit~	0	変愚	1.000	Twice-cooked for good keeping qualities, this lump of bread is as hard as a rock and about as tasty.	日持ちを良くする為に二度焼きした乾パンの一種だ。岩のように固く、味もだいたいその程度。
+34	& Strip~ of Venison	0	変愚≒	0.878	A strip of jerked beef that seems never to spoil.	良く乾燥させた肉。決して腐る事が無さそうだ。
+35	& Slime Mold~	1	変愚	1.000	An utterly hideous fungal growth. It is strangely appealing...	ぞっとするような菌類の固まりだ。なぜか食欲を刺激する…。
+36	& Pint~ of Fine Ale	0	変愚	1.000	Made from the barley of Eriador, and brewed to golden perfection.	エリアドールの大麦を醸造し、金色になるまで熟成させたものだ。
+37	& Pint~ of Fine Wine	0	変愚	1.000	A heady wine, almost as good as that served at the Green Dragon at Bywater.	水の辺村の緑竜館で出るのと同じくらい質の良い、アルコール度の高いワインだ。
+38	& Piece~ of Elvish Waybread	5	変愚	1.000	Small golden-brown wafers wrapped in silven leaves. Made with elvish art, it sustains life where nothing else can.	銀色の葉に包まれた小さな山吹色の薄焼き菓子の束だ。エルフの技で作られ、その滋養は他に食べ物が何も無くとも数週間もの間生命を維持する程である。
+39	& Serving~ of Ambrosia	90	当方		Food of the gods, fragrant and sweet. It cures poison, heals hp a bit, and restores your stats and life when eaten.	芳しく甘い、神々の食べ物だ。食べると毒が癒え、体力が少し回復し、能力値と生命力が元に戻る。
+46	& Broken Sword~	0	変愚	1.000	Above the hilt, a foot of steel rises, ending in a jagged edge.	柄の上でギザギザに折れている。
+47	& Dagger~	0	変愚	1.000	A two-edged knife with a sharp point.	先端が鋭い両刃の短剣だ。
+48	& Main Gauche~	3	変愚	1.000	A short thrusting blade with a large guard, primarily used in duels.	拳を防御する大きな鍔を持つ短い剣。主に決闘で防御用の短剣として用いられる。
+50	& Rapier~	5	変愚	1.000	A long, thin thrusting blade, mainly used in duels.	突きに用いる長く細い刀身を持つ剣。主に決闘に用いられる。
+51	& Small Sword~	5	変愚	0.992	A smaller version of the longsword, perfectly sized for Hobbits.	ロング・ソードを少し短くしたような剣だ。ホビットにぴったりのサイズだ。
+53	& Short Sword~	5	変愚	1.000	A short thrusting sword.	主に突く用途に用いる短い剣だ。
+54	& Sabre~	5	変愚	1.000	A light, somewhat curved blade that can be used to thrust or slash; familiar to horseman and duelists alike.	軽い少し曲った刃を持ち、切る事も突く事もできる。馬上及び決闘においてよく使われる。
+55	& Cutlass~	5	変愚	1.000	A large, curved chopper with a basket hilt, well known to seamen.	大きな曲った刀身と手をカバーする網状の柄を備えた剣だ。船員に良く用いられる。
+59	& Broad Sword~	10	変愚	1.000	A heavy, double-edged sword with a strong grip.	重く広い刀身と頑丈な柄を持った両刃の直刀だ。
+60	& Long Sword~	10	変愚	1.000	A long, straight, two-edged blade, with two hand guards projecting out from the hilt to form a perfect cross.	十字の形に2本の柄が付いた長い両刃の直刀だ。
+61	& Scimitar~	10	変愚	1.000	A single-edged slashing sword with a blade like a crescent.	斬る用途に特化した三日月のような刀身を持つ片刃の剣だ。
+63	& Katana~	20	変愚	1.000	A slightly curved long-handled slashing sword with a single-edged blade and a chisel tip.	長い柄と微妙に曲った刃を持つ切れ味に優れた片刃の剣だ。
+64	& Bastard Sword~	15	変愚	0.995	Also known as the hand-and-a-half blade. A larger-than-normal straight-sided sword with two cutting edges.	片手半剣とも呼ばれる。通常のロング・ソードよりも長い両刃の直刀だ。
+68	& Two-Handed Sword~	30	変愚	1.000	A great, double-edged broadsword which few can wield in one hand.	非常に大きな両刃の直刀で、これを片手で持てる者はほとんどいない。
+71	& Executioner's Sword~	40	変愚	1.000	A giant, curved blade designed to cleave the head cleanly from the body.	胴体から頭を綺麗に切り落とす為に作られた、巨大な曲った刃を持つ剣だ。
+73	& Blade~ of Chaos	70	変愚	1.000	This inconstant weapon revels in disorder, hacking and slashing your foes with bloodthirsty glee.	千変万化の姿を持つこの武器は混沌の力によって敵を切り刻み、殺戮にふける事に残忍な喜びを感じている。
+77	& Rune Sword~	70	当方		A black blade, covered with gleaming runes. It is rumored to be an evil weapon of great power that will ultimately control its bearer.	輝くルーンに覆われた黒い刃だ。強大な力を持つ邪悪な武器で、最後には持ち主を支配してしまうという噂がある。
+86	& Spear~	5	変愚	1.000	The basic polearm, with a double-edged knife mounted on a light shaft. This weapon can be thrown effectively.	最も基本的な竿状武器だ。軽く長い竿の先に尖った両刃の穂先が付いていて、突き刺すのに適している。
+89	& Trident~	5	変愚	1.000	A three-pronged spear, originally for catching fish.	三又の槍で、元来は魚を捕るのに用いられていた。
+92	& Pike~	15	変愚	1.000	A long, heavy spear with an iron head and reinforced shaft.	補強された柄に鉄の穂先が付いた、非常に長く重い槍だ。
+94	& Beaked Axe~	15	変愚	1.000	A narrow axe head opposed by a crow's beak, mounted on an oaken shaft.	木製の柄に、背が烏のクチバシを模した突起になった形の幅が狭い斧が付いている。
+95	& Broad Axe~	15	変愚	1.000	A simple, single-bladed war axe capable of chopping though limbs or armour.	単純な作りの片刃の戦斧で、対象の胴体や鎧を切断する威力がある。
+97	& Glaive~	20	変愚	1.000	A reinforced wooden pole eight feet long, topped by a massive knife blade that can can be used to thrust or chop.	2.5メートル程の補強された木製の棒の先端に大きなナイフの刃が真っ直に付いている。切り裂く事も付き刺す事もできる。
+99	& Halberd~	25	変愚	1.000	The most successful of the polearms, the halberd has a long haft mounted with a heavy axe blade and opposing spike, and topped by a thrusting spine.	長い竿に重い斧の刃とその反対側にスパイクが付き、さらに竿の先端に付き刺す為の穂先が付いている。最も完成されたタイプの竿状武器である。
+101	& Scythe~	45	変愚	1.000	The long crescent blade stands out from the handle of this polearm, and it is swung with two hands to harvest grain or blood.	長い三日月型の刃が長い柄の先端に突けられている。両手に持って穀物、または生命を苅り取る為に用いられる…。
+103	& Battle Axe~	15	変愚	1.000	A double-bladed axe. Very popular among Dwarves.	幅広の両刃の斧だ。ドワーフによく用いられる。
+104	& Great Axe~	40	変愚	1.000	An enormous two-handed battle axe, carried by Dwarven champions, who compete to see who can cleave the most orc heads.	巨大な両手持ち用の戦斧だ。オークの首を落とした数を競うドワーフの戦士が愛用している。
+108	& Scythe~ of Slicing	60	変愚	1.000	A reaper's weapon, the long blade almost hums in anticipation of the blood it will spill.	死神の武器である。その長い刃は流血の期待に歓喜の声を上げているかのようだ。
+121	& Whip~	3	変愚	1.000	A heavy whip, this thick coil is thrown from the shoulder and can knock down a large man.	重い鞭だ。きつく巻いたこの鞭を肩の上から振り下ろすと大の男でも打ち倒す事ができる。
+122	& Quarterstaff~	10	変愚	1.000	Six feet of oak which can be wielded in both hands to give a drubbing or block one.	2メートル程度の長さの木製の杖だ。両手で持って打ち付けたり攻撃を受け止める為に用いられる。
+124	& Mace~	5	変愚	1.000	A war club with an iron head, usually flanged.	鉄球、または鍔付きの多面体形の鉄塊が先端に付いた棍棒だ。
+125	& Ball-and-Chain~	20	変愚	1.000	A weighty iron ball, suspended by a chain from a sturdy oaken handle.	頑丈な木製のハンドルに、重い鉄のボールが鎖で繋っている。
+127	& War Hammer~	5	変愚	1.000	A mallet with a tapered head and a long handle.	長いハンドルがあり、先の尖った槌が先端から直角に付き出た形をしている。
+129	& Morning Star~	10	変愚	1.000	A war club with an spiked iron ball on the head.	星型のトゲが突き出た鉄球が先端に付いた棍棒だ。
+130	& Flail~	10	変愚	1.000	Two heavy bars of wood connected by a short link of chain, capable of delivering crushing blows.	2本の重い木製の棒を短い鎖で繋げた物だ。対象を叩き潰す為に用いる。
+132	& Lead-Filled Mace~	15	変愚	1.000	A heavy war club topped with a mass of lead-filled steel, capable of landing crushing blows.	重い棍棒の先に鉛を詰めた鋼鉄の重りを繋げてある。対象を叩き潰す為に用いる。
+134	& Two-Handed Flail~	45	変愚	1.000	Two great bars of wood connected by a massive chain, needing two hands to properly wield.	2本の非常に大きな木製の棒を重い鎖で継いである。うまく用いるためには両手が必要だ。
+136	& Mace~ of Disruption	80	変愚	1.000	A giant's weapon, enchanted with shattering power that breaks bones, bodies, and spirit.	巨人の武器であり、相手の骨を、体を、そして精神をも粉砕する魔法が掛けられている。
+150	& Shovel~	1	変愚	1.000	A compact and sturdy spade.	小型で頑丈なシャベルだ。
+151	& Gnomish Shovel~	20	変愚	0.991	A small spade forged of steel with gnomish craftsmanship.	ノームの職人によって作られた鋼鉄製のシャベルだ。
+152	& Dwarven Shovel~	40	変愚	1.000	A broad shovel, fit for the strong shoulders of a dwarf. It bears runes of delving and no ordinary rock can resist it.	ドワーフの強力な肩にちょうど良い幅広のシャベルだ。採掘力を高めるルーンを帯び、普通の岩ならばどんな物でも掘り進む事ができる。
+153	& Pick~	5	変愚	1.000	A heavy mining tool with a long, slightly curved head that tapers to chisel points on both ends.	重い採掘用の道具で、微妙に曲った頭部の両端に切先が付いている。
+154	& Orcish Pick~	30	変愚	1.000	A crude, ugly, but effective pickaxe. Made in enormous quantities for the slave-mines of Durthang.	粗雑で醜い作りだが、実用的なつるはしだ。
+155	& Dwarven Pick~	50	変愚	1.000	A short but sturdy pick, like those that delved deep Moria, with runes to break the sinews of mountains.	モリアの深部の採掘に使われていたのと同様な、短く頑丈なつるはしだ。
+160	& Sling~	5	変愚	1.000	A loop of leather and cords able to hurl stones or shot with tremendous velocity.	長い紐の中間にある革製の石受け部分に石を包み、これを振り回す勢いで石を飛ばす武器だ。原始的な構造だが威力はある。
+161	& Short Bow~	10	変愚	1.000	The traditional hunter's weapon, this light bow is easily drawn.	伝統的に狩人に用いられる武器だ。この軽い弓は簡単に引く事ができる。
+162	& Long Bow~	30	変愚	1.000	As tall as a man, the longbow can drive an arrow through the heaviest armour.	人の身長程の長さの弓だ。厚い鉄製の鎧でも貫通する程の威力を持つ。
+163	& Light Crossbow~	15	変愚	1.000	A mechanical bow made of wood, it is cocked to augment the strength of its wielder.	鋼鉄製の弦をあらかじめ引いておき、機械式の引き金を引くだけで矢を発射する事ができる。ショート・ボウやロング・ボウに比べて扱いが簡単な武器だ。
+168	& Harp~	25	当方		A stringed instrument preferred by Bards.	吟遊詩人が好んで使う弦楽器だ。
+170	& Flute~	66	当方		A simple woodwind instrument.	素朴な木管楽器だ。
+175	& Arrow~	3	変愚	1.000	A standard clothyard arrow, straight and cleanly fletched.	たくみに羽が付けられた真っ直な標準的な矢だ。
+178	& Seeker Arrow~	70	変愚	1.000	Carved from a rare wood, this arrow is inscribed with fell runes and fletched with eagle feathers.	希少な種類の木材から切り出され、鷲の羽を付け、威力を高めるルーンを刻まれた矢だ。
+185	& Bolt~	10	変愚	1.000	A short, heavy arrow shot from a crossbow.	発射時の強い負荷に耐えるように作られた短く重いクロスボウ用の矢だ。
+188	& Seeker Bolt~	80	変愚	1.000	A mighty quarrel, bound about with battle magics.	威力を高める魔法が掛けられた強力なクロスボウ用の矢だ。
+195	& Cloak~	1	変愚	1.000	A traveller's sturdy outer garment.	冒険者用の丈夫な外套だ。
+196	& Elven Cloak~	30	変愚	0.996	A mantle made of curious silken material by the Galadhrim that wondrously takes on the hues and shapes of its surroundings.	不思議な絹のような素材で作られた外套だ。その素材は周りの景色の色と形を映し出し、着用者を隠す効果がある。
+198	& Ethereal Cloak~	50	変愚	1.000	This unearthly, completely transparent body mantle folds and drapes in iridescent patterns around you. It weighs absolutely nothing.	この世の物ではない、この完全に透明な外套は着る者を虹模様で包み飾る。それは完全に重さがない。
+199	& Shadow Cloak~	60	変愚	1.000	A midnight-hued cloak that wreathes the wearer in folds of shadow.	着用者を影の層で包み込む闇夜の色のクロークだ。
+205	& Pair~ of Soft Leather Boots	3	変愚	1.000	These are calf-high boots of flexible leather, laced from heel to calf.	ふくらはぎの高さまでの柔軟な革のブーツだ。踵からふくらはぎまで結び紐が付いている。
+206	& Pair~ of Hard Leather Boots	5	変愚	1.000	A set of sturdy leather boots that will last many weary miles.	長い旅路でも良く保つ丈夫な革製のブーツだ。
+208	& Pair~ of Metal Shod Boots	20	当方	0.788	A set of double-lined leather boots, with toes and heels reinforced with iron, allowing the wearer to deal a swift kick.	二重張りの革のブーツで、爪先と踵が鉄で補強されており、履き手は素早い蹴りを繰り出せる。
+209	& Pair~ of Mithril Shod Boots	50	当方		A set of double-lined leather boots, with toes and heels reinforced with iron, allowing the wearer to deal a swift kick.	二重張りの革のブーツで、爪先と踵が鉄で補強されており、履き手は素早い蹴りを繰り出せる。
+212	& Hard Leather Cap~	3	変愚	1.000	A padded skullcap of boiled leather.	煮固めた革製の詰め物入りの帽子だ。
+213	& Metal Cap~	10	変愚	1.000	A pot-helm of steel that protects the skull.	頭部を保護する鋼鉄の帽子だ。
+215	& Iron Helm~	20	変愚	1.000	A mighty helmet of heavy iron, completely enclosing the head.	頭部を完全に覆う鉄製のヘルメットだ。
+216	& Steel Helm~	40	変愚	1.000	This great helm covers the head and shoulders with plates of steel and a curtain of mail.	鋼鉄板と鎖かたびらを組み合わせて、頭部から肩までを完全に覆う防具だ。
+217	& Mithril Helm~	50	当方		A mighty helmet of pure mithril, completely enclosing the head.	頭をすっぽりと包む、純ミスリル製の頑丈な兜だ。
+218	& Dragon Helm~	60	変愚	1.000	A dragon-winged great helm, glowing in all the colors of the rainbow. It grants resistance to the elements.	ドラゴンの翼飾りのある大きな兜で、虹色に輝く。元素への耐性を保証する。
+220	& Iron Crown~	30	変愚	1.000	A plain band of iron, crowned with iron spikes. It is a tyrant's symbol.	鉄の環に鉄の突起で飾りが付けられた冠だ。君主の印である。
+221	& Golden Crown~	40	変愚	1.000	An elegant golden circlet, with slender spines thrusting upward. It looks like it should be resting over the brow of a king.	幾つもの細い突起が上向きに付いた優雅な金の頭飾り。王の額に相応しい物に見える。
+222	& Jewel Encrusted Crown~	40	変愚	0.996	An elaborately decorated crown of massive gold, studded with a rainbow of gems and jewels; worthy of an emperor.	精巧に飾り付けられた重厚な金の冠に様々な宝石が虹色にちりばめられている。
+224	& Knit Cap~	3	当方		A soft woolly hat.	柔らかい毛糸の帽子だ。
+225	& Pointy Hat~	3	当方		A pointy hat. (You wonder if wearing it will automatically make you a magician...)	とんがった帽子だ。（かぶれば自動的に魔法使いになれるのだろうか、と考えてしまう……）
+227	& Set~ of Leather Gloves	1	変愚	1.000	Leather hand protection, with an open palm for gripping weapons.	革製の手甲で、手のひらは武器を握るために開いている。
+228	& Set~ of Studded Leather Gloves	5	当方		Leather hand protection, with an open palm for gripping weapons. The knuckles are weighted with studs to allow for heavier blows.	手を守る革の防具で、武器を握れるよう手のひらが開いている。拳の甲は鋲で重みを加えてあり、より重い一撃を放てる。
+229	& Set~ of Gauntlets	10	変愚	1.000	A set of gloves that completely covers the hand and wrist in steel plating.	手と手首を鋼鉄板で完全に覆うグローブだ。
+230	& Set~ of Spiked Gauntlets	20	当方		A set of gloves that completely covers the hand and wrist in steel plating. Sharp spikes extend from the knuckles.	手と手首を鋼の板ですっぽり覆う手甲だ。拳の甲から鋭い棘が突き出している。
+233	& Set~ of Caestus	55	当方		An ancient battle glove designed for hand-to-hand fighting. Its layered leather thongs are enhanced for combat by bloody-looking spikes.	素手の格闘のために作られた古代の戦闘用グローブだ。幾重にも巻いた革紐に、血に塗れたような棘が打ち込まれている。
+235	& Small Leather Shield~	3	変愚	1.000	A circular shield of cured animal hide stretched over layered wooden strips.	煮固めた動物の革を重ねた小さな木の板いっぱいに伸ばして作った丸い盾だ。
+236	& Small Metal Shield~	10	変愚	1.000	A round shield of wood reinforced with metal rims and central disk.	金属の縁材と中心の円盤で強化した円形の木の盾だ。
+237	& Large Leather Shield~	15	変愚	1.000	A large oval shield made of layered wooden strips with a thick leather covering.	重ねた木の板を厚い革で覆った大きな楕円形の盾だ。
+238	& Large Metal Shield~	30	変愚	1.000	An oval shield of wood covered by leather and rimmed with metal. A large iron shield boss offers excellent hand protection.	革で覆った木の板を金属で縁取った楕円形の盾だ。盾の大きな鉄の突起は素晴らしい腕の防御をもたらす。
+246	& Filthy Rag~	0	変愚	1.000	This tattered rag appears to once have been a robe, but has been patched and re-patched so many times that you can't be sure.	このぼろきれは元々はローブだった物のようだが、あまりにも継ぎはぎだらけでよく判別できない。
+247	& Robe~	1	変愚	1.000	A practical garment of thick wool or velvet, draping from neck to heels.	首から踵までを覆う、ビロードまたは綿製の実用的な衣服だ。
+249	Soft Leather Armour~	3	変愚	1.000	A cuirass of pliable leather with a thicker leather jack.	しなやかな革の胴当てに薄い革ジャケットが付いた鎧だ。
+250	Soft Studded Leather~	3	変愚	1.000	A cuirass of pliable leather studded with metal rivets.	多数の金属製の鋲で補強されたしなやかな革の胴当てだ。
+251	Hard Leather Armour~	5	変愚	1.000	A boiled leather cuirass and shoulder plates.	煮固めた革製の胴当てと肩当てが付いた鎧だ。
+252	Hard Studded Leather~	10	変愚	1.000	A strong leather breastplate and shoulder guards over a sleeved shirt of cured leather covered with iron studs.	多数の金属製の鋲で補強した革製のシャツに煮固めた革製の胴当てと肩当てが付いた鎧だ。
+256	Leather Scale Mail~	15	変愚	1.000	A tunic and skirt sewn with thick, overlapping scales of hardened leather.	革製のシャツに煮固めた革製の鱗のような形の部品を多数縫い付けてある鎧だ。
+270	Rusty Chain Mail~	25	変愚	1.000	Each link of this suit is brittle with rust, and the corroded rings are stiff and weakened.	この鎧の各部の継ぎ目は錆で脆くなっており、朽ちた鎖の輪は固まってしまい弱まっている。
+272	Metal Scale Mail~	25	変愚	1.000	A heavy shirt of overlapping steel scales backed by leather, with matching skirt and sleeves.	革製の袖付きシャツに鋼鉄製の鱗のような形の部品を多数縫い付けてある鎧だ。
+273	Chain Mail~	25	変愚	1.000	A sleeved hauberk of interlocking steel rings, well padded with leather. Chain mail takes skill to make, but offers good protection and relatively low weight.	鋼鉄の輪が噛み合った袖付きの鎖かたびらで、革が当てられている。鎖かたびらを作るには熟練を要するが、高い防御力を持ち比較的に軽量に仕上がる。
+275	Augmented Chain Mail~	30	変愚	1.000	A hauberk, leggings, and sleeves of interlocking steel rings, strategically reinforced at vital locations with a second layer of chain, all over a layer of heavy padding.	噛み合った鋼鉄の輪でできた鎖かたびらの胴鎧と脛当てと袖であり、2枚目の鎖の層で重要な部分を戦略的に補強しており、至る所に重い詰め物の層がある。
+281	Partial Plate Armour~	45	変愚	1.000	A steel corselet and vambraces over a skirt and leggings of chain.	鋼鉄製の胴鎧であり、スカートの上部には腕鎧があり、鎖の脛当てを持つ。
+284	Full Plate Armour~	45	変愚	1.000	A full suit of carefully fitted plates, with hinged joints backed by chain, and light padding underneath.	念入りに体に合わせた鉄板製の全身鎧であり、ちょうつがいで繋がった部分の裏は鎖で守られ、鎧の裏には軽い詰め物がある。
+287	Mithril Chain Mail~	55	変愚	1.000	Rare and wondrous is chain mail made of true-silver, for it offers more protection for the weight than any other armour.	本当に希少で驚くべきまことの銀製の鎖かたびらであり、他の鎧に比べてもその軽さにしてより高い防御を与える。
+288	Mithril Plate Mail~	60	変愚	1.000	A shimmering suit of true-silver, forged long ago by dwarven smiths of legend. It gleams with purest white as you gaze upon it.	遥かなる昔に伝説のドワーフの鍛冶師に鍛えられた、輝くまことの銀の鎧だ。凝視すると純白にきらめく。
+289	Adamantite Plate Mail~	75	変愚	1.000	Adamantite, hard as diamonds, forms this exquisite suit; nothing else in Middle Earth gives as much protection.	ダイアモンドのように硬いアダマンタイトでできた精巧で美しい鎧であり、これほどの防御をもたらす鎧は中つ国には他に存在しない。
+292	Black Dragon Scale Mail~	40	変愚	1.000	A suit of utterly black scales, against which no metal or wood can rest.	木や金属が耐えられないかのような漆黒の鱗鎧だ。
+293	Blue Dragon Scale Mail~	40	変愚	1.000	A suit of scales as blue as sapphires, emitting eerie sparks and flashes as you move about in it.	着た者が動くと不気味な稲妻と光を放つ、サファイアのように青い鱗鎧だ。
+294	White Dragon Scale Mail~	40	変愚	1.000	A suit of scales, coldly gleaming in frosty white. A shiver runs down through your spine even as you look at it.	冷淡な白に冷たくきらめく鱗鎧だ。それを見る時、背筋が寒くなる。
+295	Red Dragon Scale Mail~	40	変愚	1.000	A suit of scales, with all the reds of every fire ever lit. The scar tissue from an old burn aches as you put this armour on.	常に燃える炎に赤く彩られた鱗鎧だ。これを着ると古い火傷跡が痛む。
+296	Green Dragon Scale Mail~	45	変愚	1.000	A suit of scales, glistening in sickly green.	病的な緑に光る鱗鎧だ。
+297	Multi-Hued Dragon Scale Mail~	75	変愚	1.000	A suit of scales that throbs with angry energies; it takes all your energy to master the Elements fighting an endless war trapped inside.	怒りのエネルギーに脈打つ鱗鎧で、鎧の中に捕らわれ永遠に戦い続けるエレメント達を支配するために着る者の力全てを用いる。
+299	Law Dragon Scale Mail~	60	変愚	1.000	A suit of scales in stern blue and silver. You feel the slightest tremor as you touch it, like massed trumpets heard and cyclones felt from afar.	厳粛な青と銀の鱗鎧だ。それに触れると、トランペットの集団の演奏が聞こえるか遠方からの竜巻を感じるかのようにごく微かな振動を感じる。
+300	Bronze Dragon Scale Mail~	50	変愚	1.000	A suit of scales, gleaming in rich engraved bronze. The more you look at the the maze of whorls and lines that close inspection reveal on its surface, the less sense you are able to make of them.	贅沢に彫刻された青銅がきらめく鱗鎧だ。近づいて見ると鎧の表面に現れる渦と線の迷宮を見れば見るほど、どうやってそれらができているのかわからなくなる。
+301	Silver Dragon Scale Mail~	50	当方		A suit of scales in mirror-like silver. You feel a great stillness come over you as you regard the quality of the object.	鏡のような銀色の鱗で組まれた鎧だ。その出来栄えを眺めていると、深い静けさに包まれる。
+302	Gold Dragon Scale Mail~	50	変愚	1.000	A suit of scales in mirror-like gold. You hear nothing unusual as you wear this armour, yet your ears ache as though in the midst of a cacophony.	鏡のような金の鱗鎧だ。不協和音の中にいるかのように耳が痛くなり、この鎧を着ると異常なまでに何も聞こえなくなる。
+303	Chaos Dragon Scale Mail~	65	変愚	1.000	A suit of scales. Every shape, in every color imaginable, riot and contend upon its surface as you stare in fascination.	鱗鎧だ。魅惑されて見つめると、その表面で想像できる限りの色をとる様々な形すべてが乱舞し争う。
+304	Balance Dragon Scale Mail~	80	変愚	1.000	A suit of scales. Featureless grey to casual inspection, yet a closer look reveals patterns within patterns of iridescence that throb with leashed energies bound as though by chains of adamant.	鱗鎧だ。何気なく見ると平凡な灰色だが、近づいてよく見るとアダマンタイトの鎖のようなものに縛られたエネルギーが脈打つ虹色の紋様の中にも紋様が現れる。
+305	Power Dragon Scale Mail~	110	変愚	0.997	A suit with scales of every color, surrounded in a nimbus of perfectly untrammelled yet inextricably intermingled and utterly mastered powers elemental and ethereal.	すべての色を持つ鱗鎧で、完全な自由でありながら密接に混ざり合い完全に支配された元素と天上界の力の後光に包まれている。
+707	Rune	0	当方		A cryptic rune, of powers incomprehensible.	謎めいたルーンで、その力は計り知れない。

@@ -1,0 +1,308 @@
+# silq/lang/ja/edit/special.ja.txt
+#
+# アイテムの銘（`守りの鎖帷子` の「守りの」の側）。書式は。
+#
+# ## **銘は常に前**（用語表 §7）
+# 英語は `Mail Corslet of Protection` と後ろに置くが、日本語は
+# `守りの鎖帷子` と前に置く。だからここの訳は**「〜の」で終える**。
+# 組み替えるのは `sq_object_desc_ja()`（P2）で、**P1 の間は後ろに出る**。
+#
+# ## 括弧付きの 4 つ
+# `(Poisoned)` `(Balanced)` `(Defender)` `(Vampiric)` は英語でも
+# 名の後ろに括弧で付く別枠。日本語でも括弧のまま後ろに置く。
+#
+# ## 地名・種族は用語表 §4 に従う
+# `of Nogrod` → `ノグロドの`。ドワーフの 7 氏族（`Firebeards` `Longbeards`
+# `Ironfists`）は**「〜族の」**で揃える。
+
+I:1
+E:of Protection
+N:守りの
+
+I:2
+E:of Venom's End
+N:毒断ちの
+
+I:3
+E:of Resilience
+N:強靭の
+
+I:4
+E:of Brethil
+N:ブレシルの
+
+I:5
+E:of Stealth
+N:隠密の
+
+I:6
+E:of Nogrod
+N:ノグロドの
+
+I:7
+E:of the Iron Hills
+N:鉄山地の
+
+I:8
+E:of Ladros
+N:ラドロスの
+
+I:9
+E:of Blight
+N:枯死の
+
+I:12
+E:of Deflection
+N:受け流しの
+
+I:13
+E:of Frost
+N:霜の
+
+I:14
+E:with Many Runes
+N:多くのルーンを刻んだ
+
+I:15
+E:of Wrath
+N:憤怒の
+
+I:20
+E:of Cuivienen
+N:クイヴィエーネンの
+
+I:21
+E:of Gondolin
+N:ゴンドリンの
+
+I:22
+E:of Doriath
+N:ドリアスの
+
+I:23
+E:of Nargothrond
+N:ナルゴスロンドの
+
+I:24
+E:of Final Rest
+N:安らかな眠りの
+
+I:26
+E:of the Firebeards
+N:火髭族の
+
+I:27
+E:of Hador's House
+N:ハドルの家の
+
+I:28
+E:of Fury
+N:猛りの
+
+I:31
+E:of the Feanorians
+N:フェアノールの一党の
+
+I:34
+E:of Murder
+N:殺戮の
+
+I:35
+E:of Accompaniment
+N:伴奏の
+
+I:36
+E:of the Vanyar
+N:ヴァンヤールの
+
+I:37
+E:of Mithrim
+N:ミスリムの
+
+I:38
+E:of the Helcaraxe
+N:ヘルカラクセの
+
+I:39
+E:of Battering
+N:打ち砕きの
+
+I:40
+E:of Crushing
+N:粉砕の
+
+I:41
+E:of Piercing
+N:刺し貫きの
+
+I:43
+E:of Udun
+N:ウドゥンの
+
+I:44
+E:of Thangorodrim
+N:サンゴロドリムの
+
+I:45
+E:of Black Iron
+N:黒鉄の
+
+I:46
+E:(Poisoned)
+N:（毒）
+
+I:47
+E:(Balanced)
+N:（均整）
+
+I:48
+E:(Defender)
+N:（守護）
+
+I:49
+E:(Vampiric)
+N:（吸血）
+
+I:51
+E:of Belegost
+N:ベレゴストの
+
+I:52
+E:of the Longbeards
+N:長髭族の
+
+I:71
+E:of Brilliance
+N:燦然たる
+
+I:72
+E:of Defiance
+N:抗いの
+
+I:73
+E:of True Sight
+N:真視の
+
+I:74
+E:of Clarity
+N:明晰の
+
+I:75
+E:of Grace
+N:恩寵の
+
+I:80
+E:of Terror
+N:恐慌の
+
+I:82
+E:of Stealth
+N:隠密の
+
+I:83
+E:of Warmth
+N:温もりの
+
+I:84
+E:of the Traveller
+N:旅人の
+
+I:86
+E:of Winter's Chill
+N:冬の寒さの
+
+I:87
+E:of the Scarlet Heart
+N:緋の心臓の
+
+I:88
+E:of the Golden Flower
+N:黄金の花の
+
+I:91
+E:of Blackened Yew
+N:黒ずんだ一位の
+
+I:92
+E:of Lammoth
+N:ラムモスの
+
+I:93
+E:of Radiance
+N:輝きの
+
+I:94
+E:of the Marchwardens
+N:辺境警備隊の
+
+I:95
+E:of Falas
+N:ファラスの
+
+I:96
+E:of the Falmari
+N:ファルマリの
+
+I:101
+E:(Poisoned)
+N:（毒）
+
+I:102
+E:of Piercing
+N:刺し貫きの
+
+I:110
+E:of Ithil's Light
+N:イシルの光の
+
+I:111
+E:of Softest Tread
+N:忍び足の
+
+I:112
+E:of Snares Eluded
+N:罠抜けの
+
+I:113
+E:of Speed
+N:加速の
+
+I:114
+E:of Leaping
+N:跳躍の
+
+I:116
+E:of Treacherous Paths
+N:険しき道の
+
+I:120
+E:of Archery
+N:射撃の
+
+I:121
+E:of Lorellin
+N:ロレッリンの
+
+I:122
+E:of Swordplay
+N:剣技の
+
+I:123
+E:of the Ironfists
+N:鉄拳族の
+
+I:124
+E:of Might
+N:剛力の
+
+I:126
+E:of Treachery
+N:裏切りの
+
+I:130
+E:of Brightness
+N:光輝の
+
+I:135
+E:of Flickering Shadow
+N:揺らめく影の

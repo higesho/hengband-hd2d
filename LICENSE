@@ -1,0 +1,123 @@
+# ライセンス / License
+
+このソースツリーは **変愚蛮怒（Hengband）3.0.2.3-Beta の派生物**であり、
+さらに 3 つの別系統のゲームコア（幻想蛮怒 / Sil-Q / FroxComposband）を同梱している。
+**系統ごとに条項が違う**ので、下にまとめて示す。
+
+This source tree is a **derivative of Hengband 3.0.2.3-Beta**, and additionally
+bundles three separate game cores (Gensoband / Sil-Q / FroxComposband).
+**Each lineage carries its own terms**, listed below.
+
+変更の内容は `README_HD2D.md` に記載してある（Moria/Angband 使用許諾に基づく変愚蛮怒の
+追加条項 (2) を満たすため）。
+The nature of the changes is documented in `README_HD2D.md`, as required by
+condition (2) of Hengband's additional terms.
+
+---
+
+## 1. Moria / Angband 使用許諾（このツリーの大部分に掛かる）
+
+変愚蛮怒・短愚蛮怒（`src/`）、幻想蛮怒（`gensoband/`）、FroxComposband（`frox/`）は、
+いずれも Moria / Angband の系譜であり、以下の使用許諾に従う。
+
+```
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+```
+
+> このソフトウェアは教育や研究のためならば、そして利益を目的としないのならば
+> 複写および配布してよい。ただし、配布する全てのコピーにこの著作権表記と
+> 使用許諾文章が記載されていなければならない。この表記に加えて別の著作権も
+> 適用する事ができる。
+
+前身の著作権表記も保つ。
+
+```
+Based on Moria:  Copyright (c) 1985 Robert Alan Koeneke
+and Umoria:      Copyright (c) 1989 James E. Wilson
+```
+
+### 1.1 変愚蛮怒の追加条項（**変更した版を配布するときに掛かる**）
+
+変愚蛮怒に変更を加えた版、または変愚蛮怒の一部を含む別のプログラムを配布する場合は、
+Moria/Angband 使用許諾に加えて次の 3 つを満たす必要がある。全文は
+`lib/help/jlicense.txt` にある。
+
+| | 条項 | このツリーでの充足 |
+| --- | --- | --- |
+| (1) | 全ての著作権表記をそのままの形で含む | `lib/help/jlicense.txt` を同梱し、この文書にも引いている |
+| (2) | 変更を加えた事実および変更内容について明確に記載する | `README_HD2D.md` に記載 |
+| (3) | スコアサーバーにスコアを送信できないように変更する | 下記のとおり経路ごと切ってある |
+
+**(3) について。** 幻想蛮怒のワールドスコア送信は `gensoband/src/z-config.h` の
+`WORLD_SCORE` を定義しないことで、経路ごと組み立てから外してある。変愚蛮怒側の
+異常終了レポート送信（本家の Webhook へ送るもの）も、`DISABLE_NET` を定義して
+切ってある（`VisualStudio/HengbandCore` / `TangbandCore`、および Android の
+`CMakeLists.txt`）。**組み上がった実行体に本家のアドレスが 1 件も残らないことを
+実測して確かめている。**
+
+### 1.2 変愚蛮怒の著作権者
+
+全文は `lib/help/jlicense.txt`。主なものだけ引く。
+
+```
+変愚蛮怒                      Mr.hoge
+日本語版 Zangband の日本語化   ヒーロ
+日本語版 Angband 2.8.3-1.2.6  いとけん（新井拓人）、エルリック、
+                              ＴＯＲＳＴ（志村隆彦）、sayu（YOKOYAMA Atsushi）、
+                              岸康永、TeO、本厚木ノ隠人（松本泰治）、VOLKO（八木イサオ）
+```
+
+---
+
+## 2. Sil-Q（`silq/`）——GPL v2 と Angband 使用許諾の**選択制**
+
+Sil-Q は「GPL v2 **または** Angband 使用許諾のどちらか」で配布されている。
+原文は `silq/LICENSE.md`。
+
+**原著者は「派生物でも二重の表明を保つこと」を良い作法として求めている**——
+片方だけに絞らないでほしい、という趣旨である。このツリーはそれに従い、
+`silq/LICENSE.md` をそのまま同梱している。
+
+例外も原文のとおり保つ。
+
+- 音は freeware
+- フォントは `silq/lib/xtra/font/copying.txt` の条項（いずれも OSI 準拠）
+
+---
+
+## 3. 同梱物
+
+| 対象 | 条項 |
+| --- | --- |
+| `silq/lib/xtra/font/` | `silq/lib/xtra/font/copying.txt` |
+| `build-linux/fontcache/` | `LICENSE-NotoSansMonoCJK.txt`（SIL Open Font License） |
+| ボクセルの模型・タイル画像・音 | **このリポジトリには含めていない**（下記） |
+
+### 生成物を同梱していないことについて
+
+タイル画像・ボクセルの模型（`.vox`）・音の素材は、**このリポジトリには入れていない**
+（タイル画像だけで 2.2GB あるため）。それらを含む組み上がった配布物は
+<https://github.com/higesho/hengband-hd2d/releases> に置いてある。
+
+- ボクセルの模型 … `tools/voxel/` が手続きで組み立てる（外部の生成 AI は要らない）
+- タイル画像 … ComfyUI（Stable Diffusion）で生成したもの。生成の道具は同梱していない
+
+**タイル画像は画像生成 AI の出力である。** 権利の扱いが国や用途で異なりうるため、
+再配布・改変・商用利用を考える場合は各自で確認すること。なお上の 1.（Moria/Angband
+使用許諾）により、**このツリー全体が営利目的の配布を許していない**点にも注意。
+
+---
+
+## 4. 無保証
+
+```
+本プログラムを使用したことによって生じたいかなる損害についても
+製作者はその責任を負いません。
+
+The authors assume no responsibility for any damage caused by the use of
+this program.
+```

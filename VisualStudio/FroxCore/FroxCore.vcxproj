@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FroxCore.vcxproj ── FroxComposband コア側の実行ファイル。
+
+  定義の置き場: （§2 配置 / §3.7 MSVC の細工 / §7 手入れ許可 / §8 P4）
+
+  中身は `frox/src/` の C と `frox/adapter/` だけ。変愚側の `src/`・`hd2d/` は
+  **1 本も入れない**（共用するのは `presentation/` の TU だけ）。
+
+  ## 何本組むか — **199 本**
+  `frox/src/*.c` は 212 本ある。組まないのは **13 本**:
+    main.c / main-cap.c / main-dos.c / main-gcu.c / main-ibm.c / main-mac.c /
+    main-sdl.c / main-win.c / main-x11.c / main-xaw.c / maid-x11.c / readdib.c /
+    z-doc-test.c
+  入口と描画はアダプタが持つ。`froxcomposband.rc` / `angband.ico` / `wall.bmp` も使わない。
+  **除外はパッチではない**——`frox/src/` は 1 バイトも変えていない（設計 §1 制約 1）。
+
+  先方の `src/Makefile.src` が数える TU は 195 本で、当方はそれに
+  `angband.c` `hex_mage.c` `r_ghost.c` `r_zombie.c` の 4 本を足している。
+  どれも先方の木に在るが Makefile が拾っていない残骸で、**組んでも害が無いことを
+  検討で実測した**。
+  上流を取り込み直したときに「拾い落とし」と「先方が消した」を見分けやすいので、
+  **在るものは全部組む**側に倒してある。
+
+  ## MSVC の穴は 2 つ。**どちらも先方のソースに触らない**（設計 §3.7）
+  1. `z-doc.c` にだけ `<windows.h>` の強制インクルード（下の ClCompile を見よ）
+  2. `strncasecmp` が未解決 → `frox/adapter/fc_compat.c` の 2 行で `_strnicmp` へ回す
+
+  ## `ALLOW_SPOILERS` は落とせない（設計 §3.5 の 2026-08-24 追記）
+  `frox/src/z-config.h:185` が無条件に定義しており、消える枝は `ANGBAND_LITE` を
+  定義したときだけ。だがそれは `ALLOW_WIZARD` などを道連れにするので制約 7 に触る。
+  **代わりに `frox/lib/edit/help_upd.txt` を版つきで置く**——先方の
+  `init_help_files()` は版が一致すれば 1 バイトも書かない。
+
+  ## ビルド定義
+  `WINDOWS` は定義しない——`frox/src/h-config.h:176` が `WIN32` から自分で立てる。
+  文字セットはマルチバイト（`_MBCS`）。**サブシステムは CONSOLE** である
+  （窓を持たず、stdout がプロトコル・stderr がログ。HengbandCore.exe と同じ）。
+
+  ## 文字コード
+  `frox/src/` の写しは **純 ASCII**（機械で全数確認。`frox/UPSTREAM.md`）、
+  `frox/adapter/` の新規コードは **UTF-8（BOM 付き）**。
+  MSVC は BOM のあるファイルだけ UTF-8 として読むので、指定を足さなくても両方通る。
+  **コンパイラに文字コードを指示する類の指定は足さないこと**——`presentation/` の
+  共用 TU（BOM 無しの UTF-8）にだけ、ファイル単位で `/source-charset:utf-8` を付ける。
+
+  ## 構成は Win32 だけ宣言する
+  HengbandCore / GensobandCore / TangbandCore / SilCore と同じやり方。
+  ソリューション構成の x64 は **Hengband.sln 側の** ProjectConfigurationPlatforms で
+  Win32 へ写されるので、`/p:Platform=x64` でもこの exe は Win32 で組まれる。
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D07}</ProjectGuid>
+    <RootNamespace>FroxCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <!-- 成果物はリポジトリ直下（HengbandCore.exe と同格・同じ場所。設計 §2）。 -->
+    <OutDir>..\..\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <TargetName>FroxCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_MBCS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level1</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;4267;4819;4013;4024;4047;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--
+        並びが効く。**`frox\src` を先頭に置く**こと。後ろの `presentation` /
+        `external-lib` は共用 TU のためだけに要るもので、同名の頭文字
+        （`types.h` 等）があっても写しが勝つようにしておく。
+      -->
+      <AdditionalIncludeDirectories>..\..\frox\src;..\..\frox\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- 窓は持たない。stdout がプロトコル、stderr がログ（v1 §1.1）。 -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_MBCS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level1</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;4267;4819;4013;4024;4047;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\..\frox\src;..\..\frox\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>user32.lib;gdi32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <!-- FroxComposband 本体の C（**199 本**。上の「何本組むか」を見よ）。 -->
+  <ItemGroup>
+    <ClCompile Include="..\..\frox\src\alky.c" />
+    <ClCompile Include="..\..\frox\src\angband.c" />
+    <ClCompile Include="..\..\frox\src\archer.c" />
+    <ClCompile Include="..\..\frox\src\arky.c" />
+    <ClCompile Include="..\..\frox\src\artifact.c" />
+    <ClCompile Include="..\..\frox\src\autopick.c" />
+    <ClCompile Include="..\..\frox\src\bard.c" />
+    <ClCompile Include="..\..\frox\src\beastmaster.c" />
+    <ClCompile Include="..\..\frox\src\beorning.c" />
+    <ClCompile Include="..\..\frox\src\berserker.c" />
+    <ClCompile Include="..\..\frox\src\birth.c" />
+    <ClCompile Include="..\..\frox\src\bldg.c" />
+    <ClCompile Include="..\..\frox\src\blood_knight.c" />
+    <ClCompile Include="..\..\frox\src\blood_mage.c" />
+    <ClCompile Include="..\..\frox\src\bluemage.c" />
+    <ClCompile Include="..\..\frox\src\c-string.c" />
+    <ClCompile Include="..\..\frox\src\c-vec.c" />
+    <ClCompile Include="..\..\frox\src\cavalry.c" />
+    <ClCompile Include="..\..\frox\src\cave.c" />
+    <ClCompile Include="..\..\frox\src\chaoswar.c" />
+    <ClCompile Include="..\..\frox\src\classes.c" />
+    <ClCompile Include="..\..\frox\src\cmd1.c" />
+    <ClCompile Include="..\..\frox\src\cmd2.c" />
+    <ClCompile Include="..\..\frox\src\cmd3.c" />
+    <ClCompile Include="..\..\frox\src\cmd4.c" />
+    <ClCompile Include="..\..\frox\src\cmd5.c" />
+    <ClCompile Include="..\..\frox\src\cmd6.c" />
+    <ClCompile Include="..\..\frox\src\combat.c" />
+    <ClCompile Include="..\..\frox\src\corny.c" />
+    <ClCompile Include="..\..\frox\src\demigod.c" />
+    <ClCompile Include="..\..\frox\src\devicemaster.c" />
+    <ClCompile Include="..\..\frox\src\devices.c" />
+    <ClCompile Include="..\..\frox\src\disciple.c" />
+    <ClCompile Include="..\..\frox\src\do-spell.c" />
+    <ClCompile Include="..\..\frox\src\doppelganger.c" />
+    <ClCompile Include="..\..\frox\src\duelist.c" />
+    <ClCompile Include="..\..\frox\src\dungeon.c" />
+    <ClCompile Include="..\..\frox\src\effects.c" />
+    <ClCompile Include="..\..\frox\src\ego.c" />
+    <ClCompile Include="..\..\frox\src\equip.c" />
+    <ClCompile Include="..\..\frox\src\fear.c" />
+    <ClCompile Include="..\..\frox\src\files.c" />
+    <ClCompile Include="..\..\frox\src\flavor.c" />
+    <ClCompile Include="..\..\frox\src\floors.c" />
+    <ClCompile Include="..\..\frox\src\force_trainer.c" />
+    <ClCompile Include="..\..\frox\src\generate.c" />
+    <ClCompile Include="..\..\frox\src\gf.c" />
+    <ClCompile Include="..\..\frox\src\graymage.c" />
+    <ClCompile Include="..\..\frox\src\grid.c" />
+    <ClCompile Include="..\..\frox\src\hex.c" />
+    <ClCompile Include="..\..\frox\src\hex_mage.c" />
+    <ClCompile Include="..\..\frox\src\highmage.c" />
+    <ClCompile Include="..\..\frox\src\hissatsu.c" />
+    <ClCompile Include="..\..\frox\src\home.c" />
+    <ClCompile Include="..\..\frox\src\igor.c" />
+    <ClCompile Include="..\..\frox\src\init1.c" />
+    <ClCompile Include="..\..\frox\src\init2.c" />
+    <ClCompile Include="..\..\frox\src\int-map.c" />
+    <ClCompile Include="..\..\frox\src\inv.c" />
+    <ClCompile Include="..\..\frox\src\karrot.c" />
+    <ClCompile Include="..\..\frox\src\lawyer.c" />
+    <ClCompile Include="..\..\frox\src\load.c" />
+    <ClCompile Include="..\..\frox\src\mage.c" />
+    <ClCompile Include="..\..\frox\src\magic_eater.c" />
+    <ClCompile Include="..\..\frox\src\mauler.c" />
+    <ClCompile Include="..\..\frox\src\melee1.c" />
+    <ClCompile Include="..\..\frox\src\melee2.c" />
+    <ClCompile Include="..\..\frox\src\menu.c" />
+    <ClCompile Include="..\..\frox\src\message.c" />
+    <ClCompile Include="..\..\frox\src\mindcrafter.c" />
+    <ClCompile Include="..\..\frox\src\mirror_master.c" />
+    <ClCompile Include="..\..\frox\src\mon.c" />
+    <ClCompile Include="..\..\frox\src\mon_info.c" />
+    <ClCompile Include="..\..\frox\src\monk.c" />
+    <!--
+      **doc UI の旗（M0.5 FH-02。設計 §14.2(a)）。** この 6 TU（monspell / obj_prompt /
+      skillmaster / weaponsmith / wild / wiz_obj）は `screen_save()` ではなく
+      `Term_save()` を直に呼ぶので `character_icky` に映らず、一覧が画面へ
+      1 行も出ない。ファイル単位の define で呼び先を `fc_shim.c` の横取りへ替える
+      （z-doc.c の /FI と同じ流儀。z-term.h の宣言ごと改名されるので原型も合う）。
+      **frox/src には 1 バイトも触らない**（制約 1）。py_birth.c は入れない
+      ——誕生は `!generated` で既にミラーが開く。
+    -->
+    <ClCompile Include="..\..\frox\src\monspell.c">
+      <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\monster.c" />
+    <ClCompile Include="..\..\frox\src\monster1.c" />
+    <ClCompile Include="..\..\frox\src\monster2.c" />
+    <ClCompile Include="..\..\frox\src\mspells1.c" />
+    <ClCompile Include="..\..\frox\src\mspells2.c" />
+    <ClCompile Include="..\..\frox\src\mut.c" />
+    <ClCompile Include="..\..\frox\src\mut_a.c" />
+    <ClCompile Include="..\..\frox\src\mystic.c" />
+    <ClCompile Include="..\..\frox\src\necromancer.c" />
+    <ClCompile Include="..\..\frox\src\ninja.c" />
+    <ClCompile Include="..\..\frox\src\ninjalaw.c" />
+    <ClCompile Include="..\..\frox\src\obj.c" />
+    <ClCompile Include="..\..\frox\src\obj_info.c" />
+    <ClCompile Include="..\..\frox\src\obj_kind.c" />
+    <!-- doc UI の旗（monspell.c の註）。 -->
+    <ClCompile Include="..\..\frox\src\obj_prompt.c">
+      <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\object1.c" />
+    <ClCompile Include="..\..\frox\src\object2.c" />
+    <ClCompile Include="..\..\frox\src\object3.c" />
+    <ClCompile Include="..\..\frox\src\pack.c" />
+    <ClCompile Include="..\..\frox\src\paladin.c" />
+    <ClCompile Include="..\..\frox\src\personality.c" />
+    <ClCompile Include="..\..\frox\src\polly.c" />
+    <ClCompile Include="..\..\frox\src\priest.c" />
+    <ClCompile Include="..\..\frox\src\psion.c" />
+    <ClCompile Include="..\..\frox\src\py_birth.c" />
+    <ClCompile Include="..\..\frox\src\py_info.c" />
+    <ClCompile Include="..\..\frox\src\py_throw.c" />
+    <ClCompile Include="..\..\frox\src\quest.c" />
+    <ClCompile Include="..\..\frox\src\quiver.c" />
+    <ClCompile Include="..\..\frox\src\r_angel.c" />
+    <ClCompile Include="..\..\frox\src\r_centip.c" />
+    <ClCompile Include="..\..\frox\src\r_demon.c" />
+    <ClCompile Include="..\..\frox\src\r_dragon.c" />
+    <ClCompile Include="..\..\frox\src\r_elem.c" />
+    <ClCompile Include="..\..\frox\src\r_eye.c" />
+    <ClCompile Include="..\..\frox\src\r_ghost.c" />
+    <ClCompile Include="..\..\frox\src\r_giant.c" />
+    <ClCompile Include="..\..\frox\src\r_golem.c" />
+    <ClCompile Include="..\..\frox\src\r_hound.c" />
+    <ClCompile Include="..\..\frox\src\r_hydra.c" />
+    <ClCompile Include="..\..\frox\src\r_jelly.c" />
+    <ClCompile Include="..\..\frox\src\r_leprec.c" />
+    <ClCompile Include="..\..\frox\src\r_lich.c" />
+    <ClCompile Include="..\..\frox\src\r_mimic.c" />
+    <ClCompile Include="..\..\frox\src\r_mummy.c" />
+    <ClCompile Include="..\..\frox\src\r_orc.c" />
+    <ClCompile Include="..\..\frox\src\r_poss.c" />
+    <ClCompile Include="..\..\frox\src\r_pump.c" />
+    <ClCompile Include="..\..\frox\src\r_quyl.c" />
+    <ClCompile Include="..\..\frox\src\r_rag.c" />
+    <ClCompile Include="..\..\frox\src\r_ring.c" />
+    <ClCompile Include="..\..\frox\src\r_spider.c" />
+    <ClCompile Include="..\..\frox\src\r_sword.c" />
+    <ClCompile Include="..\..\frox\src\r_troll.c" />
+    <ClCompile Include="..\..\frox\src\r_vamp.c" />
+    <ClCompile Include="..\..\frox\src\r_vortex.c" />
+    <ClCompile Include="..\..\frox\src\r_xorn.c" />
+    <ClCompile Include="..\..\frox\src\r_zombie.c" />
+    <ClCompile Include="..\..\frox\src\races.c" />
+    <ClCompile Include="..\..\frox\src\races_a.c" />
+    <ClCompile Include="..\..\frox\src\races_k.c" />
+    <ClCompile Include="..\..\frox\src\races_mf.c" />
+    <ClCompile Include="..\..\frox\src\racial.c" />
+    <ClCompile Include="..\..\frox\src\ragemage.c" />
+    <ClCompile Include="..\..\frox\src\randname.c" />
+    <ClCompile Include="..\..\frox\src\ranger.c" />
+    <ClCompile Include="..\..\frox\src\rect.c" />
+    <ClCompile Include="..\..\frox\src\red_mage.c" />
+    <ClCompile Include="..\..\frox\src\resist.c" />
+    <ClCompile Include="..\..\frox\src\rogue.c" />
+    <ClCompile Include="..\..\frox\src\rooms.c" />
+    <ClCompile Include="..\..\frox\src\rune_kt.c" />
+    <ClCompile Include="..\..\frox\src\samurai.c" />
+    <ClCompile Include="..\..\frox\src\save.c" />
+    <ClCompile Include="..\..\frox\src\savefile.c" />
+    <ClCompile Include="..\..\frox\src\scores.c" />
+    <ClCompile Include="..\..\frox\src\scout.c" />
+    <ClCompile Include="..\..\frox\src\shop.c" />
+    <!-- doc UI の旗（monspell.c の註）。 -->
+    <ClCompile Include="..\..\frox\src\skillmaster.c">
+      <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\skills.c" />
+    <ClCompile Include="..\..\frox\src\sniper.c" />
+    <ClCompile Include="..\..\frox\src\sorcerer.c" />
+    <ClCompile Include="..\..\frox\src\spells.c" />
+    <ClCompile Include="..\..\frox\src\spells1.c" />
+    <ClCompile Include="..\..\frox\src\spells2.c" />
+    <ClCompile Include="..\..\frox\src\spells3.c" />
+    <ClCompile Include="..\..\frox\src\spells_a.c" />
+    <ClCompile Include="..\..\frox\src\spells_c.c" />
+    <ClCompile Include="..\..\frox\src\spells_h.c" />
+    <ClCompile Include="..\..\frox\src\spells_m.c" />
+    <ClCompile Include="..\..\frox\src\spells_s.c" />
+    <ClCompile Include="..\..\frox\src\spoilers.c" />
+    <ClCompile Include="..\..\frox\src\str-map.c" />
+    <ClCompile Include="..\..\frox\src\streams.c" />
+    <ClCompile Include="..\..\frox\src\tables.c" />
+    <ClCompile Include="..\..\frox\src\timelord.c" />
+    <ClCompile Include="..\..\frox\src\tourist.c" />
+    <ClCompile Include="..\..\frox\src\troika.c" />
+    <ClCompile Include="..\..\frox\src\util.c" />
+    <ClCompile Include="..\..\frox\src\variable.c" />
+    <ClCompile Include="..\..\frox\src\variant.c" />
+    <ClCompile Include="..\..\frox\src\virtue.c" />
+    <ClCompile Include="..\..\frox\src\warlock.c" />
+    <ClCompile Include="..\..\frox\src\warrior.c" />
+    <ClCompile Include="..\..\frox\src\warrior_mage.c" />
+    <ClCompile Include="..\..\frox\src\weaponmaster.c" />
+    <!-- doc UI の旗（monspell.c の註）。save 1 / load 10 の代表格。 -->
+    <ClCompile Include="..\..\frox\src\weaponsmith.c">
+      <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\werewolf.c" />
+    <!-- doc UI の旗（monspell.c の註）。wild.c:2366 の世界地図の表示だけが対象。 -->
+    <ClCompile Include="..\..\frox\src\wild.c">
+      <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\wild_realm.c" />
+    <ClCompile Include="..\..\frox\src\wild_talent.c" />
+    <!-- doc UI の旗（monspell.c の註）。 -->
+    <ClCompile Include="..\..\frox\src\wiz_obj.c">
+      <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\wizard1.c" />
+    <ClCompile Include="..\..\frox\src\wizard2.c" />
+    <ClCompile Include="..\..\frox\src\xtra1.c" />
+    <ClCompile Include="..\..\frox\src\xtra2.c" />
+    <ClCompile Include="..\..\frox\src\yellow_mage.c" />
+    <ClCompile Include="..\..\frox\src\yeqrezh.c" />
+    <ClCompile Include="..\..\frox\src\z-doc.c">
+      <!--
+        **ここだけが違う**（設計 §3.7 の 1）。Frox は z-doc.c に <windows.h> を
+        足したが、frox/src/h-type.h:107 の `#define BOOL(E) !!(E)` が SDK の
+        戻り型 BOOL を潰し、synchapi.h / libloaderapi.h の中で 102 件のエラーになる。
+        強制インクルードで SDK を angband.h より先に読ませて解く。
+        **frox/src には 1 バイトも触らない**（制約 1）。
+      -->
+      <ForcedIncludeFiles>windows.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\src\z-form.c" />
+    <ClCompile Include="..\..\frox\src\z-rand.c" />
+    <ClCompile Include="..\..\frox\src\z-term.c" />
+    <ClCompile Include="..\..\frox\src\z-util.c" />
+    <ClCompile Include="..\..\frox\src\z-virt.c" />
+  </ItemGroup>
+  <!--
+    アダプタ（新規コード。設計 §3）。C の皮と C++ の本体。
+    タイトルとセーブ選択は `fc_main.cpp` の中にある（設計 §3.3 の 2026-08-24 追記）。
+  -->
+  <ItemGroup>
+    <!-- MSVC に無い POSIX 関数の穴埋め（設計 §3.7 の 2）。いまは strncasecmp 1 本。 -->
+    <ClCompile Include="..\..\frox\adapter\fc_compat.c" />
+    <!--
+      **Frox のヘッダを見てよい C の TU**（設計 §3）。この 4 本と `fc_compat.c`
+      以外は `fc_shim.h`（純 C ABI）越しにしかコアへ触れない。
+    -->
+    <ClCompile Include="..\..\frox\adapter\fc_null_term.c" />
+    <ClCompile Include="..\..\frox\adapter\fc_bootstrap.c" />
+    <ClCompile Include="..\..\frox\adapter\fc_shim.c" />
+    <ClCompile Include="..\..\frox\adapter\fc_sub_terms.c" />
+    <!--
+      日本語層の C。`fc_lang_c.c` は素のバイト算で
+      Frox のヘッダを見ない。`fc_name_ja.c` は J3 で `angband.h` を見るようになる。
+      `fc_doc.c` はフック #13（doc の展開を vstrnfmt へ通す。§4 追記 (d)）。
+    -->
+    <ClCompile Include="..\..\frox\adapter\fc_lang_c.c" />
+    <ClCompile Include="..\..\frox\adapter\fc_name_ja.c" />
+    <ClCompile Include="..\..\frox\adapter\fc_doc.c" />
+    <!--
+      C++ の本体（P6）。どれも `fc_shim.h` 越しにしかコアへ触れない。
+      `/source-charset:utf-8` は**自分のためではない**（BOM 付きなので無くても
+      UTF-8 で読まれる）——include する `presentation/` のヘッダが BOM 無しの
+      UTF-8 で、この指定が無いと ACP で化ける（SilCore と同じ理由）。
+    -->
+    <ClCompile Include="..\..\frox\adapter\fc_frame.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\adapter\fc_menu.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\adapter\fc_manifest.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\adapter\fc_sub_panels.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\adapter\fc_pad_commands.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\adapter\fc_main.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <!-- 日本語層の C++（M1）。カタログと文字コードの変換所（設計 §3.1・§5）。 -->
+    <ClCompile Include="..\..\frox\adapter\fc_lang.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\frox\adapter\fc_text.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClInclude Include="..\..\frox\adapter\fc_shim.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_frame.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_menu.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_manifest.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_sub_panels.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_pad_commands.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_lang_c.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_lang.h" />
+    <ClInclude Include="..\..\frox\adapter\fc_text.h" />
+  </ItemGroup>
+  <!--
+    変愚と**同一ファイル**の共用 TU（設計 §3「共用するもの」）。1 バイトも改変しない。
+    `frame_codec` はプロトコル v1 の frame を、`protocol_messages` は制御メッセージを、
+    `protocol_transport` は長さ枠を、`input_event_adapter` は抽象入力（v1 §8.3）を
+    キーバイト列へ展開する。どれもコアに依らない。
+    **UTF-8 だが BOM が無い**ので `/source-charset:utf-8` が要る。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\presentation\frame\frame_codec.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\input_event_adapter.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <!--
+    Windows API の代役をまとめた層（`platform/portable/legacy_os.cpp`）。
+    **Windows でもここを通す**——中身は各アダプタに在ったものの写しで、
+    平台の分岐をあの 1 ファイルへ閉じ込めるためだけに切り出した
+    。**BOM 無しの UTF-8** なので
+    ファイル単位で `/source-charset:utf-8` を付ける。
+    `cp932.cpp` は**足さない**: あれは Windows 以外の変換の実体で、
+    こちらは `MultiByteToWideChar` を使うため 1 行も要らない。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\platform\portable\legacy_os.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClInclude Include="..\..\platform\portable\legacy_os.h" />
+    <ClInclude Include="..\..\platform\portable\legacy_os_c.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\frox\src\angband.h" />
+    <ClInclude Include="..\..\frox\src\c-string.h" />
+    <ClInclude Include="..\..\frox\src\c-vec.h" />
+    <ClInclude Include="..\..\frox\src\classes.h" />
+    <ClInclude Include="..\..\frox\src\defines.h" />
+    <ClInclude Include="..\..\frox\src\equip.h" />
+    <ClInclude Include="..\..\frox\src\externs.h" />
+    <ClInclude Include="..\..\frox\src\fear.h" />
+    <ClInclude Include="..\..\frox\src\generate.h" />
+    <ClInclude Include="..\..\frox\src\gf.h" />
+    <ClInclude Include="..\..\frox\src\grid.h" />
+    <ClInclude Include="..\..\frox\src\h-basic.h" />
+    <ClInclude Include="..\..\frox\src\h-config.h" />
+    <ClInclude Include="..\..\frox\src\h-define.h" />
+    <ClInclude Include="..\..\frox\src\h-system.h" />
+    <ClInclude Include="..\..\frox\src\h-type.h" />
+    <ClInclude Include="..\..\frox\src\home.h" />
+    <ClInclude Include="..\..\frox\src\init.h" />
+    <ClInclude Include="..\..\frox\src\int-map.h" />
+    <ClInclude Include="..\..\frox\src\inv.h" />
+    <ClInclude Include="..\..\frox\src\menu.h" />
+    <ClInclude Include="..\..\frox\src\message.h" />
+    <ClInclude Include="..\..\frox\src\mon.h" />
+    <ClInclude Include="..\..\frox\src\monspell.h" />
+    <ClInclude Include="..\..\frox\src\msvc_warnings.h" />
+    <ClInclude Include="..\..\frox\src\mut.h" />
+    <ClInclude Include="..\..\frox\src\obj.h" />
+    <ClInclude Include="..\..\frox\src\obj_prompt.h" />
+    <ClInclude Include="..\..\frox\src\pack.h" />
+    <ClInclude Include="..\..\frox\src\py_throw.h" />
+    <ClInclude Include="..\..\frox\src\quest.h" />
+    <ClInclude Include="..\..\frox\src\quiver.h" />
+    <ClInclude Include="..\..\frox\src\randname.h" />
+    <ClInclude Include="..\..\frox\src\readdib.h" />
+    <ClInclude Include="..\..\frox\src\rect.h" />
+    <ClInclude Include="..\..\frox\src\resist.h" />
+    <ClInclude Include="..\..\frox\src\rooms.h" />
+    <ClInclude Include="..\..\frox\src\savefile.h" />
+    <ClInclude Include="..\..\frox\src\scores.h" />
+    <ClInclude Include="..\..\frox\src\shop.h" />
+    <ClInclude Include="..\..\frox\src\spells.h" />
+    <ClInclude Include="..\..\frox\src\str-map.h" />
+    <ClInclude Include="..\..\frox\src\streams.h" />
+    <ClInclude Include="..\..\frox\src\types.h" />
+    <ClInclude Include="..\..\frox\src\variant.h" />
+    <ClInclude Include="..\..\frox\src\z-config.h" />
+    <ClInclude Include="..\..\frox\src\z-doc.h" />
+    <ClInclude Include="..\..\frox\src\z-form.h" />
+    <ClInclude Include="..\..\frox\src\z-rand.h" />
+    <ClInclude Include="..\..\frox\src\z-term.h" />
+    <ClInclude Include="..\..\frox\src\z-util.h" />
+    <ClInclude Include="..\..\frox\src\z-virt.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      SDL が描くまでの一瞬に白が出ないよう、背景は黒で始める。
+      ステータスバー／ナビゲーションバーは SDLActivity が没入モードで隠す。
+    -->
+    <style name="HengbandTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/black</item>
+        <!--
+          **ノッチの下へ窓を広げない**（2026-08-12 に決めた「ノッチを避けた範囲で
+          フルスクリーンに」）。`shortEdges` は端まで広げる指定で、切り欠きに重なった帯は
+          物理的に見えない＝地図と HUD がそのぶん食われていた。`never` にすると
+          システムが切り欠きを避けて窓を置く（その辺に黒帯が出るが、隠れる画素は無くなる）。
+          全画面そのものは SDL 側で担保している（窓を FULLSCREEN_DESKTOP で作る＝
+          没入モードでステータスバーとナビゲーションバーが消える）。
+        -->
+        <item name="android:windowLayoutInDisplayCutoutMode">never</item>
+    </style>
+</resources>

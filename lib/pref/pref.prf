@@ -1,0 +1,41 @@
+# File: pref.prf
+
+#
+# This file includes basic pref files.
+#
+# See "lib/help/command.txt" and "src/files.c" for more information.
+#
+
+
+##### Keyset definitions #####
+
+%:pref-key.prf
+
+
+##### Option definitions #####
+
+%:pref-opt.prf
+
+
+##### Spell color definitions #####
+
+%:spell-xx.prf
+
+
+##### System Specific Subfiles #####
+
+?:[IOR [EQU $SYS x11]]
+%:pref-x11.prf
+
+?:[EQU $SYS gcu]
+%:pref-gcu.prf
+
+?:[EQU $SYS mac]
+%:pref-mac.prf
+
+?:[EQU $SYS win]
+%:pref-win.prf
+
+?:1
+
+

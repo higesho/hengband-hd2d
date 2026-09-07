@@ -1,0 +1,2168 @@
+# 幻想蛮怒 → 英語: アイテム（k_info.txt）。書式は I:（通し番号）/ J:（日本語の原名。作成時に
+# 現物と突き合わせ、合わない項目は英語化を見送って一覧に出す）/ N:（英語名）。
+# 名前の正は gensoband/lang/en/glossary.md（承認 2026-08-24）。
+# 説明文（D:）は E4 で足した。現物の `D:` 行（日本語）をまるごと置き換える。
+
+I:1
+J:元素の魔術書第一巻
+N:& Elemental Sorcery Tome~ Vol.1
+
+I:2
+J:元素の魔術書第二巻
+N:& Elemental Sorcery Tome~ Vol.2
+
+I:3
+J:元素の魔術書第三巻
+N:& Elemental Sorcery Tome~ Vol.3
+
+I:4
+J:元素の魔術書最終巻
+N:& Elemental Sorcery Tome~ Final
+
+I:5
+J:予見の魔術書第一巻
+N:& Divination Sorcery Tome~ Vol.1
+
+I:6
+J:予見の魔術書第二巻
+N:& Divination Sorcery Tome~ Vol.2
+
+I:7
+J:予見の魔術書第三巻
+N:& Divination Sorcery Tome~ Vol.3
+
+I:8
+J:予見の魔術書最終巻
+N:& Divination Sorcery Tome~ Final
+
+I:9
+J:付与の魔術書第一巻
+N:& Enchantment Sorcery Tome~ Vol.1
+
+I:10
+J:付与の魔術書第二巻
+N:& Enchantment Sorcery Tome~ Vol.2
+
+I:11
+J:付与の魔術書第三巻
+N:& Enchantment Sorcery Tome~ Vol.3
+
+I:12
+J:付与の魔術書最終巻
+N:& Enchantment Sorcery Tome~ Final
+
+I:13
+J:召喚の魔術書第一巻
+N:& Summoning Sorcery Tome~ Vol.1
+
+I:14
+J:召喚の魔術書第二巻
+N:& Summoning Sorcery Tome~ Vol.2
+
+I:15
+J:召喚の魔術書第三巻
+N:& Summoning Sorcery Tome~ Vol.3
+
+I:16
+J:召喚の魔術書最終巻
+N:& Summoning Sorcery Tome~ Final
+
+I:17
+J:神秘の仙術書第一巻
+N:& Mystic Senjutsu Tome~ Vol.1
+
+I:18
+J:神秘の仙術書第二巻
+N:& Mystic Senjutsu Tome~ Vol.2
+
+I:19
+J:神秘の仙術書第三巻
+N:& Mystic Senjutsu Tome~ Vol.3
+
+I:20
+J:神秘の仙術書最終巻
+N:& Mystic Senjutsu Tome~ Final
+
+I:21
+J:生命の仙術書第一巻
+N:& Life Senjutsu Tome~ Vol.1
+
+I:22
+J:生命の仙術書第二巻
+N:& Life Senjutsu Tome~ Vol.2
+
+I:23
+J:生命の仙術書第三巻
+N:& Life Senjutsu Tome~ Vol.3
+
+I:24
+J:生命の仙術書最終巻
+N:& Life Senjutsu Tome~ Final
+
+I:25
+J:破邪の仙術書第一巻
+N:& Exorcism Senjutsu Tome~ Vol.1
+
+I:26
+J:破邪の仙術書第二巻
+N:& Exorcism Senjutsu Tome~ Vol.2
+
+I:27
+J:破邪の仙術書第三巻
+N:& Exorcism Senjutsu Tome~ Vol.3
+
+I:28
+J:破邪の仙術書最終巻
+N:& Exorcism Senjutsu Tome~ Final
+
+I:29
+J:自然の仙術書第一巻
+N:& Nature Senjutsu Tome~ Vol.1
+
+I:30
+J:自然の仙術書第二巻
+N:& Nature Senjutsu Tome~ Vol.2
+
+I:31
+J:自然の仙術書第三巻
+N:& Nature Senjutsu Tome~ Vol.3
+
+I:32
+J:自然の仙術書最終巻
+N:& Nature Senjutsu Tome~ Final
+
+I:33
+J:変容の妖術書第一巻
+N:& Transmutation Youjutsu Tome~ Vol.1
+
+I:34
+J:変容の妖術書第二巻
+N:& Transmutation Youjutsu Tome~ Vol.2
+
+I:35
+J:変容の妖術書第三巻
+N:& Transmutation Youjutsu Tome~ Vol.3
+
+I:36
+J:変容の妖術書最終巻
+N:& Transmutation Youjutsu Tome~ Final
+
+I:37
+J:暗黒の妖術書第一巻
+N:& Darkness Youjutsu Tome~ Vol.1
+
+I:38
+J:暗黒の妖術書第二巻
+N:& Darkness Youjutsu Tome~ Vol.2
+
+I:39
+J:暗黒の妖術書第三巻
+N:& Darkness Youjutsu Tome~ Vol.3
+
+I:40
+J:暗黒の妖術書最終巻
+N:& Darkness Youjutsu Tome~ Final
+
+I:41
+J:死霊の妖術書第一巻
+N:& Necromancy Youjutsu Tome~ Vol.1
+
+I:42
+J:死霊の妖術書第二巻
+N:& Necromancy Youjutsu Tome~ Vol.2
+
+I:43
+J:死霊の妖術書第三巻
+N:& Necromancy Youjutsu Tome~ Vol.3
+
+I:44
+J:死霊の妖術書最終巻
+N:& Necromancy Youjutsu Tome~ Final
+
+I:45
+J:混沌の妖術書第一巻
+N:& Chaos Youjutsu Tome~ Vol.1
+
+I:46
+J:混沌の妖術書第二巻
+N:& Chaos Youjutsu Tome~ Vol.2
+
+I:47
+J:混沌の妖術書第三巻
+N:& Chaos Youjutsu Tome~ Vol.3
+
+I:48
+J:混沌の妖術書最終巻
+N:& Chaos Youjutsu Tome~ Final
+
+I:49
+J:剣術の秘伝書第一巻
+N:& Kendo Manual~ Vol.1
+
+I:50
+J:剣術の秘伝書第二巻
+N:& Kendo Manual~ Vol.2
+
+I:51
+J:剣術の秘伝書第三巻
+N:& Kendo Manual~ Vol.3
+
+I:52
+J:剣術の秘伝書最終巻
+N:& Kendo Manual~ Final
+
+I:71
+J:弾薬
+D:A set of round iron balls and powdered gunpowder. It was prepared in case
+D:guns were ever implemented, but since every gun ended up being an
+D:activatable item it was dropped.
+
+I:73
+J:鋼鉄の矢
+D:An arrow of steel. Its power leaves nothing to be desired, but it is
+D:heavy.
+
+I:76
+J:鋼鉄のクロスボウの矢
+D:A crossbow bolt of steel. Its power leaves nothing to be desired, but it
+D:is heavy.
+
+I:78
+J:折れたダガー
+D:A dagger snapped clean off above the hilt.
+
+I:82
+J:山刀
+N:& Yamagatana~
+D:A sturdy, thick-bladed knife. Hunters use it mainly to cut away
+D:undergrowth and to dress their kills.
+
+I:83
+J:短刀
+D:A small straight blade, easy to carry about.
+
+I:84
+J:忍者刀
+D:A sword used by ninja. It is short and barely curved, and easy to carry.
+
+I:85
+J:隼の剣
+D:A small sword made of a very light metal. It can be swung as swiftly as a
+D:falcon.
+
+I:86
+J:竜鱗の短剣
+N:& Dragonscale Dagger~
+D:A dagger carved from dragon scale. As well as an edge that pierces armour,
+D:it grants its wielder protection from various attacks.
+
+I:87
+J:毒針
+D:A thick needle loaded with a powerful poison.
+
+I:95
+J:クレイモア
+D:A straight two-handed sword. It is a little small for a two-hander, but it
+D:is keenly sharp.
+
+I:99
+J:緋緋色金の剣
+D:A sword of hihiirokane, the legendary metal. It is incredibly strong and
+D:razor sharp.
+
+I:101
+J:脇差し
+D:A small Japanese sword. It served warriors as a spare weapon and townsfolk
+D:as a means of self-defence.
+
+I:103
+J:大太刀
+D:A very long Japanese sword. Only someone of great strength can handle it.
+
+I:104
+J:古刀
+N:& Kotou~
+D:A blade over four hundred years old, made by a forging method now lost.
+
+I:105
+J:妖刀
+N:& Youtou~
+D:A blade charged with a powerful grudge. Holding it makes you want to cut
+D:someone down...
+
+I:106
+J:スパナ
+N:& Spanner~
+D:An iron bar about fifty centimetres long. One end is split into an odd
+D:shape.
+
+I:113
+J:折れた棒
+D:A broken stick. It seems to have been the haft of some weapon.
+
+I:114
+J:花
+D:A large flower in full bloom. Fairies are fond of carrying them about.
+
+I:115
+J:魔導師の杖
+D:A staff enchanted with a special magic that helps the casting of spells.
+
+I:117
+J:六尺棒
+D:A hard staff six shaku long.
+
+I:118
+J:錫杖
+D:A kind of staff with several metal rings bound to its head. The pleasant
+D:sound they make is said to drive away worldly desires.
+
+I:119
+J:ヌンチャク
+D:A weapon of two sticks joined by a cord or a chain. It takes practice to
+D:use.
+
+I:120
+J:鉄棒
+D:A long rod of iron. It is very heavy indeed.
+
+I:121
+J:大幣
+D:A ritual implement: a wand of plain wood with specially folded paper at
+D:its tip. Waving it from side to side purifies defilement. It is not the
+D:sort of thing meant for fighting at all, and yet...
+
+I:124
+J:フランシスカ
+D:A one-handed axe with a curved blade. It is well suited to throwing.
+
+I:125
+J:ハチェット
+D:A hand axe. It is a handy tool that no household can do without, though it
+D:can serve in a fight too.
+
+I:128
+J:ロッホアーバー・アックス
+D:An axe with a broad blade on a long haft, with a hook at the tip of the
+D:blade.
+
+I:130
+J:雷神の鉞
+D:A huge broad-axe that throws off sparks. It is said to enjoy the
+D:protection of the thunder god.
+
+I:131
+J:ジャベリン
+D:A short spear meant for throwing.
+
+I:133
+J:オウル・パイク
+D:An infantry spear with a long, sharp, awl-like point. It has power enough
+D:to pierce armour.
+
+I:134
+J:ロング・スピア
+D:A spear with a very long haft. It lets you strike without letting the
+D:enemy close.
+
+I:135
+J:ランス
+D:A spear with a long conical tip.  It is well-suited for the rider of a
+D:charging horse.
+
+I:136
+J:ヘヴィ・ランス
+D:A huge cavalry lance. It is far too heavy for an ordinary man to swing,
+D:and is used fixed to the saddle or the armour with fittings.
+
+I:137
+J:三叉戟
+D:A spear whose head is a three-pronged blade. It began as a fishing tool,
+D:and is often treated as a ritual implement.
+
+I:139
+J:薙刀
+D:A curved blade on a haft about a metre and a half long. It is an old
+D:Japanese polearm.
+
+I:140
+J:ルツェルン・ハンマー
+D:A weapon combining a long spear and a hammer. A blow driven by its weight
+D:and swing is beyond compare.
+
+I:147
+J:ヘヴィ・クロスボウ
+D:A powerful mechanical bow. It is slow to fire, since a special device is
+D:needed to draw the string.
+
+I:148
+J:進化する銃
+D:A gun found in mysterious ruins by the mercenary "Combat Echizen".
+
+I:150
+J:扇
+N:& Fan~
+D:An elegant folding fan.
+
+I:151
+J:釣り竿
+D:An entirely ordinary fishing rod. In Gensokyo, however, playing the wise
+D:angler can cost you your life.
+
+I:156
+J:ナイト・シールド
+D:A steel shield with a crest engraved on it. It is pointed at the bottom so
+D:as to be easy to use on horseback.
+
+I:157
+J:ミラー・シールド
+D:A pure white mithril shield engraved with a special magic that turns back
+D:arrows and shot. Use it in a danmaku duel and you will certainly be hated
+D:for it.
+
+I:158
+J:ドラゴン・シールド
+D:A shield made of dragon scales fitted together. It gives a mysterious
+D:protection against many kinds of attack.
+
+I:159
+J:鏡
+D:One of the Three Sacred Treasures, made of hihiirokane... or rather, what
+D:used to be one.
+
+I:160
+J:リボン
+D:A long, narrow strip of decorative cloth. It is the most ordinary ornament
+D:in all Gensokyo.
+
+I:161
+J:はちまき
+D:A long, narrow strip of cloth. You tie it round your forehead to steel
+D:yourself.
+
+I:162
+J:スカーフ
+N:& Scarf~
+D:A largish strip of decorative cloth, worn mostly around the head or the
+D:neck.
+
+I:163
+J:松明
+D:A stick that burns oil or resin at its tip. You can also throw it at an
+D:enemy to attack.
+
+I:164
+J:真鍮のランタン
+D:A portable lamp. When the fuel runs out you refill it from a flask of oil.
+
+I:165
+J:魔法のランタン
+D:A lantern that gives light by magic and never needs refuelling.
+
+I:174
+J:服
+D:Ordinary western clothing.
+
+I:176
+J:メイド服
+D:A maid's uniform. It is designed above all to look clean and to be easy to
+D:move in.
+
+I:177
+J:道着
+D:Clothing worn by practitioners of the martial arts. It is tough and easy
+D:to move in.
+
+I:178
+J:ドレス
+D:Showy western clothing with a great deal of ornament.
+
+I:179
+J:着物
+D:Traditional Japanese clothing.
+
+I:180
+J:スーツ
+D:Dress from the Outside World. You cut a fine figure in it, but it is a
+D:little hard to move in.
+
+I:181
+J:道士服
+D:The robe of a mainland monk in training.
+
+I:182
+J:黒装束
+D:Jet-black garb worn by thieves and assassins.
+
+I:183
+J:修験装束
+D:The garb of a mountain ascetic or a tengu.
+
+I:184
+J:防護服
+D:Tough clothing of thick cloth with padding stuffed inside. It gets rather
+D:hot to wear.
+
+I:185
+J:レザージャケット
+D:Tough clothing of thick leather layered and sewn together.
+
+I:186
+J:巫女装束
+D:The dress of a shrine maiden, with its distinctive separate body and
+D:sleeves.
+
+I:187
+J:桶
+D:An entirely ordinary large tub. Knock the bottom out and you might just be
+D:able to wear it as armour.
+
+I:191
+J:金属製ブリガンダイン・アーマー
+D:A leather shirt covering the body, with a great many metal plates riveted
+D:to the lining.
+
+I:193
+J:大鎧
+D:A stately suit of armour of iron plates, leather and decorative cord in an
+D:intricate arrangement.
+
+I:197
+J:ブラックドラゴン・スケイルメイル
+D:A suit of jet-black scales that always gives off white smoke.
+
+I:198
+J:ブルードラゴン・スケイルメイル
+D:A suit of scales as blue as sapphires, emitting eerie sparks and flashes
+D:as you move about in it.
+
+I:199
+J:ホワイトドラゴン・スケイルメイル
+D:A suit of pure white scales with a cold glitter.
+
+I:200
+J:レッドドラゴン・スケイルメイル
+D:A suit of deep crimson scales coloured like burning flame.
+
+I:201
+J:グリーンドラゴン・スケイルメイル
+D:A suit of scales, glistening in sickly green.
+
+I:202
+J:万色ドラゴン・スケイルメイル
+D:A suit of scales shining in five colours and throbbing with angry energy.
+
+I:203
+J:ブロンズドラゴン・スケイルメイル
+D:A suit of heavy verdigris scales. It fits you as though you had worn it
+D:ten years, and fills you with dogged strength.
+
+I:204
+J:シルバードラゴン・スケイルメイル
+D:A suit of shining silver scales. Merely looking at it seems to cleanse
+D:your very heart.
+
+I:205
+J:ゴールドドラゴン・スケイルメイル
+D:A suit of scales shining in gold. You feel in it a nobility that nothing
+D:can hold down.
+
+I:206
+J:ロードラゴン・スケイルメイル
+D:A stately suit of scales tinged in blue and silver. Touch it and you feel
+D:a heavy vibration, like a tornado drawing near from far away.
+
+I:207
+J:カオスドラゴン・スケイルメイル
+D:A suit of scales that glimmers eerily in many colours. Not only the
+D:colours but the very shape of the armour seems to change each time you
+D:look at it.
+
+I:208
+J:バランスドラゴン・スケイルメイル
+D:A suit of scales.  Featureless grey to casual inspection, yet a closer
+D:look reveals patterns within patterns of iridescence that throb with
+D:leashed energies bound as though by chains of adamant.
+
+I:209
+J:時空ドラゴン・スケイルメイル
+D:A suit of translucent purple scales. Watching it, you see it float in the
+D:air now and again, or flicker. It seems to exist outside the laws of this
+D:world.
+
+I:210
+J:ダイヤモンドドラゴン・スケイルメイル
+D:A suit of diamond scales. Primordial fury pours out of it as a dazzling
+D:radiance.
+
+I:211
+J:パワードラゴン・スケイルメイル
+D:The scale mail of a wyrm holding the mightiest element of all, that of
+D:Power. It is very rarely seen.
+
+I:213
+J:マント
+D:An ornamental cloak with fine embroidery. Do not expect much protection
+D:from it.
+
+I:214
+J:毛皮のクローク
+D:A cloak of thick fur. A little blizzard will be nothing to it.
+
+I:215
+J:羽衣
+D:A beautiful hanging of cloth of the very finest quality.
+
+I:216
+J:隠れ蓑
+D:A strange straw cape under an enchantment. It hides the one who wears it.
+
+I:218
+J:帽子
+D:Gensokyo has hats in a truly remarkable variety.
+
+I:219
+J:頭襟
+D:Read "tokin". It is the small cap worn on the head by mountain ascetics
+D:and tengu.
+
+I:220
+J:ヘッドドレス
+D:A decorative cloth worn on the head. Hairbands and maid caps count as
+D:these too.
+
+I:221
+J:とんがり帽子
+D:A large black hat with a pointed tip. It is the trademark of a witch,
+D:though few witches in Gensokyo favour it.
+
+I:223
+J:仮面
+D:A tough head covering that fits snugly over the face.
+
+I:225
+J:星兜
+D:A warrior's helmet: overlapping iron plates riveted together, fitted with
+D:hornlike ornamental crests.
+
+I:231
+J:手袋
+D:Gloves of cloth.
+
+I:232
+J:ドレスグローブ
+D:Fine gloves for formal dress.
+
+I:234
+J:セスタス
+D:A massive set of hand sheathings of iron plate and leather cord.
+
+I:235
+J:篭手
+D:Armour covering the wrist, the back of the hand and the thumb with iron
+D:plate. Much of the fingers is left bare so as to make it easier to shoot a
+D:bow.
+
+I:237
+J:ドラゴン・グローブ
+D:Gloves worked from dragon hide. They give powerful protection.
+
+I:238
+J:リスト・ユニット
+N:& Wrist Unit~
+D:Don't tell me you don't know that classic!?
+
+I:239
+J:靴
+D:Ordinary leather shoes.
+
+I:240
+J:草鞋
+D:Footwear woven from straw. It is very light, and since it ties at the
+D:ankle it does not easily come off.
+
+I:241
+J:下駄
+D:Traditional wooden footwear with projections on the sole called "teeth".
+
+I:242
+J:ブーツ
+D:Tall footwear covering the ankle. The long kind reaches above the knee.
+
+I:246
+J:ドラゴン皮の靴
+D:Boots worked from dragon hide. They give powerful protection.
+
+I:325
+J:魔法の笛
+D:Blow this and your pets will come back to you from anywhere on the floor.
+
+I:358
+J:尻子器
+N:& Shirikodama Extractor~
+D:A machine of terror that tightens your sphincter just to look at it. (Use:
+D:scare monsters in sight, Charges: 10, Refill: flask of oil)
+
+I:506
+J:薄灰色の小箱
+D:A little box of a strange material called plastic. It has several buttons
+D:and a window that will not open.
+
+I:507
+J:月のイルメナイト
+N:& Lunar Ilmenite~
+D:Ilmenite, thought to be produced in great quantity on the surface of the
+D:moon. It is looked to as a resource for the distant future.
+
+I:508
+J:光苔
+D:A rare and primitive moss. It glows emerald green in dim places.
+
+I:551
+J:抗鬱:ピンク斑の
+D:A medicine branded "Tokaku Alliance Pharmaceuticals". Drinking it removes
+D:fear, makes you feel like a hero for a while, and restores 10 hit points.
+
+I:591
+J:麦酒
+D:Liquor made from malt. Legend has it that it is deeply bound up with the
+D:founding of Gensokyo.
+
+I:592
+J:外来吟醸酒
+D:A clean-tasting liquor from the Outside World. It turns up on the shelf of
+D:the Hakurei Shrine's altar without anyone knowing how.
+
+I:593
+J:鬼殺し
+D:Since the name is not a registered trademark, brewers all over Japan make
+D:a sake by it. Its origin is variously explained: "sake strong enough to
+D:floor an oni", "sake so good an oni drinks until it drops", "sake so dry
+D:that even an oni will not touch it", "sake so bad it gives even an oni a
+D:hangover". In Gensokyo, none of these apply.
+
+I:594
+J:クッキー
+N:& Cookie~
+D:A sweet baked from wheat flour mixed with sugar and other things. How it
+D:differs from a biscuit varies from culture to culture.
+
+I:595
+J:食料
+D:Travelling food made by grinding grain and dried fruit, working it into a
+D:paste and baking it. It is nourishing enough, but dull.
+
+I:599
+J:空腹充足の仙丹
+N:& Sentan~ of Satiety
+
+I:600
+J:大きな葛籠
+D:A basket woven from vine, or a wooden box, for holding clothing and the
+D:like. Incidentally it is read "tsuzura", not "kuzukago".
+
+I:601
+J:黄金の蜂蜜酒
+D:A beautiful golden mead. Drinking it sharpens the senses remarkably. It is
+D:also needed in order to command a certain dreadful being.
+
+I:602
+J:傘
+N:& Umbrella~
+D:A purple umbrella of outlandish design.
+
+I:603
+J:きゅうり
+D:A glossy cucumber. It is a kappa's favourite food.
+
+I:604
+J:油揚げ
+D:Fragrant fried tofu.
+
+I:605
+J:石塊
+D:Just an ordinary lump of stone, of the sort found anywhere.
+
+I:606
+J:京丸牡丹
+D:Hematite formed into the shape of a flower.
+
+I:607
+J:マグネタイト
+D:An ore of magnetite. For some reason demons are fond of it.
+
+I:608
+J:砒素鉱石
+D:An ore containing arsenic. It is indispensable in magical experiments, but
+D:it is deadly poison.
+
+I:609
+J:水銀鉱石
+D:An ore containing mercury. It is highly poisonous.
+
+I:610
+J:ミスリル
+D:A lump of precious mithril, the metal called "true silver".
+
+I:611
+J:アダマンタイト
+D:A strange mineral called adamantite. It is extremely tough, but
+D:appallingly heavy.
+
+I:612
+J:竜の爪
+D:The claw of a dragon. Mixed into a preparation, it is said to strengthen
+D:the effect enormously.
+
+I:613
+J:竜の鱗
+D:The scale of a dragon. It is very rarely to be had in Gensokyo.
+
+I:614
+J:ゲルセミウム・エレガンス
+D:The young shoots of Gelsemium elegans, said to be the deadliest poisonous
+D:plant of all. Apparently there are outrageous people who brew tea from it.
+
+I:615
+J:ガーネット
+D:A deep red transparent gem, also called garnet. It is the birthstone of
+D:January.
+
+I:616
+J:アメジスト
+D:Also called violet quartz. It is the birthstone of February.
+
+I:617
+J:アクアマリン
+D:A bright blue gem, also called beryl. It is the birthstone of March.
+
+I:618
+J:ダイヤモンド
+D:A colourless transparent gem, also called adamant. It is the birthstone of
+D:April.
+
+I:619
+J:エメラルド
+D:A green transparent gem, also called green jade. It is the birthstone of
+D:May.
+
+I:620
+J:ムーンストーン
+D:A pale blue-white gem, also called moonstone. It is the birthstone of
+D:June.
+
+I:621
+J:ルビー
+D:A red transparent gem, also called red jade. It is the birthstone of July.
+
+I:622
+J:ペリドット
+D:A pale green transparent gem, a variety of olivine. It is the birthstone
+D:of August.
+
+I:623
+J:サファイア
+D:A blue transparent gem, also called blue jade. It is the birthstone of
+D:September.
+
+I:624
+J:オパール
+D:An opal that shines with rainbow colours. It is the birthstone of October.
+
+I:625
+J:トパーズ
+D:A yellow transparent gem, also called yellow jade. It is the birthstone of
+D:November.
+
+I:626
+J:ラピスラズリ
+D:A blue translucent gem, also called azurite or ultramarine. It is the
+D:birthstone of December.
+
+I:627
+J:隕鉄
+D:A meteorite with a high iron content. For some reason a scar in the shape
+D:of a torii is cut into it...
+
+I:628
+J:不死鳥の羽
+D:A large and beautiful feather that glows as though burning.
+
+I:629
+J:緋緋色金
+D:The legendary metal. Its many powerful properties can only be called
+D:mysterious.
+
+I:633
+J:強い赤葡萄酒
+N:Strong Red Wine
+D:Old Vineyard, a strong red wine from the South Farthing. It is fully
+D:matured.
+
+I:634
+J:マゴットのビール
+N:Maggot's Beer
+D:"Mrs. Maggot brought out beer in a great jug and filled four large mugs.
+D:It was a good brew." (The Lord of the Rings: The Fellowship of the Ring)
+
+I:635
+J:オークの強壮酒
+N:Orcish Tonic Liquor
+D:A burning liquid. Drinking it perks you up for a while. Its taste, its
+D:side effects and its cleanliness are all unknown.
+
+I:636
+J:一四二〇年醸造のビール
+N:1420 Vintage Beer
+D:The finest beer ever brewed in the Shire, still spoken of to this day.
+
+I:637
+J:銘酒　月世界
+N:Fine Sake Gessekai
+D:Vacuum brewed. 100% glutinous rice. Perfect as a midsummer gift.
+
+I:638
+J:土蜘蛛酒
+D:Apparently a fine underground sake pickled by the tsuchigumo.
+
+I:639
+J:銘酒　直角
+N:Fine Sake Chokkaku
+D:Ninety proof, to everybody's delight.
+
+I:640
+J:血の色のブランデー
+N:Blood-Red Brandy
+D:A bottle from Remilia's private store.
+
+I:641
+J:ヴィンテージワイン
+N:Vintage Wine
+D:A vintage wine. It ought to be a considerable rarity, yet the maid of the
+D:Scarlet Devil Mansion produces an endless supply of it from somewhere.
+
+I:642
+J:どぶろく
+N:Doburoku
+D:A simple sake made by adding koji mould to cooked rice and letting it
+D:ferment.
+
+I:643
+J:焼酎
+N:Shouchuu
+D:A kind of distilled spirit. There are many sorts: rice shochu, barley
+D:shochu, sweet potato shochu and more.
+
+I:644
+J:清酒
+N:Seishu
+D:Ordinary sake, so to speak. Rice, rice koji and water are fermented,
+D:pressed and filtered.
+
+I:645
+J:超古々酒
+N:Ancient Sake
+D:An extremely old bottle that Yuyuko brought from somewhere. It is not
+D:poisoned.
+
+I:646
+J:ネクター
+N:Nectar
+D:The divine liquor of the heavens, said to grant eternal youth and life to
+D:those who drink it. It probably tastes of peaches.
+
+I:647
+J:つちのこ酒
+N:Tsuchinoko Liquor
+D:A very rare liquor. Its taste is unknown.
+
+I:648
+J:りんご酒
+N:Apple Wine
+D:A drink often served at parties in the Scarlet Devil Mansion.
+
+I:649
+J:酒虫(改)の酒
+N:Sake-Bug (Kai) Liquor
+D:Sake made with a sake-worm the oni have spent long years improving. Its
+D:taste is stubbornly, defiantly complex.
+
+I:650
+J:銘酒　日本海
+N:Fine Sake Nihonkai
+D:A bottle served at a party in the Scarlet Devil Mansion.
+
+I:651
+J:雀酒
+N:Sparrow's Sake
+D:Mystia Lorelei's recreation of what is said to be the first liquor ever
+D:made in the world. Drinking it makes you want to dance.
+
+I:652
+J:永琳の酒
+N:Eirin's Liquor
+D:A special bottle pickled by Eirin. It is said to be no worse than the aged
+D:liquor of the moon.
+
+I:653
+J:銘酒　河童の里
+D:Sake brewed by the kappa. It was meant to be the speciality of Kappa Dam,
+D:but...
+
+I:654
+J:本物の鬼ころし
+N:Genuine Onikoroshi
+D:The sake Kasen brought to the banquet. They say nobody can drink it and
+D:stay upright.
+
+I:655
+J:茸焼酎
+N:Mushroom Shouchuu
+D:One of Marisa's failures. She tried to pickle mushrooms into liquor, and
+D:some other unidentifiable mushroom grew instead.
+
+I:656
+J:一夜のクシナダ
+N:One-Night Kushinada
+D:A fine sake that goes down cleanly for all its strength. However, an
+D:extract of inky cap has been slipped into it, and one mouthful is certain
+D:to give you acute alcohol poisoning.
+
+I:657
+J:鉄屑
+N:Scrap Iron
+D:Scrap iron and junk with no use to anyone. Even so, there is no telling
+D:that nothing valuable is mixed in with it.
+
+I:660
+J:大きなリボン
+D:A large ribbon edged with frills.
+
+I:661
+J:宝塔
+D:Bishamonten's treasure pagoda... or rather, what used to be it. Go to
+D:Myouren Temple with this and you will not get off lightly.
+
+I:662
+J:ペンデュラム:輝く
+N:& Pendulum~:Shining
+D:The pendant Nazrin always wore... or rather, what used to be it.
+
+I:663
+J:赤魔法お化け:胞子に覆われた
+D:Eating it grants resistance to fire for a short time.
+
+I:664
+J:白魔法お化け:丸い
+D:Eating it grants resistance to cold for a short time.
+
+I:665
+J:青魔法お化け:仄かに光る
+D:Eating it grants resistance to electricity for a short time.
+
+I:666
+J:黒魔法お化け:毒々しい
+D:Eating it grants resistance to acid for a short time.
+
+I:667
+J:緑魔法お化け:肉厚の
+D:Eating it grants resistance to poison for a short time.
+
+I:668
+J:極彩色魔法お化け:サイケデリックな
+D:Eating it grants resistance to chaos for a short time.
+
+I:669
+J:灰色魔法お化け:不気味な
+D:Eating it grants resistance to nether for a short time.
+
+I:670
+J:無色魔法お化け:固い
+D:Eating it raises your armour class for a short time.
+
+I:671
+J:スーパー魔法お化け:巨大な
+D:Eating it leads to something quite outrageous for a short time.
+
+I:672
+J:鉄鐸
+D:Something like a large iron bell.
+
+I:673
+J:霊酒
+D:A mysterious liquor brewed by hermits. Drinking it sharpens the mind and
+D:restores 100 spell points.
+
+I:674
+J:マスケット銃
+D:An old muzzle-loading infantry gun that fires a spherical bullet.
+
+I:675
+J:「持出厳禁」と書かれた薬箱
+D:It also has "DANGER -- HANDLE WITH CARE. Eirin" written on it...
+
+I:676
+J:何か涼しくなる:漆黒の
+D:Drinking it may in fact make you colder.
+
+I:677
+J:スマートフォン
+D:A strange board that shows pictures and letters when you touch it. Youkai
+D:take it as a sign that "a human carrying this may be eaten".
+
+I:678
+J:水色魔法お化け:妙に軽い
+D:Eating it does nothing at all.
+
+I:680
+J:宝箱
+D:A sturdy wooden box reinforced with metal plates and golden rivets. The
+D:lid stands a little open, and gold, silver and jewels can be glimpsed
+D:inside. There is no mistaking it for anything but a treasure chest.
+
+I:681
+J:小さな葛籠
+D:A basket woven from vine, or a wooden box, for holding clothing and the
+D:like. Incidentally it is read "tsuzura", not "kuzukago".
+
+I:682
+J:水鉄砲
+D:At a glance it is just a water pistol. Its power, however, is at a level
+D:no child should be trusted with. (Use: a water bolt for 1d10 damage,
+D:Charges: 30, Refill: water -- on water terrain it refills even with no
+D:water carried)
+
+I:683
+J:閃光弾
+D:A flash grenade that gives off a fierce light. (Use: light area and
+D:confuse monsters in sight, Charges: 20, Single use)
+
+I:684
+J:ドリルアーム
+N:& Drill Arm~
+D:A multi-jointed arm fitted with a drill. (Use: tunnel through an adjacent
+D:wall; 10d10 damage if a monster is there, Charges: 20, Refill: battery
+D:pack)
+
+I:685
+J:火炎放射器
+N:& Flamethrower~
+D:A machine that sprays burning oil. (Use: a fire breath for 25+1d50 damage,
+D:Charges: 1, Refill: flask of oil)
+
+I:686
+J:生体探知機
+D:A radar that detects living things. (Use: detect life, Charges: 30,
+D:Refill: battery pack)
+
+I:687
+J:空中魚雷
+D:An ecologically designed missile driven by a jet of water. (Use: a rocket
+D:for 250 damage, Charges: 1, Single use)
+
+I:688
+J:ジェットハンマー
+D:A large hammer arm fitted with a jet booster. (Use: 150+1d150 damage to an
+D:adjacent monster and an earthquake, Charges: 5, Refill: rocket fuel)
+
+I:689
+J:ロケットパック
+D:A jet booster and an oddly shaped helmet. (Use: move 15 grids in a
+D:straight line, blowing small monsters aside, Charges: 5, Refill: rocket
+D:fuel)
+
+I:690
+J:マシンガン
+N:& Machine Gun~
+D:A large gun that fires shot after shot. (Use: fire ten bolts of 2d20 power
+D:around the target, Charges: 10, Refill: machine gun magazine)
+
+I:691
+J:レーザーガン
+N:& Laser Gun~
+D:A gun that fires a laser. (Use: a light beam for 150 damage, Charges: 20,
+D:Refill: white energy pack)
+
+I:692
+J:スカウター
+N:& Scouter~
+D:A machine consisting of a small translucent plate with an external unit
+D:attached. It can tell you how strong an enemy is. (Use: probing, Charges:
+D:50, Refill: battery pack)
+
+I:693
+J:対属性バリア
+N:& Elemental Barrier~
+D:A device that raises a barrier against elemental attacks. (Use: temporary
+D:resistance to acid, electricity, fire, cold and poison for 20+1d20 turns,
+D:Charges: 7, Refill: red energy pack)
+
+I:694
+J:メガクラッシュ
+D:A powerful bomb that tears the dungeon apart. (Use: *destruction* with a
+D:radius of 20+1d10, Charges: 1, Single use)
+
+I:695
+J:万能レーダー
+N:& Omni-Radar~
+D:A powerful radar. It keeps detecting everything around you for a while,
+D:but it eats through batteries. (Use: detect terrain, items, traps and
+D:monsters around you for 20+1d20 turns, Charges: 4, Refill: battery pack)
+
+I:696
+J:プラズマガン
+N:& Plasma Gun~
+D:A gun that fires plasma. (Use: a plasma bolt for 300 damage, Charges: 12,
+D:Refill: white energy pack)
+
+I:697
+J:テレポーター
+N:& Teleporter~
+D:A machine that teleports you wherever you like nearby. It often goes a
+D:little astray, though... (Use: dimension door, more or less, Charges: 5,
+D:Refill: blue energy pack)
+
+I:698
+J:カノン砲
+N:& Cannon~
+D:A cannon. It is powerful and comparatively cheap, but frightfully heavy.
+D:(Use: a plain ball for 400+1d300 damage, Charges: 1, Refill: cannon shell)
+
+I:699
+J:フォノンメーザー
+N:& Phonon Maser~
+D:A powerful vibration generator. (Use: a sound attack on everything in
+D:sight for 200 damage, Charges: 5, Refill: black energy pack)
+
+I:700
+J:加速装置
+D:A device that speeds you up. (Use: haste for 25+1d25 turns, Charges: 7,
+D:Refill: blue energy pack)
+
+I:701
+J:ガトリング砲
+N:& Gatling Gun~
+D:A multi-barrelled machine gun. Several barrels spin about and pour out
+D:bullets like rain. (Use: fire twenty to thirty bolts of 2d20 power around
+D:the target, Charges: 10, Refill: gatling magazine)
+
+I:702
+J:対魔法バリア
+N:& Anti-Magic Barrier~
+D:A barrier that guards you against curses and other magic. (Use: raise
+D:magic defence for 20+1d20 turns, Charges: 5, Refill: red energy pack)
+
+I:703
+J:E缶
+D:A mysterious blue can that heals injuries in an instant. (Use: full
+D:restoration of hit points and cure cuts, Charges: 1, Single use)
+
+I:704
+J:対物バリア
+N:& Anti-Material Barrier~
+D:A barrier that guards you against physical attacks. (Use: raise armour
+D:class and gain reflection for 20+1d20 turns, Charges: 10, Refill: black
+D:energy pack)
+
+I:705
+J:多連装ロケットランチャー
+N:& Multiple Rocket Launcher~
+D:A portable rocket launcher holding four rounds. (Use: a rocket for 400
+D:damage, Charges: 4, Single use)
+
+I:706
+J:マイダスハンド
+D:A mysterious device for transmuting the elements. (Use: turn an item into
+D:gold worth a third of its value, Charges: 16, Refill: black energy pack)
+
+I:707
+J:ニュートリノガン
+D:A mysterious particle laser gun. (Use: an all-purpose beam for 180+1d180
+D:damage, Charges: 25, Refill: particle energy pack)
+
+I:708
+J:波動砲
+N:& Wave Motion Gun~
+D:A superweapon that breaks down any matter at all. (Use: a large
+D:disintegration laser for 50d50 damage, Charges: 3, Refill: wave energy
+D:pack)
+
+I:709
+J:トワイライトゾーン
+D:A device that creates a strange space in which your power is tripled.
+D:(Use: a large increase in power for 16+1d16 turns, Charges: 5, Refill:
+D:space-time energy pack)
+
+I:710
+J:N.E.P
+D:It is the choice of the world. (Use: a large laser dealing 9999 space-time
+D:damage to beings from outside Gensokyo, Charges: 1, Refill: space-time
+D:energy pack)
+
+I:712
+J:ロケット燃料
+N:& Rocket Fuel~
+
+I:723
+J:薔薇の箱
+D:A dark wooden box inlaid with a pattern like rose petals.
+
+I:724
+J:猛毒:極彩色の
+D:Drinking it deals 20d20 poison damage. If Medicine drinks it, it restores
+D:20d20 hit points and spell points and fills the stomach.
+
+I:725
+J:河童の五色甲羅
+N:& Five-Colored Kappa Shell~
+D:A large shell coloured in the five colours of red, blue, yellow, white and
+D:black. It is a most auspicious object, though whether it is really a
+D:kappa's shell is anyone's guess.
+
+I:726
+J:三稜鏡
+N:& Prism~
+D:A tool for painting colours onto the wind. It is also called a prism.
+
+I:727
+J:河童の腕
+N:& Kappa Arm~
+D:It is a kappa's arm. How do you know? Because it came in a box marked
+D:"kappa's arm".
+
+I:728
+J:巨大な卵
+N:& Giant Egg~
+D:A gigantic egg, big enough to fill your arms. What laid it is unknown.
+
+I:729
+J:エイジャの赤石
+D:A large Super Asia free of impurities.
+
+I:730
+J:リボンのかかった箱
+D:The ribbon is a little crooked, but it is prouder than any decoration.
+
+I:732
+J:デバッグの箱
+D:For special handling
+
+I:733
+J:ウルトラソニック眠り猫
+D:At a glance it is only a cat figurine, but keep it in the house and the
+D:rats stay away to a remarkable degree.
+
+I:734
+J:氷の鱗
+D:A shard of ice that does not melt even in summer. It is a crystal of a
+D:water dragon's magic.
+
+I:735
+J:万歳楽酒
+D:The sake sold at the stalls during the Manzairaku show.
+
+I:736
+J:盃
+D:A large red cup that looks as though it might hold a whole shou of sake.
+
+I:737
+J:焼き芋
+D:A sweet potato baked with loving care. Peel the hot, fragrant skin and the
+D:fluffy flesh steams; inside it is golden as honey, moist and sweet.
+
+I:738
+J:ミラクルフルーツ
+D:The fruit of the miracle berry. A glycoprotein in it called miraculin
+D:binds with sour compounds and stimulates the sweetness receptors of the
+D:tongue, so that anything sour eaten after this fruit tastes sweet.
+
+I:740
+J:星条旗
+D:A flag said to have been left behind by the humans who set foot on the
+D:moon.
+
+I:741
+J:ウィジャボード
+D:A board used for calling up spirits.
+
+I:742
+J:杵
+D:A large wooden mallet used with a mortar for hulling grain and pounding
+D:rice cakes. Some are rod-shaped, like a log narrowed at the middle.
+
+I:744
+J:Ｔシャツ
+D:A simple short-sleeved shirt with no collar. Apparently there is a brand
+D:in hell that makes T-shirts.
+
+I:745
+J:悪夢の欠片
+N:& Nightmare Fragment~
+D:A fragment of nightmare, streaking through the dream world like a meteor.
+D:Being hit by one in the flesh is no laughing matter.
+
+I:746
+J:希望の結晶
+N:& Crystal~ of Hope
+D:The dreams and hopes of people, given a shape.
+
+I:747
+J:団子
+N:& Dango~
+D:A sweet made by kneading rice flour and the like with water and then
+D:boiling or steaming it.
+
+I:750
+J:金閣寺の一枚天井
+D:A gigantic single board of camphor wood. It is said to have served as the
+D:ceiling board of the topmost storey of Kinkakuji.
+
+I:752
+J:鉢
+D:A grubby stone bowl.
+
+I:754
+J:文々。新聞
+N:& Bunbunmaru Newspaper~
+
+I:755
+J:花果子念報
+N:& Kakashi Spirit News~
+
+I:756
+J:調剤の秘伝書第一巻
+N:& Pharmacy Manual~ Vol.1
+
+I:757
+J:調剤の秘伝書第二巻
+N:& Pharmacy Manual~ Vol.2
+
+I:758
+J:調剤の秘伝書第三巻
+N:& Pharmacy Manual~ Vol.3
+
+I:759
+J:調剤の秘伝書最終巻
+N:& Pharmacy Manual~ Final
+
+I:760
+J:惚れ:ピンクに輝く
+D:Drinking it will very likely charm the monsters around you, and raises
+D:your charisma greatly for 30 turns.
+
+I:761
+J:火炎瓶
+D:When it breaks it creates a fire ball for 8d8 damage.
+
+I:762
+J:強酸
+D:When it breaks it creates an acid ball for 16d16 damage.
+
+I:763
+J:筋肉増強剤
+D:Drinking it raises your strength, dexterity and constitution by 5 for
+D:25+1d25 turns.
+
+I:764
+J:火吹き薬
+N:Fire-Breath Medicine
+D:Drinking it makes you breathe fire for 250 damage. You cannot cancel once
+D:you have drunk it.
+
+I:765
+J:人魚薬
+N:Mermaid Medicine
+D:Drinking it turns your lower body into a fish's tail. Any boots you are
+D:wearing come off. With a fish's tail you gain resistance to water and an
+D:extra unarmed attack, but you cannot wear boots, and you are slowed while
+D:on land without levitation.
+
+I:766
+J:ゲルセミウム・エレガンスのお茶
+D:Only the freshest young shoots of fine Gelsemium elegans, picked and
+D:carefully infused.
+
+I:767
+J:胡蝶夢丸ナイトメアタイプ(液状)
+D:When it breaks it creates a psychic ball for 400 damage. This attack
+D:rarely wakes sleeping monsters.
+
+I:768
+J:ネコミミの生える薬
+N:Cat-Ear Medicine
+D:It is often what you end up with when an experiment in potion-making goes
+D:wrong.
+
+I:769
+J:国士無双の薬
+N:Kokushi Musou Elixir
+D:Drinking it grants all sorts of enhancements. Drink too much of it,
+D:however, and you explode and take heavy damage.
+
+I:770
+J:*栄養剤*
+D:"What on earth did you put in it?" "There are things in this world you are
+D:better off not asking about, you know." (Silent Sinner in Blue: Inaba of
+D:the Moon and Inaba of the Earth)
+
+I:771
+J:獣化薬
+D:Drinking it clears your current temporary effects and turns you into a
+D:huge beast for 25+1d25 turns. If your hit points are below half, they are
+D:restored up to half on transforming. While transformed your physical and
+D:unarmed combat abilities rise greatly, but most weapons and armour are
+D:nullified, and you cannot use magic, magical devices or scrolls.
+
+I:772
+J:時空消滅内服液
+D:Drinking it makes you
+
+I:773
+J:*爆発*の薬
+D:When it breaks it deals 800+1d800 nuclear damage to everything in line of
+D:sight of the point where it broke.
+
+I:774
+J:巨人の薬
+D:Drinking it clears your current temporary effects and makes you gigantic
+D:for 50+1d50 turns. While gigantic your physical abilities soar, but you
+D:cannot use spellbooks, scrolls or magical devices.
+
+I:775
+J:人も兎もイチコロリの薬
+D:"Master! That's --" "Oh, would Udonge like some too?" "No thank you!"
+D:(Silent Sinner in Blue: Inaba of the Moon and Inaba of the Earth)
+
+I:776
+J:新加速剤
+N:New Accelerant
+D:Drinking it grants extreme speed for a short time.
+
+I:777
+J:反物質
+D:When it breaks it creates an enormously powerful disintegration ball.
+
+I:778
+J:竜化薬
+D:Drinking it clears your current temporary effects and turns you into a
+D:huge dragon for 50+1d50 turns. If your hit points are below half, they are
+D:restored up to half on transforming. While transformed your physical
+D:abilities soar and you gain breath attacks and other powers, but you
+D:cannot use spellbooks, scrolls or magical devices.
+
+I:779
+J:蓬莱の薬
+D:The ultimate medicine, the greatest of all taboos, which grants eternal
+D:youth and life. Drinking it ends the game in victory, with a score 1.33
+D:times that of an ordinary retirement.
+
+I:780
+J:マジカル産廃再利用ボム
+D:When it breaks it creates a chaos ball for 777 damage.
+
+I:781
+J:栽培マンの瓶
+D:When it breaks it produces a Saibaiman.
+
+I:782
+J:炭
+D:The burnt remains of something.
+
+I:783
+J:ミステリウム
+D:A mysterious substance. Nobody has ever seen anything like it before.
+
+I:784
+J:ジキル博士の薬
+D:Drinking it turns you into a demon for 50+1d50 turns. Thrown at a monster,
+D:it may drive it berserk.
+
+I:785
+J:幸福薬
+D:Thrown at a monster, it will very likely confuse and stun it. "Citizen,
+D:happiness is mandatory." (the RPG "Paranoia")
+
+I:786
+J:高草郡の光る竹
+N:Glowing Bamboo of Takakusa
+D:A special bamboo said to grow somewhere in the Bamboo Forest of the Lost.
+
+I:787
+J:伊弉諾物質
+D:A fragment of the Izanagi Plate, which sank underground twenty-five
+D:million years ago. The magic and the memory of the age of the gods still
+D:linger in it.
+
+I:788
+J:ミクロオキシゲン
+D:When it breaks it creates an acid ball for 1600 damage.
+
+I:790
+J:ケープ
+D:A short cloak covering the shoulders and back.
+
+I:791
+J:ケセランパサラン
+N:Kesaran-Pasaran
+D:A mysterious ball of fluff. It is said to bring good fortune to its owner.
+
+I:792
+J:針
+D:A long, thick needle about a shaku in length. Needles are said to ward off
+D:evil, and one this big should work well enough on people too.
+
+I:793
+J:石桜
+N:Stone Cherry Blossom
+D:An ore giving off a youkai aura. It is said to be the soul of a corpse
+D:beneath a cherry tree, crystallised over long years.
+
+I:794
+J:折れた針
+N:Broken Needle
+D:A bundle of long needles, bent and broken. "A needle that has drunk much
+D:blood is a magic item with a history." (Wild and Horned Hermit, vol. 6)
+
+I:795
+J:アイテムカード
+D:A card with a picture of something you have seen somewhere before. Set it
+D:with the U command and use it to invoke somebody's special power.
+
+I:796
+J:ルナティックガン
+D:A strange gun shaped like a trumpet with rabbit ears growing out of it.
+
+I:797
+J:猟銃
+D:An old single-shot gun. It feels a little inadequate against youkai or
+D:large beasts.
+
+I:798
+J:拳銃
+D:A small gun that can be fired one-handed.
+
+I:799
+J:歩兵銃
+D:A rifle with a bayonet fixed to the muzzle.
+
+I:800
+J:散弾銃
+D:A gun that fires a great many small fragments at once.
+
+I:801
+J:マグナム
+D:A large-calibre handgun that takes powerful ammunition.
+
+I:802
+J:レーザーライフル
+D:A futuristic gun that fires a laser.
+
+I:803
+J:ロケットランチャー
+D:A weapon that fires vicious rockets.
+
+I:804
+J:広域立体制圧用爆裂焼夷榴弾
+D:(dummy item for an activation: if this is ever generated in normal play it
+D:is a bug, so please report it on the distributor's board)
+
+I:810
+J:二宮金次郎像
+D:(dummy item of variable weight: if this ever turns up in normal play it is
+D:a bug, so please tell the author)
+
+I:811
+J:桃の実
+N:Peach
+D:A fragrant peach that looks delicious.
+
+I:814
+J:梅酒
+N:Umeshu
+D:A liquor flavoured by steeping plums and sugar in strong spirits.
+
+I:816
+J:封魔の壺
+D:A jar that a certain magician sold to a villager. With this jar,
+D:apparently, no tanuki can bewitch you.
+
+I:817
+J:道寿の壺
+D:A treasure said to yield an endless supply of oil.
+
+I:818
+J:マムシ酒
+N:Mamushi Liquor
+D:Strong spirits with a whole pit viper boldly steeped in them. It is said
+D:to be good for the constitution.
+
+I:820
+J:独鈷杵
+N:& Vajra~
+D:One of the ritual implements called a vajra, this one with a sharp blade
+D:at each end.
+
+I:821
+J:作業服
+D:An engineer's outfit. It has pockets for tools all over it.
+
+I:822
+J:索道まんじゅう
+N:& Ropeway Manjuu~
+D:A bun put on sale to celebrate the opening of the ropeway. It does not
+D:seem to keep very long.
+
+I:823
+J:鼓
+D:An elegant hand drum.
+
+I:824
+J:笠
+N:& Sedge Hat~
+D:A stiff hat woven from bamboo, rush or sedge. It is used to keep off rain
+D:and sun.
+
+I:825
+J:鉈
+D:A blade with a broad, thick, sturdy edge and a short handle. It is a tool
+D:for life in the mountains, but it can serve as a weapon too.
+
+I:826
+J:絵巻物
+D:An old scroll. Nothing at all is written on it, however...
+
+I:827
+J:背嚢
+D:A cloth bag with straps for carrying on both shoulders. "KOSUZU" is
+D:written on the underside of the flap...
+
+I:828
+J:茂林寺の茶釜
+D:A wondrous tea kettle said to pour hot water without ever running dry.
+
+I:829
+J:羊皮紙の包み
+N:& Parchment Package~
+D:A box of fragrant wood wrapped in a large sheet of parchment. Eerie
+D:carvings cover the box...
+
+I:830
+J:銀の鍵
+D:A large silver key nearly five inches long.
+
+I:831
+J:オニフスベ:白くて大きな
+D:A round white mushroom, also called a puffball. It is famous for growing
+D:to an astonishing size overnight. When it ripens it splits and scatters
+D:spores in great numbers. The unripe ones can be eaten.
+
+I:832
+J:薬籠
+D:(dummy item for a special power: if this is ever generated in normal play
+D:it is a bug, so please report it on the distributor's board)
+
+I:834
+J:鰻の素焼き
+D:Grilling an eel is said to drive out the poison and make a medicine that
+D:cures illness.
+
+I:835
+J:写真
+D:A photograph of beautiful danmaku. Somehow it was still in your hand when
+D:you woke from the dream.
+
+I:836
+J:スペルカード
+D:A Spell Card of your very own. You can invoke it with the "use" command by
+D:paying its cost. It is not used up.
+
+I:837
+J:四猿ちゃん
+N:Four Monkeys Charm
+D:A set of four monkey figures made by a famous sage: "see not", "speak
+D:not", "hear not" and "let none escape". "Let none escape" is said to catch
+D:the worms that tell heaven of your sins and shorten your life. With this,
+D:long life is as good as guaranteed.
+
+I:838
+J:山怪散楽図
+D:A scroll painted with a grim and ghastly scene of hell.
+
+I:839
+J:天狗之書
+D:A letter written by a tengu for a human. The superb hand stands out on
+D:fine Mino paper.
+
+I:840
+J:稗田埋蔵金の地図
+N:Hieda Treasure Map
+D:Kosuzu and Akyuu found a map of the Hieda buried treasure and managed to
+D:decipher it. Marisa and the others caught wind of the rumour and set out
+D:to dig it up as well, but...
+
+I:841
+J:茸の盆栽
+D:A bonsai of fresh, glossy mushrooms. Who grew it is unknown, but you can
+D:see that it has been tended with enormous care.
+
+I:842
+J:相棒
+D:A stuffed toy of an oddly hard material, brought in from the Outside
+D:World. Is this the sort of thing the children out there dote on?
+
+I:843
+J:商売繁盛の秘宝
+N:Treasure of Prosperous Trade
+D:A treasure for prosperity in business, kept secret by a village sake shop
+D:for generations. It is shaped like a vessel for holding water.
+
+I:844
+J:水煙管
+N:Hookah
+D:A smoking implement shaped like a beautiful jar. Smoke tobacco through it
+D:and the smoke is said to grow mellow.
+
+I:845
+J:遮光器土偶
+D:An ancient clay figure with enormously exaggerated eyes. It is rare to
+D:find one that has survived intact.
+
+I:846
+J:渾天儀
+D:A rare celestial globe showing constellations in the shapes of youkai. It
+D:is thought to be the work of an old youkai of Gensokyo.
+
+I:847
+J:魚石
+D:A strange stone from which water keeps seeping out. Inside it is a pair of
+D:fish, and it is said that if you grind the stone until you can see through
+D:it, the beauty is beyond words.
+
+I:848
+J:三段ロケットの模型
+N:Three-Stage Rocket Model
+D:It looks like a lopsided three-storey hut. They say the mistress of the
+D:Scarlet Devil Mansion once went to the moon in this rocket.
+
+I:849
+J:聞き耳頭巾
+D:It looks like nothing but an old hood, but the spiritual power of Inari
+D:dwells in it, and wearing it is said to let you hear the voices of animals
+D:and plants.
+
+I:850
+J:邪竜の魚拓
+D:A truly rare fish rubbing of a young evil dragon. It is signed in the
+D:corner: "Evil Dragon *".
+
+I:851
+J:ダミー人間
+N:Dummy Human
+D:At a glance it is a sleeping human, but in fact it is an exceedingly well-
+D:made doll. ...Or is it really a doll at all?
+
+I:852
+J:月面探査車
+N:Lunar Rover
+D:A vehicle of an extremely strange shape. Is this too a product of the
+D:lunar civilisation?
+
+I:853
+J:龍石
+D:A strange stone from which water keeps seeping out. A dragon lives inside
+D:it. As the dragon grows the stone grows huge with it, until at last the
+D:stone splits with a thunderbolt and the dragon ascends to heaven.
+
+I:854
+J:ヒソウテンソク
+D:A giant humanoid robot... or rather, a balloon shaped like one.
+
+I:855
+J:青いダイヤモンド
+N:Blue Diamond
+D:An exceedingly rare blue diamond of great size.
+
+I:856
+J:箱庭冥界
+D:A box holding an extremely well-made model of the Netherworld. Look inside
+D:and you can see things like will-o'-the-wisps flitting about.
+
+I:857
+J:天狗の葉団扇
+N:Tengu's Leaf Fan
+D:A fan that only high-ranking tengu are permitted to carry. Very strong
+D:ascetic power is bound up in it.
+
+I:858
+J:希望の面
+N:Mask of Hope
+D:A pure white mask of a child's face. Its expression is as gentle as a
+D:jizou's.
+
+I:859
+J:超小型プランク爆弾
+N:Micro Planck Bomb
+D:Apparently a powerful weapon developed on the moon over a thousand years
+D:ago. It brings home to you just how fearsome the lunar civilisation is.
+
+I:860
+J:マヨヒガの茶碗
+N:Teacup of Mayohiga
+D:Sometimes an unfamiliar house called a "Mayohiga" appears suddenly in the
+D:mountains. Inside there are traces of people living there until a moment
+D:ago, yet search as you may there is nobody to be found, and goods brought
+D:back from such a house are said to bring their owner wealth.
+
+I:861
+J:ヴォイニッチ写本
+D:An old document in an unidentified language. It is full of strange
+D:illustrations.
+
+I:862
+J:蜃
+D:A youkai shellfish said to be a transformed clam of great age. This youkai
+D:has the power to create a vast illusion, the "shinkirou". Holding a
+D:banquet while gazing at the illusion was once the mark of a person of
+D:taste.
+
+I:863
+J:一星球
+D:A translucent sphere of some strange material. Inside you can see a single
+D:mark like a star.
+
+I:864
+J:優曇華の盆栽
+N:Udonge Bonsai
+D:A bonsai of a plant native to the moon. On the moon the plant neither
+D:withers nor bears fruit, but bring it to the earth and it absorbs impurity
+D:and bears jewels of seven colours. This is the Jewelled Branch of Hourai,
+D:and the earth has seen war after war fought over the treasure.
+
+I:865
+J:数百年前の手記
+D:A mysterious scrap of paper said to have been found in the bamboo forest
+D:several centuries ago. Along with references to mobile telephones, GPS and
+D:other technology that cannot have existed at the time, it sets out the
+D:startling view that this world is somebody's dream.
+
+I:866
+J:幺楽団復活演奏会のチラシ
+D:It reads "Fantastic Modulation, always in your heart".
+
+I:867
+J:七星剣
+D:An elegant straight sword ornamented with the design of the Big Dipper.
+
+I:868
+J:皿
+D:A very old plate. Did it once grace a table in the distant past?
+
+I:869
+J:壺
+D:A jar for sale. It is not really meant to be used as a chair or a drying
+D:pole.
+
+I:870
+J:像
+D:Some artist of a distant day must have poured heart and soul into carving
+D:it.
+
+I:871
+J:宝剣
+D:A single sword with fine ornamentation. It must have been made as a symbol
+D:of power, with every art of the ancient world poured into it.
+
+I:872
+J:オーパーツ
+D:Out-of-place artifact -- the name given to a mysterious find that the
+D:technology of its own age should not have been able to produce.
+
+I:873
+J:魔法の矢筒
+D:Use it and you can leave arrows at your base of operations, or draw arrows
+D:out of it.
+
+I:874
+J:ファインセラミックスの鎧
+D:Armour made of highly refined non-metallic material. New fine ceramics
+D:with all sorts of properties are being developed every day.
+
+I:875
+J:天人の丹
+N:& Celestial Elixir~
+D:The finest elixir, used by celestials in their rites. It is said that a
+D:human who eats it at once sprouts wings and ascends as an immortal.
+
+I:876
+J:頭蓋骨
+D:A skull, of the sort lying about all over hell.
+
+I:877
+J:魔法スイカ
+D:A gigantic watermelon with an eerie pattern like a skull. It grows on the
+D:trees of the Forest of Magic.
+
+I:878
+J:石の赤子
+N:Stone Baby
+D:An adorable stone statue of an infant.
+
+I:879
+J:チョウセンアサガオの葉
+D:The leaf of a poisonous plant, also called the datura or thorn apple.
+
+I:880
+J:宿屋の置物
+N:Inn Ornament
+D:An ornament that a zashiki-warashi brought back in place of wages from a
+D:job in the Outside World. "Inn of the Zashiki-warashi" is carved into it.
+
+I:881
+J:少名針妙丸の家
+N:Shinmyoumaru's House
+D:At a glance it might be an insect cage or a make-up box, but look inside
+D:and you find a bed, curtains and the rest. It is the house Shinmyoumaru
+D:lived in while shrunken as the price of the mallet's power.
+
+I:882
+J:吸血鬼の棺桶
+D:Vampires are said to sleep in coffins packed with the earth of their
+D:homeland. This coffin, however, is laid with sheets and strewn with roses.
+
+I:883
+J:マイクロンフト・ボブ
+N:Micronft Bob
+D:A small yellow disc with something like a human face drawn on it.
+
+I:884
+J:ラフノールの鏡
+D:A crystal as thin as a mirror, yet unimaginably tough.
+
+I:885
+J:鳥の巣風エクステ
+N:Bird's-Nest Hair Extensions
+D:A great mass of bright red hair extensions.
+
+I:886
+J:運命の切札
+D:A pack of cards painted with unfamiliar landscapes and figures. A unicorn
+D:is drawn on the back of each card.
+
+I:887
+J:スキーズブラズニル
+N:Skidbladnir
+D:A magic sailing ship that raises its own wind to move. Unfolded it is
+D:large enough for all the gods to board, yet folded it is said to be small
+D:enough to carry.
+
+I:888
+J:古書型コンピュータ
+N:Antique-Book Computer
+D:At a glance it is an old book, but open it and it is a computer packed
+D:with the latest technology of the Lunar Capital.
+
+I:889
+J:貝殻の戦車
+N:Seashell Chariot
+D:A magnificent chariot shaped like a gigantic seashell.
+
+I:890
+J:古のものの水晶
+D:A strange crystal that gives off cold too fierce to hold in the hand.
+
+I:893
+J:鯨の息吹
+N:Whale's Breath
+D:A sake popular at the Geidontei. Rumour has it that if you order it in
+D:autumn you get a brew that goes to your head unusually fast.
+
+I:894
+J:龍珠
+D:A jewel shining in seven colours, said to belong to the dragons. It has
+D:the power, very slightly, to put soul into a thing.
+
+I:895
+J:アビリティカード
+D:A card with a picture of some item or person you have seen before. Carry
+D:it and you can use another's power as though it were your own.
+
+I:896
+J:虹色の箱
+D:A small box that shines rather too gaudily. You will hardly be able to
+D:contain your excitement when you open it!
+
+I:897
+J:酔魔の酒の空き瓶
+N:Empty Suima Liquor Bottle
+D:Just an empty bottle. Sniff it and you can tell that it held some very
+D:strong liquor.
+
+I:898
+J:フォービドゥンフルーツ
+D:The fruit of the forbidden tree of knowledge. Tempted by the serpent, Adam
+D:and Eve ate of it and were driven out of paradise.
+
+I:901
+J:ルナティックガン改
+D:A strange gun shaped like a great trumpet with rabbit ears growing out of
+D:it.
+
+I:902
+J:蠱毒皿
+N:Kodoku Dish
+D:A great mass of insects writhes on the plate...
+
+I:904
+J:奇妙な豆
+D:A bean too big to fit in your palm, in lurid colours and markings. It
+D:seems to have been picked in the Forest of Magic.
+
+I:905
+J:勾玉
+D:A magatama you made yourself. Equip it with its own command and invoke it
+D:by spending spell points.
+
+I:907
+J:月の宝玉
+D:An orb of the moon with the power to purify impurity, a little.
+
+I:909
+J:魔法の剣
+N:& Magic Sword~
+D:A sword you conjured out of your own magic.
+
+I:910
+J:鬼潰し
+D:A sake brewed in the hot spring town underground. Naturally, no oni is
+D:ever floored by drinking it.
+
+I:911
+J:蜂蜜
+N:& Honey~
+D:Honey gathered by the bees of the Forest of Magic. It holds a great deal
+D:of magic. Something in the forest's miasma has changed it, however, and
+D:eating it as it is will make you ill.
+
+I:912
+J:蜂蜜酒
+N:Mead
+D:A liquor made by fermenting honey. It was brewed as an experiment, though,
+D:and the method is still crude, so it is not very good.
+
+I:913
+J:練酒
+N:Nerizake
+D:A paste-like liquor made by an ancient method. Rumour has it that eating
+D:it wraps you in a feeling of bliss.
+
+I:915
+J:巌となったさざれ石
+N:Sazareishi Boulder
+D:A rock formed as small pebbles gathered and hardened together over a long
+D:age.
+
+I:924
+J:蚊除けの薬草酒
+D:A herbal liquor steeped with flowers that mosquitoes hate. Scatter it and
+D:you can pass a summer free of swelling and itching. (150+1d150 damage to
+D:insects around you)

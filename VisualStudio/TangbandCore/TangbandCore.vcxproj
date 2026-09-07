@@ -1,0 +1,1207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  TangbandCore.vcxproj — 短愚蛮怒コア。
+
+  定義の置き場: 分割の第 4 段の §0〜§3 / プロトコル v1 の仕様
+
+  中身は `src/` 全部 ＋ `presentation/` ＋ `platform/windows/core_main.cpp`。
+  **`ui/` と `sdl_entry.cpp` は入れない。SDL の include も lib も足さない。**
+  （presentation は SDL ヘッダを一切 include しない＝調査済み。だから
+   `HENGBAND_SDL2_UI=1` を定義しても SDL は要らない。この定義は
+   `src/main-win.cpp` の `WinMain` を殺し、presentation の SDL 経路を
+   有効にするためのもので、SDL ライブラリの有無とは独立している。）
+
+  既存 `Hengband.vcxproj` は触っていない（計画 §0）。共有 TU の重複コンパイルは許容。
+  構成は Debug|Win32 / Release|Win32 のみ（English-* は既存 exe が担う）。
+  CRT は **/MD 固定**（既存の HENGBAND_SDL2_UI=1 上書きグループと同じ）。
+  ui 側と CRT を揃えないと、将来 lib を共有した瞬間に混ざる。
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D05}</ProjectGuid>
+    <RootNamespace>TangbandCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <!--
+    libcurl。/MD 固定なので、既存 vcxproj が HENGBAND_SDL2_UI=1 のときに選ぶ
+    vcpkg の動的 libcurl を**無条件で**使う（静的 /MT 版を混ぜると LNK4098）。
+    SDL は足さない（この exe は SDL を知らない）。
+  -->
+  <PropertyGroup Label="HengbandCurl">
+    <HengbandVcpkgRoot Condition="'$(HengbandVcpkgRoot)' == ''">C:\vcpkg</HengbandVcpkgRoot>
+    <HengbandCurlLibDebug>$(HengbandVcpkgRoot)\installed\x86-windows\debug\lib\libcurl-d.lib</HengbandCurlLibDebug>
+    <HengbandCurlLibRelease>$(HengbandVcpkgRoot)\installed\x86-windows\lib\libcurl.lib</HengbandCurlLibRelease>
+    <HengbandCurlBinDebug>$(HengbandVcpkgRoot)\installed\x86-windows\debug\bin</HengbandCurlBinDebug>
+    <HengbandCurlBinRelease>$(HengbandVcpkgRoot)\installed\x86-windows\bin</HengbandCurlBinRelease>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- 成果物はリポジトリ直下（既存 exe と同じ。lib/ と assets/ が exe 基準・cwd 相対のため）。 -->
+    <OutDir>..\..\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <TargetName>TangbandCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>TANGBAND;WINDOWS;_CRT_SECURE_NO_WARNINGS;WIN32;HAVE_STDINT_H;DISABLE_NET;JP;UTF8;WIN_DEBUG;HENGBAND_SDL2_UI=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4061;4062;4127;4244;4255;4365;4514;4668;4710;4820;4996;4774;5045;5264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\src;..\..\src\external-lib\include;..\..\presentation;..\..\platform\windows;$(HengbandVcpkgRoot)\installed\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <CompileAsManaged>false</CompileAsManaged>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <TreatAngleBracketIncludesAsExternal>true</TreatAngleBracketIncludesAsExternal>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;gdiplus.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;Normaliz.lib;DbgHelp.lib;$(HengbandCurlLibDebug);%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- 窓は持たない。stdout がプロトコル、stderr がログ（v1 §1.1）。 -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <Culture>0x0411</Culture>
+      <PreprocessorDefinitions>JP;TANGBAND</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+copy /Y "$(HengbandCurlBinDebug)\libcurl-d.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>TANGBAND;WINDOWS;_CRT_SECURE_NO_WARNINGS;WIN32;HAVE_STDINT_H;DISABLE_NET;JP;UTF8;HENGBAND_SDL2_UI=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <DisableSpecificWarnings>4061;4062;4127;4244;4255;4365;4514;4668;4710;4711;4738;4820;4996;4774;5045;5264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>..\..\src;..\..\src\external-lib\include;..\..\presentation;..\..\platform\windows;$(HengbandVcpkgRoot)\installed\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <StructMemberAlignment>16Bytes</StructMemberAlignment>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ConformanceMode>true</ConformanceMode>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <TreatAngleBracketIncludesAsExternal>true</TreatAngleBracketIncludesAsExternal>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;gdiplus.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;Normaliz.lib;DbgHelp.lib;$(HengbandCurlLibRelease);%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ResourceCompile>
+      <Culture>0x0411</Culture>
+      <PreprocessorDefinitions>JP;TANGBAND</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\action\action-limited.cpp" />
+    <ClCompile Include="..\..\src\action\activation-execution.cpp" />
+    <ClCompile Include="..\..\src\action\mutation-execution.cpp" />
+    <ClCompile Include="..\..\src\action\open-close-execution.cpp" />
+    <ClCompile Include="..\..\src\action\open-util.cpp" />
+    <ClCompile Include="..\..\src\action\run-execution.cpp" />
+    <ClCompile Include="..\..\src\action\travel-execution.cpp" />
+    <ClCompile Include="..\..\src\action\tunnel-execution.cpp" />
+    <ClCompile Include="..\..\src\action\weapon-shield.cpp" />
+    <ClCompile Include="..\..\src\artifact\fixed-art-generator.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-activation.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-characteristics.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-generator.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-misc.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-resistance.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-slay.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-keys-table.cpp" />
+    <ClCompile Include="..\..\src\avatar\avatar-changer.cpp" />
+    <ClCompile Include="..\..\src\birth\auto-roller.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-body-spec.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-select-class.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-select-personality.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-select-race.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-select-realm.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-stat.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-util.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-wizard.cpp" />
+    <ClCompile Include="..\..\src\birth\game-play-initializer.cpp" />
+    <ClCompile Include="..\..\src\birth\history-editor.cpp" />
+    <ClCompile Include="..\..\src\birth\history-generator.cpp" />
+    <ClCompile Include="..\..\src\birth\initial-equipments-table.cpp" />
+    <ClCompile Include="..\..\src\birth\inventory-initializer.cpp" />
+    <ClCompile Include="..\..\src\birth\quick-start.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-ball-bolt.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-breath.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-caster.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-spirit-curse.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-status.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-summon.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-util.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\learnt-info.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\learnt-power-getter.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-attack.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-move.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-open-close.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-racial.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-shoot.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-travel.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-tunnel.cpp" />
+    <ClCompile Include="..\..\src\action\movement-execution.cpp" />
+    <ClCompile Include="..\..\src\core\score-util.cpp" />
+    <ClCompile Include="..\..\src\external-lib\fmt\format.cc" />
+    <ClCompile Include="..\..\src\info-reader\definition-hash-data.cpp" />
+    <ClCompile Include="..\..\src\info-reader\quest-reader.cpp" />
+    <ClCompile Include="..\..\src\io\macro-configurations-store.cpp" />
+    <ClCompile Include="..\..\src\io\temp-file.cpp" />
+    <ClCompile Include="..\..\src\load\artifact-record-loader.cpp" />
+    <ClCompile Include="..\..\src\locale\character-encoding.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-movement-direction-list.cpp" />
+    <ClCompile Include="..\..\src\player-info\bluemage-data.cpp" />
+    <ClCompile Include="..\..\src\rumor\rumor-definition.cpp" />
+    <ClCompile Include="..\..\src\rumor\rumor-list.cpp" />
+    <ClCompile Include="..\..\src\rumor\rumor-service.cpp" />
+    <ClCompile Include="..\..\src\save\artifact-record-writer.cpp" />
+    <ClCompile Include="..\..\src\system\artifact\artifact-list.cpp" />
+    <ClCompile Include="..\..\src\system\artifact\artifact-record.cpp" />
+    <ClCompile Include="..\..\src\system\artifact\artifact-service.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-config.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-configs.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-record.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-records.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-service.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\quest-definition.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\quest-fixed-map.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\quest-list.cpp" />
+    <ClCompile Include="..\..\src\system\floor\town-records.cpp" />
+    <ClCompile Include="..\..\src\system\floor\wilderness-grid.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-record.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-records.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-service.cpp" />
+    <ClCompile Include="..\..\src\system\services\dungeon-monrace-service.cpp" />
+    <ClCompile Include="..\..\src\system\services\dungeon-service.cpp" />
+    <ClCompile Include="..\..\src\system\floor\floor-list.cpp" />
+    <ClCompile Include="..\..\src\load\item\item-loader-base.cpp" />
+    <ClCompile Include="..\..\src\load\item\item-loader-factory.cpp" />
+    <ClCompile Include="..\..\src\load\monster\monster-loader-factory.cpp" />
+    <ClCompile Include="..\..\src\load\player-class-specific-data-loader.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-exception.cpp" />
+    <ClCompile Include="..\..\src\market\melee-arena.cpp" />
+    <ClCompile Include="..\..\src\monster-race\race-brightness-mask.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-pain-describer.cpp" />
+    <ClCompile Include="..\..\src\net\curl-easy-session.cpp" />
+    <ClCompile Include="..\..\src\net\curl-slist.cpp" />
+    <ClCompile Include="..\..\src\net\http-client.cpp" />
+    <ClCompile Include="..\..\src\net\report-error.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\enchanter-factory.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack\abstract-mspell.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-data.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-soft-armor.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\others\apply-magic-lite.cpp" />
+    <ClCompile Include="..\..\src\monster-race\monster-kind-mask.cpp" />
+    <ClCompile Include="..\..\src\monster-race\race-resistance-mask.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-dragon-armor.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-hard-armor.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\abstract-weapon-enchanter.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\apply-magic-hafted.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\apply-magic-polearm.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\melee-weapon-enchanter.cpp" />
+    <ClCompile Include="..\..\src\object-use\quaff\quaff-effects.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\apply-magic-arrow.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\apply-magic-digging.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\apply-magic-sword.cpp" />
+    <ClCompile Include="..\..\src\object-use\read\gbh-shirt-read-executor.cpp" />
+    <ClCompile Include="..\..\src\object-use\read\parchment-read-executor.cpp" />
+    <ClCompile Include="..\..\src\object-use\read\read-executor-factory.cpp" />
+    <ClCompile Include="..\..\src\object-use\read\ring-power-read-executor.cpp" />
+    <ClCompile Include="..\..\src\object-use\read\scroll-read-executor.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-nest.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-pit.cpp" />
+    <ClCompile Include="..\..\src\smith\object-smith.cpp" />
+    <ClCompile Include="..\..\src\smith\smith-info.cpp" />
+    <ClCompile Include="..\..\src\smith\smith-tables.cpp" />
+    <ClCompile Include="..\..\src\object-use\item-use-checker.cpp" />
+    <ClCompile Include="..\..\src\object-use\use-execution.cpp" />
+    <ClCompile Include="..\..\src\object-use\zaprod-execution.cpp" />
+    <ClCompile Include="..\..\src\object-use\zapwand-execution.cpp" />
+    <ClCompile Include="..\..\src\player-base\player-class.cpp" />
+    <ClCompile Include="..\..\src\player-base\player-race.cpp" />
+    <ClCompile Include="..\..\src\player-info\magic-eater-data-type.cpp" />
+    <ClCompile Include="..\..\src\save\player-class-specific-data-writer.cpp" />
+    <ClCompile Include="..\..\src\specific-object\stone-of-lore.cpp" />
+    <ClCompile Include="..\..\src\spell-class\spells-mirror-master.cpp" />
+    <ClCompile Include="..\..\src\system\angband-system.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-allocation.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\dungeon-data-definition.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-key.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-list.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\dungeon-list.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\dungeon-record.cpp" />
+    <ClCompile Include="..\..\src\system\floor\town-list.cpp" />
+    <ClCompile Include="..\..\src\system\inner-game-data.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-list.cpp" />
+    <ClCompile Include="..\..\src\system\redrawing-flags-updater.cpp" />
+    <ClCompile Include="..\..\src\system\floor\floor-info.cpp" />
+    <ClCompile Include="..\..\src\system\grid-type-definition.cpp" />
+    <ClCompile Include="..\..\src\main-win\commandline-win.cpp" />
+    <ClCompile Include="..\..\src\main-win\graphics-win.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-term.cpp" />
+    <ClCompile Include="..\..\src\main-win\wav-reader.cpp" />
+    <ClCompile Include="..\..\src\main-win\stack-trace-win.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-damage.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\others\apply-magic-amulet.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\abstract-protector-enchanter.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-boots.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-cloak.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-crown.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-gloves.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-helm.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\others\apply-magic-ring.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-shield.cpp" />
+    <ClCompile Include="..\..\src\object\object-index-list.cpp" />
+    <ClCompile Include="..\..\src\player-info\alignment.cpp" />
+    <ClCompile Include="..\..\src\player-info\equipment-info.cpp" />
+    <ClCompile Include="..\..\src\player-status\player-energy.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-utils.cpp" />
+    <ClCompile Include="..\..\src\store\cmd-store.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-floor.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-lore.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-menu-content-table.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\macro-util.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-destroy.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-equipment.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-refill.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-throw.cpp" />
+    <ClCompile Include="..\..\src\cmd-visual\cmd-map.cpp" />
+    <ClCompile Include="..\..\src\core\asking-player.cpp" />
+    <ClCompile Include="..\..\src\core\disturbance.cpp" />
+    <ClCompile Include="..\..\src\core\object-compressor.cpp" />
+    <ClCompile Include="..\..\src\core\visuals-reseter.cpp" />
+    <ClCompile Include="..\..\src\core\window-redrawer.cpp" />
+    <ClCompile Include="..\..\src\dungeon\quest-completion-checker.cpp" />
+    <ClCompile Include="..\..\src\dungeon\quest-monster-placer.cpp" />
+    <ClCompile Include="..\..\src\flavor\flag-inscriptions-table.cpp" />
+    <ClCompile Include="..\..\src\flavor\flavor-describer.cpp" />
+    <ClCompile Include="..\..\src\flavor\flavor-util.cpp" />
+    <ClCompile Include="..\..\src\flavor\named-item-describer.cpp" />
+    <ClCompile Include="..\..\src\flavor\tval-description-switcher.cpp" />
+    <ClCompile Include="..\..\src\floor\cave-generator.cpp" />
+    <ClCompile Include="..\..\src\floor\dungeon-tunnel-util.cpp" />
+    <ClCompile Include="..\..\src\floor\fixed-map-generator.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-changer.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-leaver.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-mode-changer.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-save-util.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-util.cpp" />
+    <ClCompile Include="..\..\src\floor\line-of-sight.cpp" />
+    <ClCompile Include="..\..\src\floor\object-allocator.cpp" />
+    <ClCompile Include="..\..\src\floor\object-scanner.cpp" />
+    <ClCompile Include="..\..\src\floor\tunnel-generator.cpp" />
+    <ClCompile Include="..\..\src\game-option\auto-destruction-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\birth-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\cheat-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\disturbance-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\game-play-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\input-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\keymap-directory-getter.cpp" />
+    <ClCompile Include="..\..\src\game-option\map-screen-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\option-flags.cpp" />
+    <ClCompile Include="..\..\src\game-option\option-types-table.cpp" />
+    <ClCompile Include="..\..\src\game-option\play-record-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\runtime-arguments.cpp" />
+    <ClCompile Include="..\..\src\game-option\special-options.cpp" />
+    <ClCompile Include="..\..\src\game-option\text-display-options.cpp" />
+    <ClCompile Include="..\..\src\grid\door.cpp" />
+    <ClCompile Include="..\..\src\grid\feature-generator.cpp" />
+    <ClCompile Include="..\..\src\grid\object-placer.cpp" />
+    <ClCompile Include="..\..\src\grid\lighting-colors-table.cpp" />
+    <ClCompile Include="..\..\src\info-reader\artifact-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\dungeon-info-tokens-table.cpp" />
+    <ClCompile Include="..\..\src\info-reader\dungeon-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\ego-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\feature-info-tokens-table.cpp" />
+    <ClCompile Include="..\..\src\info-reader\general-parser.cpp" />
+    <ClCompile Include="..\..\src\info-reader\info-reader-util.cpp" />
+    <ClCompile Include="..\..\src\info-reader\json-reader-util.cpp" />
+    <ClCompile Include="..\..\src\info-reader\baseitem-tokens-table.cpp" />
+    <ClCompile Include="..\..\src\info-reader\baseitem-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\magic-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\message-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\race-info-tokens-table.cpp" />
+    <ClCompile Include="..\..\src\info-reader\race-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\skill-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\spell-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\terrain-reader.cpp" />
+    <ClCompile Include="..\..\src\info-reader\vault-reader.cpp" />
+    <ClCompile Include="..\..\src\inventory\floor-item-getter.cpp" />
+    <ClCompile Include="..\..\src\inventory\item-selection-util.cpp" />
+    <ClCompile Include="..\..\src\inventory\inventory-describer.cpp" />
+    <ClCompile Include="..\..\src\inventory\inventory-util.cpp" />
+    <ClCompile Include="..\..\src\io-dump\random-art-info-dumper.cpp" />
+    <ClCompile Include="..\..\src\io\command-repeater.cpp" />
+    <ClCompile Include="..\..\src\io\cursor.cpp" />
+    <ClCompile Include="..\..\src\io\input-key-acceptor.cpp" />
+    <ClCompile Include="..\..\src\io\input-key-requester.cpp" />
+    <ClCompile Include="..\..\src\store\store-key-processor.cpp" />
+    <ClCompile Include="..\..\src\load\info-loader.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-cfg-reader.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-mci.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-music.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-sound.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-tokenizer.cpp" />
+    <ClCompile Include="..\..\src\main\game-data-initializer.cpp" />
+    <ClCompile Include="..\..\src\main\info-initializer.cpp" />
+    <ClCompile Include="..\..\src\main\init-error-messages-table.cpp" />
+    <ClCompile Include="..\..\src\main-win\main-win-bg.cpp" />
+    <ClCompile Include="..\..\src\main\scene-table-floor.cpp" />
+    <ClCompile Include="..\..\src\main\scene-table-monster.cpp" />
+    <ClCompile Include="..\..\src\main\scene-table.cpp" />
+    <ClCompile Include="..\..\src\market\building-initializer.cpp" />
+    <ClCompile Include="..\..\src\melee\melee-spell-flags-checker.cpp" />
+    <ClCompile Include="..\..\src\melee\melee-spell-util.cpp" />
+    <ClCompile Include="..\..\src\melee\melee-spell.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-archer.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-berserker.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-blue-mage.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-chaos-warrior.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-elementalist.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-explanations-table.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-hobbit.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-info.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-mage.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-magic-eater.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-magic-resistance.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-monk.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-power-getter.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-priest.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-weaponsmith.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-lose.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-death-util.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-lite-util.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-lite.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\special-death-switcher.cpp" />
+    <ClCompile Include="..\..\src\monster-race\race-ability-mask.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-status-setter.cpp" />
+    <ClCompile Include="..\..\src\mspell\element-resistance-checker.cpp" />
+    <ClCompile Include="..\..\src\mspell\high-resistance-checker.cpp" />
+    <ClCompile Include="..\..\src\mspell\improper-mspell-remover.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack-util.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-lite.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-selector.cpp" />
+    <ClCompile Include="..\..\src\mspell\smart-mspell-util.cpp" />
+    <ClCompile Include="..\..\src\mspell\specified-summon.cpp" />
+    <ClCompile Include="..\..\src\mutation\gain-mutation-switcher.cpp" />
+    <ClCompile Include="..\..\src\mutation\lose-mutation-switcher.cpp" />
+    <ClCompile Include="..\..\src\mutation\mutation-util.cpp" />
+    <ClCompile Include="..\..\src\mutation\mutation-investor-remover.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-bolt-ball.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-breath.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-charm.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-genocide.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-resistance.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-teleport.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-util.cpp" />
+    <ClCompile Include="..\..\src\player-info\base-status-info.cpp" />
+    <ClCompile Include="..\..\src\player-info\body-improvement-info.cpp" />
+    <ClCompile Include="..\..\src\player-info\class-ability-info.cpp" />
+    <ClCompile Include="..\..\src\player-info\mutation-info.cpp" />
+    <ClCompile Include="..\..\src\player-info\race-ability-info.cpp" />
+    <ClCompile Include="..\..\src\player-info\resistance-info.cpp" />
+    <ClCompile Include="..\..\src\player-info\self-info-util.cpp" />
+    <ClCompile Include="..\..\src\player-info\weapon-effect-info.cpp" />
+    <ClCompile Include="..\..\src\player-status\player-speed.cpp" />
+    <ClCompile Include="..\..\src\player-status\player-status-base.cpp" />
+    <ClCompile Include="..\..\src\player-status\player-stealth.cpp" />
+    <ClCompile Include="..\..\src\player-status\player-basic-statistics.cpp" />
+    <ClCompile Include="..\..\src\player-ability\player-strength.cpp" />
+    <ClCompile Include="..\..\src\player-ability\player-intelligence.cpp" />
+    <ClCompile Include="..\..\src\player-ability\player-wisdom.cpp" />
+    <ClCompile Include="..\..\src\player-ability\player-dexterity.cpp" />
+    <ClCompile Include="..\..\src\player-ability\player-constitution.cpp" />
+    <ClCompile Include="..\..\src\player-ability\player-charisma.cpp" />
+    <ClCompile Include="..\..\src\player-status\player-infravision.cpp" />
+    <ClCompile Include="..\..\src\player\player-status-resist.cpp" />
+    <ClCompile Include="..\..\src\room\vault-builder.cpp" />
+    <ClCompile Include="..\..\src\specific-object\blade-turner.cpp" />
+    <ClCompile Include="..\..\src\specific-object\monster-ball.cpp" />
+    <ClCompile Include="..\..\src\object-use\read\read-execution.cpp" />
+    <ClCompile Include="..\..\src\player\player-status-flags.cpp" />
+    <ClCompile Include="..\..\src\player\player-status-table.cpp" />
+    <ClCompile Include="..\..\src\player\player-spell-status.cpp" />
+    <ClCompile Include="..\..\src\player\player-view.cpp" />
+    <ClCompile Include="..\..\src\racial\class-racial-switcher.cpp" />
+    <ClCompile Include="..\..\src\racial\mutation-racial-selector.cpp" />
+    <ClCompile Include="..\..\src\action\racial-execution.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-kutar.cpp" />
+    <ClCompile Include="..\..\src\mind\stances-table.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-dispel.cpp" />
+    <ClCompile Include="..\..\src\mutation\mutation-techniques.cpp" />
+    <ClCompile Include="..\..\src\artifact\random-art-pval-investor.cpp" />
+    <ClCompile Include="..\..\src\object-hook\hook-expendable.cpp" />
+    <ClCompile Include="..\..\src\object-hook\hook-magic.cpp" />
+    <ClCompile Include="..\..\src\object-hook\hook-perception.cpp" />
+    <ClCompile Include="..\..\src\object-hook\hook-weapon.cpp" />
+    <ClCompile Include="..\..\src\object-hook\hook-armor.cpp" />
+    <ClCompile Include="..\..\src\object-use\quaff\quaff-execution.cpp" />
+    <ClCompile Include="..\..\src\load\angband-version-comparer.cpp" />
+    <ClCompile Include="..\..\src\load\birth-loader.cpp" />
+    <ClCompile Include="..\..\src\load\dummy-loader.cpp" />
+    <ClCompile Include="..\..\src\load\floor-loader.cpp" />
+    <ClCompile Include="..\..\src\load\dungeon-loader.cpp" />
+    <ClCompile Include="..\..\src\load\extra-loader.cpp" />
+    <ClCompile Include="..\..\src\load\inventory-loader.cpp" />
+    <ClCompile Include="..\..\src\load\old\item-loader-savefile50.cpp" />
+    <ClCompile Include="..\..\src\load\load-util.cpp" />
+    <ClCompile Include="..\..\src\load\old\load-v1-5-0.cpp" />
+    <ClCompile Include="..\..\src\load\old\load-v1-7-0.cpp" />
+    <ClCompile Include="..\..\src\load\load-zangband.cpp" />
+    <ClCompile Include="..\..\src\load\lore-loader.cpp" />
+    <ClCompile Include="..\..\src\load\old\monster-loader-savefile50.cpp" />
+    <ClCompile Include="..\..\src\load\option-loader.cpp" />
+    <ClCompile Include="..\..\src\load\player-attack-loader.cpp" />
+    <ClCompile Include="..\..\src\load\player-info-loader.cpp" />
+    <ClCompile Include="..\..\src\load\store-loader.cpp" />
+    <ClCompile Include="..\..\src\load\world-loader.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-util.cpp" />
+    <ClCompile Include="..\..\src\racial\race-racial-command-setter.cpp" />
+    <ClCompile Include="..\..\src\room\cave-filler.cpp" />
+    <ClCompile Include="..\..\src\room\door-definition.cpp" />
+    <ClCompile Include="..\..\src\room\room-generator.cpp" />
+    <ClCompile Include="..\..\src\room\room-info-table.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-maze-vault.cpp" />
+    <ClCompile Include="..\..\src\room\space-finder.cpp" />
+    <ClCompile Include="..\..\src\room\treasure-deployment.cpp" />
+    <ClCompile Include="..\..\src\save\floor-writer.cpp" />
+    <ClCompile Include="..\..\src\save\info-writer.cpp" />
+    <ClCompile Include="..\..\src\save\item-writer.cpp" />
+    <ClCompile Include="..\..\src\save\monster-entity-writer.cpp" />
+    <ClCompile Include="..\..\src\save\lore-writer.cpp" />
+    <ClCompile Include="..\..\src\save\player-writer.cpp" />
+    <ClCompile Include="..\..\src\save\save-util.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-others.cpp" />
+    <ClCompile Include="..\..\src\specific-object\bloody-moon.cpp" />
+    <ClCompile Include="..\..\src\specific-object\death-crimson.cpp" />
+    <ClCompile Include="..\..\src\specific-object\muramasa.cpp" />
+    <ClCompile Include="..\..\src\specific-object\ring-of-power.cpp" />
+    <ClCompile Include="..\..\src\specific-object\toragoroshi.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\blood-curse.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-enchant.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-equipment.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-fetcher.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-polymorph.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-world.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-arcane.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-craft.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-demon.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-nature.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-sorcery.cpp" />
+    <ClCompile Include="..\..\src\status\bad-status-setter.cpp" />
+    <ClCompile Include="..\..\src\status\base-status.cpp" />
+    <ClCompile Include="..\..\src\status\body-improvement.cpp" />
+    <ClCompile Include="..\..\src\status\buff-setter.cpp" />
+    <ClCompile Include="..\..\src\player\player-realm.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-curse-removal.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-perception.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-chaos.cpp" />
+    <ClCompile Include="..\..\src\spell\spell-info.cpp" />
+    <ClCompile Include="..\..\src\status\element-resistance.cpp" />
+    <ClCompile Include="..\..\src\status\shape-changer.cpp" />
+    <ClCompile Include="..\..\src\status\sight-setter.cpp" />
+    <ClCompile Include="..\..\src\status\experience.cpp" />
+    <ClCompile Include="..\..\src\status\temporary-resistance.cpp" />
+    <ClCompile Include="..\..\src\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='English-Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='English-Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\src\store\home.cpp" />
+    <ClCompile Include="..\..\src\store\museum.cpp" />
+    <ClCompile Include="..\..\src\store\pricing.cpp" />
+    <ClCompile Include="..\..\src\store\purchase-order.cpp" />
+    <ClCompile Include="..\..\src\store\sell-order.cpp" />
+    <ClCompile Include="..\..\src\store\service-checker.cpp" />
+    <ClCompile Include="..\..\src\system\angband-version.cpp" />
+    <ClCompile Include="..\..\src\system\monster-entity.cpp" />
+    <ClCompile Include="..\..\src\system\item\item-entity.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-definition.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-message.cpp" />
+    <ClCompile Include="..\..\src\system\player-type-definition.cpp" />
+    <ClCompile Include="..\..\src\system\services\baseitem-monrace-service.cpp" />
+    <ClCompile Include="..\..\src\system\terrain\terrain-definition.cpp" />
+    <ClCompile Include="..\..\src\system\terrain\terrain-list.cpp" />
+    <ClCompile Include="..\..\src\target\grid-selector.cpp" />
+    <ClCompile Include="..\..\src\target\projection-path-calculator.cpp" />
+    <ClCompile Include="..\..\src\target\target-describer.cpp" />
+    <ClCompile Include="..\..\src\target\target-getter.cpp" />
+    <ClCompile Include="..\..\src\target\target-preparation.cpp" />
+    <ClCompile Include="..\..\src\target\target-setter.cpp" />
+    <ClCompile Include="..\..\src\target\target.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-acceleration.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-blindness.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-confusion.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-cut.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-deceleration.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-fear.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-hallucination.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-paralysis.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-poison.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-protection.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\player-stun.cpp" />
+    <ClCompile Include="..\..\src\timed-effect\timed-effects.cpp" />
+    <ClCompile Include="..\..\src\tracking\baseitem-tracker.cpp" />
+    <ClCompile Include="..\..\src\tracking\health-bar-tracker.cpp" />
+    <ClCompile Include="..\..\src\tracking\lore-tracker.cpp" />
+    <ClCompile Include="..\..\src\util\candidate-selector.cpp" />
+    <ClCompile Include="..\..\src\util\elapsed-time.cpp" />
+    <ClCompile Include="..\..\src\util\dice.cpp" />
+    <ClCompile Include="..\..\src\util\sha256.cpp" />
+    <ClCompile Include="..\..\src\view\display-inventory.cpp" />
+    <ClCompile Include="..\..\src\view\display-map.cpp" />
+    <ClCompile Include="..\..\src\view\display-self-info.cpp" />
+    <ClCompile Include="..\..\src\view\display-scores.cpp" />
+    <ClCompile Include="..\..\src\window\display-sub-windows.cpp" />
+    <ClCompile Include="..\..\src\window\main-window-left-frame.cpp" />
+    <ClCompile Include="..\..\src\window\main-window-stat-poster.cpp" />
+    <ClCompile Include="..\..\src\window\main-window-util.cpp" />
+    <ClCompile Include="..\..\src\mspell\monster-power-table.cpp" />
+    <ClCompile Include="..\..\src\system\monrace\monrace-allocation.cpp" />
+    <ClCompile Include="..\..\src\term\screen-processor.cpp" />
+    <ClCompile Include="..\..\src\util\buffer-shaper.cpp" />
+    <ClCompile Include="..\..\src\lore\combat-types-setter.cpp" />
+    <ClCompile Include="..\..\src\lore\magic-types-setter.cpp" />
+    <ClCompile Include="..\..\src\lore\lore-calculator.cpp" />
+    <ClCompile Include="..\..\src\lore\lore-util.cpp" />
+    <ClCompile Include="..\..\src\main\sound-of-music.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-summon.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\one-monster-placer.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-compaction.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-death.cpp" />
+    <ClCompile Include="..\..\src\lore\monster-lore.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-describer.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-generator.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-remover.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-util.cpp" />
+    <ClCompile Include="..\..\src\mspell\summon-checker.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\activation-info-table.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\dragon-breaths-table.cpp" />
+    <ClCompile Include="..\..\src\perception\identification.cpp" />
+    <ClCompile Include="..\..\src\player-attack\attack-chaos-effect.cpp" />
+    <ClCompile Include="..\..\src\combat\attack-criticality.cpp" />
+    <ClCompile Include="..\..\src\combat\attack-power-table.cpp" />
+    <ClCompile Include="..\..\src\combat\hallucination-attacks-table.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\insults-moans.cpp" />
+    <ClCompile Include="..\..\src\combat\martial-arts-table.cpp" />
+    <ClCompile Include="..\..\src\melee\melee-switcher.cpp" />
+    <ClCompile Include="..\..\src\melee\melee-util.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-describer.cpp" />
+    <ClCompile Include="..\..\src\melee\monster-attack-monster.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-player.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-status.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-switcher.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-table.cpp" />
+    <ClCompile Include="..\..\src\combat\attack-accuracy.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-eating.cpp" />
+    <ClCompile Include="..\..\src\player-attack\player-attack.cpp" />
+    <ClCompile Include="..\..\src\combat\slaying.cpp" />
+    <ClCompile Include="..\..\src\player-attack\blood-sucking-processor.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\vorpal-weapon.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-object.cpp" />
+    <ClCompile Include="..\..\src\inventory\inventory-damage.cpp" />
+    <ClCompile Include="..\..\src\inventory\inventory-object.cpp" />
+    <ClCompile Include="..\..\src\io\pref-file-expressor.cpp" />
+    <ClCompile Include="..\..\src\market\arena.cpp" />
+    <ClCompile Include="..\..\src\market\bounty-prize-table.cpp" />
+    <ClCompile Include="..\..\src\market\bounty.cpp" />
+    <ClCompile Include="..\..\src\market\building-craft-armor.cpp" />
+    <ClCompile Include="..\..\src\market\building-craft-fix.cpp" />
+    <ClCompile Include="..\..\src\market\building-craft-weapon.cpp" />
+    <ClCompile Include="..\..\src\market\building-enchanter.cpp" />
+    <ClCompile Include="..\..\src\market\building-monster.cpp" />
+    <ClCompile Include="..\..\src\market\building-quest.cpp" />
+    <ClCompile Include="..\..\src\market\building-recharger.cpp" />
+    <ClCompile Include="..\..\src\market\building-service.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-warrior-mage.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-android.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-balrog.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-cavalry.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-draconian.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-force-trainer.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-mindcrafter.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-mirror-master.cpp" />
+    <ClCompile Include="..\..\src\mind\monk-attack.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-ninja.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-samurai.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-warrior.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-vampire.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\protector\apply-magic-armor.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\others\apply-magic-others.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\weapon\apply-magic-bow.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\item-magic-applier.cpp" />
+    <ClCompile Include="..\..\src\player\eldritch-horror.cpp" />
+    <ClCompile Include="..\..\src\object\object-stack.cpp" />
+    <ClCompile Include="..\..\src\object\object-value-calc.cpp" />
+    <ClCompile Include="..\..\src\perception\object-perception.cpp" />
+    <ClCompile Include="..\..\src\object\object-value.cpp" />
+    <ClCompile Include="..\..\src\pet\pet-fall-off.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-floor.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-particularity.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-special.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-status.cpp" />
+    <ClCompile Include="..\..\src\system\artifact\artifact-definition.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-command-menu.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-describer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-destroyer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-drawer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-editor-command.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-editor-util.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-entry.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-finder.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-initializer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-inserter-killer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-matcher.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-menu-data-table.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-pref-processor.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-reader-writer.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-registry.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick-util.cpp" />
+    <ClCompile Include="..\..\src\autopick\autopick.cpp" />
+    <ClCompile Include="..\..\src\specific-object\death-scythe.cpp" />
+    <ClCompile Include="..\..\src\specific-object\torch.cpp" />
+    <ClCompile Include="..\..\src\pet\pet-util.cpp" />
+    <ClCompile Include="..\..\src\avatar\avatar.cpp" />
+    <ClCompile Include="..\..\src\birth\character-builder.cpp" />
+    <ClCompile Include="..\..\src\birth\birth-explanations-table.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-autopick.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-knowledge.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-process-screen.cpp" />
+    <ClCompile Include="..\..\src\io-dump\dump-util.cpp" />
+    <ClCompile Include="..\..\src\core\game-play.cpp" />
+    <ClCompile Include="..\..\src\dungeon\dungeon-processor.cpp" />
+    <ClCompile Include="..\..\src\player\digestion-processor.cpp" />
+    <ClCompile Include="..\..\src\bot\bot-json-output.cpp" />
+    <ClCompile Include="..\..\src\core\player-processor.cpp" />
+    <ClCompile Include="..\..\src\core\realtime-clock.cpp" />
+    <ClCompile Include="..\..\src\core\combat-feedback.cpp" />
+    <ClCompile Include="..\..\src\inventory\pack-overflow.cpp" />
+    <ClCompile Include="..\..\src\io\input-key-processor.cpp" />
+    <ClCompile Include="..\..\src\core\game-closer.cpp" />
+    <ClCompile Include="..\..\src\hpmp\hp-mp-processor.cpp" />
+    <ClCompile Include="..\..\src\hpmp\hp-mp-regenerator.cpp" />
+    <ClCompile Include="..\..\src\core\magic-effects-timeout-reducer.cpp" />
+    <ClCompile Include="..\..\src\core\stuff-handler.cpp" />
+    <ClCompile Include="..\..\src\core\turn-compensator.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-feature.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-item.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-charm.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-curse.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-evil.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-lite-dark.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-oldies.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-psi.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-resist-hurt.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-spirit.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-switcher.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster-util.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-monster.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-player-curse.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-player-oldies.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-player-resist-hurt.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-player-spirit.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-player-switcher.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-player.cpp" />
+    <ClCompile Include="..\..\src\effect\spells-effect-util.cpp" />
+    <ClCompile Include="..\..\src\floor\pattern-walk.cpp" />
+    <ClCompile Include="..\..\src\inventory\inventory-curse.cpp" />
+    <ClCompile Include="..\..\src\inventory\recharge-processor.cpp" />
+    <ClCompile Include="..\..\src\perception\simple-perception.cpp" />
+    <ClCompile Include="..\..\src\io-dump\dump-remover.cpp" />
+    <ClCompile Include="..\..\src\io\mutations-dump.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-autopick.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-features.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-items.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-experiences.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-monsters.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-mutations.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-quests.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-self.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-uniques.cpp" />
+    <ClCompile Include="..\..\src\main\music-definitions-table.cpp" />
+    <ClCompile Include="..\..\src\main\sound-definitions-table.cpp" />
+    <ClCompile Include="..\..\src\cmd-building\cmd-building.cpp" />
+    <ClCompile Include="..\..\src\io-dump\character-dump.cpp" />
+    <ClCompile Include="..\..\src\specific-object\chest.cpp" />
+    <ClCompile Include="..\..\src\io\record-play-movie.cpp" />
+    <ClCompile Include="..\..\src\object-activation\activation-switcher.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-others.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-diary.cpp" />
+    <ClCompile Include="..\..\src\cmd-visual\cmd-draw.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-dump.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-eat.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-gameoption.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-help.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-hissatsu.cpp" />
+    <ClCompile Include="..\..\src\cmd-building\cmd-inn.cpp" />
+    <ClCompile Include="..\..\src\knowledge\knowledge-inventory.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-item.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-macro.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-magiceat.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-mane.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-pet.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-quaff.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-read.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\cmd-save.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-spell.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-usestaff.cpp" />
+    <ClCompile Include="..\..\src\cmd-visual\cmd-visuals.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-zaprod.cpp" />
+    <ClCompile Include="..\..\src\cmd-item\cmd-zapwand.cpp" />
+    <ClCompile Include="..\..\src\cmd-io\diary-subtitle-table.cpp" />
+    <ClCompile Include="..\..\src\floor\dungeon-feeling.cpp" />
+    <ClCompile Include="..\..\src\knowledge\lighting-level-table.cpp" />
+    <ClCompile Include="..\..\src\knowledge\monster-group-table.cpp" />
+    <ClCompile Include="..\..\src\knowledge\item-group-table.cpp" />
+    <ClCompile Include="..\..\src\melee\melee-postprocess.cpp" />
+    <ClCompile Include="..\..\src\combat\shoot.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-bolt.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-breath.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-curse.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-damage-calculator.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-learn-checker.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-summon.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-util.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-attack\mspell-ball.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\earthquake.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-beam.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-grid.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-random.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-charm.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-trump.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-describer.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-detection.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-genocide.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-hex.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-launcher.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-lite.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-neighbor.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-pet.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-sight.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-specific-bolt.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-staff-only.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-teleport.cpp" />
+    <ClCompile Include="..\..\src\system\building-type-definition.cpp" />
+    <ClCompile Include="..\..\src\system\system-variables.cpp" />
+    <ClCompile Include="..\..\src\core\show-file.cpp" />
+    <ClCompile Include="..\..\src\core\speed-table.cpp" />
+    <ClCompile Include="..\..\src\info-reader\fixed-map-parser.cpp" />
+    <ClCompile Include="..\..\src\system\dungeon\dungeon-definition.cpp" />
+    <ClCompile Include="..\..\src\locale\english.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-events.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-generator.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-save.cpp" />
+    <ClCompile Include="..\..\src\system\floor\town-info.cpp" />
+    <ClCompile Include="..\..\src\floor\geometry.cpp" />
+    <ClCompile Include="..\..\src\birth\history.cpp" />
+    <ClCompile Include="..\..\src\monster\horror-descriptions.cpp" />
+    <ClCompile Include="..\..\src\main\angband-initializer.cpp" />
+    <ClCompile Include="..\..\src\io\gf-descriptions.cpp" />
+    <ClCompile Include="..\..\src\io\interpret-pref-file.cpp" />
+    <ClCompile Include="..\..\src\io-dump\player-status-dump.cpp" />
+    <ClCompile Include="..\..\src\io\read-pref-file.cpp" />
+    <ClCompile Include="..\..\src\io-dump\special-class-dump.cpp" />
+    <ClCompile Include="..\..\src\io\tokenizer.cpp" />
+    <ClCompile Include="..\..\src\io\write-diary.cpp" />
+    <ClCompile Include="..\..\src\market\arena-entry.cpp" />
+    <ClCompile Include="..\..\src\store\articles-on-sale.cpp" />
+    <ClCompile Include="..\..\src\store\black-market.cpp" />
+    <ClCompile Include="..\..\src\market\building-util.cpp" />
+    <ClCompile Include="..\..\src\store\gold-magnification-table.cpp" />
+    <ClCompile Include="..\..\src\market\play-gamble.cpp" />
+    <ClCompile Include="..\..\src\market\poker.cpp" />
+    <ClCompile Include="..\..\src\store\say-comments.cpp" />
+    <ClCompile Include="..\..\src\store\store-owner-comments.cpp" />
+    <ClCompile Include="..\..\src\store\store-owners.cpp" />
+    <ClCompile Include="..\..\src\store\store-util.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-dist-offsets.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-processor.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-status.cpp" />
+    <ClCompile Include="..\..\src\monster-attack\monster-attack-processor.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-direction.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-move.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-object.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-runaway.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-safety-hiding.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\monster-sweep-grid.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-update.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-processor-util.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-timed-effects.cpp" />
+    <ClCompile Include="..\..\src\monster-floor\quantum-effect.cpp" />
+    <ClCompile Include="..\..\src\mutation\mutation-processor.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\object-boost.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\object-curse.cpp" />
+    <ClCompile Include="..\..\src\object-enchant\object-ego.cpp" />
+    <ClCompile Include="..\..\src\flavor\object-flavor.cpp" />
+    <ClCompile Include="..\..\src\object\item-tester-hooker.cpp" />
+    <ClCompile Include="..\..\src\system\baseitem\baseitem-definition.cpp" />
+    <ClCompile Include="..\..\src\system\spell-info-list.cpp" />
+    <ClCompile Include="..\..\src\object\object-kind-hook.cpp" />
+    <ClCompile Include="..\..\src\object\object-broken.cpp" />
+    <ClCompile Include="..\..\src\object\lite-processor.cpp" />
+    <ClCompile Include="..\..\src\player\patron.cpp" />
+    <ClCompile Include="..\..\src\player-info\class-info.cpp" />
+    <ClCompile Include="..\..\src\player\player-damage.cpp" />
+    <ClCompile Include="..\..\src\status\action-setter.cpp" />
+    <ClCompile Include="..\..\src\inventory\player-inventory.cpp" />
+    <ClCompile Include="..\..\src\player\player-personality.cpp" />
+    <ClCompile Include="..\..\src\player-info\race-info.cpp" />
+    <ClCompile Include="..\..\src\player\player-sex.cpp" />
+    <ClCompile Include="..\..\src\player\player-skill.cpp" />
+    <ClCompile Include="..\..\src\player\player-status.cpp" />
+    <ClCompile Include="..\..\src\player-info\mimic-info-table.cpp" />
+    <ClCompile Include="..\..\src\player\permanent-resistances.cpp" />
+    <ClCompile Include="..\..\src\player\process-name.cpp" />
+    <ClCompile Include="..\..\src\player\race-info-table.cpp" />
+    <ClCompile Include="..\..\src\player\race-resistances.cpp" />
+    <ClCompile Include="..\..\src\player\temporary-resistances.cpp" />
+    <ClCompile Include="..\..\src\dungeon\quest.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-craft.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-crusade.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-demon.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-death.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-hissatsu.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-nature.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-song.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-sorcery.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-song.cpp" />
+    <ClCompile Include="..\..\src\effect\effect-processor.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-execution.cpp" />
+    <ClCompile Include="..\..\src\spell\technic-info-table.cpp" />
+    <ClCompile Include="..\..\src\combat\aura-counterattack.cpp" />
+    <ClCompile Include="..\..\src\window\main-window-equipments.cpp" />
+    <ClCompile Include="..\..\src\wizard\artifact-analyzer.cpp" />
+    <ClCompile Include="..\..\src\wizard\artifact-bias-table.cpp" />
+    <ClCompile Include="..\..\src\wizard\cmd-wizard.cpp" />
+    <ClCompile Include="..\..\src\wizard\fixed-artifacts-spoiler.cpp" />
+    <ClCompile Include="..\..\src\wizard\items-spoiler.cpp" />
+    <ClCompile Include="..\..\src\wizard\monrace-filter-debug-info.cpp" />
+    <ClCompile Include="..\..\src\wizard\monster-info-spoiler.cpp" />
+    <ClCompile Include="..\..\src\wizard\spoiler-table.cpp" />
+    <ClCompile Include="..\..\src\wizard\spoiler-util.cpp" />
+    <ClCompile Include="..\..\src\wizard\tval-descriptions-table.cpp" />
+    <ClCompile Include="..\..\src\load\quest-loader.cpp" />
+    <ClCompile Include="..\..\src\view\display-store.cpp" />
+    <ClCompile Include="..\..\src\object-use\throw-execution.cpp" />
+    <ClCompile Include="..\..\src\player\player-move.cpp" />
+    <ClCompile Include="..\..\src\io\files-util.cpp" />
+    <ClCompile Include="..\..\src\grid\grid.cpp" />
+    <ClCompile Include="..\..\src\locale\localized-string.cpp" />
+    <ClCompile Include="..\..\src\locale\text-encoding.cpp" />
+    <ClCompile Include="..\..\src\locale\japanese.cpp" />
+    <ClCompile Include="..\..\src\load\load.cpp" />
+    <ClCompile Include="..\..\src\main-win.cpp" />
+    <ClCompile Include="..\..\src\cmd-action\cmd-mind.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-info.cpp" />
+    <ClCompile Include="..\..\src\monster\monster-list.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-checker.cpp" />
+    <ClCompile Include="..\..\src\mspell\mspell-judgement.cpp" />
+    <ClCompile Include="..\..\src\blue-magic\blue-magic-checker.cpp" />
+    <ClCompile Include="..\..\src\mspell\assign-monster-spell.cpp" />
+    <ClCompile Include="..\..\src\mutation\mutation-calculator.cpp" />
+    <ClCompile Include="..\..\src\object\object-info.cpp" />
+    <ClCompile Include="..\..\src\racial\racial-switcher.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-arcane.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-chaos.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-hex.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-life.cpp" />
+    <ClCompile Include="..\..\src\realm\realm-trump.cpp" />
+    <ClCompile Include="..\..\src\io\report.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-city.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-fractal.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-normal.cpp" />
+    <ClCompile Include="..\..\src\room\pit-nest-util.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-special.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-trap.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-vault.cpp" />
+    <ClCompile Include="..\..\src\room\rooms-builder.cpp" />
+    <ClCompile Include="..\..\src\store\rumor.cpp" />
+    <ClCompile Include="..\..\src\save\save.cpp" />
+    <ClCompile Include="..\..\src\core\scores.cpp" />
+    <ClCompile Include="..\..\src\player-info\self-info.cpp" />
+    <ClCompile Include="..\..\src\io\signal-handlers.cpp" />
+    <ClCompile Include="..\..\src\mind\mind-sniper.cpp" />
+    <ClCompile Include="..\..\src\target\target-sorter.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-diceroll.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\spells-floor.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-object.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-status.cpp" />
+    <ClCompile Include="..\..\src\spell\spells-summon.cpp" />
+    <ClCompile Include="..\..\src\spell\range-calc.cpp" />
+    <ClCompile Include="..\..\src\spell-realm\spells-crusade.cpp" />
+    <ClCompile Include="..\..\src\spell-kind\magic-item-recharger.cpp" />
+    <ClCompile Include="..\..\src\io\uid-checker.cpp" />
+    <ClCompile Include="..\..\src\util\angband-files.cpp" />
+    <ClCompile Include="..\..\src\util\object-sort.cpp" />
+    <ClCompile Include="..\..\src\util\string-processor.cpp" />
+    <ClCompile Include="..\..\src\view\display-birth.cpp" />
+    <ClCompile Include="..\..\src\view\display-characteristic.cpp" />
+    <ClCompile Include="..\..\src\view\display-fruit.cpp" />
+    <ClCompile Include="..\..\src\view\display-lore-attacks.cpp" />
+    <ClCompile Include="..\..\src\view\display-lore-drops.cpp" />
+    <ClCompile Include="..\..\src\view\display-lore-magics.cpp" />
+    <ClCompile Include="..\..\src\view\display-lore-status.cpp" />
+    <ClCompile Include="..\..\src\view\display-lore.cpp" />
+    <ClCompile Include="..\..\src\view\display-player-middle.cpp" />
+    <ClCompile Include="..\..\src\view\display-player-stat-info.cpp" />
+    <ClCompile Include="..\..\src\view\display-player.cpp" />
+    <ClCompile Include="..\..\src\view\display-util.cpp" />
+    <ClCompile Include="..\..\src\player\process-death.cpp" />
+    <ClCompile Include="..\..\src\view\display-player-misc-info.cpp" />
+    <ClCompile Include="..\..\src\view\object-describer.cpp" />
+    <ClCompile Include="..\..\src\view\status-bars-table.cpp" />
+    <ClCompile Include="..\..\src\view\status-first-page.cpp" />
+    <ClCompile Include="..\..\src\store\store.cpp" />
+    <ClCompile Include="..\..\src\floor\floor-streams.cpp" />
+    <ClCompile Include="..\..\src\target\target-checker.cpp" />
+    <ClCompile Include="..\..\src\term\gameterm.cpp" />
+    <ClCompile Include="..\..\src\grid\trap.cpp" />
+    <ClCompile Include="..\..\src\io\screen-util.cpp" />
+    <ClCompile Include="..\..\src\object\warning.cpp" />
+    <ClCompile Include="..\..\src\floor\wild.cpp" />
+    <ClCompile Include="..\..\src\view\display-messages.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-game-modifier.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-item-modifier.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-messages.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-player-modifier.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-spells.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-spoiler.cpp" />
+    <ClCompile Include="..\..\src\wizard\wizard-special-process.cpp" />
+    <ClCompile Include="..\..\src\world\town-info-service.cpp" />
+    <ClCompile Include="..\..\src\world\world.cpp" />
+    <ClCompile Include="..\..\src\world\world-movement-processor.cpp" />
+    <ClCompile Include="..\..\src\world\world-turn-processor.cpp" />
+    <ClCompile Include="..\..\src\term\z-form.cpp" />
+    <ClCompile Include="..\..\src\term\z-rand.cpp" />
+    <ClCompile Include="..\..\src\term\z-term.cpp" />
+    <ClCompile Include="..\..\src\term\z-util.cpp" />
+    <ClCompile Include="..\..\presentation\bridge\pad_command_table.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\presentation_bridge.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bootstrap\sdl_game_bootstrap.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\term\sdl_null_term.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\term\sdl_sub_window_terms.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\audio\sdl_win_audio.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\audio\sound_event_queue.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\sdl_ui_options.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\frame_codec.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\frame_codec_check.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\input_event_adapter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <!--
+      core_main.cpp は 4b で**コアのヘッダを直接触る**ようになった（緊急セーブ・
+      quit_aux・rogue_like_commands）。したがって実行時文字コードは
+      `/execution-charset:utf-8`（`presentation/` のコア接触 TU と同じ）でなければ
+      ならない。`_("(緊急セーブ)", ...)` を UTF-8 で焼くと、セーブに書かれる
+      `died_from` だけがコア内部コードから外れる。
+      プロトコルへ出す文字列は全部 ASCII なので、この切替の影響を受けない。
+    -->
+    <ClCompile Include="..\..\platform\windows\core_main.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\presentation\frame\game_frame.h" />
+    <ClInclude Include="..\..\presentation\frame\map_cell_view.h" />
+    <ClInclude Include="..\..\presentation\frame\minimap_snapshot.h" />
+    <ClInclude Include="..\..\presentation\frame\hud_snapshot.h" />
+    <ClInclude Include="..\..\presentation\frame\message_event.h" />
+    <ClInclude Include="..\..\presentation\frame\sub_panel_kinds.h" />
+    <ClInclude Include="..\..\presentation\frame\cell_feature_bits.h" />
+    <ClInclude Include="..\..\presentation\frame\pad_command_table.h" />
+    <ClInclude Include="..\..\presentation\frame\sdl_ui_options.h" />
+    <ClInclude Include="..\..\presentation\frame\ui_seam.h" />
+    <ClInclude Include="..\..\presentation\frame\frame_codec.h" />
+    <ClInclude Include="..\..\presentation\frame\frame_codec_check.h" />
+    <ClInclude Include="..\..\presentation\frame\protocol_transport.h" />
+    <ClInclude Include="..\..\presentation\frame\protocol_messages.h" />
+    <ClInclude Include="..\..\presentation\bridge\presentation_bridge.h" />
+    <ClInclude Include="..\..\presentation\bridge\asset_manifest_builder.h" />
+    <ClInclude Include="..\..\presentation\bridge\input_event_adapter.h" />
+    <ClInclude Include="..\..\presentation\bridge\official_tile_table.h" />
+    <ClInclude Include="..\..\presentation\bridge\pad_command_bridge.h" />
+    <ClInclude Include="..\..\presentation\bootstrap\sdl_game_bootstrap.h" />
+    <ClInclude Include="..\..\presentation\term\sdl_null_term.h" />
+    <ClInclude Include="..\..\presentation\term\sdl_sub_window_terms.h" />
+    <ClInclude Include="..\..\presentation\audio\sdl_win_audio.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\angband.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

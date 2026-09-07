@@ -1,0 +1,537 @@
+<style:title>コマンドの説明</style>
+
+以下の説明は、コマンドの名前と<color:keyword>下敷きのコマンド</color>のキーを並べたものである。ローグ風の配列でキーが違う場合は、続けてコマンドの名前と<color:keyword>ローグ風の配列</color>のキーを書く。そのあとにコマンドの短い説明が来る。必要なら、それぞれの配列でどう指定するかの別の手立ても書いてある。
+
+いくつかのコマンド（掘る・罠を外す・体当たり・開ける）は、回数を指定しなくても、設定が切られていなければ必要なだけ自動で繰り返される（いまの <color:keyword>retry_obvious_count</color> の値まで。既定は 100）。そのほかにも回数を引数として使えるコマンドがある。たとえば個数を要するコマンドは、個数を訊く代わりに回数を使うので、<color:keypress>0d</color> で全部を置ける。個数を訊くコマンドは、英字を打つと最大の値に読み替える。
+
+ヘルプの中で使うコマンドは <color:keypress>?</color> で出る。
+
+<topic:Inventory><style:heading>持ち物のコマンド</style>
+
+  <indent><color:U>持ち物の一覧（<color:keypress>i</color>）</color>
+持ってはいるが身に着けていないアイテムを並べて見せる。持ち物の枠は、装備の枠を別にして 26 まである。同じアイテムはたいてい「山」にまとまって 1 枠しか使わない――下の例の松明 4 本・矢 26 本・食料 13 個のように。1 つの山は 99 個までである。
+
+<color:G>持ち物</color> <color:b>|</color> <color:D>装備</color>                                                                 
+ a) <color:U>,</color> <color:U>食料×13</color>                                            13.0 lb
+ b) <color:B>-</color> <color:g>魔法棒 {未判明}</color>                                     0.2 lb
+ c) <color:u>~</color> <color:y>松明×4(2000ターンの寿命)</color>                           12.0 lb
+ d) <color:D>(</color> <color:s>汚れたボロ服</color>                                        2.0 lb
+ e) <color:U>)</color> <color:U>革製スモール・シールド {並}</color>                          5.0 lb
+ f) <color:U>)</color> <color:U>革製スモール・シールド</color>                               5.0 lb
+ g) <color:W>|</color> マン・ゴーシュ {並}                                    3.0 lb
+ h) <color:U>{</color> <color:U>矢×26 (3d4) (+0,+0)</color>
+                                                          <color:R>  45.4 lb</color>
+持ち重り 93.4 ポンド（余力の <color:G>71%</color>）。
+
+ここで <color:keypress>/</color> を押すと、持ち物の一覧・装備の一覧、そして矢筒のようなほかの入れ物を切り替えられる。
+</indent> 
+  <indent><color:U>装備の一覧（<color:keypress>e</color>）</color>
+いま身に着けている、または手にしているアイテムを並べて見せるコマンドである。冒険者はふつう 13 の装備の枠を持ち、それぞれ体の別々の場所に当たる。1 つの枠には 1 つのアイテムしか入らず、枠に合う種類のアイテムしか入らない。種族によっては（そして怪物の姿のほとんどは）ふつうの人型と違う体つきなので、装備の枠の数と種類は変わりうる。以下は人間の戦士の装備の一覧の例である。
+
+ a) <color:W>|</color> 右手      : ブロード・ソード (2d6) (+0,+0)               15.0 lb
+ b) <color:U>)</color> 左手      : <color:U>革製スモール・シールド [3,+0]</color>           5.0 lb
+ c) <color:U>}</color> 射撃      : <color:u>ショート・ボウ (x2.50) (+0,+0)</color>           3.0 lb
+ d)   矢筒      :
+ e)   右手指    :
+ f)   左手指    :
+ g)   首        :
+ h) <color:u>~</color> 光源      : <color:y>松明(1983ターンの寿命</color>                    3.0 lb
+ i) <color:s>[</color> 体        : <color:s>鎖かたびら (-2) [14,+0]</color>                 22.0 lb
+ j)   クローク  :
+ k)   頭        :
+ l)   手        :
+ m)   足        :                                                               
+                                                          <color:R>  48.0 lb</color>             
+
+枠にはそれぞれ「右手」のような名札が付いていて、どんな種類のアイテムを受けるかを決めている。たとえば右手と左手は武器と盾を受ける。そう、二刀流も二盾流もできる。たいていのアイテムの枠は直感どおりだが（手袋は手、兜は頭）、竪琴が射撃の枠に入るように、少し意外なものもある。</indent>
+
+  <indent><color:U>アイテムを調べる（<color:keypress>I</color>）</color>
+アイテムを詳しく調べるコマンドである。すでに判っている特別な力を並べ、まだ隠れた力があるかどうかを述べ、重さと見積もりの値打ちを出す。ここでも <color:keypress>/</color> で背負い袋・装備・そのほかの入れ物を切り替えられる。アーティファクトやエゴのアイテムを見るときにとりわけ便利である。</indent>
+
+  <indent><color:U>アイテムを拾う（<color:keypress>g</color>）</color>
+足元のマスにあるアイテムを拾う（モガミネーターの指定に従う）。アイテムを拾うのに時間はかからない。</indent>
+
+  <indent><color:U>アイテムを自動で拾う（<color:keypress>^G</color>）</color>
+足元のマスにあるアイテムを拾う（モガミネーターの指定に従う）。さらに、視界の中にあるほかのアイテムまで自動で歩いて拾う。<color:keyword>auto_get_objects</color> を入れておくと、自動で拾うか自動で壊すかに登録されたアイテムはすべて自動拾いの対象になる。それでは行き過ぎなら（戦いのあと自分で片づけるのが好きかもしれない）、<color:keyword>auto_get_ammo</color> の設定は <color:keypress>=g</color> の銘を書いたアイテムだけを対象にする。ふつうは矢弾、忍者なら楔だろう。
+
+自動拾いの歩きは、対象になるアイテムが見えなくなったとき、袋がいっぱいになったとき、あるいは何かに妨げられたとき（意地の悪いドラゴンが目を覚まして息を吐こうと決めたときなど）に止まる。自動拾いは、アイテムの一覧から歩いていくより安全だが、できることも狭い。アイテムが見えていなければ対象にならないので、たいてい 1 部屋を片づけるだけである。アイテムの一覧や <color:keypress>H</color>／<color:keypress>^E</color> のコマンドは長い自動の歩きを許すので、危ない所へ踏み込むこともある（もっとも、悪いことが起きればこちらの歩きも止まる）。</indent>
+
+  <indent><color:U>アイテムを置く（<color:keypress>d</color>）</color>
+持ち物か装備のアイテムをダンジョンの床へ置く。いま立っているマスにすでにアイテムがあるか、そもそもアイテムを受けないマス（扉・階段・罠、深い溶岩のような地形）なら、ゲームは隣のマスへ置こうとする。それでも駄目なら、すでにアイテムのあるマスへ置く。ただし、近くに置けるマスがまったく無いとアイテムが消えてしまうことがあるので気をつけること。選んだ山にアイテムが複数あるなら、個数を指定できる。</indent>
+
+  <indent><color:U>アイテムを壊す（<color:keypress>k</color>）または（<color:keypress>^D</color>）</color>
+持ち物かダンジョンの床のアイテムを壊す。選んだ山にアイテムが複数あるなら、個数を指定できる。値打ちの無いがらくたを除いて、このコマンドはいつも確認を求める。</indent>
+
+  <indent><color:U>身に着ける（<color:keypress>w</color>）</color>
+アイテムを身に着ける、または手にするためのコマンドである。1 つの装備の枠には 1 つのアイテムしか入らないので、すでに埋まっている枠へ入れると、先に古いアイテムが外される。持ち物に入りきらなければ、そのアイテムは置かれることになる。</indent>
+
+  <indent><color:U>外す（<color:keypress>t</color>）または（<color:keypress>T</color>）</color>
+装備を外して持ち物へ戻すコマンドである。持ち物に入りきらなければ袋があふれ、外したあとそのアイテムを落とす。ときおり外せない呪われたアイテムに出くわす。そういうアイテムはたいてい何かしらの不利を負わせるもので、呪いを解いてからでないと外せない。</indent>
+
+<topic:Movement><style:heading>動くコマンド</style>
+
+  <indent><color:U>歩く（拾う）（<color:keypress>;</color>）</color>
+示した向きへ 1 歩動く。入ろうとするマスが壁や扉で塞がっていてはならない。<color:keyword>always_pickup</color> が入っていれば、行き先のマスのアイテムを拾う。このコマンドは回数を取り、向きを要る。「元の」向きのキー（どちらの配列でも）か「ローグ風の」向きのキー（ローグ風の配列で）でも向きへ歩ける（このコマンドに割り当ててある）。モガミネーターか簡易の自動破壊が働いていれば、指定したアイテムは拾われるか壊される。</indent>
+
+  <indent><color:U>歩く（拾うかどうかを裏返す）（<color:keypress>-</color>）</color>
+ふつうの移動と同じだが、「アイテムを拾う」の設定が裏返る。つまり <color:keyword>always_pickup</color> が入って<color:keyword>いない</color>ときにだけ拾う。このコマンドは回数を取り、向きを要る。モガミネーターか簡易の自動破壊が働いていれば、指定したアイテムは拾われるか壊される。
+
+わざと罠へ踏み込むときもこのコマンドを使う。</indent>
+
+  <indent><color:U>走る（<color:keypress>.</color>）または（<color:keypress>,</color>）</color>
+示した向きへ、通路の曲がりに沿って動き続ける。二手に分かれて「選ぶ」ことになるか、何かに妨げられるまで止まらない。何に妨げられるかは、妨げの設定で決められる。走るには向きが要る。既定では <color:keypress>Shift+向き</color> が <color:keypress>.向き</color> に割り当ててあるが、元の配列では平台によって技術的な制約に当たることがある。モガミネーターか簡易の自動破壊が働いていれば、指定したアイテムは拾われるか壊される。</indent>
+
+  <indent><color:U>階段を上る（<color:keypress><</color>）</color>
+上りの階段か縦穴の上に立っていれば上る。荒野では広域地図を開いて眺める。自由に見回せるが、目を覚ました敵が近くに居る間は旅ができない。
+
+<color:keyword>コーヒーブレイクモード</color>で遊んでいるか ironman_downward の設定を入れているのでなければ、どの階にも上りの階段が少なくとも 1 つはある。階段を上ると地上か新しい階へ出る。階はある程度そのまま残ることに注意。ダンジョンの中に居る間は戻れる（上りの階段があればの話だが）が、地上へ戻ると永久に失われる。</indent>
+
+  <indent><color:U>階段を下る（<color:keypress>></color>）</color>
+下りの階段か縦穴の上に立っていれば下りる。荒野では広域地図から普通の地図へ戻る。
+
+どの階にも下りの階段が少なくとも 2 つある。ただし依頼の階（依頼の敵を倒すまで 1 つも無い）と、ダンジョンの最下層は別である。階段を下りると新しい階へ出る（註記は「階段を上る」を参照）。</indent>
+
+  <indent><color:U>いちばん近い目を引くアイテムまで歩く（<color:keypress>H</color> または <color:keypress>^E</color>）</color>
+知っているアイテムのうち、鑑定されておらず、感触も付いていないかアーティファクトかエゴと感じ取られていて、働いているモガミネーターが「拾う値打ちが無い」と見なしておらず、道筋の判っているもの――そのいちばん近いものを探して自動で歩いていく。階をひととおり回ったあとで拾い忘れや鑑定し忘れのアイテムを手早く見つけるとき、あるいは高レベルの敵を倒して戦利品があたりに散らばったときに便利である。</indent>
+
+  <indent><color:U>道のりを続ける（<color:keypress>J</color>）または歩きを続ける（<color:keypress>(</color>）</color>
+目的地へ着く前に途切れた歩きを続ける。このコマンドは敵の一覧とアイテムの一覧の中でも使えて、そこから新しい歩きを始められる。そのために <color:keypress>J</color> のキーはローグ風の配列でも使う。</indent>
+
+<topic:Resting><style:heading>休むコマンド</style>
+
+  <indent><color:U>その場に留まる（拾う）（<color:keypress>,</color>）または（<color:keypress>.</color>）</color>
+同じマスに 1 手ぶん留まる。ふだんアイテムを拾う設定なら、足元のアイテムを拾う。このコマンドは回数を取る。「5」のキーでもよい（どちらの配列でも）。モガミネーターか簡易の自動破壊が働いていれば、指定したアイテムは拾われるか壊される。</indent>
+
+  <indent><color:U>休む（<color:keypress>R</color>）</color>
+休むのは、その場に留まり続けるより体によい。決まった時間が経ったとき、あるいはいろいろな条件が満たされたときに自動で止めるよう指示できる。いずれにせよ、妨げになることが起きたときと、何かキーを押したときには必ず目を覚ます。回数を指定しないとこのコマンドは訊いてくる。既定は特別な値 <color:keypress>&</color> で、「すっかり癒えて満腹でなくなるまで休む」という意味である。もう一つの特別な値 <color:keypress>*</color>（「HP と MP が満ちるまで休む」）も使える。</indent>
+
+<topic:Searching><style:heading>探すコマンド</style>
+
+  <indent><color:U>探す（<color:keypress>s</color>）</color>
+隣り合うマスに隠れている罠と秘密の扉を見つけるコマンドである。たいていは 1 手だけでは足りない。箱は開ける前に必ず探すこと――たいてい罠が仕掛けてある。もっとも、何も出てこなければ珍しい罠無しの箱を見つけたのかもしれない。このコマンドは回数を取る。いずれ見つかるとほぼ確信しているときに便利で、何か見つかった時点でコマンドは止まる。</indent>
+
+  <indent><color:U>探索の入切（<color:keypress>S</color>）または（<color:keypress>#</color>）</color>
+探索の状態に入ったり出たりするコマンドである。初めて押すと、画面の下に「探索中」と出る。これ以後、1 つのコマンドごとに 2 手を使う――コマンドに 1 手、探すのに 1 手である。つまり、ダンジョンを歩き回るのに倍の時間がかかり、したがって食料も倍要る。何かに妨げられると探索の状態は自動で切れる。もう一度このコマンドを打っても切れる。</indent>
+
+<topic:Alter><style:heading>手を出すコマンド</style>
+
+  <indent><color:U>掘る（<color:keypress>T</color>）または（<color:keypress>^T</color>）</color>
+掘ること、採ることは、たいそう役に立つ技である。岩には固さの違う種類がいくつもある。
+
+  <$:FF_PERMANENT> 永久岩           永久に掘れない
+  <$:FF_GRANITE> 花崗岩           たいへん硬い
+  <$:FF_QUARTZ_VEIN> 石英の脈         硬い
+  <$:FF_MAGMA_VEIN> 溶岩の脈         柔らかい
+  <$:FF_RUBBLE> 瓦礫             たいへん柔らかい
+
+石英と溶岩の脈には財宝が埋まっていることがある。判っている財宝は <$:FF_MAGMA_TREASURE> と表されるが、すべての財宝が探知なしで見えるわけではない。瓦礫がアイテムを覆っていることもある。重い武器か掘る道具を手にしているか、腕力がたいそう高いのでなければ、掘るのは難しい。このコマンドは回数を取り、向きを要り、<color:keyword>retry_obvious_count</color> の設定に従う。</indent>
+
+  <indent><color:U>扉か箱を開ける（<color:keypress>o</color>）</color>
+箱を開けるにはこのコマンドを使わねばならない（扉なら、閉じた扉へ歩き込めば自動で開けようとする）。扉や箱に錠が下りていれば、罠を外す腕前に応じて錠前を開けようとする。罠を外さずに罠つきの箱を開けると、罠が働く。扉や箱を開けるのに何度か要ることがあり、まれに扉が固く閉ざされていて体当たりで開けるしかないこともある。開けるコマンドは回数を取り、向きを要り、<color:keyword>retry_obvious_count</color> の設定に従う。</indent>
+
+  <indent><color:U>扉を閉じる（<color:keypress>c</color>）</color>
+知恵の無いものやそのほかいくつかの生き物は扉を開けられないので、扉を閉じることはかなりの値打ちを持つ。壊れた扉は閉じられない。体当たりで開けた扉は壊れることがある。閉じるコマンドは回数を取り、向きを要り、<color:keyword>retry_obvious_count</color> の設定に従う。</indent>
+
+  <indent><color:U>扉に楔を打つ／近道で動く（<color:keypress>j</color>）または（<color:keypress>S</color>）</color>
+多くの敵は閉じた扉をただ開けてしまうし、錠の下りた扉もいずれは通り抜ける。だから、ときには鉄の楔で扉を打ち固めておきたくなる。扉に打った楔 1 本ごとに扉を打ち破りにくくなる（ある限りまで）。小さな敵ほど扉を打ち破る力が弱い。このコマンドを使うには鉄の楔を持っていなければならない。楔を打つには向きが要る。</indent>
+
+  <indent><color:U>扉に体当たり（<color:keypress>B</color>）または扉をこじ開ける（<color:keypress>f</color>）</color>
+打ち固められた扉を体当たりで打ち破るコマンドである。体当たりの腕前は腕力とともに上がる。扉を体当たりで開けると（短い間）体勢を崩すことがある。固く閉ざされた扉や楔で打ち固められた扉は体当たりでしか開かないが、望むならどの閉じた扉も体当たりで開けられる。体当たりで開けた扉は二度と直らないほど壊れることがある。このコマンドは回数を取り、向きを要り、<color:keyword>retry_obvious_count</color> の設定に従う。</indent>
+
+  <indent><color:U>罠か箱の罠を外す（<color:keypress>D</color>）</color>
+床の罠や箱の罠を外そうとできる。しくじると、へまをして罠を働かせてしまうことがある。罠は見つけてからでないと外せない（探すコマンド・探知・以前に踏んだこと、のいずれかで）。このコマンドは回数を取り、向きを要り、<color:keyword>retry_obvious_count</color> の設定に従う。<color:keyword>easy_disarm</color> の設定を切っていなければ、判っている床の罠へ歩き込むと自動で外そうとする。外さずにわざと罠へ踏み込みたいときは <color:keypress>-</color> を使うこと。</indent>
+
+  <indent><color:U>隣のマスに手を出す（<color:keypress>+</color>）</color>
+この何にでも使える万能のコマンドは、上に挙げた「見て分かる」コマンド（攻撃・掘る・体当たり・開ける・罠を外す・閉じる）のどれでも、1 打で選ばせてくれる。<color:keypress>Ctrl-[向き]</color> は、どちらの配列でも既定で「手を出す-[向き]」と同じ働きに割り当ててある。このコマンドは回数を取り、向きを要り、<color:keyword>retry_obvious_count</color> の設定に従う。</indent>
+
+<topic:SpellPrayer><style:heading>呪文と祈りのコマンド</style>
+
+  <indent><color:U>解説を見る（<color:keypress>b</color>）またはじっくり読む（<color:keypress>P</color>）</color>
+呪文を唱えられる冒険者なら誰でも使えるコマンドである。これを使うと、使える呪文（あるいは選んだ魔法書に載っている呪文）がすべて並び、レベル・唱えるのに要る魔力・その呪文を覚えているかどうかが出る。一覧から呪文を選ぶと、その呪文の効き目の短い説明が出る。</indent>
+
+  <indent><color:U>呪文や祈りを学ぶ（<color:keypress>G</color>）</color>
+新しい呪文や祈りを実際に覚えるコマンドである。覚えられるようになると、画面の状態の欄に <color:B>学習</color> と出る。覚えられる呪文や祈りの載った本を持っていれば、その本で学ぶことを選べる。プリースト・パラディン・レンジャー・僧侶・練気術師なら、神が呪文を選んでくれる。ほかの職業は学ぶ呪文を自分で選べるし、同じ呪文をもう一度学ぶこともできる。各領域には本が 4 冊あり、そのうちいくつかはふつうダンジョンでしか見つからない。</indent>
+
+  <indent><color:U>呪文を唱える／精神の力を使う（<color:keypress>m</color>）</color>
+本の呪文（や祈り）を使うには、あらかじめその呪文を覚えていて、その呪文を読み取れる本を持ち物に持っていなければならない。呪文にはそれぞれ失敗する確率があり、最初はかなり高いがレベルが上がると下がる。唱えるだけの魔力が足りないときは確認を求められる。それでも進めると失敗の確率は大きく上がり、耐久を 1 点失うことがある。呪文は本から読み取らねばならないので、唱えている間は目が見えず混乱していてはならず、明かりも要る。
+
+本の呪文を学ばず、別の道で（たいていはレベルが上がることで）魔法や精神の力を覚える職業では、このコマンドの決まりが少し違うことがある。ほとんどの（すべてではない）職業では、冒険者が「凡庸」であるか反魔法のアイテムを装備していると、このコマンドはまったく働かない。</indent>
+
+  <indent><color:U>特別の力を使う（<color:keypress>U</color>）または（<color:keypress>O</color>）</color>
+種族や職業には、生まれ持った特別な力を備えたものがある。たとえばサイクロプスは<color:keyword>岩を投げる</color>ことができ、ノームは危険から<color:keyword>ショート・テレポート</color>で逃げられる。戦士は<color:keyword>剣の舞</color>の力を覚えられる。また、突然変異して力を得ることもある――目から<color:keyword>レーザー光線</color>を放つ力とか。特別な力を何も持っていなければ、このコマンドは何もしない。</indent>
+
+
+<topic:ObjectManip><style:heading>アイテムを使うコマンド</style>
+
+  <indent><color:U>食べる（<color:keypress>E</color>）</color>
+飢え死にしないよう、ときどき食べなければならない。腹が減ってくると、画面の状態の欄に <color:y>空腹</color> と出る。空腹のまま長く過ごすと <color:o>衰弱</color> になり、次いで<color:r>衰弱、目まい</color>を起こし、ついには飢え死にする。このコマンドで持ち物の食べ物を食べる――もっとも、床から直に食べることもできる……</indent>
+
+  <indent><color:U>燃料を足す（<color:keypress>F</color>）</color>
+松明を使っていて袋にほかの松明があるとき、あるいはランタンを使っていて袋に油の壺があるときは、このコマンドで光源に燃料を足せる。松明もランタンも入る燃料に限りがある。おおむね、壺 2 つでランタンが満たされ、松明 2 本で松明が満たされる。</indent>
+
+  <indent><color:U>薬を飲む（<color:keypress>q</color>）</color>
+薬を飲むコマンドである。薬に長けたデバイスマスターでなければ、飲むと薬は無くなる。効き目は薬しだいで、良いことも悪いこともある。</indent>
+
+  <indent><color:U>巻物を読む（<color:keypress>r</color>）</color>
+魔法の巻物を読むコマンドである。巻物を読むと、魔法が効くにつれて羊皮紙は崩れて消える。さらに情報を訊いてくる巻物は、たいてい（<color:keypress>ESC</color> を押して）巻物を使わずに取り消せる。魔法は気まぐれで、巻物は注意深く読まねばならないことに注意。呪文の言葉を読み違えると、何も起こらない。</indent>
+ 
+  <indent><color:U>アイテムを発動する（<color:keypress>A</color>）</color>
+ダンジョンの深くには、ドラゴンのように炎を吐けたり、思うだけで部屋を照らせたりする特別なアイテムがあるという噂を聞いたことがあるだろう。運よくそういうアイテムを見つけたなら、このコマンドでその特別な力を発動できる。発動できるのは装備しているアイテムだけで、たいていは次に発動するまでに<color:keyword>充填</color>の時間が要る。発動は巻物・魔法棒・杖・ロッドの効き目に似ており、どれも魔法の道具の技能を要し、失敗することがある。</indent>
+
+  <indent><color:U>魔法棒を向ける（<color:keypress>a</color>）またはZap Wand（<color:keypress>z</color>）</color>
+魔法棒を使おうとするコマンドである。魔法棒の効き目はふつうボルト・ビーム・ボール・ブレスなので、向きを定める要がある。したがってこのコマンドは向きを要り、狙いも使える。</indent>
+
+  <indent><color:U>杖を使う（<color:keypress>u</color>）またはZap Staff（<color:keypress>Z</color>）</color>
+杖を使おうとするコマンドである。杖はふつう周囲に効くか特定のアイテムに効くので、向きを定める要はない。</indent>
+ 
+  <indent><color:U>ロッドを振る（<color:keypress>z</color>）またはActivate Rod（<color:keypress>a</color>）</color>
+ロッドを使おうとするコマンドである。ロッドは杖のような効き目も魔法棒のような効き目も持ちうる。このコマンドは向きを要ることがあり（ロッドの種類と、その種類を知っているかによる）、狙いも使える。</indent>
+
+  <indent><color:U>アイテムの銘を書く（<color:keypress>Z</color>）または（<color:keypress>{</color>）</color>
+アイテムの銘を足す・変える・消すコマンドである。銘はアイテムの説明のあとに波括弧でくくって出る。銘はそのアイテム（かその山）だけのもので、同じアイテムすべてに自動で移りはしない。銘によっては、アイテムをどう扱うか・どんな札を付けるかをゲームへ指示する（詳しくは <link:objects.txt#Inscriptions>）。銘を空にすれば消える。</indent>
+
+  <indent><color:U>ダンジョンの覚え書き（<color:keypress>}</color>）</color>
+セーブ全体・ダンジョン・階・建物についての覚え書きの一覧を開くコマンドである。覚え書きは冒険者ごとに保存され、この一覧から読み返せる。その場所へ戻ると、当てはまる覚え書きが自動で出る。</indent>
+
+<topic:ThrowFire><style:heading>投げると射る</style>
+
+  <indent><color:U>射撃する（<color:keypress>f</color>）または（<color:keypress>t</color>）</color>
+いま装備している飛び道具に合う弾を選んで射る（飛び道具を装備していることが要る）。スリングは小石と鉄の弾だけ、弓は矢だけ、クロスボウはボルトだけを射る。弾はふつう矢筒から射るが、持ち物から直に、あるいは床からでも射られる。このコマンドは向きを要り、狙いも取れる。</indent>
+
+  <indent><color:U>アイテムを投げる（<color:keypress>v</color>）</color>
+持っているアイテムはどれでも投げられる。軽いアイテムほど遠くへ投げられる。山になっているアイテムは一度に 1 つしか投げられない。投げたアイテムが敵を傷つけるとは限らない。投げるとアイテムが壊れることもある。薬を壁へ投げると必ず割れ、しぶきで傷つけることがある。このコマンドは向きを要り、狙いも取れる。</indent>
+
+  <topic:Targetting><indent><color:U>狙いを定める（<color:keypress>*</color>）</color>
+呪文や矢などを、決まった敵やマスへ向けるコマンドである。八方のどれにも当たらない位置でもよい。向きを訊かれている最中でも、そうでないときでも使える。このコマンドは <color:keypress>l</color>ook（見回す）の代わりにもなる。見たいものが敵であるときにはとりわけ便利である。
+
+狙いを定める画にはいくつもの選択肢がある。最初に示される狙いは視界の中でいちばん近い敵で、視界の中のほかの敵も候補として選べる。向きのキーで敵を順に切り替える。<color:keypress>+</color> と <color:keypress>-</color> でもできるが、直感的ではない。
+
+敵の居ないマスを狙いたい（あるいは調べたい）ときは、<color:keypress>p</color> か <color:keypress>o</color> を押す。向きのキーがただカーソルを動かす状態に切り替わる。（視界の中に敵対する敵が 1 体も居なければ、この状態には自動で入る。<color:keypress>o</color> と <color:keypress>p</color> の違いは 1 つだけで、<color:keypress>p</color> はカーソルを自分の居る所へ移す。）いつでも <color:keypress>5</color>・<color:keypress>t</color>・<color:keypress>.</color> でいまの狙いを決められ、<color:keypress>q</color> か <color:keypress>ESC</color> で狙いを定める状態を抜け、<color:keypress>r</color> でいま狙っている敵の思い出を読み、<color:keypress>x</color> で狙ったマスのアイテムを全部見られる。<color:keypress>J</color>／<color:keypress>(</color> ではそのマスを歩く先に選べる。詳しくは <link:context_targetting.txt> を参照のこと。
+
+狙った場所へ呪文を唱えたりアイテムを射たりすると、選ばれる道筋はその場所への<color:keyword>まっすぐな</color>道であることに注意。それが望みの道とは限らない。脇の場所を狙いにうまく選べば、まっすぐには見えないマスへ向けられることもある。
+<style:screenshot>  <indent>
+位置: 知らないマス [q,t,p,m,x,j,+,-,?,<dir>]                                    
+      ##........#.... #%%####
+      #........<color:U>\</color>......      #
+      %.......<color:U>}</color>{<color:u>\</color>@....      #
+    %#%..........<color:s>*</color>....      #
+   ##    ........<color:s>*</color>...   ... #
+   #       ......<color:s>*</color>...   .<color:G>d</color>. #
+   #        ..<color:W>(</color>.#<color:s>*</color>.     .#####
+   #          .##<color:s>*</color>       <color:y>T</color>   #
+   #    <color:g>^</color>   #####<color:s>*</color>           ##########                                         
+   ##       #   #<color:s>*</color>           <color:U>'</color>
+   #        #  ##<color:s>*</color>         ############                                         
+   #        #  #<color:R>*</color>        ###
+   #        # ##<color:s>*</color>       ##                                                      
+   ##       # # <color:s>*</color>        #                                                      
+    #       # ##<color:s>*</color>        #                                                      
+    #########  #<color:s>*</color>#########
+</indent></style>
+明るい赤の <color:R>*</color> に気づいただろうか。あのマスにはドラゴンが居て、まっすぐには狙えない。だが <color:keypress>p</color> で地図の南の端を狙いに選び、呪文の道筋にあのマスを含めることができた。
+
+ボルトの呪文は道筋の最初の敵で必ず止まるが、ビームとブレスの呪文はマスすべてに効き、ボールの呪文は要れば敵の頭上を越えて狙いのマスへ届くことに注意。広域地図で <color:keypress>*</color> のコマンドを使うと、よく似た <color:keypress>l</color>ook のコマンドへつながる。<color:keypress>*</color> のコマンドに時間はかからない。</indent>
+
+<topic:Looking><style:heading>見るコマンド</style>
+
+  <indent><color:U>敵の一覧（<color:keypress>Y</color>）または（<color:keypress>[</color>）</color>
+いま見えている敵をすべて並べるコマンドである。近くに一意の敵やそのほか厄介な敵が居るかを手早く知る手立てで、召喚や探知の直後に使うことがいちばん多い。</indent>
+
+  <indent><color:U>アイテムの一覧（<color:keypress>]</color>）</color>
+その階で判っているアイテムをすべて並べ、店やダンジョンの入口のような目を引く地形も一緒に見せるコマンドである。アイテムの一覧を出している間に <color:keypress>S</color> を押すと、階段を一覧に含めるかどうかが入れ替わる。アイテムの一覧は、その階の階段・アーティファクト・未鑑定のアイテムなどを見つけるのに便利で、目当てまで下がって <color:keypress>J</color> を押せば直に歩いていける。</indent>
+
+  <indent><color:U>全体地図（<color:keypress>M</color>）</color>
+ダンジョン全体の地図を、1 画面に収まるよう縮めて見せるコマンドである。縮めてあるので大きな地形しか見えず、大事なアイテムでも地図に出ないことがある。ダンジョンのまだ探っていない区域を手早く見つけたり、ダンジョンの端に対する自分の位置を掴んだりするのにとりわけ役に立つ。このコマンドに時間はかからない。
+<style:screenshot>
+  +------------------------------------------------------------------+
+  |                          <color:U>######</color>  <color:U>#########</color>                       |
+  |                   ########....####.......<color:s>%</color>                       |
+  |             ######......#####.####.......#                       |
+  |             <color:y>d</color>......##            ######<color:s>%%</color>#                       |
+  |            <###.....#                                            |
+  |             ##<color:U>'</color>.....#                                            |
+  |             ##<color:U>'</color>.....#                                            |
+  |              ##<color:U>+</color>#####                                            |
+  |     #####    ..                                                  |
+  |     #...#    ##                                                  |
+  |     ###%<color:U>'</color>##%#%#                                                  |
+  |        %###%%<#                                                  |
+  |              .#                                                  |
+  |              <color:s>%</color>#                                                  |
+  |              <color:s>%%</color>                                                  |
+  |            #<color:s>%</color>#<color:s>%%</color>                                                 |
+  |            #...#                                                 |
+  |            ###<color:s>%</color>#                                                 |
+</style>
+モガミネーターが働いていれば、指定したアイテムをこの地図に出せる。ただしこれは古い作りで、<color:keypress>]</color> のアイテムの一覧を使うほうがいつでも便利である。</indent>
+
+  <indent><color:U>地図の中の位置（<color:keypress>L</color>）または自分はどこか（<color:keypress>W</color>）</color>
+地図を動かして、いまの階のあらゆる区画を眺められるコマンドである。ESC を押すと終わり、必要なら地図は自分を中心へ戻す。地図を動かすには「向き」のキーを押すだけでよい。上の行に区画の位置と、いまの区画からのずれが出る。このコマンドに時間はかからない。</indent>
+
+  <indent><color:U>画面の中心を戻す（<color:keypress>^V</color>）</color>
+画面の中心を自分の位置へ戻すコマンドである。動くにつれてゲームも画面を自動で送るが、それは端へ近づいたときだけである。このコマンドは、すぐ上の<color:U>地図の中の位置</color>より手早い代わりになる。もっとも、もう一歩進んで <color:keyword>center_player</color> の設定（<link:option.txt#center_player>）を入れてしまう人も居る。</indent>
+
+  <indent><color:U>見回す（<color:keypress>l</color>）または調べる（<color:keypress>x</color>）</color>
+近くの敵（種類と傷み具合を知るため）やアイテム（種類を知るため）を見回すコマンドである。敵の足元にアイテムがあるか、敵が壁の中に居るかを調べるのにも使う。このコマンドに時間はかからない。
+
+このコマンドは <color:keypress>*</color> の狙いを定めるコマンドとたいへん近い間柄で、狙いの画の特別なキーはこの見回しの画でもたいてい効く。とりわけ敵を見たいなら、このコマンドの代わりに <color:keypress>*</color> を使うほうが便利なことが多い。一方、町の建物を調べるには <color:keypress>l</color>／<color:keypress>x</color> のほうが向く。</indent>
+
+<topic:Message><style:heading>メッセージのコマンド</style>
+
+  <indent><color:U>階の感触をもう一度（<color:keypress>^F</color>）</color>
+いまの階についての感触をもう一度出す。</indent>
+
+  <indent><color:U>前のメッセージを見る（<color:keypress>^P</color>）</color>
+近ごろのメッセージをすべて見せるコマンドである。送って読めるし、ESCAPE で抜けられる。このコマンドに時間はかからない。</indent>
+
+  <indent><color:U>覚え書きを残す（<color:keypress>:</color>）</color>
+覚え書きを残すコマンドである。残した覚え書きはメッセージの一覧に（頭に「覚え書き:」を付けて）出る。このコマンドに時間はかからない。メッセージの記録に小さな絵も添えられる。たとえば:
+<style:screenshot>
+  <indent><color:y>覚え書き:</color> このコウモリども、<color:v>ほんとに</color>くたばった！
+              #.################.#
+              #..........<.......#
+              #.##############<color:U>></color>#.#
+          #####.#              #.######
+          #.....#              #.......
+          #.#####              ########
+          #.#                         #
+  #########<color:U>'</color>########
+  #................#
+  #...........@....#
+  #.......<color:v>b</color>........#
+  #................#
+  #.........<color:v>b</color>......<color:u>'</color>
+  #................#
+  #................#
+  #................#
+  #................#
+  <color:U>##################</color>
+
+フルーツ・バットに狙いを定めた。
+フルーツ・バットは死んだ。
+
+フルーツ・バットに狙いを定めた。
+フルーツ・バットは死んだ。
+</style></indent>
+<topic:GameStatus><style:heading>いまの様子を見るコマンド</style>
+
+  <indent><color:U>人物調書（<color:keypress>C</color>）</color>
+冒険者の全部を見せる。耐性・技能の程度・いまの能力値と伸びしろ・装備・持ち物・我が家のアイテム・近接戦闘と射撃の平均のダメージ・覚えている呪文・依頼の記録などである。この画から <color:keypress>|</color> のコマンドで人物の記録を書き出せる。</indent>
+
+  <indent><color:U>人物調書の写しを見比べる</color>
+人物調書の中では、画を離れずに調書まるごとの写しを取って見比べられる。<color:keypress>c</color> でいま出ている調書を取っておき、<color:keypress>C</color> で既定の写し（あれば）と見比べる。写しの置き場を増やす話や、大文字の記号で直に読み込む別名など、コマンドの詳しい話は <link:charsheet.txt#CharacterCompare> を参照のこと。</indent>
+
+  <indent><color:U>知識の一覧（<color:keypress>~</color>）</color>
+冒険者・アーティファクト・敵・鑑定したアイテムなどについて調べる一覧を開くコマンドである。
+
+<color:r>アイテムの知識</color>                <color:r>ダンジョンの知識</color>                                   
+  (a) アーティファクト        (d) ダンジョン                                    
+  (o) アイテム                      (q) 依頼                                          
+  (e) エゴ                    (t) 地形の記号
+  (_) 自動で拾う／壊す                                                          
+                            <color:r>自分の知識</color>                                      
+<color:r>敵の知識</color>                  (@) 自分について                                
+  (m) 知っている敵            (W) 武器のダメージ                                
+  (w) 賞金首                  (H) 得点表                                        
+  (u) 残っている一意の敵                                                        
+  (k) 倒した数              <color:r>技能</color>                                              
+  (p) ペット                  (P) 熟練度                                        
+                              (s) 呪文の熟練度                                  
+
+ご覧のとおり、ここには多くのことが載っている。あちこち触ってみれば何が見られるか分かる。</indent>
+
+  <indent><color:U>いまの時刻（<color:keypress>^T</color>）または（<color:keypress>'</color>）</color>
+ゲームの中のいまの日付と時刻を、たいていは短い一言を添えて見せるコマンドである。（一言の無い素の情報は <color:keypress>C</color> の人物調書でも見られる。）</indent>
+
+<topic:SaveExit><style:heading>セーブと終了のコマンド</style>
+
+  <indent><color:U>セーブして終了（<color:keypress>^X</color>）</color>
+あとで続きから遊べるようセーブするコマンドである。仕組みの不具合でゲームが落ちたときも（願わくば）セーブファイルは作られる。死んだあとも、そのセーブファイルを使えば同じ設定と知識でもう一度遊べる。</indent>
+
+  <indent><color:U>セーブする（<color:keypress>^S</color>）</color>
+ゲームをセーブするが終了しないコマンドである。遊んでいる最中に計算機が落ちるのが心配なら、こまめに使うとよい。</indent>
+
+  <indent><color:U>終了（自殺する）（<color:keypress>Q</color>）</color>
+冒険者を殺してゲームを終える。本当にそうしてよいか訊かれ、さらにその選択を確かめられる。死んだ冒険者は永久に死んだままであることに注意。</indent>
+
+<topic:UserPref><style:heading>設定のコマンド</style>
+
+設定のコマンドの説明と、この機能の詳しい話は <link:pref_contents.txt> を参照のこと。
+
+  <indent><color:U>設定を変える（<color:keypress>=</color>）</color>
+設定を触れるようにする。ずるの設定を使うと、セーブファイルが得点表に載せられない印を付けられることがあるので注意。</indent>
+
+  <indent><color:U>マクロの設定（<color:keypress>@</color>）</color>
+マクロを触れるようにする。設定ファイルからマクロを読み込んだり書き出したり、いろいろな種類のマクロを作ったり、キーの割り当てを決めたりできる。</indent>
+
+  <indent><color:U>見た目の設定（<color:keypress>%</color>）</color>
+見た目を触れるようにする。設定ファイルから見た目を読み込んだり書き出したり、敵・アイテム・地形の色と記号の割り当てを変えたりできる。</indent>
+
+  <indent><color:U>色の設定（<color:keypress>&</color>）</color>
+色を触れるようにする。このコマンドは一部の仕組みでしか働かない。</indent>
+ 
+  <indent><color:U>モガミネーターの設定を読み直す（<color:keypress>$</color>）</color>
+モガミネーター用の "pickpref.prf" と "pickpref-<<playername>>.prf" を読み直すコマンドである。遊んでいる最中に外の編集器でこれらのファイルを直したときにだけ要る。</indent>
+
+  <indent><color:U>モガミネーターの設定を編集する（<color:keypress>_</color>）</color>
+拾い方の設定の編集器を開く前に確認し、モガミネーターがまだ働いていなければ働かせる。この編集器では <color:keypress>ESC</color> のキーで一覧が開き、モガミネーターを切って抜ける選択肢もある。<color:keypress>^Q</color> か <color:keypress>^W</color> で編集器を終える。</indent>
+
+<topic:Help><style:heading>ヘルプ</style>
+
+  <indent><color:U>ヘルプ（<color:keypress>?</color>）</color>
+ヘルプの仕組みを開く。場合によっては（ヘルプの中などでは）決まったヘルプの頁を開くこともある。</indent>
+
+  <indent><color:U>記号を調べる（<color:keypress>/</color>）</color>
+ある記号が何を表すかを調べるコマンドである。たとえば <color:keypress>/.</color> と押せば、<color:keypress>.</color> の記号が床のマスを表すと分かる。近くの決まった敵について知りたいなら、このコマンドではなく <color:keypress>*</color> のコマンドを使うこと。
+
+敵の記号にこのコマンドを使うと、その記号に当たる種類を思い出させてくれて、その種類のうち見たことのある敵をすべて並べてくれる。同じことは <color:keypress>~</color> の知識の一覧からも見られる。
+
+記号を調べるコマンドには、特別なコマンドが 4 つある。<color:keypress>Ctrl-A</color> で知っている敵を全部、<color:keypress>Ctrl-U</color> で知っている一意の敵を全部、<color:keypress>Ctrl-N</color> で知っている一意でない敵を全部、<color:keypress>Ctrl-M</color> で打ち込んだ文字列に当たる敵を全部思い出す。<color:keypress>k</color> で倒した数の順に、<color:keypress>p</color> で敵の本来の深さの順に並べ替え、<color:keypress>ESC</color> で抜ける。</indent>
+ 
+  <indent><color:U>版の情報（<color:keypress>V</color>）</color>
+いま遊んでいるゲームの版と、いまの地図の大きさを教えるコマンドである。詳しくは <link:version.txt> を参照のこと。</indent>
+
+<topic:Extra><style:heading>そのほかのコマンド</style>
+
+  <indent><color:U>直前の命令をもう一度（<color:keypress>n</color>）または（<color:keypress>X</color>）</color>
+直前に実行したコマンドを、引数もそのままに繰り返すコマンドである。同じ敵へ何度も射たり、同じ呪文を唱え続けたりするのにたいそう便利である。</indent>
+
+  <indent><color:U>打鍵を記録する（<color:keypress>"</color>）</color>
+打ったコマンドは、ふつうの ASCII の字ならどれでも名前にして控えておける。実のところ、手で打ったコマンドはすべて <color:keypress>.</color> の控えへ自動で記録される。直前の命令をもう一度打つとき、実際にはこの特別な <color:keypress>.</color> の控えを流し直している。それとは別に、次のコマンドを好きな控えへ記録して、あとで手で流すこともできる。たとえば <color:keypress>"Fmae*t</color> と打つと、コマンド <color:keypress>mae*t</color> が <color:keypress>.</color> の控えに加えて <color:keypress>F</color> の控えへ記録される。あとで <color:keypress>'F</color> で流し直せる。一方 <color:keypress>'.</color> や <color:keypress>n</color> での流し直しは、すぐ次の手でしか効かない。</indent>
+
+  <indent><color:U>記録した打鍵を流す（<color:keypress>'</color>）</color>
+上で述べたとおり、<color:keypress>"</color> のコマンドで打鍵を記録し、あとで <color:keypress>'</color> のコマンドで流し直せる。打鍵は控えに保存され、控えはそれぞれ ASCII の 1 字で指す。たとえば <color:keypress>"t<cmd></color> で記録したなら、あとで <color:keypress>'t</color> を押せば流し直せる。この控えは一時のもので、ゲームを起こし直すたびに消える。記録した打鍵を見るには <color:keypress>'</color> の控えを選ぶ（つまり、いちばん外で <color:keypress>''</color> と押す）。そのあと使いたい控えを打てる（たとえば <color:keypress>''t</color> は <color:keypress>'t</color> と同じ働きだが、2 つ目の <color:keypress>'</color> を押した時点で記録した打鍵の中身が全部見える）。
+
+流し直すコマンドが使われることはまれである。たいていはマクロとキーの割り当て（<link:pref.txt#Macros>）のほうが向いている。</indent>
+
+  <indent><color:U>サブウィンドウの入切（<color:keypress>^I</color>）</color>
+サブウィンドウの表示を持ち物と装備の間で入れ替える。持ち物・装備のサブウィンドウを出しているときにだけ効く。</indent>
+
+  <indent><color:U>画面を描き直す（<color:keypress>^R</color>）</color>
+全体の設定のいろいろな変更を取り込み、すべての窓を描き直すコマンドである。<color:keyword>angband.live</color> で遊んでいて誰かが見物し始めたときに使ってやるのが礼儀である。描画がおかしいと感じたときや、見た目を変えたのにゲームが応じていないときにも使う。迷ったら使えばよい。</indent>
+        
+  <indent><color:U>画面を書き出す（<color:keypress>)</color>）</color>
+いまの画面の文書を作り、ゲームの中の閲覧器で見せるコマンドである。そのあと <color:keypress>|</color> のコマンドで、素の字か html として保存できる。html にするには、ファイルの拡張子を html にするだけでよい。絵を出す設定で遊んでいるときは、書き出す前にふつうの字の表示へ直そうとすることに注意。</indent>
+
+  <indent><color:U>ペットに命じる（<color:keypress>p</color>）</color>
+ペットが居るなら、このコマンドで命令を出したりペットの設定を入れ替えたりする。詳しくは <link:monster.txt#PetCommands> を参照のこと。</indent>
+
+<topic:Summary><style:heading>まとめ</style>
+<style:table>
+<color:U>持ち物のコマンド           元の配列        ローグ風</color>
+  持ち物の一覧                <color:keypress>i</color>
+  装備の一覧                  <color:keypress>e</color>
+  アイテムを調べる            <color:keypress>I</color>
+  アイテムを拾う              <color:keypress>g</color>
+  アイテムを置く              <color:keypress>d</color>
+  アイテムを壊す              <color:keypress>k               ^D</color>
+  身に着ける                  <color:keypress>w</color>
+  外す                        <color:keypress>t                T</color>
+
+<color:U>動くコマンド               元の配列        ローグ風</color>
+  歩く（拾う）                <color:keypress>;</color>
+  歩く（拾いを裏返す）        <color:keypress>-</color>
+  走る                        <color:keypress>.                ,</color>
+  階段を上る                  <color:keypress><</color>
+  階段を下る                  <color:keypress>></color>
+  向きのキー（DIR）        <color:keypress>7  8  9          y  k  u</color>
+                           <color:keypress>4     6          h     l</color>
+                           <color:keypress>1  2  3          b  j  n</color>
+  走る                    <color:keypress>SHIFT+DIR</color>
+  目を引くアイテムまで歩く    <color:keypress>H               ^E</color>
+  歩きを続ける                <color:keypress>J                (</color>
+
+<color:U>休むコマンド               元の配列        ローグ風</color>
+  その場に留まる（拾う）      <color:keypress>,                .</color>
+  休む                        <color:keypress>R</color>
+
+<color:U>探すコマンド               元の配列        ローグ風</color>
+  探す                        <color:keypress>s</color>
+  探索の入切                  <color:keypress>S                #</color>
+
+<color:U>手を出すコマンド           元の配列        ローグ風</color>
+  掘る                        <color:keypress>T               ^T</color>
+  扉か箱を開ける              <color:keypress>o</color>
+  扉を閉じる                  <color:keypress>c</color>
+  扉に楔を打つ                <color:keypress>j                S</color>
+  扉に体当たり                <color:keypress>B                f</color>
+  罠を外す                    <color:keypress>D</color>
+  手を出す                    <color:keypress>+</color>
+  手を出す                <color:keypress>CTRL+DIR</color>
+
+<color:U>呪文のコマンド             元の配列        ローグ風</color>
+  呪文の解説を見る            <color:keypress>b                P</color>
+  呪文を学ぶ                  <color:keypress>G</color>
+  呪文を唱える                <color:keypress>m</color>
+  特別の力を使う              <color:keypress>U                O</color>
+
+<color:U>アイテムのコマンド         元の配列        ローグ風</color>
+  食べる                      <color:keypress>E</color>
+  燃料を足す                  <color:keypress>F</color>
+  薬を飲む                    <color:keypress>q</color>
+  巻物を読む                  <color:keypress>r</color>
+  アイテムを発動する          <color:keypress>A</color>
+  魔法棒を向ける              <color:keypress>a                z</color>
+  杖を使う                    <color:keypress>u                Z</color>
+  ロッドを振る                <color:keypress>z                a</color>
+  銘を書く                    <color:keypress>Z                {</color>
+  ダンジョンの覚え書き        <color:keypress>}</color>
+
+<color:U>射るコマンド               元の配列        ローグ風</color>
+  射撃する                    <color:keypress>f                t</color>
+  アイテムを投げる            <color:keypress>v</color>
+  狙いを定める／見回す        <color:keypress>*</color>
+
+<color:U>見るコマンド               元の配列        ローグ風</color>
+  敵の一覧                    <color:keypress>Y                [</color>
+  アイテムの一覧              <color:keypress>]</color>
+  全体地図                    <color:keypress>M</color>
+  地図の中の位置              <color:keypress>L                W</color>
+  見回す                      <color:keypress>l                x</color>
+  画面の中心を戻す           <color:keypress>^V</color>
+
+<color:U>メッセージのコマンド       元の配列        ローグ風</color>
+  階の感触をもう一度         <color:keypress>^F</color>
+  前のメッセージ             <color:keypress>^P</color>
+  覚え書きを残す              <color:keypress>:</color>
+
+<color:U>いまの様子のコマンド       元の配列        ローグ風</color>
+  人物調書                    <color:keypress>C</color>
+  知識の一覧                  <color:keypress>~</color>
+  いまの時刻                 <color:keypress>^T                '</color>
+
+<color:U>セーブと終了のコマンド     元の配列        ローグ風</color>
+  セーブして終了             <color:keypress>^X</color>
+  セーブする                 <color:keypress>^S</color>
+  終了（自殺する）            <color:keypress>Q</color>
+
+<color:U>設定のコマンド             元の配列        ローグ風</color>
+  設定を変える                <color:keypress>=</color>
+  マクロの設定                <color:keypress>@</color>
+  見た目の設定                <color:keypress>%</color>
+  色の設定                    <color:keypress>&</color>
+  モガミネーターを読み直す    <color:keypress>$</color>
+  モガミネーターの設定を編集  <color:keypress>_</color>
+
+<color:U>ヘルプのコマンド           元の配列        ローグ風</color>
+  ヘルプ                      <color:keypress>?</color>
+  記号を調べる                <color:keypress>/</color>
+  版の情報                    <color:keypress>V</color>
+
+<color:U>そのほかのコマンド         元の配列        ローグ風</color>
+  直前の命令をもう一度        <color:keypress>n                X</color>
+  サブウィンドウの入切       <color:keypress>^I</color>
+  画面を描き直す             <color:keypress>^R</color>
+  画面を書き出す              <color:keypress>)</color>
+  ペットに命じる              <color:keypress>p</color>
+</style>
+<color:D>
+最初       : Alexander Cutler・Andy Astrand
+更新       : (2.7.6) Russ Allbery (rra@cs.stanford.edu)
+更新       : (2.7.9) Ben Harrison (benh@phial.com)
+更新       : Zangband 2.2.0 から 2.2.6c まで Robert Ruehlmann
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.7.0
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.1.liquorice
+</color>

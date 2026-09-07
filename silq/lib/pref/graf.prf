@@ -1,0 +1,32 @@
+# File: graf.prf
+
+#
+# This file defines attr/char mappings for when graphics mode is enabled.
+#
+# See `src/files.c` for more information.
+#
+
+
+###############################################################################
+# Load the standard font file
+###############################################################################
+%:font-std.prf
+
+
+###############################################################################
+# Load system-specific pref files
+###############################################################################
+?:[EQU $SYS x11]
+%:graf-x11.prf
+
+?:[EQU $SYS gcu]
+%:graf-gcu.prf
+
+?:[EQU $SYS mac]
+%:graf-mac.prf
+
+?:[EQU $SYS win]
+%:graf-win.prf
+
+?:1
+

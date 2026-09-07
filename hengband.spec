@@ -1,0 +1,338 @@
+%define version 3.0.2.3
+%define release 1
+
+Summary: hengband %{version}
+Name: hengband
+Version: %{version}
+Release: %{release}
+License: unknown
+Group: Amusements/Games
+Url: https://hengband.github.io
+Source: hengband-%{version}.tar.gz
+Requires: ncurses-libs libstdc++ libcurl libX11 libXft
+BuildRequires: autoconf automake gcc-c++ ncurses-devel libcurl-devel nkf libX11-devel libXft-devel
+
+Requires: %{name}-data = %{version}
+
+%package data
+
+Summary: %{name}-data %{version}
+
+%package en
+
+Requires: ncurses-libs libstdc++ libcurl libX11 libXft
+Requires: %{name}-data = %{version}
+Summary: %{name}-en %{version}
+
+%description
+Hengband is a variant of ZAngband.
+
+Official page is this,
+https://hengband.github.io
+
+More information is in /usr/share/doc/hengband/readme-eng.md
+This package contains an executable file in Japanese.
+You also need to install hengband-data package for playing.
+
+Summary(ja): 変愚蛮怒 %{version}
+
+%description -l ja
+変愚蛮怒は Angband のバリアントです。
+
+本ソフトウェアの最新版は以下の場所から入手できます。
+https://hengband.github.io
+
+詳しくは /usr/share/doc/hengband/readme.md を参照。
+このパッケージは日本語版実行ファイルです。
+他にゲーム用データファイルが必要です。
+
+%description data
+Hengband is a variant of ZAngband.
+
+Official page is this,
+https://hengband.github.io
+
+More information is in /usr/share/doc/hengband/readme-eng.md
+This packages contains common data files.
+
+Summary(ja): 変愚蛮怒 %{version}
+
+%description data -l ja
+変愚蛮怒は Angband のバリアントです。
+
+本ソフトウェアの最新版は以下の場所から入手できます。
+https://hengband.github.io
+
+詳しくは /usr/share/doc/hengband/readme.md を参照。
+このパッケージはゲーム用データです。
+
+%description en
+Hengband is a variant of ZAngband.
+
+Official page is this,
+https://hengband.github.io
+
+More information is in /usr/share/doc/hengband/readme-eng.md
+This package contains an executable file in English.
+You also need to install hengband-data package for playing.
+
+Summary(ja): 変愚蛮怒 %{version}
+
+%prep
+rm -rf %{buildroot}
+
+%setup -n %{name}-%{version}
+./bootstrap
+
+%build
+%configure --with-libpath=%{_datadir}/games/%{name}/lib --disable-japanese --enable-xft
+%make_build
+cp src/hengband src/hengband-en
+%configure --with-libpath=%{_datadir}/games/%{name}/lib --enable-xft
+%make_build
+
+%install
+mkdir -p %{buildroot}/%{_bindir}
+mkdir -p %{buildroot}/%{_datadir}/games/%{name}
+%make_install bindir=%{_bindir}
+cp src/hengband-en %{buildroot}/%{_bindir}
+cp -R lib/ -p %{buildroot}/%{_datadir}/games/%{name}/
+find %{buildroot}/%{_datadir}/games/%{name}/ -type f -name "Makefile*" -exec rm {} \;
+find %{buildroot}/%{_datadir}/games/%{name}/ -type f -name "delete.me*" -exec rm {} \;
+find %{buildroot}/%{_datadir}/games/%{name}/ -name ".git*" -exec rm -rf {} \;
+rm -rf %{buildroot}/%{_datadir}/games/%{name}/lib/xtra/{sound,music}
+touch %{buildroot}/%{_datadir}/games/%{name}/lib/apex/scores.raw
+
+%clean
+rm -rf %{buildroot}
+
+%preun
+if [ -e %{_datadir}/games/%{name}/lib/data/f_info_j.raw ]
+then
+rm -rf %{_datadir}/games/%{name}/lib/data/*.raw
+fi
+exit 0
+
+%files
+%defattr(-,root,root)
+%attr(2755,root,games) %{_bindir}/%{name}
+
+%files en
+%defattr(-,root,root)
+%attr(2755,root,games) %{_bindir}/%{name}-en
+
+%files data
+%dir %{_datadir}/games/%{name}/lib
+%attr(775,root,games) %dir %{_datadir}/games/%{name}/lib/apex
+%attr(775,root,games) %dir %{_datadir}/games/%{name}/lib/bone
+%attr(775,root,games) %dir %{_datadir}/games/%{name}/lib/data
+%dir %{_datadir}/games/%{name}/lib/edit
+%dir %{_datadir}/games/%{name}/lib/file
+%dir %{_datadir}/games/%{name}/lib/file/books
+%dir %{_datadir}/games/%{name}/lib/help
+%dir %{_datadir}/games/%{name}/lib/info
+%dir %{_datadir}/games/%{name}/lib/pref
+%attr(775,root,games) %dir %{_datadir}/games/%{name}/lib/save
+%dir %{_datadir}/games/%{name}/lib/script
+%dir %{_datadir}/games/%{name}/lib/user
+%dir %{_datadir}/games/%{name}/lib/xtra
+%dir %{_datadir}/games/%{name}/lib/xtra/graf
+%{_datadir}/games/%{name}/lib/apex/h_scores.raw
+%{_datadir}/games/%{name}/lib/apex/readme.txt
+%attr(664 root,games) %config(noreplace) %{_datadir}/games/%{name}/lib/apex/scores.raw
+%{_datadir}/games/%{name}/lib/edit/*.txt
+%{_datadir}/games/%{name}/lib/edit/*.jsonc
+%{_datadir}/games/%{name}/lib/edit/quests/*.jsonc
+%{_datadir}/games/%{name}/lib/edit/towns/*.txt
+%{_datadir}/games/%{name}/lib/file/*.txt
+%{_datadir}/games/%{name}/lib/file/books/*.txt
+%{_datadir}/games/%{name}/lib/help/*.hlp
+%{_datadir}/games/%{name}/lib/help/*.txt
+%{_datadir}/games/%{name}/lib/pref/*.prf
+%{_datadir}/games/%{name}/lib/xtra/graf/8x8.bmp
+%doc readme.md readme_angband readme-eng.md autopick.txt autopick_eng.txt
+%license lib/help/jlicense.txt THIRD-PARTY-NOTICES.txt
+
+%changelog
+* Tue May 26 2026 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.2.3(Beta)
+
+* Tue Jan 6 2026 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.2.2(Beta)
+
+* Fri Dec 19 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.2.1(Beta)
+
+* Tue Dec 16 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.2.0(Beta)
+
+* Sun Aug 17 2025 whitehara <white@vx-xv.com>
+- Enable Xft
+- hengband RPM 3.0.1.29(Beta)
+
+* Mon Jun 16 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.28(Beta)
+
+* Mon May 26 2025 whitehara <white@vx-xv.com>
+- Add specified version dependencies between hengband,en and hengband-data
+
+* Wed May 21 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.27(Beta)
+
+* Tue Feb 18 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.26(Beta)
+
+* Mon Jan 20 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.25(Beta)
+
+* Mon Jan 6 2025 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.24(Beta)
+
+* Fri Dec 20 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.23(Beta)
+
+* Mon Dec 16 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.22(Beta)
+
+* Fri Nov 29 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.21(Beta)
+
+* Tue Aug 27 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.20(Beta)
+
+* Mon Aug 12 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.19(Beta)
+
+* Fri Aug 02 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.18(Beta)
+
+* Sun Jul 14 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.17(Beta)
+
+* Tue Jul 02 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.16(Beta)
+
+* Fri Jun 21 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.15(Beta)
+
+* Wed Jun 05 2024 whitehara <white@vx-xv.com>
+- hengband RPM 3.0.1.14(Beta)
+
+* Sun Jun 02 2024 whitehara <white@vx-xv.com>
+- Add new .jsonc to data
+- hengband RPM 3.0.1.13(Beta)
+
+* Wed May 08 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.12(Beta)
+
+* Wed Apr 17 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.11(Beta)
+
+* Mon Apr 01 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.10(Beta)
+
+* Sun Mar 10 2024 Shiro Hara <white@vx-xv.com>
+- Add en(English version), data(common data files) subpakages
+- hengband RPM 3.0.1.9(Beta)
+
+* Mon Mar 04 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.8(Beta)
+
+* Mon Feb 05 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.7(Beta)
+
+* Mon Jan 22 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.6(Beta)
+
+* Tue Jan 09 2024 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.5(Beta)
+
+* Wed Dec 27 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.4(Beta)
+
+* Mon Dec 11 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.3(Beta)
+
+* Mon Nov 27 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.2(Beta)
+
+* Fri Nov 17 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.1(Beta)
+
+* Mon Oct 30 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.1.0(Beta)
+
+* Sun Oct 22 2023 Shiro Hara <white@vx-xv.com>
+- Fix the graphic mode is not available on X11
+
+* Wed Oct 18 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.91(Alpha)
+
+* Mon Oct 16 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.90(Alpha)
+
+* Tue Aug 8 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.89(Alpha)
+
+* Mon Jul 24 2023 Shiro Hara <white@vx-xv.com>
+- Enable X11
+
+* Sun Jul 23 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.88(Alpha)
+
+* Sun Jul 09 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.87(Alpha)
+
+* Mon Jun 26 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.86(Alpha)
+
+* Wed Jun 14 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0.85(Alpha)
+
+* Mon May 29 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 84
+
+* Wed May 17 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 83
+- Replace RPM_BUILD_ROOT to builddir macro
+
+* Sat May 06 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 82
+
+* Thu May 04 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 81
+
+* Mon Feb 20 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 78
+
+* Sun Feb 19 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 77
+- Remove Packacger
+- Remove Buildroot
+- Add %license
+- Fix Version and Release
+
+* Fri Feb 17 2023 Shiro Hara <white@vx-xv.com>
+- hengband RPM 3.0.0Alpha release 76
+- Renew Url
+- Renew Packager
+- Change Copyright to License
+- Change readme.txt to readme.md
+
+* Fri Jul 05 2002 Takahiro MIZUNO <tow@plum.freemail.ne.jp>
+- hengband RPM 1.0.0b release 3
+- Add %preun script.
+- Change source extension. (tar.gz -> bz2)
+- Fix Copyright.
+- Fix simply %files.
+- Fix %description.
+
+* Mon Jun 17 2002 Takahiro MIZUNO <tow@plum.freemail.ne.jp>
+- hengband RPM 1.0.0b release 2
+- Fix setgid permission. (Mogamiさん多謝)
+
+* Sun Jun 16 2002 Takahiro MIZUNO <tow@plum.freemail.ne.jp>
+- hengband RPM 1.0.0b release 1
+
+* Sun Jun 16 2002 Takahiro MIZUNO <tow@plum.freemail.ne.jp> 
+- hengband RPM 1.0.0 release 1

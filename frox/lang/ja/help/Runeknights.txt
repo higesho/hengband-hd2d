@@ -1,0 +1,203 @@
+<style:title>ルーン・ナイト</style>
+
+ルーン・ナイトとして遊ぶことの大きな部分は、力の神秘のルーンをさまざまな装備へ刻むことにある。ルーンの種類ごとに、その主題に沿った特別な能力をくれる。この能力は、ルーンを刻むアイテムの種類によって少しずつ変わる。一般に、ルーンは兜・手袋・盾へ刻むより体の防具へ刻む方が強い。ルーンを刻むとたいていマナを使い切るうえ、ルーン・ナイトはふつうにはマナが回復しないので、手当たりしだいに試して確かめるのは時間がかかり、良くない置き方になりやすい。1 つのアイテムに刻めるルーンは 1 つだけで、いちど刻んだルーンは外すことも変えることもできない。ただし、同じルーンを複数のアイテムへ刻むのは差し支えない。
+
+下のルーンの早見表は少し種明かしになるが、これを手元に置いて遊ぶのを喜ぶ人が多い。
+
+<topic:RunesByType><style:heading>種類ごとのルーン</style>
+
+この節では、ルーンごとに、刻めるアイテムの種類を並べて示す。これでそれぞれのルーンが何をするか一目で分かり、どこへ使うのがいちばん良いかを決められる。
+
+<color:B>吸収</color>
+<color:R>近接武器</color>      <color:G>L1</color>  魔法耐性、マナ吸収
+<color:R>盾</color>            <color:G>L1</color>  魔法耐性、マナ吸収
+<color:R>体の防具</color>      <color:G>L1</color>  魔法耐性、マナ吸収
+
+<color:B>守り</color>
+<color:R>盾</color>            <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:R>体の防具</color>      <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:R>兜</color>            <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:R>クローク</color>      <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:R>手袋</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:R>靴</color>            <color:G>L5</color>  AC の恩恵、腐食からの守り
+
+<color:B>再生</color>
+<color:R>体の防具</color>      <color:G>L7</color>  急回復
+<color:R>クローク</color>      <color:G>L7</color>  急回復
+
+<color:B>火</color>
+<color:R>近接武器</color>      <color:G>L9</color>  火炎属性
+<color:R>盾</color>            <color:G>L9</color>  火炎への耐性
+<color:R>体の防具</color>      <color:G>L9</color>  火炎への耐性、火炎オーラ
+<color:R>クローク</color>      <color:G>L9</color>  火炎オーラ
+<color:R>光源</color>          <color:G>L9</color>  火炎オーラ
+<color:R>手袋</color>          <color:G>L45</color> 火炎属性
+
+<color:B>風</color>
+<color:R>近接武器</color>      <color:G>L40</color> 攻撃回数 +0.75
+<color:R>クローク</color>      <color:G>L11</color> 浮遊
+<color:R>靴</color>            <color:G>L11</color> 浮遊
+
+<color:B>水</color>
+<color:R>近接武器</color>      <color:G>L13</color> 酸属性
+<color:R>盾</color>            <color:G>L13</color> 酸への耐性
+<color:R>体の防具</color>      <color:G>L13</color> 酸と朦朧への耐性
+<color:R>クローク</color>      <color:G>L13</color> 酸への耐性
+<color:R>手袋</color>          <color:G>L45</color> 酸属性
+
+<color:B>光</color>
+<color:R>兜</color>            <color:G>L15</color> 閃光への耐性
+<color:R>光源</color>          <color:G>L15</color> 閃光への耐性
+
+<color:B>影</color>
+<color:R>盾</color>            <color:G>L17</color> 暗黒への耐性
+<color:R>体の防具</color>      <color:G>L17</color> 暗黒への耐性、隠密 +5L/50
+<color:R>兜</color>            <color:G>L17</color> 暗黒への耐性
+<color:R>クローク</color>      <color:G>L17</color> 隠密 +5L/50
+
+<color:B>地</color>
+<color:R>近接武器</color>      <color:G>L35</color> 切れ味
+<color:R>盾</color>            <color:G>L19</color> 破片への耐性
+<color:R>体の防具</color>      <color:G>L19</color> 破片への耐性、破片オーラ
+<color:R>クローク</color>      <color:G>L19</color> 破片オーラ
+
+<color:B>理解</color>
+<color:R>兜</color>            <color:G>L21</color> 知能 +2、簡易鑑定
+<color:R>光源</color>          <color:G>L21</color> 知能 +1
+
+<color:B>保全</color>
+このルーンを袋に入れて持ち歩くと、袋の中のアイテムが属性の攻めで壊される見込みが半分になる。
+
+<color:B>加速</color>
+<color:R>手袋</color>          <color:G>L25</color> 器用さ +2
+<color:R>靴</color>            <color:G>L25</color> 加速 +3L/50
+
+<color:B>視</color>
+<color:R>兜</color>            <color:G>L27</color> 盲目への耐性、透明視認
+<color:R>光源</color>          <color:G>L27</color> 盲目への耐性
+
+<color:B>生命</color>
+<color:R>盾</color>            <color:G>L29</color> 経験値保持
+<color:R>体の防具</color>      <color:G>L29</color> 経験値保持、耐久力 +1
+<color:R>光源</color>          <color:G>L29</color> 経験値保持
+
+<color:B>安定</color>
+<color:R>体の防具</color>      <color:G>L31</color> 因果混乱・カオス・劣化への耐性
+<color:R>兜</color>            <color:G>L31</color> 因果混乱への耐性
+<color:R>クローク</color>      <color:G>L31</color> 因果混乱への耐性
+<color:R>靴</color>            <color:G>L31</color> 因果混乱への耐性
+
+<color:B>反射</color>
+<color:R>盾</color>            <color:G>L33</color> 反射
+
+<color:B>死</color>
+<color:R>近接武器</color>      <color:G>L35</color> 吸血
+<color:R>盾</color>            <color:G>L35</color> 地獄への耐性
+<color:R>体の防具</color>      <color:G>L35</color> 地獄と毒への耐性
+<color:R>兜</color>            <color:G>L35</color> 地獄への耐性
+
+<color:B>心</color>
+<color:R>兜</color>            <color:G>L37</color> 知能 +2、知能維持、精神感知
+<color:R>光源</color>          <color:G>L37</color> 精神感知
+
+<color:B>力</color>
+<color:R>体の防具</color>      <color:G>L39</color> 腕力・器用さ・耐久力 +2、腕力・器用さ・耐久力の維持
+<color:R>兜</color>            <color:G>L39</color> 腕力・耐久力 +2
+
+<color:B>破壊</color>
+<color:R>近接武器</color>      <color:G>L41</color> ダメージのサイコロ +2
+<color:R>手袋</color>          <color:G>L41</color> 殺戮
+
+<color:B>幸運</color>
+このルーンを袋に入れて持ち歩くと、幸運に恵まれる。これは高級品と特別製のアイテムを見つける見込みを上げる。この幸運の効き目は白いオーラの突然変異やラッキーな性格と同じ種類のもので、重ねがけにはならない。
+
+<color:B>不死</color>
+<color:R>盾</color>            <color:G>L45</color> 時間への耐性
+<color:R>体の防具</color>      <color:G>L45</color> 時間への耐性、経験値保持、能力値維持
+<color:R>兜</color>            <color:G>L45</color> 時間への耐性
+<color:R>クローク</color>      <color:G>L45</color> 時間への耐性
+
+<topic:RunesBySlot><style:heading>装備の枠ごとのルーン</style>
+
+この節では、ルーンを装備の枠ごとにまとめてある。これでどの種類のアイテムにどの種類のルーンを使えるかが一目で分かる。力の最終的な割り振りを考える助けになるだろう。
+
+<color:R>近接武器</color>
+<color:B>吸収</color>          <color:G>L1</color>  魔法耐性、マナ吸収
+<color:B>火</color>            <color:G>L9</color>  火炎属性
+<color:B>水</color>            <color:G>L13</color> 酸属性
+<color:B>地</color>            <color:G>L35</color> 切れ味
+<color:B>死</color>            <color:G>L35</color> 吸血
+<color:B>風</color>            <color:G>L40</color> 攻撃回数 +0.75
+<color:B>破壊</color>          <color:G>L41</color> ダメージのサイコロ +2
+
+<color:R>盾</color>
+<color:B>吸収</color>          <color:G>L1</color>  魔法耐性、マナ吸収
+<color:B>守り</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:B>火</color>            <color:G>L9</color>  火炎への耐性
+<color:B>水</color>            <color:G>L13</color> 酸への耐性
+<color:B>影</color>            <color:G>L17</color> 暗黒への耐性
+<color:B>地</color>            <color:G>L19</color> 破片への耐性
+<color:B>生命</color>          <color:G>L29</color> 経験値保持
+<color:B>反射</color>          <color:G>L33</color> 反射
+<color:B>死</color>            <color:G>L35</color> 地獄への耐性
+<color:B>不死</color>          <color:G>L45</color> 時間への耐性
+
+<color:R>体の防具</color>
+<color:B>吸収</color>          <color:G>L1</color>  魔法耐性、マナ吸収
+<color:B>守り</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:B>再生</color>          <color:G>L7</color>  急回復
+<color:B>火</color>            <color:G>L9</color>  火炎への耐性、火炎オーラ
+<color:B>水</color>            <color:G>L13</color> 酸と朦朧への耐性
+<color:B>影</color>            <color:G>L17</color> 暗黒への耐性、隠密
+<color:B>地</color>            <color:G>L19</color> 破片への耐性、破片オーラ
+<color:B>生命</color>          <color:G>L29</color> 経験値保持、耐久力 +1
+<color:B>安定</color>          <color:G>L31</color> 因果混乱・カオス・劣化への耐性
+<color:B>死</color>            <color:G>L35</color> 地獄と毒への耐性
+<color:B>力</color>            <color:G>L39</color> 腕力・器用さ・耐久力 +2、腕力・器用さ・耐久力の維持
+<color:B>不死</color>          <color:G>L45</color> 時間への耐性、経験値保持、全能力値維持
+
+<color:R>兜</color>
+<color:B>守り</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:B>光</color>            <color:G>L15</color> 閃光への耐性
+<color:B>影</color>            <color:G>L17</color> 暗黒への耐性
+<color:B>理解</color>          <color:G>L21</color> 知能 +2、簡易鑑定
+<color:B>視</color>            <color:G>L27</color> 盲目への耐性、透明視認
+<color:B>安定</color>          <color:G>L31</color> 因果混乱への耐性
+<color:B>死</color>            <color:G>L35</color> 地獄への耐性
+<color:B>心</color>            <color:G>L37</color> 知能 +2、知能維持、精神感知
+<color:B>力</color>            <color:G>L39</color> 腕力・耐久力 +2
+<color:B>不死</color>          <color:G>L45</color> 時間への耐性
+
+<color:R>クローク</color>
+<color:B>守り</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:B>再生</color>          <color:G>L7</color>  急回復
+<color:B>火</color>            <color:G>L9</color>  火炎オーラ
+<color:B>風</color>            <color:G>L11</color> 浮遊
+<color:B>水</color>            <color:G>L13</color> 酸への耐性
+<color:B>影</color>            <color:G>L17</color> 隠密
+<color:B>地</color>            <color:G>L19</color> 破片オーラ
+<color:B>安定</color>          <color:G>L31</color> 因果混乱への耐性
+<color:B>不死</color>          <color:G>L45</color> 時間への耐性
+
+<color:R>手袋</color>
+<color:B>守り</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:B>加速</color>          <color:G>L25</color> 器用さ +2
+<color:B>破壊</color>          <color:G>L41</color> 殺戮
+<color:B>火</color>            <color:G>L45</color> 火炎属性
+<color:B>水</color>            <color:G>L45</color> 酸属性
+
+<color:R>靴</color>
+<color:B>守り</color>          <color:G>L5</color>  AC の恩恵、腐食からの守り
+<color:B>風</color>            <color:G>L11</color> 浮遊
+<color:B>加速</color>          <color:G>L25</color> 加速 +3L/50
+<color:B>安定</color>          <color:G>L31</color> 因果混乱への耐性
+
+<color:R>光源</color>
+<color:B>火</color>            <color:G>L9</color>  火炎オーラ
+<color:B>光</color>            <color:G>L15</color> 閃光への耐性
+<color:B>理解</color>          <color:G>L21</color> 知能 +1
+<color:B>視</color>            <color:G>L27</color> 盲目への耐性
+<color:B>生命</color>          <color:G>L29</color> 経験値保持
+<color:B>心</color>            <color:G>L37</color> 精神感知
+
+

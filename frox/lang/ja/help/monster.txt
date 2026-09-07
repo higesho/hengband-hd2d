@@ -1,0 +1,489 @@
+<style:title>敵</style>
+
+敵との出会いはこのゲームの背骨である。財宝を得るのも、経験を積むのも、強くなるのも、たいていは敵を倒すことによる。ただし、敵のすべてが死なねばならない憎むべきものというわけではない。
+
+<indent><color:U>敵の種族</color>
+
+このゲームの敵はどれも、ある決まった敵の種類を表しており、便宜上その敵の<color:keyword>種族</color>と呼ばれる。（この語はやや紛らわしく、必ずしも別の生物種や民族を意味しない。人間の見習い魔術師・人間の見習い僧侶・人間の見習い考古学者は3 つの別々の敵の種族である。それにこの筆者は括弧を使いすぎる。）種族は敵についてのほとんどを決める。どの近接攻撃で（あれば）打ってくるか、どの呪文を（あれば）使えるか、あなたのどの攻撃を（あれば）受け流せるか、である。
+
+同じ種族の敵 2 匹がまったく同じというわけではない。ヒットポイントや速さといった細かいところには個体ごとの差がある。だがたいていの場面ではその差を無視して、同じ種族の敵をすべて同じものとして扱ってよい――失礼に思えるかもしれないが。一方で、種族が違えばまるで別物である。それぞれが独特の難しさを持つ。まったく難しくないひと握りを除けば、の話だが。
+
+<color:U>敵の分類</color>
+
+敵の種族はいくつかの区分（<color:keyword>分類</color>）にまとめられる。同じ分類の敵 2 匹は、地図の上ではつねに同じ英字の記号で表される。たとえばオークはすべて o の字を分け合う。同じ種族の敵は色も分け合う（オーク・ウォーロックはどれも <color:v>o</color> である）。ある敵の種族が、同じ分類の別の種族と英字も色も分け合うことはありうるが、比較的まれである。
+
+敵の分類の記号をすべて下に挙げる。</indent>
+
+<topic:MonsterSymbols><style:heading>敵の記号</style>
+
+  <color:U>a</color>   アリ                            <color:U>A</color>   天使
+  <color:U>b</color>   コウモリ                        <color:U>B</color>   鳥
+  <color:U>c</color>   ムカデ                          <color:U>C</color>   犬
+  <color:U>d</color>   ドラゴン                        <color:U>D</color>   古代ドラゴン/ワイアーム
+  <color:U>e</color>   目玉                            <color:U>E</color>   エレメンタル
+  <color:U>f</color>   ネコ/キツネ                     <color:U>F</color>   トンボ
+  <color:U>g</color>   ゴーレム                        <color:U>G</color>   ゴースト
+  <color:U>h</color>   人間型                          <color:U>H</color>   雑種
+  <color:U>i</color>   ベトベト                        <color:U>I</color>   昆虫
+  <color:U>j</color>   ゼリー                          <color:U>J</color>   ヘビ
+  <color:U>k</color>   コボルド                        <color:U>K</color>   キラー・ビートル
+  <color:U>l</color>   水棲生物                        <color:U>L</color>   リッチ
+  <color:U>m</color>   カビ                            <color:U>M</color>   多首のヒュドラ
+  <color:U>n</color>   ナーガ                          <color:D>N   （特別 ― シャドウアー）</color>
+  <color:U>o</color>   オーク                          <color:U>O</color>   オーガ
+  <color:U>p</color>   人間                            <color:U>P</color>   巨大人間型生物
+  <color:U>q</color>   四足獣                          <color:U>Q</color>   クイルスルグ
+  <color:U>r</color>   ネズミ                          <color:U>R</color>   爬虫類/両生類
+  <color:U>s</color>   スケルトン                      <color:U>S</color>   蜘蛛/サソリ/ダニ
+  <color:U>t</color>   町の人                          <color:U>T</color>   トロル
+  <color:U>u</color>   下級デーモン                    <color:U>U</color>   上級デーモン
+  <color:U>v</color>   ボルテックス                    <color:U>V</color>   バンパイア
+  <color:U>w</color>   イモムシ/大群                   <color:U>W</color>   ワイト/レイス
+  <color:D>x   （特別 ― 見破りやすい擬態）</color>    <color:U>X</color>   ゾーン/ザレン
+  <color:U>y</color>   イーク                          <color:U>Y</color>   イエティ
+  <color:U>z</color>   ゾンビ/ミイラ                   <color:U>Z</color>   ハウンド
+  <color:U>$</color>   動く金貨                        <color:U>,</color>   キノコの塊
+  <color:U>#</color>   エント/霧の生き物
+
+種族と違い、敵の分類はその敵がどれほど危ないかを何も教えてくれない。ほとんど無害なジャイアント・グリーン・フロッグは<color:g>R</color> の記号を持つ爬虫類/両生類だが……ティラノサウルスもまたそうである。ただし分類から、おおまかな見当をつけることはできる。たとえばドラゴンとハウンドはほぼすべて何かしらのブレスを吐く。また <color:y>d</color> や <color:y>D</color> の記号を持つものは、ドラゴンを殺す武器で余計にダメージを受けると考えてよい。
+
+<topic:Assessment><style:heading>敵を見定める</style>
+
+その敵が何者で、戦ってどれほどのダメージを与えてくるかを知るいちばん安上がりな道は、けんかを吹っかけて確かめることである。ただしこれは死などの厄介ごとにつながりかねないので、もっと慎重な道を選びたくなるかもしれない。
+
+敵を調べるには <color:keypress>*</color> の狙いを定めるコマンドか、<color:keypress>l</color> の見るコマンドを使う。ここでは <color:o>*</color> のコマンドを使って、北東にいる <color:D>h</color> がニーベルングだと分かった。
+
+<style:screenshot>
+Monster: a ニーベルング [r,q,t,p,o,x,j,+,-,?,<dir>]
+                                                                    レベル<color:G>     1</color>
+                                                                    経験<color:G>      15</color>
+                                                                    金  <color:G>      32</color>
+                                                                    <color:W>|</color><color:d>      </color><color:U>~(</color><color:d>   </color>
+                                                                    腕力: <color:G>    16</color>
+                                                                    知能: <color:G>    18</color>
+                                                                    賢さ: <color:G>     9</color>
+                <color:U>#</color>.. <color:D>h</color>                                               器用: <color:G> 18/40</color>
+                <color:U>#</color>.<color:s>**</color>                                                耐久: <color:G>    17</color>
+                <color:U>#</color>@..                                                魅力: <color:G>    12</color>
+                <color:U>####</color>                                                AC     <color:G>    6</color>
+                                                                    HP <color:G>  37</color>/<color:G>  37</color>
+                                                                    SP <color:G>  14</color>/<color:G>  14</color>
+                                                                                
+                                                                    <color:D>h</color>[<color:G>*********</color>]
+<color:B>Quest: L5</color>
+</style>
+初めて遊んでいるなら、その敵がニーベルングだと分かっただけでは大して助けにならない。<color:keyword>ニーベルングとはどんなものなのか。</color>この狙いを定める画面で <color:keypress>r</color> を押すと、いくらか追加の知らせが出る。
+
+<style:screenshot>
+Monster: a ニーベルング [r,q,t,p,o,x,j,+,-,?,<dir>]
+名前    : <color:B>ニーベルング</color> (<color:D>h</color>)                                              L      <color:G>     1</color>
+レベル  : <color:y>?</color><color:d>         </color>Speed: +0                                           <color:G>      15</color>
+AC      : <color:y>?</color><color:d>         </color>種別 : <color:b>男性</color>                                         <color:G>      32</color>
+HP      : <color:y>?</color><color:d>         </color>                                                    <color:d>   </color><color:U>~(</color><color:d>   </color>
+<color:d>                    </color>                                                    : <color:G>    16</color>
+攻撃    : <color:y>?</color>                                                             : <color:G>    18</color>
+                                                                        : <color:G>     9</color>
+撃破数  : <color:G>0</color>                                                             : <color:G> 18/40</color>
+                                                                        : <color:G>    17</color>
+夜のドワーフで、彼らの主人アルベリヒのために富を集めている。            : <color:G>    12</color>
+                <color:U>####</color>                                                AC     <color:G>    6</color>
+                                                                    HP <color:G>  37</color>/<color:G>  37</color>
+                                                                    SP <color:G>  14</color>/<color:G>  14</color>
+                                                                                
+                                                                    <color:D>h</color>[<color:G>*********</color>]
+<color:B>Quest: L5</color>
+</style>
+前にニーベルングに出会っていれば、この画面は役に立つ知らせで埋まっていただろう。出会っていないので、実のところ速さと説明文しか無い……だがその説明文は、ニーベルングが盗人かもしれないと強くにおわせている。（少し先走ると、アルベリヒという名のユニークのニーベルングがいるかもしれないことも分かる。）
+
+ニーベルングに何度か打たせてみると、盗人だという読みが当たっていたと分かり、敵の思い出がこの新しい知らせで更新される。
+
+<style:screenshot>
+Monster: a ニーベルング [r,q,t,p,o,x,j,+,-,?,<dir>]
+名前    : <color:B>ニーベルング</color> (<color:D>h</color>)                                              L <color:G>     2</color>
+レベル  : <color:y>?</color><color:d>         </color>Speed: +0                                           <color:G>      21</color>
+AC      : <color:y>?</color><color:d>         </color>種別 : <color:D>Thief</color>, <color:b>男性</color>                                  <color:G>       0</color>
+HP      : <color:y>?</color><color:d>         </color>                                                    <color:d>   </color><color:U>~(</color><color:d>   </color>
+<color:d>                    </color>                                                    : <color:G>    16</color>
+攻撃    : <color:G>Type    Effects</color>                                               : <color:G>    18</color>
+          Hit     Hurt                                                  : <color:G>     9</color>
+          Touch   Steal Gold                                            : <color:G> 18/40</color>
+                                                                        : <color:G>    17</color>
+撃破数  : <color:G>0</color>                                                             : <color:G>    12</color>
+                                                                           <color:G>    6</color>
+夜のドワーフで、彼らの主人アルベリヒのために富を集めている。            <color:r> 15</color>/<color:G>  48</color>
+                                                                    SP <color:G>  18</color>/<color:G>  18</color>
+                                                                                
+                                                                    <color:D>h</color>[<color:R>**</color>-------]
+<color:B>Quest: L5</color>
+</style>
+
+右側の敵の状態の帯にも目を留めてほしい。あの小さな <color:D>h</color>[<color:R>**</color>-------] である。これは敵がどれだけ健やかかを表す。こちらもニーベルングを何度か打ち返したので、2 つの赤い星の隣にある 7 つの空の枠が、すでに元の体力のごく一部まで減っていることを教えている。これほど速く大きな傷を与えられたのだから、ニーベルングはさほど手強くないのだろう。（状態の帯のもっと詳しい説明は、下の <link:monster.txt#HealthBar> を参照のこと。）
+
+<topic:Uniques><style:heading>ユニークの敵</style>
+
+世に人間は多くいるが、あなたはひとりしかいない。同じように、1 度しか倒せない敵が多くいて、これを<style:keyword>ユニークの敵</style>、あるいはただ<style:keyword>ユニーク</color>と呼ぶ。このゲームの大きな部分は、できるだけ多くのユニークを倒すことにある。実のところ、勝つにはあるユニークを倒さねばならない。<style:keyword>混沌のサーペント</style>である。多くの依頼もまたユニーク退治である。
+
+ユニークはたいてい、その深さで出会ううちでも指折りに手強い敵である。とりわけ序盤では、ふつうの敵をただ大きく凶悪にしただけのユニークも多い。たとえばコボルドの王ムガシュは、打撃が強く、ヒットポイントが多く、どこへ行くにも取り巻きを連れているふつうのコボルドだと言ってよい。とはいえ、ユニークがまさに唯一無二で、ほかの誰とも似ていないことも珍しくない。
+
+ユニークが手強いことの裏返しとして、最上級の財宝も落とす。<color:keyword>特別な落とし物</color>を持つユニークもいる。たとえばユニークのアーサー・ペンドラゴンは、たいそう値打ちのある剣エクスカリバーを落とすかもしれない。ただし、それは決して確かではない。
+
+ユニークはほかのどの敵の種族にも属さない。ゲームから見れば、ユニークはそれぞれが 1 つの敵の種族である。
+
+  <indent><color:U>ユニークの魔法への抵抗</color>
+
+ユニークの敵は、ほかのダンジョンの住人より魔法に強い傾向がある。とりわけ、ユニークを遅くしたり眠らせたりできるほど強い魔法はほとんど無い。テレポートに耐性を持つユニークは、つねに完全な免疫を持つ（ふつうの敵の多くは抵抗の判定があるだけである）。さらに、抹殺と大抹殺の効き目（下の <link:monster.txt#Genocide> を参照）はユニークには決して効かない。
+</indent>
+  <indent><color:U>しゃべるユニーク</color>
+
+ときおり、ユニークの敵が近づきながら話しかけてくることがある。たいていは侮辱の言葉と戦いへの誘いを叫ぶが、自分自身にまつわる話に触れることもあれば、あまり敵意が無ければ気さくに世間話をすることもある。ゲームには（暴力以外で）返事をする仕組みは無い。しゃべるのはユニークに限られてはいないが、ふつうの敵の種族ではずっとまれである。
+</indent>
+  <indent><color:U>賞金首のユニーク</color>
+
+冒険者を作るたびに、ゲームは 20 体の<color:keyword>賞金首のユニーク</color>の一覧を新たに無作為に選ぶ。この一覧は辺境の地・サロス・アナンバールの賞金首事務所で見られ、<color:keypress>~</color> の知識のメニューのコマンドでいつでも見直せる。賞金首のユニークを倒すと、その首に懸かった賞金を思い出す。死体か骨を拾って賞金首事務所へ持ち込めば、働きの褒美として値打ちのあるアイテムを 1 つ以上もらえる。
+
+賞金首の一覧はユニークの本来の深さで並んでいる。深いユニークを倒すほど褒美は良くなる。
+</indent>
+
+<topic:MonsterList><style:heading>見えている敵をすべて並べる</style>
+
+<color:keypress>*</color> のコマンドで敵を 1 体ずつ調べるのは、気にすべき敵が 1 体だけのときには良い。だが、しばしば何十体もの敵が一度に近くにいる。これは、依頼の場へ入って敵を感知する呪文を唱えたばかりの、もう少し進んだ冒険者の画面である――この者たちは何者だろうか。
+<style:screenshot>
+<color:y>You sense the presence of doors! You sense the presence of</color>          金  <color:G>    475k</color>
+<color:y>monsters!</color> You hear a door burst open!                               <color:W>|</color><color:D>|</color><color:U>}~</color><color:g>==</color><color:y>"</color><color:o>~</color><color:y>(</color><color:g>(</color><color:u>]</color><color:U>]</color>
+                             <color:y>Z</color>   <color:y>Z</color>.<color:y>Z</color>                                腕力: <color:G>18/113</color>
+                               <color:U>#++</color><color:y>Z</color><color:U>#</color>                                知能: <color:G>    10</color>
+                               <color:U>#</color>...<color:U>#</color>                                賢さ: <color:G> 18/10</color>
+                               <color:U>#</color>...<color:U>#</color>             <color:u>}</color>                  器用: <color:G>18/161</color>
+         <color:g>^</color>              <color:G>T</color>      <color:U>#</color>...<color:U>#</color>          <color:B>-</color>   <color:u>^</color>  p              耐久: <color:G>18/153</color>
+                               <color:U>#</color>...<color:U>#</color>      <color:o>O</color>  <color:o>O</color>                      魅力: <color:G>    16</color>
+               <color:v>p</color>      <color:G>T</color><color:D>u</color><color:G>T</color> <color:U>######</color>...<color:U>######</color>           <color:U>z</color>               AC     <color:G>   93</color>
+        <color:s>[</color>           <color:G>hh</color>  <color:G>T</color> <color:U>+</color>.............<color:U>+</color><color:R>f</color>                <color:u>^</color>         HP <color:y> 502</color>/<color:G> 503</color>
+        <color:W>|</color>        <color:G>h</color> <color:G>h</color>  <color:U>=</color>  <color:G>T</color><color:U>+</color>......@......<color:U>+</color> <color:R>ff</color> <color:D>j</color>        <color:s>V</color>   <color:W>|</color>         SP <color:G> 100</color>/<color:G> 100</color>
+        <color:G>F</color>           <color:G>h</color>     <color:U>+</color>.............<color:U>+</color><color:R>f</color>                <color:y>d</color>                     
+                  <color:G>h</color>       <color:U>######</color>...<color:U>######</color><color:R>f</color>  <color:R>f</color>                                   
+                  <color:G>h</color> <color:G>h</color>          <color:U>#</color>...<color:U>#</color>      <color:R>f</color>        <color:u>G</color>                            
+                <color:s>K</color>  <color:G>h</color>   <color:G>h</color>       <color:U>#</color>...<color:U>#</color>      <color:R>f</color>                                     
+                               <color:U>#</color>...<color:U>#</color>         <color:R>f</color>                                  
+                               <color:U>#</color>...<color:U>#</color>                                            
+                               <color:U>#+++#</color>                                            
+                                                                    <color:G>Fast (+8)</color>   
+                                                                    <color:G>Full</color>        
+                                       <color:b>O</color>                            <color:B>Study (8)</color>   
+                           <color:o>g</color>   <color:U>Y</color>       <color:W>p</color>
+                                  ,                                             
+<color:B>Quest: L35</color>                                <color:G>DTrap</color>                                 
+</style>
+
+記号だけで敵が誰か見当がつくほど長く遊んでいたとしても、これはやはり処理しきれないほどの知らせである。ここでの答えは <color:keypress>Y</color>（ローグライクのキー設定に替えているなら<color:keypress>[</color>）を押して<color:keyword>敵の一覧</color>を出すことである。
+
+<style:screenshot>
+2 体が見えている。うち 2 体は起きている:                            レベル<color:G>    33</color>
+ <color:y>Z</color> エナジー・ハウンド (2 awake)                                     経験<color:G>   22.5k</color>
+                                                                    金  <color:G>    475k</color>
+ほかに 67 体を把握している。うち 8 体は起きている:                  <color:W>|</color><color:D>|</color><color:U>}~</color><color:g>==</color><color:y>"</color><color:o>~</color><color:y>(</color><color:g>(</color><color:u>]</color><color:U>]</color>
+ <color:g>D</color> <color:D>古代グリーン・ドラゴン              </color> N 17 E  1                   腕力: <color:G>18/113</color>
+ <color:y>d</color> <color:D>炎の使者                            </color> S  1 E 25                   知能: <color:G>    10</color>
+ <color:D>u</color> <color:D>ボダック                            </color> N  2 W 10                   賢さ: <color:G> 18/10</color>
+ <color:s>V</color> <color:D>マスター・バンパイア                </color> N  0 E 21                   器用: <color:G>18/161</color>
+ <color:v>p</color> <color:D>ログルス使い                        </color> N  2 W 18 <color:u>^</color>  p              耐久: <color:G>18/153</color>
+ p <color:D>白衣の修行僧                        </color> N  4 E 20                   魅力: <color:G>    16</color>
+ <color:b>O</color> <color:D>オーガ・シャーマン                  </color> S 10 E  6   <color:U>z</color>               AC     <color:G>   93</color>
+ # <color:D>花崗岩の壁                          </color> N  9 E  4         <color:u>^</color>         HP <color:y> 502</color>/<color:G> 503</color>
+ <color:U>Y</color> <color:D>Giant land sloth                    </color> S 11 W  2     <color:s>V</color>   <color:W>|</color>         SP <color:G> 100</color>/<color:G> 100</color>
+ = <color:D>ミミック(指輪)                      </color> N  0 W 11         <color:y>d</color>                     
+ <color:g>,</color> <color:D>コープサー                          </color> N 10 W  4                               
+ <color:D>g</color> <color:v>『究極ダンジョン=クリーナー』 (asleep</color> S 13 E  4  <color:u>G</color>                           
+ <color:B>p</color> <color:D>透視術者                            </color> S 17 W  1                               
+ <color:o>O</color> <color:D>オーガ・メイジ (2 asleep)                           </color>                         
+ <color:o>q</color> <color:D><ナーグル>の妖獣                              </color> N 13 W  8                               
+ <color:W>p</color> <color:D>ベネディクトの手下 (11 asleep)                  </color>                             
+ <color:U>z</color> <color:D>食屍鬼                              </color> N  2 E 19                   <color:G>Fast (+8)</color>   
+ <color:D>j</color> <color:D>ブラック・ウーズ                    </color> N  0 E 12                   <color:G>Full</color>        
+ <color:s>K</color> <color:D>殺人クワガタ                        </color> S  4 W 17                   <color:B>Study (8)</color>   
+ <color:y>H</color> <color:D>鵺                                  </color> N 16 E  5                               
+ <color:y>Z</color> エナジー・ハウンド (7 awake)                                                 
+   <color:B>[Press ESC to exit. Press ? for help]</color>
+</style>
+
+これでもまだ知らせが多いが、一覧はまず視線の通り具合で並び（2 体のエネルギー・ハウンドが先頭に来るのは、まっすぐ見えているからである）、次に敵の本来の深さで並ぶ。深さは脅威のおおまかな目安である。つまり、一覧の上の方にいる敵ほど気にすべきである。
+
+そこでいちばんレベルが高いのはエンシェント・グリーン・ドラゴンで、場合によってはたいそう厄介な敵である。このゲームの経験から言えば、<color:keyword>ボダク</color>、とりわけ<color:keyword>ログルスの支配者</color>の方がもっと気になる――だがどちらも上の方にいるので、すぐ見つけられた。
+幸い、一覧はこれらの敵を白ではなく<color:D>黒</color>で塗っており、まだ眠っていることを表している。（ユニークの敵、ここでは究極のダンジョン掃除人は、<color:v>紫</color>で並ぶ。）
+
+一覧に並んだ敵のすべてが、先ほどの画面に実際に見えていたわけではない。多くは画面の外にいたが、それでも感知の届く範囲にいたので敵の一覧に出ている。こちらにはありがたいことである。
+
+敵の一覧から <color:keypress>R</color> を押せば追加の知らせを出せる。ここでは<color:keyword>ファイア・エンジェル</color>を選んだ。たまたま、この冒険者がすでにいくらか知っていた敵だったからである。
+
+<style:screenshot>
+<color:G>[Monster Info, Line 0/22]</color>                                           レベル<color:G>    33</color>
+                                                                    経験<color:G>   22.5k</color>
+名前    : <color:B>炎の使者  </color> (<color:y>d</color>)                                            金  <color:G>    475k</color>
+レベル  : <color:G>37 to 70</color><color:d>  </color>Speed: <color:R>+10</color>                                      <color:W>|</color><color:D>|</color><color:U>}~</color><color:g>==</color><color:y>"</color><color:o>~</color><color:y>(</color><color:g>(</color><color:u>]</color><color:U>]</color>
+AC      : <color:y>?</color><color:d>         </color>種別 : <color:D>Evil</color>, <color:o>Dragon</color>                             腕力: <color:G>18/113</color>
+HP      : <color:y>?</color><color:d>         </color>                                                知能: <color:G>    10</color>
+<color:d>                    </color>                                                賢さ: <color:G> 18/10</color>
+Spells  : <color:G>14.28%</color> (1 of 7 moves) <color:y>Intelligent</color>                         器用: <color:G>18/161</color>
+Breathe : <color:R>Plasma</color> (1x)                                               耐久: <color:G>18/153</color>
+                                                                    魅力: <color:G>    16</color>
+攻撃    : <color:G>Type    Effects</color>                                           AC     <color:G>   93</color>
+          Claw    Hurt                                              HP <color:y> 502</color>/<color:G> 503</color>
+          Claw    Hurt                                              SP <color:G> 100</color>/<color:G> 100</color>
+          Bite    Hurt, <color:r>Fire</color>                                                    
+          Bite    Hurt, <color:r>Fire</color>                                                    
+                                                                                
+Info    : <color:y>Shining</color>, <color:s>Suitable for Riding</color>                                          
+                                                                                
+撃破数  : <color:G>1</color>                                                                     
+Exp     : <color:G>1.59k</color> at CL33                                                         
+Drops   : Up to 3 Objects                                           <color:G>Fast (+8)</color>   
+                                                                    <color:G>Full</color>        
+</style>
+速さ +10 でプラズマのブレスを吐くレベル 37 の邪悪なドラゴン……ファイア・エンジェルもまた上の方に並んでいた理由が分かるだろう。
+
+<topic:MonsterColors><style:heading>敵の色</style>
+
+ある属性（ダメージの種類）に結びついた敵は、しばしば色で見分けられる。いちばん多く、いちばん当てになるのは<color:r>赤</color>と火炎、<color:w>白</color>と冷気の結びつきである。たとえばレッド・ドラゴンは火のブレスを吐き、噛んで焼き、こちらの火の攻撃に耐性を持つ。（赤い敵がすべて火のものだという意味ではなく、火のものの多くが赤いというだけである。）
+
+ほかの似た結びつきには、<color:b>青</color>と電撃、<color:D>黒</color>と<color:s>灰色</color>と酸、<color:g>緑</color>と毒、<color:U>青銅色</color>と混乱、<color:y>金色</color>と轟音、<color:W>銀色</color>と遅鈍がある。<color:P>桃色</color>の敵は、近接で打つと腕力を吸い取ることが多い。<color:v>混じり合った色</color>の敵はあらゆる色にちらつき、たいてい複数の属性に結びついている。混じり合った色のドラゴンもハウンドも、よくある 5 つの属性（酸・冷気・火炎・電撃・毒）のすべてを吐き、また耐える。
+
+この大まかな決まりは完全ではない。たとえば酸のブレスを吐くウォーター・ハウンドは、思われる <color:D>Z</color> や<color:s>Z</color> ではなく<color:t>Z</color> である。（これはほかのハウンドとの取り違えを避けるためである。暗黒のブレスを吐くシャドウ・ハウンドが<color:D>Z</color> で、悪名高いグラビティ・ハウンドが<color:s>Z</color> だからである。）
+
+<topic:EldritchHorror><style:heading>狂気を誘うもの</style>
+
+ダンジョンの敵の中には、見ただけで深刻な影響が出るほど恐ろしいものがいる。こうした<color:keyword>正気を削る敵</color>を見ると、いくつかの厄介なことのうち 1 つ（か、それ以上）が起こる。知能と賢さが一時的に下がる、怯える、混乱する、幻覚や記憶喪失に襲われる、といったものである。
+
+正気を削る敵を初めて見たのを乗り切れたなら、その後はその敵を見え続けさせても安全である。見えている限り、狂気の効き目は起きない。その敵がいったん見えなくなり、また見えたときに起きることはありうるが、同じ 1 体が 2 度以上正気を削ることはたいそうまれである。
+
+どの冒険者にも正気を削られるのに抗う見込みはあるが、完全な免疫を得られる者はひと握りしかいない。
+
+<topic:Pets><style:heading>ペットと乗ること</style>
+
+忠実なペットほど良いものがあるだろうか。ペットに踏みつけられるのを心配する人もいるが、このゲームでは<color:G>ペットが間違ってあなたを攻撃することは決して無い</color>。ペットのグレート・ヘル・ワイアームが敵を薙ぎ払う間、安心して歩き回れる。さらに良いことに、新しいペットを召喚できるペットもいる。
+
+ペットがいればゲームがずっと楽になると思うかもしれない。ペットのワイアームをトロルの巣へ送り込み、外で苦悶と恐怖の叫び、はらわたの飛び散る音、骨の砕ける音などを聞いているのはたしかにたいそう気分が良い。だが、それで多くの経験が得られると思ってはいけない。とどめを自分で刺したときにだけ、経験を丸ごと得られるのである。
+
+ペットにもいくらか自分の身を守る本能が残っている。体力が減ると、主のために死ぬよりは戦い（と、その階）から去ることを選ぶかもしれない。ペットの役立ち方にはもうひとつ限りがあって、<color:G>ユニークの敵はあなたにしか倒せない</color>という決まりがある。ペットを含め、ほかの敵には倒せない。ペットはユニークを傷つけられるが、とどめは刺せない。（クイルスルグの冒険者はペットへの頼りようが並外れているので、この決まりはゆるめられている。）
+
+ペットの扱い方は人によって大きく違う。ペットを飼うのが好きな腕利きもいれば、その道をまるで使わない人もいる。（たいていの冒険者では）勝つのにペットは要らないが、楽しいものではある。
+
+  <indent><color:U>ペットを得る</color>
+
+ペットを得る道はいくつかある。魔法の系統によっては、ペットを魔法で召喚したり、出会った生き物を魅了したりできる。メンタル・トレーナーは相手を「支配」できる。カオスの守護者が信奉者への贈り物としてペットをくれることもある。魔法の人形は投げるとペットが生まれる（ただし呪われていて敵が生まれることもある）。モンスター魅了の魔法棒は、その名のとおりに使える。
+
+<color:keyword>モンスター・ボール</color>は、（ほぼ）誰でも使える便利な道具である。モンスター・ボールは雑貨屋でよく買える。使うには手に装備してから<color:keypress>A</color> 発動し、捕らえたい敵を狙いに選ぶ。うまくいけば、もう一度ボールを <color:keypress>A</color> 発動してその敵をペットとして解き放てる。
+
+敵意のある敵は捕まるのに抗おうとし、瀕死のときにしか捕らえられない。ビーストマスターはモンスター・ボールの扱いにたいそう長けており、この縛りがゆるめられている。階の守護者は捕らえられない。ユニークと町の依頼の階にいる敵は、すでにペットになっているときしか捕らえられないので、先に魅了するなどして手なずけねばならない。
+</indent>
+  <indent><color:U>ペットの機嫌を保つ</color>
+
+ペットはあなたからの仕打ちを受け入れる。傷つけても、ペットのままである。だがペットがあなたに求めるのは気配りである。これを<color:keyword>ペットの維持</color>と呼び、マナをいくらか食う。ペットが多いほど、また強いほど、維持は重くなる。維持が軽いうち（100% 未満）は実際にマナが減ることは無く、ただマナの回復が遅くなるだけである（おかげでマナの無い冒険者もペットを何匹か飼える）。だが維持が重くなるとマナが減っていき、尽きてしまえば、維持が軽くなるまでペットを手放すほかない。召喚好きのペットがいると、これがよく起きる。
+
+維持がひどく重くなると（500% あたりから）、状態の帯に赤い<color:keyword>維持の警告</color>が出る。ここまで来ると、ペットは気配りの足りなさから<color:keyword>ないがしろにされた</color>と感じることがある。ないがしろにされたペットは敵意を持つこともあるが、たいていは「英雄ごっこもここまでだ」と思ってその階を去っていく。
+</indent>
+  <indent><color:U>ペットの進化</color>
+
+ペットも冒険者と同じく、敵意のある敵を倒すと経験を得る。じゅうぶんな経験を積むと、<color:keyword>進化</color>してより強い敵になるペットもいる。たとえばベビー・マルチヒュー・ドラゴンはヤング・マルチヒュー・ドラゴンになり、次にマチュア・マルチヒュー・ドラゴンになり、ついには強大な多色のワイアームになるかもしれない。
+
+ただし難点がひとつある。たいそう強い姿へ進化するには長くかかるうえ、ペットをモンスター・ボールへ入れると経験をすべて失ってしまうのである。元の姿へ戻ることは無いが、次の姿へ向けて積んだぶんは失われる。
+</indent>
+<topic:PetCommands>  <indent><color:U>ペットに命じる</color>
+
+ペットはよくしつけられていて、ぴったり付いてくる・近くに留まる・敵を探し出すなど、さまざまな命令に応える。ペットへの命令は <style:keypress>p</style> を押すと出るペットのコマンドのメニューで行う。
+
+使えるペットのコマンドの一覧である。
+
+<style:keyword>ペットを手放す</style>
+  <indent>選んだペットを手放す。手放したペットはいまの階からすぐに消える。レベルの高い名前つきのペットからレベルの低い名前の無いペットへ順に、手放すかどうかを尋ねてくる。'U' を押せば、名前の無いペットをすべて手放せる。</indent>
+
+<style:keyword>ペットの狙いを定める</style>
+  <indent>狙う敵を選ぶ。ペットはすべてその敵を追い始める。このコマンドを使うと、敵がペットの視線に入っていない場面でも、ペットはずっと積極的に道を探すようになる。</indent>
+
+<style:keyword>そばに居ろ</style>
+  <indent>できるだけ近くで戦うようペットに命じる。</indent>
+
+<style:keyword>ついて来い</style>
+  <indent>動き回るあなたについて来るようペットに命じる。</indent>
+
+<style:keyword>探して倒せ</style>
+  <indent>近くの敵を追うようペットに命じる。</indent>
+
+<style:keyword>離れていろ</style>
+  <indent>あなたの視線から外れるようペットに命じる。</indent>
+
+<style:keyword>遠くへ行け</style>
+  <indent>できるだけ遠くへ行くようペットに命じる。</indent>
+
+<style:keyword>ペットは扉を開ける</style>
+  <indent>ペットが扉を開けてよいかを切り替える。</indent>
+
+<style:keyword>ペットはアイテムを拾う</style>
+  <indent>ペットがアイテムを拾ってよいかを切り替える。ペットは、前に拾ったアイテムをすべて落とす。</indent>
+
+<style:keyword>テレポートを許す</style>
+  <indent>ペットがテレポートの呪文とテレポート・アウェイの呪文を唱えてよいかを切り替える。</indent>
+
+<style:keyword>攻めの呪文を許す</style>
+  <indent>ペットがブレスと攻めの呪文を使ってよいかを切り替える。</indent>
+
+<style:keyword>召喚の呪文を許す</style>
+  <indent>ペットが召喚の呪文を唱えてよいかを切り替える。</indent>
+
+<style:keyword>巻き添えを許す</style>
+  <indent>あなたが巻き添えのダメージを受けるほど近くにいても、ペットがボールの呪文やブレスを使ってよいかを切り替える。</indent>
+ 
+<style:keyword>ペットに乗る</style>
+  <indent>選んだペットに乗る。</indent>
+
+<style:keyword>ペットから降りる</style>
+  <indent>乗っていたペットから降りる。</indent>
+
+<style:keyword>ペットに名前をつける</style>
+  <indent>ペットを選んで名前をつける。</indent>
+
+<style:keyword>地図でペットを目立たせる</style>
+  <indent>ペットをすべて黄色で目立たせるかを切り替える。</indent>
+
+<style:keyword>一覧でペットを目立たせる</style>
+  <indent>敵の一覧でペットをすべて黄色で目立たせるかを切り替える。友好的な敵も緑で目立たせる。</indent>
+
+<style:keyword>両手で武器を持つ</style>
+<style:keyword>片手で手綱を取る</style>
+  <indent>乗っている間、左手をどう使うかを切り替える。両手で武器を持てば近接のダメージが最も大きくなり、乗っているペットには「ペットの狙いを定める」のコマンドで狙いを追わせられる。</indent>
+</indent>
+  <indent><color:U>乗ること</color>
+すべてのペットに乗れるわけではないが、乗れるものは多い――馬・たいていのドラゴン・そのほか多くである。乗騎を御するには片手を空けて手綱を握らねばならない。その代わり、ペットはあなたと一緒に狙いを攻め、敵の攻撃はあなたと乗騎に分かれる。結果として、戦いで受けるダメージは減る。
+
+乗ることのいちばん大事な点は速さである。ペットに乗っている間、あなたの速さは元の速さによらず、乗騎の速さと乗馬の技能だけで決まる。加速の薬を飲んでも乗騎の速さは変わらないが、ペットの近くの壁へ投げつければペットが速くなる。モンスター加速の魔法棒や呪文を使ってもよい。
+
+乗馬の熟練度は、はじめのうちたいそう低いことに注意（<style:keypress>~</style> の知識のメニューの「<style:keypress>P</style> 熟練度」を参照）。熟練度が低いうちは乗ることをうまく生かせず、乗っている間の速さもたいそう低い。乗騎の速さを丸ごと得るには、乗る稽古が要る。乗りながら敵を近接で攻めたり、飛び道具で撃ったりすると、乗馬の熟練度が少し上がる。まずレベルの低い生き物に乗り、それから少しずつ高い乗騎へ移るとよい。
+
+<color:keypress>~</color> の知識のメニューでは、職業ごとに決まった乗馬の<color:keyword>熟練度の上限</color>も見られる。上限が低ければ乗馬が上手くなることは決して無いので、別の道を考えた方がよいだろう。
+</indent>
+<topic:Friendly><style:heading>友好的な敵</style>
+
+ダンジョンでは、あなたを狙っていない敵にときおり出会う。こうした敵は、ゲームのメッセージで「友好的」と書かれる。友好的な敵はあなたを傷つけようとしないが、あなたの敵を攻めてくれるとも限らない。
+
+ペットと違い、友好的な敵は傷つけると敵に回る。ペットと同じく、友好的な敵が召喚したものもまた友好的である（見境なく召喚する、よほど愚かな友の場合を除く）。ペットと違い、友好的な敵はマナの維持を要さず、ペットのコマンドで命じることもできない。
+
+友好的な敵が召喚した友好的なものの忠誠は、あなたではなく元の友好的な敵に向いているかもしれない。その者を怒らせれば、召喚されたものは戦いであなたの側に付かないかもしれない。
+
+ユニークはほかの敵には決して倒せず、あなたにしか倒せないので、友好的なユニークは大きな助けになる――あなたのために皆を殺してくれるのを、誰が止められようか。ただし友好的なユニークはたいそうまれである。それに、政治家（友好的なユニークを味方に付けやすい職業）は、体力が減るとユニークが逃げ出すのを見るかもしれない。
+
+<topic:Mimics><style:heading>擬態するものとシャドウアー</style>
+
+ダンジョンでよく見かけるアイテムの姿（と記号）をまとって化ける敵がいくつもいる。<color:W>|</color>・<color:g>(</color>・?・!・<color:W>&</color>・=・<color:b>~</color>・<color:y>$</color>・<color:r>*</color> の記号である。これを不公平（あるいは面白くない）と感じる人もいるので、そうした人のために<color:keyword>easy_mimics</color> の表示の設定<link:option.txt#easy_mimics> がある。これはこうした敵のたいていの記号を<color:u>x</color> という特別な記号へ変える。没入感は少し落ちるが、クロークだと思っていたものに切り刻まれるのが嫌なら、ぜひ使うとよい。
+
+正体を隠そうとするのは、この昔ながらの擬態するものだけではない。<color:keyword>シャドウアー</color>もいる。目立つ <color:D>N</color> の記号ですぐ見分けられそうに思えるが……シャドウアーはそもそも 1 つの種族ではない。シャドウアーとはほかの種族の敵が正体を隠しているものである。誰なのかがすぐ分かることもあれば、考えねばならないこともある。たいていのシャドウアーはさほど害が無いが、それを当てにしすぎないこと。シャドウアーはかなりまれで、ユニークがシャドウアーとして現れることは決して無い。
+
+見かけで遊ぶ敵の種族がもう 2 つある。<color:keyword>カメレオン</color>と<color:keyword>たぬき</color>である。カメレオンは本物の変身者で、ほかの敵の見かけだけでなく性質もまとい、いきなり姿を変えるかもしれないという点を除けばその敵とまったく同じにふるまう。一方たぬきは、ほかの種族の敵に見えるだけである。実のところかなり無害だが、そうでないと思わせて怖がらせるかもしれない。
+
+<topic:Breeders><style:heading>増える敵</style>
+
+<color:keyword>爆発的に増える</color>能力を持つ敵が少しいる。たいそう速く増え、部屋じゅうを同じ種類の新しい敵で埋め尽くす。（どうやってそうしているのかは、あまり詳しく考えない方がよいだろう。）増える敵が危ないことはまれだが（ひとつ、よく知られた例外はある）、とりわけ依頼の階ではひどく厄介になりうる。
+
+増える敵は、手に負えないほど増える前に倒すのがいちばんよい。町の依頼ではたいそうまれだが（依頼の達成の条件が「その階から敵をすべて片づけること」であることが多い）、町の依頼に出たときはつねに最優先で片づけるべきである。<color:keyword>セクシー</color>な性格を選ぶと、増える敵はとりわけ厄介になりやすい。たいていの冒険者は増える敵が眠っているうちに倒せる見込みがあるが、セクシーな冒険者は反感で皆を起こしてしまうので、その見込みが消えるのである。
+
+極端な場合でも、階が丸ごと増える敵で埋まることは決して無い（よほど小さな階でなければ）。同時に 100 体までという厳しい上限がある。わざと増やして倒し経験を稼ぐ<color:keyword>増える敵の養殖</color>は、このゲームではあまりうまくいかない。この道で得られる経験はごく限られており、すぐに先細りになる。レベルを上げる道は、もっと面白く実りの多いものがほかにいくらでもある。
+
+<topic:MonsterMemory><style:heading>敵の知識</style>
+
+敵の種類はたいそう多く（およそ 1300 種）、その多くが似た色と記号を分け合っているので、それぞれが何をできるのかを覚えておくのはとても難しい。とりわけ、まだ遊び始めたばかりならなおさらである。幸い、ゲームはそれぞれの敵との経験を自動で記録してくれる。受けた近接攻撃・呪文・ブレス、こちらのどの魔法の攻めに耐えたか、財宝を落としたか、増えるのを見たか、倒してどれだけの経験を得たかを覚えている。
+ 
+この<color:keyword>敵の思い出</color>を見る道はいくつかある。2 つはすでに上で示した。<color:keypress>*</color> を押して見えている敵に狙いを定め、次に <color:keypress>r</color> を押して思い出す道と、<color:keypress>Y</color> を押して敵の一覧を出し、次に <color:keypress>R</color> を押してその敵の思い出を見る道である。
+
+この道は、詳しく知りたい敵がいま見えているときにしか使えない。だが <color:o>~</color> の知識のメニュー（<color:keyword>既知のモンスター</color>の小メニューを選ぶ）を使えば、どの敵の思い出もいつでも見られる。おおよそ、こう見える。
+
+<style:screenshot>
+モンスターの知識一覧
+分類                   名前                                          記号 撃破  
+==============================================================================  
+<color:B>ユニーク</color>             | ブランドの情婦『ジャスラ』                     <color:v>n</color>  alive  
+乗れる敵             | 『スキュラ』                                   <color:y>M</color>  alive  
+賞金首               | <color:B>Castamir the Usurper</color>                           <color:v>p</color>  <color:D> dead</color>  
+エジプト             | 『迷宮のミノタウロス』                         <color:U>H</color>  <color:D> dead</color>  
+アリ                 | 『クッパ大王』                                 <color:g>D</color>  alive  
+コウモリ             | Othrod, Lord of the Orcs                       <color:R>o</color>  <color:D> dead</color>  
+ムカデ               | Xylibbogaz, the Disembodied Mouth              <color:W>f</color>  <color:D> dead</color>  
+ドラゴン             | ウルク=ハイの大王『アゾグ』                    <color:r>o</color>  <color:D> dead</color>  
+浮遊する目玉         | 『究極ダンジョン=クリーナー』                  <color:D>g</color>  alive  
+ネコ・キツネ         | ニーベルング族の王『アルベリヒ』               <color:D>h</color>  alive  
+ゴーレム             | 『グレンデル』                                 <color:g>O</color>  <color:D> dead</color>  
+ホビット等           | Orcobal the Mighty                             <color:r>o</color>  <color:D> dead</color>  
+ベトベト             | ウルファングの息子『ウルワルス』               <color:U>p</color>  <color:D> dead</color>  
+ゼリー               | アゾグの息子『ボルグ』                         <color:r>o</color>  <color:D> dead</color>  
+コボルド             | ニーベルング族の『ミーメ』                     <color:u>h</color>  <color:D> dead</color>  
+水棲生物             | アルベリヒの息子『ハーゲン』                   <color:o>h</color>  <color:D> dead</color>  
+カビ                 | それ                                           <color:W>.</color>  alive  
+ナーガ               | Orcogar, Son of Orcobal                        <color:r>o</color>  <color:D> dead</color>  
+オーク               | 『柳じじい』                                   <color:s>#</color>  <color:D> dead</color>  
+<dir>, '?' to recall, 'v' for visuals, 'c' to copy, ESC
+</style>
+ここで敵を選んで <color:keypress>?</color> か<color:keypress>r</color> を押せば、その敵について知っていることがすべて出る。
+
+ただし、この敵の知識はまだ完全ではない。経験から学んだことしか教えてくれないのである。何度も戦わずに敵について知れることをすべて知りたいなら、そこへ至る道が 3 つある。
+
+近くの敵を探査の呪文（かアイテムの効き目）で<color:keyword>探査</color>できる。これはその 1 体についても、その種族についても、すべてを明かす。もうひとつは、土地の<color:keyword>ビーストマスター</color>を訪ねて（すべてではないが、たいていの町にいる。荒野の無い町では図書館がこの役を担う）、金を払って敵の種族を調べてもらう道である。これもその種族のすべてを明かす。最後の道は、<color:keyword>Easy Lore</color> の生まれの設定（<link:option.txt#easy_lore>）を入れることである。これは生まれたときから敵の思い出を丸ごとくれる。ゲームは少し易しくなるが、それこそが望みなのかもしれない。
+
+同じセーブデータを使っている限り、冒険者が死んでも敵の知識は残る。敵の思い出は冒険者のものではなく、あなたのものなのである。
+
+<topic:Resistances><style:heading>「……に抵抗した」</style>
+
+手持ちの気の利いた魔法の手管が、どの敵にも同じように効くとは限らない。決まったダメージの種類や状態の効き目に対して、生まれつきの耐性、ときには免疫を持つ敵が多くいる。<color:keyword>免疫</color>とは、その攻めがその敵にまったく効かないということである。属性（たとえば火炎）への<color:keyword>耐性</color>とは、敵の受けるダメージが大きく減るが、それでも少しは受けるということである。状態の効き目に抵抗するとは、敵がその効き目への抵抗の判定に成功したということである。攻めの威力に比べて敵のレベルが高いほど、抵抗する見込みは高くなる。（たいていの場合これは決まった耐性を要さない。多くの状態の効き目は、どの敵にも抵抗の見込みを与える。まったく免疫のものもある。）
+
+その正体そのものによって免疫を持つ敵もいる。たとえば非生物・デーモン・アンデッドはすべて吸血に免疫である。アンデッドの敵はまた、地獄では傷つけられない。
+
+「〜には免疫がある」「〜は抵抗した」「〜には効かなかった」といったさまざまな返しのメッセージでは、同じ攻めをもう一度試す値打ちがあるのかどうか迷うことがある。ただし「〜には免疫がある」なら、あきらめてよいと考えて間違いない。敵の思い出に記される耐性（属性の耐性・状態の効き目の耐性・テレポート）については、迷ったら思い出を見ればよい。いま出たメッセージがその敵の耐性か免疫を意味するものなら、その知らせは思い出に出るようになっている。
+
+<topic:Genocide><style:heading>抹殺</style>
+
+強力な呪文と魔法の道具の中には、敵の分類（同じ英字の記号を分け合う敵すべて）を<color:keyword>抹殺</color>できるものがある。抹殺は、いまいる階からその分類の敵をすべて取り除こうとする。
+
+抹殺はつねに完全に効くわけではない。ユニークと依頼の敵（町の依頼の敵を含む）には効かず、ユニーク以外の敵にもレベルに応じて抵抗する見込みがある。抹殺への抵抗に成功した敵は、この先の抹殺への免疫を得ることがわずかにある。もうひとつの難点は、抹殺を唱えるのに掛かる負担である。効いた敵 1 体ごとにいくらかのダメージを受ける。1 体あたりのダメージはごく小さいが、敵の数が多ければ、抹殺を唱えることで大きく傷つき、死ぬことさえある。（カオスの守護者がただで抹殺をくれたときは、そうはならない。この場合は守護者が抹殺を唱えていて、分類を選ばせてくれているだけである。）
+
+これに近く、抹殺と同じ基本の決まりに従う呪文の効き目がほかに 2 つある。<color:keyword>消滅</color>は敵 1 体を狙い（これだけでもたいそう値打ちがある）、<color:keyword>大抹殺</color>は分類によらずユニーク以外の敵すべてに効くが、階の全体ではなくすぐ周り（あなたから 20 マス以内の敵）に限られる。
+
+抹殺は敵の元にある「本当の」英字の記号に基づいており、冒険者が敵の見かけへ加えた変更は無視する。たとえば <color:o>x</color> の記号に抹殺を唱えても、easy_mimics の設定を入れていたとしても擬態するものには効かない。<color:o>x</color> はその擬態するものの本当の記号ではないからである。同じく <color:o>D</color> を抹殺すれば、見かけをほかのものへ変えていたとしても古代ドラゴンに効く。
+
+カメレオンは、いまの見かけの種族に本当に属しているものとして抹殺される。一方たぬきとシャドウアーは、元にある分類で抹殺される。たぬきなら四足獣（<color:U>q</color>）、シャドウアーならそのシャドウアーが実際に属する種族の分類である。
+
+友好的な敵は、抹殺の試みが失敗すればつねに敵意を持つようになる。たとえユニークであって、抹殺がその者を傷つける見込みがそもそも無かったとしてもである。抹殺はペットにも効く（ペットが敵意を持つことはない）が、乗騎に効くことは決して無い。
+
+ほかのローグライクの経験はあるが Angband の系統は初めてという人は、抹殺や大抹殺が敵の種族や分類をゲームから永久に取り除くものと思うことがある。そうはならない。抹殺は 1 つの階の敵にしか効かず、その階でさえ抵抗の見込みがある。この限りがあってもなお、抹殺と大抹殺の出どころはたいそう値打ちがあり、終盤の戦いのために蓄えておく人も多い。
+
+<topic:HealthBar><style:heading>体力の帯の色</style>
+
+敵の状態・体力の帯の星の数は、つねにその敵の体力を表す。星の色は敵についての追加の知らせを明かす。体力の帯の色の早見表である。優先の高いものから低いものへ並べてある（当てはまる色が複数あるときは、いちばん優先の高い色が使われる）。
+<style:table>
+      <color:u>U</color>[*********]   敵は無敵である
+      <color:u>U</color>[<color:b>*********</color>]   敵は麻痺しているか眠っている
+      <color:u>U</color>[<color:u>*********</color>]   敵は混乱している
+      <color:u>U</color>[<color:B>*********</color>]   敵は朦朧としている
+      <color:u>U</color>[<color:v>*********</color>]   敵は怯えている
+      <color:u>U</color>[<color:D>*********</color>]   敵は遅くなっている
+      <color:u>U</color>[<color:r>*</color>--------]   敵の体力は 10% 未満である
+      <color:u>U</color>[<color:R>**</color>-------]   敵の体力は 25% 未満である
+      <color:u>U</color>[<color:o>*****</color>----]   敵の体力は 60% 未満である
+      <color:u>U</color>[<color:y>*********</color>]   敵の体力は 100% 未満である
+      <color:u>U</color>[<color:G>*********</color>]   敵の体力は満ちている
+      <color:u>U</color>[<color:G>********</color>-]   敵の体力は満ちているが、最大 HP が減っている
+      U[---------]   敵の状態と居場所が分からない
+</style>
+
+空の枠と、囲む角かっこの色も、いくらかの知らせを与える。
+<style:table>
+      <color:u>U</color><color:R>[</color><color:o>*****</color><color:R>----</color><color:R>]</color>   敵はいまの狙いである
+      <color:u>U</color><color:B>[</color><color:o>*****</color><color:B>----</color><color:B>]</color>   敵はいまの乗騎である
+
+      <color:u>U</color><color:b>[</color><color:o>*****</color>----<color:b></color><color:b>]</color>   敵はたいそう強い（並の 133.3% 超）
+      <color:u>U</color><color:v>[</color><color:o>*****</color>----<color:v>]</color>   敵は加速している
+</style>
+
+<color:D>
+最初       : (??)
+更新       : (??)
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.0.11
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.1.liquorice
+更新       : FrogComposband 7.1.salmiak
+</color>

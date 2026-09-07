@@ -1,0 +1,1029 @@
+***** <Energy>
+=== Turn order and energy ===
+Keine: "Let me begin with the order in which things act.
+One of the marks of a roguelike is that you and the enemy act in turn.
+That is not quite true of Hengband or of Gensoband, however.
+You may certainly take as long as you like to think when it is your turn, but
+two beings of the same speed do not necessarily act alternately.
+
+What follows is a little detailed.
+Every character, yourself included, needs a certain amount of time after
+acting before it can act again. That time is worked out from the "energy
+required", the "speed" and a random number.
+
+The energy required depends on the action you have just finished. It is the
+same for almost everything, but a very few actions use a different figure.
+Dropping an item, shooting or throwing quickly, breaking off an action on a
+warning -- these use little time before your next action.
+Walking through forest without levitation, on the other hand, costs more.
+There are also classes that spend more energy than usual on a powerful attack,
+and classes that make small attacks to spend less.
+
+As for speed: the higher it is, the shorter the time to your next action.
+Think of +10 as twice the speed of no bonus, and +20 as three times.
+But +30 is not four times. From about +25 the benefit weakens, and between +40
+and +50 there is scarcely a difference at all.
+
+Then the random number. It rarely troubles you, but now and then it makes a
+surprising difference. Even at +30 speed an enemy at +10 can act twice in a
+row. Whether you find that thrilling or destructive of strategy is a matter of
+taste; either way, that is how the order of actions is decided here.
+Bend your mind not to "how do I scrape through a fight on the edge" but to
+"how do I gather my strength and always fight in perfect condition".
+
+Note also that the speed of a non-unique monster varies by up to about 50%
+from one individual to another. Even within one kind of monster there may be
+one that is unusually fast and strong.
+When you want a pet to ride, aim for the fastest you can find."
+
+
+***** <Meleeweapon>
+=== Melee weapons ===
+
+
+Keine: "Now let me explain attacking an adjacent enemy.
+As I have said more than once, typing the direction of an adjacent enemy with
+a movement command attacks it automatically.
+Attacks with an adjacent weapon such as a sword or a spear come first.
+
+One command gives you as many blows as your number of blows.
+The number of blows is decided by class, strength, dexterity, how light the
+weapon is, and any extra-blows bonus from equipment.
+Each class has its own ceiling on blows.
+Holding a single weapon in both hands makes blows easier to gain.
+A dagger cannot be held in both hands, but a dagger gains a bonus to blows at
+high proficiency.
+
+A great many things bear on your chance to hit.
+A high level or a high AC on the enemy makes hitting harder.
+A race, class or nature suited to melee makes it easier.
+High strength and dexterity make it easier.
+Your chance rises as you gain levels, though how much depends greatly on class.
+Bonuses to hit from your weapon and other equipment raise it, of course.
+Temporary effects from buffs, penalties from bad statuses and much else come
+into it too.
+Your chance to hit bears heavily on your total damage; do not neglect it.
+
+The damage of one blow comes first from the weapon's damage and the bonuses of
+your other equipment. High strength then raises it.
+And, importantly, from how well the weapon's brands and slays suit the enemy.
+For brands and slays, look again at the chapter on items.
+
+The 'C' command shows your ordinary melee damage; the blacksmith can tell you
+the detailed damage including slays."
+
+--- Two weapons ---
+
+Keine: "You may hold a weapon in each hand. Your damage is that of both.
+It looks strong, but it is not so easy: fighting with two weapons carries a
+considerable penalty to your chance to hit.
+Against an enemy with a high AC you will barely land a blow without real skill.
+
+For a Warrior or a Samurai with a high aptitude for two weapons it can be a
+real choice. Some equipment reduces the two-weapon penalty; using that is
+another way."
+
+***** <Shootingweapon>
+=== Shooting ===
+
+Keine: "Next, bows and crossbows.
+In Hengband a bow or crossbow went into a slot of its own; in Gensoband you
+simply hold it in your hands, in both as a rule.
+You may hold a shield or a melee weapon in the other hand, but that carries a
+penalty to your chance to hit and to your shots.
+
+You shoot with the 'f' command. After the command, choose which missile to
+fire, then set a target, and the shot is made.
+A missile you have fired can be picked up and used again, though it sometimes
+breaks and is lost.
+
+Typing the command for every shot is tiresome, so a macro is usually used.
+Macros are explained in a later chapter.
+
+The damage of a single shot is decided almost entirely by the quality of the
+launcher and the missile.
+While a launcher is wielded, the missile shows the damage
+(damage per shot / damage per turn).
+The chance to hit is worked out much as it is for melee, but with the shooting
+skill rather than the melee skill.
+A crossbow gives a slightly better chance to hit than a bow.
+Your chance to hit and your shots can be checked with the 'C' command.
+
+To raise your shots, raise your proficiency with the launcher, or wield a bow
+or a ring with the "extra shots" property.
+The "trigger-happy" nature raises your shots a little, but it lowers your
+constitution badly and I do not recommend it.
+
+Shots and melee blows work very differently.
+A melee attack uses one ordinary unit of energy for all your blows, whereas
+each single shot uses (one ordinary unit of energy / your number of shots).
+With 4 shots you fire once in a quarter of an ordinary action's time.
+This property in fact makes shooting far more favourable than melee.
+
+As I explained, the order in which you and the enemy act is not fixed in
+Gensoband. One of the reasons for defeat deep down is an unexpected run of
+enemy actions. Even with 800 HP and more, if an enemy happens to act twice in
+a row and both are fierce breaths or spells, the game is simply over.
+But when you fight by shooting with a high number of shots, you choose what to
+do after every single shot, so you almost never take a run of enemy actions.
+
+When you are used to the game and aiming at your first win, I recommend a
+class good with a bow, such as the Ranger or the Archer.
+You should be able to fight steadily even against the dangerous enemies of the
+deep floors."
+
+
+***** <Martialarts>
+=== Martial arts ===
+
+Keine: "Martial arts means attacking bare-handed. It is used when you wield no
+melee weapon. A dedicated martial class, and some unique classes, can strike
+harder bare-handed than with a weapon.
+
+Your number of martial blows is decided chiefly by level, dexterity and
+martial arts proficiency.
+Those with a high aptitude for it also have a higher ceiling on blows.
+Extra-blows equipment raises martial blows too, of course.
+
+The damage comes from your strength, from bonuses on rings and other
+equipment, and from the kind of martial blow.
+The kind of blow means how you strike -- punch, kick, claw and so on.
+Each kind has its own dice, weight and extra effect, so the more often the
+strong kinds come up, the more damage you do.
+
+What decides the kind of blow is chiefly level, race and class.
+If your race is Oni, for instance, an ordinary punch comes out as a "mighty
+iron fist" and does as much as a decent martial class.
+A ningyo's tail hits hard as well.
+If a mutation gives you horns or a tail, martial blows using them can appear.
+And if some special magic transforms you, your martial blows change to suit.
+
+The 'C' command shows your martial damage, but as I said the calculation is
+far too tangled to give an exact average, so it shows the mean of a hundred
+rolls. The figure changes every time you press 'C'; that is how it works, and
+I ask your understanding."
+
+--- Extra martial blows during a weapon attack ---
+
+Keine: "You can in fact use martial arts during a weapon attack as well: when
+you have a tail or horns, when your martial arts proficiency is high, or when
+your shield proficiency is high.
+With those abilities and traits you sometimes land a martial blow after a
+weapon attack. Holding a staff-type weapon in both hands seems to bring out
+extra martial blows more readily."
+
+
+***** <Throwing>
+=== Throwing ===
+Keine: "You can also attack by throwing an item at an enemy with the 'v'
+command. With a high throwing proficiency you can throw faster than an
+ordinary action.
+
+Throwing anything but a melee weapon does little damage.
+The exception is a special potion, such as a Potion of Explosion.
+
+The range of a throw is not long, and with low strength it barely carries.
+Throwing damage is decided by the kind of item, by how well the weapon's slays
+and brands suit the enemy, and by your strength.
+Casting Mighty Throw, or wearing a Ring of Throwing, raises it.
+
+The chance to hit comes from throwing proficiency, shooting skill and
+dexterity.
+A thrown potion shatters and its contents fly everywhere.
+A thrown weapon that is not an artifact sometimes breaks and is lost.
+
+Some weapons -- knives, javelins and the like -- are "good for throwing", and
+throwing one lands more easily and does more damage.
+An artifact good for throwing in particular can be expected to do a great deal.
+
+Rarely you see a weapon that "returns when thrown".
+It does not always return, and even when it does you may fail to catch it and
+drop it at your feet.
+The nimbler you are, the less often that happens, and with a very high
+throwing proficiency you will never fail at all.
+Any class can throw a little, but not many are good at it."
+
+
+***** <Critical>
+=== Critical hits ===
+Keine: "Any of the attacks described above can land as a "critical hit".
+When it does, the damage -- the dice part in particular -- leaps up.
+As a rule, the heavier the weapon, the more often criticals come."
+
+
+
+
+***** <Skilllevel>
+=== Weapon proficiency ===
+Keine: "Your skills with weapons, shields and so on have a "proficiency".
+Raise it and you handle them more skilfully, to your advantage in a fight.
+The ceiling on proficiency is set by your class's aptitude, and you cannot
+normally pass it.
+To see your present proficiency and aptitude, press '~' and then 'e'.
+
+As a rule, raising proficiency raises your chance to hit with that thing, but
+some skills bring other benefits besides. Let me set them out.
+
+- Martial arts
+  Blows come more easily when you carry no weapon.
+  And the chance of stunning or confusing what you strike rises.
+
+- Shields
+  Raise your shield skill and, when you attack an adjacent enemy, you bash
+  with the shield as well, up to twice more.
+  The heavier the shield the more damage it tends to do, and it can stun.
+
+- Riding
+  Raise your riding skill and you are less easily thrown from a high-level
+  monster, and your speed while mounted rises to match the monster you ride.
+  Past a certain point, letting go of the reins -- to hold a weapon in both
+  hands, say -- no longer leaves the mount wandering off.
+  In the end you can control the mount freely with your hands off.
+
+- Two weapons
+  A weapon in each hand carries a heavy penalty to your chance to hit; the
+  two-weapon skill softens it.
+  At a very high skill the penalty is all but ignored.
+  With weapons or gauntlets suited to two-weapon fighting you may even hit
+  better than with one weapon.
+
+- Throwing
+  Raise your throwing skill and a throw takes less time.
+  As with a bow, you can cut the turn finely and attack while avoiding runs of
+  enemy actions.
+  Throwing a weapon good for throwing cuts the time further.
+  And with a high throwing skill you will always recover a weapon that returns
+  when thrown.
+
+- Daggers
+  Raise your dagger skill and your blows increase, and the dagger's dice part
+  gains +1 for more damage.
+  If the Soldier class has taken "dagger fighting", however, that dice bonus
+  takes precedence.
+
+- Long swords
+  With long swords, the rise in your chance to hit per level of skill is a
+  little larger.
+  Plain compared with the other skills, but even those with little aptitude
+  get some benefit.
+
+- Katana
+  Raise your katana skill and the chance of a fierce first stroke rises.
+  Such a stroke can do heavy damage, or kill an enemy outright, much like a
+  ninja's ambush.
+
+- Hafted weapons
+  Raise your hafted skill and the chance of stunning what you strike rises.
+  It can stun even an enemy that resists stunning.
+  A stunned enemy fails at what it tries again and again. Extremely powerful.
+
+- Staves (polearms of the staff kind)
+  Raise your staff skill and you use the staff skilfully to raise your AC.
+  Holding it in both hands doubles the effect.
+  Attacking with a staff also raises the chance of an extra martial blow.
+
+- Axes
+  Raise your axe skill and an enemy you strike is sometimes left with its
+  defence lowered.
+  For details see "temporary effects on monsters" below.
+
+- Spears
+  Raise your spear skill and, when an enemy attacks you in melee, you strike
+  first. This is a single blow, but it costs no energy and lands as a critical
+  hit more readily.
+
+- Polearms
+  Raise your polearm skill and you sometimes flinch an enemy you strike,
+  delaying its next action slightly.
+  Not enough to beat on it one-sidedly, but with luck you take fewer runs of
+  enemy actions.
+
+- Bows and crossbows
+  Raise your bow or crossbow skill and you shoot faster.
+  Up to version 1.1.93 the rise in shooting speed per level was set separately
+  for each class; from 1.1.94 shooting speed rises chiefly as a proficiency
+  bonus.
+  If you mean to fight with a bow in the end, train the skill in a planned way.
+  Some classes gain a further shooting-speed bonus on top of the proficiency
+  bonus.
+
+- Guns
+  Raise your gun skill and, besides a better chance of a successful shot, the
+  gun you wield reloads faster.
+
+That is about all.
+Proficiency rises more easily when you fight high-level enemies.
+I shall not stop you beating on a pet to train, but that will not carry you
+past a certain level."
+
+
+***** <Buff>
+=== Buffs ===
+
+Keine: "Fighting a formidable enemy with no preparation is reckless.
+Gensoband gives you many ways to raise your own strength for a time.
+Let me name a few of the basic ones. Most come from potions or spells.
+
+- Heroism
+  Your spirits are high. Your HP and AC rise by 10 and your melee lands a
+  little more easily. It cures fear and prevents you becoming afraid.
+  You gain it from spells and potions, and also by drinking liquor.
+  But drink too much liquor and you make yourself ill.
+
+- Blessing
+  You are blessed by a god -- which one I do not know.
+  Your AC rises by 10 and your melee lands a little more easily.
+  Your magic defence also rises slightly, so curses and the like are less
+  likely to take.
+  You gain it from a blessing spell or from a Scroll of Holy Chant.
+  The scroll shop sells them, so keep some if you can spare the money.
+
+- Resist fire / cold / lightning / acid / poison
+  You have temporary resistance to an element.
+  It cuts the damage of that element, or of poison, to one third.
+  I have explained this more than once, but it matters, so once more:
+  gain a temporary resistance on top of a resistance from equipment and you
+  have "double resistance", which cuts the damage to one ninth.
+  That holds only for the five listed above (fire, cold, lightning, acid,
+  poison). There are spells that give temporary resistance to chaos, hell and
+  so on, but they do not give double resistance to those.
+
+  Temporary resistances come chiefly from spells and potions.
+  If your class cannot cast them, buy every resistance potion you see in the
+  black market.
+
+- Confusing touch
+  Read a Scroll of Confuse Monster and your hands glow with this.
+  Attack an enemy in this state and you may confuse it.
+  Many strong early enemies can be confused, so use it freely.
+  From the middle depths it can hardly be relied on.
+
+- Haste
+  Your speed rises by +10. That is twice the speed of no bonus, so it is all
+  but essential against a formidable enemy.
+  Potions of Speed come fairly readily from early on, but they are consumable.
+  Get a Staff of Speed as soon as you can.
+  There are several spells that haste you as well.
+
+- Stat boosts
+  Spells such as Strength raise the matching base parameter.
+  The ceiling on a base parameter is normally 40, but there are powerful boost
+  spells that break through it.
+
+Those are the basics. There are more than a hundred temporary effects; for the
+details, read the description of each ability or spell."
+
+
+***** <BadStatus>
+=== Bad status effects ===
+
+Keine: "An enemy's attack and other things may leave you temporarily unwell.
+Let me explain those states.
+Most bad statuses wear off with time, but let me also tell you how to cure
+them at once.
+
+- Poison
+  Your HP and MP stop recovering with time, and you take damage little by
+  little.
+  A Potion of Neutralize Poison, of Cure Critical Wounds or of Healing cures
+  it. Resistance to poison prevents being poisoned.
+
+- Fear
+  You panic and cannot attack an adjacent enemy.
+  Your spell failure rate rises and your shooting lands less easily.
+  A potion or liquor that gives heroism cures it.
+  Resistance to fear prevents becoming afraid.
+
+- Confusion
+  Your head is in a panic and you cannot move or attack in the direction you
+  choose. You also cannot use spells or abilities, cannot read scrolls, and
+  fail with staves and other devices almost every time.
+  A Potion of Cure Serious Wounds or better cures it; resistance to confusion
+  prevents it.
+
+- Blindness
+  You cannot see, and cannot make out what is around you.
+  You also cannot use scrolls or spellbooks, nor items lying at your feet.
+  You have not forgotten the terrain you learned, and telepathy and other
+  detection work as usual.
+  A Potion of Cure Serious Wounds or better cures it; resistance to blindness
+  prevents it.
+
+- Paralysis
+  I have explained this often enough. You cannot move for several turns, and
+  usually the game is over.
+  Free action prevents paralysing attacks, but starvation, a failed attempt to
+  break a door and the like can paralyse you even with it.
+
+- Hallucination
+  Everything you see turns into something strange.
+  You can make out neither monsters nor items.
+  Somehow you can still read spellbooks and scrolls normally.
+  Curing hallucination needs a Potion of Curing, a staff or some other rather
+  special means. It often does not wear off quickly with time.
+  Resistance to chaos prevents it.
+
+- Slowness
+  Your speed falls by -10. Fighting on in that state is dangerous.
+  It wears off with time, and it cancels out against temporary haste.
+
+- Petrifaction
+  The same as paralysis, but you cannot move even with free action.
+  Ancient malice, and the blood curse described later, rarely cause it.
+  Very high magic defence can prevent it.
+
+- Stat loss
+  An enemy's attack and other things lower a base stat for a time.
+  This does not heal with time, but the matching Potion of Restore X brings it
+  back. Sustain for a stat prevents its loss.
+  Stat loss from a time-reversal attack, however, is prevented only by
+  resistance to time and space.
+
+- Experience loss
+  Hell attacks, experience-draining blows, chaos attacks and so on reduce your
+  experience, and can lower your level.
+  This does not heal with time, but a Potion of Restore Life Levels brings it
+  back. Resistance to hell greatly reduces experience loss.
+
+- Cuts
+  Left alone, they damage you every turn.
+  You are cut by an enemy's slashing attacks, by curses, by the shard element
+  and so on, and a very bad wound can do more than 100 damage.
+  A Potion of Cure Critical Wounds or better heals any cut in an instant.
+  There is no resistance that prevents cuts, though some races cannot be cut.
+
+- Stunning
+  Your spell success rate falls.
+  An enemy's blows, sound attacks, water attacks, plasma attacks and so on
+  stun you. Stunning accumulates, and past a certain point you black out and
+  fall where you stand.
+  You go on being attacked, of course, and a game over is all but unavoidable.
+  A Potion of Cure Serious Wounds or better clears stunning.
+  Resistance to sound, to water and so on prevents stunning by those elements.
+  There is no resistance that prevents stunning from blows, though some races
+  cannot be stunned.
+
+- Damage (to the body)
+  A few special races such as the Youkai-Doll and the Haniwa take "damage"
+  rather than cuts and stunning.
+  In this state their abilities fall, and at heavy damage they are in no state
+  to fight.
+  Damage mends a little at a time, and a racial ability can sometimes repair
+  the body.
+
+That is roughly all.
+The Potion of Cure Critical Wounds heals a fair amount and cures many bad
+statuses -- a truly excellent potion. It is sold in the shops, so if your
+funds and your weight limit allow, carrying dozens at all times is no bad
+thing."
+
+
+
+***** <Monster-TimedStatus>
+=== Temporary effects on monsters ===
+
+Keine: "Monsters have temporary buffs and bad statuses too. Let me set them out.
+
+- Haste
+  A hasted monster gets +10 speed.
+  You then take runs of attacks more easily, which is dangerous.
+  If a formidable enemy is hasted, dispel its magic or run about until the
+  haste runs out.
+  A monster with the Haste spell can haste itself.
+  A monster with the Alarm spell wakes every monster around it and hastes them
+  all. And waving a Wand of Haste Monsters, or shattering a Potion of Speed
+  nearby, hastes a monster.
+
+- Invulnerability
+  Almost nothing works on the monster.
+  A powerful monster with the "globe of invulnerability" spell can make itself
+  invulnerable.
+  An attack gets through to an invulnerable monster one time in thirteen, and
+  the "sword of light" element, or the attacks of some powerful unique classes,
+  pierce invulnerability.
+  Casting "dispel magic" also removes a monster's invulnerability.
+  Otherwise, once a monster is invulnerable there is usually nothing for it but
+  to run about until it runs out.
+
+- Sleep and holding
+  Most monsters are asleep when you first come down to a floor.
+  A held monster likewise does not move.
+  A monster in either state does nothing, but land a single attack or hostile
+  spell on it and it wakes and attacks.
+  With low stealth, wandering nearby wakes them more easily.
+  Some monsters sleep deeply and some lightly; as a rule a monster that
+  "watches for intruders" wakes easily and one that "pays no attention to
+  intruders" wakes with difficulty.
+  The difference between sleep and holding is whether the monster's resistance
+  applies. Sleep attacks do nothing at all to a monster that resists sleep,
+  but a holding attack may still work.
+
+
+- Slowness
+  A slowed monster gets -10 speed. It becomes much easier to kill.
+  Spells such as Slow, and attacks of the slowing element or of some mind
+  elements, can slow a monster.
+  Slowing a high-level monster is quite hard, mind.
+  Slowness wears off with time, and a high-level monster recovers quickly.
+
+- Confusion
+  A confused monster cannot move straight and cannot cast. A considerable
+  weakening.
+  The Scroll and Wand of Confuse Monster sold in the shops, and attacks of the
+  confusion element, of mind elements and of chaos, can confuse a monster.
+  It does nothing to a monster that resists confusion, and almost every late
+  monster does.
+  Confusion wears off with time, and a high-level monster recovers quickly.
+
+- Stunning
+  A stunned monster sometimes does nothing, and very often fails when it tries
+  to cast. Another considerable weakening.
+  Sound attacks, water attacks, force attacks and some mind elements can stun
+  a monster.
+  As a rule it does nothing to a monster that resists stunning.
+  But melee with martial arts or a hafted weapon can stun even a monster that
+  resists it.
+  Stunning wears off with time, and a high-level monster recovers quickly.
+
+- Fear
+  A frightened monster does not attack in melee and runs about.
+  It also uses teleport and healing spells rather than attacks.
+  Besides spells that cause fear, heavy damage can frighten a monster.
+  A monster that resists fear is never frightened.
+  Fear passes with time or as the monster heals, and a monster cornered in a
+  dead end can recover as well.
+
+- Lowered attack (from v1.1.94)
+  A monster with lowered attack does about 25% less melee damage and no longer
+  lands "terrible blows".
+  Potions and spells with the lowering effect, and attacks of the shard,
+  causality or petroleum elements, can lower a monster's attack.
+  A plainer effect than slowness, confusion or stunning, and for that reason it
+  takes somewhat more readily on a high-level monster.
+  It wears off with time, and a high-level monster or one that regenerates
+  quickly recovers fast.
+
+- Lowered defence (from v1.1.94)
+  A monster with lowered defence has about 25% less AC, and its saving throws
+  against bad statuses and mind attacks are slightly weakened.
+  Potions and spells with the lowering effect, and attacks of the
+  disenchantment or causality elements, can lower a monster's defence.
+  Otherwise it is as for lowered attack.
+
+- Lowered magic (from v1.1.94)
+  A monster with lowered magic has its spell level reduced by 25% and its
+  spell success rate lowered.
+  Potions and spells with the lowering effect, and attacks of the causality
+  element or of many mind elements, can lower a monster's magic.
+  Otherwise it is as for lowered attack.
+
+- Bound (from v1.1.95)
+  A bound monster can neither move nor teleport, and fails at anything it
+  tries with a small probability.
+  Certain special spells and abilities bind a monster.
+  Binding wears off with time.
+  A huge monster will break out of it at once.
+
+- Berserk (from v1.1.95)
+  A berserk monster can no longer cast, but its melee does roughly twice the
+  damage.
+  Besides sealing an enemy's magic, you can strengthen a melee pet by making
+  it berserk.
+  Throwing a Potion of Berserk Strength, or certain abilities and spells, makes
+  a monster berserk.
+  It wears off with time, and a high-level monster or one that regenerates
+  quickly recovers easily.
+
+Attacks that bring on these bad statuses take poorly on unique monsters, on
+deities and on powerful monsters.
+In Hengband bad statuses hardly worked on unique monsters at all; in Gensoband
+they work on them to some degree.
+So the Slow Monster and Confuse Monster devices you find early on may still
+have their uses.
+
+Some unique classes can also give monsters special temporary effects that are
+none of the above."
+
+
+***** <Attack_type>
+=== Damage elements ===
+Keine: "The spells and techniques of Hengband carry various elements.
+Here let me explain chiefly the elements of the attacks the enemies use.
+Some of this repeats what I said about monster abilities and about equipment
+resistances, but it matters, so let me gather it in one place.
+
+- Acid
+  An attack of strong acid, reduced by resistance to acid.
+  It can damage the armour you wear and dissolve staves, scrolls and the like
+  in your pack.
+  Double resistance or immunity reduces the damage further and stops items
+  dissolving entirely.
+  When acid damages your armour, the damage to you is reduced a little.
+
+- Lightning
+  An electrical attack, reduced by resistance to lightning.
+  It can break rings and wands in your pack.
+  Double resistance or immunity reduces the damage further and stops items
+  breaking entirely.
+
+- Fire
+  An attack of fire, reduced by resistance to fire.
+  It can burn staves, scrolls and the like in your pack.
+  Double resistance or immunity reduces the damage further and stops items
+  burning entirely.
+
+- Cold
+  An attack of cold, reduced by resistance to cold.
+  It can shatter potions in your pack.
+  Double resistance or immunity reduces the damage further and stops potions
+  shattering entirely.
+
+- Poison
+  An attack of poison. It can poison you.
+  Resistance to poison reduces the damage and prevents being poisoned.
+  Double resistance reduces the damage further.
+
+- Water
+  An attack of torrents or masses of water, reduced by resistance to water.
+  Taken without the resistance it can stun you and shatter potions.
+
+- Holy (evil-breaking)
+  A holy attack. Resistance to holy halves the damage.
+  If your race is weak to it -- a youkai, an undead -- the damage is greater.
+
+- Light
+  An attack of dense light rays. It can blind you.
+  Resistance to light reduces the damage and prevents blindness from light.
+
+- Dark
+  An attack of some mysterious dark power. It can blind you.
+  Resistance to dark reduces the damage and prevents blindness from dark.
+
+- Shards
+  An attack of hard objects flying at speed.
+  It cuts you and shatters potions.
+  Resistance to shards reduces the damage, prevents cuts, and prevents
+  "almost" all potion breakage.
+
+- Sound
+  An attack of shock waves. It can stun you and shatter potions.
+  Resistance to sound reduces the damage and prevents potion breakage from
+  sound. It also prevents stunning from sound and several other elements.
+
+- Nether (hell)
+  An attack with the power of death, used often by the undead.
+  Being hit costs you part of your experience for a time, and can lower your
+  level. Resistance to hell reduces both the damage and the experience loss.
+
+- Chaos
+  An attack, it seems, with the disordered energy of before the making of the
+  universe.
+  Being hit brings on confusion, experience loss, hallucination, mutation and
+  item destruction -- all manner of unpleasant things.
+  Confusion is stopped by resistance to confusion; experience loss by
+  resistance to chaos or hell; hallucination and mutation by resistance to
+  chaos. Item destruction is mostly stopped by resistance to chaos, but not
+  entirely. An awkward element in every way.
+
+- Disenchantment
+  An attack of a special energy that drains magic and vitality.
+  Being hit lowers the quality of your equipment, and can even disenchant an
+  artifact.
+  Resistance to disenchantment reduces the damage and prevents equipment being
+  disenchanted.
+
+- Plasma
+  An attack of great heat with lightning in it.
+  It counts as both fire and lightning. Without resistance to sound it also
+  stuns.
+
+- Nuclear heat
+  A compound of fire and light. Half of the power is reduced by each
+  resistance.
+
+- Pollution
+  A compound of poison and disenchantment. Half of the power is reduced by
+  each resistance.
+
+- Whirlwind
+  An attack of fiercely swirling wind. It blows you away and shatters potions.
+  There is no resistance to it, but a heavy pack keeps you from being blown
+  away and greatly reduces the damage.
+  With levitation, being blown away does somewhat less damage and potions are
+  not shattered.
+
+- Gravity
+  An attack that seems to make a gravity field.
+  Being hit blows you away, and can stun you, slow you or shatter potions.
+  Resistance to time and space reduces the damage and prevents the extra
+  effects.
+  Even without it, levitation prevents most of the extra effects.
+
+- Time reversal
+  An attack, it seems, that reverses time to weaken you.
+  Being hit lowers your stats and experience greatly, for a time.
+  Neither sustain nor resistance to hell prevents this; resistance to time and
+  space does.
+
+- Causality
+  A strange and powerful attack that seems to meddle with the laws of time and
+  space.
+  Being hit does heavy damage and brings on all sorts of odd things.
+  You may be teleported somewhere, you may mutate, and at worst your
+  parameters may be swapped about.
+  Resistance to time and space reduces the damage and prevents the odd effects.
+  That resistance is hard to come by, but happily almost no enemy uses
+  causality attacks.
+
+- Slowing
+  An attack that hinders your movement -- slime or sticky thread, perhaps.
+  Being hit slows you (-10 speed) for a time.
+  If you were hasted, the two cancel out and the effect is lost.
+  No resistance prevents it, but the damage is never very great.
+
+- Force
+  A release of life energy, it seems.
+  No resistance reduces this attack. Without resistance to sound it also stuns.
+
+- Mana
+  A radiation of pure magical power.
+  No resistance reduces this attack.
+
+- Disintegration
+  A powerful attack that breaks matter apart and destroys it.
+  No resistance reduces this attack.
+
+- Meteor
+  An attack of great mass flying at speed. It can burn your possessions and
+  shatter potions.
+  No resistance reduces this attack. Resistance to shards very likely prevents
+  the item destruction.
+
+- Sword of light
+  Condensed energy, it seems, born of tremendous mental power.
+  No resistance reduces this attack, and it pierces every defence -- magical
+  armour, becoming ghostly, invulnerability and the rest.
+
+- Hellfire
+  An extremely dangerous attack. No equipment gives resistance to it, and if
+  you are a Tennin, a Lunarian or a Gyokuto the damage is fiercer still.
+  Very few enemies use it. You will meet it in the deepest floors.
+
+That is about all.
+I say it again: as a rule, do not fight an enemy whose attacks use an element
+you have no resistance to."
+
+
+***** <Weak_point>
+=== Weak points ===
+
+Keine: "You may have a particular element as a weak point.
+
+The best-known is a weakness to evil-breaking attacks.
+Many youkai have it, and take 33% more damage from such attacks.
+For an undead or a demon race it rises to 66%, and learning Darkness or
+Necromancy magic adds another 25% to 33%.
+If Remilia has learned the Darkness realm, for instance, she takes twice the
+damage in total from an evil-breaking attack.
+Deep down, with the resistance missing, a single blow from a shrine maiden or
+a Silver Wyrm may end the game.
+
+There are other weaknesses besides: Cirno and Letty are weak to fire, a
+Tsukumo or a Youkai-Doll is weak to disenchantment, and so on.
+You can see them at once by showing the resistance screen with the 'C'
+command; the elements in question are printed in red.
+Exactly how much the damage rises, though, you can only learn by taking it.
+Whatever else, keep as far as you can from enemies that use your weak element."
+
+
+***** <Tactics1>
+=== Tactics -- shallow levels ===
+
+Keine: "From here let me set out a few tactics that suit each stage of
+exploring. First the shallow levels -- down to about floor 20."
+
+--- The prospector ---
+Keine: "Short of money early on?
+Then shouldering a pick and setting to work mining is one way.
+First buy a Pick at the general store in the village and a Scroll of Treasure
+Detection at the scroll shop. It costs a little more, but a Staff of Treasure
+Location from the magic shop will do as well.
+Then go in and out of a nearby dungeon (the cave at Myouren Temple will do)
+until you find a place where several veins show in the walls, and detect
+treasure. A great deal of treasure buried in the walls around you will appear.
+Wield the pick and dig those walls with the 'T' command to make money.
+Stick at it a while and you can build up several thousand gold.
+But mind the monsters nearby. If white mice start multiplying you are in
+trouble."
+
+--- Buffs you can use from early on ---
+Keine: "While your equipment is still thin, even a slightly strong monster is
+a formidable enemy. Let me name a few buffs you can use from the start.
+
+- Scroll of Holy Chant
+  Read it and you are blessed, raising your defence and your attack. Sold at
+  the scroll shop.
+
+- Scroll of Confuse Monster
+  Read it and your next physical attack confuses the enemy once.
+  It works on most early monsters, which do not resist confusion. Sold at the
+  scroll shop.
+
+- Liquor and Potions of Heroism
+  Drink liquor or a Potion of Heroism and you gain heroism, raising your
+  attack, defence and HP and stopping fear.
+  Liquor is sold in the shops, but too much is dangerous, so go steadily.
+  Be particularly careful not to drink some tremendously strong-looking liquor
+  that no shop sells.
+
+- Potion of Speed
+  The trump card of the early game -- a useful potion that lets you move twice
+  as fast.
+  The ordinary potion shop does not stock it; the black market does now and
+  then. It is often found on the first floor of a dungeon as well, so going in
+  and out from the surface and using Scrolls or Staves of Object Location to
+  look for one is another way.
+
+- Devices that inflict bad statuses on monsters
+  Confuse Monster, Slow Monster and the like.
+  They used to do nothing at all to a slightly higher-level monster or to a
+  unique, but from version 1.1.90 they work to some degree on early monsters.
+
+- Stat-lowering potions
+  Potions of Weakness, of Clumsiness and so on, which lower your stats if you
+  drink them.
+  From version 1.1.94 you can throw them at a monster to weaken it for a time."
+
+--- Torches and crossbows ---
+Keine: "If you are poor both at melee and at magic, I recommend torches and
+crossbows.
+A torch is a light source, but throw one at an enemy with the v command and it
+does a fair amount of fire damage.
+And a crossbow is a missile weapon that lands fairly easily even at low skill.
+Keep your distance with Scrolls of Phase Door and you can hold your own against
+a reasonably formidable enemy."
+
+--- Teleport Away ---
+Keine: "Let me tell you the strongest spell of all: Teleport Away.
+Wave a Wand of Teleport Away and a beam comes out that forcibly teleports
+whatever it strikes.
+It will serve you from the beginning of the game to the end for avoiding a
+fight you do not want.
+It takes rather poorly on an enemy that resists teleportation, and does nothing
+at all to a unique monster that resists it."
+
+
+***** <Tactics2>
+=== Tactics -- middle levels ===
+Keine: "Let us call floors 30 to 60 or so the middle game.
+This is when the character of each class begins to show.
+Your equipment fills out, but the resistances you need grow as well, and
+finding the right combination will tax you."
+
+--- The badger hole ---
+Keine: "Surely nobody is reckless enough to fight surrounded by formidable
+enemies in a great hall?
+When there are several enemies the rule is to back into a corridor and take
+them one at a time, but if they have breaths and spells they will attack you
+one after another from behind.
+Then dig a zigzag with a Wand of Stone to Mud.
+Drawn out it looks like this.
+#######
+#@#Z#D#Z
+##Z#Z#ZZZ
+########Z
+#########
+This greatly reduces the number of enemies that can attack you.
+It will not serve, mind, if there are enemies with disintegration attacks,
+earthquake attacks or the ability to move through walls."
+
+--- The line-of-sight trick ---
+Keine: "Are you used to targeting for shooting and spells yet?
+There is a useful way to use that targeting.
+You cannot target an enemy hidden by the corner of a corridor, but from the
+targeting state you can press '*' to enter manual targeting, then move the
+target a little behind the enemy so that the line of fire just clips it.
+Fire from there and the attack strikes the enemy on the line.
+That lets you attack before the enemy comes into view.
+This works only for shooting, bolts, beams and the like -- not for balls or
+curses."
+
+  @****
+######p**O
+######
+
+(By aiming at the O, you hit the p that cannot normally be targeted)
+
+--- The Poison Needle ---
+Keine: "There is a weapon called the Poison Needle, familiar from a certain
+famous RPG series.
+Wield it and stab an enemy and you sometimes do 9999 damage.
+Yes -- even a huge dragon with 5000 HP dies at a stroke.
+Take a Poison Needle to the Dragon's Lair and aim at a wyrm or another
+formidable enemy.
+Stab a few times and, if it does not work, flee before your own HP runs out.
+With luck you gain tens of thousands of experience and a great many fine items.
+It is dangerous, of course, and it needs a certain amount of HP, double
+resistances, a means of detection and other preparation and care.
+Some people dislike this as "scumming" -- skimming off the good part -- but it
+is not against the rules.
+If you are stuck in the middle game, trying it at your own risk is one option.
+And for the avoidance of doubt: the Poison Needle does nothing to a unique
+monster."
+
+--- Doping ---
+Keine: "Building up your equipment matters, but without raising your base
+stats the middle game is hard to break through.
+To raise them, look for Potions of Strength, of Intelligence and so on and
+drink every one you find.
+Floors 30 to 45 or so are where they turn up most.
+An enemy that drops only "good items" will not yield them.
+Using nothing but the Poison Needle in the Dragon's Lair may in fact slow your
+progress."
+
+
+***** <Tactics3>
+=== Tactics -- deep levels ===
+Keine: "By the time you set foot below floor 60 or 70 you will be strong
+enough to face the great figures of Gensokyo.
+Now comes the stage of levelling to the ceiling and gathering your final
+equipment for the last battle.
+By now strategies differ from player to player, so let me set out only what is
+dangerous not to know."
+
+--- *Destruction* ---
+Keine: "The deep floors often produce great numbers of enemies.
+And most of the formidable ones have powerful summoning magic.
+You cannot deal with them one by one. This is what *Destruction* is for.
+
+When *Destruction* goes off, an area of radius 12 to 17 around you is wrecked.
+In detail: every monster and item vanishes, and the terrain becomes a random
+shape of rock and floor.
+You and the grid you stand on are untouched.
+Think of the vanished monsters as being blown to some floor above or below.
+A unique monster caught by *Destruction* will turn up again somewhere in time.
+*Destruction* comes from a staff, a scroll, or certain spells -- the Chaos,
+Foreseeing and Punish realms have them.
+
+Scrolls are consumable, so you will mostly rely on the staff; but the Staff of
+*Destruction* is quite hard to use as a device.
+A Warrior or a Samurai, poor with devices, will struggle deep down without
+equipment that raises the magic device skill."
+
+--- Means of emergency escape ---
+Keine: "Deep down, enemies with powerful ranged attacks are usually awake and
+a careless teleport is dangerous -- especially when your HP is low.
+But there will be times when you must risk it: when a summoning surrounds you
+just after a fierce spell has hit you in a fight with a formidable enemy.
+
+At such a time, give up the fight altogether and flee to another floor.
+You lose the experience and the items of the enemy you had nearly killed, of
+course, but while there is life there is hope.
+For fleeing I recommend the Scroll of Teleport Level.
+Read it and you are thrown to another floor, where you can start afresh.
+The black market sometimes sells them in a batch, so carry a few when you go
+deep.
+
+The Scroll of *Destruction* can serve as an escape as well, but they are few
+and it is a waste.
+You may wonder about the Staff of *Destruction*; it cannot be relied on.
+The reason is that staves and other devices sometimes fail.
+A class good at magic rarely fails even with a difficult device, but a bad roll
+at the crucial moment and a game over is a common enough story.
+
+Once you have avoided the fight by these means, heal at once, even if you can
+see no enemy nearby. There is no telling what happens in a dungeon.
+And it hardly needs saying: confusion and blindness stop you reading scrolls,
+so mind those resistances too."
+
+--- The Amberites and the blood curse ---
+Keine: "There are beings called the Amberites.
+They look no different from humans, but they are extremely long-lived, have
+astonishingly tough bodies, and can walk between parallel worlds at will.
+Twelve Amberites appear in Gensoband.
+They will stand as great obstacles late in your adventure.
+
+...Nobody was rude enough to think "so it is a parade of the author's own
+characters", I trust?
+Let me explain, just in case.
+The Amberites are the family that appears in the series called the Chronicles
+of Amber, by the American writer Roger Zelazny.
+They were implemented in Zangband, which came from Angband, and they hold an
+important place in Hengband, which came from Zangband in turn.
+The Japanese translation of the Amber series is out of print, but do read it if
+you get the chance. It is a fantasy of overwhelming scale and a masterpiece of
+the con game.
+
+To return to the point.
+Every Amberite is quite strong, but the greatest threat is their final attack,
+the "blood curse".
+When you kill an Amberite, half the time they lay a terrible curse on you.
+When cursed, something like a stronger version of the ancient malice I
+described earlier happens.
+With bad luck you are surrounded by enemies and petrified, and the game is
+over.
+As a countermeasure: with magic defence of about "legendary[2]" petrifaction
+does not happen.
+A high-level shrine maiden has that much magic defence unaided; with another
+class it may be worth securing it even with anti-magic equipment.
+By the way, killing each Amberite raises your score a little."

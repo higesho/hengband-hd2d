@@ -1,0 +1,346 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GensobandCore.vcxproj ── 幻想蛮怒コア側の実行ファイル。
+
+  定義の置き場: （§2 配置 / §7 手入れ許可 / §8 P1）
+
+  中身は `gensoband/src/` の C と `gensoband/adapter/` だけ。
+  変愚側の `src/`・`presentation/`・`hd2d/` は **1 本も入れない**。
+
+  ## ビルド定義は先方の手順書のとおり
+  `gensoband/src/_VisualStudioCommunity2022.txt` にある設定をそのまま写している:
+  定義 `WINDOWS;JP;SJIS;_CRT_SECURE_NO_WARNINGS;WIN32`・文字セットはマルチバイト・
+  SDL チェックなし（/sdl-）・警告 4244;4996;4101 無効・`winmm.lib` と `wsock32.lib`。
+
+  違うのは **サブシステムだけ**。先方は WINDOWS だがこちらは **CONSOLE** である
+  （設計 §2。窓を持たず、stdout がプロトコル・stderr がログ。HengbandCore.exe と同じ）。
+
+  ## コンパイル除外（設計 §7。除外はパッチではない）
+  `main.c`・`main-win.c`・`maid-x11.c`・`readdib.c` の 4 本。入口と描画はアダプタが持つ。
+  `main-win.c` を外すと `find_mon_music_priority()` と `init_music_hack()` が宙に浮くので、
+  `gensoband/adapter/gb_win_stubs.c` が受ける（`gensoband/src/` の改変はゼロ）。
+  `angband.rc` / `angband.res` も使わない。
+
+  ## 文字コード（2 種類が同居している）
+  `gensoband/src/` の写しは **SJIS**、`gensoband/adapter/` の新規コードは
+  **UTF-8（BOM 付き）**。MSVC は BOM のあるファイルだけ UTF-8 として読み、
+  それ以外は ACP（932）として読むので、指定を足さなくても両方が正しく通る。
+
+  **コンパイラに文字コードを指示する類の指定は足さないこと**（source-charset も
+  execution-charset も utf-8 も）。足した瞬間に写しのコメントと文字列が丸ごと化ける。
+  変愚側の HengbandCore.vcxproj は逆に UTF-8 を明示している。混ぜないこと。
+
+  ## 構成は Win32 だけ宣言する（V6）
+  HengbandCore.vcxproj と同じやり方。この vcxproj は Debug・Win32 と Release・Win32 しか
+  持たず、ソリューション構成の x64 は **Hengband.sln 側の** ProjectConfigurationPlatforms
+  （ActiveCfg / Build.0）で Win32 へ写される。
+  だから `/p:Platform=x64` でもこの exe は Win32 で組まれる。
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D04}</ProjectGuid>
+    <RootNamespace>GensobandCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <!-- 成果物はリポジトリ直下（HengbandCore.exe と同格・同じ場所。設計 §2）。 -->
+    <OutDir>..\..\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <TargetName>GensobandCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WINDOWS;JP;SJIS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--
+        並びが効く。**`gensoband\src` を先頭に置く**こと。後ろの `presentation` /
+        `external-lib` は共用 TU（frame_codec ほか）のためだけに要るもので、
+        同名の頭文字（`types.h` 等）があっても写しが勝つようにしておく。
+      -->
+      <AdditionalIncludeDirectories>..\..\gensoband\src;..\..\gensoband\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- 窓は持たない。stdout がプロトコル、stderr がログ（v1 §1.1）。 -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WINDOWS;JP;SJIS;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--
+        並びが効く。**`gensoband\src` を先頭に置く**こと。後ろの `presentation` /
+        `external-lib` は共用 TU（frame_codec ほか）のためだけに要るもので、
+        同名の頭文字（`types.h` 等）があっても写しが勝つようにしておく。
+      -->
+      <AdditionalIncludeDirectories>..\..\gensoband\src;..\..\gensoband\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <!--
+    幻想蛮怒本体の C。**除外は 4 本だけ**（設計 §7）:
+      main.c / main-win.c / maid-x11.c / readdib.c
+    入口と描画はアダプタが持つ。angband.rc / angband.res も使わない。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\gensoband\src\ability_card.c" />
+    <ClCompile Include="..\..\gensoband\src\artifact.c" />
+    <ClCompile Include="..\..\gensoband\src\autopick.c" />
+    <ClCompile Include="..\..\gensoband\src\avatar.c" />
+    <ClCompile Include="..\..\gensoband\src\birth.c" />
+    <ClCompile Include="..\..\gensoband\src\bldg.c" />
+    <ClCompile Include="..\..\gensoband\src\bldg2.c" />
+    <ClCompile Include="..\..\gensoband\src\cave.c" />
+    <ClCompile Include="..\..\gensoband\src\chuukei.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd1.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd2.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd3.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd4.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd5.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd6.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd7.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd_junko.c" />
+    <ClCompile Include="..\..\gensoband\src\cmd_yuma.c" />
+    <ClCompile Include="..\..\gensoband\src\do-spell.c" />
+    <ClCompile Include="..\..\gensoband\src\dungeon.c" />
+    <ClCompile Include="..\..\gensoband\src\effects.c" />
+    <ClCompile Include="..\..\gensoband\src\files.c" />
+    <ClCompile Include="..\..\gensoband\src\flavor.c" />
+    <ClCompile Include="..\..\gensoband\src\floors.c" />
+    <ClCompile Include="..\..\gensoband\src\generate.c" />
+    <ClCompile Include="..\..\gensoband\src\grid.c" />
+    <ClCompile Include="..\..\gensoband\src\hex.c" />
+    <ClCompile Include="..\..\gensoband\src\hissatsu.c" />
+    <ClCompile Include="..\..\gensoband\src\inet.c" />
+    <ClCompile Include="..\..\gensoband\src\init1.c" />
+    <ClCompile Include="..\..\gensoband\src\init2.c" />
+    <ClCompile Include="..\..\gensoband\src\japanese.c" />
+    <ClCompile Include="..\..\gensoband\src\load.c" />
+    <ClCompile Include="..\..\gensoband\src\mane.c" />
+    <ClCompile Include="..\..\gensoband\src\melee1.c" />
+    <ClCompile Include="..\..\gensoband\src\melee2.c" />
+    <ClCompile Include="..\..\gensoband\src\mind.c" />
+    <ClCompile Include="..\..\gensoband\src\monster1.c" />
+    <ClCompile Include="..\..\gensoband\src\monster2.c" />
+    <ClCompile Include="..\..\gensoband\src\mspells1.c" />
+    <ClCompile Include="..\..\gensoband\src\mspells2.c" />
+    <ClCompile Include="..\..\gensoband\src\mspells3.c" />
+    <ClCompile Include="..\..\gensoband\src\mutation.c" />
+    <ClCompile Include="..\..\gensoband\src\new_class_power.c" />
+    <ClCompile Include="..\..\gensoband\src\obj_kind.c" />
+    <ClCompile Include="..\..\gensoband\src\object1.c" />
+    <ClCompile Include="..\..\gensoband\src\object2.c" />
+    <ClCompile Include="..\..\gensoband\src\racial.c" />
+    <ClCompile Include="..\..\gensoband\src\random_unique_monster.c" />
+    <ClCompile Include="..\..\gensoband\src\report.c" />
+    <ClCompile Include="..\..\gensoband\src\rooms.c" />
+    <ClCompile Include="..\..\gensoband\src\save.c" />
+    <ClCompile Include="..\..\gensoband\src\scores.c" />
+    <ClCompile Include="..\..\gensoband\src\snipe.c" />
+    <ClCompile Include="..\..\gensoband\src\spells1.c" />
+    <ClCompile Include="..\..\gensoband\src\spells2.c" />
+    <ClCompile Include="..\..\gensoband\src\spells3.c" />
+    <ClCompile Include="..\..\gensoband\src\store.c" />
+    <ClCompile Include="..\..\gensoband\src\straygod.c" />
+    <ClCompile Include="..\..\gensoband\src\streams.c" />
+    <ClCompile Include="..\..\gensoband\src\tables.c" />
+    <ClCompile Include="..\..\gensoband\src\util.c" />
+    <ClCompile Include="..\..\gensoband\src\variable.c" />
+    <ClCompile Include="..\..\gensoband\src\wild.c" />
+    <ClCompile Include="..\..\gensoband\src\wizard1.c" />
+    <ClCompile Include="..\..\gensoband\src\wizard2.c" />
+    <ClCompile Include="..\..\gensoband\src\xtra1.c" />
+    <ClCompile Include="..\..\gensoband\src\xtra2.c" />
+    <ClCompile Include="..\..\gensoband\src\z-form.c" />
+    <ClCompile Include="..\..\gensoband\src\z-rand.c" />
+    <ClCompile Include="..\..\gensoband\src\z-term.c" />
+    <ClCompile Include="..\..\gensoband\src\z-util.c" />
+    <ClCompile Include="..\..\gensoband\src\z-virt.c" />
+  </ItemGroup>
+  <!--
+    アダプタ（新規コード。設計 §3）。C の皮と C++ の芯。
+
+    ## `/source-charset:utf-8` が C++ 側にだけ付いている理由（P2）
+    共用 TU（`presentation/`）とそのヘッダは **UTF-8 だが BOM が無い**。
+    BOM が無いファイルは MSVC が ACP（932）として読むので、日本語コメントが
+    化けるだけでなく、**先行バイトが直後の `*/` を食ってコメントが閉じない**
+    ことがある。だから「presentation のヘッダを include する TU」にだけ
+    `/source-charset:utf-8` を付ける。
+
+    `/execution-charset` は**付けない**（設計 §3.1）。実行時は ACP のままなので、
+    - C の TU（`gb_*.c`）の日本語リテラル → CP932 ＝ コアの内部コードと同じ
+    - C++ の TU の日本語リテラル → CP932 なので、**線に乗せる前に
+      `gb::sjis_to_utf8()` を通す**（プロトコルは UTF-8）
+    という分担になる。`gensoband/src/` の写し（SJIS・BOM 無し）には何も付けない。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\gensoband\adapter\gb_bootstrap.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_audio.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_null_term.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_shim.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_sub_terms.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_win_stubs.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_name_en.c" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_text.cpp" />
+    <ClCompile Include="..\..\gensoband\adapter\gb_frame.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\gensoband\adapter\gb_manifest.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\gensoband\adapter\gb_pad_commands.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\gensoband\adapter\gb_sub_panels.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\gensoband\adapter\gb_menu.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\gensoband\adapter\gb_main.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\gensoband\adapter\gb_lang.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <!--
+    変愚と**同一ファイル**の共用 TU（設計 §1 制約 3・§8 P2）。
+    ここは 1 バイトも改変しない。`frame_codec` はプロトコル v1 の frame を、
+    `protocol_messages` は制御メッセージを、`protocol_transport` は長さ枠を、
+    `input_event_adapter` は抽象入力（v1 §8.3）をキーバイト列へ展開する。
+    どれも `frame/` のヘッダと nlohmann しか見ないので、コアに依らない。
+  -->
+  <ItemGroup>
+    <!--
+      Windows API の代役をまとめた層（`platform/portable/legacy_os.cpp`）。
+      **Windows でもここを通す**——中身は各アダプタに在ったものの写しで、
+      平台の分岐をあの 1 ファイルへ閉じ込めるためだけに切り出した
+      。BOM 無しの UTF-8 なので上と同じ扱い。
+      `cp932.cpp` は**足さない**: あれは Windows 以外の変換の実体で、
+      こちらは `MultiByteToWideChar` を使うため 1 行も要らない。
+    -->
+    <ClCompile Include="..\..\platform\portable\legacy_os.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClInclude Include="..\..\platform\portable\legacy_os.h" />
+    <ClInclude Include="..\..\platform\portable\legacy_os_c.h" />
+    <ClCompile Include="..\..\presentation\frame\frame_codec.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\input_event_adapter.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\gensoband\src\angband.h" />
+    <ClInclude Include="..\..\gensoband\src\defines.h" />
+    <ClInclude Include="..\..\gensoband\src\externs.h" />
+    <ClInclude Include="..\..\gensoband\src\generate.h" />
+    <ClInclude Include="..\..\gensoband\src\grid.h" />
+    <ClInclude Include="..\..\gensoband\src\h-basic.h" />
+    <ClInclude Include="..\..\gensoband\src\h-config.h" />
+    <ClInclude Include="..\..\gensoband\src\h-define.h" />
+    <ClInclude Include="..\..\gensoband\src\h-system.h" />
+    <ClInclude Include="..\..\gensoband\src\h-type.h" />
+    <ClInclude Include="..\..\gensoband\src\init.h" />
+    <ClInclude Include="..\..\gensoband\src\kajitips.h" />
+    <ClInclude Include="..\..\gensoband\src\mindtips.h" />
+    <ClInclude Include="..\..\gensoband\src\readdib.h" />
+    <ClInclude Include="..\..\gensoband\src\rooms.h" />
+    <ClInclude Include="..\..\gensoband\src\streams.h" />
+    <ClInclude Include="..\..\gensoband\src\types.h" />
+    <ClInclude Include="..\..\gensoband\src\z-config.h" />
+    <ClInclude Include="..\..\gensoband\src\z-form.h" />
+    <ClInclude Include="..\..\gensoband\src\z-rand.h" />
+    <ClInclude Include="..\..\gensoband\src\z-term.h" />
+    <ClInclude Include="..\..\gensoband\src\z-util.h" />
+    <ClInclude Include="..\..\gensoband\src\z-virt.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_shim.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_text.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_lang.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_lang_c.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_frame.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_manifest.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_pad_commands.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_sub_panels.h" />
+    <ClInclude Include="..\..\gensoband\adapter\gb_menu.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

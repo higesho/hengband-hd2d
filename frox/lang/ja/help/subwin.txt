@@ -1,0 +1,50 @@
+<style:title>サブウィンドウ</style>
+
+いつでも見えている（ダンジョンの地図からヘルプまで何でも出せる）主な画面のほかに、このゲームでは最大 7 つの<color:keyword>サブウィンドウ</color>を使える。これは大事な情報を画面に出しっぱなしにしておくための、補いの画面である。サブウィンドウは <color:keyword>Term-1</color> から <color:keyword>Term-7</color> まで番号が付いている（主な画面が Term-0）。
+
+<topic:WhyGood><color:U>サブウィンドウの良いところ</color>
+
+いちばんよく使われるサブウィンドウは<color:keyword>敵の一覧</color>・<color:keyword>アイテムの一覧</color>・<color:keyword>持ち物</color>・<color:keyword>近ごろのメッセージ</color>である。とりわけ敵の一覧はたいそう便利である。死ぬよくある原因は、近くに危ない敵が居ることに気づかないことで、それを知らせてくれる敵の一覧があれば、そうなることはずっと減る。
+
+アイテムの一覧も同じく重宝する。その階で取りこぼしが無いかをひと目で見られるし、いちばん値打ちのあるアイテム（とモガミネーターが欲しがるアイテム）は上のほうに出る。町や荒野で依頼やダンジョンの入口を手早く見つけるのにも役立つ。
+
+<topic:WhyBad><color:U>サブウィンドウの悪いところ</color>
+
+サブウィンドウが取る場所は、主な画面が取れない場所である。サブウィンドウを出すと、主な画面の<color:keyword>行</color>と<color:keyword>桁</color>の数か、<color:keyword>字の大きさ</color>か、その両方で折り合いをつけることになる。目が悪いか画面が小さめなら、サブウィンドウを使わずに字を大きくすることを勧める。
+
+サブウィンドウが無ければ主な画面に集中し続けられ、たびたび脇へ目をやる要も無くなる。サブウィンドウは役に立つことを見せてくれるが、同じことはふつうのコマンドでも見られる――持ち物は <color:keypress>i</color>、敵の一覧は <color:keypress>Y</color>／<color:keypress>[</color>、アイテムの一覧は <color:keypress>O</color>／<color:keypress>]</color>、近ごろのメッセージは <color:keypress>^P</color> である。しかもこれらのコマンドは、サブウィンドウには無い働き（アイテムを調べる・アイテムまで歩く・メッセージを探すなど）も持っている。
+
+<topic:AngbandLive><color:U>angband.live でのサブウィンドウの設定</color>
+
+angband.live の遊ぶ頁にある 4 つの値――<color:keyword>subwindow right cols</color>・<color:keyword>subwindow right split</color>・<color:keyword>subwindow top rows</color>・<color:keyword>subwindow bottom rows</color>――を好みに合わせて決める。よくある例は順に 40/25/0/5 である。冒険者を始めたら、遊びの最中に <color:keypress>=W</color> と打ってそれぞれのサブウィンドウに何を出すかを決める。
+
+起動時にゲームが落ちるなら、サブウィンドウが場所を取りすぎているのかもしれない。値を小さくするか字を小さくしてみること。また「subwindow top rows」か「subwindow bottom rows」のどちらかは 0 にしておくこと。
+
+angband.live でサブウィンドウ無しで遊ぶには、4 つの値をすべて 0 のままにしておけばよい。
+
+<topic:Windows><color:U>手元で遊ぶときの設定（Windows）</color>
+
+上の道具帯から <color:keyword>Window</color> を選び、<color:keyword>Visibility</color> で 7 つのサブウィンドウをそれぞれ入切する。出したサブウィンドウはマウスで好きな場所へ動かせる。遊びの最中に <color:keypress>=W</color> と打って、それぞれのサブウィンドウに何を出すかを決める。
+
+<topic:Linux><color:U>手元で遊ぶときの設定（Linux の curses）</color>
+
+ゲームを起こすときに、命令行でサブウィンドウの大きさと置き場を指定する。いくつか例を挙げる。
+
+<color:y>$ ./froxcomposband -mgcu -uCrusher -- -right 57x26,*</color>
+
+これは主な画面の右に幅 57 桁のサブウィンドウの帯を作る。この帯には 2 つのサブウィンドウが入り、1 つは高さ 26 行、もう 1 つは残りをすべて埋める。
+
+<color:y>$ ./froxcomposband -mgcu -uCrusher -- -right 57x26,* -bottom *x10</color>
+
+さきほどと同じ 2 つに加え、主な画面の下に 3 つ目のサブウィンドウ（Term-3）を作る。高さ 10 行、幅は（全体 - 57）桁である。
+
+<color:y>$ ./froxcomposband -mgcu -uCrusher -- -bottom *x10 -right 57x26,*</color>
+
+上と同じだが、下のサブウィンドウが Term-1 になり、桁をすべて使えるようになる。
+
+遊びの最中に <color:keypress>=W</color> と打って、それぞれのサブウィンドウに何を出すかを決める。
+
+<color:D>
+--
+最初       : FrogComposband 7.1.liquorice
+</color>

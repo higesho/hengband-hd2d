@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  HengbandHd2d.vcxproj — ボクセル HD2D の実行体（プロトコル v1 の第 3 の ui）。
+
+  定義の置き場: ボクセル HD2D の設計 §2・§3 /
+        / プロトコル v1 の仕様
+
+  中身は `hd2d/` 全部 ＋ `presentation/frame/` の中立 TU ＋ `platform/windows/hd2d_main.cpp`。
+  **`src/` も `ui/` も入れない。**この exe はコアの型も既存 ui の作りも 1 つも知らない
+  （設計書 必守制約 1・5・6）。
+
+  描画は OpenGL 4.6 core。**`opengl32.lib` はリンクしない**（1.1 の口しか出さないので
+  意味が無い）。関数は全部 `hd2d/render/gl_core.cpp` が `SDL_GL_GetProcAddress` で引く。
+  SDL2 は窓・入力・フォントにだけ使う（`SDL2_image` も要らない）。
+
+  全 TU が PCH 無効・UTF-8（`presentation/frame` は SJIS を通らない）なので、
+  TU ごとにメタデータを書かず ItemDefinitionGroup にまとめる。
+  `..\..\src` を include 経路に入れているのは `external-lib/include-json.h`
+  （nlohmann の入口）がそこにあるためだけで、コアのヘッダは 1 つも引かない。
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <!--
+      **x64 だけ。** SteamVR の OpenXR ランタイムが 32bit へ提供されていないので、
+      画面側は x64 でなければ VR に行けない。
+      コア（HengbandCore）と上流版（Hengband）は Win32 のまま。別プロセスで
+      パイプはバイト列なので混在してよい。
+
+      Win32 の構成は**消してある**。残すと (a) 同じ `HengbandHd2d.exe` を 2 つの構成が
+      奪い合って前の版が残る、(b) `hd2d/xr/` が x86 の openxr-loader を要求する、
+      の 2 つを抱えることになる。画面を Win32 で組む用は VR 以後もう無い。
+    -->
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D03}</ProjectGuid>
+    <RootNamespace>HengbandHd2d</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <!-- 構成は x64 だけ（上の注記）。Debug と Release で違うのは最適化と CRT の枝 -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="HengbandSdl">
+    <!--
+      三つ組は Platform から引く（いまは x64 だけ）。導入は の Windows 節と
+      。**`sdl2-ttf` は重ね三つ組で組み直すこと**——
+      素の /O2 だと x64 で字が欠ける（同 罠 15）。
+    -->
+    <HengbandVcpkgRoot Condition="'$(HengbandVcpkgRoot)' == ''">C:\vcpkg</HengbandVcpkgRoot>
+    <HengbandVcpkgTriplet Condition="'$(Platform)' == 'x64'">x64-windows</HengbandVcpkgTriplet>
+    <HengbandVcpkgTriplet Condition="'$(HengbandVcpkgTriplet)' == ''">x86-windows</HengbandVcpkgTriplet>
+    <HengbandSdlInclude>$(HengbandVcpkgRoot)\installed\$(HengbandVcpkgTriplet)\include</HengbandSdlInclude>
+    <HengbandSdlLibRelease>$(HengbandVcpkgRoot)\installed\$(HengbandVcpkgTriplet)\lib</HengbandSdlLibRelease>
+    <HengbandSdlLibDebug>$(HengbandVcpkgRoot)\installed\$(HengbandVcpkgTriplet)\debug\lib</HengbandSdlLibDebug>
+    <HengbandSdlBinRelease>$(HengbandVcpkgRoot)\installed\$(HengbandVcpkgTriplet)\bin</HengbandSdlBinRelease>
+    <HengbandSdlBinDebug>$(HengbandVcpkgRoot)\installed\$(HengbandVcpkgTriplet)\debug\bin</HengbandSdlBinDebug>
+  </PropertyGroup>
+  <PropertyGroup Label="HengbandHd2dEditor">
+    <!--
+      ボクセルエディタ（P9・R13）。**既定で入る**（開発の道具なので）。
+      リリース用（配布物）は `/p:HengbandHd2dEditor=0` で hd2d\edit\ の TU と
+      HD2D_EDITOR 定義が丸ごと外れる（2026-08-08 に決めた「内蔵するが、
+      リリース用には含めない」）。
+
+      **出力はリポジトリ直下ではなく `dist-noeditor\` へ**（DLL も PostBuildEvent が
+      そこへ写すので、そのまま配布物の器になる）。中間物も分ける。開発用の exe と
+      同じパスへ書くと、切り替え直後の増分ビルドが「出力のほうが新しい」と読んで
+      リンクを飛ばし、**エディタ無しの exe が残ったまま**になる（実際に踏んだ）。
+    -->
+    <HengbandHd2dEditor Condition="'$(HengbandHd2dEditor)' == ''">1</HengbandHd2dEditor>
+    <HengbandHd2dEditorDefine Condition="'$(HengbandHd2dEditor)' != '0'">HD2D_EDITOR=1;</HengbandHd2dEditorDefine>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!--
+      出力はリポジトリ直下（`HengbandCore.exe` を exe と同じ場所から起こすため。
+      `core_link.cpp` の `exe_directory()`）。中間物は三つ組ごとに分ける。
+    -->
+    <OutDir>..\..\</OutDir>
+    <OutDir Condition="'$(HengbandHd2dEditor)' == '0'">..\..\dist-noeditor\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IntDir Condition="'$(HengbandHd2dEditor)' == '0'">$(Configuration)-noeditor\</IntDir>
+    <IntDir Condition="'$(Platform)' == 'x64'">$(Configuration)-x64\</IntDir>
+    <IntDir Condition="'$(HengbandHd2dEditor)' == '0' AND '$(Platform)' == 'x64'">$(Configuration)-noeditor-x64\</IntDir>
+    <TargetName>HengbandHd2d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(HengbandHd2dEditorDefine)WINDOWS;_CRT_SECURE_NO_WARNINGS;WIN32;HAVE_STDINT_H;WIN_DEBUG;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\src;..\..\src\external-lib\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <TreatAngleBracketIncludesAsExternal>true</TreatAngleBracketIncludesAsExternal>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine Condition="'$(Platform)'=='Win32'">MachineX86</TargetMachine>
+      <TargetMachine Condition="'$(Platform)'=='x64'">MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(HengbandSdlLibDebug);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2d.lib;SDL2_ttfd.lib;SDL2_imaged.lib;openxr_loaderd.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\SDL2d.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\SDL2_ttfd.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\SDL2_imaged.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\freetyped.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\libpng16d.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\zd.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\bz2d.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\brotlicommon.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\brotlidec.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\brotlienc.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\openxr_loaderd.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\OpenAL32.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\fmtd.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinDebug)\jsoncpp.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(HengbandHd2dEditorDefine)WINDOWS;_CRT_SECURE_NO_WARNINGS;WIN32;HAVE_STDINT_H;SDL_MAIN_HANDLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\src;..\..\src\external-lib\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <TreatAngleBracketIncludesAsExternal>true</TreatAngleBracketIncludesAsExternal>
+    </ClCompile>
+    <Link>
+      <TargetMachine Condition="'$(Platform)'=='Win32'">MachineX86</TargetMachine>
+      <TargetMachine Condition="'$(Platform)'=='x64'">MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(HengbandSdlLibRelease);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2_ttf.lib;SDL2_image.lib;openxr_loader.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)" mkdir "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\SDL2.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\SDL2_ttf.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\SDL2_image.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\freetype.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\libpng16.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\z.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\bz2.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\brotlicommon.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\brotlidec.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\brotlienc.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\openxr_loader.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\OpenAL32.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\fmt.dll" "$(OutDir)"
+copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <!-- 窓のアイコン（剣。Android の起動アイコンと同じ形と色）。ASCII だけの .rc -->
+    <ResourceCompile Include="..\..\platform\windows\hd2d.rc" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(HengbandHd2dEditor)' != '0'">
+    <!-- ボクセルエディタ（P9）。リリース用ビルドには入らない -->
+    <ClCompile Include="..\..\hd2d\edit\edit_check.cpp" />
+    <ClCompile Include="..\..\hd2d\edit\prefab_edit.cpp" />
+    <ClCompile Include="..\..\hd2d\edit\prefab_writer.cpp" />
+    <ClCompile Include="..\..\hd2d\edit\voxel_editor.cpp" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(HengbandHd2dEditor)' != '0'">
+    <ClInclude Include="..\..\hd2d\edit\edit_check.h" />
+    <ClInclude Include="..\..\hd2d\edit\prefab_edit.h" />
+    <ClInclude Include="..\..\hd2d\edit\prefab_writer.h" />
+    <ClInclude Include="..\..\hd2d\edit\voxel_editor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\hd2d\app\hd2d_app.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\asset_checks.cpp" />
+    <ClCompile Include="..\..\hd2d\app\app_support.cpp" />
+    <ClCompile Include="..\..\hd2d\app\app_clock.cpp" />
+    <ClCompile Include="..\..\hd2d\app\run_parts.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\check_support.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\world_checks.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\device_checks.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\view_modes.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\render_checks.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\ui_checks.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\input_checks.cpp" />
+    <ClCompile Include="..\..\hd2d\audio\ambience_table.cpp" />
+    <ClCompile Include="..\..\hd2d\audio\ambience_mix.cpp" />
+    <ClCompile Include="..\..\hd2d\audio\sfx_catalog.cpp" />
+    <ClCompile Include="..\..\hd2d\audio\audio_engine.cpp" />
+    <ClCompile Include="..\..\hd2d\assets\sprite_atlas.cpp" />
+    <ClCompile Include="..\..\hd2d\assets\tile_catalog.cpp" />
+    <ClCompile Include="..\..\hd2d\render\billboard_renderer.cpp" />
+    <ClCompile Include="..\..\hd2d\render\glyph_atlas.cpp" />
+    <ClCompile Include="..\..\hd2d\world\entity_view.cpp" />
+    <!-- 一過性の重ね書き。 -->
+    <ClCompile Include="..\..\hd2d\world\overlay_view.cpp" />
+    <!-- 足元のリング（SQ-1。同 §4）。 -->
+    <ClCompile Include="..\..\hd2d\render\ground_ring.cpp" />
+    <ClCompile Include="..\..\hd2d\render\light_shaft.cpp" />
+    <ClCompile Include="..\..\hd2d\net\core_link.cpp" />
+    <ClCompile Include="..\..\hd2d\render\camera.cpp" />
+    <ClCompile Include="..\..\hd2d\render\cloud_layer.cpp" />
+    <ClCompile Include="..\..\hd2d\render\sky_dome.cpp" />
+    <ClCompile Include="..\..\hd2d\render\gl_core.cpp" />
+    <ClCompile Include="..\..\hd2d\render\gl_program.cpp" />
+    <ClCompile Include="..\..\hd2d\render\lighting.cpp" />
+    <ClCompile Include="..\..\hd2d\render\post_process.cpp" />
+    <ClCompile Include="..\..\hd2d\render\scene_look.cpp" />
+    <ClCompile Include="..\..\hd2d\render\leaf_detail.cpp" />
+    <ClCompile Include="..\..\hd2d\render\dust_motes.cpp" />
+    <ClCompile Include="..\..\hd2d\render\surface_wear.cpp" />
+    <ClCompile Include="..\..\hd2d\render\shadow_map.cpp" />
+    <ClCompile Include="..\..\hd2d\render\text_overlay.cpp" />
+    <ClCompile Include="..\..\hd2d\render\voxel_renderer.cpp" />
+    <ClCompile Include="..\..\hd2d\voxel\greedy_mesher.cpp" />
+    <ClCompile Include="..\..\hd2d\voxel\part_motion.cpp" />
+    <ClCompile Include="..\..\hd2d\voxel\prefab.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\click_path.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\combat_fx_view.cpp" />
+    <ClCompile Include="..\..\hd2d\i18n\lang.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\feature_menu.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\floor_cutin.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\fps_mode.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\game_hud.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\game_pad.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\key_binds.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\ui_image.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\hd2d_settings.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\ui_cursor.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\ui_layout.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\ui_paint.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\virtual_pad.cpp" />
+    <ClCompile Include="..\..\hd2d\voxel\vox_file.cpp" />
+    <ClCompile Include="..\..\hd2d\world\dungeon_style.cpp" />
+    <ClCompile Include="..\..\hd2d\world\floor_meaning.cpp" />
+    <ClCompile Include="..\..\hd2d\world\prefab_library.cpp" />
+    <ClCompile Include="..\..\hd2d\world\slab_library.cpp" />
+    <ClCompile Include="..\..\hd2d\world\terrain_memory.cpp" />
+    <ClCompile Include="..\..\hd2d\world\terrain_view.cpp" />
+    <ClCompile Include="..\..\hd2d\world\town_plan.cpp" />
+    <ClCompile Include="..\..\hd2d\xr\xr_fake.cpp" />
+    <ClCompile Include="..\..\hd2d\xr\xr_input.cpp" />
+    <ClCompile Include="..\..\hd2d\xr\xr_math.cpp" />
+    <ClCompile Include="..\..\hd2d\xr\xr_room.cpp" />
+    <ClCompile Include="..\..\hd2d\xr\xr_session.cpp" />
+    <ClCompile Include="..\..\presentation\frame\frame_codec.cpp" />
+    <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp" />
+    <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp" />
+    <ClCompile Include="..\..\platform\windows\hd2d_main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\hd2d\app\hd2d_app.h" />
+    <ClInclude Include="..\..\hd2d\app\hd2d_checks.h" />
+    <ClInclude Include="..\..\hd2d\app\app_support.h" />
+    <ClInclude Include="..\..\hd2d\app\app_clock.h" />
+    <ClInclude Include="..\..\hd2d\app\run_parts.h" />
+    <ClInclude Include="..\..\hd2d\app\checks\check_support.h" />
+    <ClInclude Include="..\..\hd2d\net\core_link.h" />
+    <ClInclude Include="..\..\hd2d\render\cloud_layer.h" />
+    <ClInclude Include="..\..\hd2d\render\gl_core.h" />
+    <ClInclude Include="..\..\hd2d\render\gl_program.h" />
+    <ClInclude Include="..\..\hd2d\render\lighting.h" />
+    <ClInclude Include="..\..\hd2d\render\post_process.h" />
+    <ClInclude Include="..\..\hd2d\render\scene_look.h" />
+    <ClInclude Include="..\..\hd2d\render\leaf_detail.h" />
+    <ClInclude Include="..\..\hd2d\render\dust_motes.h" />
+    <ClInclude Include="..\..\hd2d\render\surface_wear.h" />
+    <ClInclude Include="..\..\hd2d\render\math3d.h" />
+    <ClInclude Include="..\..\hd2d\render\shadow_map.h" />
+    <ClInclude Include="..\..\hd2d\render\term_colors.h" />
+    <ClInclude Include="..\..\hd2d\render\text_overlay.h" />
+    <ClInclude Include="..\..\hd2d\render\voxel_renderer.h" />
+    <ClInclude Include="..\..\hd2d\voxel\greedy_mesher.h" />
+    <ClInclude Include="..\..\hd2d\voxel\part_motion.h" />
+    <ClInclude Include="..\..\hd2d\voxel\prefab.h" />
+    <ClInclude Include="..\..\hd2d\voxel\vox_file.h" />
+    <ClInclude Include="..\..\hd2d\world\dungeon_style.h" />
+    <ClInclude Include="..\..\hd2d\world\floor_meaning.h" />
+    <ClInclude Include="..\..\hd2d\world\prefab_library.h" />
+    <ClInclude Include="..\..\hd2d\world\slab_library.h" />
+    <ClInclude Include="..\..\hd2d\world\terrain_memory.h" />
+    <ClInclude Include="..\..\hd2d\world\terrain_view.h" />
+    <ClInclude Include="..\..\hd2d\world\town_plan.h" />
+    <ClInclude Include="..\..\hd2d\render\camera.h" />
+    <ClInclude Include="..\..\hd2d\render\frustum.h" />
+    <ClInclude Include="..\..\hd2d\render\billboard_renderer.h" />
+    <ClInclude Include="..\..\hd2d\render\glyph_atlas.h" />
+    <ClInclude Include="..\..\hd2d\assets\sprite_atlas.h" />
+    <ClInclude Include="..\..\hd2d\assets\tile_catalog.h" />
+    <ClInclude Include="..\..\hd2d\world\entity_view.h" />
+    <ClInclude Include="..\..\hd2d\world\overlay_view.h" />
+    <ClInclude Include="..\..\hd2d\render\ground_ring.h" />
+    <ClInclude Include="..\..\hd2d\render\light_shaft.h" />
+    <ClInclude Include="..\..\hd2d\ui\click_path.h" />
+    <ClInclude Include="..\..\hd2d\ui\combat_fx_view.h" />
+    <ClInclude Include="..\..\hd2d\i18n\lang.h" />
+    <ClInclude Include="..\..\hd2d\ui\feature_menu.h" />
+    <ClInclude Include="..\..\hd2d\ui\floor_cutin.h" />
+    <ClInclude Include="..\..\hd2d\ui\game_hud.h" />
+    <ClInclude Include="..\..\hd2d\ui\game_pad.h" />
+    <ClInclude Include="..\..\hd2d\ui\key_binds.h" />
+    <ClInclude Include="..\..\hd2d\ui\ui_image.h" />
+    <ClInclude Include="..\..\hd2d\ui\hd2d_settings.h" />
+    <ClInclude Include="..\..\hd2d\ui\ui_cursor.h" />
+    <ClInclude Include="..\..\hd2d\ui\ui_layout.h" />
+    <ClInclude Include="..\..\hd2d\ui\ui_paint.h" />
+    <ClInclude Include="..\..\hd2d\ui\virtual_pad.h" />
+    <ClInclude Include="..\..\hd2d\render\render_view.h" />
+    <ClInclude Include="..\..\hd2d\xr\xr_fake.h" />
+    <ClInclude Include="..\..\hd2d\xr\xr_input.h" />
+    <ClInclude Include="..\..\hd2d\xr\xr_math.h" />
+    <ClInclude Include="..\..\hd2d\xr\xr_room.h" />
+    <ClInclude Include="..\..\hd2d\xr\xr_session.h" />
+    <ClInclude Include="..\..\presentation\frame\minimap_snapshot.h" />
+    <ClInclude Include="..\..\presentation\frame\cell_feature_bits.h" />
+    <ClInclude Include="..\..\presentation\frame\frame_codec.h" />
+    <ClInclude Include="..\..\presentation\frame\game_frame.h" />
+    <ClInclude Include="..\..\presentation\frame\map_cell_view.h" />
+    <ClInclude Include="..\..\presentation\frame\protocol_messages.h" />
+    <ClInclude Include="..\..\presentation\frame\protocol_transport.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

@@ -1,0 +1,63 @@
+# File: graf-gcu.prf
+
+#
+# This file defines attr/char mappings for the GCU graphics backend (when the
+# game was compiled via `src/main-gcu.c`). GCU stands for "Generic Curses
+# Utility", i.e., curses/ncurses.
+#
+# The mappings defined in this file are eventually translated to Curses ACS
+# characters ("Alternative Character Set") at render-time.
+#
+# Example:
+#    The  mapping to `0xA3` has the high bit set, and `0xA3 & 0x7F = 0x23 = #`.
+#    The `#` character is subsequently mapped to ACS_CKBOARD at render-time as
+#    per `Term_text_gcu()` in `main-gcu.c`.
+#
+# See `src/main-gcu.c` and `src/files.c` for more information.
+#
+
+#
+# Secret doors
+#
+
+F:48:1/0xA3
+
+#
+# Magma
+#
+
+F:50:2/0xA5
+F:52:2/0xA5
+
+#
+# Quartz
+#
+
+F:51:9/0xA5
+F:53:9/0xA5
+
+#
+# Treasure veins
+#
+
+#F:54:3/0xA3
+#F:55:3/0xA3
+
+#
+# Granite walls
+#
+
+F:56:1/0xA3
+F:57:1/0xA3
+F:58:1/0xA3
+F:59:1/0xA3
+
+#
+# Permanent walls
+#
+
+F:60:1/0xA3
+F:61:1/0xA3
+F:62:1/0xA3
+F:63:1/0xA3
+

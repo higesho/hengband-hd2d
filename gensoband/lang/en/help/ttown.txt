@@ -1,0 +1,255 @@
+=== The map display ===
+
+Keine: "Well then, the adventure begins at last.
+You start at the entrance to the Human Village.
+You can see something like a town drawn in colourful letters and symbols,
+can you not? Let us begin with what those symbols mean.
+
+.................................................%%%%
+.................%%%..............................%%%
+................%%%%%..................##...%%.%%.%%%
+...............%%%%%%%...............#####..%...%.%%%
+%%............%%%%%%%%%.....%%%%%%%...####....+...%%%
+%%...%%%%%....%%%%%%%%%.....%%%%%%%..#####..%...%.%%%
+%%...%%5%%......%%6%%###....%%%4%%%.######..%%.%%.%%%
+.....................................................
+.........................@......f....................
+.....................................................
+%%%%%%..%%%%....%%%%#%%%.%%%%#%%%9%%%.%%%%..%%%%.%%%%
+%%%%%2..%%%%....%%%%#%%%.%%%%#%%%%%%%#%%%%%%%%%%.%%%%
+%%%%%%..%%%%....%%%%.%%%.%%%%#%%%%%%%#%%%%%%%%%%.....
+%%%%%%..........%%%%........##%%%%%%%.%%%%%%%%%%.....
+..............................%%%%%%%#%%%%%%%%%%.....
+..%%%%..........%%%%..........%%%%%%%................
+..%%%%..........%%%%......................%%%%%%%%%..
+
+The player (@)
+The '@' in the middle is you yourself.
+Press the direction keys or the number keys and you should move.
+
+Ground (.)
+White and green dots are ground and floor. You can walk on them.
+
+Forest (#)
+A green # is forest. Walking through it slows you down a little.
+
+Wall (%)
+On the game screen this appears as a solid orange block; in this text it is
+written as %. White walls can be tunnelled through; orange walls can never be
+broken.
+
+Door (+)
+In a town this marks the entrance to a building. Go in and you can use the
+various facilities. In the dungeon, however, the same terrain is nothing more
+than an obstacle that can be opened and closed.
+
+Digits (1-9)
+These are shop entrances. Go in and you can trade.
+There are shops in the dungeon from time to time as well.
+
+Letters (a-z, A-Z) and symbols
+These various letters and symbols are monsters.
+The f a little to the right of the player is one of them.
+The one standing here is only a stray cat, but the dungeon will be swarming
+with dangerous monsters.
+
+To move, to attack, to do anything at all, you type a command on the
+keyboard. The bare minimum of commands you need at the start is gathered in
+the guide for newcomers. There are hardly any dangerous monsters in the
+Human Village, so walk about for a while and try out the various commands.
+
+Walking off the edge of the map takes you to the map next door, and the map
+you left is reset when you do. Take care not to wander off to the next map
+with something important still lying on the floor."
+
+
+***** <Shopping>
+=== The shops ===
+
+Keine: "Next, the shops.
+In a shop you can buy items and sell the ones you do not need.
+The higher your charisma, the better the prices you are offered.
+The numbers 1 to 9 in the Human Village are the shop entrances.
+Now and then you will see an expensive item whose name differs a little from
+the ordinary kind. Items I shall explain in a chapter of their own.
+
+1: General Store
+Here you can buy food, lanterns, flasks of oil to refill them, and picks for
+digging through walls.
+
+2: Armoury
+Here you can buy clothing and armour.
+If you cast spells, be warned that equipment which is too heavy, or ordinary
+gloves on your hands, will get in the way of your magic.
+
+3: Weaponsmith
+Here you can buy weapons and ammunition.
+A warrior class starts with a decent weapon already, but if yours looks
+unreliable it is no bad thing to buy something suitable here.
+
+4: Potion and Liquor Shop
+Here you can buy potions and drink.
+If you can spare the money, buy a few doses of cure while you are here.
+
+5: Scroll Shop
+Here you can buy scrolls.
+Scrolls do all manner of things and no adventure can do without them.
+Buy a Scroll of Teleportation first, for emergencies.
+And when you set out for a distant dungeon, do not forget a Scroll of Word of
+Recall.
+
+6: Magic Shop
+Here you can buy rings, amulets, staves and the like.
+Staves and wands have a limited number of charges, but they are handy tools
+that take up little room.
+
+7: Black Market and the like
+In one corner of a town stands a suspicious building known as the black
+market or the thieves' market, and all sorts of goods with a history behind
+them find their way there. Most are powerful items you will see in no other
+shop -- but the prices they ask are beyond anything an honest shop would
+dare. Once your funds allow it, it is worth looking in regularly.
+Bargains seem to turn up rather more readily in some towns than in others.
+
+8: Base of Operations
+This building is yours to use freely. You can store several hundred kinds of
+item you cannot carry.
+There is no such building when your adventure begins, but if you settle the
+troubles of the townsfolk, one or two towns may let you use a building as a
+base of operations.
+
+9: Bookshop
+Keine: "Here you can buy spellbooks.
+No very powerful book is sold here.
+And the bookshop in the Human Village does not seem to stock books of
+Sorcery."
+
+10: Entrance Hall
+Keine: "This becomes available together with your base of operations.
+Several thousand items can be left here, but an item left here can never be
+used again. When you find an item that is worthless yet too curious to throw
+away, put it on show in the entrance hall."
+
+Keine: "When you sell an item, the rule is to identify it first.
+Sell an unidentified item and you will be beaten down cruelly on the price.
+
+Also, a shop's stock is renewed several times a day.
+If you want an item you cannot afford, run and raise the money before someone
+else buys it."
+
+
+***** <Buildings>
+=== The other buildings ===
+
+Keine: "The character '+' in a town marks the entrance to a building you may
+enter. Each building lets you do something different. Let me name a few.
+
+- Hieda Manor
+Bring an unidentified item to the Hieda Manor in the Human Village and it
+will be identified cheaply. For a rather steep fee you can also be told what
+is known about a monster you name.
+
+- Staying at an inn
+Almost every town has an inn where you can take a meal or stay the night.
+The inn has a bar as well, and there you can hear the rumours of the town.
+
+- Quests
+Someone has a favour to ask of you. More on this later.
+
+- Blacksmith
+Weapons can be enchanted, armour can be enchanted, and a weapon's properties
+can be examined. For a fee, of course.
+
+- Item research
+Some powerful items do not reveal all their effects on an ordinary
+identification. Take such items to Kourindou or to the library of the
+Scarlet Devil Mansion and they will be studied in detail.
+The fee for the trouble is somewhat high.
+
+- Divine Spirit Mausoleum branch office
+The saint Toyosatomimi keeps an office open in a number of towns.
+She can recharge staves and other magical devices, move you to a town you
+have already visited, or send you down to the deepest floor you have reached
+in a dungeon. When you have her send you into a dungeon, do not forget the
+means to come home again.
+
+- Eientei
+At Eientei almost anything can be cured: drained experience, lowered stats,
+mutations. Getting there through the bamboo forest is rather a chore, mind.
+
+- Hakurei Shrine
+The shrine will restore lowered stats and remove curses from your equipment.
+The fee is rather high, though. Could it not be brought down somehow?
+In a corner of the grounds the kappa seem to be busy with their gambling.
+
+- Guilds
+Archers, engineers, apothecaries and others have organised themselves into
+guilds, and if you belong to one of those classes you can receive services
+reserved for members.
+
+- Kirisame Magic Shop
+Marisa keeps a shop in the Forest of Magic.
+Gather materials and bring them to her and you build up points that can be
+exchanged for prizes.
+But until you are sure of your own strength, keep away from the Forest of
+Magic.
+
+- Grassroots Youkai Network
+There seems to be a mutual-aid society for the small, weak youkai who belong
+to no faction at all.
+
+
+***** <FixedQuests>
+=== The fixed quests ===
+
+Go to certain places and you can take on a "quest".
+Most quests are a matter of killing monsters, but some ask you to find an
+item and bring it back.
+Carry one out handsomely and the one who asked will reward you.
+
+Some quests, however, are appallingly dangerous.
+The danger is shown as a dungeon depth, so use that as your guide.
+Unless you can walk that floor of the dungeon with room to spare, it is not
+safe. The Ctrl-q command shows the outline and the danger of each quest again.
+
+Look at the entrance to a quest dungeon with the 'l' command and you can see
+which quest that entrance belongs to.
+Take care not to blunder into a dangerous quest by mistake.
+
+Taking on a monster-killing quest will usually make a dungeon of its own
+appear in that town. Go in only once you are ready.
+If you truly cannot kill the enemy you can escape by going up the stairs, but
+running away means the quest has failed and you get no reward.
+
+Only the quests concerning your base of operations may be attempted again
+after you run away. The items on the floor are gone on the second attempt,
+however.
+
+Note also that *Destruction*, Genocide and similar magic cannot be used in a
+quest dungeon."
+
+
+***** <WorldMap>
+=== The wilderness map ===
+
+Keine: "Press the '<' command on the surface and a wilderness map appears,
+showing the whole of Gensokyo from above.
+The map you were on is reset then as well, so mind the items on the ground.
+You can walk about the wilderness map just as you do the ordinary map, but
+time passes faster. Think of every single step on the wilderness map as
+walking an ordinary map from one edge to the other.
+
+Besides the Human Village there are various other towns, and you will see
+dungeons here and there. Your goal is to conquer the sinister cave west of
+the village, the one named Angband.
+While you are still a beginner, though, it is better to go to Myouren Temple
+just southeast of the village and train in the easy dungeon there, the Cave
+of the Great Mausoleum.
+
+While you travel the wilderness map, monsters will sometimes ambush you.
+When they do, you are returned to an ordinary map with several monsters
+lurking nearby. Do not fight them -- simply run to the next map.
+The strength of the monsters is decided largely by the terrain.
+Enemies in forest (#), river (~) or mountain (^) are far beyond anything you
+can face when you have only just set out.
+Keep to the roads (the white dots) for a while yet."

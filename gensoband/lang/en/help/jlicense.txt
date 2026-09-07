@@ -1,0 +1,218 @@
+**********************************************************************
+             Copyright and licence of Hengband
+**********************************************************************
+
+(This page is reprinted from Hengband. The Japanese original is a
+translation of the English texts quoted below; here the originals are
+given as they stand.)
+
+
+---------
+Copyright
+---------
+
+    The parts of Hengband that differ from Japanese Angband and Japanese
+  Zangband are held in copyright, on behalf of all the contributors, by:
+
+    Mr.hoge          Email: echizen(at)users.spamblock.sourceforge.jp
+
+
+    The parts of Japanese Zangband specific to the Japanese translation of
+  Zangband are held in copyright, on behalf of all the contributors, by:
+
+    Itakura          Email: itakura(at)users.spamblock.sourceforge.net
+
+
+    The changes common to all platforms made in Japanese Angband 2.8.3-1.2.6
+  over the original Angband 2.8.3 are held in copyright by:
+
+    Shitoshin (Kiyohide Utsumi)  iris(at)bf.mbn.or.jp
+    Elrock                       CXK01336(at)niftyserve.or.jp
+    FIRST (Kentaro Shirakata)    argrath(at)yo.rim.or.jp
+    sayu (Atsushi Yokoyama)      sayu(at)gol.com
+    Koji Kishi                   kis-(at)ca2.so-net.or.jp
+    TeO                          CXE00237(at)niftyserve.or.jp
+    Dotou no Himajin (Hiromine Kanemitsu)  KFF02766(at)niftyserve.or.jp
+    VOLKO (Isamu Kido)           Tokyo BBS: VOLKO
+
+
+    The platform-specific changes made in Japanese Angband 2.8.3-1.2.6 over
+  the original Angband 2.8.3 are held in copyright by the porters below:
+
+    PC-98x1   ported by : Shitoshin (iris(at)bf.mbn.or.jp)
+                          Elrock (CXK01336(at)niftyserve.or.jp)
+    X680x0    ported by : FIRST (argrath(at)yo.rim.or.jp)
+    DOS/V     ported by : sayu (sayu(at)gol.com)
+    UNIX/X11  ported by : Koji Kishi (kis-(at)ca2.so-net.or.jp)
+                          Akinobu Lee (ri(at)kuis.kyoto-u.ac.jp)
+    NeXTSTEP  ported by : Rei Takahashi (ks7098tr(at)ex.ecip.osaka-u.ac.jp,
+                          rei0(at)osk2.3web.ne.jp)
+    FM-TOWNS  ported by : Kenichiro Katayama (ken_katayama(at)geocities.co.jp)
+    Windows95 ported by : TeO (CXE00237(at)niftyserve.or.jp)
+
+
+
+-------
+Licence
+-------
+
+Hengband, like Angband and ZAngband on which it is based, is distributed
+under the Moria/Angband licence below.
+
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+(The last sentence is understood to mean that, besides the three named
+above, there are many other contributors whose copyrights apply separately.)
+
+
+If you distribute a program that changes Hengband, or another program that
+includes part of Hengband's code, distribution is permitted only when the
+following conditions are met in addition to the Moria/Angband licence. A
+"change" here means a change to any of the individual files in the
+distributed archive, or the addition or removal of files.
+
+  (1) All copyright notices must be included as they stand.
+
+  (2) The fact that changes were made, and what those changes are, must be
+      clearly stated.
+
+  (3) Whatever changes are necessary must be made so that scores can no
+      longer be sent to Hengband's score server (by disabling the score
+      sending feature, by changing the address of the destination server, or
+      by some similar means). This condition does not apply if none of the
+      changes affects the content of the game itself at all.
+
+
+The licence notice above does not rule out the possibility of distribution
+under the GPL alone, by way of Angband's dual licence (described below). At
+present Hengband cannot be distributed under the GPL, but should that become
+possible in future, those who receive it under the GPL are under no
+obligation to follow the licence notice above.
+
+
+--------
+Warranty
+--------
+    The authors accept no responsibility for any damage whatever arising from
+  the use of this program.
+
+
+
+---------------------------------------------
+Copyright and licence of Angband (the English)
+---------------------------------------------
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+
+All changes made by Ben Harrison and Robert Ruehlmann are also available
+under the GNU GENERAL PUBLIC LICENSE.  Note that this doesn't influence
+the current distribution, since parts of the source are still only
+available under the old Moria/Angband license.  Until all parts of
+Angband are distributed under the GPL the only valid license remains
+the original Moria/Angband license.
+
+
+-----------------
+The dual licence
+-----------------
+At the suggestion of Robert Ruehlmann, an effort has been under way to make
+Angband and its variants distributable under the GPL. For details see the page
+about the Angband OpenSource Initiative on the official Angband home page.
+
+http://www.thangorodrim.net/development/opensource.html
+
+In summary:
+
+Angband and its predecessor Moria were written before the idea of OpenSource
+was widely accepted, but their authors made a licence guaranteeing that
+Angband and Moria would always be distributed free of charge.
+(This is the so-called Moria/Angband licence.)
+
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+That licence, however, does not meet the conditions of OpenSource: there is
+no obligation to publish the source when distributing a changed version, and
+there were several other problems besides. As a result Angband cannot lawfully
+be included in a Linux distribution, nor can it use the many services prepared
+for OpenSource projects (SourceForge and the like), nor can code distributed
+under the GPL be used as part of Angband.
+
+To overcome these problems, Robert Ruehlmann began the Angband OpenSource
+Initiative, an effort to make it possible to distribute Angband -- and any
+variant that wishes to share in the benefit of the licence change -- under the
+GNU General Public License.
+
+Changing the licence requires either the agreement of everyone who wrote any
+of the code in Angband, or else a complete rewrite of every part written by an
+author who has not agreed to the new licence.
+
+Moving Angband to the GPL alone would force the authors of every variant based
+on Angband to change their licence to the GPL as well. To avoid that, the
+"dual licence" method was chosen, distributing the code under both the GPL and
+the Angband licence. Variant authors may therefore go on using the Angband
+licence if they wish; they need not change their variant's licence to the GPL.
+
+Note that at present the dual licence applies only to the parts of the source
+written by those who agreed to the Angband OpenSource Initiative. Other parts
+are still distributed under the Moria/Angband licence alone, so the dual
+licence does not affect the whole of Angband as it is distributed today. Until
+every part of Angband can be distributed under both licences, the only licence
+valid for the program as a whole is the Moria/Angband licence.
+
+To distribute your own changes under the dual licence, you may use the short
+statement below and send it by mail. (The statement must include your name; a
+nickname is said to be acceptable.)
+
+I hereby release [insert here the name of your patch, or the phrase 'all my
+changes to the Angband code'], under the terms of the GNU General
+Public License (version 2), as well as under the traditional Angband
+license.  It may be redistributed under the terms of the GPL (version
+2 or any later version), or under the terms of the traditional Angband
+license.
+
+
+You may also choose to release all your changes to Angband into the public
+domain and give up all rights. If so, say so in your message.
+
+
+So far the Angband OpenSource Initiative has the agreement of the following
+developers:
+ - Robert Ruehlmann
+ - Ben Harrison
+ - Greg Wooledge (Random artifact generation)
+ - Tim Baker
+ - William Tanksley
+ - Dr. Andrew White (APW Borg)
+ - Dennis van Es (BorgBand, DvEband)
+ - Julian Lighton
+ - Billy Tanksley
+ - Dean Anderson (CthAngband)
+ - Chris Weisiger (new Angband vaults)
+ - Shayne Steele
+ - Topi Ylinen
+ - Steven Fuerst
+ - Jonathan Ellis (edit files patch)
+ - Eytan Zweig (EyAngband) - public domain
+ - Matthias Kurzke (PsiAngband, ego-item patch)
+ - Sheldon Simms (random artifact names)
+ - Dave Blackston (squelch patch)
+ - Greg Flint
+ - John I'anson-Holton
+ - Aram Harrow
+ - Leon Marrick
+ - Daniel Nash
+ - Keldon Jones
+ - Jim Wilson (UMoria author)
+ - Mark Kvale (labyrinthine room patch)

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  退避するのはセーブ（files/lib/save）と設定（hd2d.cfg）だけ。
+  展開済みのゲームデータ・タイル・voxel・音声は APK から作り直せるうえ
+  200MB を超えるので include しない（include したものだけが対象になる仕様）。
+-->
+<full-backup-content>
+    <include domain="file" path="lib/save/" />
+    <include domain="file" path="hd2d.cfg" />
+</full-backup-content>

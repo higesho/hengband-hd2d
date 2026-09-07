@@ -1,0 +1,712 @@
+# Frox 日本語化 J7: **クエストの名前と依頼文**（設計 §8.59）。
+# 欄: 鍵<TAB>訳。**鍵は触らない。**訳が空なら英語のまま出る（制約 4）。
+#   name:番号      … q_info.txt の N: の名前
+#   q_xxx.txt:番号 … その本の D: の連なり（上から 1, 2, …）
+# `D:` は空白で継がれるので、**1 段落 1 行**で書くこと（§8.59）。
+#
+# The Thieves' Hideout (Outpost)
+name:1	盗賊の隠れ家 (辺境の地)
+# The Sewer (Outpost)
+name:2	下水道 (辺境の地)
+# The Stranger (Telmora)
+name:3	見知らぬ者 (テルモラ)
+# The Vault (Telmora)
+name:4	宝物庫 (テルモラ)
+# The Barrow Downs (Telmora)
+name:5	塚山丘陵 (テルモラ)
+# Trial by Fire (Telmora)
+name:6	火の試練 (テルモラ)
+# Oberon
+name:8	オベロン
+# Serpent of Chaos
+name:9	混沌のサーペント
+# The Node of Sorcery (Zul)
+name:10	仙術の特異点 (ズル)
+# The Node of Chaos (Zul)
+name:11	カオスの特異点 (ズル)
+# The Node of Nature (Zul)
+name:12	自然の特異点 (ズル)
+# Pest Control (Outpost)
+name:14	害虫駆除 (辺境の地)
+# Eric's Stronghold (Telmora)
+name:15	エリックの要塞 (テルモラ)
+# Assault on Montsalvat (Telmora)
+name:16	モンサルヴァト城への侵攻 (テルモラ)
+# Doom Quest I (Angwil)
+name:19	破滅のクエスト１ (アングウィル)
+# Vapor Quest (Outpost)
+name:20	謎の障気 (辺境の地)
+# Doom Quest II (Angwil)
+name:21	破滅のクエスト２ (アングウィル)
+# The Orc Camp (Anambar)
+name:22	オークのキャンプ (アナンバール)
+# The Spawning Pits (Angwil)
+name:23	増殖地獄 (アングウィル)
+# The Rise and Fall of Micro$oft (Angwil)
+name:24	マイクロソフトの興亡 (アングウィル)
+# The Haunted House (Outpost)
+name:25	幽霊屋敷 (辺境の地)
+# The Killing Fields (Telmora)
+name:26	激戦場 (テルモラ)
+# The Old Castle (Outpost)
+name:27	古い城 (辺境の地)
+# The Royal Crypt (Outpost)
+name:28	王家の墓 (辺境の地)
+# Tengu and Death Swords (Morivant)
+name:29	テングとデスソード (モリバント)
+# The Mimic's Treasure (Morivant)
+name:30	ミミックの財宝 (モリバント)
+# Old Man Willow Quest (Outpost)
+name:31	柳じじい (辺境の地)
+# The Dark Elven Lords (Morivant)
+name:32	ダークエルフの王 (モリバント)
+# The Cloning Pits (Thalos)
+name:33	クローン地獄 (サロス)
+# The Mountain Shrine (Telmora)
+name:34	山の祠 (テルモラ)
+# Dragon Quest (Angwil)
+name:35	竜退治 (アングウィル)
+# The Sand Pit (Angwil)
+name:36	砂の穴 (アングウィル)
+# Random 1
+name:40	-
+# Random 2
+name:41	-
+# Random 3
+name:42	-
+# Random 4
+name:43	-
+# Random 5
+name:44	-
+# Random 6
+name:45	-
+# Random 7
+name:46	-
+# Random 8
+name:47	-
+# Random 9
+name:48	-
+# Random 10
+name:49	-
+# Trouble at Home (Outpost)
+name:50	我が家の厄介事 (辺境の地)
+# I Hate Snakes! (Morivant)
+name:51	蛇は嫌いだ！ (モリバント)
+# The Old Barracks (Morivant)
+name:52	古い兵舎 (モリバント)
+# The Shopkeeper's Secret (Morivant)
+name:53	店主の秘密 (モリバント)
+# The Elven Embassy (Morivant)
+name:54	エルフの大使館 (モリバント)
+# The Underground City (Morivant)
+name:55	地下都市 (モリバント)
+# Clear the Tunnels (Anambar)
+name:60	坑道の掃除 (アナンバール)
+# Clear the Wreckage (Thalos)
+name:61	瓦礫の片付け (サロス)
+# Crow's Nest (Outpost)
+name:62	カラスの巣 (辺境の地)
+# Mushrooms (Thalos)
+name:63	キノコ (サロス)
+# The Renegade Sorcerer (Thalos)
+name:64	裏切りの仙術士 (サロス)
+# Tidy the Laboratory (Thalos)
+name:65	研究室の片付け (サロス)
+# Basilisk Cave (Thalos)
+name:66	バジリスクの洞窟 (サロス)
+# Crystal Quest (Anambar)
+name:67	水晶の依頼 (アナンバール)
+# Dinosaur Quest (Anambar)
+name:68	恐竜の依頼 (アナンバール)
+# The Old Watchtower (Thalos)
+name:69	古い物見の塔 (サロス)
+# Djinni's Cavern (Thalos)
+name:70	ジンの洞窟 (サロス)
+# Shadow Fairies (Thalos)
+name:71	影の妖精 (サロス)
+# The Killer in the Cellar (Anambar)
+name:72	地下室の殺し屋 (アナンバール)
+# Smugglers' Den (Anambar)
+name:73	密輸人の隠れ家 (アナンバール)
+# Cop Quest (Anambar)
+name:74	衛兵の依頼 (アナンバール)
+# The Mystery of Apina Island (Anambar)
+name:75	アピナ島の謎 (アナンバール)
+# Staff Recovery (Thalos)
+name:76	杖の回収 (サロス)
+# Eddies in the Space-Time Continuum (Zul)
+name:77	時空の渦 (ズル)
+# The Volcano (Telmora)
+name:78	火山 (テルモラ)
+# Troll Slayer (Morivant)
+name:56	トロル殺し (モリバント)
+# Giant Slayer (Morivant)
+name:57	巨人殺し (モリバント)
+# Dragon Slayer (Morivant)
+name:58	ドラゴン殺し (モリバント)
+# Demon Slayer (Morivant)
+name:59	悪魔殺し (モリバント)
+# Dragon Slayer (Morivant)
+name:79	ドラゴン殺し (モリバント)
+# Demon Slayer (Morivant)
+name:80	悪魔殺し (モリバント)
+# Giant Slayer (Morivant)
+name:81	巨人殺し (モリバント)
+# Purple Quest
+name:82	紫の依頼
+# The Treachery of Lord Bovin (Anambar)
+name:83	ボヴィン卿の裏切り (アナンバール)
+# Bear Problem (Outpost)
+name:84	熊の騒ぎ (辺境の地)
+# Doom Quest II\: Hell in Angwil
+name:85	破滅のクエスト２\: アングウィルの地獄
+# Facing the Books (Angwil)
+name:86	本との対決 (アングウィル)
+# The Compost Heap (Outpost)
+name:87	堆肥の山 (辺境の地)
+# Swamp Lights (Telmora)
+name:88	沼の灯 (テルモラ)
+# Cyclops's Lair (Thalos)
+name:89	サイクロプスの巣 (サロス)
+# Dark Academy (Thalos)
+name:90	闇の学院 (サロス)
+# The Pit of Despair (Angwil)
+name:91	絶望の穴 (アングウィル)
+# Ghost Town (Morivant)
+name:92	廃墟の町 (モリバント)
+# The Dwarven Embassy (Morivant)
+name:93	ドワーフの大使館 (モリバント)
+# Troll Invasion (Telmora)
+name:94	トロルの襲来 (テルモラ)
+# The Lost Temple of the Spider-God (Morivant)
+name:95	蜘蛛神の失われた神殿 (モリバント)
+# The Thing under the Mountain (Telmora)
+name:96	山の下の怪物 (テルモラ)
+# Metatron
+name:97	メタトロン
+# The Angwilian Stables (Outpost)
+name:98	アングウィルの厩舎 (辺境の地)
+# The Treasure of Scary Rock (Anambar)
+name:99	恐岩の宝 (アナンバール)
+# One of our former students has brought shame on the order of wizards by taking over the local museum and turning it into an academy of evil. He has begun teaching the dark arts to all applicants, and what's worse, below market prices. Put a stop to his treachery and reclaim our honour.
+q_acadmy.txt:1	かつての教え子のひとりが、この地の博物館を乗っ取って悪の学院に変えてしまい、魔術師の一門に恥をかかせている。志願者なら誰にでも闇の術を教え始めたうえ、あろうことか相場より安い値で教えているのだ。あの裏切り者を止め、我らの名誉を取り戻してくれ。
+# Well done! We will convert the building back into a museum, but you can have this amulet as your reward, it's too valuable to go back into the collection.
+q_acadmy.txt:2	見事だ！ 建物は博物館に戻すとしよう。だがこのアミュレットは礼として取っておくがいい。収蔵品に戻すには価値がありすぎる。
+# You have failed us. I hate competition so much.
+q_acadmy.txt:3	期待を裏切ってくれたな。競争相手というものが、私はほとほと嫌いだ。
+# One of the houses in town was recently sold to a foreign merchant. Now more and more alarming things happen like a sudden plague of evil in the moats, animals dying, people getting sick, and a general run of bad luck for our town. It is like someone is playing around with powers of darkness. I have evidence that the origin of everything is the stranger living in the house in the north-west corner of town. I need you to take this foul invader out.
+q_antipaladin.txt:1	町の家の一軒が、近ごろ余所者の商人に売られた。それからというもの、堀に悪しきものが湧き、家畜が死に、人が病み、町全体が不運続きだ。誰かが闇の力をもてあそんでいるとしか思えん。すべての元凶は、町の北西の角の家に住むあの余所者だという証拠を掴んでいる。あの穢れた侵入者を始末してくれ。
+# You saved us from deep trouble. Please accept this modest gift.
+q_antipaladin.txt:2	おかげで深刻な事態を免れた。ささやかだが、このアイテムを受け取ってくれ。
+# It seems like I've overestimated your power. But at least my friend Astinus, the Librarian says that the Anti-paladin has left the town. Let us hope that he never comes back.
+q_antipaladin.txt:3	どうやらあなたの力を買いかぶっていたようだ。だが少なくとも、司書の友人アスティナスの話では、あのアンチパラディンは町を出たらしい。二度と戻らぬことを祈るばかりだ。
+# Sailors have become afraid of passing anywhere near Apina Island. They claim it's haunted by the crew of the dread pirate Roope, and fear attacks from his ghost ship. I'd dismiss it as just another silly maritime myth, but it's starting to disturb trade; please investigate the island and make sure there's no one there.
+q_apina.txt:1	船乗りたちがアピナ島の近くを通るのを怖がるようになった。恐るべき海賊ロープの乗員たちの亡霊が出る、幽霊船に襲われる、と言うのだ。またぞろ海の与太話かと思っていたが、交易に障りが出はじめている。島を調べて、誰もいないことを確かめてきてほしい。
+# Thank you! You never know when a silly-sounding myth might be confirmed.
+q_apina.txt:2	ありがとう！ 馬鹿げた言い伝えがいつ本当になるか、わかったものではないからな。
+# That's horrible! Hopefully some day I can find a genuine hero to cleanse the place.
+q_apina.txt:3	なんと恐ろしい！ いつかあの場所を清めてくれる本物の英雄が見つかることを願うよ。
+# One of the mountains in the eastern part of our territory used to host a dwarven mining community; but they moved out in a hurry after their tunnels started spitting out lava. At first we thought it was just a normal volcano that had lain dormant for centuries, but it now appears their diggings disturbed the sleep of something even more dangerous. A shadowy horror, cloaked in flames, is rumoured to have lived under the old mine; we occasionally hear the mountain rumble at night, as if some enormous monster were trying to dig its way out. We hope you can put it back to sleep before it reaches the open.
+q_balrog.txt:1	領の東にある山のひとつは、かつてドワーフの鉱山町だった。だが坑道から溶岩が噴き出しはじめ、彼らは慌てて出ていった。はじめは何百年も眠っていた普通の火山だろうと思っていたが、どうやら彼らの掘削が、もっと危険な何かの眠りを妨げてしまったらしい。炎をまとった影の恐怖が古い坑の下に棲んでいたという噂がある。夜になると山が唸るのだ。まるで途方もない怪物が外へ掘り進もうとしているかのように。表へ出てくる前に、もう一度眠らせてやってほしい。
+# Thank you! Here is a reward for your good work.
+q_balrog.txt:2	ありがとう！ よい働きへの報酬だ、受け取ってくれ。
+# That's horrible news.
+q_balrog.txt:3	なんとも恐ろしい知らせだ。
+# The next building will be the barracks. As you have noticed, there are a lot of lost souls wandering the ruined buildings. Therefore, this could be very dangerous as a lot of soldiers were quartered here.
+q_barracks.txt:1	次の建物は兵舎だ。気づいているだろうが、崩れた建物には迷える魂が数多くさまよっている。ここには兵が大勢詰めていたから、相当に危険だろう。
+# I hear there were some valuable items in the barracks. You can keep anything you found as your reward.
+q_barracks.txt:2	兵舎には値打ちのあるアイテムがいくつかあったと聞いている。見つけたものは何でも報酬として持っていってよい。
+# You have failed me, beware you do not do so again!
+q_barracks.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# Lately, a dark evil has been discovered. An ancient burial ground has been taken over by something terrible. Creatures black as night now inhabit the place, attacking our villagers and eating our young. Please, we are desperate. We don't have much to offer, but we beg you to help us!
+q_barrow_downs.txt:1	近ごろ、暗い災いが見つかったのです。古い埋葬地が、恐ろしい何かに乗っ取られてしまいました。夜のように黒い生き物どもが棲みつき、村人を襲い、幼子を食らっています。どうか――我々にはもう手がありません。差し出せるものは多くありませんが、助けてくださるようお願いします！
+# Thank you! You have saved our town and our people rejoice! I've talked with Astinus, the local librarian, Suiyan, the local weaponmaster, and Lorien, the local beastmaster. They will offer you a special discount price when they serve you. It is not much, but we are a poor people.
+q_barrow_downs.txt:2	ありがとうございます！ 町は救われ、皆が喜んでおります。土地の司書アスティナス、武器の達人スイヤン、獣使いのロリエンとも話をつけました。あなたが訪ねれば特別に安くしてくれるはずです。大したことはできませんが、我々は貧しい民なのです。
+# Thank you! You have saved our town and our people rejoice! Please accept this gift.
+q_barrow_downs.txt:3	ありがとうございます！ 町は救われ、皆が喜んでおります。どうかこのアイテムをお納めください。
+# Oh no! We are doomed to periodic culling from the foul denizens of the Barrow Downs. You have disappointed me dearly. Please, begone for now. I must inform the village of your failure. Come back later after we have had time to grieve.
+q_barrow_downs.txt:4	ああ、なんということだ！ これでは塚山丘陵の穢れた住人どもに、幾度でも間引かれるほかありません。ひどく落胆しました。今はどうかお引き取りを。村に失敗を伝えねばなりません。悲しみが癒えたころに、また来てください。
+# Hey you came back. Okay, next thing you should study is that cave up there to the north. It's full of basilisks. I want drawings of their gizzards. I warn you this is a graded examination and the pass rate is low. Don't let  that put you off I'm sure you've been hard at work reading.
+q_basilisk.txt:1	おや、戻ってきたか。よろしい、次に調べるのは北の上手にあるあの洞窟だ。バジリスクだらけでな。奴らの砂嚢の写生図が欲しい。断っておくがこれは成績のつく試験で、合格率は低い。まあ怯むな、しっかり読み込んできたのだろう。
+# Fancy seeing you again! Top marks, here's your badge of merit.
+q_basilisk.txt:2	また会えたな！ 満点だ、これが優等の記章だ。
+# Oh it's you again. What? You ran away? No credit for this assignment.
+q_basilisk.txt:3	ああ、また君か。なんだと？ 逃げ出した？ この課題は単位なしだ。
+# The bear population in our eastern forests has exploded recently; before we'd only see the occasional solitary grizzly, but now they're forming groups and even use our roads. They seem to live in a cave near the southern edge of the forest, at the base of a large hill. The Count believes them responsible for the disappearances of some of our citizens, who were last seen walking in that area. Please explore their den and make our town safe again.
+q_bears.txt:1	東の森で熊が急に増えている。以前は一頭きりのハイイログマをたまに見かける程度だったのに、今では群れをなし、街道まで使う始末だ。森の南の端、大きな丘の麓にある洞窟を棲み処にしているらしい。伯爵は、あのあたりで最後に姿を見られた住民の失踪も熊のしわざだとお考えだ。巣を調べて、町をふたたび安全にしてくれ。
+# Thank you, truly you are stronger than any bear.
+q_bears.txt:2	ありがとう。あなたはまことに、どんな熊よりも強い。
+# I hope I can find someone more capable than you.
+q_bears.txt:3	あなたより腕の立つ者が見つかることを願うよ。
+# There have been a flock of birds attacking people on the roads and carrying  away their valuables. We think they have a nest up in the hills to the south.  We need your help.
+q_birds.txt:1	街道で人を襲い、金目のものをさらっていく鳥の群れがいる。南の丘に巣があるとみている。力を貸してほしい。
+# Now those devilish birds won't be harming innocent people.
+q_birds.txt:2	これであの悪魔じみた鳥どもが罪のない人を傷つけることもない。
+# You have failed me, beware you do not do so again!
+q_birds.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# Some nights ago, a local woman heard a dreadful scream from the cellar next door and ran down to investigate. She found her neighbor's mutilated body lying in a pool of blood on the cellar floor, with terrible scratch marks on his face and firewood still in his arms; there was no sign of the assailant or assailants. Spooked, she ran for her life and reported the incident to us immediately. We sent an officer in to investigate, he was thrown back out by an invisible force as easily as if he had been a cheap rag doll. I know not what horrors you will face, I only know that this may well be your most dangerous mission yet, and hope I am not sending you to your death. Good luck, and may the gods protect you.
+q_cellar.txt:1	幾晩か前のこと、この地の女が隣家の地下室から恐ろしい悲鳴を聞き、駆け下りて確かめた。そこで見たのは、地下室の床の血だまりに横たわる隣人の無残な亡骸だ。顔にはひどい掻き傷があり、腕にはまだ薪を抱えていた。襲った者の姿はどこにもない。女は怯えて逃げ出し、すぐさま我々に届け出た。調べに向かわせた役人は、安物の布人形のようにたやすく、目に見えぬ力で外へ投げ返された。どんな怪異が待つのか私にもわからん。ただ、これがあなたにとってこれまでで最も危険な務めになるだろうことと、死地へ送り出すのでないことを願うばかりだ。武運を祈る。神々の加護があらんことを。
+# You came through when no one else could have done. Please accept this gift.
+q_cellar.txt:2	ほかの誰にもできなかったことを、あなたはやり遂げた。どうかこのアイテムを受け取ってくれ。
+# [CENSORED]
+q_cellar.txt:3	[検閲済み]
+# The Wizards of Chaos have discovered a magical Node of Chaos in a nearby volcano. You must seek the Node and dispatch its guardians so that the Tower of Chaos can claim the mystical energies of the Node.
+q_chaos.txt:1	カオスの魔術師たちが、近くの火山にカオスの特異点を見つけた。おまえはその特異点を探し出し、守護者どもを片づけよ。カオスの塔がその神秘の力を手にできるようにな。
+# You have done well.
+q_chaos.txt:2	よくやった。
+# Begone, incompetent fool! The dimensional energies of the  mystic Node have faded away and are lost forever! You had your chance and botched the job.
+q_chaos.txt:3	去れ、無能者め！ 神秘の特異点の次元の力は薄れ、永久に失われた！ 機会は与えたのに、おまえはしくじったのだ。
+# The compost heap on the other side of the city has started attracting large numbers of rats, some of them of a type we've never seen before. Please try to locate their nest and stop the infestation.
+q_cheap.txt:1	町の反対側にある堆肥の山に、鼠が大挙して集まりはじめた。中には見たこともない種類のものもいる。奴らの巣を突き止めて、この蔓延を食い止めてくれ。
+# Thank you for eradicating those pests! It was a dirty job, but someone had to do it.
+q_cheap.txt:2	害虫どもを駆除してくれてありがとう！ 汚れ仕事だったが、誰かがやらねばならなかったのだ。
+# Oh no! I hope we won't have to suffer the rats forever.
+q_cheap.txt:3	なんということだ！ この先ずっと鼠に悩まされずに済むことを願うよ。
+# For the past few years we have been cloning exceptionally powerful  creatures for gladiatorial combat. Something has gone very wrong in  the Cloning Pits. Please eliminate all the clones and you will be well rewarded. The active security systems have stopped working. The clones can use magic, teleport, summon, etc. "The Ultimate Dungeon  Cleaner" security bots are no longer controlled, so you will need to eliminate them as well. Levitation and a good distance weapon are recommended.
+q_cloning_pits.txt:1	ここ数年、我々は闘技場の戦いのために、飛び抜けて強い生き物を複製してきた。ところがクローン地獄でひどい手違いが起きた。クローンをすべて始末してくれれば、たっぷり礼をしよう。稼働していた警備の仕組みは止まってしまった。クローンどもは魔法を使い、テレポートし、召喚もする。『究極ダンジョン=クリーナー』の警備ロボットももう制御が効かないので、あれも片づけてもらう必要がある。浮遊の力と、よい遠距離武器を勧めておく。
+# Impressive!!
+q_cloning_pits.txt:2	見事！！
+# It seems like this task was too difficult for you.
+q_cloning_pits.txt:3	この務めはあなたには荷が重すぎたようだ。
+# Unfortunately, rates of violent crime in our city have soared in recent months. For some reason, we've started attracting all sorts of crazy outsiders who fancy themselves "adventurers"; and the Mayor was happy with them at first because they brought in money, and the shopkeepers were happy too as you can probably guess. But now they're braining innocent townsfolk for the sake of a few dollars, or using them as targets for test zaps on their new wands, or just slicing them in half because they happen to be in the way. A whole bunch of those carrot-suckers are based in a small secluded house southeast of here, near the south wall. Regrettably, we can't massacre them because we're cops and need to obey the law; I would be most grateful for any help you can offer.
+q_cq1.txt:1	残念ながら、この数か月で我が町の凶悪犯罪が跳ね上がっている。どういうわけか、自分を『冒険者』だと思い込んだ頭のおかしい余所者ばかりが集まるようになった。金を落としていくので市長ははじめ喜んでいたし、察しのとおり店主たちも喜んでいた。だが今では、はした金のために罪のない町の者を殴り倒し、新しい杖の試し撃ちの的にし、たまたま道をふさいだというだけで真っ二つにしている。あの薄のろどもの大半は、ここから南東の、南の城壁近くにある人目につかない小屋を根城にしている。我々は警官で法に従わねばならないから、まとめて始末するわけにはいかない。手を貸してもらえるなら、これほどありがたいことはない。
+# Those "adventurers" are gone now? That's wonderful! No, don't tell me exactly what happened, I don't need to know... Since their house is now unoccupied, maybe you could move in.
+q_cq1.txt:2	あの『冒険者』どもはもういない？ すばらしい！ いや、何があったかは詳しく言わなくていい、知る必要はない…。小屋が空いたのだから、あなたが住んでもいいのではないか。
+# Too bad. I just hope you're not contemplating suicide after this abject failure.
+q_cq1.txt:3	残念だ。これほど無様に失敗したからといって、自ら命を絶とうなどと考えていないことを祈るよ。
+# A mysterious force has entered the royal crypt and is desecrating the graves of the king's noble ancestors. Their bodily remains have been magically animated and their spirits enslaved and forcibly turned to evil. You must enter the crypt and seek out the Archliches. Once they have been eliminated, my guards should be able to take care of the rest.
+q_crypt.txt:1	謎の力が王家の墓所に入り込み、王の高貴な先祖たちの墓を汚している。亡骸は魔法で動かされ、魂は囚われて無理やり邪悪へ転じさせられた。あなたには墓所へ入り、アーチリッチどもを探し出してもらいたい。奴らさえ片づけば、残りは我が衛兵たちで始末できるはずだ。
+# How can I ever thank you? Let the people rejoice - a hero of legend walks this day in Outpost. My treasurer tells me a number of rather valuable heirlooms seem to be missing from the crypt - how about I turn a blind eye and we call it quits? Oh wait a moment ... Now where did I put that? Ah! Take this trinket and be glad you still live.
+q_crypt.txt:2	どう礼を言えばよいものか。皆に喜びを。伝説の英雄が今日、辺境の地を歩いているのだ。会計係が言うには、墓所からかなり値打ちのある家宝がいくつか失せているらしい。見て見ぬふりをする代わりに、これで貸し借りなしということにしないか。おや、少し待て…どこへ置いたかな。ああ！ この小物を持っていけ。命があるだけでも喜ぶことだ。
+# A mysterious force has entered the royal crypt and is desecrating the graves of the king's noble ancestors. Their bodily remains have been magically animated and their spirits enslaved and forcibly turned to evil. You must enter the crypt and seek out the Archliches. Once they have been eliminated, the town guard should be able to take care of the rest.
+q_crypt.txt:3	謎の力が王家の墓所に入り込み、王の高貴な先祖たちの墓を汚している。亡骸は魔法で動かされ、魂は囚われて無理やり邪悪へ転じさせられた。あなたには墓所へ入り、アーチリッチどもを探し出してもらいたい。奴らさえ片づけば、残りは町の衛兵で始末できるはずだ。
+# How can we ever thank you? Let the people rejoice - a hero of legend walks this day in Outpost. This land will forever remain in your debt.
+q_crypt.txt:4	どう礼を言えばよいものか。皆に喜びを。伝説の英雄が今日、辺境の地を歩いているのだ。この地は末永くあなたに恩義を負うことになる。
+# I trusted you and you have failed me. Heaven knows how we will appease the spirits of the king's ancestors now!
+q_crypt.txt:5	あなたを信じたのに、期待を裏切られた。王の先祖の魂を、これからどうやって鎮めればよいというのだ！
+# I always... uh, our city always needs more money, and I know a mage in Thalos who would pay handsomely for a shipment of dragons' hearts. What'd you say you open five great crystal drakes for him and we split the reward? You should find the drakes nesting in the crystal castle away to the east.
+q_crystal.txt:1	私はいつも…いや、我が町はいつも金が要る。サロスに、竜の心臓を一荷ぶん納めれば気前よく払ってくれる魔術師の知り合いがいるのだ。グレート・クリスタル・ドレイクを五頭ほど開いてやって、報酬を山分けというのはどうだね。ドレイクは東の彼方の水晶の城に巣を作っているはずだ。
+# Thank you very much, here's your share of the reward. I look forward to working together with you again.
+q_crystal.txt:2	まことにありがとう。これがあなたの取り分だ。またともに仕事ができるのを楽しみにしているよ。
+# That's a pity, I guess I should have contracted someone more experienced.
+q_crystal.txt:3	残念だ。もっと経験のある者に頼むべきだったな。
+# There's a cave to the east of the city, near the shore, that we've always been a bit afraid to approach; but until recently we never thought there was anything worse there than a couple of bears, and some spiders and bats near the entrance. Now, though, it seems the bears have been driven out by a man-eating cyclops! We need a hero to visit the cave and rid us of that one-eyed giant.
+q_cyclo.txt:1	町の東、岸辺の近くに洞窟がある。昔から近寄るのが少々恐ろしい場所だったが、つい最近までは、熊が二、三頭と、入口あたりに蜘蛛や蝙蝠がいる程度だと思っていた。ところが今度は、その熊が人食いのサイクロプスに追い出されたらしい。洞窟へ出向き、あの一つ目の巨人を退治してくれる英雄が要る。
+# You saved us from deep trouble. Please accept this modest gift.
+q_cyclo.txt:2	おかげで深刻な事態を免れた。ささやかだが、このアイテムを受け取ってくれ。
+# You have failed me, beware you do not do so again!
+q_cyclo.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# A small group of Dark Elven Lords have set up a small shop in town. I do not need any competition, so kill everything  in their shop. You will be very well rewarded. Their shop is located in the Magic Shop's building. They are well guarded, so be careful.
+q_dark_elves.txt:1	ダークエルフ・ロードの一団が、町に小さな店を構えた。競争相手など要らんのでな、店の中のものを皆殺しにしてもらいたい。礼はたっぷり弾む。店は魔法の店の建物の中にある。守りは固いから気をつけろ。
+# Thank you! Your efforts are greatly appreciated.
+q_dark_elves.txt:2	ありがとう！ よくやってくれた。
+# The quest was more than you could handle.
+q_dark_elves.txt:3	この依頼はあなたの手に余ったようだな。
+# You're one of the strongest we've seen, so here's your final test - go to Angband and kill ten lesser balrogs. If you can do it, we'll sing songs to your glorious triumph.
+q_dem_old.txt:1	あなたは今まで見た中でも指折りの強者だ。ならば最後の試験だ。鉄獄へ行き、レッサー・バルログを十体倒してこい。やり遂げたなら、その輝かしい勝利を歌にして讃えよう。
+# Wow! Here's a trophy of your great victory.
+q_dem_old.txt:2	おお！ これは偉大な勝利の記念品だ。
+# So you were never that good really.
+q_dem_old.txt:3	どうやら、それほどの腕ではなかったのだな。
+# You're one of the strongest we've seen, so here's your final test - go to Angband and kill ten pit fiends. If you can do  it, we'll sing songs to your glorious triumph.
+q_demonslayer.txt:1	あなたは今まで見た中でも指折りの強者だ。ならば最後の試験だ。鉄獄へ行き、ピット・フィーンドを十体倒してこい。やり遂げたなら、その輝かしい勝利を歌にして讃えよう。
+# Wow! Here's a trophy of your great victory.
+q_demonslayer.txt:2	おお！ これは偉大な勝利の記念品だ。
+# So you were never that good really.
+q_demonslayer.txt:3	どうやら、それほどの腕ではなかったのだな。
+# This is strictly confidential, but I've heard reports that a local wizard is running a dinosaur reintroduction program! The nutjob's using magic to resurrect dinosaurs and dimetrodons; so far he's kept them under wraps at his own place, but it's only a matter of time before he lets them loose. The last thing our city needs is a population of urban dinosaurs; I would be blamed and ousted in no time, no matter how hard I argued it was good for tourism. I hope you can unresurrect them before that happens. The wizard's house is to the west of here, north of the  police station; I won't be too sorry if it turns out you need to off him  as well.
+q_dino.txt:1	これは他言無用だが、この地の魔法使いが恐竜の再導入計画をやっているという報告を聞いた。その変わり者は魔法で恐竜やディメトロドンを蘇らせているのだ。今のところ自分の屋敷に隠しているが、放し飼いにするのも時間の問題だろう。都会に恐竜が住み着くなど、我が町にいちばん要らないものだ。観光の役に立つといくら言い張っても、私はたちまち責めを負わされて追い出される。そうなる前に、蘇りを解いてやってほしい。魔法使いの家はここから西、警察署の北にある。ついでにあの男を始末することになったとしても、私はさほど悲しまないよ。
+# Thank you for solving my prehistoric problem. Here's your reward, I hope you find it satisfactory.
+q_dino.txt:2	太古の悩みを片づけてくれてありがとう。これが報酬だ、気に入ってもらえるとよいのだが。
+# Sweet zombie Serpent, no. I just hope it's not true that urban dinosaurs evolve into dragons over time.
+q_dino.txt:3	おお、サーペント・ゾンビよ、勘弁してくれ。都会の恐竜が時とともに竜へ進化するという話が、嘘であることを祈るばかりだ。
+# We've had a few problems lately with the rogue djinni who lives in a cavern to the northeast of the city. It was previously quite tame and did the bidding of a local sorcerer, but the man vanished some time ago and the djinni has been out of control since then. Please visit its cave and eliminate it and any lesser spirits that may attend to it. (I've heard rumours that the djinni might become friendly again if offered peppermint leaves; so if you have any, that could be an alternative way to deal with it.)
+q_djinni.txt:1	町の北東の洞窟に棲む、はぐれたディジニのことで近ごろ厄介が続いている。以前はおとなしく、この地の魔術師の言いつけを守っていたのだが、その男がしばらく前に姿を消してから、ディジニは手がつけられなくなった。洞窟へ出向き、あれと、付き従う下位の精霊たちを始末してほしい。（薄荷の葉を差し出せばディジニがまた友好的になる、という噂も聞いている。持っているなら、それも片づけ方のひとつになるだろう。）
+# My men found this valuable lamp in the djinni's secret treasure trove, I hope you find it an acceptable token of our gratitude.
+q_djinni.txt:2	部下がディジニの隠し財宝から、この値打ちのあるランプを見つけてきた。感謝の印として受け取ってもらえるとよいのだが。
+# You have failed me, beware you do not do so again!
+q_djinni.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# We need your help, adventurer. A hole has opened up to the northwest of our town, and strange demons lurk within. One of our townspeople investigated it unwittingly and barely  escaped with his life! Please destroy these demons and  ensure the continued safety of our town, else we are surely doomed.
+q_doom1.txt:1	冒険者よ、力を貸してほしい。町の北西に穴が開き、その中に奇怪な悪魔どもが潜んでいる。町の者がひとり、それと知らずに調べに入り、命からがら逃げ帰ってきた。どうかその悪魔どもを滅ぼし、我が町の安全を守ってくれ。さもなくば我々は破滅するほかない。
+# Thank you for killing the demons!
+q_doom1.txt:2	悪魔どもを倒してくれてありがとう！
+# I've sent out someone else to do the job. Now leave me alone!
+q_doom1.txt:3	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# Another strange hole in reality has opened up on the edge of our town, and appears to be even more dangerous than the  last. Five of our strongest knights ventured within -- only  one returned, scorched by fire and babbling incoherently.   We have not the resources to deal with this threat. Do you?
+q_doom2.txt:1	またひとつ、現実に奇妙な穴が町の外れに開いた。前のものよりさらに危険なようだ。我らの最も屈強な騎士が五人踏み込み、戻ったのはひとりきり。炎に焼かれ、意味の通らぬことを口走っていた。この脅威に立ち向かうだけの力は我々には無い。あなたにはあるか。
+# Gods be praised, you have returned alive! When the last demon fell, we felt an evil aura depart from this town, letting all breathe easier again. Please accept our  sincerest thanks for saving our lives -- and a powerful gift from our resident Wizard. May you find it useful in your  questing.
+q_doom2.txt:2	神々に感謝を、生きて戻ってきたのだな！ 最後の悪魔が倒れたとき、邪悪な気配がこの町を去るのを皆が感じ、ようやく息をつけた。命を救ってくれたことに心からの礼を。そして、町に住まう魔法使いからの強力な贈り物を受け取ってくれ。あなたの旅の役に立つことを願う。
+# Gods be praised, you have returned alive! When the last demon fell, we felt an evil aura depart from this town, letting all breathe easier again. Please accept my  sincerest thanks for saving our town -- and a powerful gift from my wizard friend. May you find it useful in your  questing.
+q_doom2.txt:3	神々に感謝を、生きて戻ってきたのだな！ 最後の悪魔が倒れたとき、邪悪な気配がこの町を去るのを皆が感じ、ようやく息をつけた。町を救ってくれたことに心からの礼を。そして、魔法使いの友からの強力な贈り物を受け取ってくれ。あなたの旅の役に立つことを願う。
+# I've sent out someone else to do the job. Now leave me alone!
+q_doom2.txt:4	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# Another strange hole in reality has opened up on the edge of our town, and appears to be even more dangerous than the  last. Five of our strongest knights ventured within -- only  one returned, scorched by fire and babbling incoherently.   We have not the resources to deal with this threat. Do you?
+q_doom2c.txt:1	またひとつ、現実に奇妙な穴が町の外れに開いた。前のものよりさらに危険なようだ。我らの最も屈強な騎士が五人踏み込み、戻ったのはひとりきり。炎に焼かれ、意味の通らぬことを口走っていた。この脅威に立ち向かうだけの力は我々には無い。あなたにはあるか。
+# Gods be praised, you have returned alive! When the last demon fell, we felt an evil aura depart from this town, letting all breathe easier again. Please accept our  sincerest thanks for saving our lives -- and a powerful gift from our resident Wizard. May you find it useful in your  questing.
+q_doom2c.txt:2	神々に感謝を、生きて戻ってきたのだな！ 最後の悪魔が倒れたとき、邪悪な気配がこの町を去るのを皆が感じ、ようやく息をつけた。命を救ってくれたことに心からの礼を。そして、町に住まう魔法使いからの強力な贈り物を受け取ってくれ。あなたの旅の役に立つことを願う。
+# I've sent out someone else to do the job. Now leave me alone!
+q_doom2c.txt:3	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# You're pretty strong, so how about something to really  test you. Go to the lonely mountain and kill ten ancient gold dragons. That'll show us if you're really great.
+q_drag_old.txt:1	なかなか強いようだな。ならば本当に力を試すものはどうだ。はなれ山へ行き、古代ゴールド・ドラゴンを十体倒してこい。それで本物かどうかがわかる。
+# Nicely done. Here's another trophy of your victory.
+q_drag_old.txt:2	よくやった。これも勝利の記念品だ。
+# So you can't handle big dragons.
+q_drag_old.txt:3	大きな竜には手が出せぬというわけか。
+# There's a small dungeon in which dragons have created a home. They aren't a threat to us, but what do you say to doing some looting? Here's the deal, you go in, kill everything in there, take what you like and I'll send my men in for the rest. Sound good?
+q_dragons.txt:1	竜どもが住み処にしている小さなダンジョンがある。我々に害を成すわけではないが、少し漁ってみる気はないか。話はこうだ。あなたが入って中のものを皆殺しにし、好きなものを持っていく。残りは私が部下を送って回収する。悪くないだろう？
+# Here's a little something extra for you.
+q_dragons.txt:2	これはほんの色をつけたぶんだ。
+# Disgraceful.
+q_dragons.txt:3	恥ずべきことだ。
+# You're pretty strong, so how about something to really  test you. Go to Tiamat's lair and kill ten great wyrms of many colours. That'll show us if you're really great.
+q_dragonslayer.txt:1	なかなか強いようだな。ならば本当に力を試すものはどうだ。ティアマットの巣へ行き、グレート・万色ワイアームを十体倒してこい。それで本物かどうかがわかる。
+# Nicely done. Here's another trophy of your victory.
+q_dragonslayer.txt:2	よくやった。これも勝利の記念品だ。
+# So you can't handle big dragons.
+q_dragonslayer.txt:3	大きな竜には手が出せぬというわけか。
+# The ruins of the old Dwarven Embassy might be worth checking out. Dangerous monsters lurk there now, but we both know dwarves' predilection for gold and treasures.
+q_dwarf.txt:1	古いドワーフ大使館の廃墟は、調べてみる値打ちがあるかもしれん。今は危険な怪物が巣くっているが、ドワーフが金銀財宝に目がないのは互いに承知のところだ。
+# Well done, you can keep everything you found.
+q_dwarf.txt:2	よくやった。見つけたものはすべて持っていってよい。
+# Too bad, I guess those old treasures are lost forever.
+q_dwarf.txt:3	残念だ。あの古い宝物も、これで永久に失われたということか。
+# Unfortunately, reliable teleporting between Zul and the outside world has become impossible, thanks to a group of strange time mages who moved in some time ago. Their experiments have twisted the space-time fabric around our town. We could probably fix it with sorcery, but as things stand there would be little point - it would just get messed up all over again tomorrow. The time mages have refused to either leave or start behaving, and there's too many of them for us to drive out of the town by force. We need the help of a great hero like you, I hope you can catch them napping.
+q_eddies.txt:1	残念ながら、ズルと外の世界とのあいだで確かなテレポートができなくなってしまった。しばらく前に移り住んできた、奇妙な時の魔術師の一団のせいだ。彼らの実験が、この町のまわりの時空の織り目をねじ曲げてしまった。仙術で直すこともできるだろうが、今のままでは意味が無い。明日にはまた滅茶苦茶にされるだけだからだ。時の魔術師たちは出ていくことも、おとなしくすることも拒んでいるうえ、力ずくで町から追い出すには数が多すぎる。あなたのような偉大な英雄の助けが要る。寝込みを襲えるとよいのだが。
+# Yes, I heard of your success; news travel fast here. Thank you for your help, now we can teleport to other towns again without fear of landing on the wrong planet or in the wrong century. I found this strange object when we went out to admire your work and smooth out the space-time fabric; I am not sure what it is, but it looks like some kind of club. We have no use for it, please take it as a memento and thank-you gift.
+q_eddies.txt:2	うむ、うまくいったと聞いたよ。ここでは知らせが早いのでな。助かった。おかげで、よその惑星やよその世紀に降り立つ心配をせずに、また他の町へテレポートできる。あなたの働きを見に出て、時空の織り目をならしていたときに、この奇妙なアイテムを見つけた。何なのかはよくわからないが、棍棒のたぐいに見える。我々には使い道が無い。記念と礼の印に受け取ってくれ。
+# Too bad, the whole town was counting on you.
+q_eddies.txt:3	残念だ。町じゅうがあなたを頼りにしていたのだが。
+# You might be interested in exploring the old Elven Embassy among the ruins. The Elves are known to have stored many excellent items within those walls, perchance there are still some left hidden among the embassy ruins.
+q_embassy.txt:1	廃墟に残るエルフの旧大使館を探ってみるのも面白いかもしれん。エルフはあの壁の内に優れたアイテムを数多く納めていたことで知られている。ひょっとすると、まだ大使館の廃墟に隠れて残っているものがあるかもしれんぞ。
+# I hear you are doing rather well for yourself from all items you have been `liberating` from the ruins. Just remember I'm not charging you any taxes.
+q_embassy.txt:2	廃墟から『解放』してきたアイテム々で、ずいぶん儲けているそうだな。税を取り立ててはいないことを、ゆめゆめ忘れるなよ。
+# You have failed me, beware you do not do so again!
+q_embassy.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# When Oberon, the rightful ruler of Amber, disappeared, Eric  did not waste much time making his claim for the throne. Eric is waiting for his own coronation in a secure stronghold. You must eliminate him before he is crowned, or other Amberites may feel obliged to obey him -- and he'll be invincible!
+q_eric.txt:1	アンバーの正統な王オベロンが姿を消すと、エリックはすかさず王座への名乗りを上げた。エリックは堅固な要塞で自らの戴冠を待っている。戴冠の前に始末しなければならない。さもなくば他のアンバーの者たちも従わざるをえないと考え、あれは無敵になってしまう。
+# You have done well. Please accept this reward.
+q_eric.txt:2	よくやった。この報酬を受け取ってくれ。
+# Eric is now the King of Amber. Maybe Oberon will come back and take the crown, or maybe not. You have failed your mission and the traitor has become the supreme ruler of Amber.
+q_eric.txt:3	エリックは今やアンバーの王だ。オベロンが戻って王冠を取り返すかもしれないし、そうならないかもしれない。あなたは務めを果たせず、裏切り者がアンバーの至高の支配者となった。
+# The forests near our city, once a safe and pleasant place for a relaxing evening walk, have become increasingly dangerous as shadow fairies have settled there. My scouts report they usually lurk in a deep thicket northeast of the main gate. I would be most thankful should you go there and eliminate this threat to our safety.
+q_fairy.txt:1	かつては夕暮れの散歩に安全で心地よい場所だった町の近くの森が、影妖精が住み着いてからというもの、ますます危険になっている。物見の者の話では、大門の北東の深い茂みに潜んでいることが多いらしい。そこへ出向き、この脅威を取り除いてもらえれば、これほどありがたいことはない。
+# Thank you for making our forests safer.
+q_fairy.txt:2	森を安全にしてくれてありがとう。
+# I hope I can find someone more capable than you.
+q_fairy.txt:3	あなたより力のある者が見つかることを願うよ。
+# I would like you to explore the ruins of the old barracks. No one's been there in decades; the rooms have largely caved in, and the ghosts of the soldiers who died in the great earthquake are rumoured to haunt the place. You could check whether it's safe and whether anything valuable survived the earthquake.
+q_ghosts.txt:1	古い兵舎の廃墟を調べてもらいたい。何十年も誰も足を踏み入れていない。部屋の多くは崩れ落ち、大地震で死んだ兵たちの亡霊が出るという噂だ。安全かどうか、そして地震を免れた値打ちのあるものが残っていないかを見てきてほしい。
+# I hear there was still some good stuff left, you can keep anything you found as your reward.
+q_ghosts.txt:2	まだよいアイテムが残っていたそうだな。見つけたものは何でも報酬として持っていってよい。
+# You have failed me, beware you do not do so again!
+q_ghosts.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# You're not a total wimp but how about something a bit more challenging? Go to the Giant's Hall and kill ten lesser titans to show us you're really strong.
+q_giantslayer.txt:1	まるきり腰抜けというわけではないようだ。もう少し歯ごたえのあるものはどうだ。巨人の広間へ行き、レッサー・タイタンを十体倒して、本当に強いことを見せてみろ。
+# You're not a total wimp but how about something a bit more challenging? Go to the Snow Castle and kill ten lesser titans to show us you're really strong.
+q_giantslayer.txt:2	まるきり腰抜けというわけではないようだ。もう少し歯ごたえのあるものはどうだ。雪の城へ行き、レッサー・タイタンを十体倒して、本当に強いことを見せてみろ。
+# Not bad. Our armourers have made you another trophy.
+q_giantslayer.txt:3	悪くない。武具職人がまた記念品を作ってくれた。
+# So you're not stronger than a titan.
+q_giantslayer.txt:4	タイタンより強くはなかったということだな。
+# There is something evil going on in the old, thatched house near the south-east corner of the city wall. People say that the house is haunted and refuse to go near it. We need someone to exorcise the evil spirits that are infesting the house.
+q_haunted_house.txt:1	町の城壁の南東の角の近くにある、古い茅葺きの家で邪悪な何かが起きている。町の者はあの家には幽霊が出ると言って、近寄ろうとしない。家に巣くう悪霊を祓ってくれる者が要る。
+# Well done, indeed! Our citizens can finally sigh in relief.
+q_haunted_house.txt:2	まことに見事！ 町の者もようやく胸をなでおろせる。
+# Bah, what a loser! Fortunately, a bunch of pilgrims who were passing by turned out to be ultra-elite paladins on their pilgrimage to the holy city, and -- as a spiritual exercise -- the cleaned up the house without even asking for a reward. Maybe you should try to find them: you could learn a thing or two!
+q_haunted_house.txt:3	ふん、まったくの役立たずだな！ 幸い、通りかかった巡礼の一団が、聖なる都へ向かう超一流のパラディンたちだとわかってな。修行のひとつとして、報酬も求めずに家を清めてくれたよ。彼らを探してみてはどうだ。ひとつふたつ学べるかもしれんぞ。
+# Lord Bovin, the once-beloved Warden of the High Tower, has joined forces with a black enchantress and turned to evil. Dark wizards and necromancers now frequent the High Tower, plotting against our city. Their plans must be disrupted before they raise an unstoppable army of demons, dragons and the dead. Please help us and save our city.
+q_htower.txt:1	高塔の守り手として長く慕われてきたボヴィン卿が、黒衣の女魔術師と手を結び、邪悪に堕ちてしまった。今や高塔には闇の魔術師や死霊術師が出入りし、この街に対して謀りごとを巡らせている。デーモンとドラゴンと死者の、止めようのない軍勢を起こされる前に、その企みを断たねばならない。どうか力を貸し、この街を救ってほしい。
+# Thank you! Now the people of Anambar can walk safely again.
+q_htower.txt:2	ありがとう！ これでアナンバールの民も、また安心して出歩ける。
+# I should have known you wouldn't be up to this task. Fortunately Lord Gwilim, the great hero, happened to drop by and saved us from the dark armies of the traitor Bovin.
+q_htower.txt:3	あなたにこの務めは荷が重いと、はじめから察するべきだった。幸い、大英雄グウィリム卿がたまたま通りかかり、裏切り者ボヴィンの闇の軍勢から我々を救ってくださった。
+# A group of mercenaries have been frightening people at the bar. I need you to go and restore order. Be sure to  send my condolences to the families.
+q_inntrouble.txt:1	傭兵の一団が酒場で客を怯えさせている。行って秩序を取り戻してきてくれ。遺族には私からの弔意を伝えるのを忘れずにな。
+# Here is a reward for your good work.
+q_inntrouble.txt:2	よい働きへの報酬だ、受け取ってくれ。
+# You have failed me, beware you do not do so again!
+q_inntrouble.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# A mysterious army has appeared near the eastern border. Their troops seem endless. There is not a hope a we can defeat them by numbers, we have to take out their general to make them retreat. Your mission is to infiltrate their headquarters, find the horned general and then get out of there alive. Beware of traps!
+q_killing_fields.txt:1	東の国境の近くに、素性の知れぬ軍勢が現れた。その兵の数は尽きることがないように見える。数で打ち破る望みはない。退かせるには敵の将を討つしかないのだ。おまえの務めは、敵の本陣に潜り込み、角を生やした将を見つけ出し、そこから生きて戻ることだ。罠に気をつけろ！
+# The invasion from the east has been thwarted! As a reward, we will give you valuable item which may yet save your life.
+q_killing_fields.txt:2	東からの侵攻は食い止められた！ 褒美として、いつかおまえの命を救うかもしれない値打ちのあるアイテムを授けよう。
+# We have now been driven into a full war which we wished to avoid. You have failed your duty, your superiors and your country. You have lost your honour.
+q_killing_fields.txt:3	避けたかった全面戦争へ追い込まれてしまった。おまえは自らの務めを、上官を、そして祖国を裏切った。おまえは名誉を失ったのだ。
+# Unusual and dangerous phenomena have been reported in the marshes to the northeast. Strange lights are said to blink around, luring travelers away from safe paths and into quagmires; and one fowler even claims to have narrowly escaped with his life after being set upon by what looked like an enormous rolling pumpkin! I do not know how much truth there is behind these stories, but I would appreciate it if you investigated and made sure the swamps are safe.
+q_lights.txt:1	北東の湿地で、怪しく危うい出来事が続けて報せられている。奇妙な灯がちらちらと漂い、旅人を安全な道から誘い出して泥沼へ引き込むという。鳥刺しのひとりなどは、途方もなく大きな転がるカボチャのようなものに襲われ、命からがら逃げてきたと言い張っている。この話にどれだけの真実があるのかは分からないが、湿地を調べて安全を確かめてきてもらえるとありがたい。
+# Thank you! I sent a couple of scouts to see for themselves what happened, and one of them discovered this lamp in the remains of that giant pumpkin. Please take it as a reward for your good work.
+q_lights.txt:2	ありがとう！ 何が起きたのかをその目で見てくるよう斥候を二人ほど出したところ、そのうちのひとりが、あの巨大なカボチャの残骸からこのランプを見つけてきた。よい働きへの報酬として受け取ってくれ。
+# Oh no! If this keeps up, next we'll have hydras in the swamps...
+q_lights.txt:3	なんということだ！ このままでは、次は沼にヒドラが出るぞ……
+# One of the houses in town was recently sold to a foreign mystic. Now more and more alarming things happen like the sudden plague of evil in the sewers, animals dying, people getting sick, and a general run of bad luck for our town. It is like someone is playing around with powers of chaos. I have evidence that the origin of everything is the stranger living in the house in the north-west corner of town. I need you to take this logrus adept out.
+q_logrus_master.txt:1	町の家のひとつが、最近よその地から来た神秘家に売られた。それからというもの、下水道に突然邪悪がはびこり、家畜が死に、人が病み、町全体が不運続きと、剣呑なことばかりが増えている。まるで誰かがカオスの力をもてあそんでいるかのようだ。すべての元凶が、町の北西の角の家に住むあのよそ者であるという証拠を私は握っている。このログルス使いを始末してきてほしい。
+# You saved us from deep trouble again. Please accept this modest gift.
+q_logrus_master.txt:2	またしても深刻な事態から救ってくれた。ささやかだが、このアイテムを受け取ってくれ。
+# It seems like I've overestimated your power. But at least my friend Astinus, the Librarian says that the Logrus Master has left the town. Lets hope that he never comes back.
+q_logrus_master.txt:3	どうやらあなたの力を買いかぶっていたようだ。だが少なくとも、司書の友人アスティナスの話では、あのログルス使いは町を出たらしい。二度と戻らぬことを祈るばかりだ。
+# If you can see this description, there's a bug in the code, please report.
+q_meta.txt:1	この説明が見えているなら、コードに不具合がある。報告してほしい。
+# A mysterious building has appeared, with the eldritch runes "M$" inscribed in its walls. An aura of evil radiates from this building. People in nearby villages have lost their money and sanity, and turned into mindless zombies. Beware -- it is rumoured that the Dark Lord who dwells inside this mansion of vast evil is the Apocalyptic Beast himself! Who knows what unspeakable secrets lurk inside?
+q_microsoft.txt:1	奇怪な建物が現れた。壁には『M$』という不気味なルーン文字が刻まれている。この建物からは邪悪な気配が漂い出ている。近くの村の者たちは金も正気も失い、心を無くしたゾンビと化してしまった。気をつけろ。この途方もない悪の館に住まう暗黒の君主は、黙示録の獣その人だという噂がある！ 中にどれほど口にするのもはばかられる秘密が潜んでいるか、知れたものではない。
+# Thank you for killing the demon!
+q_microsoft.txt:2	あの悪魔を倒してくれてありがとう！
+# You have brought a terrible thing upon us! Now Micro$oft has an absolute monopoly on everything in this town, this country, this world! Every item sold anywhere is now M$-licenced and M$ gets a part of the profit. And there's no guarantee that the overall quality of the wares will improve... I notice that you have not received the Official M$ Licence number on your forehead yet. I don't know if anyone will sell you anything before you get one.
+q_microsoft.txt:3	とんでもないことをしてくれた！ 今やマイクロ$フトは、この町の、この国の、この世界のすべてを完全に独り占めしている！ どこで売られるアイテムにも M$ の認可が要り、M$ が利益の一部を取っていく。それでアイテムの出来がよくなる保証などどこにもないというのに……。見たところ、あなたの額にはまだ M$ 公認の認可番号が入っていないな。それを手に入れるまで、誰かが何かを売ってくれるかどうかは分からんぞ。
+# The Black Market's owner is thinking of opening another Thieves' Guild.  I do not need the competition, here is the key to the Black Market's treasure room. Destroy everything you find there and you will be rewarded.
+q_mimics_treasure.txt:1	ブラックマーケットの主が、もうひとつ盗賊ギルドを開こうと考えている。競争相手など要らん。これがブラックマーケットの宝物庫の鍵だ。そこで見つけたものをすべて壊してくれば礼をしよう。
+# You have done well. Please accept the following reward as a token of my gratitude.
+q_mimics_treasure.txt:2	よくやった。感謝の印として、次の報酬を受け取ってくれ。
+# You have failed this quest, but keep what you have found.
+q_mimics_treasure.txt:3	この依頼はしくじったな。だが見つけたものは持っていくがいい。
+# Those annoying do-gooders who call themselves the knights of the Holy Grail are a pain in our flesh. We can tolerate them no longer! You must storm their Castle Montsalvat and show them who's the boss!
+q_montsalvat.txt:1	聖杯の騎士などと名乗る、あの鼻につく善人どもが目の上のこぶだ。もう我慢ならん！ 奴らのモンサルヴァト城へ攻め込み、どちらが上か思い知らせてやれ！
+# You have done well. Please accept this reward.
+q_montsalvat.txt:2	よくやった。この報酬を受け取ってくれ。
+# Aaaargghh! You wimp, you feeble cry-baby! Do you have any idea  of the disgrace you have brought to our mighty guild? Who's going to fear Death Knights anymore when they hear how those Knights of the accursed Holy Grail wiped the floor with you? Get lost! GO! NOW!
+q_montsalvat.txt:3	ぐああああっ！ この腰抜けめ、泣き虫の役立たずめ！ 我らが偉大なギルドにどれほどの恥をかかせたか分かっているのか？ 呪われた聖杯の騎士どもにおまえがこてんぱんにされたと聞いて、これから誰が死の騎士を恐れるというのだ？ 失せろ！ 行け！ 今すぐにだ！
+# There's a warehouse at the northern edge of the city that Vanerion, the librarian, has used for storing rare books. About half a year ago, people started reporting a malevolent presence there, as if they were being spied on by someone unseen. Last week Vanerion went there for a book, and when he opened the door he barely recognized the place. A gang of thieves seems to have set up shop there; but more worryingly, the books themselves were coming to life. The malevolent presence was everywhere, and demonic signs appeared on the floor. Please locate and destroy the source of this evil, reports indicate the ability to kill from range could be of paramount importance.
+q_mug.txt:1	街の北のはずれに、司書のヴァネリオンが珍しい本の置き場として使ってきた倉庫がある。半年ほど前から、そこに悪意ある気配がある、見えない誰かに覗かれているようだ、という声が上がりはじめた。先週ヴァネリオンが本を取りに行ったところ、扉を開けてもそこがどこだか分からぬほど様変わりしていたそうだ。盗賊の一味が住み着いているらしい。だがそれ以上に気がかりなのは、本そのものが動きはじめていることだ。悪意ある気配は至るところに満ち、床には悪魔の印が浮かんでいたという。この邪悪の源を突き止めて滅ぼしてきてほしい。報せによれば、離れたところから殺す力がなによりも物を言うそうだ。
+# Thank you for eliminating this abomination!
+q_mug.txt:2	あの忌まわしきものを始末してくれてありがとう！
+# You have brought a terrible thing upon us! Now their spying eyes are everywhere.
+q_mug.txt:3	とんでもないことをしてくれた！ 今や奴らの覗く目が至るところにある。
+# Are you here to enrol? First thing I need from you is to go and get a pile of magic mushrooms. They grow in the icky cave.
+q_mushrooms.txt:1	入学しに来たのか？ まずおまえにしてもらいたいのは、魔法のキノコを山ほど採ってくることだ。あれはねばねば洞窟に生えている。
+# Good now I can finish my salad. Take this signet ring to show you're allowed to be here.
+q_mushrooms.txt:2	よし、これでサラダを仕上げられる。ここにいてよい証しに、この印章の指輪を持っていけ。
+# You know what helps with mushrooms? Other mushrooms.
+q_mushrooms.txt:3	キノコに効くものが何か知っているか？ 別のキノコだ。
+# The Wizards of Nature have discovered a magical Node of  Nature in a nearby forest. You must seek the Node and  dispatch its guardians so that the Tower of Nature can  claim the mystical energies of the Node.
+q_nature.txt:1	自然の魔術師たちが、近くの森に自然の特異点を見つけた。おまえはその特異点を探し出し、守護者どもを片づけよ。自然の塔がその神秘の力を手にできるようにな。
+# You have done well. A powerful spellbook awaits you outside.
+q_nature.txt:2	よくやった。強力な魔法書が外で待っている。
+# Begone, incompetent fool! The dimensional energies of the  mystic Node have faded away and are lost forever! You had your chance and botched the job.
+q_nature.txt:3	去れ、無能者め！ 神秘の特異点の次元の力は薄れ、永久に失われた！ 機会は与えたのに、おまえはしくじったのだ。
+# It is time to take the battle to the Serpent. But before you can reach it, you must find and kill Oberon. Only after defeating the powerful king of Amber will the stairs leading to the Serpent's lair be opened.
+q_oberon.txt:1	サーペントとの戦いに挑むときが来た。だがそこへ辿り着く前に、オベロンを見つけ出して倒さねばならない。強大なアンバーの王を打ち破ってはじめて、サーペントの巣へ降りる階段が開かれるのだ。
+# The old castle northwest of here has been taken over by evil beings.  Mighty undead, evil spell casters, dragons, and even titans are  rumored to lurk there. Destroy ALL the monsters within the castle,  and your reward will be an artifact of great value.
+q_old_castle.txt:1	ここから北西の古い城が、邪悪なものたちに乗っ取られた。強力なアンデッド、邪悪な魔法使い、ドラゴン、さらにはタイタンまでもが潜んでいるという噂だ。城の中の怪物をすべて滅ぼせば、褒美として大きな値打ちのあるアーティファクトをやろう。
+# Impressive!! You have served me well. May this final gift aid you well in your future adventures.
+q_old_castle.txt:2	見事！！ よく仕えてくれた。この最後の贈り物が、これからの冒険で大いに役立つことを。
+# Impressive!! You have served me well. May this gift aid you well in your future adventures.
+q_old_castle.txt:3	見事！！ よく仕えてくれた。この贈り物が、これからの冒険で大いに役立つことを。
+# It seems like this task was too difficult for you.
+q_old_castle.txt:4	この務めはあなたには荷が重すぎたようだ。
+# Old Man Willow has gone too far! He has turned a small section of the forest against all men. Please kill him before his influence can spread any further, you will be well rewarded  for completing this quest. The quest is in a clearing east of the town.
+q_old_man_willow.txt:1	柳じじいのやりようは度を越している！ 森の一角を、人という人に敵対させてしまったのだ。その力がこれ以上広がる前に討ち取ってきてほしい。やり遂げれば十分に報いよう。場所は町の東の開けた土地だ。
+# Thank you! Old Man Willow was much more manageable when good ol' Tom Bombadil was still around.
+q_old_man_willow.txt:2	ありがとう！ 柳じじいも、あの気のいいトム・ボンバディルがいたころは、もっと手なずけやすかったのだがな。
+# The quest was more than you could handle.
+q_old_man_willow.txt:3	この依頼はあなたの手に余ったようだな。
+# The marauding orcs approach ever closer to our quiet town, as is happening all over in these troubled times. To the southeast lies a valley where our scouts have found an orc raiding party preparing to overrun us once and for all. Our forces are committed elsewhere; please repel this threat before they reach our borders.
+q_orcs.txt:1	荒らし回るオークどもが、この静かな町へじりじりと近づいてきている。この乱れた世では、どこでも起きていることだ。南東に谷があり、斥候がそこで、我々を一気に踏みつぶそうと支度をしているオークの襲撃隊を見つけた。我が軍は他所に出払っている。この脅威が国境へ達する前に、どうか追い払ってほしい。
+# Thank you for your assistance. Please accept this token of our appreciation. We may have need for your help in future, as well.
+q_orcs.txt:2	助力に感謝する。感謝の印としてこれを受け取ってくれ。これからもまた力を借りることがあるかもしれん。
+# I've sent out someone else to do the job. Now leave me alone!
+q_orcs.txt:3	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# Thank you for taking care of the orcs. I had my men search the area after you were finished and they discovered a secret tunnel in a nearby hill. We suspect this is where the orcs are coming from. Secure the tunnels and you will be rewarded.
+q_orcs2.txt:1	オークどもを片づけてくれて助かった。あのあと部下に周りを調べさせたところ、近くの丘に隠された坑道を見つけた。オークはそこから湧いてきているのだろう。坑道を制圧してくれば礼をしよう。
+# You helped make the city safer from orcs.
+q_orcs2.txt:2	おかげで街はオークからいくらか安全になった。
+# You have failed me, beware you do not do so again!
+q_orcs2.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# Unspeakable horrors inhabit the old quarry south of our town, spreading gloom and fear as they creep out at night. Please, help us before it's too late for Angwil.
+q_pit2.txt:1	町の南にある古い石切場に、言葉にできない恐怖が棲みついている。夜になると這い出してきて、陰鬱と恐れをまき散らすのだ。頼む、アングウィルが手遅れになる前に力を貸してくれ。
+# Unspeakable horrors inhabit an old quarry in the forest to the northwest, spreading gloom and fear as they creep out at night. Please,  help us before it's too late for Outpost.
+q_pit2.txt:2	北西の森にある古い石切場に、言葉にできない恐怖が棲みついている。夜になると這い出してきて、陰鬱と恐れをまき散らすのだ。頼む、辺境の地が手遅れになる前に力を貸してくれ。
+# Thank you.
+q_pit2.txt:3	感謝する。
+# Oh. no.
+q_pit2.txt:4	ああ、なんてことだ。
+# Oh you're back already, hmm. Next thing you should do is get me some pumpkins from the icky cave. They have interesting magical properties.
+q_pumpkins.txt:1	おや、もう戻ってきたのか。ふむ。次にしてもらいたいのは、ねばねば洞窟からカボチャをいくつか採ってくることだ。あれには面白い魔法の性質がある。
+# Good work. Now I can finish my soup. Take this signet ring to show you're allowed to be here.
+q_pumpkins.txt:2	よい働きだ。これでスープを仕上げられる。ここにいてよい証しに、この印章の指輪を持っていけ。
+# You know what helps with pumpkins? Fire.
+q_pumpkins.txt:3	カボチャに効くものが何か知っているか？ 火だ。
+# This quest has been removed. If you are seeing this, then you probably took the quest before upgrading to a version in which the quest no longer exists.
+q_removed.txt:1	この依頼は削除された。これが見えているなら、依頼を受けたあとで、その依頼が無くなった版へ更新したのだろう。
+# You accomplished something truly noble. Well done!
+q_removed.txt:2	まことに気高いことを成し遂げた。見事だ！
+# You failed this quest.
+q_removed.txt:3	この依頼はしくじった。
+# I keep hearing persistent rumors of an old treasure chest hidden somewhere on Scary Rock, supposedly buried there by the pirates who infested these shores in days gone by. I would very much like to investigate this matter, unfortunately none of the local men are willing to go anywhere near that islet. I'm sure it's just the name of the place keeping them away, you should have nothing to worry about.
+q_scary.txt:1	恐岩のどこかに古い宝箱が隠されているという噂が、いつまでも消えない。その昔この海岸を荒らし回った海賊たちが埋めたものらしい。ぜひ確かめてみたいのだが、あいにく地元の男は誰ひとり、あの小島に近寄ろうとしない。名前に怖じ気づいているだけだろう。あなたが案じることは何もないはずだ。
+# Thank you! Here's a little reward for your good work. I trust there was enough booty for both of us?
+q_scary.txt:2	ありがとう！ よい働きへのささやかな報酬だ。分け前は二人ぶんあったのだろうな？
+# Too bad, I will need to find a better hero. Wait a minute... did you at least verify the presence of the treasure?
+q_scary.txt:3	残念だ、もっとましな英雄を探さねばならんな。いや待て……宝がそこにあることだけでも確かめてきたのか？
+# Your final quest is the ultimate quest that has always been required of you. You must enter the realm of the Serpent, travel deep, and defeat this source of all our problems. Be prepared, be patient, and good luck. May the light shine on you.
+q_serpent_of_chaos.txt:1	最後の依頼は、はじめからあなたに求められてきた究極の務めだ。サーペントの領域へ踏み入り、深くまで下り、我らのあらゆる災いの源を打ち倒せ。備えを固め、焦らず進め。幸運を祈る。あなたの上に光がありますように。
+# The sewer underneath the city has been acting strange lately. There are rumors of monsters living beneath our fair city. I need you to exterminate the vermin and bring the sewer back to its normal, if dirty, self.
+q_sewer.txt:1	街の下の下水道の様子が、このところおかしい。この美しい街の地下に怪物が棲みついているという噂もある。害獣を駆除して、下水道を汚いなりのいつもの姿へ戻してきてほしい。
+# Thank you! It was a dirty job, but someone had to do it.
+q_sewer.txt:2	ありがとう！ 汚れ仕事だったが、誰かがやらねばならなかったのだ。
+# I had to call help from a local druid, since you failed to clean out the sewer.
+q_sewer.txt:3	あなたが下水道を片づけそこねたので、地元のドルイドに助けを求めるほかなかった。
+# A ship carrying important documents has been wrecked near the shore. I need you to investigate the wreckage and report back to me.
+q_shipwreck.txt:1	大切な書類を積んだ船が、岸の近くで難破した。残骸を調べて、私に報せてきてほしい。
+# You have done well, please accept this token of thanks.
+q_shipwreck.txt:2	よくやった。感謝の印としてこれを受け取ってくれ。
+# You have failed me, beware you do not do so again!
+q_shipwreck.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# While you were gone, I had a visit from an old friend and we were  reminiscing about the infamous storekeeper from the ancient city.  My Dwarven friend always got the better end of the bargain when it  came to haggling, but he met his match whenever he encountered this  storekeeper. My advisor believes that the storekeeper used magic to charm his clients. Why don't you search the ruins and see if  you can shed some light on the matter.
+q_shopkeeper.txt:1	あなたが留守のあいだ、古い友が訪ねてきてな、古代都市の悪名高い店主の話で思い出話に花が咲いた。私のドワーフの友は値切りとなればいつも得をする男だが、あの店主にだけは歯が立たなかったそうだ。相談役は、店主が魔法で客を魅了していたのだろうと見ている。廃墟を探して、この件に光を当ててみてはどうかね。
+# Once again, we are in your debt.
+q_shopkeeper.txt:2	またしてもあなたに借りができたな。
+# You have failed me, beware you do not do so again!
+q_shopkeeper.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# A forgotten shrine in a nearby mountain has become a den of monsters, please return silence to this ancient place. Be warned that quite a few of these creatures are dangerous.
+q_shrine.txt:1	近くの山にある忘れられた祠が、怪物の巣窟になってしまった。この古い場所に静けさを取り戻してきてほしい。ただし、そこの生き物にはかなり危険なものが多いと心得ておけ。
+# Thank you. Please put this reward to good use.
+q_shrine.txt:2	感謝する。この報酬を役立ててくれ。
+# The quest was more than you could handle.
+q_shrine.txt:3	この依頼はあなたの手に余ったようだな。
+# Illegal mushrooms are showing up on the streets and even in the school, and more and more people are getting addicted. At first we thought the new shroomery was to blame, but we raided the place and couldn't find anything illegal. It appears the actual culprits are smugglers who get the shrooms cheap from some old hobbit, sneak them into our town and sell them here at a tidy profit. We know who they are and where they're operating from, unfortunately a certain corn-loving hag won't give us a search warrant, so legally there's absolutely nothing we can do. We'd appreciate it if a private detective paid those sons of vampire bats a quick visit and maybe killed them in self-defence. Their base is a small house just north of here.
+q_smug.txt:1	違法なキノコが街角に、学校にまで出回り、溺れる者が増える一方だ。はじめは新しいキノコ農園のせいだと思って踏み込んだのだが、違法なものは何ひとつ出てこなかった。どうやら本当の下手人は密輸人らしい。年寄りのホビットからキノコを安く仕入れ、こっそり町へ持ち込んで、たっぷり儲けを乗せて売りさばいている。誰が、どこを根城にしているかも分かっているのだが、あいにくトウモロコシ好きのさる婆さんが捜索の令状を出してくれん。だから法の上では、我々には手も足も出ない。私立探偵とやらがあの吸血コウモリの子らのところへちょっと顔を出して、正当防衛でうっかり始末してくれるとありがたいのだがな。奴らの根城は、ここのすぐ北の小さな家だ。
+# Thank you for your discreet help. You may keep any interesting mushrooms you found; here's a legal extra one we booked as evidence earlier, hopefully it will be of use to you. Er... you did kill the smugglers in self-defence, right?
+q_smug.txt:2	内々の助力に感謝する。見つけた面白いキノコは持っていってかまわん。これは先に証拠として押さえてあった合法のもので、ひとつ余分にやろう。役に立つといいのだがな。ええと……密輸人を始末したのは正当防衛だったのだろうな？
+# Well, that's just fantabulous. Let's say you blundered in by accident and happened to see a humongous pile of illegal mushrooms? Maybe we can use that as evidence.
+q_smug.txt:3	いやはや、実にすばらしい。あなたは間違えて迷い込み、たまたま違法なキノコの山を目にした、ということにしておこうか。それなら証拠に使えるかもしれん。
+# Illegal mushrooms are showing up on the streets, and I'm not behind it. The actual culprits are smugglers who get the shrooms cheap from some old hobbit, sneak them into the town and sell them at a tidy profit. I'd like to expand a bit and take over their operation, or at least steal their mushrooms; but it's very dangerous, they're a pretty tough group. I would appreciate your help, their base is a small house south of the Arena.
+q_smug.txt:4	違法なキノコが街角に出回っているが、裏にいるのは俺じゃない。本当の下手人は密輸人どもだ。年寄りのホビットからキノコを安く仕入れ、こっそり町へ持ち込んで、たっぷり儲けを乗せて売りさばいている。こっちも少し手を広げて、奴らの商売を乗っ取りたい。せめてキノコだけでも頂きたいのだが、なにしろ危ない。かなり腕の立つ連中だ。手を貸してもらえるとありがたい。根城は闘技場の南の小さな家だ。
+# Thank you for your help. I managed to steal this one mushroom earlier, you can have it as a bonus.
+q_smug.txt:5	手を貸してくれて助かった。先にこのキノコをひとつ失敬しておいた。おまけにやろう。
+# Too bad. Say, can you give me a blueprint of their place?
+q_smug.txt:6	残念だったな。ところで、奴らの家の見取り図をもらえないか？
+# ...What is that you say? One of the buildings seems to be overrun with snakes! You might be interested to know that not long ago, a local adventurer dropped, I mean "Lost" his prized  leather whip among the ruins when he came face to face with a  thousand snakes. Perhaps you could perform a little house  cleaning in the ruins.
+q_snakes.txt:1	……なんだと？ 建物のひとつが蛇に乗っ取られているだと！ 少し前の話だが、この町の冒険者が千匹の蛇と鉢合わせして、自慢の革のムチを廃墟に落とした。いや『失くした』のだったな。ひとつ、廃墟の掃除をしてきてはくれまいか。
+# I will sleep easier now I do not have to think about those snakes. If you found the whip you can keep it as a reward.
+q_snakes.txt:2	あの蛇どものことを考えずに済むと思うと、今夜はよく眠れそうだ。ムチを見つけたのなら、報酬として持っていくがいい。
+# You have failed me, beware you do not do so again!
+q_snakes.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# An old sorcerer has betrayed the order of wizards and gone over to serve the forces of darkness. He has built a tower nearby and  the Sultan is growing concerned. Go kill him, I'll give you credit.
+q_sorcerer.txt:1	年老いた仙術士が魔術師の結社を裏切り、闇の勢力に与した。近くに塔を建てたので、スルタンが気を揉んでおられる。行って始末してこい。単位はやろう。
+# Well done on the special examination. Here is your wizard's hat.
+q_sorcerer.txt:2	特別試験、よくやった。これが君の魔術師の帽子だ。
+# Back already? So you couldn't do it. No matter. The order of wizards will have to take care of its own problem.
+q_sorcerer.txt:3	もう戻ったのか？ できなかったのだな。まあいい。魔術師の結社が、自分たちの厄介事は自分で片づけるとしよう。
+# The Wizards of Sorcery have discovered a magical Node of Sorcery  in a damp area nearby. You must seek the Node and dispatch  its guardians so that the Tower of Sorcery can claim the  mystical energies of the Node.
+q_sorcery.txt:1	仙術の魔術師たちが、近くの湿地に仙術の特異点を見つけた。おまえはその特異点を探し出し、守護者どもを片づけよ。仙術の塔がその神秘の力を手にできるようにな。
+# You have done well.
+q_sorcery.txt:2	よくやった。
+# Begone, incompetent fool! The dimensional energies of the  mystic Node have faded away and are lost forever! You had your chance and botched the job.
+q_sorcery.txt:3	去れ、無能者め！ 神秘の特異点の次元の力は薄れ、永久に失われた！ 機会は与えたのに、おまえはしくじったのだ。
+# A great, great evil approaches, perhaps the end for our town. Our scouts lie slaughtered, their bodies crushed and mangled by powerful beasts. I know not what you shall face.  Monsters appear as if out of thin air, as if spawned by a foul  altar in a valley close to where you defeated the orcs. I am hesistant to ask for your help, knowing you may be sent  to your doom, and yet you are the last hope for our town.  Approach each nook carefully, as evil lies in unexpected places. Please prepare well, and strike hard in our names.
+q_spawning_pits.txt:1	途方もない邪悪が迫っている。この町の終わりかもしれん。斥候たちは皆殺しにされ、強大な獣どもに骨まで砕かれていた。おまえが何と相まみえることになるのか、私にも分からぬ。魔物が何もない空から湧くように現れるのだ。おまえがオークを打ち破った場所の近くの谷に忌まわしい祭壇があり、そこから産み落とされているらしい。死地へ送り出すことになると分かっていて助けを乞うのは気が引ける。それでも、おまえがこの町の最後の望みなのだ。思わぬ所に邪悪は潜んでいる。物陰のひとつひとつに気を配れ。よく備えて、我らの名にかけて打ち込んでくれ。
+# Your valor shall go down in our legends; your name shall be sung by elvenkind for ages to come. Hail the conquering hero! May your battles with the Serpent be as successful. Use our gift wisely, and may the light shine on you.
+q_spawning_pits.txt:2	おまえの武勇は我らの伝説に刻まれ、その名はエルフの民に幾世も歌い継がれよう。凱旋せし英雄に栄えあれ！ サーペントとの戦いも、これと同じ首尾でありますように。我らの贈り物を賢く使い、光がおまえを照らさんことを。
+# I've sent out someone else to do the job. Now leave me alone!
+q_spawning_pits.txt:3	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# Local explorers have discovered a well-preserved ancient temple hidden under the ruins of the old Elven Embassy. It seems, though, that the temple was less forgotten than we had assumed at first; the descendants of the spider-cultists who originally built it have kept it in active use. Now I fear they will attempt to summon their dark god to punish us for disturbing his unholy shrine... We must strike first and destroy the spider cult, but you are the only one I can trust to do it.
+q_spider.txt:1	町の探検家たちが、古いエルフ大使館の廃墟の下に、よく残った古代の神殿を見つけた。だがどうやらこの神殿、我々が初めに思っていたほど忘れ去られてはいなかったらしい。もともとこれを建てた蜘蛛の教団の末裔が、今も使い続けているのだ。邪悪な聖域を荒らした罰として、奴らが闇の神を呼び出そうとするのではないかと恐れている……。先手を打って蜘蛛の教団を滅ぼさねばならん。だが、これを任せられるのはおまえしかいない。
+# I hear you are doing rather well for yourself from all items you have been `liberating` from the ruins. Just remember I'm not charging you any taxes.
+q_spider.txt:2	廃墟から『解放』してきたアイテム々で、ずいぶん儲けているそうだな。税を取り立ててはいないことを、ゆめゆめ忘れるなよ。
+# You have failed me, beware you do not do so again!
+q_spider.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# Some time ago, a well-meaning chap from the elf-town of Angwil tried to open a livery stable here; but the beasts he offered for hire were completely untamed and too vile to be ridden, and his business failed miserably. The Angwilian left the town in humiliation; unfortunately, the beasts and the stables are still here, and the smell and reputation of the place are driving visitors away. We're not getting the steady inflow of new customers I need; and even the locals prefer to stay indoors where the stench is not as bad, making them harder to rob. I would appreciate it if you cleaned the old place up a bit.
+q_stable.txt:1	少し前のことだ。エルフの町アングウィルから来た善意の男が、ここに貸し馬の厩舎を開こうとした。だが貸し出す獣はまるで馴らされておらず、乗るにはあまりに性が悪くて、商売は無残に潰れた。そのアングウィル人は恥をかいて町を去ったが、あいにく獣も厩舎も残ったままだ。あの臭いと悪評のせいで、旅の者が寄りつかん。当てにしていた新顔の客足がぱたりと止まった。町の連中でさえ、臭いのましな家の中に引きこもるので、こちらも懐を狙いにくい。あの古い場所を少し片づけてくれるとありがたいのだが。
+# Thank you! I look forward to going out without a clothespin on my nose.
+q_stable.txt:2	助かった！ これで鼻に洗濯ばさみを挟まずに外を歩けるというものだ。
+# Too bad. I guess there's nothing for it but to try to divert the river to wash the place out.
+q_stable.txt:3	残念だ。こうなると、川の流れを引き込んであの場所を洗い流すよりほかに手はあるまい。
+# Back again? All right, another student of mine tried to play with the undead some time ago and came up second-best. See if you can bring back any of the valuables he had, or at least recover his wizard's staff.
+q_staff.txt:1	また来たのか？ よろしい。少し前に別の教え子がアンデッドを相手に遊ぼうとして、返り討ちにあった。持っていた金目の物を持ち帰れるか試してみろ。せめて魔術師の杖だけでも回収するのだ。
+# Hey, you made it! Tell you what, I'll let you keep that staff, you may not be a full wizard yet but at least you're doing better than him.
+q_staff.txt:2	おお、やり遂げたか！ よし、その杖は持っていていい。まだ一人前の魔術師ではないが、少なくともあいつよりはましだ。
+# Let's see... you failed, no credit.
+q_staff.txt:3	どれどれ……しくじったな。単位はやらん。
+# The Magic Shop's owner is thinking of opening another Thieves' Guild.  I do not need the competition, here is the key to the Magic Shop's back treasure room. Destroy everything you find there and you will be rewarded.
+q_tengu_death_swords.txt:1	魔法の店の主人が、もうひとつ盗賊ギルドを開こうと考えている。競争相手など要らん。これが魔法の店の奥の宝物庫の鍵だ。そこで見つけたものを片端から壊してこい。報酬は出す。
+# You have done well. Perhaps this will prove useful.
+q_tengu_death_swords.txt:2	よくやった。これが役に立つかもしれん。
+# You have failed this quest, but keep what you have found.
+q_tengu_death_swords.txt:3	この依頼はしくじったな。だが見つけたものは持っていくがいい。
+# For many years, the armies of my town have waged war against the forces of Chaos. As the battles have become numerous,  I find that I am having trouble controlling the thieves who are beginning to move into my city. If you wish to show your allegience you must search the city and destroy the lair that these thieves call home. My troops report finding evidence of the thieves in the northeastern quarter. Your task is to kill these ruffians.
+q_thieves.txt:1	長年にわたり、この町の軍はカオスの勢力と戦い続けてきた。戦の数が増えるにつれ、町に入り込みはじめた盗賊どもを抑えきれなくなってきた。忠誠を示したいのなら、町を捜し回り、盗賊どもが根城と呼ぶ隠れ家を潰せ。兵の報告では、北東の区画に盗賊の痕跡があったという。おまえの務めは、この無法者どもを討ち取ることだ。
+# Thank you for killing the band of thieves! Here is something I think you will enjoy.
+q_thieves.txt:2	盗賊の一団を討ち取ってくれて感謝する！ おまえが気に入りそうなものがある、受け取ってくれ。
+# It seems like this task was too difficult for you. Good that I hired another adventurer to clean up the remaining thieves.
+q_thieves.txt:3	この務めはおまえには荷が重かったようだな。残った盗賊の始末に別の冒険者を雇っておいてよかった。
+# You again. Tell you what, a couple of other students left the laboratory in a mess. Go and tidy it up! That should keep you busy.
+q_tidy.txt:1	またおまえか。よし、ほかの教え子が二人ばかり、研究室を散らかしたまま放り出していった。行って片づけてこい！ しばらくは手が空くまい。
+# Hrm, you know you're meant to follow lab safety and wear gloves in there? Go to the stockroom and get yourself a pair.
+q_tidy.txt:2	うむ、あそこでは安全の決まりに従って手袋を着けることになっているのを知っているか？ 倉庫へ行って一組もらってこい。
+# Ugh now who is going to clean up the mess in there.
+q_tidy.txt:3	ああ、これではあの散らかりようを誰が片づけるというのだ。
+# A few days ago, my men chanced upon a small group of trolls on the road to Angwil, and managed to fight them off after a hard-fought battle. Unfortunately, it seems the trolls they saw were only a scouting party for an enormous army hiding in the hills to the east, intent on destroying our town and subjecting us all to unimaginable horrors. Please, we cannot deal with this threat on our own, we need your help.
+q_troll2.txt:1	数日前、うちの者がアングウィルへの街道でトロルの小隊に出くわし、苦戦の末になんとか追い払った。だがあいにく、あれは東の丘に潜む大軍の斥候にすぎなかったらしい。奴らはこの町を滅ぼし、我らを想像もつかぬ恐怖に沈めるつもりだ。頼む、この脅威は我らだけでは手に負えない。力を貸してくれ。
+# Thank you for saving our town, please put this reward to good use.
+q_troll2.txt:2	町を救ってくれて感謝する。この報酬を役立ててくれ。
+# Oh no! Only the Maintainer being too lazy to actually wipe us off the map can save us now.
+q_troll2.txt:3	なんということだ！ もはや我らを救えるのは、地図から本当に消し去るのを面倒がってくれる開発者だけだ。
+# If you want our respect you need to prove yourself. Go to the orc caves and kill ten Ologs to show us you aren't a wimp.
+q_trollslayer.txt:1	我らの敬意が欲しければ、まず己を示せ。オークの洞窟へ行き、オログを十匹殺して、腰抜けではないと見せてみろ。
+# If you want our respect you need to prove yourself. Go to the troll caves and kill ten Ologs to show us you aren't a wimp.
+q_trollslayer.txt:2	我らの敬意が欲しければ、まず己を示せ。トロルの洞窟へ行き、オログを十匹殺して、腰抜けではないと見せてみろ。
+# Good start. Our armourers have made you a trophy.
+q_trollslayer.txt:3	よい出だしだ。我らの鎧職人が、おまえに戦利品をこしらえた。
+# Not tough enough eh? Try harder next time.
+q_trollslayer.txt:4	骨がなかったか？ 次はもっと励め。
+# Our archeologists have discovered an ancient underground city. They have asked that you help them in clearing out any would be dangers. It stands to reason that you might find some interesting items in the process.
+q_underground.txt:1	我らの考古学者が古代の地下都市を見つけた。危険になりそうなものを片づけるのを手伝ってほしいそうだ。その道すがら、面白いアイテムが見つかることもあるだろう。
+# You have our undying gratitude for your heroic efforts. Here, take my old battle gloves for your victory.
+q_underground.txt:2	その英雄的な働きに、我らは尽きせぬ感謝を捧げる。さあ、勝利の証に、私の古い戦いの手袋を受け取ってくれ。
+# You have our undying gratitude for your heroic efforts. Here, take this reward for your victory.
+q_underground.txt:3	その英雄的な働きに、我らは尽きせぬ感謝を捧げる。さあ、勝利の証に、この報酬を受け取ってくれ。
+# You have failed me, beware you do not do so again!
+q_underground.txt:4	期待を裏切ってくれたな。二度と同じことのないように！
+# Something curious has taken root beneath our Inn. Celebor, the innkeeper, has reported strange vapors and auras in the basement that drive out all living things. A caged canary was placed there to test the air quality; it died within minutes, though the strange scents had vanished when the investigators returned. Then, suddenly, it was as if the air itself attacked! Please see if you can detect what is amiss.
+q_vapor.txt:1	宿屋の地下に、奇妙なものが根を下ろした。宿の主人ケレボールの話では、地下室に妙な障気と気配が満ちていて、生きているものを残らず追い出してしまうという。空気を調べるために鳥籠のカナリアを置いたところ、数分で死んだ。ところが調べる者が戻ったときには、妙な匂いは消えていたのだ。そして突然、空気そのものが襲いかかってきたかのようだった！ 何がおかしいのか、突き止めてきてくれないか。
+# Strange tidings indeed. Where eldritch vapors gather, more dangerous creatures are often nearby. Perhaps this is an ill omen of dangers yet to come... We may be in need of your services again soon. This gift may help you detect what evils plague this land.
+q_vapor.txt:2	まことに奇怪な知らせだ。得体の知れぬ障気が集まる所には、たいていもっと危険なものが潜んでいる。これはこの先の災いの凶兆かもしれん……。近いうちにまた力を借りることになるだろう。この贈り物が、この地を蝕む邪悪を見つけ出す助けになるはずだ。
+# I've sent out someone else to do the job. Now leave me alone!
+q_vapor.txt:3	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# Something curious has taken root beneath our Inn. Otick, the innkeeper, has reported strange vapors and auras in the basement that drive out all living things. A caged canary was placed there to test the air quality; it died within minutes, though the strange scents had vanished when the investigators returned. Then, suddenly, it was as if the air itself attacked! Please see if you can detect what is amiss.
+q_vapor2.txt:1	宿屋の地下に、奇妙なものが根を下ろした。宿の主人オティックの話では、地下室に妙な障気と気配が満ちていて、生きているものを残らず追い出してしまうという。空気を調べるために鳥籠のカナリアを置いたところ、数分で死んだ。ところが調べる者が戻ったときには、妙な匂いは消えていたのだ。そして突然、空気そのものが襲いかかってきたかのようだった！ 何がおかしいのか、突き止めてきてくれないか。
+# Strange tidings indeed. Where eldritch vapors gather, more dangerous creatures are often nearby. Perhaps this is an ill omen of dangers yet to come... We may be in need of your services again soon. This gift may help you detect what evils plague this land.
+q_vapor2.txt:2	まことに奇怪な知らせだ。得体の知れぬ障気が集まる所には、たいていもっと危険なものが潜んでいる。これはこの先の災いの凶兆かもしれん……。近いうちにまた力を借りることになるだろう。この贈り物が、この地を蝕む邪悪を見つけ出す助けになるはずだ。
+# I've sent out someone else to do the job. Now leave me alone!
+q_vapor2.txt:3	その仕事はもう別の者に行かせた。ひとりにしてくれ！
+# The vault outside the town was used as a minor fortress and stored many valuable items. It has since been overrun. Please find the small sword known as Sting and return it to us! The moment you find the sword, your quest will be complete. While the sword could be in any of the chambers, only look through one at a time. The monsters there are strong and we left traps to be concerned with as well.
+q_vault.txt:1	町の外の宝物庫は小さな砦として使われ、値打ちのあるアイテムを数多く納めていた。それが今は魔物に占拠されている。『つらぬき丸』と呼ばれるスモール・ソードを見つけ、我らに返してほしい！ 剣を見つけた瞬間、依頼は達成となる。剣はどの部屋にあってもおかしくないが、部屋はひとつずつ見て回れ。中の魔物は強く、こちらが仕掛けた罠も残っているので気をつけろ。
+# Please keep the sword, it will aid you in your future quests.
+q_vault.txt:2	その剣は持っていてくれ。これからの依頼で助けになるだろう。
+# You didn't find the sword? Well, the monsters have probably carried it away. Too bad, Sting would have been quite helpful in driving the evil out of our town.
+q_vault.txt:3	剣は見つからなかったのか？ うむ、魔物どもが運び去ったのだろう。残念だ。『つらぬき丸』があれば、この町から邪悪を追い払うのにずいぶん役立っただろうに。
+# A volcano has been rumbling in the eastern part of our territory. But, we do not think it is natural. Now, it is time to eliminate all creatures that are making their home at the volcano. You must exterminate them all if we are to avoid having lava ruin our crops!
+q_volc.txt:1	我らの領地の東で火山が鳴動している。だが、これは自然のものではあるまい。今こそ、あの火山を住処にしている生き物を残らず取り除くときだ。溶岩に作物を台無しにされたくなければ、全部退治してもらわねばならん！
+# Here is a reward for your good work.
+q_volc.txt:2	よい働きへの報酬だ、受け取ってくれ。
+# You have failed me, beware you do not do so again!
+q_volc.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# A volcano has been rumbling in the eastern part of our territory. But, we do not think it is natural. Now, it is time to eliminate all creatures that are making their home at the volcano. You must exterminate them all if we are to avoid having lava ruin our crops!
+q_volc_old.txt:1	我らの領地の東で火山が鳴動している。だが、これは自然のものではあるまい。今こそ、あの火山を住処にしている生き物を残らず取り除くときだ。溶岩に作物を台無しにされたくなければ、全部退治してもらわねばならん！
+# Here is a reward for your good work.
+q_volc_old.txt:2	よい働きへの報酬だ、受け取ってくれ。
+# You have failed me, beware you do not do so again!
+q_volc_old.txt:3	期待を裏切ってくれたな。二度と同じことのないように！
+# Our scouts report a large number of Wargs in the dungeon. We don't know who set them on guard at 250 feet, but we think their task is to hinder resupply of our outposts in the dungeon. We offer you a small reward if you clear the path for the supplies.
+q_wargs.txt:1	斥候の報告によれば、ダンジョンにワーグが大量にいるという。誰が二百五十フィートに見張りとして置いたのかは分からんが、ダンジョンにある我らの拠点への補給を妨げるのが役目だろう。補給路を切り開いてくれるなら、ささやかな報酬を出そう。
+# The scouts of Outpost have reported a large number of Wargs in the dungeon. Their presence at 250 feet hinders resupply to our troops in the dungeon. Otick, the innkeeper, will offer you a small reward if you clear the path for our supplies.
+q_wargs.txt:2	辺境の地の斥候が、ダンジョンにワーグが大量にいると報せてきた。二百五十フィートに居座られては、ダンジョンにいる我らの部隊への補給が滞る。補給路を切り開いてくれるなら、宿の主人オティックがささやかな報酬を出すだろう。
+# Since most of the supplies have been sent to our troops in the dungeon, we can only give you a small reward.
+q_wargs.txt:3	物資の大半はダンジョンの部隊へ送ってしまったので、ささやかな報酬しか出せない。
+# Bah! I'll have to find another for this simple task.
+q_wargs.txt:4	ふん！ こんな簡単な務めに、また別の者を探さねばならんとはな。
+# We desperately need help in clearing out a foul nest of worms. These eldritch abominations are sleeping in a nearby pit, waiting upon the stars. Please, you must help us before it is too late.
+q_worms.txt:1	忌まわしい長虫の巣を片づけるのに、どうしても力を貸してほしい。あの得体の知れぬ怪物どもは近くの穴で眠り、星のときが満ちるのを待っている。頼む、手遅れになる前に助けてくれ。
+# Thank you.
+q_worms.txt:2	感謝する。
+# Oh. no.
+q_worms.txt:3	ああ、なんてことだ。
+# Unfortunately, the citizens of Thalos are still not safe. A young boy disappeared last week while out on a walk; we found his corpse in the forest a few days later, lifeless and sucked dry of blood. The city's lawyers, afraid of being blamed by the public, are pressuring me to drive out the vampires who have taken over the old watchtower near the shore. Please help me eliminate the vampires, you will be well rewarded.
+q_wtower.txt:1	あいにく、サロスの市民はまだ安全とは言えん。先週、散歩に出た少年が姿を消し、数日後に森で亡骸が見つかった。息はなく、血を吸い尽くされていた。市の法律家たちは世論に責められるのを恐れ、岸辺近くの古い物見の塔を占拠した吸血鬼を追い払えと私に迫っている。吸血鬼の始末に力を貸してくれ。相応の礼はする。
+# Thank you once more for your help. Here's your reward, let's hope the innocent children of Thalos will never be attacked again.
+q_wtower.txt:2	重ねて礼を言う。これが報酬だ。サロスの罪なき子らが二度と襲われずに済むことを願おう。
+# An old watchtower in the forest west of here, near the river, has been taken over by vampires. A young boy disappeared last week while out on a walk in the forest; his corpse was found near the tower a few days later, lifeless and sucked dry of blood. My lawyers are afraid of being blamed by the public and want the vampires driven out. Please help me eliminate the vampires, you will be well rewarded.
+q_wtower.txt:3	ここから西の森、川の近くにある古い物見の塔が、吸血鬼に占拠された。先週、森へ散歩に出た少年が姿を消し、数日後に塔の近くで亡骸が見つかった。息はなく、血を吸い尽くされていた。うちの法律家たちは世論に責められるのを恐れ、吸血鬼を追い出せと言っている。吸血鬼の始末に力を貸してくれ。相応の礼はする。
+# Thank you for your help. Here's your reward, let's hope the innocent children of Outpost will never be attacked again.
+q_wtower.txt:4	力を貸してくれて感謝する。これが報酬だ。辺境の地の罪なき子らが二度と襲われずに済むことを願おう。
+# I relied on you and you failed me. Now I'll have to find someone competent.
+q_wtower.txt:5	おまえを頼ったのに、期待を裏切られた。今度は腕の立つ者を探さねばなるまい。

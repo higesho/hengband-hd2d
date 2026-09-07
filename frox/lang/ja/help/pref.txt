@@ -1,0 +1,183 @@
+<style:title>好みの設定</style>
+
+FroxComposband ではゲームのさまざまなところを好みに合わせて変えられる。キーマップを決める（押したキーが元のコマンドへ結びつく形を変える）、マクロを作る（1 回のキー押しを一連のキー押しへ結びつける）、見た目を変える（敵・アイテム・地形の見えを変える）、色を変える（ある色を明るく、暗く、あるいはまったく別のものにする）、設定を切り替える（入れる・切る）といったことである。
+
+<topic:Files><style:heading>設定のファイル</style>
+
+設定のファイルには 2 つの種類がある。システムの設定と、利用者の設定である。前者は表示と入力の既定の設定であり、後者は既定を上書きするために足せる、自由な作り替えである。pref.prf のようなシステムの設定のファイルは、たいてい導入先からの相対で /lib/pref に置かれている（たとえば Windows で C:\games\FroxComposband へ入れたなら、システムの設定のファイルはC:\games\FroxComposband\lib\pref にある）。一方、利用者の設定のファイルは利用者のディレクトリに置かれる。Windows では導入先からの相対で /lib/user、Linux ではおそらく（これは変えられる）~/.angband/FroxComposband である。一般に、利用者のファイルの置き場は平台によって違い、ゲームの組み方と入れ方でも変わる。
+
+立ち上げのとき、システムの設定のファイル pref.prf が読み込まれ、このファイルがほかの設定のファイル――キーボードの結びつけの pref-key.prf や、設定の既定値の pref-opt.prf――の読み込みを導く。次に見た目のためのシステムの設定のファイルが読み込まれる。まずふつうの ASCII 表示のための font.prf と、あの変わったグラフィックスを使う人のための graf.prf である。これらのシステムの設定のファイルは、遊んでいる平台に応じて別のファイルへ橋渡しする（Windows なら font-win.prf など）。
+
+最後に、冒険者が生まれるか読み込まれると、ゲームは次の利用者の設定のファイルを読み込もうとする。
+  <color:G>user.prf
+  user-$SYS.prf
+  $RACE.prf
+  $CLASS.prf
+  $PLAYER.prf</color>
+ここで $SYS は平台を表す 3 文字のシステムコードで、Windows 版なら <color:keyword>win</color>、Curses 版なら <color:keyword>gcu</color> である。$RACE はいまの冒険者の種族、$CLASS は職業の名、$PLAYER は冒険者の実際の名前である。ただし、ファイルシステムで使えない字が入っているときは別である（たとえば冒険者に <color:keypress>Mr. *WONDER*</color> と名づけるのはおそらく良くない）。利用者の設定のファイルは最後に読み込まれるので、システムの設定を自分の設定で上書きできる。例は下で述べる。
+
+設定のファイルは、さまざまな設定を組み立てるために読まれるコマンドの並びでできている。これを次に述べる。
+
+<topic:Commands><style:heading>設定のコマンド</style>
+
+設定を決めるコマンドは多くある。書き方は込み入っているが、たいていは <color:keypress>%</color>・<color:keypress>&</color>・<color:keypress>@</color> という画面のコマンドで手軽に済ませられ、書き方の悩みはゲームに任せられる。次の節で書き方の例をひとつ示し、それから、書き方の細かいところを隠すために作られた画面のコマンドで設定する道を述べる。
+
+<topic:Example><style:heading>ひとつの例</style>
+
+この例では、ゲームを起こして冒険者を読み込む。こちらの冒険者は工夫の無い<color:keyword>Test</color> という名前なので、この後 Test.prf と書いたら、そのファイル名を自分の冒険者の名前に読み替えてほしい。
+
+この例では、利用者の設定のコマンドをひとつ直に打ち込む。そのために、<color:keypress>!</color> のキーで使える<color:keyword>利用者の設定のコマンドを打つ</color>という特別なコマンドを使う。これには、使いたい設定のコマンドの正しい書き方と、値ごとの内部の番号を知っていなければならない。進んだコマンドなので、ふつうはもっと親しみやすいゲーム中のコマンド（この場合は見た目のためのもの）を使いたくなるだろう。
+
+@ を見飽きたとしよう。代わりに <color:y>@</color> にしてみよう。この変更をするには <color:keypress>!</color> と打ってから<color:keypress>R:0:11:@</color> と入れる。<color:keypress>R</color> の設定のコマンドは敵の種族（ご存じのとおり /lib/edit/r_info.txt で定めてある）の表示の値を決めるものである。ゲームは敵の種族の表の特別な 0 番を冒険者の表示の設定として使う。<color:keypress>R:0</color> と入れたのは、この値を上書きしたいという意味である。次の欄は使う属性である。16 色のうちひとつを表す 0 から 15 の値を入れる。ここでは黄色の 11 を選んだ。最後に、この敵の種族の字として @ をそのまま使う。このコマンドを打った後もまだ冒険者はただの @ のままだが、<color:keypress>^R</color> と打って描き直させれば、誇らしく <color:y>@</color> と出るはずである。
+
+ここでゲームを起こし直すと、この変更は失われる。<color:keyword>見た目をいじる</color>コマンドはすぐ後で述べるが、いまはとにかく <color:keypress>%</color> に続けて<color:keypress>1</color> を押して、いまの敵の種族の見た目を利用者の設定のファイルへ書き出してほしい。こちらでは Test.prf が既定として出る（思い出してほしいが、こちらの冒険者の名前は Test である）。この $NAME.prf という提案はそのままにしておくとよい。覚えているとおり、これは立ち上げのときゲームが自動で読み込もうとするファイルのひとつだからである。この値のままにしておけば、次にこの冒険者で遊ぶとき変更が自動で使われる。では <color:keypress>ENTER</color> を押して実際に設定を書き出そう。
+
+最後にひとこと。書き出した Test.prf のファイルは直に手で直してもよいし、消してもよい。これは例なのでおそらく消したいだろうが、ゲームは（既定では）いまの冒険者の利用者の設定をすべてここへ入れており、決めたマクロもここに入ることは知っておいてほしい。
+
+<topic:Visuals><style:heading>見た目をいじる（<color:keypress>%</color>）</style>
+
+さて、<color:keypress>R:0:11:@</color> のような呪文めいた指示を打ち込むのはうんざりだと思ったかもしれない。それなら安心してほしい。もっと楽な道がある。前の節と同じ変更を、見た目をいじる画面でやり直してみよう。<color:keypress>%</color> を押してから、敵の属性を変えるメニューの項目――数字で入れる <color:keypress>4</color> か、目で選ぶ <color:keypress>7</color>――を選ぶ。いや、両方を合わせよう。まず <color:keypress>4</color> を押し、それから <color:keypress>v</color> を押して目で選ぶやり方へ切り替える。（冒険者はふつうの敵ではないので、この道では目で選ぶやり方でしか触れない。）
+<style:screenshot>
+モンスターの見た目
+
+   名前                                                      番号  記号
+==============================================================================
+   <color:B>プレイヤー</color>                                           <color:B>01/40</color> <color:B>0</color>       @
+   <color:d>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#
+   <color:s>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:o>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:r>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:g>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:b>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:u>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:D>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:W>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:v>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:y>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:R>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:G>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:B>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:U>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+
+<dir>, ENTER to accept, 'c' to copy, ESC
+</style>
+では矢印キーで好きな見た目（この場合は黄色の @）を選ぶ。
+<style:screenshot>
+モンスターの見た目
+
+   名前                                                      番号  記号
+==============================================================================
+   <color:B>プレイヤー</color>                                           <color:B>0b/40</color> <color:B>0</color>       <color:y>@</color>
+   <color:d>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#
+   <color:s>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:o>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:r>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:g>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:b>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:u>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:D>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:W>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:v>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:y>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:R>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:G>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:B>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+   <color:U>6789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~#</color>
+
+<dir>, ENTER to accept, 'c' to copy, ESC</style>
+
+<color:keypress>ENTER</color> を押して変更を受け入れよう。
+
+これは前の節でやった <color:keypress>!</color> と<color:keypress>R:0:11:@</color> と同じ変更である。手間は少し増えるが、書き方も ASCII のキーコードも色の番号も覚えずに済む。
+
+変更を残したいときは、前と同じく <color:keypress>1</color> の項目で敵の見た目を書き出す。ほかの見た目の項目は自分で試してほしい。敵だけでなく、アイテムと地形の見た目も決められる。<color:G>この冒険者に覚えさせるため、変更は必ず書き出すこと。</color>
+
+<topic:Colors><style:heading>色をいじる（<color:keypress>&</color>）</style>
+
+この項目では、ゲームが使う基本の色を決められる。これは少し手間がかかる。画面の使い方は分かりやすい（<color:keypress>R</color>・<color:keypress>G</color>・<color:keypress>B</color> のキーで RGB の値を動かす）が、1 回押すごとに値が 1 しか増減しないので、望みの値に届くまで時間がかかる。ここでも<color:G>変更を書き出すのを忘れないこと。</color>
+
+平台によっては色を変えられないことがある。
+
+<topic:Options><style:heading>設定をいじる（<color:keypress>=</color>）</style>
+
+ゲームのさまざまな設定は別のところで説明している（<link:option.txt> を参照）。ここでは、設定を入れる・切るための設定のコマンドが 2 つあることだけ述べる。<color:keypress>Y:option_name</color> で入れ、<color:keypress>X:option_name</color> で切る（これには <color:keypress>!</color> を使う）。言うまでもなく、option_name は決めたい設定の正しい名前に置き換えること。内部の設定の名前の一覧は、前の橋渡しの先に載っている。
+
+<style:note>注意: <color:normal>ずるの設定は利用者の設定のコマンド X や Y では変えられない。<color:keyword>pref-opt.prf</color> のシステムの設定のファイルでも決められない。ずるをするには <color:keyword>allow_debug_opts</color> を入れてから、画面で設定を切り替えねばならない。ただし、そうすると冒険者にずるの印が付く。</color></style>
+
+<topic:CustomKeys><style:heading>キー設定をいじる（<color:keypress>@</color>）</style>
+
+「キー設定をいじる」のコマンドでは、<color:keyword>キーマップ</color>と<color:keyword>マクロ</color>を決めたり消したりできる。これは 1 回の論理的なキー押しを一連のキー押しへ結びつけるもので、ふつうのキーの働きを変えたり、ファンクションキーやテンキーのような特別なキーを、ときには Ctrl のような修飾キーと組み合わせて使ったりして、よく使う何度も打つコマンドを「自動で」行えるようにする。
+
+新しくなったキー設定の画面では、キー設定の組を読み込んだり保存したり、決めたキーを見て回ったり、1 つずつ直したり、保存していない変更を捨てたり、すべてを出荷時の既定へ戻したりできる。
+
+<topic:Macros><color:U>マクロ</color>
+
+マクロは一連のキー押しを表すものであり、キー押しのすべてに印字できる形があるわけではないので、マクロの引き金と働きはしばしば人の読める形に「符号化」せねばならない。
+
+<style:table>
+<color:U>  逃がし字  意味</color>
+  \xHH      16 進で HH 番の文字（\x1B は Escape）
+  \0oo-\3oo 8 進で oo 番の文字
+  \e        Escape（[Esc] と出る）
+  \b        Backspace（[Bksp] と出る）
+  \t        Tab（[Tab] と出る）
+  \n        改行
+  \r        Return / Enter（[Enter] と出る）
+  \s        Space（[Space] と出る）
+  \d        Delete / DEL（[Del] と出る）
+  \\        文字そのものの円記号
+  \^        文字そのもののキャレット
+  ^X        「control-X」の制御コード（^G は Ctrl-G）
+</style>
+
+簡単なバイトの形を持たない特別なキー――ファンクションキー・矢印キー・Home/End/Page Up/Page Down など――は、角かっこの中に本当の名前で書く。たとえば [F1]・[Left]・[Alt+g] である。文字そのものの "[" は \[ と書ける。誤った逃がし字と、知らない [名前] は、黙って無視されるのではなく撥ねられる。
+
+マクロの「働き」はほかのマクロの引き金と突き合わされないので、果てしない繰り返しは作れないことに注意。たいそう長いマクロも決められるが、元にある入力の仕組みによって長さに限りがあり、一般に引き金も働きも 1024 キーほどまでである。
+
+特別な "\" のコマンド（マクロの中では "\\" と符号化せねばならない）はマクロでたいそう役に立つ。これはすべてのキーマップを飛び越えて、次のキー押しを元の FroxComposband のコマンドとして扱わせるからである。FroxComposband のコマンドの一覧は 「command.txt」のヘルプを参照のこと。たとえば Shift-KP6 を "\" + "." + "6" へ結びつけるマクロは、どのキー設定を選んでいても、どんなキーマップを決めていても、「東へ走る」の働きを起こす。
+
+マクロは利用者の設定のファイルで 2 行 1 組として書ける。1 行は "A:<str>" の形で符号化したマクロの働きを定め、もう 1 行は "P:<str>" の形で符号化したマクロの引き金を定める。
+
+<topic:Keymaps><color:U>キーマップ</color>
+
+「キー設定をいじる」のコマンドでは<color:keyword>キーマップ</color>も決められる。これはマクロに近いものである。キーマップは 1 回のキー押しを一連のキー押しへ結びつけ、その一連はほかのキーマップもマクロも飛び越える。
+
+<style:note>キーマップはたいていの作り替えに向いており、複数の働きを続けてつなげたいときにも使える。ふつうはこちらを選ぶべきである。マクロが要るのは 2 つの場面だけである。ひとつは、引き金がゲームや端末からふつうの 1 回のキー押しとして見えない特別なキー――F1〜F12 を含む多くのファンクションキー・矢印・Home/End/Page Up/Page Down など――のときである。もうひとつは、持ち物・店・確かめの画面のようなメニューの中でその一連を起こせなければならないときである。ふつうの英字のキーにマクロを当てるのは、選ぶメニューでその字が働かなくなってもよいのでなければ避けること。</style>
+
+FroxComposband は、元のキー設定とローグライクのキー設定を元のコマンドへ結びつけるのにキーマップを使っており、冒険者が自分のキーマップを直したり足したりすることも許している。キーマップの働きはすべて、元のキー設定やローグライクのキー設定のキー押しではなく、元のコマンドで書かねばならないことに注意。元のキー設定は元のコマンドの組とほぼ同じだが、「数字」が ";" と向きへ結びつき、"5" が "," へ結びつき、いくつかの Ctrl キーがさまざまなものへ結びつく点が違う。元のコマンドの全体は「command.txt」を参照のこと。キーマップの使い道のひとつに、コマンドを "\x00" へ結びつけて「働かなくする」ことがある。
+
+キーマップは利用者の設定のファイルで"A:<str>" "C:<T>:<key>" の形の 2 行 1 組として書ける。<str> は符号化したキーマップの働き、<T> はキー設定（元が 0、ローグライクが 1）、<key> は符号化した引き金のキーである。
+
+<topic:MacroSamples><style:heading>マクロとキーマップの例</style>
+
+<color:G>例 1: 射撃</color>
+主に使う弾に <color:v>@f1=g</color> と刻み、<color:keypress>f1*5</color> か<color:keypress>*5f1</color> の並びを好きなマクロのキーへ結びつける。これで自動でいちばん近い敵に狙いを定め、刻んだ弾を撃つ。銘の =g のところは、戦いが終わったら弾を自動で拾わせる。（<color:keyword>use_old_target</color> の設定が既定どおり切ってあるなら <color:keypress>f1*5</color> を、入れてあるなら <color:keypress>*5f1</color> を使う。）
+
+<color:G>例 2: 休息</color>
+R&\r というマクロの並びを、たとえば F1 のような手近なキーへ足す。ふつう休むにはキーを 2 回押さねばならない（<color:keypress>R</color> と<color:keypress>Enter</color>）ので、休息をしょっちゅう中断される人にはこれが煩わしい。
+
+<color:G>例 3: 照明</color>
+照明の杖に <color:v>@ug</color> と刻み、<color:keypress>ug</color> の並びをたとえば F6 のような好きなキーへ結びつける。照明のロッドを見つけたら、マクロの働きを <color:keypress>za</color> へ変えるだけで、同じキーで部屋を照らし続けられる。
+
+<color:G>例 4: まとめて鑑定</color>
+鑑定の杖（充填が 50 回以上あるもの）に<color:v>@ui</color> と刻み、ui* を好きな知識のキーへ結びつける。袋が未鑑定のアイテムでいっぱいになったら、このマクロを使う。
+
+<color:G>例 5: 呪文</color>
+よく使う攻めの呪文が、<color:v>@mf</color> と刻んだ本の<color:keypress>e</color> の呪文だとしよう。ここでは <color:keypress>y</color> を引き金のキーにする。この引き金にはマクロではなくキーマップが要る。そうしないと <color:keypress>y</color> のキーのふつうの働きを邪魔してしまうからである。<color:keypress>y</color> のキーマップを作り、働きを <color:keypress>mfe</color> にする。さらに一歩進んでいちばん近い敵に自動で狙いを定めたいなら、<color:keypress>mfe*5</color> か<color:keypress>*5mfe</color> にする。呪文の例はほかにも <link:magic.txt#Macros> を参照のこと。
+
+<color:G>例 6: スクリーンショット</color>
+スクリーンショットのキー <color:keypress>)</color> は決まった場面でしか働かず、メッセージのような面白い中身を消してしまうことがあるという点で、いくらか使いどころが限られる。特別なキー <color:keypress>x1d</color>（キーコード 29）ならいつでもそうした難点なしに画面を写せるが、キーボードや平台によってはキーコード 29 を実際に出す道が無い。\x1d というマクロの並びをたとえば F11 のような好きなキーへ足せば、好きなときに画面を写せる。（これはキーマップではなくマクロでなければならないことに注意。）
+
+<style:note>マクロとキーマップを次の遊びでも使いたいなら、ファイルへ保存するのを忘れないこと。</style>
+<color:D>
+最初       : Alexander Cutler・Andy Astrand
+更新       : (2.7.6) Russ Allbery (rra@cs.stanford.edu)
+更新       : (2.7.9) Ben Harrison (benh@phial.com)
+更新       : Zangband 2.2.0 から 2.2.6c まで Robert Ruehlmann
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.7.0
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.1.liquorice
+</color>

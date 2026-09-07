@@ -1,0 +1,124 @@
+# File: limits.txt
+#
+# -----------------------------------------------------------------------------
+# vim: ft=conf
+#
+# The line above must be within the first 1-5 lines of this file. It is a
+# modeline for vim/neovim to parse this file as a "config" file, which
+# visually highlights `# ...` lines as comments, making this file easier to
+# parse and edit for a human.
+# -----------------------------------------------------------------------------
+#
+# This file is used to create the `lib/data/limits.raw` file, which is
+# used to initialize the "array sizes" information for Sil.
+#
+# Do not modify this file unless you know exactly what you are doing,
+# unless you wish to risk possible system crashes and broken savefiles.
+#
+#
+# === Understanding limits.txt ===
+#
+# M:code:value
+#
+# 'M' is the limit marker followed by a code letter and one or more values.
+#
+# Limit codes:
+#   M:F:value - Max number of feature/terrain types
+#   M:K:value - Max number of object kinds
+#   M:B:value - Max number of abilities
+#   M:A:special:normal:random:self-made - Max numbers of artefacts
+#               Important note: Changing these numbers will almost always break
+#               savefile compatibility!
+#   M:E:value - Max number of special item (ego) types
+#   M:R:value - Max number of monster races
+#   M:G:value - Max number of ghost templates
+#   M:V:value - Max number of vaults
+#   M:P:value - Max number of player races
+#   M:C:value - Max number of player houses
+#   M:H:value - Max number of player history lines
+#   M:Q:value - Max number of quests
+#   M:L:value - Max number of flavors
+#   M:O:value - Max number of objects on level
+#   M:N:value - Size of names array (bytes)
+#   M:T:value - Size of descriptions array (bytes)
+#
+#
+# === Notes ===
+#
+# - These numbers are all actually the maximum + 1, (except for the artefact
+#   non-total numbers).
+
+
+# Version stamp (required)
+
+V:1.5.1
+
+
+# Maximum number of feature types
+M:F:86
+
+# Maximum number of object kinds
+M:K:600
+
+# Maximum number of abilities
+M:B:240
+
+# Maximum number of total artefacts
+#
+# Changing these numbers will almost always break savefile compatibility!
+#
+# M:A:special:normal:random:self-made
+#
+#   special artefacts:     (1 to this number - 1)
+#   normal artefacts:      ((special) to (special + this number - 1))
+#   random artefacts:      ((normal artefacts) to (normal artefacts + this number - 1))
+#   self-made artefacts:   ((random artefacts) to (random artefacts + this number - 1))
+#   total artefacts        = special + normal + random + self-made
+M:A:20:180:1:50
+
+# Maximum number of special item types
+M:E:145
+
+# Maximum number of monster races
+M:R:656
+
+# Maximum number of permanent maintainer ghost templates (in *angband/lib/bones)
+M:G:19
+
+# Maximum number of vaults
+M:V:500
+
+# Maximum number of player races
+M:P:4
+
+# Maximum number of player houses
+M:C:11
+
+# Maximum number of player history lines
+M:H:165
+
+# Maximum number of quests (including a slot for random quests)
+M:Q:4
+
+# Maximum number of flavors
+M:L:310
+
+# Maximum number of objects on the level
+M:O:512
+
+# Previously we had the maximum number of monsters on the level here
+# but it has been made into a compile-time #define
+
+
+###############################################################################
+# Array sizes (in bytes) for some initialization stuff
+###############################################################################
+
+# Size of the "fake" array for reading in names of monsters, objects,
+# artefacts, store-owners, player-races, ...
+M:N:20480
+
+# Size of the "fake" array for reading in the descriptions of monsters,
+# vaults, and the player-histories
+M:T:65440
+

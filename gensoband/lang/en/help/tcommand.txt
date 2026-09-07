@@ -1,0 +1,271 @@
+=== What differs from Hengband ===
+
+Keine: "Most of you will only need to know what differs from Hengband, so let
+me begin with that.
+
+The important point first.
+In Gensoband a class ability is used with the 'J' command, not with 'm'.
+The 'j' command shows the description of a class ability.
+(In the roguelike keyset, 'S' uses an ability and 'P' describes it.)
+
+So it is divided up: 'J' for class abilities, 'm' for spells, 'U' for racial
+powers. The 'b' command shows descriptions not only of spells but of all of
+these.
+
+Next, the "jam a door" command has been removed. There is no spike item
+either.
+
+From version 1.1.27 on, spellcasting classes alone can use the "barrier
+guard" with the Ctrl-'g' command. See the "odds and ends" chapter for details.
+
+And when you want to set off a trap on the floor deliberately, the '>'
+command will step onto it for you. That way you can drop through a trapdoor,
+or scatter sleeping gas over everything around you.
+
+Those are all the differences that concern commands."
+
+***** <Turn>
+=== Action commands and the rest ===
+
+Keine: "Commands fall broadly into two kinds:
+commands with which you do something, and commands with which you look at
+something, examine something or change a setting.
+
+Doing something costs energy and the monsters around you move; the other
+commands cost no energy at all.
+Look around you, check your equipment or set your options as much as you
+please.
+
+
+***** <Keymapmode>
+=== The two keyset modes ===
+
+Keine: "There are two modes for the command layout of the keyboard.
+
+One is the "original keyset".
+Directions come from the number pad, which is easy and natural to use, but
+your right hand travels back and forth between the pad and the letter keys,
+which is a little inefficient.
+
+The other is the "roguelike keyset".
+This uses no number pad; everything is done from the ordinary keys.
+The direction keys resemble the cursor movement of vi -- will that mean
+anything to you? It is rather forbidding at first.
+But you can play on a laptop with no number pad, and your right hand does not
+wander, so it is efficient.
+
+The original keyset is the initial setting.
+This help file explains the commands on the assumption of the original keyset.
+You can change the setting from the option command ('=')."
+
+***** <ComWindow>
+=== The command window ===
+
+Keine: "Everything you do in Gensoband is done, in principle, by typing a
+command on the keyboard. There are nearly a hundred commands, which must be a
+high wall for a newcomer.
+
+But do not worry. When the game is waiting for a command, try pressing the
+Enter key. A command window appears, much like the one in a certain famous
+console RPG. From there you can easily find the command you need.
+Work from this command window at first, and learn the commands you use most
+often, one after another.
+
+I am sorry to say that some classes use a special selection menu of their own
+which the command window does not handle. Those you must drive from the
+keyboard."
+
+***** <SpecialKey>
+=== Special commands ===
+
+Keine: "Let me describe a few of the more unusual commands.
+
+- Using the command menu
+  As I said, the Enter key.
+
+- Cancelling
+  If you change your mind while typing a command, press the 'ESC' key.
+
+- Repeating the last key
+  Use the 'n' key. This works not only in the field but inside a shop as well.
+
+- Repeating a set number of times
+  Type the '0' key, then the number of repetitions, then the command you want
+  repeated. Disarming and tunnelling repeat by themselves without this.
+
+- The control key
+  You hold down Ctrl, of course, but on some systems the OS takes the key and
+  it does not work. When that happens, try the '^' key. The key you press
+  after it is treated as though Ctrl had been held down.
+
+
+***** <OriginalKeyset>
+=== The original keyset in brief ===
+
+     Original Keyset Directions
+
+              7  8  9
+              4     6
+              1  2  3
+
+ Return key  Open the command menu
+ a  Aim a wand                           A  Activate an equipment
+ b  Browse magic list                    B  Bash a door
+ c  Close a door                         C  Character description
+ d  Drop an item                         D  Disarm a trap
+ e  Equipment list                       E  Eat some food
+ f  Fire an item                         F  Fuel your lantern/torch
+ g  Stay still (flip pickup)             G  Gain new spells/prayers
+ h  (unused)                             H  (unused)
+ i  Inventory list                       I  Observe an item
+ j  Browse class abilities               J  Use a class ability
+ k  Destroy an item                      K  (unused)
+ l  Look around                          L  Locate player on map
+ m  Cast a spell / use mental power      M  Full dungeon map
+ n  Repeat last command                  N  (unused)
+ o  Open a door or chest                 O  (unused)
+ p  Command your pets                    P  (unused)
+ q  Quaff a potion                       Q  Quit (commit suicide)
+ r  Read a scroll                        R  Rest for a period
+ s  Search for traps/doors               S  Toggle search mode
+ t  Take off equipment                   T  Dig a tunnel
+ u  Use a staff                          U  Use a racial/class power
+ v  Throw an item                        V  Version info
+ w  Wear/wield equipment                 W  (unused)
+ x  (unused)                             X  (unused)
+ y  (unused)                             Y  (unused)
+ z  Zap a rod                            Z  (unused)
+ !  (unused)                            ^A  (special - wizard command)
+ @  Interact with macros                ^B  (unused)
+ #  (unused)                            ^C  (special - break)
+ $  Reload Auto-picker pref             ^D  (unused)
+ %  Interact with visuals               ^E  Toggle choice window
+ ^  (special - control key)             ^F  Repeat level feeling
+ &  Interact with colors                ^G  Barrier guard
+ *  Target monster or location          ^H  (unused)
+ (  Load screen dump                    ^I  (special - tab)
+ )  Dump screen dump                    ^J  (special - linefeed)
+ {  Inscribe an object                  ^K  (unused)
+ }  Uninscribe an object                ^L  (unused)
+ [  (unused)                            ^M  Open the unified command menu
+ ]  (unused)                            ^N  (unused)
+ -  Walk (flip pickup)                  ^O  (unused)
+ _  Edit auto-picker/destroyer pref     ^P  Show previous messages
+ +  Alter grid                          ^Q  Display quest info
+ =  Set options                         ^R  Redraw the screen
+ ;  Walk (with pickup)                  ^S  Save and don't quit
+ :  Take notes                          ^T  (unused)
+ '  (unused)                            ^U  (unused)
+ "  Enter a user pref command           ^V  Output rand artifacts list
+ ,  Stay still (with pickup)            ^W  (special - wizard mode)
+ <  Go up staircase (Enter global map)  ^X  Save and quit
+ .  Run                                 ^Y  (unused)
+ >  Go down staircase(Enter normal map) ^Z  (unused)
+ \  (special - bypass keymap)            |  Check play record
+ `  (special - escape)                   ~  Check various information
+ /  Identify symbol                      ?  Help
+
+
+***** <RogueKeyset>
+=== The roguelike keyset in brief ===
+
+     Roguelike Keyset Directions
+
+              y  k  u
+              h     l
+              b  j  n
+
+ Return key  Open the command menu
+ a  Zap a rod (Activate)                 A  Activate an equipment
+ b  (walk - south west)                  B  (run - south west)
+ c  Close a door                         C  Character description
+ d  Drop an item                         D  Disarm a trap
+ e  Equipment list                       E  Eat some food
+ f  Bash a door (force)                  F  Fuel your lantern/torch
+ g  Stay still (flip pickup)             G  Gain new spells/prayers
+ h  (walk - west)                        H  (run - west)
+ i  Inventory list                       I  Observe an item
+ j  (walk - south)                       J  (run - south)
+ k  (walk - north)                       K  (run - north)
+ l  (walk - east)                        L  (run - east)
+ m  Cast a spell / use mental power      M  Full dungeon map
+ n  (walk - south east)                  N  (run - south east)
+ o  Open a door or chest                 O  Use a racial/class power
+ p  Command your pets                    P  Browse magic list
+ q  Quaff a potion                       Q  Quit (commit suicide)
+ r  Read a scroll                        R  Rest for a period
+ s  Search for traps/doors               S  Use a class ability
+ t  Fire an item                         T  Take off equipment
+ u  (walk - north east)                  U  (run - north east)
+ v  Throw an item                        V  Version info
+ w  Wear/wield equipment                 W  Locate player on map
+ x  Look around                          X  (unused)
+ y  (walk - north west)                  Y  (run - north west)
+ z  Aim a wand (Zap)                     Z  Use a staff (Zap)
+ !  (unused)                            ^A  (special - wizard command)
+ @  Interact with macros                ^B  (tunnel - south west)
+ #  Toggle search mode                  ^C  (special - break)
+ $  Reload Auto-picker pref             ^D  Destroy item
+ %  Interact with visuals               ^E  Toggle choice window
+ ^  (special - control key)             ^F  Repeat level feeling
+ &  Interact with colors                ^G  Barrier guard
+ *  Target monster or location          ^H  (tunnel - west)
+ (  Load screen dump                    ^I  (special - tab)
+ )  Dump screen dump                    ^J  (tunnel - south)
+ {  Inscribe an object                  ^K  (tunnel - north)
+ }  Uninscribe an object                ^L  (tunnel - east)
+ [  Repeat last command                 ^M  Open the unified command menu
+ ]  (unused)                            ^N  (tunnel - south east)
+ -  Walk (flip pickup)                  ^O  (unused)
+ _  Edit auto-picker/destroyer pref     ^P  Show previous messages
+ +  Alter grid                          ^Q  Display quest info
+ =  Set options                         ^R  Redraw the screen
+ ;  Walk (with pickup)                  ^S  Save and don't quit
+ :  Take notes                          ^T  Dig a tunnel
+ '  (unused)                            ^U  (tunnel - north east)
+ "  Enter a user pref command           ^V  Output rand artifacts list
+ ,  Run                                 ^W  (special - wizard mode)
+ <  Go up staircase (Enter global map)  ^X  Save and quit
+ .  Stay still (with pickup)            ^Y  (tunnel - north west)
+ >  Go down staircase(Enter normal map) ^Z  (unused)
+ \  (special - bypass keymap)            |  Check play record
+ `  (special - escape)                   ~  Check various information
+ /  Identify symbol                      ?  Help
+
+
+***** <Macro>
+=== Simple macro examples ===
+
+Keine: "Let me explain the macros.
+A macro is a way of assigning a run of commands to a key of your choosing.
+The macro commands are reached with the '@' key.
+
+Macros will make your adventure dramatically more efficient, but inscriptions
+come into it as well and they are quite hard until you are used to them.
+Let me give a few examples for the shooting and spellcasting classes.
+A newcomer need not touch any other macro.
+
+First, a macro for shooting.
+'@' -> '4' (create a macro) -> it asks which key to bind, so type 'x' and
+wait about a second -> type "\e\e\ef1*t\e" -> '2' (append macros to a file).
+Next, inscribe the arrows you carry with "=g@f1" using the '{' command.
+Now pressing the x key alone shoots at the nearest monster.
+The arrows you fire are picked up automatically as you walk over them.
+Use whatever key you like in place of x -- one of the unused keys in the list
+above is best. F1 to F12 can be bound as well.
+
+Next, a macro for spells.
+'@' -> '4' (create a macro) -> type 'x' and wait about a second ->
+type "\e\e\emaa\e" -> '2' (append macros to a file).
+Next, inscribe the spellbook you want with "@ma" using the '{' command.
+Now pressing the x key casts the first spell in that book.
+If it is an attack spell, type "\e\e\emaa*t\e" instead, and it should cast at
+the nearest enemy. For the second spell, change the maa part to mab.
+
+The '\e' in a macro stands for the ESC key.
+If you press the macro key by accident when the game is not waiting for a
+command, there is no telling what you would do, so hammering ESC first breaks
+off whatever was going on. There is also '\r' for the Return key, and others.
+
+If you want to know more about macros, see the help on the user preference
+files."

@@ -1,0 +1,74 @@
+<style:title>買い物</style>
+
+<color:keyword>早見表</color>は <link:context_shop.txt#QuickRef>、買い物の詳しい話は <link:town.txt#Shopping> にある。
+
+地上の町にはいくつも店があり、物資を買ったり要らないアイテムを売ったりできる。店はそれぞれ扱うアイテムが決まっている――武器専門店は武器（近接も飛び道具も）を、防具屋は防具を売る。錬金術の店は薬と巻物を、雑貨屋は食料・ランタン・油といった基本の道具を売る。どの町にもブラックマーケットがあり、法外な値段ではあるが、ふつうはダンジョンでしか手に入らないアイテムを買える。
+
+<topic:Tutorial><style:heading>はじめての買い物</style>
+
+店に入ると、店主と売り物を並べた画面が出る:
+<style:screenshot> <indent>
+    <color:U>冷酷ヴェンジェラ (ハーフトロル)</color>                            <color:G>防具屋</color> (<color:r>15000</color>)  
+
+    アイテムの説明                                                  重さ   値段
+ a) <color:U>(</color> <color:s>守りの軟革よろい [4,+16]</color>                                   8.0 lbs <color:D> 10400</color>
+ b) <color:y>(</color> <color:s>防護服 [6,+4]</color>                                              8.0 lbs   1010
+ c) <color:y>(</color> <color:s>防護服 [6,+0]</color>                                              8.0 lbs    272
+ d) <color:U>(</color> <color:s>革製スケイル・メイル (-1) [11,+0]</color>                         14.0 lbs   1540
+ e) <color:U>(</color> <color:s>皮ジャケット (-1) [12,+0]</color>                                 13.0 lbs   1870
+ f) <color:u>]</color> <color:U>硬革帽子 [2,+3]</color>                                            1.5 lbs    546
+ g) <color:s>]</color> <color:U>金属帽子 [3,+0]</color>                                            2.0 lbs     35
+ h) <color:U>]</color> <color:U>鋲付き革グローブ (+1) [1,+0]</color>                               0.5 lbs   1010
+ i) <color:U>]</color> <color:U>鋲付き革グローブ (+1) [1,+0] {25% off}</color>                     0.5 lbs    758
+ j) <color:U>]</color> <color:U>軟革ブーツ [2,+0]</color>                                          2.0 lbs     10
+ k) <color:U>]</color> <color:U>硬革ブーツ [3,+0]</color>                                          4.0 lbs     35
+ l) <color:s>]</color> <color:U>鉄鋲底の靴 (+2) [4,+0]</color>                                     8.0 lbs <color:D>  2220</color>
+
+所持金: <color:y>1.94k</color>
+
+<color:G>[<color:o>b/p/g</color>] 買う  [<color:o>s/d</color>] 売る  [<color:o>x</color>] 調べる  [<color:o>?</color>] ヘルプ  [<color:o>q/Esc</color>] 出る</color>
+<color:G>[<color:o>R</color>] 取り置き  [<color:o>S</color>] 品揃えを入れ替え  [<color:o>B</color>] 全部買う</color>
+<color:G>[<color:o>Space/PgDn</color>] 次の頁  [<color:o>-/PgUp</color>] 前の頁  <color:w>[</color><color:o>U</color><color:w>] 不要なアイテムを隠す (<color:y>N</color>)</color>
+</indent></style>
+使えるコマンドは画面の下に出ている。目当てのコマンドを選び、あとは出てくる指示に従えばよい。品揃えが 1 頁に収まらないときは <color:keypress>Page Up</color> と <color:keypress>Page Down</color> で送る。
+
+<color:keypress>u</color> か <color:keypress>U</color> を押すと、モガミネーターの規則で「不要」と分類したアイテムを隠すかどうかを切り替えられる。隠している間は下の帯のその項目が赤くなり、<color:keypress>不要なアイテムも出す</color> と読める。帯には隠れている行の数（積み重ねごとに 1 行）が出て、店の品揃えが変わるたびに数え直される。モガミネーターを使わない設定にしていると、<color:keypress>u</color> はまずそれを有効にする手順を教えてくれる。
+
+店主の手持ちの金には限りがあり、売ったアイテムにはその範囲までしか払ってもらえない。いくら持っているかは画面上部の店の種類の隣に出ている。
+
+<topic:QuickRef><style:heading>早見表</style>
+  <indent><color:G>基本のコマンド</color>
+<color:keypress>p b g</color>     店のアイテムを買う
+<color:keypress>s d</color>       店にアイテムを売る
+<color:keypress>x</color>         店のアイテムを調べる
+<color:keypress>B</color>         店の品揃えをまとめて買い占める
+<color:keypress>S</color>         金を払って品揃えを入れ替えてもらう
+<color:keypress>R</color>         あとで買うために店のアイテムを取り置く
+<color:keypress>u U</color>       不要なアイテムを一覧から隠すかどうかを切り替える
+<color:keypress>q Esc</color>     店を出る
+
+<color:G>そのほかのコマンド</color>
+<color:keypress>w</color>         アイテムを身に着ける
+<color:keypress>t T</color>       身に着けたアイテムを外す
+<color:keypress>k ^D</color>      持ち物のアイテムを壊す
+<color:keypress>e</color>         装備を見る
+<color:keypress>i</color>         持ち物を見る
+<color:keypress>I</color>         持ち物のアイテムを調べる
+<color:keypress>Tab</color>       持ち物／装備のサブウィンドウを切り替える
+<color:keypress>{</color>         持ち物のアイテムに銘を刻む
+<color:keypress>}</color>         ダンジョンの覚え書きの画を開く
+<color:keypress>C</color>         人物調書を見る
+
+<style:note>註: この<color:keyword>そのほかのコマンド</color>は、店を出ずに使えるよう、ふだんのゲームのコマンドをそのまま持ち込んだものである。ただしここでのキーの割り当ては<color:keyword>コードに直に書かれて</color>いるので、自分で設定したキーマップは効かない。</style>
+
+<color:G>画面送り</color>
+<color:keypress>Page Up</color>   長い品書きを送る
+<color:keypress>Page Down</color>
+<color:keypress>Space</color>     Page Down と同じ
+<color:keypress>-</color>         Page Up と同じ
+
+<color:G>表示の設定</color>
+<color:keypress>^W</color>        重さの表示を切り替える (<link:option.txt#show_weights> を見よ)
+<color:keypress>^P</color>        魔法の道具の威力の表示を切り替える (<link:option.txt#show_power> を見よ)
+<color:keypress>^G</color>        絵の表示を切り替える (<link:option.txt#show_item_graph> を見よ)
+</indent>

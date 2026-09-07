@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- backup_rules.xml と同じ方針（Android 12 以降はこちらが使われる）。 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="file" path="lib/save/" />
+        <include domain="file" path="hd2d.cfg" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="file" path="lib/save/" />
+        <include domain="file" path="hd2d.cfg" />
+    </device-transfer>
+</data-extraction-rules>

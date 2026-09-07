@@ -1,0 +1,68 @@
+// 場面 → 環境音の**土台**
+//
+// **上から順に見て、最初に当たった規則の bed を鳴らす。**当たらなければ鳴らさない。
+// bed は assets/audio/bed/<名前>.wav（読めなければ黙って無音）。
+//
+// ここで決まるのは**土台 1 本だけ**である。草・葉・水・海鳴り・岩・溶岩・沼・
+// ガラス・閉塞・生き物の**層は周囲の内訳から自動で乗る**（ambience_mix.cpp）ので、
+// ここに書く必要は無い。
+//
+// when に書ける条件（書かないものは問わない）:
+//   floor      … 1=地上 2=ダンジョン 3=クエスト階 4=闘技場
+//   dungeon    … ダンジョンの番号（DungeonDefinitions.jsonc の id）
+//   town       … 町の番号（町の中でなければ 0）
+//   depth_min / depth_max … 階の深さ
+//   wild       … 広域マップか
+//   night      … 夜か（6:00 未満と 18:00 以降）
+//   time       … 時刻の帯。dawn(6-9) / day(9-15) / dusk(15-18) / night(18-6)
+//   ground     … 足元の材料。周囲の内訳から決まる（§8.1）
+//                stone / grass / forest / dirt / swamp / water / deep_water /
+//                lava / rock / glass
+//
+// bed に空文字を書くと「**ここでは鳴らさない**」の明示になる（後ろの広い規則へ落ちない）。
+{
+  "rules": [
+    // ---- 闘技場・クエスト階（場所が特別なので先に採る） ----
+    { "when": { "floor": 4 }, "bed": "arena" },
+    { "when": { "floor": 3 }, "bed": "quest" },
+
+    // ---- 広域マップ（§8.7）----
+    // **地形では切り替えない。**1 マスが荒野 1 つぶんなので、切り替えの落ち着き待ちが
+    // 追いつかない。旅の土台 1 本に、時刻の層だけを乗せる。
+    { "when": { "wild": true }, "bed": "wild_travel" },
+
+    // ---- 町（§8.7。町ごとに分ける。時刻は層で出す）----
+    { "when": { "town": 1 }, "bed": "town_outpost" },
+    { "when": { "town": 2 }, "bed": "town_telmora" },
+    { "when": { "town": 3 }, "bed": "town_morivant" },
+    { "when": { "town": 4 }, "bed": "town_angwil" },
+    { "when": { "town": 5 }, "bed": "town_zul" },
+    // 名前の無い町（クエストの町など）に落ちたとき用。
+    { "when": { "floor": 1, "town": 0, "ground": "stone" }, "bed": "town_outpost" },
+
+    // ---- 専用のダンジョン 4 本（§8.6。層では絶対に出ない性格のもの）----
+    { "when": { "dungeon": 20 }, "bed": "dungeon_glass" },
+    { "when": { "dungeon": 10 }, "bed": "dungeon_heaven" },
+    { "when": { "dungeon": 9 }, "bed": "dungeon_hell" },
+    { "when": { "dungeon": 11 }, "bed": "dungeon_sunken" },
+
+    // ---- 地上（足元の材料で分ける。§8.5 の作る順に並べてある）----
+    { "when": { "floor": 1, "ground": "grass" }, "bed": "field_grass" },
+    { "when": { "floor": 1, "ground": "forest" }, "bed": "field_forest" },
+    { "when": { "floor": 1, "ground": "rock" }, "bed": "field_mountain" },
+    { "when": { "floor": 1, "ground": "water" }, "bed": "field_shore" },
+    { "when": { "floor": 1, "ground": "deep_water" }, "bed": "field_sea" },
+    { "when": { "floor": 1, "ground": "swamp" }, "bed": "field_swamp" },
+    { "when": { "floor": 1, "ground": "dirt" }, "bed": "field_dirt" },
+    { "when": { "floor": 1, "ground": "lava" }, "bed": "field_lava" },
+    // 材料が分からない地上（数えていないコア）は草原に落とす。
+    { "when": { "floor": 1 }, "bed": "field_grass" },
+
+    // ---- ダンジョン（深さ 3 段。§8.6）----
+    // **地形はここでは見ない。**森のダンジョン（id 7）も山（id 14）も、
+    // 葉・岩・水の層が周囲から自動で乗るので差が付く。
+    { "when": { "floor": 2, "depth_max": 20 }, "bed": "cave_shallow" },
+    { "when": { "floor": 2, "depth_max": 60 }, "bed": "cave_deep" },
+    { "when": { "floor": 2 }, "bed": "cave_abyss" }
+  ]
+}

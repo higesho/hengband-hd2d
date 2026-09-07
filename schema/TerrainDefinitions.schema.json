@@ -1,0 +1,373 @@
+{
+  "type": "object",
+  "required": ["version", "terrains"],
+  "properties": {
+    "version": {
+      "type": "number",
+      "description": "Version情報"
+    },
+    "terrains": {
+      "type": "array",
+      "description": "地形情報定義の配列",
+      "items": {
+        "type": "object",
+        "required": ["id", "key", "name", "symbol", "flags"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "key": {
+            "description": "地形の識別子",
+            "type": "string"
+          },
+          "name": {
+            "type": "object",
+            "description": "地形のゲーム内表記",
+            "required": ["ja", "en"],
+            "properties": {
+              "ja": {
+                "type": "string"
+              },
+              "en": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "symbol": {
+            "type": "object",
+            "description": "地形の表示シンボル",
+            "required": ["character", "color", "lit"],
+            "properties": {
+              "character": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1
+              },
+              "color": {
+                "type": "string"
+              },
+              "lit": {
+                "description": "地形が明るいかどうか",
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "mimic": {
+            "description": "他の地形への模倣 例:罠→床",
+            "type": ["string", "null"]
+          },
+          "map_priority": {
+            "description": "マップ表示優先度",
+            "type": ["integer", "null"]
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ACID_PUDDLE",
+                "AVOID_RUN",
+                "BASH",
+                "BLDG",
+                "CAN_DIG",
+                "CAN_FLY",
+                "CAN_PASS",
+                "CAN_SWIM",
+                "CLOSE",
+                "COLD_PUDDLE",
+                "DEEP",
+                "DISARM",
+                "DROP",
+                "ELEC_PUDDLE",
+                "ENTRANCE",
+                "FLOOR",
+                "GLASS",
+                "GLOW",
+                "HAS_ITEM",
+                "HIT_TRAP",
+                "CAN_DISINTEGRATE",
+                "STONE",
+                "LAVA",
+                "UP_STAIRS",
+                "LOS",
+                "MIRROR",
+                "DOWN_STAIRS",
+                "MOUNTAIN",
+                "MOVE",
+                "NOTICE",
+                "OPEN",
+                "PATTERN",
+                "PERMANENT",
+                "PLACE",
+                "PLANT",
+                "POISON_PUDDLE",
+                "PROJECTION",
+                "QUEST",
+                "QUEST_ENTER",
+                "QUEST_EXIT",
+                "REMEMBER",
+                "RUNE_EXPLOSION",
+                "RUNE_PROTECTION",
+                "SECRET",
+                "SHAFT",
+                "SHALLOW",
+                "SPECIAL",
+                "SPIKE",
+                "STAIRS",
+                "STORE",
+                "TELEPORTABLE",
+                "TOWN",
+                "TRAP",
+                "TREE",
+                "WALL",
+                "WATER"
+              ]
+            }
+          },
+          "trap": {
+            "type": ["object", "null"],
+            "required": ["type", "power"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "TRAPDOOR",
+                  "PIT",
+                  "SPIKED_PIT",
+                  "POISON_PIT",
+                  "TY_CURSE",
+                  "TELEPORT",
+                  "FIRE",
+                  "ACID",
+                  "SLOW",
+                  "LOSE_STR",
+                  "LOSE_DEX",
+                  "LOSE_CON",
+                  "BLIND",
+                  "CONFUSE",
+                  "POISON",
+                  "SLEEP",
+                  "TRAPS",
+                  "ALARM",
+                  "OPEN",
+                  "ARMAGEDDON",
+                  "PIRANHA"
+                ]
+              },
+              "power": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              }
+            },
+            "additionalProperties": false
+          },
+          "door": {
+            "type": ["object", "null"],
+            "required": ["power"],
+            "properties": {
+              "power": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              }
+            },
+            "additionalProperties": false
+          },
+          "tunnel": {
+            "type": ["object", "null"],
+            "required": ["power"],
+            "properties": {
+              "power": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              }
+            },
+            "additionalProperties": false
+          },
+          "pattern": {
+            "type": ["object", "null"],
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "START",
+                  "TILE_1",
+                  "TILE_2",
+                  "TILE_3",
+                  "TILE_4",
+                  "END",
+                  "OLD",
+                  "TELEPORT",
+                  "WRECKED"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "store": {
+            "type": ["object", "null"],
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "GENERAL",
+                  "ARMOURY",
+                  "WEAPON",
+                  "TEMPLE",
+                  "ALCHEMIST",
+                  "MAGIC",
+                  "BLACK",
+                  "HOME",
+                  "BOOK",
+                  "MUSEUM"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "building": {
+            "type": ["object", "null"],
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "BUILDING_00",
+                  "BUILDING_01",
+                  "BUILDING_02",
+                  "BUILDING_03",
+                  "BUILDING_04",
+                  "BUILDING_05",
+                  "BUILDING_06",
+                  "BUILDING_07",
+                  "BUILDING_08",
+                  "BUILDING_09",
+                  "BUILDING_10",
+                  "BUILDING_11",
+                  "BUILDING_12",
+                  "BUILDING_13",
+                  "BUILDING_14",
+                  "BUILDING_15",
+                  "BUILDING_16",
+                  "BUILDING_17",
+                  "BUILDING_18",
+                  "BUILDING_19",
+                  "BUILDING_20",
+                  "BUILDING_21",
+                  "BUILDING_22",
+                  "BUILDING_23",
+                  "BUILDING_24",
+                  "BUILDING_25",
+                  "BUILDING_26",
+                  "BUILDING_27",
+                  "BUILDING_28",
+                  "BUILDING_29",
+                  "BUILDING_30",
+                  "BUILDING_31"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "convert": {
+            "type": ["object", "null"],
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["FLOOR", "WALL", "INNER", "OUTER", "SOLID", "STREAM"]
+              },
+              "stream_index": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "additionalProperties": false
+          },
+          "generation": {
+            "type": ["object", "null"],
+            "required": ["changes"],
+            "properties": {
+              "changes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["terrain", "probability"],
+                  "properties": {
+                    "terrain": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "probability": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "interactions": {
+            "type": "object",
+            "description": "特定行動後の地形変化定義",
+            "properties": {
+              "BASH": {
+                "type": "string"
+              },
+              "CLOSE": {
+                "type": "string"
+              },
+              "DESTROYED": {
+                "type": "string"
+              },
+              "DISARM": {
+                "type": "string"
+              },
+              "DROP_GOLD": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*d[1-9][0-9]*$"
+              },
+              "ENSECRET": {
+                "type": "string"
+              },
+              "HIT_TRAP": {
+                "type": "string"
+              },
+              "MAY_HAVE_GOLD": {
+                "type": "string"
+              },
+              "OPEN": {
+                "type": "string"
+              },
+              "SECRET": {
+                "type": "string"
+              },
+              "SHAFT": {
+                "type": "string"
+              },
+              "SPIKE": {
+                "type": "string"
+              },
+              "UNPERM": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

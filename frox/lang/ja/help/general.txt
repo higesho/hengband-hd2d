@@ -1,0 +1,131 @@
+<style:title>全体の案内</style>
+
+この文書はゲームの手短な入門である。FroxComposband は FrogComposband を今に引き継いだ、一人で遊ぶダンジョン探索ゲームで、あなたはダンジョンの暗い底のどこかに潜む恐るべき<color:keyword>混沌のサーペント</color>を討つことを最後の目的とする冒険者を操る。その道すがら、数々の副次的な任務を果たし、強力な魔法の呪文を覚え、幻想的な怪物を倒すか手なずけ、素晴らしい財宝を手に入れ、暗い迷宮を渡り歩き、長い文をかき分け、外国の大衆文化への意味不明な引用に戸惑い、思うようにいかず机を何度も叩き、そうして願わくば大いに楽しむことになる。
+
+<topic:Help><style:heading>ヘルプの読み方</style>
+
+遊び始める前に 300 ページの説明書を読むことを作者が期待している――そんなゲームをあなたはいくつも見てきたことだろう。FroxComposband もその類だが、こちらの説明書は手のひらに収まる大きさではない。
+
+もちろん、遊ぶ前に全部を読む必要はない。飛び込んで、遊びながら仕組みを掴み、判らないことが出てきたらそのつどヘルプを引けばよい。このゲームで何をすることになっていて、それをどう進めるのか――そこが判る程度には読んでおくこと。この文書は読む価値が確かにあるし、<color:keyword>コマンドのヘルプ</color>（<link:command.txt>）もそうである。コマンドを知らなければ、ゲームの中で何ひとつできない。<color:keyword>初心者の手引き</color>（<link:tang.txt>）は、基本のあらましを手早く引く帳面として使ってもよいし、まったく開かずに済ませてもよい。<color:keyword>よくある質問</color>（<link:faq.txt>）は、最初のうちは冒頭を除いて飛ばしてよく、コマンドやそのほかの基本が掴めてから戻ってくるとよい。ほかの文書の多くは基本を（詳しさの度合いはさまざまに）扱っているが、この「よくある質問」はもっと進んだ話題を手早く見るのに向いている。
+
+ヘルプの中では、いくつかの言葉を<color:keyword>赤で強調</color>し、ときに<color:G>緑</color>や<color:y>黄</color>にしてある。大事に見せるためであり、頁を少しでも味気なくしないためでもある。<color:G>[角括弧]</color>に入った緑の字は文書のほかの場所へのリンクで、その字を押せばたどれる。<color:keypress>?</color> を押せばヘルプ自体のヘルプが出る。
+
+<topic:Basics><style:heading>ゲームの基本</style>
+
+ゲームを始める前に、冒険者を作らなければならない。種族・職業・性格・魔法領域・誕生の選択肢は数多くの中から選べる（<link:birth_contents.txt> を参照）が、最後の目的はいつも同じ――邪悪な混沌のサーペントを倒すことである。世界から悪を除くためにそうするのか、それとも次の支配者に成り代わるためなのかは、まったくあなた次第である……
+
+あなたは簡単なキー入力で冒険者を導き、世界を探り、役に立つアイテムを見つけ、鋼と魔法で怪物と戦う。サーペントを討つのはずっと先の目標で、一度の冒険に数日、数週、ときには数か月かかる。その最後の対決に備えるには、冒険から多くの<color:G>経験</color>を積み、身を守り力を高める、より値打ちのある魔法の<color:G>装備</color>を探し続けなければならない。
+
+このゲームには広大な<color:keyword>荒野</color>があり、多くの町と数多くのダンジョンが探索を待っている。たいていのダンジョンには最下層を守る主が居て、倒せば良い褒美が出ることが多い。ダンジョンにはそれぞれ趣向もある。たとえば<color:keyword>オークの洞窟</color>にはご想像のとおりオークが群れているが、まったく別の趣向のこともある――白兵戦を禁じた<color:keyword>反攻撃の洞窟</color>や、怪物が一体ずつ隔てられていて（たいていは）一対一で戦える<color:keyword>闘技場</color>のように。探るべきものは尽きないが、もっと簡素なゲームを望むなら、この荒野は無しにもできる。
+
+<topic:Modes><style:heading>遊び方の種類</color>
+
+遊び方はいくつかある。<color:keyword>初心者モード</color>は選べる種族と職業を絞り、性格の選択を無くし、誕生の選択肢を自動で決め、荒野を切る。誕生の手順を簡素にして、できるだけ早く本編に入れるようにしたものである。
+
+初心者モードを飛ばして<color:keyword>通常モード</color>から始める人も居る。こちらが普通の、想定された遊び方である。通常モードでは既定で荒野が有り（切ることもできる）、種族・職業・性格も全部選べる。目移りする覚悟をしておくこと。
+
+そして、数え切れないほどの強敵に死ぬのに飽きたなら、自分が怪物になって遊ぶ<color:keyword>モンスターモード</color>がある。多くの怪物の種類から一つを選び、その種の弱い個体として始め、経験を積んで強い姿へ進化していく。装備の扱いは大きく違うことがある――多くの怪物は独自の体つきをしており、生まれ持った攻撃（爪・牙・酸の偽足など）だけに頼って普通の武器を持てないものも居る。モンスターモードに職業の選択は無く、選んだ怪物の種類がそのまま種族でもあり職業でもある。
+
+<color:keyword>コーヒーブレイクモード</color>は、速さを上げて足早に進む版である。荒野が無く、同じ階を繰り返さず、序盤の階が狭く、怪物の落とすアイテムが増え、レベルが上がりやすい。<color:G>初心者モードを選ぶとコーヒーブレイクも自動で入る</color>が、通常モードとモンスターモードでも誕生の選択肢として選べるので、新しい人だけのものではない。「荒野を無くす」選択肢はコーヒーブレイクモードを前提に釣り合いを取ってあるので、コーヒーブレイクと荒野の両方を切るのは勧められない。
+
+<topic:First><style:heading>まず何をするか</style>
+
+冒険は<color:keyword>辺境の地</color>という町から始まる。ここでは店の主人と取り引きして、物資・武器・防具・魔法の道具を手に入れられる。生まれつきの装備が少しと、いくらかの金も持っている。
+
+まずは店を回り、要となる物資を買うとよい――<color:keyword>錬金術の店</color>でショート・テレポートとテレポートの巻物を、<color:keyword>寺院</color>で重傷の治癒の薬を。特に序盤は手に負えない状況に陥りやすいので、すぐ逃げる手と癒す手を持っておくことが欠かせない。金が余ったら、<color:keyword>雑貨屋</color>で初めの松明を真鍮のランタンに買い替えるのも考えたい。ランタンのほうが明るく、暗がりでも遠くまで見える。
+
+これでダンジョンへ降りる支度が整った。幻想的な冒険が待っている……が、その前に少し待ってほしい。辺境の地の領主ウルドリックの城を訪ねれば、特別な<color:keyword>町の依頼</color>が受けられる。先にそちらを片づけたくなるかもしれない。
+
+町と店については <link:town.txt> を、町の依頼の詳しい説明は <link:town.txt#TownQuests> を参照のこと。
+
+<topic:Dungeon><style:heading>ダンジョンへ</style>
+
+<style:note>註: このヘルプで荒野の無い遊び方を扱う所は、コーヒーブレイクモードが入っていることを前提にしている。初心者モードを選んだなら自動でそうなっている。</style>
+
+荒野を有りにして遊んでいるなら、まず探るべきダンジョンは<color:keyword>兎の巣穴</color>である。辺境の地の出発点のすぐ隣に入口がある小さなダンジョンで、多くのダンジョンと同じく主が居る――コボルドの王か君主かである。その階の割にはかなり手強いが、それはおおむね身の回りに従える大群のせいである。落ち着いて、軍勢をまとめて相手にすることを避ければ、大丈夫なはずである。ウルドリックの最初の町の依頼を果たして次を頼んであれば、兎の巣穴に<color:y>害獣退治</color>の依頼も現れる。この依頼を果たすのは、コボルドの君主に挑む備えとして申し分ない。ダンジョンで何が待つかについては <link:dungeon_contents.txt> を参照のこと。
+
+荒野を無しにして遊んでいるなら、ダンジョンの選択は少なくとも簡単である――<color:keyword>鉄獄</color>ただ一つしかない。ダンジョンの中でどちらへ進むかも簡単で、下へ潜るしかない。じきに（荒野ありの遊び方と同じ但し書きつきで）<color:y>害獣退治</color>のダンジョンの依頼が現れる。育ち始めの冒険者にとって、早い時期の分かれ道となる一戦である。ときおり無作為の<color:keyword>階の守護者</color>にも出会う。値打ちのあるアイテムを落とすので、力を尽くして倒すこと。ダンジョンでの冒険を十分にしたと思ったら、<color:keyword>帰還の詔</color>の巻物を読んで辺境の地へ戻ろう。
+
+<topic:Wilderness><style:heading>荒野</style>
+
+あなたの冒険は、広くて危険な荒野で繰り広げられる。幸い、旅立ちの地は辺境の地というわりあい安全な町だが、油断はできない。町の壁の内側であっても荒野はすぐそこで、危険な怪物が迷い込んでくる。
+
+始まりのダンジョンである<color:keyword>兎の巣穴</color>を（できれば辺境の地から行けるもう一つの序盤のダンジョン<color:keyword>隠れ家</color>も）征したら、荒れ地へ踏み出す備えができたはずである。光と食料はたっぷり要る。だがそれ以上に大事なのが<color:keyword>テレポート</color>で、荒野は危ない場所だからである。
+
+別の町へ向かうのが目的なら、あるいはダンジョンの入口を探すのが目的なら、旅には特別な<color:keyword>広域の荒野地図</color>（「全体地図」とも呼ばれる）を使うとよい。この特別な地図に入るのも出るのも、階段の上り下りと同じキーである。
+
+<style:note><color:keypress><</color> で広域地図に入り、<color:keypress>></color> で出る。</style>
+
+ただし気をつけること。目を覚ました敵に追われている間は、広域地図を眺めることはできても、その上を旅することはできない。また、広域地図の上でも<color:keyword>待ち伏せ</color>に遭うことがある。夜のほうが、そして人通りの多い道から離れるほど起こりやすい。逃げるためのテレポートの手が無いと、待ち伏せは命取りになりうる。
+
+全体地図では <color:keypress>*</color> のコマンドで見回して、町やダンジョンの入口を調べられる。ダンジョンや荒野のマスの危険度には目を配ること。見回している間、上の行に出る値で、旅に安全な（あるいは危険な）区域が判る。ダンジョンについては、いちばん浅い深さが出る。
+
+多くの町とダンジョンが待っている。序盤に探るのに向いたダンジョンには<color:keyword>オークの洞窟</color>・<color:keyword>潮の洞窟</color>・<color:keyword>ねばねば洞窟</color>・<color:keyword>迷宮</color>がある。<color:keyword>モリバント</color>・<color:keyword>アナンバール</color>・<color:keyword>サロス</color>の町にもかなり早く訪れておきたい――もっとも、サロスへ徒歩で向かうのは勧められないが……。地図の中ほど、モリバントの町の北東に、恐ろしき<color:keyword>鉄獄<color:normal>のダンジョンがある。混沌のサーペントの住みかであり、ゲームに勝つには彼を討たねばならない。
+<style:screenshot>
+<color:b>~~~~~~</color><color:B>~~~~</color><color:g>..</color><color:B>~~~</color><color:u>........</color><color:B>~~~~~~~~~</color><color:g>.......</color>...<color:g>.</color>......<color:G>#</color><color:B>~</color>........<color:g>...</color><color:B>~~~~</color><color:G>#</color>
+<color:b>~~</color><color:B>~~~~~~~</color><color:g>....</color>*....<color:u>.........</color><color:B>~~~~</color><color:g>......</color>...<color:g>......</color><color:G>#</color><color:B>~~~~</color><color:G>#</color><color:o>######</color>..<color:g>.</color><color:B>~~</color><color:g>..</color><color:B>~</color><color:G>#</color>
+<color:B>~~~~~~~~</color><color:g>.</color>.....<color:g>.</color><color:G>#</color><color:u>.</color>..<color:u>.....</color><color:v>></color><color:u>...</color><color:g>.....</color>.....<color:g>......</color><color:y>></color><color:g>.</color><color:G>#</color><color:B>~</color><color:G>###</color><color:o>########</color>..<color:B>~</color><color:g>...</color><color:B>~</color><color:G>#</color>
+<color:B>~~~~~~~~</color><color:g>.</color>.<color:g>...</color><color:G>###</color><color:u>..</color>..<color:u>.........</color><color:g>...</color>..<color:g>............</color><color:B>~~</color><color:G>###</color><color:o>#######</color><color:B>~~</color>.<color:B>~</color><color:g>...</color><color:B>~~</color>
+<color:B>~~~~~~~~</color><color:g>.</color>.<color:g>..</color><color:G>#####</color><color:u>..</color>....<color:u>......</color><color:g>..</color>..<color:g>...</color><color:o>###</color><color:g>.......</color><color:B>~</color><color:G>##</color><color:o>#########</color><color:B>~</color><color:o>#</color>.<color:g>......</color>
+<color:B>~~~~~~~~</color><color:g>.</color>.<color:g>...</color><color:G>#####</color><color:u>....</color>..<color:u>.....</color><color:g>.</color>..<color:g>.....</color><color:o>###</color><color:g>......</color><color:B>~~</color><color:G>#</color><color:o>###########</color>..<color:g>.....</color>
+<color:B>~~~~~~~~</color><color:g>.</color>.<color:g>....</color><color:G>##</color><color:o>##</color><color:u>.....</color>...<color:u>...</color>..<color:g>.....</color><color:o>#</color><color:g>.</color><color:o>#</color><color:g>........</color><color:B>~~~</color><color:v>></color><color:o>##########</color>...<color:g>...</color>
+<color:B>~~~~~~~~</color><color:g>.</color>.<color:g>..</color><color:o>#####</color><color:v>></color><color:g>..</color><color:u>.....</color>...<color:g>.</color>.<color:g>....</color><color:v>></color><color:g>..............</color><color:o>#</color><color:B>~~</color><color:o>###########</color>...<color:g>.</color>
+<color:B>~~~~</color><color:g>..</color>....<color:o>####</color><color:g>.............</color>...<color:g>............</color><color:B>....</color><color:g>...</color><color:o>##############</color><color:v>></color><color:o>#</color>..
+.<color:g>.</color><color:B>~~</color><color:g>.</color>..<color:B>~</color><color:g>.</color>..<color:g>...</color>.......<color:g>........</color>.....<color:g>......</color><color:B>....~~</color><color:g>....</color><color:o>################</color><color:g>.</color>
+......<color:B>~~</color><color:g>..</color>.....<color:g>.....</color>....<color:g>.........</color>..<color:g>....</color><color:B>...~~~~</color><color:g>...</color><color:o>##################</color>
+<color:g>.....</color><color:B>~~~~</color><color:g>.......</color><color:B>~~~</color><color:g>....</color>......<color:g>.....</color>.<color:g>....</color><color:B>..~~~~~</color><color:g>.....</color><color:o>################</color>
+<color:o>#</color><color:g>....</color><color:B>~~~~~~~~~~~~~~~</color><color:g>........</color>.....@*<color:g>...</color><color:B>..~~~~~</color><color:g>.</color>...<color:g>....</color><color:o>##############</color>
+<color:o>##</color><color:g>.</color><color:G>#</color><color:g>..</color><color:B>~~~~~~</color><color:g>.....</color><color:B>~~~~~~~~~~~</color>.<color:B>~~~</color><color:g>..</color>...<color:g>.</color><color:B>~~..</color>.....<color:G>#</color>...<color:g>...</color><color:o>#############</color>
+<color:r>~</color><color:o>##</color><color:g>....</color><color:B>~~~~</color><color:g>....</color>*..<color:g>.</color><color:B>~~~~~~~~</color>..<color:B>~~~~~</color><color:g>..</color>.......<color:G>#######</color>...<color:g>..</color><color:o>###########</color><color:U>~</color>
+<color:v>></color><color:o>##</color><color:g>....</color><color:B>~~~</color><color:g>...</color><color:G>#</color><color:g>...</color>..<color:g>.</color><color:B>~~~~</color><color:g>...</color>.<color:g>....</color><color:B>~~</color><color:v>></color><color:B>~~~</color><color:G>############</color><color:v>></color><color:G>#</color>.....<color:u>.</color><color:o>########</color><color:r>~</color>
+<color:r>~</color><color:o>##</color><color:g>.</color><color:G>#</color><color:g>..</color><color:B>~~</color><color:g>..</color><color:G>###</color><color:g>....</color>...<color:B>~~</color><color:g>..</color>...<color:g>......</color><color:B>~~~~~</color><color:G>##############</color><color:g>...</color>....<color:u>.</color><color:o>####</color><color:U>~</color><color:r>~</color>
+<color:o>##</color><color:g>.</color><color:G>#</color><color:g>.</color><color:B>~~~</color><color:g>..</color><color:G>###</color><color:g>.......</color>......<color:g>.</color><color:G>####</color><color:g>....</color><color:B>~~</color><color:G>#################</color><color:g>..</color><color:B>~~~</color>.<color:u>...</color><color:o>###</color><color:U>~</color>
+<color:o>#</color><color:g>.</color><color:G>#</color><color:g>..</color><color:B>~~~</color><color:g>.....</color><color:u>...</color><color:g>......</color>.<color:G>#########</color><color:g>...</color><color:B>~</color><color:G>##################</color><color:g>..</color><color:B>~~~</color>..<color:u>....</color><color:o>##</color>
+<color:g>...</color><color:G>#</color><color:g>..</color><color:B>~~</color><color:g>....</color><color:u>.....</color><color:g>.....</color>.<color:G>######</color><color:o>#</color><color:G>##</color><color:g>..</color><color:B>~~</color><color:G>###################</color><color:B>~~~~</color><color:u>.</color>.<color:u>.</color><color:v>></color><color:u>...</color><color:o>#</color>
+<color:o>#</color><color:g>.....</color><color:B>~~</color><color:g>.....</color><color:u>.........</color>.<color:G>#####</color><color:o>#</color><color:v>></color><color:o>#</color><color:G>###</color><color:g>.</color><color:B>~</color><color:G>###################</color><color:B>~~~</color><color:u>..</color>.......
+<color:g>.</color><color:o>#</color><color:g>.....</color><color:B>~</color><color:g>...</color><color:u>..........</color>..<color:g>..</color><color:G>####</color><color:o>#</color><color:G>####</color><color:g>.</color><color:B>~~</color><color:G>###############</color><color:B>~~~~~~~</color><color:u>........</color>
+<color:u>.</color><color:g>......</color><color:B>~~~</color><color:u>.......</color><color:B>~~~~~~</color><color:g>...</color><color:G>#######</color><color:g>..</color><color:B>~~~</color><color:G>###############</color><color:B>~~~~~~~~~~~~~~</color>
+<color:u>..</color><color:g>...</color><color:B>~~~~~~</color><color:u>....</color><color:B>~~~~~~~~~~~~</color><color:g>.........</color><color:B>~~~</color><color:G>##############</color><color:B>~~~~~~~~~~~</color><color:b>~~~</color>
+<color:u>....</color><color:g>.</color><color:B>~~~~~~~~~~~~~~~~</color><color:b>~~</color><color:B>~~~~~~~~~</color><color:g>..</color><color:B>~~~~~~~~</color><color:G>#########</color><color:B>~~~~~~</color><color:b>~~~~~~~~~~</color>
+地上
+</style>
+ときどき、話を分かりやすくするためにスクリーンショットを文書へ入れる。上の絵では、冒険者（私。@ で表される）が <color:keypress><</color> を押して広域地図に入り、辺境の地（南西の *）からモリバントの町まで歩き、いまその隣に立っている。ダンジョンの入口は <$:FF_ENTRANCE> で示され、鉄獄の入口は <color:y>></color> で強調してある。
+
+ご覧のとおり、探るダンジョンが尽きるまでには相当かかる（しかも、ここに見えているのは地図全体のごく一部でしかない）。ただし、この中には桁違いに危険なものもある。たとえば<color:keyword>竜の住みか</color>は深さ 60 から始まって 72 まで続く。ダンジョンを訪ねる順に唯一の正解は無いが、たいていの人は易しいものから始めたがるようである……
+
+いちばん危険なダンジョンの多くには<color:keyword>入口の守護者</color>が居る。あなたを洞窟へ入れまいとする高レベルの怪物である。たとえば<color:keyword>水晶の城</color>の入口は、たいそう厄介な天上界ドラゴンが守っている。入口の守護者はあまり動き回らず、できるだけ入口の近くに留まろうとするものが多い。
+
+荒野について最後に一つ。山を越えるには<color:keyword>浮遊</color>の手立てが要る。ダンジョンの入口のいくつかは山中に埋もれていて、さもなければたどり着けない。そして大洋の深い海については、近寄らないのがいちばんである。
+
+荒野とそのダンジョンについてのより詳しい話は <link:town.txt#Wilderness> を参照のこと。
+
+<topic:Winning><style:heading>ゲームに勝つ</style>
+
+さて、少し話が先走っているが、ここまで来たあなたはもう<color:keyword>オベロン</color>を倒しているはずだ、そうだろう？ まだかもしれないが、いずれは<color:keyword>鉄獄</color>の 99 階（4950 フィート）でアンバーの王に立ち向かえるだけの力が付く。この敵を倒すと魔法の階段が現れ、ようやく 100 階へ降りて恐るべき<color:keyword>混沌のサーペント</color>と対峙できる。彼を討つまで、それより下へは行けない。備えが整うまで 100 階をうろつくのは避けたほうがよい。サーペントはダンジョンを横切ってあなたのもとへ現れ、その不遜さゆえに討ち取る癖があるからである……
+
+荒野の無い遊び方では、この最後の戦いはほかの鉄獄の依頼と違って、備えが足りないと判ったら逃げて町へ帰還できる。荒野ありの遊び方では、無作為の依頼でもそれができる（<link:dungeon.txt#RandomQuests> を参照）。
+
+混沌のサーペントはたいそう手強い敵で、まともに勝ち目を持つには手持ちのすべてを注ぎ込まねばならない。それはたいてい、体力回復と*体力回復*をたくさん、たくさん（さらにもっとたくさん）持ち込むことを意味する。<color:B>体力回復</color>と<color:B>*体力回復*</color>である。加えて、彼の呼ぶ援軍をさばくために破壊の手も十分に要る。これ以上の助言はしない。勝ち方を自分で見つけるのも楽しみのうち、だろう？
+
+首尾よく混沌のサーペントを討ち取れたなら、<color:keyword>勝利者</color>の称号を得る。そのあとも探索を続けられるし、セーブして後日また遊ぶこともできるが、生ける者の中で最も手強い相手を倒したのだから、正直あまり意味は無い――ダンジョンのどこかに埋もれているという強力な指輪の噂に耳を貸すのでなければ。それに、死からよみがえる怪物が居るという噂もある。
+
+引退する気になったら、「自殺」（<color:keypress>^K</color>）でゲームを終える（後世のために最後の記録を出しておくのを忘れずに）。引退するまでは殺されうるので、サイバーデーモンの群れへ迷い込む前に引退しておきたいかもしれない。
+
+<topic:UponDeath><style:heading>死ぬということ</style>
+
+ヒットポイント（<color:keyword>HP</color>）はあなたの冒険者の健康を表す。HP が 0 を下回ったら冒険者は死に、冒険は終わる。恐ろしい墓碑の画面が出る前に、最期の言葉を残せる。冒険者は殿堂に加えられ、その後も殿堂か墓碑の画面から人物調書を見られる（アイテムはなぜか全部鑑定されている）。
+
+殺されたにせよ勝って引退したにせよ、冒険者は縮めたセーブファイルを残す。そこには選んだ設定・敵の知識・アイテムの知識（<link:monster.txt#MonsterMemory> を参照）・誕生のときの選択が入っている。このセーブファイルを開くと、新しい冒険者はファイルが無いときとまったく同じように作られるが、前の冒険者の敵とアイテムの知識だけが引き継がれる。さらに<color:keyword>クイックスタート</color>という選択肢も増え、同じ種族・職業・性格の新しい冒険者を手早く始められる。
+
+気を落とさないこと。死ぬのはごく当たり前で、だからこそ、ようやく訪れた勝利がいっそう甘いのである。勝つまでに数か月、ことによると数年かかるかもしれない。だが道すがらにも楽しみはあり、試すことは山ほどある。<color:G>幸運を、そして楽しんで！</color>
+
+<color:D>
+--
+最初       : (??)
+更新       : (??)
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.5.4
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.0.nougat
+更新       : FrogComposband 7.1.liquorice
+</color>

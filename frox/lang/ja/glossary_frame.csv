@@ -1,0 +1,132 @@
+kind,en,ja,note
+# 人物調書とアイテムの説明の「枠」の名札（設計 §8.21。フックは要らない）。
+# 桁が決まっている: `doc_printf(doc, " %-11.11s: ", name)`（py_info.c）なので
+# **訳語は 11 バイト以内**（CP932 は 1 バイト＝1 桁なので、全角 5 文字まで）。
+# 生成器 tools/frox/fc_build_ja_frame.py が詰めものを付けてカタログへ書く。
+# kind: res=耐性 / head=見出し / flag=能力の名札 / rate=技能の評価 / dmg=見出し（打撃）
+res,Acid,耐酸,変愚の既訳
+res,Electricity,耐電撃,変愚の既訳
+res,Fire,耐火炎,変愚の既訳
+res,Cold,耐冷気,変愚の既訳
+res,Poison,耐毒,変愚の既訳
+res,Light,耐閃光,変愚の既訳
+res,Dark,耐暗黒,変愚の既訳
+res,Confusion,耐混乱,変愚の既訳
+res,Nether,耐地獄,変愚の既訳
+res,Nexus,耐因果混乱,変愚は桁の都合で「耐因混」。ここは 5 文字入る
+res,Sound,耐轟音,変愚の既訳
+res,Shards,耐破片,変愚の既訳
+res,Chaos,耐カオス,変愚は「耐カオ」
+res,Disenchantment,耐劣化,変愚の既訳
+res,Time,耐時間,変愚の既訳
+res,Blindness,耐盲目,変愚の既訳
+res,Fear,耐恐怖,変愚の既訳
+res,Teleportation,テレポ不可,当方の案。No Tele と同じ旗なので同じ訳
+head,Resistances,耐性,
+head,Auras,オーラ,
+head,Slays,スレイ,
+head,Abilities,能力,
+head,Sustains,能力値維持,
+head,Detection,感知,
+head,Curses,呪い,
+flag,Aura Elec,電撃オーラ,
+flag,Aura Fire,火炎オーラ,
+flag,Aura Cold,冷気オーラ,
+flag,Aura Shards,破片オーラ,
+flag,Revenge,復讐,
+flag,Slay Evil,対邪悪,当方の案（「〜スレイ」は桁に入らない）
+flag,Slay Undead,対不死,当方の案
+flag,Slay Demon,対悪魔,当方の案
+flag,Slay Dragon,対竜,当方の案
+flag,Slay Human,対人間,当方の案
+flag,Slay Animal,対動物,当方の案
+flag,Slay Orc,対オーク,当方の案
+flag,Slay Troll,対トロル,当方の案
+flag,Slay Giant,対巨人,当方の案
+flag,Slay Good,対善良,当方の案
+flag,Slay Living,対生物,当方の案
+flag,Acid Brand,酸属性,
+flag,Elec Brand,電撃属性,
+flag,Fire Brand,火炎属性,
+flag,Cold Brand,冷気属性,
+flag,Pois Brand,毒属性,
+flag,Mana Brand,魔力属性,
+flag,Dark Brand,暗黒属性,
+flag,Chaotic,カオス,「カオス属性」は 12 バイトで入らない
+flag,Sharpness,切れ味,変愚の既訳
+flag,Stunning,朦朧,
+flag,Quake,地震,変愚の既訳
+flag,Vampiric,吸血,変愚の既訳
+flag,Extra Blows,追加攻撃,
+flag,Extra Shots,追加射撃,
+flag,Extra Might,追加威力,
+flag,Blessed,祝福,
+flag,Riding,乗馬,
+flag,Digging,掘削,
+flag,Throwing,投擲,
+flag,Speed,加速,変愚の既訳
+flag,Free Act,耐麻痺,変愚の既訳
+flag,See Invis,透明視認,変愚は「透明体視認」（6 文字で入らない）
+flag,Warning,警告,変愚の既訳
+flag,Slow Digest,遅消化,変愚の既訳
+flag,Regenerate,急回復,変愚の既訳
+flag, HP Regen,HP回復,先方の名札に頭の空白がある
+flag, SP Regen,SP回復,先方の名札に頭の空白がある
+flag,Hold Life,経験値保持,変愚の既訳
+flag,Levitation,浮遊,変愚の既訳
+flag,Perm Lite,永久光源,
+flag,Reflection,反射,変愚の既訳
+flag,Nightvision,夜目,
+flag,Life Mult,生命力倍率,
+flag,Dec Mana,消費魔力減,
+flag,Easy Spell,呪文簡易化,
+flag,Anti Magic,反魔法,
+flag,Magic Skill,魔道具技能,技能の Device（魔道具）と分ける
+flag,Spell Power,呪文威力,
+flag,Spell Cap,呪文容量,
+flag,Magic Res,魔法耐性,技能の SavingThrow（魔法防御）と分ける
+flag,Infravision,赤外線視,
+flag,Stealth,隠密,変愚の既訳
+flag,Searching,探索,変愚の既訳
+flag,Sust Str,腕力維持,
+flag,Sust Int,知能維持,
+flag,Sust Wis,賢さ維持,
+flag,Sust Dex,器用維持,
+flag,Sust Con,耐久維持,
+flag,Sust Chr,魅力維持,
+flag,Telepathy,精神感知,「テレパシー」は 12 バイトで入らない
+flag,ESP Evil,邪悪感知,
+flag,ESP Nonliv,非生物感知,
+flag,ESP Living,生物感知,
+flag,ESP Good,善良感知,
+flag,ESP Undead,不死感知,
+flag,ESP Demon,悪魔感知,
+flag,ESP Dragon,竜感知,
+flag,ESP Human,人間感知,
+flag,ESP Animal,動物感知,
+flag,ESP Orc,オーク感知,
+flag,ESP Troll,トロル感知,
+flag,ESP Giant,巨人感知,
+flag,Rnd Tele,テレポ暴発,当方の案
+flag,No Tele,テレポ不可,当方の案（耐性の Teleportation と同じ旗）
+flag,Drain Exp,経験値減少,
+flag,Aggravate,反感,変愚の既訳
+flag,TY Curse,太古の怨念,変愚の既訳
+skill,Melee,近接戦闘,J4 で既にカタログに在る語
+skill,Archery,射撃,変愚の既訳
+skill,SavingThrow,魔法防御,変愚は「魔法防御」
+skill,Stealth,隠密,変愚の既訳
+skill,Perception,知覚,変愚の既訳
+skill,Searching,探索,変愚の既訳
+skill,Disarming,解除,変愚の既訳
+skill,Device,魔道具,J4 で既にカタログに在る語
+rate,Very Bad,最低,変愚の既訳
+rate,Bad,悪い,変愚の既訳
+rate,Poor,劣る,変愚の既訳
+rate,Fair,普通,変愚の既訳
+rate,Good,良い,変愚の既訳
+rate,Very Good,大変良い,変愚の既訳
+rate,Excellent,卓越,変愚の既訳
+rate,Superb,超越,変愚の既訳
+rate,Heroic,英雄的,変愚の既訳
+rate,Amber,アンバー,変愚は Legendary＝「伝説的」。Frox は Amber

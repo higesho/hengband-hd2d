@@ -1,0 +1,348 @@
+# silq/lang/ja/edit/terrain.ja.txt
+#
+# 地形の名前。定義の置き場の書式は 、訳語は
+# silq/lang/ja/glossary.md（承認済み 版 1.0）。
+#
+#   I:  通し番号 / E: 英語の原名（照合用）/ N: 日本語の名前
+#
+# **`unused` も訳す。** 画面には出ないが、落とすと「E: が現物と違う」の一覧が
+# 賑やかになって、本当に見るべき行が埋もれる（設計 §1 制約 4 の趣旨）。
+#
+# **鍛冶場の「残り N 回」は数字を動かさない。** あれは地形 1 つ 1 つが別項目で、
+# 番号と回数が 1 対 1 に対応している（terrain.txt:64-79）。
+
+I:0
+E:<darkness>
+N:<暗闇>
+
+I:1
+E:open floor
+N:床
+
+I:2
+E:chasm
+N:裂け目
+
+I:3
+E:glyph of warding
+N:守りのルーン
+
+I:4
+E:open door
+N:開いた扉
+
+I:5
+E:broken door
+N:壊れた扉
+
+I:6
+E:warded door
+N:封じられた扉
+
+I:7
+E:warded door
+N:封じられた扉
+
+I:8
+E:warded door
+N:封じられた扉
+
+I:9
+E: patch of sunlight
+N: 陽だまり
+
+I:10
+E:unused (was the rage variant of open floor in v1.5.0 and earlier)
+N:未使用（v1.5.0 以前の床の異種）
+
+I:11
+E:unused (was the rage variant of walls in v1.5.0 and earlier)
+N:未使用（v1.5.0 以前の壁の異種）
+
+I:12
+E:unused
+N:未使用
+
+I:13
+E:unused
+N:未使用
+
+I:14
+E:unused
+N:未使用
+
+I:15
+E:unused
+N:未使用
+
+I:16
+E:false floor
+N:偽の床
+
+I:17
+E:pit
+N:落し穴
+
+I:18
+E:spiked pit
+N:棘の落し穴
+
+I:19
+E:dart trap
+N:投げ矢の罠
+
+I:20
+E:gas trap
+N:ガスの罠
+
+I:21
+E:gas trap
+N:ガスの罠
+
+I:22
+E:alarm trap
+N:警報の罠
+
+I:23
+E:flash trap
+N:閃光の罠
+
+I:24
+E:caltrop field
+N:撒菱の罠
+
+I:25
+E:roost
+N:ねぐら
+
+I:26
+E:web
+N:蜘蛛の巣
+
+I:27
+E:deadfall trap
+N:落石の罠
+
+I:28
+E:discoloured spot
+N:変色した床
+
+I:29
+E: unused
+N: 未使用
+
+I:30
+E:unused
+N:未使用
+
+I:31
+E:unused
+N:未使用
+
+I:32
+E:door
+N:扉
+
+I:33
+E:locked door
+N:鍵のかかった扉
+
+I:34
+E:locked door
+N:鍵のかかった扉
+
+I:35
+E:locked door
+N:鍵のかかった扉
+
+I:36
+E:locked door
+N:鍵のかかった扉
+
+I:37
+E:locked door
+N:鍵のかかった扉
+
+I:38
+E:locked door
+N:鍵のかかった扉
+
+I:39
+E:locked door
+N:鍵のかかった扉
+
+I:40
+E:jammed door
+N:固く閉じた扉
+
+I:41
+E:jammed door
+N:固く閉じた扉
+
+I:42
+E:jammed door
+N:固く閉じた扉
+
+I:43
+E:jammed door
+N:固く閉じた扉
+
+I:44
+E:jammed door
+N:固く閉じた扉
+
+I:45
+E:jammed door
+N:固く閉じた扉
+
+I:46
+E:jammed door
+N:固く閉じた扉
+
+I:47
+E:jammed door
+N:固く閉じた扉
+
+I:48
+E:secret door
+N:隠し扉
+
+I:49
+E:pile of rubble
+N:瓦礫の山
+
+I:50
+E:unused
+N:未使用
+
+I:51
+E:quartz vein
+N:石英の鉱脈
+
+I:52
+E:unused
+N:未使用
+
+I:53
+E:unused
+N:未使用
+
+I:54
+E:unused
+N:未使用
+
+I:55
+E:unused
+N:未使用
+
+I:56
+E:granite wall
+N:花崗岩の壁
+
+I:57
+E:granite wall
+N:花崗岩の壁
+
+I:58
+E:granite wall
+N:花崗岩の壁
+
+I:59
+E:granite wall
+N:花崗岩の壁
+
+I:60
+E:unused
+N:未使用
+
+I:61
+E:unused
+N:未使用
+
+I:62
+E:unused
+N:未使用
+
+I:63
+E:granite wall
+N:花崗岩の壁
+
+I:64
+E:forge (exhausted)
+N:鍛冶場（使い切り）
+
+I:65
+E:forge (1 use remaining)
+N:鍛冶場（残り 1 回）
+
+I:66
+E:forge (2 uses remaining)
+N:鍛冶場（残り 2 回）
+
+I:67
+E:forge (3 uses remaining)
+N:鍛冶場（残り 3 回）
+
+I:68
+E:forge (4 uses remaining)
+N:鍛冶場（残り 4 回）
+
+I:69
+E:forge (5 uses remaining)
+N:鍛冶場（残り 5 回）
+
+I:70
+E:enchanted forge (exhausted)
+N:魔法の鍛冶場（使い切り）
+
+I:71
+E:enchanted forge (1 use remaining)
+N:魔法の鍛冶場（残り 1 回）
+
+I:72
+E:enchanted forge (2 uses remaining)
+N:魔法の鍛冶場（残り 2 回）
+
+I:73
+E:enchanted forge (3 uses remaining)
+N:魔法の鍛冶場（残り 3 回）
+
+I:74
+E:enchanted forge (4 uses remaining)
+N:魔法の鍛冶場（残り 4 回）
+
+I:75
+E:enchanted forge (5 uses remaining)
+N:魔法の鍛冶場（残り 5 回）
+
+I:76
+E:forge 'Orodruth' (exhausted)
+N:鍛冶場『オロドルース』（使い切り）
+
+I:77
+E:forge 'Orodruth' (1 use remaining)
+N:鍛冶場『オロドルース』（残り 1 回）
+
+I:78
+E:forge 'Orodruth' (2 uses remaining)
+N:鍛冶場『オロドルース』（残り 2 回）
+
+I:79
+E:forge 'Orodruth' (3 uses remaining)
+N:鍛冶場『オロドルース』（残り 3 回）
+
+I:80
+E:up staircase
+N:上りの階段
+
+I:81
+E:down staircase
+N:下りの階段
+
+I:82
+E:up shaft
+N:上りの立坑
+
+I:83
+E:down shaft
+N:下りの立坑

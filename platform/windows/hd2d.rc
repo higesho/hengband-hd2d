@@ -1,0 +1,13 @@
+// Windows resources for HengbandHd2d.exe (the voxel HD2D screen).
+//
+// ASCII only on purpose: rc.exe reads this file with the machine's narrow
+// code page (CP932 here), and a multi byte tail can swallow the next line.
+// See and the memory note "rc.exe CP932 line ending trap".
+//
+// The icon is the same sword as the Android launcher icon; the shapes and
+// colours come from android/hd2d/src/main/res/drawable/ic_launcher_foreground.xml
+// and values/ic_launcher_background.xml. Regenerate it with the script kept in
+// (icon section) if those change.
+//
+// Icon id 1: Explorer shows the icon with the lowest numeric id.
+1 ICON "hd2d.ico"

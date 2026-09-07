@@ -1,0 +1,654 @@
+<style:title>モガミネーター</style>
+
+<color:keyword>モガミネーター</color>は決まりに基づいてアイテムを自動でさばく仕組みで、<color:keypress>_</color> のコマンドで働かせたり書き換えたりできる。この仕組みで、どのアイテムを拾うか、どれを壊すか、どれを自動で鑑定するか、どれをアイテムの一覧で<color:keyword>欲しいアイテム</color>として出すかを決められる。好みに合わせてアイテムへ自動で銘を刻めるし、種族や職業ごとの好みをさばく条件の文まで書ける。あるいは、既定のモガミネーターの決まりをそのまま使ってもよい。それだけでも上のすべてをやってくれる。
+
+この文書は、何も知らないところから始めるつもりでこの仕組みを手ほどきの形で説明する。詳しい引きの資料はこの文書の後ろの方に出る（どうしても待てないなら<link:editor.txt#Reference> を参照）。
+
+この仕組みは、もとの作者である変愚蛮怒の開発者 Mogami にちなむ名前である。
+
+<topic:Review><style:heading>アイテムの知識のおさらい</style>
+疑いようもなく、このゲームはたいそう多くのアイテムを生む。値打ちのあるものも、無いものも、決まった場面でしか値打ちの無いものもある……。モガミネーターはその戦利品の山をほどく助けになる。
+
+まず、<link:objects.txt#Knowledge> で詳しく説明したことをごく手短におさらいする。アイテムを見つけたとき、たいていそれは<color:keyword>未鑑定</color>だが、そのアイテムの質のおおまかな<color:keyword>感じ</color>をすでに得ているか、じきに得る。これを<color:keyword>アイテムの感触</color>、あるいは<color:keyword>感触</color>と呼ぶ。見込みがありそうなら、おそらく<color:keyword>鑑定</color>して基本を明かし、ときには<color:keyword>*鑑定*</color>して特別な性質まで明かしたくなるだろう。
+
+つまり、アイテムについての知識は次のいずれかの状態にある。
+  [1] 感じ取っていない
+  [2] 感じ取った（擬似鑑定）
+  [3] 鑑定した
+  [4] *鑑定* した
+
+キノコ・薬・巻物では少し話が違う。このアイテムには<color:keyword>見かけ</color>があり、いちどその見かけを覚えれば、この先の同じアイテムはすべてすぐ見分けられる。実のところ同じアイテムはどれもまったく同じなので、鑑定の遊びは最初のひとつを見つけて知ることだけであり、その後は拾いと壊しの好みでこの種類のアイテムをどう扱うかを決めればよい。
+
+<topic:ManagingObjects><style:heading>アイテムをさばく</style>
+
+アイテムをさばく道は 3 つある。手でさばく道、簡易自動破壊を使う道（下の <link:editor.txt#EasyDestroyer>）、そしてモガミネーターを使う道である。モガミネーターは、ただアイテム（たいていはがらくた）を壊すだけの簡易自動破壊よりずっと強い。<color:y>モガミネーターと簡易自動破壊を並べて使ってよいのは、</color><color:keyword>always_pickup</color><color:y>の設定を入れているときだけである。</color>
+
+<color:keyword>モガミネーター</color>とは何か。つまるところ、ある種類のアイテムに出くわすたびに決まった行いをするための、決まりに基づく仕組みである。既定の行いは<color:keyword>拾う</color>で、ほかの行いを指定しなければこれが使われる。ただしモガミネーターはがらくたを壊したり、アイテムを自動で鑑定し銘を刻んだりもできる。では基本を見ていこう。
+
+<topic:BasicUsage><style:heading>基本の使い方</style>
+
+モガミネーターは <color:keypress>_</color> を押すと働き始め、同時に好みをさばくゲーム中の編集画面が開く。こんな見た目になる。
+<style:screenshot> <indent>
+<color:B>(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)</color>         (0,0)               
+<color:G>#########################################</color>                                       
+<color:G># Consumables</color>                                                                   
+<color:G>#########################################</color>                                       
+mushroom of restoring<color:U>#!E</color>                                                        
+~mushroom of hallucination                                                      
+                                                                                
+<color:v>?:[EQU $RACE Snotling Doppelganger]</color>                                             
+<color:D>~mushroom</color>                                                                       
+<color:v>?:1</color>                                                                             
+                                                                                
+<color:v>?:[LEQ $LEVEL 35]</color>                                                               
+<color:R>potions</color>:resist heat and cold<color:U>#!kq</color>                                                
+<color:v>?:1</color>                                                                             
+<color:R>potions</color>:resistance<color:U>#!kq</color>                                                          
+<color:R>potions</color>:stone skin<color:U>#!k</color>                                                           
+<color:R>potions</color>:heroism                                                                 
+<color:R>potions</color>:speed<color:U>#!kq</color>                                                               
+<color:R>potions</color>:giant strength<color:U>#!k</color>                                                       
+                                                                                
+<color:R>potions</color>:revelation                                                           
+                                                                                
+<color:R>potions</color>:of strength<color:U>#!k</color>                                                          
+<color:B>-------------------------------------------------------------------------------</color>
+This line is a comment.                                                         
+</indent></style>
+始めたばかりなら、この込み入りようから一目散に逃げ出したくなるだろう。画面のいちばん上の行に出る道が書いてあることに目を留めてほしい。<color:keypress>^Q</color> である（<color:keypress>ESC</color> のメニューからも出られる）。すぐ出たくなるのはもっともだが、実のところ<color:G>それで構わない。最初の </color><color:keypress>_</color><color:G> の確かめを受け入れればモガミネーターが入り、既定の好みで立ち上がる。</color>だからそれ以上いじらなくてもよく働いてくれる。この編集画面の <color:keypress>ESC</color> のメニューから止めることもできる。（よほど面倒くさがりなら、ここで読むのをやめて既定の好みのまま気楽に遊び続けてよい。）
+
+<topic:WhatHappened><color:U>で、何が起きたのか</color>
+
+モガミネーターが入ったので、出くわすがらくたの多くが壊されるようになる。たとえば、ダンジョンを斬り進みながら残してきた死体と骨のたぐいである。……ただし<color:keyword>賞金首の死体</color>は別で、こちらは自動で拾われる。
+
+ここまでは良い滑り出しだが、それでも役に立たないと思うアイテムに出くわすことはある。たとえば雑貨屋でランタンを買ったとしよう。もう松明はどうでもよくなる。<color:keypress>k</color> のコマンド（ローグライクのキー設定では<color:keypress>^D</color>）を使うと、こんな確かめが出る。
+  本当に<color:y>木のたいまつ {未鑑定}</color>を壊すか。<color:y>[y/n/Auto]</color>
+
+<color:keypress>A</color> 自動という選びに目を留めてほしい。これを選ぶとアイテムを壊したメッセージが出るが、松明が嫌いだということも仕組みが覚えてくれる。次に冒険者が松明の上へ動いたら、自動で壊される。
+
+これがモガミネーターの単純な使い方のひとつである。出くわすたびに自動で壊すものを登録していけば、戦利品の山はさばきやすくなる。ただし後で見るように、<color:keyword>自動で拾う</color>ことは自動で壊すことよりさらに良い。
+
+<topic:CorrectingMistakes><style:heading>しまった、加速の指輪を自動で壊している</style>
+
+痛い。だが慌てないこと。これは簡単に直せる。ただし、そのためには好みのファイルの編集画面へ戻らねばならない。<color:keypress>_</color> を押してから<color:keypress>END</color> を押して文書の終わりへ移る。ここに、自動で壊すよう登録したアイテムが記録されている。画面はこんな見た目になるだろう。
+<style:screenshot> <indent>
+<color:B>(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)</color>       <color:y>*</color> (0,268)             
+                                                                                
+<color:v>?:[EQU $CLASS Tourist]</color>                                                          
+<color:D>~photograph</color>                                                                     
+<color:v>?:1</color>                                                                             
+                                                                                
+~<color:G>special </color><color:R>items</color>                                                                  
+!<color:G>worthless </color><color:R>items</color>                                                                
+<color:G>#!unusable items</color>                                                                
+<color:R>?:$AUTOREGISTER</color>                                                                 
+<color:R># *Warning!* The lines below will be deleted if you use Auto-destroy with a new character.</color>
+<color:R># Keep them by cut & paste if you need them for future characters.</color>              
+<color:R>(!nameless lights:^wooden torch$</color>                                                
+<color:B>-------------------------------------------------------------------------------</color>
+Destroy all light sources whose name begins with "wooden torch$", and which are 
+neither ego-item nor artifact. Do not display as wanted.  This line will be     
+deleted later.
+</indent></style>
+上の絵では分からないが、カーソルはファイルのいちばん最後の行に置いてある。ここでは、松明を壊すよう登録したときの行である。画面のいちばん下に、その決まりが何を意味するかをゲームがきちんと教えてくれることに目を留めてほしい。気になるなら、既定の好みのファイルの上でカーソルを動かしてみるとよい。この仕組みの働き方がかなり分かる。この（あるいはほかの）決まりをただ消したければ、その行を消して<color:keypress>^W</color> で出れば保存して変更が効く。
+
+<topic:WantedObjects><style:heading>欲しいアイテムはどうするか</style>
+
+欲しくないものは話の半分にすぎない。本当に好きなアイテムもある。この 2 つはうまく噛み合う。<color:keyword>気になるアイテム</color>は<color:keypress>]</color> のアイテムの一覧の先頭に出るからである。これで、がらくたが壊されていなくても気になるものを楽に追える。
+
+致命傷の治癒の薬が欲しいとしよう（既定では拾わないアイテムの、無作為だがもっともな例である）。この薬が自動で拾われ、アイテムの一覧の上の方にも出たら良いと思わないだろうか。これは好みのファイルの<color:keyword>いちばん上</color>へ次の行を足せば済む。
+<style:screenshot> <indent>
+<color:B>(^Q:Quit, ^W:Save&Quit, ESC:Menu, Other:Input text)</color>       <color:y>*</color> (0,0)               
+<color:y>cure critical wounds</color>
+<color:G>#########################################</color>                                       
+<color:G># Consumables</color>                                                                   
+<color:G>#########################################</color>                                       
+mushroom of restoring<color:U>#!E</color>                                                        
+~mushroom of hallucination                                                      
+                                                                                
+<color:v>?:[EQU $RACE Snotling Doppelganger]</color>                                             
+<color:D>~mushroom</color>                                                                       
+<color:v>?:1</color>                                                                             
+<color:B>--------------------------------------------------------------------------------</color>
+Pick up all items which have "cure critical wounds" as part of their name.
+Display these items as wanted in object lists.
+</indent></style>
+目立つように、新しい行を画面で<color:y>黄色</color>にしてある。画面の下に目を向けてほしい。うまく働きそうに読めるだろうか。新しい行をいちばん上へ置かねばならなかったのは、<color:G>決まりが上から下へ優先の順に処理される</color>からである。いちばん下へ置いたら、先の決まりに上書きされていたかもしれない。
+
+では <color:keypress>]</color> を押してアイテムの一覧を出そう。この階に欲しいものはあるだろうか。
+<style:screenshot>
+There are 4 wanted objects:                                         LEVEL <color:G>     1</color>
+ <color:r>!</color> <color:B>4 Potions of Cure Critical Wounds   </color> S  4 E 16                   EXP <color:G>       3</color>
+                                                                    AU  <color:G>     747</color>
+There are 4 other objects:                                          <color:W>|</color><color:d>      </color><color:y>!</color><color:U>(</color><color:d>   </color>
+ <color:u>~</color> <color:y>4 Wooden Torches {unidentified}     </color> N  3 E 17                   STR : <color:G>    16</color>
+   <color:B>[Press ESC to exit. Press ? for help]</color>                            INT : <color:G>    18</color>
+><color:s>.....</color>#<color:U>+</color>#<color:s>.</color>%%                                                        WIS : <color:G>     9</color>
+%%%%<color:s>.</color>%<color:s>%.</color>#<color:s>.</color>%                         ##<color:s>..</color>                            DEX : <color:G> 18/40</color>
+   <color:s>%</color><color:U>'</color>%<color:s>....</color>#                        #<color:s>%....</color>                           CON : <color:G>    17</color>
+  <color:s>%</color>%<color:s>......</color>%                       <color:s>%%.</color><color:u>~</color><color:s>..%</color>                           CHR : <color:G>    12</color>
+ #<color:s>%......</color><color:U>+</color>%         <color:s>%%</color>%          <color:s>%</color>#<color:s>....%%..</color>                         AC     <color:G>    6</color>
+%#........%<color:s>%</color>%%%<color:s>%</color>%%<color:s>%</color>#<color:s>%</color>.%<color:s>%</color>        ##<color:s>..........</color>                        HP <color:G>  37</color>/<color:G>  37</color>
+%.........<color:U>'</color><color:s>.</color><color:U>'</color><color:s>....</color>...<color:y>@</color>..#<color:s>%</color>      #<color:s>%..........</color>#                        SP <color:G>  14</color>/<color:G>  14</color>
+%<color:s>%</color>%......%%%%%%<color:s>%%%%%</color>#<color:o>*</color><color:U>'</color>.###<color:s>%</color>% #<color:s>%....</color>##<color:s>....</color><color:o>*</color>                                     
+<color:s>..</color><color:U>'</color><color:s>.......</color>#       %<color:s>.......%..</color>#<color:s>%....%%....</color>#<color:s>%</color>                                     
+%<color:s>%</color>##<color:s>......%</color>       <color:s>%........%%%....</color>##<color:s>....</color>##                                      
+   <color:s>%.....%</color>#       %<color:s>.......</color><color:u>'</color><color:s>......</color>#<color:s>%.</color><color:r>!</color><color:s>..%%</color>                                       
+   <color:s>%.</color>#<color:s>...%</color>        #<color:s>.......</color>#<color:s>%%</color>###########                                        
+   <color:s>%%%</color>%#%%        #<color:s>.......</color>#                                                     
+</style>
+当たりである。アイテムの一覧の中で <color:keypress>J</color> を押せば、そのおいしい薬まで<color:keyword>自動で歩いていく</color>ことさえできる。これ以上簡単なことがあるだろうか。
+
+まとめると、「cure critical wounds」という行を足すことで、名前に「cure critical wounds」を含むアイテムをすべて拾うようモガミネーターへ伝えている。そんなに長く打たなくてもよく、「crit」でも同じように働くだろう。ただし打つ字が少ないほど、その決まりがほかのアイテムにも当てはまりやすくなる。たとえば「cure」は軽傷の治癒・重傷の治癒・致命傷の治癒の薬、さらには傷の治癒の杖にも当てはまる。それでよいこともあるが、長めに打った方が良いこともある。
+
+<topic:IntroRulesEvents><style:heading>決まりと出来事の入門</style>
+
+では、これはどう働くのか。つまるところ、好みのファイルは順の付いた決まりの並びである。ある出来事（アイテムの上へ動くなど）が起きるたびに、決まりが<color:v>上から下へ</color>調べられ、最初に当てはまったもの（あれば）が使われる。どの決まりにも、当てはまったとき何をするかを決める行いが結びついている。
+
+決まりはファイルの 1 行だが、どの行も決まりというわけではない。空の行もあれば、注釈の行もあり、決まりを無視させる条件の行もある。
+
+アイテムが決まりと突き合わされるのは決まった出来事が起きたときである。たいていは冒険者が(1) アイテムの上へ動いたとき、(2) 新しいアイテムの感触を得たとき（<link:option.txt#destroy_feeling> を参照）、(3) アイテムを鑑定したとき（<link:option.txt#destroy_identify> を参照）である。
+
+<topic:Rules><style:heading>決まり</style>
+
+決まりは 1 行で、行う行い・当てはまるかを見る述語・そして足す銘（省いてよい）からなる。順に見ていこう。
+
+  <indent><color:o>行い</color>
+
+まず、拾うことが既定の行いであり、ほかの行いを指定しなければこれになる。ほかにはどんな行いがあるだろうか。
+
+<color:keypress>!</color>  壊す
+<color:keypress>;</color>  拾うかどうか尋ねる
+<color:keypress>~</color>  床へ置いていく
+
+これが主な行いである。決まりが <color:keypress>!</color>・<color:keypress>;</color>・<color:keypress>~</color> で始まらなければ拾うものとされる。<color:keyword>always_pickup</color> の設定を入れていると<color:keypress>;</color> と<color:keypress>~</color> は上書きされることに注意。<color:keyword>leave_mogaminator</color> の設定も入れていなければ、<color:keypress>!</color> さえ上書きされる。
+
+さらに、主な行いに添える次の字がある。
+
+<color:keypress>(</color>  このアイテムを<color:keypress>M</color> の地図に出さない
+<color:keypress>?</color>  このアイテムを自動で鑑定する
+
+このうち最初のものはあまり使われない。<color:keypress>M</color> の地図のアイテムの表示は、アイテムの一覧が良くなったことですっかり要らなくなったからである。2 つ目（<color:keypress>?</color>）はたいそう役に立つ。当てはまるアイテムを自動で鑑定してくれるからである。これは大きな時間の節約になるが、鑑定の巻物か杖を持ち歩いていなければならない。
+
+行いの字はすべて決まりの行の<color:keyword>先頭</color>に置かねばならない。ただしひとつ例外がある。<color:keypress>#</color> の字は当てはまるアイテムへ自動で銘を刻みたいという意味で、決まりの<color:keyword>末尾</color>に置き、その後には銘の文字だけが続く。たとえば決まりの終わりに<color:U>#@ad!sdk</color> と書けば、その決まりに当てはまるアイテムへ<color:R>@ad!sdk</color> と自動で刻まれる。（この銘の意味は <link:objects.txt#Inscriptions> を参照。）
+</indent>
+  <indent><color:o>当てはめ</color>
+当てはめはアイテムの名前との文字の突き合わせだと上で見たが、望めばもっと細かく指定できる。そのためには次の<color:keyword>語</color>を使って、アイテムを見る述語を組み立てる。語の部分は、考えに入れるアイテムの大まかな種類を表す名詞と、それを修飾する 0 個以上の形容詞からなる。さらに <color:keypress>:</color> に続けて探す文字を書けば、自由な文字の突き合わせも指定できる。これらは下の例の節でまとめて示す。
+
+まず名詞から見よう。全部の一覧はこの文書の終わりに載せるが、手始めによく使う名詞をいくつか挙げる。
+
+<color:R>Items</color> <indent>すべてに当てはまる。たいそう大まかな決まりに役立つ。たとえば ~?<color:G>unidentified</color> <color:R>items</color> なら、まだ鑑定していないものをすべて自動で鑑定しつつ地面へ置いていく。あるいは <color:keyword>items</color> だけならすべて拾う。</indent>
+<color:R>Weapons</color> <indent>近接武器すべてに当てはまる。飛び道具には当てはまらない。</indent>
+<color:R>Shooters</color> <indent>弓・スリング・クロスボウを含む飛び道具すべてに当てはまる。</indent>
+<color:R>Armors</color> <indent>体の防具はもちろん、盾・兜・クロークを含むあらゆる形の防具に当てはまる。</indent>
+<color:R>Wands</color>     魔法棒に当てはまる
+<color:R>Staves</color>    杖に当てはまる
+<color:R>Rods</color>      ロッドに当てはまる
+<color:R>Potions</color>   薬に当てはまる
+<color:R>Scrolls</color>   巻物に当てはまる
+
+語で当てはめの述語を組み立てるときは、名詞をちょうどひとつ指定せねばならないが、形容詞は好きなだけ使える。形容詞の全部の一覧は下の <link:editor.txt#Adjectives> にあるが、よく使うものをいくつか挙げる。
+
+<color:G>Unaware</color> <indent>見かけをまだ鑑定していないアイテムに当てはまる。</indent>
+<color:G>Unidentified</color> <indent>まだ鑑定していないアイテムすべてに当てはまる。</indent>
+<color:G>Unsensed</color> <indent>鑑定も擬似鑑定もしていないアイテムに当てはまる。</indent>
+<color:G>Ego</color> <indent>高級品すべてに当てはまる。</indent>
+<color:G>Nameless</color> <indent>エゴでもアーティファクトでもないアイテムすべてに当てはまる。</indent>
+<color:G>Wanted</color> <indent>賞金首の敵の死体と骨に当てはまる。これは賞金首事務所へ持ち込むと褒美がもらえる。</indent>
+
+形容詞を重ねる例を挙げる。?<color:G>unidentified ego</color> <color:R>weapons</color> は、高級品でありまだ鑑定していない近接武器すべてに当てはまる。もちろんこれは、エゴだと分かるためにそのアイテムを擬似鑑定していなければならないという意味である。
+
+最後に、探す文字を使って当てはめをさらに絞り込める。形容詞も名詞も使わなければ、決まりの文字全体（行いの字の後から始まり、<color:keypress>#</color> の銘の字までのすべて）が探す文字として使われる。語を使うときは、<color:keypress>:</color> の区切りで語の部分の終わりを示す。例は下で述べる。
+</indent>
+  <indent><color:o>例</color>
+
+!<color:R>potions</color>:apple juice
+  <indent>リンゴジュースの薬を壊す（どれほど爽やかであってもである）。壊すための <color:keypress>!</color> の行いの字、アイテムの種類すべてに当てはめる<color:keyword>potions</color> の語、<color:keypress>:</color> の区切りのキー、そしてアイテムの名前と突き合わせる文字の欄を使っている。</indent>
+
+?<color:G>unaware </color><color:R>items</color>
+  <indent>まだ鑑定していない見かけのあるアイテム（見たことのない薬など）を拾い、自動で鑑定する。ほかの主な行いが書かれていないので拾う行いが暗に決まっており、添えの行い（自動で鑑定する）があっても同じであることに注意。この決まりは形容詞 <color:G>unaware</color> で名詞 <color:R>items</color> を修飾している。<color:R>scrolls</color> や<color:R>potions</color> のようなもっと細かい名詞を使えば、この決まりの当てはまる範囲を狭められる。</indent>
+
+<color:G>wanted </color><color:R>corpses</color><color:U>#Wanted!kkk</color>
+  <indent>賞金首の死体を拾い、<color:U>Wanted!kkk</color> と自動で刻む。この銘は「差別のせいで賞金首になった」ようにも読めるが、ただ、うっかりその死体を壊そうとしたときに何度も確かめを出させるという意味である。（銘の働きについては<link:objects.txt#Inscriptions> を参照。）</indent>
+
+?<color:R>staves</color>:destruction<color:U>#@ud!sdk</color>
+  <indent>名前に「destruction」を含む杖をすべて拾い、自動で鑑定する。そのアイテムに <color:U>@ud!sdk</color> と刻む。</indent>
+</indent>
+
+<topic:Scenarios><style:heading>組み立ての例</style>
+
+前の節で、ひとつひとつの決まりはすっかり使いこなせるようになったはずである。ここからは一段上がって、よくある仕事をこなすために複数の決まりを組み合わせよう。用意はよいだろうか。
+
+  <indent><color:B>組み立て 1</color>: アイテムをさばく
+
+この組み立てでは、流れ込むアイテムをできるだけ手際よくさばきたい。まず次の決まりから始めよう。
+  <color:G>unsensed </color><color:R>armors</color>
+  <color:G>unsensed </color><color:R>weapons</color>
+
+この決まりは、まだ感じ取ってもいない鑑定してもいない防具と武器をすべて拾えという意味である。薬や巻物のような多くの種類のアイテムは外れるが、少なくとも武器と防具は感じ取れるアイテムである。感じ取るにはアイテムが袋の中になければならないので（床での感触がすぐ働かなかったのは、アイテムが <color:G>unsensed</color> の形容詞に当てはまったことから分かる）、拾っておくのが都合が良い。
+
+では次の決まりを足そう。
+  !<color:G>average common </color><color:R>weapons</color>
+  !<color:G>average common </color><color:R>armors</color>
+
+本当にこうしたいとは限らないが、ここでは冒険者が並のありふれた装備をがらくたと見なせるほど進んでいるとしよう。この決まりは感触が働いた時点で動き、感触が並と出た武器と防具を壊す。<color:G>common</color> の形容詞は、ドラゴン・スケイル・メイルやカオスの刃のような珍しい並のアイテムにこの決まりが当てはまるのを防ぐ。
+
+これで冒険者は装備をすべて機嫌よく拾い、感触が働いたら並のものを自動で壊すようになった。もっとできるだろうか。では次を足してみよう。
+  ?<color:G>unidentified ego </color><color:R>items</color>
+
+これでエゴのアイテムも感触が働いた時点で自動で鑑定される。たいそう良い。だがしばらくするといくつかのエゴの型に飽きて、壊すよう登録したくなるかもしれない。
+
+  !<color:G>common ego </color><color:R>cloaks</color>:of protection
+  !<color:G>common ego </color><color:R>weapons</color>:of sharpness
+
+これで退屈な高級品まで、こちらが 1 度もキーを押さずに自動で焼き払われるようになった。ただし、切れ味の剣はサイコロが増えていることもあり、そうなるとさほど退屈でもない。それは次のようにして守れる。
+  <color:G>dice boosted </color><color:R>weapons</color>
+あるいはこうしてもよい。
+  <color:R>weapons</color><color:o> more dice than 30</color>
+ただし最後のものは進んだ手である。
+
+まとめると、決まりの並び全体はこうなるだろう。
+  <color:R>weapons</color><color:o> more dice than 30</color>
+  ?<color:G>unidentified ego </color><color:R>items</color>
+
+  !<color:G>average common </color><color:R>weapons</color>
+  !<color:G>average common </color><color:R>armors</color>
+
+  <color:G>unidentified </color><color:R>armors</color>
+  <color:G>unidentified </color><color:R>weapons</color>
+
+  !<color:G>common ego </color><color:R>cloaks</color>:of protection
+  !<color:G>common ego </color><color:R>weapons</color>:of sharpness
+
+新しい防具と武器は、冒険者が踏むと決まり 5 か 6 に当たるので、自動で袋へ入る。やがて感触が働き、並だと分かれば決まり 3 か 4 で壊され、高級品だと分かれば決まり 2 で処理されてそのエゴのアイテムが自動で鑑定され、決まりが読み直される。守りのクロークなら決まり 7 で壊され、切れ味の武器なら決まり 8 で壊される。ただしサイコロが大きく増えていれば、最優先の決まり 1 で守られる。簡単だろう。これで気にすべきは{悪い}・{上質}・{特別製} の装備だけになった……。
+</indent>
+  <indent><color:B>組み立て 2</color>: 見かけのあるアイテム
+こちらは易しい。まず決まりの組を丸ごと出す。
+  <color:R>potions</color>:healing<color:U>#!kq</color>
+  <color:R>potions</color>:of strength<color:U>#!k</color>
+  <color:R>potions</color>:of intelligence<color:U>#!k</color>
+  <color:R>potions</color>:of wisdom<color:U>#!k</color>
+  <color:R>potions</color>:of dexterity<color:U>#!k</color>
+  <color:R>potions</color>:of constitution<color:U>#!k</color>
+  <color:R>potions</color>:of charisma<color:U>#!k</color>
+  <color:R>potions</color>:augmentation<color:U>#!k</color>
+
+  <color:R>scrolls</color>:artifact creation<color:U>#!*</color>
+  ...
+
+  ?<color:G>unaware </color><color:R>items</color>
+
+  <color:G>collecting </color><color:R>potions</color>
+  <color:G>collecting </color><color:R>scrolls</color>
+
+  <color:R>?:$AUTOREGISTER</color>
+  ...
+  (!<color:R>potions</color>:^potion of restore charisma$
+  (!<color:R>scrolls</color>:^scroll of treasure detection$
+  ... <many more junk flavors auto-registered for destruction> ...
+
+この形は、欲しい見かけを上に置いて自動で拾い（そして銘を刻み）、欲しくない見かけを下に置いて自動で壊し（これはアイテムを壊すとき<color:keypress>A</color> を押すたびに自動でファイルへ書き込まれる）、収集と見かけ未鑑定の決まりを真ん中に置く、というものである。見かけ未鑑定のアイテムは自動で鑑定され、その時点で拾いか壊しの決まりが働く機会を得る。<color:G>collecting</color> の決まりは、同じ見かけのアイテムを袋にすでに持っているときに働く。たとえば致命傷の治癒の薬を持っているがその見かけの決まりが無いとする。このとき収集の決まりがほかの致命傷の治癒の薬を拾ってくれる。
+</indent>
+  <indent><color:B>組み立て 3</color>: 魔法書
+さて、これが最後である。まず自分で読み解けるか試してほしい。
+  <color:G>first realm's fourth </color><color:R>spellbooks</color><color:U>#@md!sdk</color>
+  <color:G>first realm's third </color><color:R>spellbooks</color><color:U>#@mc!sdk</color>
+  ~<color:G>first realm's second </color><color:R>spellbooks</color><color:U>#@mb!k</color>
+  ~<color:G>first realm's first </color><color:R>spellbooks</color><color:U>#@ma!k</color>
+  <color:G>second realm's fourth </color><color:R>spellbooks</color><color:U>#@mh!sdk</color>
+  <color:G>second realm's third </color><color:R>spellbooks</color><color:U>#@mg!sdk</color>
+  ~<color:G>second realm's second </color><color:R>spellbooks</color><color:U>#@mf!k</color>
+  ~<color:G>second realm's first </color><color:R>spellbooks</color><color:U>#@me!k</color>
+  !<color:G>first </color><color:R>spellbooks</color>
+  !<color:G>second </color><color:R>spellbooks</color>
+  !<color:G>third </color><color:R>spellbooks</color>:major arcana
+  !<color:G>fourth </color><color:R>spellbooks</color>:manual of mastery
+  <color:G>third </color><color:R>spellbooks</color>
+  <color:G>fourth </color><color:R>spellbooks</color>
+読み解けただろうか。この組み立ては、冒険者の魔法の系統の高レベルの魔法書を拾い、自分の系統の低レベルの魔法書は置いていき、それ以外の低レベルの魔法書はすべて壊し、秘術の魔法書もすべて壊すが、ほかの系統の高レベルの魔法書は（おそらく売って金にするために）拾う。自分の系統の魔法書には本の札を揃えておくために自動で銘を刻む。ここでも順がたいそう大事である。冒険者の魔法の系統の決まりは、低レベルの魔法書を壊す一般の決まりより前に来なければならない。（ここでは <color:G>unreadable</color> の形容詞を使えばもっと安全で、順に左右されにくくできただろう。）
+</indent>
+<topic:WhichRule><style:heading>どの決まりが使われているのか</style>
+
+ある場面でどの決まりが使われているのか分からなくなったら、<color:keyword>destroy_debug</color> の設定を入れる（<link:option.txt#destroy_debug> を参照）。この設定があれば<color:keypress>I</color> 調べるコマンドでもっと詳しく分かる。たとえばこうである。
+<style:screenshot>
+  <color:u>a Thieves' Guide [Burglar's Handbook]</color>
+
+    <color:r>Autopick:</color> (!<color:G>unreadable first </color><color:R>spellbooks</color>
+</style>
+この振る舞いが気に入るかどうかは分からないが、気に入らなければどの行を直せばよいかがこれで分かる。
+
+さらに、デバッグを入れておくと、行いが取られるたびに使われた決まりがメッセージの記録に出るので、アイテムが壊される・拾われる・地面へ置かれる・自動で鑑定される理由がはっきり分かる。たとえばこうである。
+<style:screenshot>
+  <indent>You have 26 charges remaining. <color:B>(AutoID</color><color:B>:</color>~?<color:G>unidentified </color><color:R>rods</color><color:B>)</color> You see <color:v>a </color>
+<color:v>Rod: </color><color:W>Frost Ball</color><color:v> (</color><color:y>1/3 charges</color><color:v>)</color>. <color:B>(Destroy:</color>(!<color:R>rods</color>:frost ball$<color:B>)</color>
+Auto-destroying.</indent>
+</style>
+これはメッセージがあふれるので、<color:keyword>destroy_debug</color> の設定を入れっぱなしにはしたくないだろう。
+
+<topic:Conditionals><style:heading>条件</style>
+
+これは進んだ話だが、根っこの考え方は単純である。何が役に立ち何ががらくたかは、種族・職業・冒険者のレベルなどによって変わりうる。<color:keyword>条件</color>は、ふさわしいときだけ決まりを当てはめる助けになる。条件の文はそれぞれ<color:keyword>TRUE</color>（1）か<color:keyword>FALSE</color>（0）に定まる。FALSE になる条件に出会うと、次に TRUE の条件が来るまでその後の決まりはすべて無視される。
+
+条件の行はつねに<color:keyword>?:</color> の字で始まり、その後に（かなり暗号めいて見える）ゲームが評価する式が続く。
+
+例を見よう。上の<color:B>組み立て 1</color>で並の装備を壊す行を足したのを覚えているだろうか。冒険者がじゅうぶん進んでいるのでなければ本当にそうしたいとは限らないと述べた。レベル 20 でじゅうぶん進んでいるとしよう。
+  <color:v>?:[GEQ $LEVEL 20]</color>
+  !<color:G>average common </color><color:R>weapons</color>
+  !<color:G>average common </color><color:R>armors</color>
+  <color:v>?:1</color>
+
+<color:v>紫</color>の行が 2 本あり、どちらも <color:keyword>?:</color> で始まっていることに目を留めてほしい。これが条件である。ひとつ目は妙な形の式を含み、ふたつ目はずっと単純で、ただ <color:v>?:1</color> である。
+
+ひとつ目の条件は TRUE になることも、ならないこともある。$LEVEL（これはいまの冒険者のレベルだと見当がついただろう）の値と、それが 20 以上かどうかで決まる。GEQ は<color:keyword>greater than or equal to</color>（以上）の略で、20 はただの数である。この並び（$LEVEL GEQ 20 でも $LEVEL >= 20 でもなく[GEQ $LEVEL 20]）になっているのは、GEQ がこの式の<color:keyword>関数</color>で、$LEVEL と 20 がその引数だからである。
+
+これに比べて <color:v>?:1</color> は易しい。これは……そう、1 になる。そしてすでに述べたとおり 1 は TRUE なので、<color:v>?:1</color> は「決まりを無視する」切り替えを元へ戻し、実質的に前の条件の効く範囲の終わりを示す。
+
+もうひとつ例を挙げる。
+<style:wide>  <color:v>?:[OR [EQU $CLASS Mage High-Mage Sorcerer] [EQU $RACE Beholder Lich] ]</color>
+  wizardstaff
+  <color:v>?:1</color></style>
+
+これはもっと込み入った式だが、おそらく読み解けるだろう。職業がメイジ・ハイ・メイジ・ソーサラーのいずれか、<color:v>または</color>種族がビホルダーかリッチのいずれかなら TRUE である。
+
+つまり式は、関数（GEQ や OR など）・変数（$RACE や $LEVEL など）・そのままの値（Mage や Sorcerer など）・そして角かっこからできている。では、使える関数と変数は何だろうか。
+
+<color:G>関数        説明</color>
+  <color:keyword>IOR</color> <indent>論理和。[IOR a b c ...] は、部分の式 a・b・c… の<color:o>どれか</color>が TRUE なら TRUE である。</indent>
+  <color:keyword>OR</color> <indent>IOR と同じ。（計算機の人か数学の人なら XOR の関数もあると思うかもしれないが、無い。）</indent>
+  <color:keyword>AND</color> <indent>論理積。[AND a b c ...] は、部分の式 a・b・c… の<color:o>すべて</color>が TRUE なら TRUE である。</indent>
+  <color:keyword>NOT</color> <indent>[NOT a] は a が FALSE なら TRUE、その逆も同じである。何かが<color:o>そうでない</color>ときに行いを取りたいときに使う。</indent>
+  <color:keyword>EQU</color> <indent>[EQU v a b c ...] は、v の値が a・b・c… の<color:o>どれか</color>と同じなら TRUE である。比べ方は文字である。ふつうは v に <color:keyword>$CLASS</color>（下を参照）のような組み込みの変数の式を置き、残りの引数に <color:keyword>Mage</color> や<color:keyword>Sorcerer</color> のような比べる文字を置く。そのままの文字は引用符で囲まないので、空白を含められないことに注意。空白を含む名前は、必要なら中黒でつなぐこと（<color:keyword>Filthy Rag</color> ではなく<color:keyword>Filthy-Rag</color>）。</indent>
+  <color:keyword>LEQ</color> <indent>[LEQ v a] は、v の整数の値が a の整数の値<color:o>以下</color>なら TRUE である。EQU が引数を文字として扱うのに対し、LEQ は数として扱うことに注意。</indent>
+  <color:keyword>GEQ</color> <indent>[GEQ v a] は、v の整数の値が a の整数の値<color:o>以上</color>なら TRUE である。EQU が引数を文字として扱うのに対し、GEQ は数として扱うことに注意。</indent>
+
+<color:G>変数        説明</color>
+<color:keyword>$RACE</color> <indent>種族の名前を返す。たとえば <color:keyword>Snotling</color> や<color:keyword>High-Elf</color> である。</indent>
+<color:keyword>$CLASS</color> <indent>職業の名前を返す。たとえば <color:keyword>Warrior-Mage</color> や<color:keyword>Mindcrafter</color> である。<color:r>モンスター</color>モードで遊んでいるときは、この変数はつねに <color:keyword>Monster</color> を返し、$RACE の方が <color:keyword>Lich</color> や<color:keyword>Dragon</color> のような実際の敵の種族を返すことに注意。</indent>
+<color:keyword>$SUBCLASS</color> <indent>あれば下位の職業の名前を返す。弟子の <color:keyword>Yeqrezh</color> や、グレイ・メイジの <color:keyword>Evil Bias</color> などである。</indent>
+<color:keyword>$SPECIALITY</color> <indent>専門の名前を返す。たとえばウェポンマスターの <color:keyword>Axes</color> や、デバイスマスターの <color:keyword>Potions</color> である。この 2 つ以外の職業では <color:keyword>none</color> を返す。</indent>
+<color:keyword>$REALM1</color> <indent>あれば 1 つ目の系統の名前を返す。たとえば <color:keyword>Chaos</color> や<color:keyword>Sorcery</color> である。1 つ目の系統が無ければ <color:keyword>none</color> を返す。</indent>
+<color:keyword>$REALM2</color> <indent>あれば 2 つ目の系統の名前を返す。たとえば <color:keyword>Life</color> や<color:keyword>Death</color> である。2 つ目の系統が無ければ <color:keyword>none</color> を返す。</indent>
+<color:keyword>$LEVEL</color> <indent>いまのレベルを返す。ふつうは GEQ か LEQ と組み合わせて<color:v>[LEQ $LEVEL 34]</color> のように境目と比べる。</indent>
+<color:keyword>$SELLING</color> <indent><color:keyword>no_selling</color> の設定を入れていれば<color:keyword>Off</color> を、そうでなければ <color:keyword>On</color> を返す。</indent>
+<color:keyword>$MONEY</color> <indent>冒険者の持っている金の量を返す。$LEVEL と同じく、GEQ か LEQ と組み合わせて金持ちか貧乏かを見る。</indent>
+
+変数はすべて <color:keypress>$</color> の字で始まり、そのままの文字と区別される。
+
+<color:G>そのままの値 説明</color>
+<color:keyword>Number</color> <indent>数は <color:keyword>105</color> や <color:keyword>32</color> のように書く。</indent>
+<color:keyword>String</color> <indent>文字は <color:keyword>High-Mage</color> や<color:keyword>Beholder</color> のように書き、空白を含められない。</indent>
+
+<topic:Editor><style:heading>編集画面の使い方</style>
+
+編集画面はさほど難しくないはずで、おそらく自分で分かるだろう。ふつうの文字の編集画面と同じく、矢印キーでカーソルを動かし、正しい場所へ来たら打ち込む。進んだこと（と、つい忘れてしまう簡単なこと）は<color:keypress>ESC</color> のメニューからできる。
+<style:screenshot> <indent>
+<color:B>(a-j) Command:</color>                                                                  
+<color:G>#####</color><color:b>+---------------------------+</color><color:G>#######</color>                                       
+<color:G># Con</color><color:b>|</color><color:B> a) Help                   </color><color:b>|</color>                                              
+<color:G>#####</color><color:b>|</color><color:B> b) Quit without save   ^Q </color><color:b>|</color><color:G>#######</color>                                       
+mushr<color:b>|</color><color:B> c) Sa</color><color:b>+----------------------------------+</color>                                
+~mush<color:b>|</color><color:B> d) Re</color><color:b>|</color><color:B> a) Left     (Left Arrow key)  ^B </color><color:b>|</color>                                
+     <color:b>|</color><color:B> e) Lo</color><color:b>|</color><color:B> b) Down     (Down Arrow key)  ^N </color><color:b>|</color>                                
+<color:v>?:[EQ</color><color:b>|</color><color:B> f) Ed</color><color:b>|</color><color:B> c) Up       (Up Arrow key)    ^P </color><color:b>|</color>                                
+<color:D>~mush</color><color:b>|</color><color:B> g) Se</color><color:b>|</color><color:B> d) Right    (Right Arrow key) ^F </color><color:b>|</color>                                
+<color:v>?:1</color>  <color:b>|</color><color:B> h) Mo</color><color:b>|</color><color:B> e) Beginning of line          ^A </color><color:b>|</color>                                
+     <color:b>|</color><color:B> i) In</color><color:b>|</color><color:B> f) End of line                ^E </color><color:b>|</color>                                
+<color:v>?:[LE</color><color:b>|</color><color:B> j) Ad</color><color:b>|</color><color:B> g) Page up  (PageUp key)      ^O </color><color:b>|</color>                                
+<color:D>potio</color><color:b>|</color><color:B> k) Ad</color><color:b>|</color><color:B> h) Page down(PageDown key)    ^L </color><color:b>|</color>                                
+<color:v>?:1</color>  <color:b>|</color><color:B> l) Ke</color><color:b>|</color><color:B> i) Top      (Home key)        ^T </color><color:b>|</color>                                
+<color:R>potio</color><color:b>|</color><color:B> m) Co</color><color:b>|</color><color:B> j) Bottom   (End key)         ^U </color><color:b>|</color>                                
+<color:R>potio</color><color:b>+------+----------------------------------+</color>                                
+<color:R>potions</color>:heroism                                                                 
+<color:R>potions</color>:speed<color:U>#!kq</color>                                                               
+<color:R>potions</color>:giant strength<color:U>#!k</color>                                                       
+                                                                                
+<color:R>potions</color>:revelation                                                           
+                                                                                
+<color:R>potions</color>:of strength<color:U>#!k</color>                                                          
+<color:B>--------------------------------------------------------------------------------</color>
+This line is a comment.                                                         
+</indent></style>
+ここで、カーソルを動かすコマンドと、矢印などのふつうのキーがどうしても効かないときの控えのキーがはっきり分かる。
+
+編集画面が、式の書き方に応じて決まりの行を自動で色づけすることに注意。出ている文字が実際に打ち込んだ決まりとまったく同じでないこともある（形容詞の並びが入れ替わることなどがある）が、意味は同じである。取り違えを避けるため、カーソルのある行だけは決して色づけされず、つねに打ったとおりに出る。
+
+<topic:EasyDestroyer><style:heading>簡易自動破壊</style>
+
+ここまで読んでモガミネーターは手に負えないと思ったなら、アイテムをさばくもっと単純な仕組み――<color:keyword>簡易自動破壊</color>――を代わりに使える。この仕組みは設定で決める（<link:option.txt#AutoDestroyer> を参照）。<color:keyword>destroy_items</color> の設定が簡易自動破壊を入れたり切ったりする。モガミネーターと簡易自動破壊を並べて使うのが勧められるのは、<color:keyword>always_pickup</color> の設定を入れている<color:v>ときに限る</color>。
+
+モガミネーターを入れたがその働きが気に入らないなら、この編集画面の <color:keypress>ESC</color> のメニューから止めるか、<color:keyword>disable_mogaminator</color> の設定で切れる。<color:keyword>leave_mogaminator</color> の設定は、まったくのがらくただけを壊すように限る。<color:keyword>always_pickup</color> を使ってもモガミネーターによるアイテムの破壊は止まるが、簡易自動破壊はそのまま働く。
+
+<topic:Reference><style:heading>引きの表</style>
+
+この節ではモガミネーターの細かい書き方をすべて示す。だがその前に、そもそも好みのファイルはどこにあるのだろうか。既定の好みは lib/pref/pickpref.prf から立ち上がるので、すべての冒険者の既定の好みを直したければこのファイルを直す。自分だけの既定の好みを/lib/user/pickpref-UserDefault.prf に作ることもできる。こうすれば元の既定を上書きせずに済み、自分の変更が気に入らなくなったら簡単に戻れる。（利用者の既定のもうひとつの利点は、ゲーム中で決めて直せることである。全体の既定ではそれができない。）
+
+モガミネーターを働かせると、好みは環境に応じた場所の別のファイルへ収められる。Windows ではlib/user/pickpref-<color:o>NAME</color>.prf に、Linux では~/.angband/FrogComposband/pickpref-<color:o>NAME</color>.prf（ゲームのディレクトリの外）へ移ることもある。<color:o>NAME</color> はいまの冒険者の名前に置き換わる。つまり、外の文字の編集画面で冒険者の好みを直したければ、このファイルを変えることになる。たいていはゲーム中の編集画面を使う方が簡単である。ただし遊んでいる最中にゲームの外で好みを直したなら、<color:keypress>$</color> のコマンドでゲームに好みのファイルを読み直させること。
+
+約束した引きの表を下に載せる。存分に使ってほしい。
+
+<topic:LineTypes><color:B>表 I: 編集画面の行の種類</color>
+  <indent><color:G>種類        説明</color>
+<color:keyword>注釈</color> <indent>この行は <color:keypress>#</color> で始まり、仕組みに無視される。</indent>
+
+<color:keyword>条件</color> <indent>この行は全体の処理の切り替えを入れたり切ったりする。式が TRUE になれば切り替えが入り、その後の決まりが使われる。FALSE になれば切り替えが切れ、次に TRUE の条件が来るまでその後の決まりは無視される。詳しくは上の <link:editor.txt#Conditionals> を参照。</indent>
+
+<color:keyword>決まり</color> <indent>それ以外の行は、空でなければすべて決まりである。決まりの書き方は次の 5 つの表で述べる。</indent>
+</indent>
+<topic:RuleSyntax><color:B>表 II: 決まりの書き方</color>
+  <indent>決まりは次の 2 つの形のどちらかである。
+<style:wide><style:indent><color:y>[</color>Actions<color:y>]</color> <color:G>Adjectives</color><color:y>*</color> <color:R>Noun</color> <color:o>Special-Clauses</color><color:y>*</color> <color:y>[</color><color:keypress>:</color>Search-String<color:y>]</color> <color:y>[</color><color:U>#Inscription-String</color><color:y>]</color></style></style>
+
+<color:y>[</color>Actions<color:y>]</color> Search-String <color:y>[</color><color:U>#Inscription-String</color><color:y>]</color>
+
+角かっこは省いてよい部分を表す。<color:y>*</color> はクリーネ星で、その前の部分を 0 個以上書けることを表す。決まりはすべて、好みのファイルの 1 行に書かねばならない。
+
+<color:G>書き方の部分      説明</color>
+Actions <indent>「この決まりに当てはまったら何をするか」の部分。次の表で述べる行いの字を 1 つ以上使う。この部分を省くと、行いは<color:keyword>拾う</color>になる。</indent>
+
+<color:G>Adjectives</color> <indent>名詞を修飾し、この決まりに当てはまるアイテムをさらに絞り込む。</indent>
+
+<color:R>Noun</color> <indent>1 つ目の形ではつねに名詞をひとつ指定し、この決まりが当てはまるアイテムの大まかな種類を表す。</indent>
+
+<color:o>Special Clauses</color> <indent>さらに細かい絞り込みで、下で述べる（<link:editor.txt#SpecialClauses>）。名詞を修飾する点は形容詞に似ているが、形容詞と違ってアイテムの性質を数で比べる。また、形容詞が名詞の前に来るのに対し、これはつねに名詞の後に来る。</indent>
+
+Search String <indent>アイテムの名前と突き合わせる自由な形の文字である。比べ方は文字で、大文字と小文字は区別しない。特別な 2 つの字<color:keypress>^</color> と<color:keypress>$</color> は、突き合わせる文字がアイテムの名前のそれぞれ先頭か末尾になければならないことを表す。たとえば <color:keyword>^foo</color> は名前が <color:keyword>foo</color> で始まるアイテムにしか当てはまらないので、<color:keyword>foobar</color> は当たるが<color:keyword>barfoo</color> は当たらない。同じく <color:keyword>bar$</color> は名前が <color:keyword>bar</color> で<color:keywords>終わる</color>アイテムにしか当てはまらない。最後に、アイテムの名前はつねに単数形であることに注意。たとえば <color:keyword>Seeker Bolt</color> なら文字の突き合わせが働くが、<color:keyword>Seeker Bolts</color> ではつねに外れる。</indent>
+
+<color:U>Inscription String</color> <indent>この決まりに当てはまるアイテムへ自動で刻まれる、自由な形の文字である。</indent>
+
+込み入って見えるなら、既定の好みを眺めてみるとよい。じきに分かってくる。
+</indent>
+<topic:CommandLetters><color:B>表 III: 決まりの行いの字</color>
+  <indent><color:G>字      種類       説明</color>
+  <color:keypress>!</color>     主      壊す
+  <color:keypress>;</color>     主      拾うかどうか尋ねる
+  <color:keypress>~</color>     主      床へ置いていく
+        主      <indent>拾う。ほかの主な行いの字を書かなければこれになる。この行いに専用の字は無く、上書きされない限りそう決められるだけである。</indent>
+  <color:keypress>(</color>     添え    <indent><color:keypress>M</color> の地図とアイテムの一覧に出さない</indent>
+  <color:keypress>?</color>     添え    <indent>鑑定の巻物か杖を持っていれば、このアイテムを自動で鑑定する。</indent>
+  <color:keypress>#</color>     末尾    <indent>この字の後に続く文字を、当てはまるアイテムへ自動で刻む。主と添えの行いの字は決まりの行の<color:keyword>先頭</color>に、末尾の行いの字は決まりの行の<color:keyword>末尾</color>に置かねばならないことに注意。</indent>
+
+決まりには主な行いがひとつ要る（ほかに何も書かなければ拾うになる）。添えの行いは 0 個以上でよく、ただひとつの末尾の行いも省いてよい。
+</indent>
+<topic:Nouns><color:B>表 IV: 決まりの名詞</color>
+  <indent><color:G>名詞       説明</color>
+<color:R>Items</color> <indent>すべてに当てはまる。たいそう大まかな決まりに役立つ。たとえば ~?<color:G>unidentified</color> <color:R>items</color> なら、まだ鑑定していないものをすべて自動で鑑定しつつ地面へ置いていく。あるいは <color:keyword>items</color> だけならすべて拾う。ほかの名詞を書かなければ、名詞 <color:keyword>items</color> が暗に決められる。</indent>
+
+<color:R>Weapons</color> <indent>（掘る道具を含む）近接武器すべてに当てはまる。飛び道具には当てはまらない。</indent>
+
+<color:R>Favorite Weapons</color>
+           <indent>撃つ道具を含め、その職業が好む武器すべてに当てはまる。たとえばウェポンマスターは斧やクロスボウのような決まった種類の武器に打ち込む。その専門が何であれ、この「名詞」はその好みのアイテムに当てはまる。ゲームは <color:keyword>favorite weapons</color> を形容詞＋名詞ではなくひとつの名詞と見なすことに注意。</indent>
+
+<color:R>Hafted Weapons</color>
+           <indent>メイス・フレイル・ウォーハンマーのような鈍器すべてに当てはまる。この武器はプリーストに好まれる。上の <color:R>Favorite Weapons</color> の「名詞」と同じく、モガミネーターはこれを形容詞＋名詞ではなくひとつの名詞と見なす。</indent>
+
+<color:R>Diggers</color> <indent>シャベル・つるはしなど、掘る道具すべてに当てはまる。</indent>
+
+<color:R>Shooters</color> <indent>撃つ道具の枠へ入るものすべてに当てはまる。スリング・弓・クロスボウ・ハープ・銃である。</indent>
+
+<color:R>Ammo</color> <indent>飛び道具の弾すべてに当てはまる。矢・小石・鉄の弾・クロスボウの矢である。</indent>
+
+<color:R>Armors</color> <indent>あらゆる形の防具に当てはまる（もっと細かい名詞は下を参照）。</indent>
+<color:R>Suits</color>      体の防具に当てはまる。
+<color:R>Shields</color>    盾に当てはまる。
+<color:R>Cloaks</color>     クロークに当てはまる。
+<color:R>Helms</color>      兜と王冠に当てはまる。
+<color:R>Gloves</color>     手袋に当てはまる。
+<color:R>Boots</color>      靴に当てはまる。
+
+<color:R>Wands</color>      魔法棒に当てはまる。
+
+<color:R>Staves</color> <indent>杖（魔法の道具の方であって、クォータースタッフの方ではない）に当てはまる。たとえば <color:R>staves</color>:healing や<color:R>staves</color>:speed を試すとよい。</indent>
+
+<color:R>Rods</color>       ロッドに当てはまる。
+
+<color:R>Potions</color> <indent>薬に当てはまる。（気をつけること。腕力の薬と腕力回復の薬のように、薬の名前には互いに一部が重なるものが多い。）</indent>
+
+<color:R>Scrolls</color>    巻物に当てはまる。
+
+<color:R>Rings</color>      指輪に当てはまる。
+
+<color:R>Amulets</color>    アミュレットに当てはまる。
+
+<color:R>Lights</color>     光源の枠へ入るものすべてに当てはまる。
+
+<color:R>Spellbooks</color> <indent>魔法書すべてに当てはまる。術者でも（売り手でも）ないなら!<color:G>spellbooks</color> と気兼ねなく書いてよいが、本を使う術者なら形容詞と組み合わせたくなるだろう。</indent>
+
+<color:R>Junk</color> <indent>折れた棒のようなまったくのがらくたに当てはまる。（売れるかもしれない）彫像も含むので、それを除くには!<color:G>worthless</color> <color:R>junk</color> を使う。</indent>
+
+<color:R>Corpses</color> <indent>死体に当てはまる。死体は役に立ちうる。ポゼッサーは取り憑けるし、イゴールは切り分けるし、デーモンの中には人間型の死体を食べるものもいるし、<color:G>wanted</color> <color:R>corpses</color> は賞金首事務所へ持ち込める。</indent>
+
+<color:R>Skeletons</color> <indent>死体と同じく、<color:G>wanted</color> <color:R>skeletons</color> は賞金首事務所へ持ち込める。アーチャーは骨から矢とクロスボウの矢も作れる。</indent>
+
+語で当てはめの述語を組み立てるときは、名詞をちょうどひとつ指定せねばならないが、形容詞は好きなだけ使える。
+</indent>
+<topic:Adjectives><color:B>表 V: 決まりの形容詞</color>
+  <indent>形容詞はたいそう多いので、ここでは種類ごとにまとめてある。</indent>
+
+<color:o>アイテムの知識</color>
+<color:G>Unsensed</color> <indent>まだ鑑定も擬似鑑定もしていないアイテムに当てはまる。</indent>
+
+<color:G>Unidentified</color> <indent>まだ鑑定していないアイテムに当てはまる（?<color:G>unidentified</color> <color:R>items</color> ならすべて自動で鑑定する）。</indent>
+
+<color:G>Unaware</color> <indent>見かけをまだ鑑定していないアイテムに当てはまる。</indent>
+
+<color:G>Identified</color> <indent>鑑定したアイテムすべてに当てはまる。</indent>
+
+<color:G>*Identified*</color> <indent>完全に鑑定したアイテムに当てはまる。めったに要らない。</indent>
+
+<color:o>アイテムの質</color>
+<color:G>Average</color> <indent>並のアイテムすべてに当てはまる。これを ! の行いの字とかなり早いうちから組み合わせる人もいるが、打ち直しの土台のアイテムを探しているときは都合が悪いことがある。</indent>
+
+<color:G>Good</color> <indent>上質のアイテムすべてに当てはまる。</indent>
+
+<color:G>Ego</color>          <indent>Applies to all excellent objects. See <link:objects.txt#EgoItems> for more information.</indent>
+
+<color:G>Artifact</color> <indent>アーティファクトすべてに当てはまる。詳しくは <link:objects.txt#SpecialItems> を参照。</indent>
+
+<color:G>Cursed</color> <indent>呪われたアイテムすべてに当てはまる。控えめに使うこと。呪われたアイテムにも良いものはあるし、!<color:G>worthless</color> <color:R>items</color> が本当のがらくたを拾ってくれる。</indent>
+
+<color:G>Nameless</color> <indent>アーティファクトでもエゴのアイテムでもないアイテムすべてに当てはまる。</indent>
+
+<color:G>Rare</color> <indent>決まった、コードに書き込まれたアイテムの種類の一覧に載るものすべてに当てはまる。たとえばカオスの刃と破邪のメイスは<color:G>rare</color> であり、ドラゴン・スケイル・メイルを含むドラゴンの防具もすべてそうである。</indent>
+
+<color:G>Common</color> <indent><color:G>rare</color> で<color:v>ない</color>アイテムすべてに当てはまる。ロング・ソードは common だが、カオスの刃はそうでない。</indent>
+
+<color:G>Worthless</color> <indent>値打ちが 0 のアイテムは<color:G>worthless</color> と見なされる。ただし少し気をつけること。たとえば死体は「値打ちが無い」が、いくつかは取っておきたいはずである。既定の好みでは、役に立つ値打ちの無いものを守る決まりの下、いちばん最後に!<color:G>worthless</color> <color:R>items</color> が置いてある。</indent>
+
+<color:G>Icky</color> <indent>その職業に向かないアイテムのことである。向かない装備になるか、職業ごとのほかの罰を招く。</indent>
+
+<color:o>アイテムの性質</color>
+<color:G>Dice Boosted</color> <indent><color:R>weapons</color> か<color:R>shooters</color> と一緒に使うと、そのアイテムのダメージのサイコロかダメージの倍率がその種類にしては高いことを表す。</indent>
+
+アイテムの性質で当てはめる詳しい話は、下の <color:o>Special Clauses</color> を参照。
+
+<color:o>魔法書の形容詞</color>
+<color:G>Unreadable</color> <indent>使えない魔法書に当てはまる。系統を持たない職業で遊んでいるか、その本が選んだ系統のものでないかのどちらかである。</indent>
+
+<color:G>First Realm's</color> <indent>あれば 1 つ目の魔法の系統の本に当てはまる。</indent>
+
+<color:G>Second Realm's</color> <indent>あれば 2 つ目の魔法の系統の本に当てはまる。</indent>
+
+<color:G>First</color>
+<color:G>Second</color>
+<color:G>Third</color>
+<color:G>Fourth</color> <indent>魔法の系統にはそれぞれ 4 冊の魔法書がある。この形容詞はその本を番号で指す。たいてい 1 冊目と 2 冊目は安く、3 冊目と 4 冊目は値打ちがある。</indent>
+
+<color:o>死体の形容詞</color>
+<color:G>Wanted</color> <indent><color:R>corpses</color> か<color:R>skeletons</color> と組み合わせて、賞金首の敵の亡骸を表す。</indent>
+
+<color:G>Unique</color> <indent><color:R>corpses</color> か<color:R>skeletons</color> と組み合わせて、ユニークの敵の亡骸を表す。（集めているのだろうか。）</indent>
+
+<color:G>Human</color> <indent>冒険者によっては人間型の死体を糧にしたり、強いデーモンの味方を召喚する儀式に使ったりする。そのときは~<color:G>human</color> <color:R>corpses</color> のような決まりを好みへ足すとよい。ただし ~<color:G>special</color> <color:R>items</color> でも働く。</indent>
+
+<color:o>そのほか</color>
+<color:G>Collecting</color> <indent><color:G>Collecting</color> <color:R>items</color> は、すでに袋にあるアイテムと同じで重ねられるアイテムに当てはまる。</indent>
+
+<color:G>Special</color> <indent><color:G>Special</color> <color:R>items</color> は、種族や職業に要るアイテムのことである。ふつうなら既定でがらくたと見なされるアイテムである。たとえば冒険者によってはふつうの食べ物からわずかな糧しか得られず、人間型の死体を食べねばならない（おいしい）。悪魔の術者は死体をさまざまな呪文に使う。アーチャーは骨から自分の弾を作る。ビーストマスターと騎兵はモンスター加速の魔法棒を実際にありがたがる。こうした特別な場面をこの形容詞で扱う。<color:y>これは、アーティファクトを指すアイテムの感触 {特別製} とはまったく別の意味であることに注意。</color></indent>
+
+<color:G>Unusable</color> <indent>いま装備の枠を持っていない身に着けるアイテムに当てはまる。モンスターモードではとりわけ重宝する。ただし、いずれ新しい枠を得ることもあるのでいくらか気をつけて使うこと。
+</indent>
+<topic:SpecialClauses><color:B>表 VI: 決まりの特別な句</color>
+  <indent>次の句で N は数字（0-9）を表す。NN は数字を 1 つか 2 つ打てるという意味で、0 から 99 までの数を書ける。同じく NNNNNN なら 0 から 999999 までである。数字を多く打ちすぎると、読み手が特別な句と認めず、決まりが思わぬ結果を生む。
+
+<color:G>特別な句                説明</color>
+<color:o>More Dice Than NN</color> <indent>この句は <color:R>weapons</color> にだけ当てはまり、与えうるダメージの上限が書いた数を超えるとき真になる。たとえば (2d5) の武器は<color:o>more dice than 9</color> に当てはまるが、<color:o>more dice than 10</color> には当てはまらない。</indent>
+
+<color:o>More Bonus Than NN</color> <indent>ここでアイテムの恩恵とは、pval・命中・ダメージ・AC の恩恵のうちいちばん大きなものである。たとえば <color:R>rings</color> <color:o>more bonus than 9</color>:speed は加速の指輪 (+10) 以上を拾うが、ほかの加速の指輪には当てはまらない。<color:R>suits</color> <color:o>more bonus than 19</color>:power dragon なら、パワー・ドラゴン・スケイル・メイルが欲しいがAC の恩恵が +20 以上のものに限る、という意味である。</indent>
+
+<color:o>More Level Than NN</color> <indent>この句は<color:R>corpses</color> に使うためのもので、ポゼッサーが自分の作った死体の山をさばけるようにする。ほかのアイテムにも使え、その場合はそのアイテム、あるいはそのエゴの型のレベルに当たる。道具では、その道具の威力の高さに当てはまる。</indent>
+
+<color:o>More Charges Than NN</color> <indent>魔法の道具のためのものである。たとえば充填 20 回の傷の治癒の杖をすでに持っていて、それより少ないものはがらくただと思っているときに使う。</indent>
+
+<color:o>More Weight Than NN</color> <indent>職業によっては防具の重さに縛りがある。モンク・スカウト・忍者などである。一方モーラーのように、たいそう重い武器を好む職業もある。この句はアイテムの重さ（ポンド）と突き合わせる。<color:R>weapons</color> <color:o>more weight than 39</color> なら、39.1 ポンド以上の武器に当てはまる。</indent>
+
+<color:o>More Value Than NNNNNN</color> <indent>この句は分かっているアイテムの値打ちと突き合わせる。気をつけて使うこと。まだ分からないアイテムや *鑑定* していないアイテムでは、「分かっている」値打ちが本当の値打ちより低いことがある。</indent>
+</indent>
+<topic:CondiSyntax><color:B>表 VII: 条件の書き方</color>
+  <indent>条件の文は次の形である。
+
+?:<color:B>Expression</color>
+
+条件の式は次の（一部の）文法に従う。
+
+<color:B>Expression</color> <color:y>:=</color> <indent><style:indent><color:r>Literal</color> <color:y>|</color> <color:v>Variable</color> <color:y>|</color> [<color:R>Function</color> <color:B>Expression</color><color:y>*</color>]</style></indent>
+<color:R>Function</color>   <color:y>:=</color> <indent><style:indent>IOR <color:y>|</color> OR <color:y>|</color> AND <color:y>|</color> NOT <color:y>|</color> EQU <color:y>|</color> LEQ <color:y>|</color> GEQ</style></indent>
+<color:v>Variable</color>   <color:y>:=</color> <indent><style:indent>$RACE <color:y>|</color> $CLASS <color:y>|</color> $REALM1 <color:y>|</color> $LEVEL <color:y>|</color> $MONEY <color:y>|</color> ...</style></indent>
+<color:r>Literal</color>    <color:y>:=</color> <indent><style:indent>23 <color:y>|</color> 52 <color:y>|</color> Rage-Mage <color:y>|</color> High-Elf <color:y>|</color> ... </style></indent>
+
+上とは違い、角かっこは式の書き方の一部であって、文法の中で省いてよい部分を表すのでは<color:v>ない</color>ことに注意。むしろ、関数を当てはめる式はつねに角かっこで囲まれる。
+
+条件の行の式が FALSE か 0 になると、その後の決まりは無視される。TRUE か 0 でない値になると、その後の決まりが使われる。詳しくは上の <link:editor.txt#Conditionals> を参照。
+</indent>
+<topic:CondiFuncs><color:B>表 VIII: 条件の関数</color>
+  <indent><color:G>Function    Explanation</color>
+  <color:keyword>IOR</color> <indent>論理和。[IOR a b c ...] は、部分の式 a・b・c… の<color:o>どれか</color>が TRUE なら TRUE である。</indent>
+  <color:keyword>OR</color> <indent>IOR と同じ。（計算機の人か数学の人なら XOR の関数もあると思うかもしれないが、無い。）</indent>
+  <color:keyword>AND</color> <indent>論理積。[AND a b c ...] は、部分の式 a・b・c… の<color:o>すべて</color>が TRUE なら TRUE である。</indent>
+  <color:keyword>NOT</color> <indent>[NOT a] は a が FALSE なら TRUE、その逆も同じである。何かが<color:o>そうでない</color>ときに行いを取りたいときに使う。</indent>
+  <color:keyword>EQU</color> <indent>[EQU v a b c ...] は、v の値が a・b・c… の<color:o>どれか</color>と同じなら TRUE である。比べ方は文字である。ふつうは v に <color:keyword>$CLASS</color>（下を参照）のような組み込みの変数の式を置き、残りの引数に <color:keyword>Mage</color> や<color:keyword>Sorcerer</color> のような比べる文字を置く。そのままの文字は引用符で囲まないので、空白を含められないことに注意。</indent>
+  <color:keyword>LEQ</color> <indent>[LEQ v a] は、v の整数の値が a の整数の値<color:o>以下</color>なら TRUE である。EQU が引数を文字として扱うのに対し、LEQ は数として扱うことに注意。</indent>
+  <color:keyword>GEQ</color> <indent>[GEQ v a] は、v の整数の値が a の整数の値<color:o>以上</color>なら TRUE である。EQU が引数を文字として扱うのに対し、GEQ は数として扱うことに注意。</indent>
+</indent>
+<topic:CondiVars><color:B>表 IX: 条件の変数</color>
+  <indent><color:G>Variable    Explanation</color>
+<color:keyword>$RACE</color> <indent>種族の名前を返す。たとえば <color:keyword>Snotling</color> や<color:keyword>High-Elf</color> である。</indent>
+<color:keyword>$CLASS</color> <indent>職業の名前を返す。たとえば <color:keyword>Warrior-Mage</color> や<color:keyword>Mindcrafter</color> である。<color:r>モンスター</color>モードで遊んでいるときは、この変数はつねに <color:keyword>Monster</color> を返し、$RACE の方が <color:keyword>Lich</color> や<color:keyword>Dragon</color> のような実際の敵の種族を返すことに注意。</indent>
+<color:keyword>$SUBCLASS</color> <indent>あれば下位の職業の名前を返す。弟子の <color:keyword>Yeqrezh</color> や、グレイ・メイジの <color:keyword>Evil Bias</color> などである。</indent>
+<color:keyword>$SPECIALITY</color> <indent>専門の名前を返す。たとえばウェポンマスターの <color:keyword>Axes</color> や、デバイスマスターの <color:keyword>Potions</color> である。この 2 つ以外の職業では <color:keyword>none</color> を返す。</indent>
+<color:keyword>$REALM1</color> <indent>あれば 1 つ目の系統の名前を返す。たとえば <color:keyword>Chaos</color> や<color:keyword>Sorcery</color> である。1 つ目の系統が無ければ <color:keyword>none</color> を返す。</indent>
+<color:keyword>$REALM2</color> <indent>あれば 2 つ目の系統の名前を返す。たとえば <color:keyword>Life</color> や<color:keyword>Death</color> である。2 つ目の系統が無ければ <color:keyword>none</color> を返す。</indent>
+<color:keyword>$LEVEL</color> <indent>いまのレベルを返す。ふつうは GEQ か LEQ と組み合わせて<color:v>[LEQ $LEVEL 34]</color> のように境目と比べる。</indent>
+<color:keyword>$SELLING</color> <indent><color:keyword>no_selling</color> の設定を入れていれば<color:keyword>Off</color> を、そうでなければ <color:keyword>On</color> を返す。</indent>
+<color:keyword>$MONEY</color> <indent>冒険者の持っている金の量を返す。$LEVEL と同じく、GEQ か LEQ と組み合わせて金持ちか貧乏かを見る。</indent>
+
+変数はすべて <color:keypress>$</color> の字で始まり、そのままの文字と区別される。編集のファイルで使える変数のいくつかはここでは使えず、ここで使える変数のいくつか（$SYS や $KEYBOARD など）は当てはまることがまず無いので載せていないことに注意。
+</indent>
+<topic:CondiLits><color:B>表 X: 条件のそのままの値</color>
+  <indent><color:G>Literal     Explanation</color>
+<color:keyword>Number</color> <indent>数は <color:keyword>105</color> や <color:keyword>32</color> のように書く。</indent>
+<color:keyword>String</color> <indent>文字は <color:keyword>High-Mage</color> や<color:keyword>Beholder</color> のように書く。そのままの文字は引用符で囲まないので空白を含められないことに注意。必要なら中黒でつなぐこと（Filthy Rag の種族なら <color:keyword>Filthy-Rag</color>）。</indent>
+</indent><color:D>
+--
+最初       : PosChengband 4.0.0
+更新       : FrogComposband 7.1.liquorice
+</color>

@@ -1,0 +1,502 @@
+=== Exploring the dungeon ===
+
+Keine: "Let me go over the dungeon in outline.
+A dungeon is a set of parallel worlds whose shape changes utterly every time
+you enter it. All manner of items lie scattered within, and vicious monsters
+prowl about.
+
+You move, attack, use items and do everything else by typing commands.
+The enemies do not move until you act, and there is no time limit on your
+input, so when things go badly do not panic -- take your time and think out
+the best move.
+
+Your journey's goal is to kill enemies and gain levels, to find items and
+build up your equipment, and to kill the one behind the incident on the
+bottom floor of the dungeon called Angband."
+
+
+***** <Prepare>
+=== Preparing to go down ===
+
+Keine: "Now then. I understand your impatience, but go into the dungeon with
+no preparation at all and you will soon be lost or killed.
+Let me list what you should take into the earliest dungeons.
+
+- Food
+Reaching the place where a dungeon's entrance lies takes a journey of hours
+or of days. Without enough food you will suffer the indignity of a game over
+before you even arrive.
+Food is sold at the general store in town.
+A few rations are enough for a nearby dungeon, but a great eater such as an
+oni had better carry many more.
+A golem or a vampire cannot fill its stomach with ordinary food and must find
+some other way.
+
+- A light source
+Some rooms in a dungeon are lit, but most are pitch dark.
+In the dark you cannot see an enemy right beside you, and you can read
+neither scrolls nor spellbooks.
+To avoid that, wield a light source such as a torch or a lantern.
+A torch gives so little light that you see only the grids next to you, so I
+advise buying a lantern at the general store.
+And do not forget flasks of oil to refill it.
+A vampire sees in a pitch-dark room and needs no light source.
+
+- Equipment
+You have the barest equipment from the start, but that is a little thin.
+Gather weapons and armour so the monsters of the dungeon do not kill you.
+
+A class such as the Warrior starts with a decent weapon, but some classes
+have nothing but a poor knife, or nothing at all.
+Go to the weaponsmith and buy a weapon that suits your skill aptitudes.
+Note that daggers and other short blades cannot be held in both hands and
+gain blows only slowly, so I do not recommend them.
+
+Next, buy a hat, boots, a cloak and so on at the armoury.
+An AC of 20 or so is plenty down to about floor 10.
+But putting on whatever looks hard is not the whole of it.
+Carrying a shield tends to cost you blows, and heavy clothing makes spells
+harder to cast. That choice depends on the case.
+
+- A way home
+Once you go deep, getting back is a labour in itself.
+Then, deep in the dungeon, read a Scroll of Word of Recall and you return to
+the surface. To go from the surface back into the dungeon, read the scroll
+again or use a Divine Spirit Mausoleum branch office.
+Recall takes some time to trigger, so it is no use as an emergency escape.
+
+- Other things
+Let me name some other tools that are useful early on. All are sold in the
+town shops. You will not have the money to buy them all at once, so gather
+them a little at a time while you make money on the shallow floors.
+When something is sold out, wait a few hours of game time and the shop's
+stock is renewed.
+
+  - Scroll of Teleportation
+    Read it and you move somewhere on the floor in an instant.
+    Keep a few for when enemies surround you.
+
+  - Potion of Cure Serious Wounds
+    Carry ten or twenty and drink several at once when you have no room to
+    rest. Drinking one also cures confusion and blindness.
+    There is a stronger Potion of Cure Critical Wounds, but it costs rather
+    more.
+
+  - Scroll of Holy Chant
+    Read it and you are blessed for a time.
+    While blessed your defence and your chance to hit rise slightly, and your
+    magic defence rises a little.
+    Read one before fighting a strong enemy and things go rather more easily.
+
+  - Scroll of Confuse Monster
+    Read it and your hands begin to glow.
+    Attack an enemy in that state and you can confuse it.
+    This too is a genuinely useful thing when fighting a strong early enemy.
+
+  - Staff or Scroll of Object Location
+    Exploring a dungeon does not mean peering into every corner of every
+    room; you would be there all day. Use one of these and you learn where
+    the items lying nearby are.
+
+  - Staff of Door/Stair Location, Scroll of Magic Mapping, Staff of
+    Enlightenment
+    These tell you where the nearby staircases are, or the shape of the
+    ground. They cost a little, but you will want them by the time you go a
+    good way down.
+
+  - Ring of Warning
+    Wear this on your finger and it trembles to warn you when you are about
+    to step onto a trap, or when a strong enemy is likely to strike where you
+    are going. A useful thing against early traps.
+
+That is the gist of it. There are of course many other useful tools.
+By the time you are past the beginning you will often carry Stone to Mud,
+Teleport Away, a means of haste and a means of identification; from the
+middle depths, double elemental resistance, powerful healing, an emergency
+escape, full detection -- and a means of *Destruction*."
+
+
+***** <MapSymbols>
+=== Terrain symbols (in detail) ===
+
+Keine: "I explained the letters and symbols when we spoke of the town, but in
+the dungeon there are more of them and some change their meaning.
+Let me go through them properly.
+Type the '/' command and you can look up what a letter or symbol means.
+
+Terrain first.
+
+  [[[[w|.| (floor, road, sand, grass and so on)
+  [[[[G|:| (flower beds, thickets and so on)
+  Level ground. Ordinary terrain.
+  Grass and sand of various colours have various names, but they work alike.
+  [[[[w|^| (trap)
+  A trap. Step onto it carelessly and it does you some harm.
+  Traps are usually hidden and look just like the floor.
+  You can find them by trap detection or by searching.
+  A command lets you try to disarm one, though you may fail.
+  No item ever lies on a trap.
+  [[[[B|~| (shallow water)
+  Water shallow enough to wade. A ningyo or a kappa is refreshed by it.
+  Some monsters are aquatic and cannot leave the water.
+  [[[[b|~| (deep water)
+  Water deep enough that you must swim. A ningyo or a kappa is refreshed by
+  it. Enter it without levitation, without resistance to water and with a
+  heavy pack and you cannot swim -- you drown.
+  While drowning, everything you do carries a penalty and you take damage.
+  A vampire in particular drowns at once, without appeal, unless levitating.
+  Many monsters cannot swim and will not enter deep water.
+  No item ever lies on deep water.
+  [[[[U|~| (shallow lava)
+  Red-hot ground. Merely walking on it burns you.
+  [[[[r|~| (deep lava)
+  A lava flow. Enter it and you take heavy damage.
+  Even levitating you take a little.
+  Many monsters cannot enter lava either.
+  No item ever lies on deep lava.
+  [[[[D|#| (dark pit)
+  A deep hole in the ground. You cannot enter it without levitation.
+  No item ever lies in a pit.
+  [[[[U|'| (open door)  [[[[u|'| (broken door)
+  A door that stands open and can be passed.
+  A door that is not broken can be closed with a command.
+  No item ever lies where an unbroken door stands.
+  [[[[U|+| (closed door)
+  A door that is shut and cannot be passed.
+  A door may be hidden and look just like a wall.
+  It may be locked, or fixed so that it will never open.
+  If it is locked you can try to pick it with a command.
+  You can also smash it open by force, though I recommend that to none but the
+  very strong.
+  [[[[w|<| (up staircase)  [[[[w|>| (down staircase)
+  [[[[U|<| (up shaft)      [[[[U|>| (down shaft)
+  Staircases. Go up or down a floor with the '<' or '>' command.
+  A staircase moves one level, a shaft two.
+  No item ever lies on a staircase.
+  Note that if you leave a floor and come back by the same staircase, the
+  enemies' hit points have somehow been fully restored.
+  [[[[G|#| (tree)
+  Forest, rather than a single tree. You cannot see past it.
+  Passing through it takes a little longer.
+  (wall)
+  It cannot be shown here, but it is a whitish square. It marks a dungeon
+  wall. You cannot pass it, of course, though a ghost or a pass-wall spell
+  can. With a high digging skill you can tunnel through it with a command; it
+  takes a while. Quartz is easy to dig, granite rather harder.
+  Any wall can be melted in an instant by Stone to Mud, whether cast or from a
+  device. But an orange permanent wall can never be broken, and even a
+  pass-wall spell cannot enter it.
+  [[[[o|*| (vein with treasure)
+  The same as a wall, but digging it out yields money.
+  It is often disguised to look like an ordinary wall, but a Scroll of Detect
+  Treasure and the like will find it.
+  [[[[w|:| (rubble)
+  A mass of stone. You cannot pass it, but it is fairly easy to dig.
+  Digging it sometimes yields a lump of rock. If you are a golem, that is
+  precious food.
+  [[[[o|^| (mountain)
+  An enormous wall. Mountains on the surface can be crossed by flying, but
+  mountains inside a dungeon cannot be passed at all.
+  1-9  (shops)
+  There are eccentrics who keep shop inside the dungeon.
+  You can trade there just as on the surface.
+
+  There are other special terrains, but in the main a dungeon is built from
+  the terrains listed above."
+
+
+***** <MonSymbols>
+=== Monster symbols ===
+
+Keine: "Monsters are shown almost always by letters.
+A few use other symbols, and there are mimics that take the appearance of an
+item. Do not approach an item carelessly just because you have seen one.
+Whether the thing in front of you is an item or a monster can be checked with
+the 'l' command (look).
+
+Here is a short list. Monsters have a chapter of their own later.
+If you have played Hengband, note that several of the symbols have changed.
+
+a (ants)                b (bats)
+c (spiders, centipedes) d (dragons)
+e (eyes)                f (cats, feline beastmen)
+g (golems)              h (humanoids)
+i (icky things)         j (jellies)
+k (kobolds, wolf beastmen) l (aquatic creatures)
+m (molds)               n (nagas, ningyo)
+o (orcs)                p (humans)
+q (quadrupeds)          r (rodents, rabbits)
+s (skeletons)           t (tengu)
+u (minor demons)        v (vortices)
+w (worms)               y (lesser youkai)
+z (zombies)
+
+A (angels)              B (birds and the like)
+C (dogs, wolves)        D (ancient dragons)
+E (elementals)          F (fairies)
+G (ghosts)              H (chimerae and the like)
+I (insects)             J (snakes)
+K (kappa)               L (liches)
+M (many-headed reptiles) N (mysterious shapes)
+O (ogres, oni)          P (giants)
+Q (quylthulgs)          R (reptiles, amphibians)
+S (deities)             T (trolls)
+U (major demons)        V (vampires)
+W (wights)              X (xorns)
+Y (greater and humanoid youkai)  Z (zephyr hounds)
+
+# (trees, tentacles, mist and so on)   % (wall monsters)
+* (spheres)
+
+***** <Objects>
+=== Item symbols ===
+
+Keine: "Next, a short account of the letters items are shown by.
+They are symbols, in the main.
+
+$ (money)                    Money. It never weighs you down, however much
+                             you carry.
+& (chests, containers)       Open one and items come out. Often trapped.
+
+! (drinks, bottles)          Liquor and potions. Sometimes other things
+                             shaped like a bottle.
+? (scrolls, spellbooks)      Scrolls and books.
+, (food, mushrooms)          Eat it to fill your stomach. Some have special
+                             effects.
+_ (staves)                   Using one has various effects. It has a set
+                             number of charges.
+- (wands, rods)              Using one has various effects. Several can be
+                             carried together.
+
+| (swords, knives, blades)   Edged weapons.
+\ (hafted weapons, axes)     Heavy weapons.
+/ (poles, spears, polearms)  Long weapons.
+{ (bows, crossbows, guns)    Missile launchers.
+} (arrows, shot and so on)   Ammunition.
+
+( (clothing, cloaks)         Light armour worn on the body or over it.
+) (hats, gloves, boots)      Light armour worn on head, hands and feet.
+[ (body armour, shields)     Heavy armour worn on the body or the arm.
+] (helms, gauntlets, greaves) Heavy armour worn on head, hands and feet.
+" (amulets)                  Ornaments worn round the neck.
+= (rings)                    Ornaments worn on a finger.
+~ (light sources, ribbons)   Torches and lanterns, or ribbon-shaped ornaments.
+
+* (materials and so on)      Materials, ores, and other round things.
+` (figurines)                Magical figurines. Throw one and it takes shape
+                             as your servant.
+~ (photographs)              A photograph with somebody in it.
+
+That is about all. As I said, some monsters look like items.
+Beware in particular of the monster called the Death Sword, which looks like
+a '|'."
+
+
+***** <Feelings>
+=== The feeling of a level ===
+
+Keine: "Explore a dungeon for a while and you may sense something of the
+feeling of the floor you are on:
+"What a boring place..."
+"This place seems reasonably safe."
+"This place does not seem too risky."
+"This place seems terribly dangerous." and so on.
+What is it that produces this feeling?
+
+It is an item, or a monster, out of keeping with the floor you are on.
+Explore for a while on a floor that feels dangerous and you may find an
+unbelievably precious item lying on the ground -- or you may run headlong
+into an enemy you cannot handle.
+On such a floor you should explore more carefully than usual.
+If you have a means of detecting items or monsters, use it often.
+
+The higher your searching skill, the sooner you sense the feeling of a floor.
+And if you are a lucky man (or girl), or have set certain options, the
+messages you see will differ from the ones I just gave."
+
+
+***** <Vault>
+=== Special rooms and vaults ===
+
+Keine: "You may find strange structures in the dungeon.
+Let me name a few.
+
+- Pit / Nest (a monster den)
+  A corridor runs all the way round a rectangular room, and the room inside
+  is packed tight with monsters.
+  Every monster inside is awake from the start.
+  I do not know what they are doing in there, but open the door carelessly
+  and they may all attack you at once.
+  The shape is distinctive, so if you are watchful you should know one from
+  outside.
+
+- Vault (a treasure chamber)
+  What people call a monster house.
+  The room is crammed with items, traps and monsters.
+  The shape is complicated, and some are enormous, like a castle.
+  Most are enclosed by permanent walls that cannot be broken, and the
+  monsters inside are plainly stronger than the floor you are on.
+  Until you are used to exploring, the wise course is to keep away.
+
+- Horde
+  Not quite a structure, but the dungeon sometimes holds a crowd of awake
+  monsters that all share a symbol.
+  Monsters stronger than the floor are often mixed in, which makes it quite
+  dangerous. Deep down in particular, a careless teleport can drop you into
+  the middle of a pack of dragons or hounds.
+
+- Arcade (a shopping street)
+  For some reason there is sometimes a town inside the dungeon.
+  Make use of it without thinking about it too hard. Bargains seem easier to
+  find in the deep floors.
+  Merely entering a shop counts as an action, so clear the nearby enemies
+  first.
+
+- Pattern (a floor with a pattern drawn on it)
+  The details are unknown, but it seems to be a device that sets some kind of
+  trial. You will see one inside certain enormous vaults.
+  It is a single unbroken path from a starting point to an exit.
+  You cannot step across into it and you cannot leave partway.
+  What is more, your HP keeps falling while you walk it.
+  Reach the exit and you can, it seems, teleport to whatever floor you like.
+  Fine items are laid there too."
+
+
+***** <RandomQuests>
+=== Random quests ===
+
+Keine: "On certain floors of Angband a random quest occurs.
+A monster of some name stands guard there; kill it and a staircase down
+appears, together with several fine items as your reward.
+If you cannot kill it you may flee the floor, though of course the quest then
+fails."
+
+--- Yukari Yakumo ---
+Keine: "On floor 50 of Angband the great youkai Yukari Yakumo has taken up
+her place. First, fight her and kill her. She is a formidable enemy, but
+there is always an opening.
+On easy mode, killing Yukari Yakumo wins the game.
+On normal mode, killing her makes you a winner, and you may end the game
+there if you wish."
+
+
+***** <Dungeons>
+=== The kinds of dungeon ===
+Keine: "Gensokyo holds a variety of dungeons. Let me present them.
+
+- Angband (floors 1 to 100)
+  The main stage of your adventure.
+  Conquering it is your goal.
+  Its monsters and terrain are the standard ones.
+  Gems and ores are sometimes found, according to the depth.
+
+- Cave of the Great Mausoleum (floors 1 to 30)
+  A dungeon reached from Myouren Temple, near the Human Village.
+  No special terrain such as vaults appears, and no enemy stronger than the
+  floor. It makes a fine training ground for the start of an adventure.
+  Deeper in, gems are sometimes found.
+
+- Forest of Magic Depths (floors 24 to 36)
+  A dungeon deep in the Forest of Magic.
+  Almost all the terrain is forest, grass, marsh and rubble.
+  Beasts and giant mushrooms appear readily.
+  Mushrooms seem to be gathered here in quantity.
+  An enormous mushroom is said to hold the deepest part.
+
+- Genbu Ravine (floors 10 to 20)
+  Between the Forest of Magic and Youkai Mountain.
+  It is built of pitted walls and rivers.
+  Aquatic creatures appear often. Rare materials seem to be gathered here.
+
+- Scarlet Devil Mansion Depths (floors 30 to 50)
+  Entered from the Scarlet Devil Mansion, which stands by the lake
+  north-northwest of the Human Village.
+  It is built of comparatively orderly walls and corridors.
+  The enemies seem mostly humanoid and demonic.
+  Magical devices are often found.
+  The deepest part holds the mistress of the mansion, Remilia Scarlet.
+  And near the bottom the head maid will cut you down without a word.
+  Both are highly dangerous, so unless you are sure of yourself, do not go far
+  in.
+
+- Hell Valley (floors 35 to 50)
+  A good way northwest of the Human Village, near the foot of Youkai Mountain.
+  It is full of rock and pits, so exploring is hard without levitation.
+  Ghostly enemies appear often.
+  Materials essential to magic seem to be found here.
+  A hell crow of the underground guards the deepest part.
+
+- Muenzuka (floors 40 to 50)
+  A good way northeast of the Human Village, beyond Youkai Mountain.
+  Open terrain with much wood and grass.
+  All kinds of materials and fine items are often found, but enemies far too
+  strong for the depth are often awake from the start.
+
+- Former Blazing Hell (floors 40 to 50)
+  Entered from the courtyard of the Palace of the Earth Spirits, in the
+  Former Hell Road. To reach the Former Hell Road you must walk southwest
+  from the Human Village and then a good way east.
+  But there is a rumour of a road in the Forest of Magic that leads to the
+  Former Hell Road. It may be worth looking for.
+
+  The Former Blazing Hell is lava from end to end. Entering it without
+  levitation and without protection from fire is suicide.
+  Many enemies resist fire or fly.
+
+- Inverted Castle (floors 30 to 45)
+  A good way northwest of the Human Village.
+  A castle floating in the air, the stage of the incident once raised by a
+  descendant of Issun-boushi and an amanojaku.
+  Corridors are often broken by deep pits, so levitation is essential.
+  For some reason no magic at all can be used here.
+
+- Senkai (floors 30 to 45)
+  A good way west of the Human Village.
+  A place the saint is said to have made as a training ground for hermits.
+  A curious place where every wall is glass.
+  For some reason no melee attack at all can be used here.
+
+- Dragon's Lair (floors 60 to 72)
+  Underground, further in from the Former Hell Road.
+  A dangerous place where vicious dragons from another world appear in
+  numbers. It is full of pits, so walking is hard without levitation.
+  Rare gems can be had, they say, but it is not a place to go deep into for
+  pleasure.
+
+- Dream World (floors 30 to 70)
+  The entrance lies deep in Youkai Mountain, near the lake.
+  This is properly the world of dreams that everyone visits while asleep, but
+  it seems one can enter it in the flesh.
+  Since you are already inside a dream, everyone is awake, and on top of that
+  it is thick with vaults and other special structures -- an extremely
+  dangerous place. Materials found nowhere else can be had, but unless you
+  are very sure of yourself you had better not go.
+
+- Hell (floors 40 to 80)
+  Pass Muenzuka, cross the Sanzu River where plesiosaurs and giant fish come
+  at you, and you reach Higan. The entrance to Hell is there.
+  Inside it teems with demons and undead and is full of damaging terrain.
+  It is not a place to go without pressing business.
+
+- Rainbow Dragon Cave (floors 30 to 65)
+  Go north from the Human Village and climb the mountain and you come to an
+  open place called False Tentana. The entrance to the Rainbow Dragon Cave is
+  there. Inside it is a narrow but deep dungeon, and rare ores are said to be
+  found in its depths.
+  There is something to beware of: this place is said to be short of the
+  substance called oxygen, so humans cannot breathe.
+  It gives me no trouble at all, mind. Curious, is it not.
+  A human, or one of the races close to humans, will come to grief without
+  some item to make up the oxygen.
+  A ring that keeps you from drowning, perhaps?"
+
+
+***** <Souvenir>
+=== What each dungeon yields ===
+
+Keine: "As I have just explained, the dungeons of each region sometimes yield
+produce of their own.
+Mushrooms are often found in the Forest of Magic, mercury and arsenic in Hell
+Valley, magical devices in the Scarlet Devil Mansion.
+Muenzuka seems to yield a thoroughly mixed bag.
+The higher your searching ability, the more readily these things are found."

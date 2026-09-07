@@ -1,0 +1,271 @@
+# 幻想蛮怒 → 英語: ru_name_prefix.txt（丸ごと）。ランダムユニークの名の枕
+# （random_unique_monster.c:4239）。**N: の番号（NAMEPOWER）は変えないこと。**
+# 日本語は諺・四字熟語の断片を枕にする言葉遊びなので、**同じ調子の英語の枕**に
+# 置き換えた（直訳では名前として読めない）。並びと本数は現物どおり。
+
+N:1:NAMEPOWER_LOW
+Three Years on a Stone
+Even a Sardine's Head
+Led by an Ox
+Speak of the Devil
+Under the Floorboards
+Out of the Same Hole
+While the Cat's Away
+Even a Qilin Grown Old
+Before You Trip
+Both the Sour and the Sweet
+The Mountain Roars and Out Comes
+Even Dust Piled Up
+A Near Neighbour Rather Than a Distant Kin
+In for a Penny of Poison
+Counting the Skins of an Uncaught
+One Who Chases Two Hares
+The Enemy Too Is a Wily
+There's No Accounting for
+And That's the End of the Tale
+That Trick Won't Work on
+Just So, Says
+Patience Is the Province of
+Begging Your Pardon at
+Wise to the Ways of
+Prodigy at Ten, Bright at Fifteen, and Past Twenty Just
+Out of a Gourd Comes
+(Ltd.)
+(Inc.)
+Super
+Behold!
+Transform!
+Doing Summer
+Third-Time
+Botched
+The Finest in Ten Years
+The Finest in Recent Memory
+Better Even Than Last Year, Which They Called the Best
+Third Place in the District Heats
+Sat by the Window
+Making Up the Numbers
+For Tax Purposes
+With a Downward Strike Reset Clause
+With a Third Mortgage
+In Breach of the Washington Convention
+Monde Selection Gold
+On Probation
+Now Showing to Great Acclaim
+Patent Pending
+Finding Themselves
+Attacking
+Troubled
+Meguro
+Toshimaen
+Nagatanien
+Kourakuen
+Writhing in Agony
+Reaping What One Sowed
+Wishing to Remain Anonymous
+Wanted by Name
+Bound by Strange Fate
+Wasted to the Bone with Grief
+Meekly Nodding
+Utterly Downcast
+Never Without a Word to Add
+Gloomy and Dismal
+Politely Insolent
+Running This Way and That
+Rabble and Riffraff
+Widowed, Orphaned and Alone
+Unlucky and Unrecognised
+Rash and Thoughtless
+Shallow and Slight
+Brazen and Shameless
+Fair of Speech and False of Face
+Flustered and Panic-Stricken
+Plastered on Both Sides
+Utterly Ordinary
+Covered in Wounds
+Ruling for Three Days
+Idle and Planless
+Ignorant and Benighted
+Full of Its Own Importance
+Of the Quiet Wooded Lakeside
+I'll Say It Again, You Certainly Are
+The Sort Byakuren Would Punch With a Running Start
+Fugitive
+Chuunibyou
+The Two of Them Are
+Disliked
+Ruiner of Rice Fields
+Outcast
+Nuisance
+Troublesome
+Fool With a Single Purpose
+Drunken
+That One They Talk About
+Weekend
+From Sixty Years Old
+Bearing a Look of That Person
+Perfectly Ordinary
+With a Face Seen Somewhere Before
+Stay-at-Home
+Of a Certain Angband
+Talked About in the Streets
+On the Cliff
+Your
+You Are My
+What Is This
+Would You Believe It
+Next-Door
+Unworthy
+I Think I Saw It in a Book at Suzunaan
+Keine Was Talking About
+Low and Vulgar
+Pushy When It's Just the Two of Us
+
+N:2:NAMEPOWER_MED
+Unbeaten in a Brawl
+In High Spirits
+A Thousand Seas and a Thousand Mountains
+Veteran of a Hundred Battles
+Brimming With Wit
+Wicked and Lawless
+Working in the Dark
+Robed and Crowned in Glory
+Spirits Soaring to Heaven
+Broad-Minded and Generous
+Cunning and Crooked
+Wildly Original
+Coming Back in a Cloud of Dust
+Sparing Neither Body nor Life
+Full of Courage
+Bold and Fearless
+Sleeping on Brushwood, Tasting Gall
+Standing Alone and Walking Alone
+Acting as if Nobody Were There
+Outlandish
+Ruffian
+Proud of Their Strength
+Drifting
+Vengeful
+Wandering
+Tyrant
+Great Figure
+Full Moon
+Twilight
+Dawn
+Daybreak
+Labyrinth
+Starfall Night
+Sea of Tranquillity
+Wuthering Heights
+Water's Edge
+Seashore
+Misty Lake
+Scarlet Devil Mansion
+Human Village
+Youkai Mountain
+Underground
+Heaven
+Forest of Magic
+Muenzuka
+Myouren Temple
+Netherworld
+Bamboo Forest
+Eientei
+Sunflower Field
+Muenzuka
+Genbu Ravine
+Former Hell Road
+Palace of the Earth Spirits
+Former Blazing Hell
+Geyser
+Graveyard
+Inverted Castle
+Lily of the Valley Field
+Oitekebori
+Ashiarai Mansion
+From the Planet Yonder
+Shioyashiki
+
+N:3:NAMEPOWER_HIGH
+Lamentation
+Grudge
+Wrath
+Wailing
+Greed
+Sloth
+Madness
+Fanaticism
+Terror
+Despair
+Smiles
+Obsession
+Empty Mind
+Oblivion
+Shuddering
+Astonishment
+Sorrow
+Delight
+Rapture
+Fury
+Passion
+Desolation
+The Unbending
+The Match for a Thousand
+Peerless Under Heaven
+Undefeated in a Lifetime
+Heart of Cloud, Nature of Moon
+Without Equal Within the Seas
+Strange Forces and Disorderly Gods
+Shaking Heaven and Earth
+Raging Billows
+Drifting Cloud, Flowing Water
+Dazzling Radiance
+Great in Merit and Virtue
+A Single Flash of Light
+Without Equal in the Realm
+Adamantine and Unbreakable
+Both Talented and Beautiful
+Eight Faces and Six Arms
+Seamless as a Robe of Heaven
+Impregnable
+Smoke of Guns and Rain of Shot
+Free of Thought and Free of Care
+Clear Mirror, Still Water
+Pure in All Six Senses
+Hair Standing on End With Rage
+A Match for Ten Thousand
+Abyss
+Naraka
+Hell
+Outer Space
+Phantasm
+Ruin
+Death
+Fresh Blood
+Covenant
+Legend
+Antiquity
+The Other World
+The Heavens
+The Pure Land
+Black
+White
+Grey
+All Colours
+
+N:*:DEFAULT(NAMEPOWER_MAX)
+Everlasting Heaven and Earth
+Without Precedent and Without Successor
+Living Drunk and Dying in a Dream
+The Three Thousand Worlds
+Perfect and Flawless
+Apocalypse
+The Last Days
+The End
+Eternity
+The Imperishable
+The Galaxy
+Fantasy
+Fate
+Taboo
+Paradise
+The Beginning

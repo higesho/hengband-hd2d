@@ -1,0 +1,458 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "DungeonDefinitions.schema.jsonc",
+  "title": "DungeonDefinitions",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "dungeons"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "dungeons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dungeon"
+      }
+    }
+  },
+  "$defs": {
+    "localizedText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ja", "en"],
+      "properties": {
+        "ja": {
+          "type": "string"
+        },
+        "en": {
+          "type": "string"
+        }
+      }
+    },
+    "position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["wild_y", "wild_x"],
+      "properties": {
+        "wild_y": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wild_x": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minDepth", "maxDepth", "minPlayerLevel", "objGood", "objGreat", "pit", "nest"],
+      "properties": {
+        "minDepth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maxDepth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minPlayerLevel": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "objGood": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "objGreat": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pit": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/pitKind"
+          },
+          "uniqueItems": true
+        },
+        "nest": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nestKind"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "monsters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minCount", "additionalSpawnProbability", "normalMonsterRate", "flagsMode"],
+      "properties": {
+        "minCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "additionalSpawnProbability": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "normalMonsterRate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "flagsMode": {
+          "type": "string",
+          "enum": ["NONE", "AND", "NAND", "OR", "NOR"]
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/monsterFlag"
+          }
+        },
+        "spells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/monsterSpell"
+          }
+        },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          }
+        }
+      }
+    },
+    "floor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tiles", "tunnelRate"],
+      "properties": {
+        "tiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/floorTile"
+          }
+        },
+        "tunnelRate": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "final_floor": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "guardian": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
+        "object": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9999
+        },
+        "artifact": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 999
+        }
+      }
+    },
+    "wall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tiles", "outer", "inner", "streams"],
+      "properties": {
+        "tiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/wallTile"
+          }
+        },
+        "outer": {
+          "$ref": "#/$defs/wallTerrain"
+        },
+        "inner": {
+          "$ref": "#/$defs/wallTerrain"
+        },
+        "streams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stream"
+          }
+        }
+      }
+    },
+    "floorTile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "rate"],
+      "properties": {
+        "type": {
+          "enum": [
+            "DEEP_LAVA",
+            "DEEP_WATER",
+            "DIRT",
+            "FLOOR",
+            "FLOWER",
+            "GLASS_FLOOR",
+            "GRASS",
+            "SHALLOW_LAVA",
+            "SHALLOW_WATER"
+          ]
+        },
+        "rate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32767
+        }
+      }
+    },
+    "wallTile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "rate"],
+      "properties": {
+        "type": {
+          "enum": [
+            "DARK_PIT",
+            "DEEP_LAVA",
+            "DEEP_WATER",
+            "GLASS_WALL",
+            "GRANITE",
+            "MAGMA_TREASURE",
+            "MOUNTAIN_WALL",
+            "PERMANENT",
+            "QUARTZ_TREASURE",
+            "SHALLOW_WATER",
+            "TREE"
+          ]
+        },
+        "rate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32767
+        }
+      }
+    },
+    "wallTerrain": {
+      "type": "string",
+      "enum": [
+        "BRAKE",
+        "DARK_PIT",
+        "DEEP_LAVA",
+        "DEEP_WATER",
+        "GLASS_WALL",
+        "GRANITE",
+        "MAGMA_VEIN",
+        "MOUNTAIN_WALL",
+        "NONE",
+        "PERMANENT",
+        "QUARTZ_VEIN",
+        "SHALLOW_WATER",
+        "TREE"
+      ]
+    },
+    "hex16String": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{4}$"
+    },
+    "dungeonFlag": {
+      "type": "string",
+      "enum": [
+        "ACID_RIVER",
+        "ARCADE",
+        "ARENA",
+        "BEGINNER",
+        "CAVE",
+        "CAVERN",
+        "CHAMELEON",
+        "CURTAIN",
+        "DARKNESS",
+        "DESTROY",
+        "FORGET",
+        "GLASS_DOOR",
+        "GLASS_ROOM",
+        "LAKE_ACID",
+        "LAKE_LAVA",
+        "LAKE_POISONOUS",
+        "LAKE_RUBBLE",
+        "LAKE_TREE",
+        "LAKE_WATER",
+        "LARGE",
+        "LARGEST",
+        "LAVA_RIVER",
+        "MAZE",
+        "NO_CAVE",
+        "NO_DOORS",
+        "NO_MAGIC",
+        "NO_MELEE",
+        "NO_VAULT",
+        "POISONOUS_RIVER",
+        "SMALL",
+        "SMALLEST",
+        "WATER_RIVER",
+        "WINNER"
+      ]
+    },
+    "monsterFlag": {
+      "type": "string",
+      "enum": [
+        "ANIMAL",
+        "AQUATIC",
+        "CAN_FLY",
+        "CAN_SWIM",
+        "CHAMELEON",
+        "DEMON",
+        "DRAGON",
+        "ELDRITCH_HORROR",
+        "EVIL",
+        "GIANT",
+        "GOOD",
+        "HAS_DARK_1",
+        "HAS_DARK_2",
+        "HAS_LITE_1",
+        "HAS_LITE_2",
+        "IM_FIRE",
+        "INVISIBLE",
+        "NONLIVING",
+        "ORC",
+        "SELF_DARK_1",
+        "SELF_DARK_2",
+        "SELF_LITE_1",
+        "SELF_LITE_2",
+        "TROLL",
+        "UNDEAD",
+        "WILD_MOUNTAIN",
+        "WILD_OCEAN",
+        "WILD_VOLCANO",
+        "WILD_WOOD"
+      ]
+    },
+    "monsterSpell": {
+      "type": "string",
+      "enum": ["BA_DARK", "BA_LITE", "BR_DARK", "BR_LITE"]
+    },
+    "dungeon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "description",
+        "position",
+        "generation",
+        "monsters",
+        "floor",
+        "wall",
+        "flags"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "name": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "description": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "position": {
+          "$ref": "#/$defs/position"
+        },
+        "generation": {
+          "$ref": "#/$defs/generation"
+        },
+        "monsters": {
+          "$ref": "#/$defs/monsters"
+        },
+        "floor": {
+          "$ref": "#/$defs/floor"
+        },
+        "final_floor": {
+          "$ref": "#/$defs/final_floor"
+        },
+        "wall": {
+          "$ref": "#/$defs/wall"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dungeonFlag"
+          }
+        }
+      }
+    },
+    "pitKind": {
+      "type": "string",
+      "enum": [
+        "CHAPEL",
+        "DARK_ELF",
+        "DEMON",
+        "DRAGON",
+        "GIANT",
+        "HORROR",
+        "ORC",
+        "SYMBOL_EVIL",
+        "SYMBOL_GOOD",
+        "TROLL"
+      ]
+    },
+    "nestKind": {
+      "type": "string",
+      "enum": [
+        "CLONE",
+        "JELLY",
+        "SYMBOL_GOOD",
+        "SYMBOL_EVIL",
+        "MIMIC",
+        "HORROR",
+        "KENNEL",
+        "ANIMAL",
+        "CHAPEL",
+        "UNDEAD"
+      ]
+    },
+    "stream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "count", "chance", "priority"],
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/wallTerrain"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 255
+        },
+        "chance": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    }
+  }
+}
