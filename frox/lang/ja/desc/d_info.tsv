@@ -1,0 +1,58 @@
+# ダンジョンの説明文
+#
+# **この表が説明文の定義の置き場。** 作り直しは `python tools/frox/fc_build_ja_desc.py --write`、
+# ここから `edit/d_info.ja.txt` の `D:` を組むのは `fc_build_ja_names.py --write`。
+#
+# 欄はタブ区切りで idx / name / dep / src / ratio / en / ja。
+#   src=変愚   … 英語原文が変愚と一致。訳をそのまま採った
+#   src=変愚≒  … ほぼ一致（ratio が材料）。**目で確かめること**
+#   src=当方   … 人が書いた。**作り直しでも消さない**
+#   src=未訳   … 空欄。英語のまま出る（制約 4）
+#
+# ja を書き替えれば src は次の作り直しで自動的に `当方` になる。
+# name と en は**人が読むため**で、突き合わせには使わない（突き合わせは idx）。
+idx	name	dep	src	ratio	en	ja
+0	Wilderness	0	当方		wilderness	荒野
+1	Angband	1	当方		the entrance to the Dungeon of Angband	鉄獄のダンジョンの入口
+2	Camelot	20	当方		the entrance to the fabled land of Camelot	伝説の地キャメロットの入口
+3	Orc cave	15	当方		a dark tunnel leading to an Orc Cave	オークの洞窟へ続く暗い坑道
+4	Labyrinth	20	当方		the frightening entrance to the Labyrinth	迷宮の恐ろしげな入口
+5	Dragon's lair	60	当方		a big tunnel leading to a Dragon's Lair	竜の住みかへ続く大きな坑道
+6	Graveyard	50	当方		a hole to the Graveyard underground	地下の墓地へ通じる穴
+7	Witch Wood	25	当方		a twisting path leading to the Witch Wood	魔女の森へ続くくねった小道
+8	Volcano	50	当方		a hole to the center of the Volcano	火山の中心へ通じる穴
+9	Hell	666	当方		the stairway to Hell	地獄への階段
+10	Heaven	555	当方		the opulent gates of Heaven	きらびやかな天界の門
+11	Numenor	55	当方		a submerged way to the lost land of Numenor	水没した遺跡へ続く水路
+12	Castle	40	当方		the entrance to the Castle	城の入口
+13	R'lyeh	80	当方		a way to R'lyeh	ルルイエへの道
+14	Eyrie	40	当方		a way leading to the Eyrie	猛禽の巣へ続く道
+15	Mine	75	当方		the entrance to the Mine	金鉱の入口
+16	Anti-magic cave	40	当方		the entrance to the cave filled with anti-magic cloud	反魔法の雲に満ちた洞窟の入口
+17	Anti-melee cave	40	当方		the entrance to the cave filled with restricting magical field	動きを縛る魔法の場に満ちた洞窟の入口
+18	Chameleon cave	30	当方		the entrance to the chameleon's den	カメレオン洞の入口
+19	Dark cave	55	当方		the dark entrance to the cave filled with magical darkness	魔法の闇に満ちた洞窟の暗い入口
+20	Crystal castle	40	当方		the entrance to the crystal castle	水晶の城の入口
+21	Icky cave	10	当方		the entrance to the Icky caves	ねばねば洞窟の入口
+22	Mount Olympus	80	当方		the entrance to Mount Olympus	オリュンポス山の入口
+23	Lonely Mountain	30	当方		the entrance to the Lonely Mountain	はなれ山の入口
+24	Giant's Hall	30	当方		the entrance to the Giant's Hall	巨人の広間の入口
+25	Arena	50	当方		the entrance to the Arena	闘技場の入口
+26	Random Forest	25	当方		a path into an unknown forest	見知らぬ森へ入る小道
+27	Random Volcano	50	当方		a hole to the center of an unknown volcano	見知らぬ火山の中心へ通じる穴
+28	Random Mountain	40	当方		a way leading to an unknown mountain	見知らぬ山へ続く道
+29	Random Sea	55	当方		a submerged way to an unknown lost land	見知らぬ沈んだ地へ続く水路
+30	Warrens	1	当方		an entrance to a warren	兎の巣穴の入口
+31	Hideout	8	当方		a shady entrance to a rebel hideout	反乱者の隠れ家のうさんくさい入口
+32	Battlefield	30	当方		a shrouded entrance to a cursed battlefield	呪われた古戦場の霧に包まれた入口
+33	Tidal cave	15	当方		a slippery entrance to a tidal cave	潮の洞窟の滑りやすい入口
+34	Pyramidal mound	64	当方		dark steps leading into a pyramidal mound	ピラミッド型の墳丘へ下る暗い階段
+35	Plains of Oz	18	当方		a brick path to the mysterious land of Oz	オズの平原へ続く煉瓦の道
+36	Troll cave	18	当方		a dark tunnel leading to a troll cave	トロルの洞窟へ続く暗い坑道
+37	Disaster area	60	当方		a steel gate leading into a disaster area	災厄の地へ通じる鋼の門
+38	Snow castle	30	当方		the entrance to the snow castle	雪の城の入口
+39	Asgard	64	当方		the rainbow bridge to Asgard	アスガルドへ架かる虹の橋
+40	Man cave	8	当方		the shady entrance of a man cave	男の隠れ家のうさんくさい入口
+41	Atlantis	55	当方		a submerged way to the lost island of Atlantis	沈んだ島アトランティスへ続く水路
+42	Mystery cave	1	当方		the foggy entrance to a mysterious cave	謎の洞窟の霧に煙る入口
+43	Mount Meru	72	当方		the path to Mount Meru	須弥山への道

@@ -1,0 +1,2175 @@
+# 幻想蛮怒 → 英語: モンスター（r_info.txt）。書式は I:（通し番号）/ J:（日本語の原名。作成時に
+# 現物と突き合わせ、合わない項目は英語化を見送って一覧に出す）/ N:（英語名）。
+# 名前の正は gensoband/lang/en/glossary.md（承認 2026-08-24）。
+# 説明文（D:）は E4 で足した。現物の `D:` 行（日本語）をまるごと置き換える。
+
+I:1
+J:妖精
+D:An embodiment of nature, found everywhere in Gensokyo.
+
+I:10
+J:花妖精
+D:An embodiment of nature, found everywhere in Gensokyo. It is carrying a
+D:flower.
+
+I:11
+J:茸妖精
+D:An embodiment of nature, found everywhere in Gensokyo. It is carrying a
+D:mushroom.
+
+I:12
+J:向日葵妖精
+D:An embodiment of nature, found everywhere in Gensokyo. It is carrying a
+D:big sunflower.
+
+I:13
+J:中妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This one is
+D:somewhat larger.
+
+I:14
+J:メイド妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This one is a
+D:little cleverer than most, and has been hired to work as a maid. Even so,
+D:you cannot expect it to be good for much beyond making up the numbers.
+
+I:15
+J:ゾンビフェアリー
+D:An embodiment of nature, found everywhere in Gensokyo. For some reason
+D:this cheerful fairy has dressed up as a zombie.
+
+I:16
+J:大妖精
+D:An embodiment of nature, found everywhere in Gensokyo. It is large and
+D:strong for a fairy.
+
+I:17
+J:EX妖精
+D:An embodiment of nature, found everywhere in Gensokyo. It is quick and
+D:aggressive, and not to be taken lightly even though it is only a fairy.
+
+I:18
+J:付喪神（小）
+D:Bowls and odds and ends lie scattered on the ground. Surely it is only
+D:your imagination that they have sprouted legs and are walking about?
+
+I:19
+J:付喪神（中）
+D:A youkai born when an old tool gains a will of its own and begins to move.
+D:Sometimes it even curses people. Lay your worn-out tools properly to rest
+D:before they end up like this.
+
+I:52
+J:付喪神（古）
+D:An old and powerful tsukumogami. It must have gathered its strength over a
+D:very long time.
+
+I:141
+J:キョンシー
+D:A corpse animated by sorcery from the mainland. Its movements are stiff,
+D:but it is surprisingly fast, and its fangs are venomous.
+
+I:159
+J:野鉄砲
+N:Mami
+D:An animal much like a tanuki that turned into a youkai after it learned
+D:the taste of human blood.
+
+I:179
+J:妖獣（山犬）
+N:Youkai beast (mountain dog)
+D:A dog turned youkai, often seen in forests and bamboo groves.
+
+I:180
+J:妖獣（山猫）
+N:Youkai beast (wildcat)
+D:A wildcat turned youkai, often seen in forests and bamboo groves.
+
+I:194
+J:ホフゴブリン
+N:Hobgoblin
+D:A youkai that came to the Human Village in place of a zashiki-warashi. It
+D:is a hard worker, but its face was so frightening that it was driven out
+D:of the village.
+
+I:199
+J:人魚
+N:Mermaid
+D:A youkai that is half human and half fish. It is usually quite peaceful.
+
+I:224
+J:河童
+N:Kappa
+D:A familiar youkai that lives in marshes and rivers. It is very wary.
+
+I:237
+J:河童
+N:Kappa
+D:Under the water a kappa grows stronger, and is said to be able to drag
+D:down even oxen and horses.
+
+I:239
+J:山童
+N:Yamawaro
+D:A youkai resembling a kappa. It lives in a hideout deep in the mountains,
+D:where they are said to have built up an advanced trading system. Playing
+D:survival games in the mountains seems to be their hobby.
+
+I:320
+J:河童のエンジニア
+D:A kappa with a huge rucksack on its back. All manner of things come flying
+D:out of that rucksack like a jack-in-the-box.
+
+I:423
+J:煙々羅
+N:Enenra
+D:At first it is nothing but smoke rising from a house. But if no one
+D:notices the smoke, it is said that it really will burn the house down.
+
+I:531
+J:『シアーハートアタック』
+D:The left hand of Killer Queen, the Stand of Yoshikage Kira. It tracks
+D:adventurers by their body heat, and will follow them anywhere. "Killer
+D:Queen's Sheer Heart Attack always finishes off the prey it marks..."
+
+I:543
+J:ウォーター・ハウンド
+D:A mass of water rises out of the ground and comes gliding towards you.
+D:Looking closer, you see that it is shaped like a dog.
+
+I:587
+J:小悪魔
+N:Koakuma
+D:A demon of no great power. Most of them are cunning and fond of mischief.
+
+I:660
+J:白狼天狗
+D:A tengu charged with patrolling the mountain.
+
+I:698
+J:永遠の戦士『エルリック』
+D:A gaunt man with the pure white hair and skin of an albino. He holds a
+D:greatsword far too large for his frail frame as if it weighed nothing, and
+D:watches you with eyes as red as blood. The black blade glows with an eerie
+D:light, as though it were pulsing, and now and then it sings a strange
+D:melody...
+
+I:827
+J:鴉天狗
+D:A swift tengu who serves as a reporter on the mountain. Its youkai power
+D:is great and its attacks are many.
+
+I:860
+J:『太歳星君』
+D:A mighty deity of Taoist lore: a god of curses, a god of life, and a god
+D:that destroys evil and vanquishes foes. Following the course of Jupiter,
+D:it burrows unseen through the earth in the shape of a colossal lump of
+D:flesh covered all over with eyes. Should it ever be dug up, great calamity
+D:is said to rain down upon the world above.
+
+I:871
+J:はぐれメタル
+D:A slime clad in hard metal.
+
+I:872
+J:『八岐大蛇』
+D:The legendary serpent of the land of Izumo, with eight heads and eight
+D:tails. If its sacrifice is refused it raises a flood and wipes out the
+D:people.
+
+I:878
+J:『ディオ・ブランドー』
+D:Made an immortal vampire by the power of the Stone Mask, Dio sees
+D:adventurers as nothing but food. Beware The World! "I do not know the true
+D:nature of his Stand, but one thing is certain -- he can only use it at
+D:point-blank range!"
+
+I:879
+J:王蟲
+D:A herd of Ohmu maddened with rage charges at you, spreading miasma as it
+D:comes.
+
+I:880
+J:時を統べる者『リチャード・ウォン』
+D:A psychic who bends time and space to his will. Cool and collected, he
+D:always wears a confident smile. Behind that mask, however, lives a cold-
+D:blooded soul that will stop at nothing to satisfy its own desires. He
+D:calculates everything, and never lets you guess what he truly intends.
+
+I:881
+J:超人『ロック』
+D:"That's right! Locke the Superman!" "You know of me?" "Of course! Ageless,
+D:deathless, and the mightiest esper in history!" (Yuki Hijiri, Locke the
+D:Superman: "The Red Serpent")
+
+I:882
+J:皇帝『レイザーク』
+D:She wished only to fight other superhumans as a superhuman, and so she
+D:took the guise of an emperor and set out to destroy the Earth. "At any
+D:rate, we woke one morning to find that Dinal had become the sacred domain
+D:of the Emperor Layzark." (Yuki Hijiri, Locke the Superman: "Cosmic Game")
+
+I:883
+J:大天狗
+D:They stand among the leaders of tengu society on Youkai Mountain, and
+D:their strength is worthy of the name.
+
+I:920
+J:『デモゴルゴン』
+D:A terrible demon whose very name is said to bring ruin, and a commander of
+D:the armies of hell.
+
+I:922
+J:ピカチャウ
+D:It looks adorable, but let your guard down and you will take a shock you
+D:never expected.
+
+I:923
+J:雪女
+D:The snow beat against his face until Minokichi awoke. The door of the hut
+D:had been forced open, and by the light of the snow he saw a woman in the
+D:room -- a woman all in white. She was bending over Mosaku, breathing upon
+D:him, and her breath was like a bright white smoke. (Lafcadio Hearn,
+D:"Kwaidan")
+
+I:925
+J:日光猿
+D:It always appears in a mob. Which is to say, a whole troop of Nikko
+D:monkeys...
+
+I:926
+J:ツチノコ
+D:A snake-like creature with a short, thick body. It is a tremendous
+D:glutton. It is also kin to the nozuchi, and has the power to command
+D:grass.
+
+I:929
+J:ヘルファイア・ワイアーム
+D:A cruel and cunning dragon that dwells in hell. Its scales glow red-hot
+D:like flowing lava and give off sulphurous smoke, and vicious spines run
+D:from its head along its spine to the tip of its tail. It comes at you
+D:eager to torment and devour another wretched victim. (AD&D)
+
+I:930
+J:超人ロックのクローン
+D:"It's no use! You alone cannot defeat us. Do you know why? What sort of
+D:esper do you suppose the Keeper of the Book chose to clone?" "!?" "The
+D:mightiest esper in history, naturally! In other words, you, Locke the
+D:Superman." (Yuki Hijiri, Locke the Superman: "The Red Serpent")
+
+I:931
+J:銀河皇帝『カル・ダームIII世』
+D:He created clones of Locke the Superman to set against Locke and Liger I.
+D:"How often I have wished that record had never been found. But there is no
+D:turning back now. I bear a responsibility to all humanity in the galaxy,
+D:for I am Caldarm the Third, Emperor of the Galaxy!" (Yuki Hijiri, Locke
+D:the Superman: "The Keeper of the Book")
+
+I:932
+J:『バーノール=ルパート』
+D:"I was two people to begin with. I had them merged into one, to oversee
+D:the Drum project. Done this way, a lifespan can be stretched eightfold.
+D:And the power is multiplied eightfold as well." (Yuki Hijiri, Locke the
+D:Superman: "The Keeper of the Book")
+
+I:933
+J:『摂政バーノール公』
+D:"Duke Banor, 'His Excellency the Regent', was it? Regent indeed. The
+D:Empire has not had a regent in centuries." (Yuki Hijiri, Locke the
+D:Superman: "The Keeper of the Book")
+
+I:934
+J:『ルパート将軍』
+D:"So you are the Keeper of the Book." "A pity for you. I am Rupart -- known
+D:also as Duke Banor." (Yuki Hijiri, Locke the Superman: "The Keeper of the
+D:Book")
+
+I:935
+J:『ドルアーガ』
+D:Four legs. Nine arms. On his head a tall golden crown with horns jutting
+D:from either side. His body is blue, and he is fanged. He is said to be the
+D:one who sealed away the goddess Ishtar.
+
+I:936
+J:北斗神拳の使い手『ケンシロウ』
+D:The successor of Hokuto Shinken, a school passed to only one heir in each
+D:generation. In an age when it seemed that strength ruled all, he lives for
+D:love and fights for love.
+
+I:937
+J:サイバー『レムス』
+D:Cybers were humans whose bodies had been strengthened by machinery, but
+D:they suffered a flaw: their minds lost their balance. Lems, made a Cyber
+D:from nothing but his brain, was no exception. "That... that isn't Lems.
+D:It's a monster." (Yuki Hijiri, Locke the Superman: "Cyber Genocide")
+
+I:951
+J:メット
+D:Against this monster you will be dumbfounded at how utterly useless magic
+D:is. Rumour has it there is a Goomba inside...
+
+I:952
+J:カミカゼ・ハウンド
+D:A dog that looks fit to explode at any moment.
+
+I:953
+J:折れたデスソード
+D:A broken sword that roams about in search of the blood of its prey.
+
+I:963
+J:ビルダー帝国帝王『ボ帝ビル』
+D:Ten-time consecutive grand champion of the Galactic Bodybuilding Contest.
+D:His finishing move is the Botei-Build Cutter.
+
+I:965
+J:ミミック(ミミック(箱)の像)
+D:A strange creature disguised as a statue of a strange creature disguised
+D:as an abandoned chest, waiting for a foolish adventurer to step within
+D:reach of its poisonous claws.
+
+I:966
+J:地味な脇役『ルイージ』
+D:He is absolutely NOT a Mario knock-off! (or so he claims)
+
+I:967
+J:ガキ大将『ジャイアン』
+D:What's yours is mine. What's mine is mine.
+
+I:979
+J:小神霊（青）
+D:An embodiment of assorted desires. This one seems to be a divine spirit of
+D:the desire for profit.
+
+I:982
+J:デュラハン
+D:Carrying its head in its hand, this ominous monster comes to announce
+D:death.
+
+I:983
+J:ヒバゴン
+D:Resembling a monkey but, at five feet tall, much larger than monkey, this
+D:animal must be one of the mysterious beasts that live around Mt. Hiba in
+D:Hiroshima Prefecture.  It may or may not appear in a certain psychic
+D:photograph.
+
+I:984
+J:小神霊（紫）
+D:An embodiment of assorted desires. This one seems to be a divine spirit of
+D:the desire for long life.
+
+I:985
+J:ユニコーン
+D:It is a white horse with a horn on its forehead.
+
+I:986
+J:猫又
+D:This cat has a second tail.  There are fables about old cats becoming such
+D:creatures and bedeviling people.
+
+I:987
+J:鉄巨人
+D:An iron golem of colossal size. It shakes the dungeon as it walks towards
+D:you.
+
+I:988
+J:鳳凰
+D:It is a ruler among the birds and a symbol of virtue and grace.  It has
+D:the beak of a rooster, the face of a swallow, the forehead of a fowl, the
+D:neck of a snake, the back of a tortoise, the hindquarters of a stag, and
+D:tail of a fish.
+
+I:989
+J:麒麟
+D:It is deer-like but with the scales of a dragon and the tail of an ox.
+D:All accounts attest to its holiness and power.
+
+I:990
+J:ペガサス
+D:It is a large white horse with wings.
+
+I:991
+J:オーディンの乗馬『スレイプニル』
+D:This great eight-legged horse is Odin's mount.  It is said to be the child
+D:of Loki, the giant.
+
+I:992
+J:ヴァリノールの猟犬『フアン』
+D:As large as a small horse, Huan, the hound of Valinor, has the ability to
+D:understand and speak the languages of elves and men.  However, he never
+D:speaks in front of Feanor's sons as he's only allowed to speak three times
+D:before he dies.
+
+I:998
+J:黒チォコヴォ
+D:A variety of chiokovo that has learned to fly.
+
+I:999
+J:デヴチォコヴォ
+D:A gigantic chiokovo. It has hoarded a great many items!
+
+I:1001
+J:ブロンズ・ワイアーム
+D:A huge dragon with heavy scales of greenish brown. It stands so quietly
+D:that it might have been there for a thousand years.
+
+I:1002
+J:ゴールド・ワイアーム
+D:A huge dragon of blinding golden radiance, wheeling calmly through the
+D:air. When it fixes you with its gaze and growls in displeasure, that alone
+D:shakes the air and sets the dungeon rumbling.
+
+I:1004
+J:異世界からの勇者『ピップ』
+D:Merlin the magician summoned this young warrior to complete a variety of
+D:tasks.  Pip carries a dubious sword, created by Merlin and modeled on King
+D:Arthur's Excalibur.
+
+I:1005
+J:暗黒城の魔術師『アンサロム』
+D:This black-haired sorceror does all he can to wither crops, steal pigs,
+D:dry up waterways, and kidnap a queen.
+
+I:1012
+J:自縛霊
+D:It has unfinished business.
+
+I:1018
+J:世紀末覇者『ラオウ』
+D:Raou is the eldest of four honorary brothers, another being Kenshirou, who
+D:were trained by the master of Hokuto Shinken, a martial art.  Headstrong,
+D:Raou tries to forge a new order through conquest in a turbulent dark era.
+
+I:1019
+J:ラオウの愛馬『黒王号』
+D:This rough horse, with its large black body, is just right for Raou.
+
+I:1021
+J:小神霊（緑）
+D:An embodiment of assorted desires. This one seems to be a divine spirit of
+D:the desire for bombs.
+
+I:1032
+J:小神霊（白）
+D:An embodiment of assorted desires. This one seems to be a divine spirit of
+D:attachment to the world of the living.
+
+I:1036
+J:トラップマスター
+D:Be careful!  When you see him, you're likely already surrounded with
+D:traps.
+
+I:1040
+J:中神霊
+D:A gathering of strong human emotions.
+
+I:1041
+J:大神霊
+D:A powerful phantom that has attained divinity.
+
+I:1045
+J:分解ボルテックス
+D:You see streams of dust spiraling inward from rapidly crumbling stone on
+D:the walls or floor.
+
+I:1059
+J:野良神様
+N:Stray god
+D:One of the many gods who have no shrine of their own. It is weak, but
+D:bully it and you may be struck by divine punishment.
+
+I:1060
+J:雷獣
+D:It looks adorable, but let your guard down and you will be reduced to an
+D:idiot.
+
+I:1064
+J:時空ワイアーム
+D:The figure is distorted, like but not like the way swirling water or air
+D:above a hot surface can twist a shape, but it appears to be a huge dragon,
+D:somehow.
+
+I:1065
+J:地蔵尊の蛸
+D:A vast swarm of octopuses summoned by the Octopus Priest, an avatar of the
+D:great bodhisattva Kshitigarbha. "...And at that moment the shore roared
+D:all of a sudden, and out of that sea came thousands upon thousands of
+D:octopuses great and small, spewing ink from their mouths and rushing upon
+D:the enemy host. In an instant everything around was as black as a moonless
+D:night, and whether it was the poison of the octopuses' breath that choked
+D:them or not, men tumbled headlong from their horses, men fell sprawling on
+D:the ground, down and down they went..."
+
+I:1067
+J:妖怪兎
+N:Youkai rabbit
+D:A rabbit youkai. It is often found in the bamboo thickets.
+
+I:1069
+J:魔人『ウォーケン』
+D:He is the last survivor of the Skookum, a clan now extinct. "Walken is a
+D:psychic who can make the very molecules of matter vibrate!" (Hirohiko
+D:Araki, "Baoh the Visitor")
+
+I:1081
+J:チャージマン『研』
+D:He is an elementary school student who, with his weapons such as the Alpha
+D:Gun, Visual Belt, and Sky Rod, indiscriminately slaughters Juralians on a
+D:daily basis.
+
+I:1082
+J:ジュラル星人
+D:This maroon-colored, vaguely humanoid, creature with one eye, tentacle-
+D:like limbs, slim waist and broad chest is a member of an advanced
+D:civilization from another world.  They have invaded this world to steal
+D:its resources.
+
+I:1083
+J:妖怪兎(人型)
+N:Youkai rabbit (humanoid)
+D:A rabbit youkai that has gained enough power to take human shape. It is
+D:always cheerful, but far more cunning than it looks.
+
+I:1085
+J:マインドワーム
+D:A native creature of the planet Chiron that attacks the minds of other
+D:living things. "The Mind Worm is the natural defence of a living planet --
+D:its white blood cells, if you will. In a world where unassimilated thought
+D:poses a danger, the Mind Worm seeks out gatherings of sentient mental
+D:energy and destroys them with merciless efficiency." (Chairman Prokhor
+D:Zakharov, "Mind Worm, Mind Worm") (Sid Meier's Alpha Centauri)
+
+I:1086
+J:アイル・オブ・ディープ
+D:A creature of the planet Chiron that carries Mind Worms across the sea.
+D:"The Isle of the Deep is not a single creature but a colony of thousands
+D:of slender, tubular aquatic organisms. It is also the vector by which the
+D:Mind Worms that terrorise the planet's continents are carried, and it
+D:secretes a sticky, glue-like substance that hardens into that shell shape
+D:and floats the colony up, so that it looks for all the world like a huge
+D:island." (Lady Deirdre Skye, "A Comparative Biology of Planet") (Sid
+D:Meier's Alpha Centauri)
+
+I:1087
+J:チロン・ローカスト
+D:A subspecies of Mind Worm native to the planet Chiron that flits about
+D:like a locust. (Sid Meier's Alpha Centauri)
+
+I:1089
+J:宵闇の妖怪『ルーミア』
+N:Rumia, the Youkai of the Dusk
+D:(no detailed description yet)
+
+I:1090
+J:氷の妖精『チルノ』
+N:Cirno, the Ice Fairy
+D:(no detailed description yet)
+
+I:1091
+J:華人小娘『紅美鈴』
+N:Hong Meiling, the Chinese Girl
+D:(no detailed description yet)
+
+I:1092
+J:動かない大図書館『パチュリー・ノーレッジ』
+N:Patchouli Knowledge, the Unmoving Great Library
+D:(no detailed description yet)
+
+I:1093
+J:紅魔館のメイド『十六夜　咲夜』
+N:Sakuya Izayoi, the Maid of the Scarlet Devil Mansion
+D:(no detailed description yet)
+
+I:1094
+J:永遠に紅い幼き月『レミリア・スカーレット』
+N:Remilia Scarlet, the Eternally Young Scarlet Moon
+D:(no detailed description yet)
+
+I:1095
+J:悪魔の妹『フランドール・スカーレット』
+N:Flandre Scarlet, the Devil's Little Sister
+D:(no detailed description yet)
+
+I:1096
+J:冬の忘れ物『レティ・ホワイトロック』
+N:Letty Whiterock, the Remnant of Winter
+D:(no detailed description yet)
+
+I:1097
+J:凶兆の黒猫『橙』
+N:Chen, the Black Cat of Ill Omen
+D:(no detailed description yet)
+
+I:1098
+J:七色の人形遣い『アリス・マーガトロイド』
+N:Alice Margatroid, the Seven-Colored Puppeteer
+D:(no detailed description yet)
+
+I:1099
+J:騒霊ヴァイオリスト『ルナサ・プリズムリバー』
+N:Lunasa Prismriver, the Poltergeist Violinist
+D:(no detailed description yet)
+
+I:1100
+J:騒霊トランペッター『メルラン・プリズムリバー』
+N:Merlin Prismriver, the Poltergeist Trumpeter
+D:(no detailed description yet)
+
+I:1101
+J:騒霊キーボーディスト『リリカ・プリズムリバー』
+N:Lyrica Prismriver, the Poltergeist Keyboardist
+D:(no detailed description yet)
+
+I:1102
+J:半人半霊の庭師『魂魄　妖夢』
+N:Youmu Konpaku, the Half-Human Half-Phantom Gardener
+D:(no detailed description yet)
+
+I:1103
+J:華胥の亡霊『西行寺　幽々子』
+N:Yuyuko Saigyouji, the Dreaming Phantom
+D:(no detailed description yet)
+
+I:1104
+J:すきま妖怪の式『八雲　藍』
+N:Ran Yakumo, the Shikigami of the Gap Youkai
+D:(no detailed description yet)
+
+I:1105
+J:神隠しの主犯『八雲　紫』
+N:Yukari Yakumo, the Mastermind of Spiritings-Away
+D:(no detailed description yet)
+
+I:1106
+J:闇に蠢く光の蟲『リグル・ナイトバグ』
+N:Wriggle Nightbug, the Bug of Light Wriggling in the Dark
+D:(no detailed description yet)
+
+I:1107
+J:夜雀の怪『ミスティア・ローレライ』
+N:Mystia Lorelei, the Night Sparrow
+D:(no detailed description yet)
+
+I:1108
+J:知識と歴史の半獣『上白沢　慧音』
+N:Keine Kamishirasawa, the Half-Beast of Knowledge and History
+D:(no detailed description yet)
+
+I:1109
+J:幸運の素兎『因幡　てゐ』
+N:Tewi Inaba, the Lucky White Rabbit
+D:(no detailed description yet)
+
+I:1110
+J:狂気の月の兎『鈴仙・優曇華院・イナバ』
+N:Reisen Udongein Inaba, the Moon Rabbit of Insanity
+D:(no detailed description yet)
+
+I:1111
+J:月の頭脳『八意　永琳』
+N:Eirin Yagokoro, the Brain of the Moon
+D:(no detailed description yet)
+
+I:1112
+J:永遠と須臾の罪人『蓬莱山　輝夜』
+N:Kaguya Houraisan, the Sinner of Eternity and the Instant
+D:(no detailed description yet)
+
+I:1113
+J:蓬莱の人の形『藤原　妹紅』
+N:Fujiwara no Mokou, the Figure of the Person of Hourai
+D:(no detailed description yet)
+
+I:1114
+J:寂しさと終焉の象徴『秋　静葉』
+N:Shizuha Aki, the Symbol of Loneliness and Demise
+D:(no detailed description yet)
+
+I:1115
+J:豊かさと稔りの象徴『秋　穣子』
+N:Minoriko Aki, the Symbol of Abundance and Harvest
+D:(no detailed description yet)
+
+I:1116
+J:秘神流し雛『鍵山　雛』
+N:Hina Kagiyama, the Nagashi-bina of the Hidden God
+D:(no detailed description yet)
+
+I:1117
+J:超妖怪弾頭『河城　にとり』
+N:Nitori Kawashiro, the Super Youkai Warhead
+D:(no detailed description yet)
+
+I:1118
+J:下っ端哨戒天狗『犬走　椛』
+N:Momiji Inubashiri, the Rank-and-File Patrol Tengu
+D:(no detailed description yet)
+
+I:1119
+J:伝統の幻想ブン屋『射命丸　文』
+N:Aya Shameimaru, the Traditional Reporter of Fantasy
+D:(no detailed description yet)
+
+I:1120
+J:祀られる風の人間『東風谷　早苗』
+N:Sanae Kochiya, the Enshrined Human of the Wind
+D:(no detailed description yet)
+
+I:1121
+J:山坂と湖の権化『八坂　神奈子』
+N:Kanako Yasaka, the Avatar of Mountains and Lakes
+D:(no detailed description yet)
+
+I:1122
+J:土着神の頂点『洩矢　諏訪子』
+N:Suwako Moriya, the Highest of the Native Gods
+D:(no detailed description yet)
+
+I:1123
+J:春を運ぶ妖精『リリーホワイト』
+N:Lily White, the Fairy Who Heralds Spring
+D:(no detailed description yet)
+
+I:1124
+J:恐るべき井戸の怪『キスメ』
+N:Kisume, the Fearsome Well Spirit
+D:(no detailed description yet)
+
+I:1125
+J:暗い洞窟の明るい網『黒谷　ヤマメ』
+N:Yamame Kurodani, the Bright Net in the Dark Cave
+D:(no detailed description yet)
+
+I:1126
+J:地殻の下の嫉妬心『水橋　パルスィ』
+N:Parsee Mizuhashi, the Jealousy Beneath the Earth's Crust
+D:(no detailed description yet)
+
+I:1127
+J:語られる怪力乱神『星熊　勇儀』
+N:Yuugi Hoshiguma, the Rumored Unnatural Phenomenon
+D:(no detailed description yet)
+
+I:1128
+J:怨霊も恐れ怯む少女『古明地　さとり』
+N:Satori Komeiji, the Girl Even Vengeful Spirits Fear
+D:(no detailed description yet)
+
+I:1129
+J:地獄の輪禍『火焔猫　燐』
+N:Rin Kaenbyou, Hell's Traffic Accident
+D:(no detailed description yet)
+
+I:1130
+J:熱かい悩む神の火『霊烏路　空』
+N:Utsuho Reiuji, the Scorching, Troubled Divine Flame
+D:(no detailed description yet)
+
+I:1131
+J:閉じた恋の瞳『古明地　こいし』
+N:Koishi Komeiji, the Closed Eyes of Love
+D:(no detailed description yet)
+
+I:1132
+J:ダウザーの小さな大将『ナズーリン』
+N:Nazrin, the Little Dowser General
+D:(no detailed description yet)
+
+I:1133
+J:愉快な忘れ傘『多々良　小傘』
+N:Kogasa Tatara, the Cheerful Forgotten Umbrella
+D:(no detailed description yet)
+
+I:1134
+J:守り守られし大輪『雲居一輪＆雲山』
+N:Ichirin Kumoi & Unzan, the Guarding and Guarded Great Wheel
+D:(no detailed description yet)
+
+I:1135
+J:水難事故の念縛霊『村紗　水蜜』
+N:Minamitsu Murasa, the Ghost of the Shipwreck Accident
+D:(no detailed description yet)
+
+I:1136
+J:毘沙門天の弟子『寅丸　星』
+N:Shou Toramaru, the Disciple of Bishamonten
+D:(no detailed description yet)
+
+I:1137
+J:封印された大魔法使い『聖　白蓮』
+N:Byakuren Hijiri, the Sealed Great Magician
+D:(no detailed description yet)
+
+I:1138
+J:未確認幻想飛行少女『封獣　ぬえ』
+N:Nue Houjuu, the Unidentified Fantastic Flying Girl
+D:(no detailed description yet)
+
+I:1139
+J:読経するヤマビコ『幽谷　響子』
+N:Kyouko Kasodani, the Sutra-Chanting Yamabiko
+D:(no detailed description yet)
+
+I:1140
+J:忠実な死体『宮古　芳香』
+N:Yoshika Miyako, the Loyal Corpse
+D:(no detailed description yet)
+
+I:1141
+J:壁抜けの邪仙『霍　青娥』
+N:Seiga Kaku, the Wicked Hermit Who Passes Through Walls
+D:(no detailed description yet)
+
+I:1142
+J:神の末裔の亡霊『蘇我　屠自古』
+N:Soga no Tojiko, the Phantom Descendant of the Gods
+D:(no detailed description yet)
+
+I:1143
+J:古代日本の尸解仙『物部　布都』
+N:Mononobe no Futo, the Shikaisen of Ancient Japan
+D:(no detailed description yet)
+
+I:1144
+J:聖徳道士『豊聡耳　神子』
+N:Toyosatomimi no Miko, the Shoutoku Taoist
+D:(no detailed description yet)
+
+I:1145
+J:淡水に棲む人魚『わかさぎ姫』
+N:Wakasagihime, the Mermaid of Fresh Water
+D:(no detailed description yet)
+
+I:1146
+J:ろくろ首の怪奇『赤蛮奇』
+N:Sekibanki, the Rokurokubi Horror
+D:(no detailed description yet)
+
+I:1147
+J:竹林のルーガルー『今泉　影狼』
+N:Kagerou Imaizumi, the Loup-Garou of the Bamboo Forest
+D:(no detailed description yet)
+
+I:1148
+J:古びた琵琶の付喪神『九十九　弁々』
+N:Benben Tsukumo, the Tsukumogami of an Aged Biwa
+D:(no detailed description yet)
+
+I:1149
+J:古びた琴の付喪神『九十九　八橋』
+N:Yatsuhashi Tsukumo, the Tsukumogami of an Aged Koto
+D:(no detailed description yet)
+
+I:1150
+J:逆襲のあまのじゃく『鬼人　正邪』
+N:Seija Kijin, the Rebellious Amanojaku
+D:(no detailed description yet)
+
+I:1151
+J:小人の末裔『少名　針妙丸』
+N:Shinmyoumaru Sukuna, the Descendant of the Inchlings
+D:(no detailed description yet)
+
+I:1152
+J:夢幻のパーカッショニスト『堀川　雷鼓』
+N:Raiko Horikawa, the Phantasmal Percussionist
+D:(no detailed description yet)
+
+I:1153
+J:片腕有角の仙人『茨木　華扇』
+N:Kasen Ibaraki, the One-Armed, Horned Hermit
+D:(no detailed description yet)
+
+I:1154
+J:小さな百鬼夜行『伊吹　萃香』
+N:Suika Ibuki, the Tiny Night Parade of a Hundred Demons
+D:(no description written yet -- already grown gigantic)
+
+I:1155
+J:伊吹萃香（小）
+N:Suika Ibuki (small)
+D:A small double born from Suika's hair.
+
+I:1156
+J:美しき緋の衣『永江　衣玖』
+N:Iku Nagae, the Beautiful Scarlet Cloth
+D:(no detailed description yet)
+
+I:1157
+J:非想非非想天の娘『比那名居　天子』
+N:Tenshi Hinanawi, the Girl of Bhava-agra
+D:(no detailed description yet)
+
+I:1158
+J:表情豊かなポーカーフェイス『秦　こころ』
+N:Hata no Kokoro, the Expressive Poker Face
+D:(no detailed description yet)
+
+I:1159
+J:小さなスイートポイズン『メディスン・メランコリー』
+N:Medicine Melancholy, the Little Sweet Poison
+D:(no detailed description yet)
+
+I:1160
+J:四季のフラワーマスター『風見　幽香』
+N:Yuuka Kazami, the Flower Master of the Four Seasons
+D:(no detailed description yet)
+
+I:1161
+J:三途の水先案内人『小野塚　小町』
+N:Komachi Onozuka, the Ferryman of the Sanzu River
+D:(no detailed description yet)
+
+I:1162
+J:楽園の最高裁判長『四季映姫・ヤマザナドゥ』
+N:Eiki Shiki, Yamaxanadu, the Supreme Judge of Paradise
+D:(no detailed description yet)
+
+I:1163
+J:今どきの念写記者『姫海棠　はたて』
+N:Hatate Himekaidou, the Modern Spirit-Photography Reporter
+D:(no detailed description yet)
+
+I:1164
+J:人形
+D:One of Alice's dolls. Each of them moves so freely that you would never
+D:believe they are worked by strings.
+
+I:1168
+J:シルバー・ワイアーム
+D:A huge dragon shining with a divine silver-white radiance. Yet the sight
+D:of it is so overwhelming that it strikes you down to the very depths of
+D:your soul.
+
+I:1169
+J:アンバーの末弟『ランダム』
+D:Random, youngest of the nine princes, spent his days roaming the Shadows
+D:for amusement. He is calculating and moody, yet surprisingly loyal. "A
+D:short, sly-faced fellow. A pointed nose, a laughing mouth, hair like a
+D:bundle of straw. And some sort of Renaissance costume in orange, red and
+D:brown. Long hose, and a tight-fitting embroidered doublet." (Roger
+D:Zelazny, "Nine Princes in Amber")
+
+I:1170
+J:ドラゴンゾンビ
+D:The corpse of a dragon, raised by magic into an undead thing.
+
+I:1171
+J:『Deathspit』
+D:An extremely dangerous hound. Its endless breath has laid many an
+D:adventurer in the grave.
+
+I:1172
+J:『Plaguewrath』
+D:An extremely dangerous hound. Its endless breath has laid many an
+D:adventurer in the grave.
+
+I:1173
+J:竜牙兵
+D:A soldier of bone created with a dragon's tooth for a catalyst. An
+D:ordinary warrior is no match for one, and powerful mages command them by
+D:the score.
+
+I:1174
+J:レッサー・アザー・ゴッド
+D:Nameless gods of monstrous shape. Most of them serve the high god Azathoth
+D:and dance endlessly in the depths of the cosmos, but for some strange
+D:reason a few make their way to this world.
+
+I:1175
+J:フルート奏者
+D:A monstrous piper who plays his flute for all eternity at the side of the
+D:high god Azathoth.
+
+I:1176
+J:ポイズン・ジャイアント
+D:A giant with lurid skin covered in tumours. Smoke rises here and there
+D:from its body...
+
+I:1177
+J:黒の剣
+D:A greatsword that floats in the air with a baleful glow. It has a
+D:malevolent will of its own, and swings at you to drink up your soul.
+
+I:1178
+J:アンバライト
+D:A youth with a faint trace of the blood of Oberon, King of Amber. His body
+D:is far tougher than it looks.
+
+I:1179
+J:『オメガ』
+D:The ultimate weapon of the ancient Ronkan civilisation. Even heroes with
+D:twelve weapons are no match for it.
+
+I:1180
+J:『ミカエル』
+D:An archangel whose name means "who is like God", said to have led the
+D:hosts of heaven in battle against Satan and... hold on, wait a moment?
+
+I:1181
+J:ダイアモンドナイト
+D:A knight clad in heavy, exquisitely ornamented armour. You cannot read the
+D:face behind that thick helm. It comes striding towards you with a dazzling
+D:greatsword at the ready...
+
+I:1182
+J:レッサー・デーモン
+D:A demon of the lower orders. It glares at you with burning eyes.
+
+I:1183
+J:グレーター・デーモン
+D:A demon of the higher orders. It has sharp claws and a body like steel,
+D:and glares at you with freezing eyes.
+
+I:1184
+J:マイルフィック
+D:A mighty demon. It looks like a huge winged bronze statue, half man and
+D:half beast.
+
+I:1185
+J:応龍
+D:A dragon with four legs and wings. An auspicious beast symbolising change,
+D:it is said to soar through the heavens at will and to call up storms.
+
+I:1186
+J:霊亀
+D:A huge and holy tortoise that carries a mountain on its shell. The
+D:mountain is called Mt. Horai, a paradise said to be the home of undying
+D:hermits.
+
+I:1187
+J:図書館防衛用ゴーレム
+D:A golem made by a certain witch to guard her library from thieves. Somehow
+D:every one of them looks like something you have seen before.
+
+I:1188
+J:図書館防衛用ゴーレム(大)
+D:A golem made by a certain witch to guard her library from thieves. Apart
+D:from being big enough to tower over you, somehow every one of them looks
+D:like something you have seen before.
+
+I:1189
+J:狼男
+D:A typical beastman. They often live in bamboo groves and forests.
+
+I:1190
+J:狼女
+D:A typical beastman. They often live in bamboo groves and forests.
+
+I:1191
+J:死神(事務員)
+D:A shinigami who works in Higan. Hermits and celestials are outside her
+D:jurisdiction, but she will fight them anyway.
+
+I:1192
+J:死神(船頭)
+D:A shinigami who works at the Sanzu River. Hermits and celestials are
+D:outside her jurisdiction, but she will fight them anyway.
+
+I:1193
+J:死神(お迎え担当)
+D:A shinigami who works in the world of the living. It is said that hermits
+D:and celestials who cannot drive them off are escorted straight down to
+D:hell.
+
+I:1194
+J:新米仙人
+D:A hermit whose training is still shallow, but who fights bravely at the
+D:sight of youkai and evil spirits.
+
+I:1195
+J:仙人
+D:A hermit of great virtue who has mastered powerful sennin arts.
+
+I:1196
+J:天人
+D:They have finished centuries of training and now live in the heavens with
+D:superhuman powers.
+
+I:1197
+J:鼻高天狗
+D:A long-nosed tengu who handles most of the paperwork on the mountain.
+
+I:1198
+J:亡霊
+N:Phantom
+D:The soul of a human being. It seems to keep something of the shape and the
+D:memories it had in life.
+
+I:1199
+J:大怨霊
+D:A soul in which strong negative feeling has been distilled. It thinks of
+D:nothing but hurting others, and is dangerous enough to kill even youkai.
+
+I:1200
+J:怨霊
+D:A soul of pure human spite and anger that attacks the mind of its target.
+D:Unlike a ghost, a vengeful spirit is said to feel warm to the touch.
+
+I:1201
+J:究極生命体『カーズ』
+N:Kars, the Ultimate Lifeform
+D:"And there! How beautiful! What radiance! The finest thing I have ever
+D:seen..." "At last I have overcome... overcome that sun!" (Hirohiko Araki,
+D:JoJo's Bizarre Adventure, vol. 12)
+
+I:1202
+J:異端審問官『モズグス』
+N:Mozgus, the Inquisitor
+D:"Repent, you damned souls! Faith, I have found, is a matter of dying!"
+D:(Kentaro Miura, "Berserk", vol. 20)
+
+I:1203
+J:使徒？『モズグス』
+N:Mozgus, the Apostle?
+D:"Fool who does not fear God -- heaven's punishment is swift! In heaven's
+D:stead, I shall visit judgement upon you!" (Kentaro Miura, "Berserk", vol.
+D:20)
+
+I:1204
+J:空師『柳　龍光』
+N:Ryuukou Yanagi, the Master of the Void Fist
+
+I:1205
+J:天狗の使い
+D:A youkai crow kept by the tengu for hunting.
+
+I:1206
+J:鬼神長
+D:One of the oni captains who command the oni and shinigami of hell. He
+D:rarely leaves Higan, but he sometimes comes to the world of the living to
+D:pass judgement in person on those who prolong their lives by illicit
+D:means.
+
+I:1207
+J:UMA『チュパカブラ』
+D:A newcomer among monsters, imported (?) from the Outside World. It moves
+D:quickly and drinks the blood of livestock.
+
+I:1208
+J:宙に浮かぶ魔法陣(赤)
+D:A magic circle floating in the air. Magicians often set them up to
+D:intercept intruders.
+
+I:1209
+J:宙に浮かぶ魔法陣(青)
+D:A magic circle floating in the air. Magicians often set them up to
+D:intercept intruders.
+
+I:1210
+J:宙に浮かぶ魔法陣(白)
+D:A magic circle floating in the air. Magicians often set them up to
+D:intercept intruders.
+
+I:1211
+J:宙に浮かぶ魔法陣(大)
+D:A large and finely wrought magic circle floating in the air. Magicians
+D:often set them up to intercept intruders.
+
+I:1212
+J:『魔法の森の主』
+N:Master of the Forest of Magic
+D:A giant mushroom monster the size of a kaiju. Its saliva is said to
+D:dissolve anything.
+
+I:1213
+J:魔法おばけキノコ(赤)
+D:A monstrous mushroom, a speciality of the Forest of Magic. It will not let
+D:itself be picked quietly, though.
+
+I:1214
+J:魔法おばけキノコ(青)
+D:A monstrous mushroom, a speciality of the Forest of Magic. It will not let
+D:itself be picked quietly, though.
+
+I:1215
+J:魔法おばけキノコ(黒)
+D:A monstrous mushroom, a speciality of the Forest of Magic. It will not let
+D:itself be picked quietly, though.
+
+I:1216
+J:魔法おばけキノコ(白)
+D:A monstrous mushroom, a speciality of the Forest of Magic. It will not let
+D:itself be picked quietly, though.
+
+I:1217
+J:魔法おばけキノコ(緑)
+D:A monstrous mushroom, a speciality of the Forest of Magic. Try not to
+D:become a seedbed for its spores before you pick it.
+
+I:1218
+J:魔法おばけキノコ(極彩色)
+D:A monstrous mushroom, a speciality of the Forest of Magic. In the Forest
+D:of Magic, though, the mushroom may be the one doing the tasting.
+
+I:1219
+J:魔法おばけキノコ(灰色)
+D:A monstrous mushroom, a speciality of the Forest of Magic. In the Forest
+D:of Magic, though, the mushroom may be the one doing the tasting.
+
+I:1220
+J:魔法おばけキノコ(透明)
+D:A monstrous mushroom, a speciality of the Forest of Magic. In the Forest
+D:of Magic, though, the mushroom may be the one doing the tasting.
+
+I:1221
+J:悪魔の妹『フランドール・スカーレット』
+N:Flandre Scarlet, the Devil's Little Sister
+D:(no detailed description yet)
+
+I:1222
+J:祟り神
+N:Tatarigami
+D:A raging deity. Worship it in the proper manner and it will grant you its
+D:protection; defy it and you are in for a terrible time.
+
+I:1223
+J:氷晶
+D:My proud minion!
+
+I:1224
+J:逆襲のあまのじゃく『鬼人　正邪』
+N:Seija Kijin, the Rebellious Amanojaku
+D:(no detailed description yet)
+
+I:1225
+J:地獄の河童
+D:There are kappa in hell as well. They are said to be more formidable than
+D:the ones above ground.
+
+I:1226
+J:博麗の巫女『博麗　霊夢』
+N:Reimu Hakurei, the Shrine Maiden of Hakurei
+
+I:1227
+J:普通の魔法使い『霧雨　魔理沙』
+N:Marisa Kirisame, the Ordinary Magician
+
+I:1228
+J:妖怪狸
+D:A tanuki that has gained youkai power. It can turn into a human, and into
+D:other things besides.
+
+I:1229
+J:妖怪古狸
+D:A powerful youkai tanuki that has lived long and gathered great strength.
+
+I:1230
+J:化け狸十変化『二ッ岩　マミゾウ』
+N:Mamizou Futatsuiwa, the Bake-danuki with Ten Transformations
+D:(no detailed description yet)
+
+I:1231
+J:妖怪狐
+D:A fox youkai. Its arts of transformation are famous.
+
+I:1232
+J:(付喪神1)
+D:Your own weapon, risen to power and dancing through the air.
+
+I:1233
+J:(付喪神2)
+D:Your own weapon, turned into a tsukumogami.
+
+I:1234
+J:(付喪神3)
+D:Your own weapon, now moving of its own accord.
+
+I:1235
+J:(付喪神4)
+D:Your own weapon, now possessed of a will of its own.
+
+I:1236
+J:(付喪神5)
+D:Your own weapon, turned into a tsukumogami.
+
+I:1237
+J:ランダムユニーク1
+N:Random unique 1
+
+I:1238
+J:ランダムユニーク2
+N:Random unique 2
+
+I:1239
+J:ランダムユニーク3 水棲
+N:Random unique 3 (aquatic)
+
+I:1240
+J:妖怪鼠
+N:Youkai mouse
+D:Large rats that move with great speed. They are oddly well organised, and
+D:look as if they are searching for something...
+
+I:1241
+J:宙に浮かぶ魔法陣(小)
+D:A magic circle floating in the air. Magicians often set them up to
+D:intercept intruders.
+
+I:1242
+J:賢者の石
+D:A substance said to be the ultimate product of magic.
+
+I:1243
+J:頭
+D:A detached head of Sekibanki. It chases enemies down and attacks them.
+
+I:1244
+J:頭
+D:A detached head of Sekibanki. It stays where it is and attacks with a
+D:plain laser.
+
+I:1245
+J:ハシビロコウ
+D:A large bird with a great beak. It stares at you without moving at all...
+
+I:1246
+J:コモドドラゴン
+D:A large reptile. It has a powerful tail, sharp claws and venomous fangs.
+
+I:1247
+J:強い亡霊
+D:The spirit of a human with a fierce will. To the eye it is no different
+D:from a living person, but let your guard down and it will kill you
+D:outright.
+
+I:1248
+J:劣化ハウンド
+D:A dull-coloured, dog-like mass. As it writhes forward, the plants around
+D:it wither before your eyes and the puddles turn foul.
+
+I:1249
+J:浄化ハウンド
+D:Something shaped like a dog, giving off a divine light. It appears to have
+D:judged you unclean and means to erase you.
+
+I:1250
+J:分解ハウンド
+D:All at once, holes opened up in the wall and the floor. Something like the
+D:silhouette of a dog comes leaping at you...
+
+I:1251
+J:邪龍
+D:An evil dragon that gathered strength for centuries until it became a full
+D:dragon.
+
+I:1252
+J:龍の子
+N:Infant dragon
+D:A dragon's child. It is still young, but it has the power to call up wind
+D:and rain.
+
+I:1253
+J:玉兎
+D:A soldier of the lunar rabbits. It wears a helmet with holes for its ears
+D:and holds a bayonet at the ready.
+
+I:1254
+J:UMA『モケーレ・ムベンベ』
+D:A monster said to live in the jungles of central Africa. It is somewhere
+D:between a hippopotamus and an elephant in bulk, five to ten metres long,
+D:with a long snake-like neck and tail, four legs, and three claws on each
+D:foot.
+
+I:1255
+J:恙虫の群れ
+D:The tsutsugamushi is a mite too small to see with the naked eye. Its venom
+D:is strong, however, and those it bites are said to suffer a raging fever.
+
+I:1256
+J:『祐天上人』
+N:High Priest Yuuten
+D:A famous monk of the Edo period. He was expelled by the priest Dantsuu for
+D:his dullness, but one night he suddenly became an expert at laying
+D:vengeful spirits to rest...
+
+I:1257
+J:『白仙』
+D:A monk of about sixty. He travelled about painting pictures of cats and
+D:tigers to keep the rats away. Rats that saw a picture painted by Hakusen
+D:are said to have vanished on the spot...
+
+I:1258
+J:球電
+D:A lightning bolt shaped like a ball, bounding through the air. Look
+D:closely and you can see the shadow of something alive inside it...
+
+I:1259
+J:『万歳楽』
+N:Manzairaku
+D:Said to be a legendary monstrous fish. "Seven shaku long, mouse-grey all
+D:over, with fur seven sun long, a head like a mouse, red eyes, and a forked
+D:tail like a swallow's..."
+
+I:1260
+J:送り提灯
+N:Okuri-chouchin
+D:Several lanterns float along through the air with nobody holding them.
+D:They turn out to be a kappa delivery service.
+
+I:1261
+J:『ニンジャスレイヤー』
+D:A ninja feared as the death god of Neo-Saitama. He wears black and red
+D:ninja garb and a sinister mask with the characters for "ninja" and "slay"
+D:carved on either cheek. His eyes burn with vengeance against every ninja
+D:alive.
+
+I:1262
+J:魔界妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This one seems to
+D:have come from Makai: it wears dark clothes and its wings glow a dull red.
+
+I:1263
+J:テスト妖精
+D:A fairy for testing. If this monster ever turns up in normal play it is a
+D:bug, so please tell the author.
+
+I:1264
+J:地獄鴉
+N:Hell raven
+D:A crow born of the darkness of hell. It seems to be native to Former Hell.
+
+I:1265
+J:カナメファンネル
+D:A keystone flying about by Tenshi's arts.
+
+I:1266
+J:グリーンアイドモンスター
+D:A monster of jealousy that you yourself created. The stronger your
+D:jealousy, the stronger the monster.
+
+I:1267
+J:秘封倶楽部初代会長『宇佐見　菫子』
+N:Sumireko Usami, the First President of the Secret Sealing Club
+D:(no detailed description yet)
+
+I:1268
+J:『光の三妖精』
+N:Three Fairies of Light
+
+I:1269
+J:月都メカ(改)
+D:It was supposed to be a stage built for the Lunar Capital Exposition, but
+D:Kaguya has reworked it into a piece of avant-garde sculpture.
+
+I:1270
+J:人面犬
+D:A stray dog is going through the rubbish. Hm? Hold on a moment...
+
+I:1271
+J:蟒蛇
+D:A great serpent that could swallow a human whole. It seems to be very fond
+D:of sake.
+
+I:1272
+J:竹林の妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This one lives in
+D:the bamboo grove and delights in leading visitors astray.
+
+I:1273
+J:浅葱色のイーグルラヴィ『清蘭』
+N:Seiran, the Pale Blue Eagle Ravi
+
+I:1274
+J:橘色のイーグルラヴィ『鈴瑚』
+N:Ringo, the Orange Eagle Ravi
+
+I:1275
+J:夢の支配者『ドレミー・スイート』
+N:Doremy Sweet, the Ruler of Dreams
+
+I:1276
+J:舌禍をもたらす女神『稀神　サグメ』
+N:Sagume Kishin, the Goddess Whose Words Invite Calamity
+
+I:1277
+J:地獄の妖精『クラウンピース』
+N:Clownpiece, the Fairy of Hell
+
+I:1279
+J:地獄(異界)の女神『ヘカーティア・ラピスラズリ』
+N:Hecatia Lapislazuli, the Goddess of Hell (Otherworld)
+
+I:1280
+J:地獄(地球)の女神『ヘカーティア・ラピスラズリ』
+N:Hecatia Lapislazuli, the Goddess of Hell (Earth)
+
+I:1281
+J:地獄(月)の女神『ヘカーティア・ラピスラズリ』
+N:Hecatia Lapislazuli, the Goddess of Hell (Moon)
+
+I:1282
+J:地獄妖精
+D:An embodiment of nature, found everywhere in Gensokyo. There are fairies
+D:in hell too, and tormenting the sinners there seems to be their idea of
+D:fun.
+
+I:1283
+J:月面妖精
+D:An embodiment of nature, found everywhere in Gensokyo. A few fairies live
+D:even on the surface of the moon.
+
+I:1284
+J:純化妖精
+D:An embodiment of nature, found everywhere in Gensokyo. A purified fairy is
+D:a mass of pure life force, said to hold power equal to a fierce god.
+
+I:1285
+J:悪夢の欠片
+N:Nightmare fragment
+D:A shard of nightmare, streaking through the dream world like a meteor.
+
+I:1286
+J:イーグルラヴィ
+D:A survey unit of the lunar rabbits. The work is dangerous and the pay is
+D:poor, so morale seems low.
+
+I:1287
+J:(特殊フィールド)
+N:(special field)
+
+I:1288
+J:栽培マン
+D:"With soil like this you could raise some fine Saibaimen." (Akira
+D:Toriyama, "Dragon Ball")
+
+I:1289
+J:夢塊
+N:Dream mass
+D:Something like a soap bubble drifts by. It is a dream that someone was
+D:meant to have. Touch it and you will be drawn into the dream world.
+
+I:1290
+J:豹
+D:A large cat of prey, clothed in pale tawny fur with distinctive black
+D:spots.
+
+I:1291
+J:『足売り婆』
+N:Ashiuri-baba, the Leg-Selling Hag
+D:Here of all places stands an old pedlar woman. She carries a great bundle
+D:wrapped in cloth on her back -- but look closely, and what sticks out of
+D:the bundle seems to be a human leg...
+
+I:1292
+J:首無し馬
+D:A headless horse runs about. Some say it is the mount of the year god,
+D:others that it is the curse laid on those who kill a horse.
+
+I:1293
+J:永遠と須臾の罪人『蓬莱山　輝夜』
+N:Kaguya Houraisan, the Sinner of Eternity and the Instant
+D:She is your mistress. You must protect her whatever it takes.
+
+I:1294
+J:校長先生の肖像画
+N:Portrait of the principal
+D:A stern-faced portrait hangs on the wall. Hm? Hold on a moment...
+
+I:1295
+J:『八尺さま』
+N:Hasshaku-sama
+D:She appears as a woman fully eight shaku (two metres forty) tall. She
+D:wears a white dress and a hat, and laughs in an eerie voice.
+
+I:1296
+J:月の衛士
+D:Soldiers who guard the nobles of the moon. They wear armour in a medieval
+D:mainland style and carry swords like beams of light.
+
+I:1297
+J:神霊の依り憑く月の姫『綿月　依姫』
+N:Watatsuki no Yorihime, the Lunar Princess Possessed by Divine Spirits
+
+I:1298
+J:海と山を繋ぐ月の姫『綿月　豊姫』
+N:Watatsuki no Toyohime, the Lunar Princess Connecting Sea and Mountain
+
+I:1300
+J:穢身探知型機雷
+D:One of the proud weapons of the lunar civilisation.
+
+I:1301
+J:雷龍
+D:A powerful dragon that commands lightning. It shines so brightly that it
+D:looks like a huge ball of light.
+
+I:1302
+J:くねくね
+N:Kunekune
+D:A mysterious being that writhes and twists in a strange way. Those who see
+D:it are said to go mad.
+
+I:1303
+J:コーウィンの銃士
+D:Firearms were not used in Amber since gunpowder does not work there:
+D:chemistry is not always the same in Amber and the parallel worlds that are
+D:shadows of it.  Prince Corwin, by accident, had found a substance in
+D:Avalon that could work as powder and primer in Amber and its closest
+D:shadows.  With that in mind, he devised a plan to take Amber using a small
+D:force armed with automatic rifles.  This gunner, from a parallel world
+D:where Corwin is worshipped as a god, is one of that force.
+
+I:1304
+J:アイテムキャリアー
+D:A strange machine shaped like a bird, flying awkwardly. Weapons are stored
+D:in its round body.
+
+I:1305
+J:清掃ボット
+N:Cleaning bot
+D:Alpha Complex is kept spotless at all times by the work of its perfectly
+D:regimented and highly efficient cleaning bots.
+
+I:1306
+J:小舟
+D:A small boat assigned to you. You may ride in it, or you may swim under
+D:your own power.
+
+I:1307
+J:ヒダル神
+D:A dangerous divine spirit. Those it possesses are said to be seized by a
+D:terrible hunger.
+
+I:1308
+J:天狗風
+N:Tengu whirlwind
+D:A whirlwind that springs up suddenly in the mountains. Some say a tengu
+D:raises it, others that a tengu is inside it.
+
+I:1309
+J:蝦蟇
+N:Toad
+D:A toad (a Japanese common toad) of astonishing size. It is said to be a
+D:messenger of the great toad of Youkai Mountain.
+
+I:1310
+J:神に近づく蝶の妖精『エタニティラルバ』
+N:Eternity Larva, the Butterfly Fairy Approaching God
+D:(no detailed description yet)
+
+I:1311
+J:浮世の関を超える山姥『坂田　ネムノ』
+N:Nemuno Sakata, the Yamanba Beyond the Barriers of the Mundane World
+D:(no detailed description yet)
+
+I:1312
+J:神仏に心酔する守護神獣『高麗野　あうん』
+N:Aunn Komano, the Guardian Beast Devoted to Gods and Buddhas
+
+I:1313
+J:森で垂迹した魔法地蔵『矢田寺　成美』
+N:Narumi Yatadera, the Magic Jizou Manifested in the Forest
+D:(no detailed description yet)
+
+I:1314
+J:危険すぎるバックダンサー『爾子田　里乃』
+N:Satono Nishida, the Far Too Dangerous Backup Dancer
+D:(no detailed description yet)
+
+I:1315
+J:危険すぎるバックダンサー『丁礼田　舞』
+N:Mai Teireida, the Far Too Dangerous Backup Dancer
+D:(no detailed description yet)
+
+I:1316
+J:究極の絶対秘神『摩多羅　隠岐奈』
+N:Okina Matara, the Ultimate, Absolute Hidden God
+D:(no detailed description yet)
+
+I:1317
+J:バレットゴーレム
+N:Bullet golem
+D:A huge ball of light bears down on you, firing bullets as it comes. It
+D:seems to move according to the will of its user.
+
+I:1318
+J:判読眼のビブロフィリア『本居　小鈴』
+N:Kosuzu Motoori, the Bibliophile with a Deciphering Eye
+D:(no detailed description yet -- currently possessed)
+
+I:1319
+J:最凶最悪の双子の妹『依神　女苑』
+N:Joon Yorigami, the Younger of the Most Wicked Twins
+D:(no detailed description yet)
+
+I:1320
+J:最凶最悪の双子の姉『依神　紫苑』
+N:Shion Yorigami, the Elder of the Most Wicked Twins
+D:(no detailed description yet)
+
+I:1321
+J:最凶最悪の双子の姉『依神　紫苑』
+N:Shion Yorigami, the Elder of the Most Wicked Twins
+D:(no detailed description yet)
+
+I:1322
+J:秘封倶楽部初代会長『宇佐見　菫子』
+N:Sumireko Usami, the First President of the Secret Sealing Club
+D:(no detailed description yet)
+
+I:1323
+J:鰻
+D:A slippery, snake-like fish that has somehow come to live in the rivers
+D:and lakes. Grilled, it is said to make a medicine that cures illness.
+
+I:1324
+J:いのしし
+N:Wild boar
+D:A stocky beast a little over a metre long. It comes down from the
+D:mountains to the village and ruins the fields. Its meat, called "peony" or
+D:"mountain whale", is delicious.
+
+I:1325
+J:蝶の妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This fairy has
+D:brightly coloured butterfly wings.
+
+I:1326
+J:梅林の妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This fairy has the
+D:power to make the rain last longer.
+
+I:1327
+J:エンシェントシップ
+D:A small boat that flies through the sky. Riding in it is great fun.
+
+I:1328
+J:ゴンベッサ
+N:Gombessa
+D:One of the ancient fish that survive to this day.
+
+I:1329
+J:超巨大魚
+D:A huge ancient fish of the Sanzu River, big enough to swallow a human
+D:whole.
+
+I:1330
+J:首長竜
+D:It is a prehistoric terror that dwells in the Sanzu River.
+
+I:1331
+J:海龍
+D:A huge dragon that lives in the sea. It is sometimes seen in the Sanzu
+D:River as well.
+
+I:1332
+J:剣士埴輪
+D:A haniwa carrying a sword, created by Keiki Haniyasushin, the goddess of
+D:sculpture.
+
+I:1333
+J:弓兵埴輪
+D:A haniwa carrying a bow, created by Keiki Haniyasushin, the goddess of
+D:sculpture.
+
+I:1334
+J:騎馬兵埴輪
+D:A haniwa horseman riding a haniwa horse, created by Keiki Haniyasushin,
+D:the goddess of sculpture.
+
+I:1335
+J:熟練剣士埴輪
+D:An elite of the haniwa corps. It bears a sword of shining white, and both
+D:its movements and its finish are a cut above the other haniwa.
+
+I:1336
+J:熟練弓兵埴輪
+D:An elite of the haniwa corps. It holds a powerful bow at the ready and
+D:watches you without lowering its guard.
+
+I:1337
+J:熟練騎馬兵埴輪
+D:An elite of the haniwa corps. It rides a finely decorated horse and looks
+D:somehow proud of itself.
+
+I:1338
+J:動物霊(勁牙組)
+D:An animal spirit belonging to the Keiga Gang, one of the great
+D:organisations of the Animal Realm. They mean to rule the Animal Realm by
+D:sheer physical strength.
+
+I:1339
+J:動物霊(鬼傑組)
+D:An animal spirit belonging to the Kiketsu Family, one of the great
+D:organisations of the Animal Realm. They mean to rule the Animal Realm by
+D:ambush and trickery.
+
+I:1340
+J:動物霊(剛欲同盟)
+D:An animal spirit belonging to the Gouyoku Alliance, one of the great
+D:organisations of the Animal Realm. They mean to rule the Animal Realm by
+D:fighting from a bird's-eye view.
+
+I:1341
+J:河原のアイドル水子『戎　瓔花』
+N:Eika Ebisu, the Idol Mizuko of the Riverbed
+D:(no detailed description yet)
+
+I:1342
+J:古代魚の子連れ番人『牛崎　潤美』
+N:Urumi Ushizaki, the Child-Toting Keeper of Ancient Fish
+D:(no detailed description yet)
+
+I:1343
+J:地獄関所の番頭神『庭渡　久侘歌』
+N:Kutaka Niwatari, the God Managing Hell's Checkpoint
+D:(no detailed description yet)
+
+I:1344
+J:鬼傑組組長『吉弔　八千慧』
+N:Yachie Kicchou, the Boss of the Kiketsu Family
+D:(no detailed description yet)
+
+I:1345
+J:埴輪兵長『杖刀偶　磨弓』
+N:Mayumi Joutouguu, the Haniwa Corporal
+D:(no detailed description yet)
+
+I:1346
+J:孤立無援が誂えた造形神『埴安神　袿姫』
+N:Keiki Haniyasushin, the Sculptor God for the Isolated
+D:(no detailed description yet)
+
+I:1347
+J:勁牙組組長『驪駒　早鬼』
+N:Saki Kurokoma, the Boss of the Keiga Family
+D:(no detailed description yet)
+
+I:1348
+J:『ライカ』
+D:A curious object that scampers about like a puppy. It seems to be kept as
+D:a pet at Kourindou.
+
+I:1349
+J:カワウソ
+D:A beast with short limbs and a long, flowing body. It is a good swimmer
+D:and lives near the water. An otter of many years is said to take on shapes
+D:and lead people astray.
+
+I:1350
+J:人喰い朝顔
+N:Man-eating morning glory
+D:A giant morning glory seen in the Forest of Magic in summer. It seems to
+D:catch its prey with nimble vines.
+
+I:1351
+J:永久罪人
+D:A soul warped past all repair by savage malice. It is not worth even
+D:rebirth, and is fated to be shut up in hell forever.
+
+I:1352
+J:すっぽん
+D:A reptile with a soft shell. Its jaws are strong, and once it bites it
+D:does not easily let go. Its meat and blood are held to be extremely
+D:nourishing, and have been prized since ancient times.
+
+I:1353
+J:妖獣（大猪）
+N:Youkai beast (great boar)
+D:A great boar of many years, slowly turning into a youkai. Its meat is
+D:superb, but take it on with anything less than real skill and you will be
+D:the meal instead.
+
+I:1354
+J:猩々？
+D:The shoujou is a youkai like an ape with long fur and a ruddy face. It
+D:loves sake, understands human speech, and is said to join in banquets and
+D:dance. What stands before you now, however, is a huge monster that seems
+D:the very image of savagery.
+
+I:1355
+J:夢幻酒場『鯢呑亭』の看板娘『奥野田　美宵』
+N:Miyoi Okunoda, the Poster Girl of the Geidontei
+D:(no detailed description yet)
+
+I:1356
+J:アナグマ
+D:An animal that digs deep, winding burrows with its sharp claws. It is
+D:sometimes lumped together with the tanuki under the name mujina. Its meat
+D:is said to be rich and tasty.
+
+I:1357
+J:商売繁盛の縁起物『豪徳寺　ミケ』
+N:Mike Goutokuji, the Lucky Charm of Prosperous Trade
+D:(no detailed description yet)
+
+I:1358
+J:山奥のビジネス妖怪『山城　たかね』
+N:Takane Yamashiro, the Business Youkai of the Mountain Recesses
+D:(no detailed description yet)
+
+I:1359
+J:高地に棲む山女郎『駒草　山如』
+N:Sannyo Komakusa, the Yamajorou of the Highlands
+D:(no detailed description yet)
+
+I:1360
+J:本物の勾玉制作職人『玉造　魅須丸』
+N:Misumaru Tamatsukuri, the Genuine Magatama Craftsman
+D:(no detailed description yet)
+
+I:1361
+J:耳元で囁く邪悪な白狐『菅牧　典』
+N:Tsukasa Kudamaki, the Wicked White Fox Whispering in Your Ear
+D:(no detailed description yet)
+
+I:1362
+J:鴉天狗の大将『飯綱丸　龍』
+N:Megumu Iizunamaru, the General of the Crow Tengu
+D:(no detailed description yet)
+
+I:1363
+J:無主物の神『天弓　千亦』
+N:Chimata Tenkyuu, the God of Unclaimed Goods
+D:(no detailed description yet)
+
+I:1364
+J:黒きドラゴンイーター『姫虫　百々世』
+N:Momoyo Himemushi, the Black Dragon-Eater
+D:(no detailed description yet)
+
+I:1365
+J:丸太
+D:A gigantic log comes rolling at you! Run before you are flattened!
+
+I:1366
+J:無敗の剛欲同盟長『饕餮　尤魔』
+N:Yuuma Toutetsu, the Undefeated Head of the Gouyoku Alliance
+D:(no detailed description yet)
+
+I:1367
+J:ミミック(酒)
+D:Sake possessed by a drink demon. Drink it carelessly and you will be shut
+D:up in the dream world.
+
+I:1368
+J:爪弾きにされた反獄の怨霊『宮出口　瑞霊』
+N:Mizuchi Miyadeguchi, the Ostracized, Prison-Defying Vengeful Spirit
+D:(no detailed description yet)
+
+I:1375
+J:天上界ワイアーム
+D:A huge and mysterious dragon covered in grey scales that shimmer with
+D:rainbow colours. It can pass freely between the ethereal and the material
+D:planes, and can blow its opponents into another dimension if need be. It
+D:is deeply curious, and has a habit of hoarding all manner of unusual
+D:things. (AD&D)
+
+I:1376
+J:クリスタル・ワイアーム
+D:A huge dragon with a translucent body like crystal. Refracting the light
+D:into a glittering blaze, it is beautiful enough to hold your eye.
+D:Unusually for a dragon it is friendly towards other races -- though not,
+D:of course, towards insolent thieves after its treasure. (AD&D)
+
+I:1377
+J:邪龍の幼体
+D:It looks like a black serpent with wings. It speaks human tongues and is
+D:cunning, yet it has a surprising sense of humour.
+
+I:1378
+J:水龍
+D:A powerful dragon that commands water and ice. Its scales, charged with
+D:the magic of ice, are valuable goods.
+
+I:1380
+J:漁師
+D:He seems to make his living catching river fish and crabs in the ravine.
+
+I:1381
+J:漁師
+D:He seems to make his living catching river fish and crabs in the ravine.
+D:But why would a fisherman be down in a place like this?
+
+I:1382
+J:沢蟹の群れ
+N:Swarm of river crabs
+D:A small crab that lives in fresh water.
+
+I:1383
+J:ヤツメウナギ
+D:A very primitive water creature. It fastens onto its prey with a mouth
+D:like a sucker and drinks its fluids. Its flesh is said to be good for
+D:night blindness.
+
+I:1384
+J:富裕霊
+N:Wealthy ghost
+D:The spirit of one who once held the rights to the land hereabouts. A
+D:certain god's power reduced that title to nothing, and it was driven off
+D:the land.
+
+I:1385
+J:森閑のケルベロス『三頭　慧ノ子』
+N:Enoko Mitsugashira, the Cerberus of the Still Forest
+D:(no detailed description yet)
+
+I:1386
+J:小さな聖域の大聖『孫　美天』
+N:Son Biten, the Great Sage of the Small Sanctuary
+D:(no detailed description yet)
+
+I:1387
+J:穢れた有機物の怪物『天火人　ちやり』
+N:Chiyari Tenkajin, the Monster of Filthy Organic Matter
+D:(no detailed description yet)
+
+I:1388
+J:地獄の美しきストーカー『豫母都　日狭美』
+N:Hisami Yomotsu, the Beautiful Stalker of Hell
+D:(no detailed description yet)
+
+I:1389
+J:寂滅為楽の王『日白　残無』
+N:Zanmu Nippaku, the King of Blissful Nirvana
+D:(no description written yet)
+
+I:1390
+J:イタコAI
+D:An information-gathering AI sent in from the Outside World. This one seems
+D:to be a leftover that has already finished gathering its information.
+
+I:1391
+J:『脱獄した動物霊(鬼傑組)』
+N:Escaped Animal Spirit (Kiketsu)
+D:An otter spirit that has escaped from the Kiketsu Family, one of the great
+D:organisations of the Animal Realm. It is enjoying life on the surface, but
+D:seems afraid of pursuers from its old home.
+
+I:1392
+J:蜂の群れ
+N:Swarm of bees
+D:A swarm of bees that lives in the Forest of Magic. Bees are said to
+D:observe the duty between lord and subject: harm one, and the whole swarm
+D:comes for revenge.
+
+I:1393
+J:魔法蜂の群れ
+N:Swarm of magic bees
+D:A swarm of bees that gained intelligence from the magic of the Forest of
+D:Magic. They understand human speech and can hold a simple conversation.
+
+I:1394
+J:妖怪蜂の群れ
+N:Swarm of youkai bees
+D:A vast colony of youkai bees with wills of their own. Their ferocity has
+D:grown along with their intelligence, and they are not easily tamed.
+
+I:1395
+J:敵意の小結晶(赤)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1396
+J:敵意の小結晶(青)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1397
+J:敵意の小結晶(黄)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1398
+J:敵意の小結晶(緑)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1399
+J:敵意の中結晶(赤)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1400
+J:敵意の中結晶(青)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1401
+J:敵意の中結晶(黄)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1402
+J:敵意の中結晶(緑)
+D:Hostility towards imaginary enemies, flowed in from the Outside World and
+D:crystallised.
+
+I:1403
+J:敵意の巨大結晶(赤)
+D:A huge crystal of hostility that flowed in from the Outside World. It
+D:scatters fierce attacks in every direction.
+
+I:1404
+J:敵意の巨大結晶(青)
+D:A huge crystal of hostility that flowed in from the Outside World. It
+D:scatters fierce attacks in every direction.
+
+I:1405
+J:敵意の巨大結晶(黄)
+D:A huge crystal of hostility that flowed in from the Outside World. It
+D:scatters fierce attacks in every direction.
+
+I:1406
+J:敵意の巨大結晶(緑)
+D:A huge crystal of hostility that flowed in from the Outside World. It
+D:scatters fierce attacks in every direction.
+
+I:1407
+J:化石の森の妖精
+D:An embodiment of nature, found everywhere in Gensokyo. This fairy appears
+D:in the depths of Mt. Asamajoue.
+
+I:1408
+J:聖域に棲む山姥の長『塵塚　ウバメ』
+N:Ubame Chirizuka, the Chief of the Yamanba in the Sanctuary
+D:(no detailed description yet)
+
+I:1409
+J:正体不明の順わぬ妖獣『封獣　チミ』
+N:Chimi Houjuu, the Unidentified, Untamed Youkai Beast
+D:(no detailed description yet)
+
+I:1410
+J:逼塞した聖地の道祖神『道神　馴子』
+N:Nareko Michigami, the Wayside God of the Secluded Holy Land
+D:(no detailed description yet)
+
+I:1411
+J:錦上の京の急所『ユイマン・浅間』
+N:Yuiman Asama, the Vital Point of the Brocade Capital
+D:(no detailed description yet)
+
+I:1412
+J:恒久の姫『磐永　阿梨夜』
+N:Ariya Iwanaga, the Princess of Permanence
+D:(no detailed description yet)
+
+I:1413
+J:虚構の都市を創る怪『渡里　ニナ』
+N:Nina Watari, the Phantom Who Creates Fictitious Cities
+D:(no detailed description yet)
+
+I:1414
+J:木人
+D:A puppet used for training. It seems to be gathering dust while still as
+D:good as new.
+
+I:1415
+J:蛸
+N:Octopus
+D:Something writhes in the deep water. It is in truth a colony of deified
+D:serpents, revered by the kappa of the mountain under the name of
+D:"octopus".
+
+I:1416
+J:妖獣（鹿）
+N:Youkai beast (deer)
+D:A deer turned youkai, sometimes met with in the mountains. Blunder into
+D:its territory and you will find yourself on the wrong end of those
+D:powerful antlers.
+
+I:1417
+J:肉人
+D:A youkai that looks like a lump of meat with short arms and legs. It is
+D:quiet and harmless, but if it is hurt it is said to pay the injury back.

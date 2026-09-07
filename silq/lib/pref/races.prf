@@ -1,0 +1,23 @@
+# File: races.prf
+
+#
+# This file loads race-specific pref files.
+#
+
+###############################################################################
+# Load race-specific pref files
+###############################################################################
+?:[EQU $RACE Noldor]
+%:noldor.prf
+
+?:[EQU $RACE Sindar]
+%:sindar.prf
+
+?:[EQU $RACE Naugrim]
+%:naugrim.prf
+
+?:[EQU $RACE Edain]
+%:edain.prf
+
+?:1
+

@@ -1,0 +1,10701 @@
+# silq/lang/ja/ui/messages.ja.txt
+#
+# 表示文字列のカタログ。
+#
+#   E:  鍵。C の文字列リテラルの中身そのまま。\n \t \r \\ と、
+#       行頭・行末の空白 1 個ぶんの \s を解く。**それ以外は正規化しない**
+#       ――1 バイトでも違えば別の鍵である
+#   J:  訳文。**空なら「わざと訳さない」の印**（未訳一覧から外れる）
+#   W:  任意。桁を合わせたい鍵の幅（バイト）。tools/silq/check_ja.py が見る
+#
+# 符号は UTF-8・改行は LF。コアが読むときに CP932 へ直す（設計 §3.1）。
+#
+# ---------------------------------------------------------------------------
+# **いまは P0（道の試し）＋ P2（基の名）＋ P3（メッセージ）が入っている。**
+# 画面まわり（キャラクターシート・設定・誕生）は P5 でここへ足す。
+#
+# 直す前に読むもの:
+#   * 用語表 silq/lang/ja/glossary.md（**`決` の行は勝手に変えない**）
+# * 設計 （フック 10 か所）と §8.2（未訳の仕分け）
+#
+# 検査:
+#   python tools/silq/check_ja.py            鍵の重複・型の食い違い・CP932・桁
+#   python tools/silq/sq_untranslated.py     まだ訳していない鍵を段ごとに数える
+#   python tools/silq/sq_p3_playthrough.py <workdir>   通しで遊んで文言を並べる
+#
+# 覚え書き:
+#   * `%.0s` は「引数を食って何も出さない」印。英語の文法をつなぐだけの引数
+#     （"Y" / "was" / 複数形の "s"）を捨てる。数を減らすと後ろがずれるので消せない
+#   * `%^s` の `^` は日本語では何もしないが、**並びを合わせるため残す**
+#   * 会心の段を表す末尾の `%s`（`.` `!` `!!`）は ASCII のままにする
+# ---------------------------------------------------------------------------
+
+
+###############################################################################
+# タイトルの品書き（init2.c の initial_menu()。フック #1/#2 を通る）
+###############################################################################
+
+E:a) Tutorial
+J:a) チュートリアル
+
+###############################################################################
+# マニュアル（フック #17。`silq/adapter/sq_bootstrap.c`）。
+# **英語にも出るようになった**（2026-08-23。追補 ③）ので、鍵は英文で、
+# 日本語はここにある。以前はコードが CP932 のバイト列を直に持っていた。
+###############################################################################
+
+E:m brings up the manual (the rules in detail)
+J:m を押すとマニュアル（規則の詳しい説明）が開く
+
+E:Manual
+J:マニュアル
+
+###############################################################################
+# セーブの選択（2026-08-23 に決めた。`silq/adapter/sq_bootstrap.c` の
+# `sq_pick_savefile()`）。**先方の画ではなくアダプタが描く画**なので、
+# 鍵は当方が決めた英文である。
+###############################################################################
+
+E:Choose a saved character
+J:セーブデータを選ぶ
+
+E:Arrows to choose, Enter to open, D to delete, Escape to cancel
+J:上下左右で選ぶ／決定で開く／D で消す／取消でやめる
+
+# 「消す」の行（追補 ⑧ の直し。2026-08-23）。コントローラだけの機体では
+# `D` が押せないので、一覧の行として置いた。
+
+E:[ delete a character ]
+J:［ セーブデータを消す ］
+
+E:[ stop deleting ]
+J:［ 消すのをやめる ］
+
+E:Choose a character to delete
+J:消すセーブデータを選ぶ
+
+E:Arrows to choose, Enter to delete, Escape to stop
+J:上下左右で選ぶ／決定で消す／取消でやめる
+
+# 削除（追補 ⑧。2026-08-23）。`Delete` は `get_check()` の前置きなので、
+# 後ろに「"名前"?」が続く形で読めること。
+
+E:Delete
+J:消す
+
+E:Could not delete that character.
+J:そのセーブデータを消せませんでした。
+
+E:There are no saved characters.
+J:セーブデータがありません。
+
+
+E:(%d more not shown)
+J:（ほか %d 件は出ていません）
+
+
+E:b) New character
+J:b) 新しい冒険者
+
+E:c) Open saved character
+J:c) 続きから
+
+E:d) Quit
+J:d) やめる
+
+
+###############################################################################
+# 起動中の進捗（init2.c の note()。フック #3 を通る）
+###############################################################################
+
+E:[Initializing arrays... (monsters)]
+J:[配列を用意しています... (敵)]
+
+E:[Initializing arrays... (objects)]
+J:[配列を用意しています... (実体)]
+
+
+###############################################################################
+# 実体の基の名（P2）
+#
+# **これだけは表（object.txt）に無い。** 風味を持つ種類の基の名は
+# `object1.c:820-770` に英語の綴りでべた書きされていて、`k_name` を通らない。
+# `#` は風味の入る所、`~` は複数形、`&` は冠詞の印で、**日本語では全部落とす**
+# （落とすのは `sq_object_desc_ja()`。設計 §6.3）。ここでは形だけ揃えておく。
+###############################################################################
+
+E:& # Amulet~
+J:& # 護符~
+
+E:& Amulet~
+J:& 護符~
+
+E:& # Ring~
+J:& # 指輪~
+
+E:& Ring~
+J:& 指輪~
+
+E:& # Staff~
+J:& # 杖~
+
+E:& Staff~
+J:& 杖~
+
+E:& # Horn~
+J:& # 角笛~
+
+E:& Horn~
+J:& 角笛~
+
+E:& # Potion~
+J:& # 薬~
+
+E:& Potion~
+J:& 薬~
+
+E:& # Herb~
+J:& # 薬草~
+
+E:& Herb~
+J:& 薬草~
+
+E:& # Easter Egg~
+J:& # 復活祭の卵~
+
+E:& Easter Egg~
+J:& 復活祭の卵~
+
+# 装備の空き枠。1 画面に 14 回出る。
+E:(nothing)
+J:(なし)
+
+
+
+###############################################################################
+# P3: メッセージ（設計 8 の P3）
+
+#
+# 仕分けは tools/silq/sq_untranslated.py が出す 4 つの段のうち p3。
+# 呼び口は msg_print / msg_format / note / bell / get_check である。
+###############################################################################
+
+
+###############################################################################
+# cmd1.c ― 移動・落下・罠・打撃・跳躍・鍛冶場（137 件）
+###############################################################################
+
+E:You have %s (%c).
+J:%s(%c)を手に入れた。
+
+# 虜囚のお使い（thrall quest）。%s は quest_text[] / quest_outcome[] で、
+# **あれは書式ではなく引数なので英語のまま出る**（設計 §4 の追記「引数は訳せない」）。
+E:%^s murmurs the song of staunching.
+J:%^sが止血の歌を口ずさんだ。
+
+E:%^s gives you a ragged herb.
+J:%^sがぼろぼろの薬草をくれた。
+
+E:%^s tells you about some passages a little way off.
+J:%^sが少し先の抜け道について教えてくれた。
+
+E:%^s thanks you again.
+J:%^sが重ねて礼を言った。
+
+E:Looking up at you, %s begs you for %s.
+J:%sがあなたを見上げ、%sを求めて懇願している。
+
+E:%^s %s and thanks you.
+J:%^sは%s、あなたに礼を言った。
+
+# 敵の警戒の段（睡眠 → まどろみ → 油断 → 気づく）。
+E:%^s wakes up and notices you.
+J:%^sが目を覚まし、あなたに気づいた。
+
+E:%^s wakes up.
+J:%^sが目を覚ました。
+
+E:%^s notices you.
+J:%^sがあなたに気づいた。
+
+E:%^s stirs.
+J:%^sが身じろぎした。
+
+E:%^s looks around.
+J:%^sが辺りを見回した。
+
+E:%^s falls asleep.
+J:%^sが眠りに落ちた。
+
+E:%^s becomes unwary.
+J:%^sの警戒が緩んだ。
+
+E:%^s's sleep deepens.
+J:%^sの眠りが深くなった。
+
+E:%^s becomes more unwary.
+J:%^sの警戒がさらに緩んだ。
+
+E:%^s looks less alert.
+J:%^sの注意が散漫になった。
+
+# アイテムの性質が分かったときの報せ。
+E:It creates an unnatural darkness.
+J:これは不自然な闇を生み出す。
+
+E:It glows with a wondrous light.
+J:これは妙なる光を放っている。
+
+E:It glows very brightly.
+J:これは非常に明るく輝いている。
+
+E:It slows your movement.
+J:これは動きを鈍らせる。
+
+E:It speeds your movement.
+J:これは動きを速める。
+
+E:You feel more forceful in melee.
+J:打撃に力が乗るようになった。
+
+E:You feel less forceful in melee.
+J:打撃から力が抜けた。
+
+E:You feel stronger.
+J:力が強くなった気がする。
+
+E:You feel less strong.
+J:力が弱くなった気がする。
+
+E:You feel more agile.
+J:身のこなしが軽くなった気がする。
+
+E:You feel less agile.
+J:身のこなしが鈍くなった気がする。
+
+E:You feel more resilient.
+J:体が丈夫になった気がする。
+
+E:You feel less resilient.
+J:体が弱くなった気がする。
+
+E:You feel more attuned to the world.
+J:世界との調べが深まった気がする。
+
+E:You feel less attuned to the world.
+J:世界との調べが薄れた気がする。
+
+E:You feel more in control of your weapon.
+J:武器を意のままに操れるようになった気がする。
+
+E:You feel less in control of your weapon.
+J:武器を持て余すようになった気がする。
+
+E:You feel more accurate at archery.
+J:矢がよく狙えるようになった気がする。
+
+E:You feel less accurate at archery.
+J:矢の狙いが甘くなった気がする。
+
+E:Your movements become quieter.
+J:足音が静かになった。
+
+E:Your movements less quiet.
+J:足音が大きくなった。
+
+E:You feel more perceptive.
+J:感覚が鋭くなった気がする。
+
+E:You feel less perceptive.
+J:感覚が鈍くなった気がする。
+
+E:You feel more firm of will.
+J:意志が強くなった気がする。
+
+E:You feel less firm of will.
+J:意志が弱くなった気がする。
+
+E:You feel a desire to craft things with your hands.
+J:己の手で物を作りたくなってきた。
+
+E:You feel less able to craft things.
+J:物を作る腕が鈍った気がする。
+
+E:You are filled with inspiration.
+J:霊感が満ちてきた。
+
+E:You feel a loss of inspiration.
+J:霊感が失われていく。
+
+E:You have gained the ability '%s'.
+J:能力「%s」を得た。
+
+E:You somehow feel more accurate in combat.
+J:なぜか戦いの狙いが冴えてきた。
+
+E:You somehow feel less accurate in combat.
+J:なぜか戦いの狙いが鈍ってきた。
+
+E:You somehow feel harder to hit.
+J:なぜか敵の攻撃をかわしやすくなった。
+
+E:You somehow feel more vulnerable.
+J:なぜか敵の攻撃を受けやすくなった。
+
+E:You somehow feel more protected.
+J:なぜか身の守りが固くなった。
+
+E:You recognize it as %s.
+J:それが%sだと分かった。
+
+E:You realize that it is %s.
+J:それが%sだと気づいた。
+
+E:You realize that your %s is %s.
+J:あなたの%sが%sだと気づいた。
+
+E:You notice that you can see %s very clearly.
+J:%sがはっきりと見えることに気づいた。
+
+E:You notice that wraiths are being drawn to you.
+J:亡霊があなたに引き寄せられていることに気づいた。
+
+E:You notice that you are growing hungry much faster than before.
+J:以前よりずっと早く腹が減ることに気づいた。
+
+E:You notice that you are growing hungry slower than before.
+J:以前より腹の減りが遅いことに気づいた。
+
+# 殺戮の銘（slay）が判じられたときの 2 行。**2 つ目の %s は slay_desc() が
+# strnfmt で組む句**で、あちらは書式なので訳が効く（cmd1.c:1120- の一群）。
+E:Your %s %s.
+J:あなたの%sが%s。
+
+E:Your shot %s.
+J:あなたの射た矢が%s。
+
+E:You recognize your %s to be %s.
+J:あなたの%sが%sだと分かった。
+
+E:You have found a trap.
+J:罠を見つけた。
+
+E:You have found a secret door.
+J:隠し扉を見つけた。
+
+E:You have discovered a trap on the chest!
+J:箱に罠が仕掛けられているのを見つけた！
+
+E:There are no more objects where you are standing.
+J:足元にはもう何も落ちていない。
+
+E:There are no objects where you are standing.
+J:足元には何も落ちていない。
+
+E:Your backpack is full.
+J:荷物袋がいっぱいだ。
+
+E:You have no room for %s.
+J:%sを入れる余地が無い。
+
+E:You cannot lift %s.
+J:%sは持ち上げられない。
+
+E:You carefully avoid a trap.
+J:慎重に罠をよけた。
+
+E:You fall into the darkness!
+J:闇の中へ落ちていく！
+
+E:...and land somewhere deeper in the Iron Hells.
+J:……そして鉄の地獄のさらに深みへ降り立った。
+
+E:The floor crumbles beneath you!
+J:足元の床が崩れた！
+
+E:You fall through...
+J:あなたは落ちていく……
+
+E:You fall into a pit!
+J:落し穴に落ちた！
+
+E:You fall into a spiked pit!
+J:串刺しの落し穴に落ちた！
+
+E:You are impaled!
+J:串刺しになった！
+
+E:Your armour protects you.
+J:鎧が身を守った。
+
+E:A small dart hits you!
+J:小さな投げ矢が命中した！
+
+E:A small dart hits you, but is deflected by your armour.
+J:小さな投げ矢が当たったが、鎧に弾かれた。
+
+E:A small dart barely misses you.
+J:小さな投げ矢がすれすれで外れた。
+
+E:There is a searing flash of light!
+J:焼けつくような閃光が走った！
+
+E:Your vision quickly clears.
+J:視界はすぐに晴れた。
+
+E:A vapor fills the air and you feel yourself becoming lightheaded.
+J:蒸気が立ちこめ、頭がふらついてきた。
+
+E:You resist the effects!
+J:効果に耐えた！
+
+E:You are surrounded by a strange mist!
+J:奇妙な霧に包まれた！
+
+E:Your memories fade away.
+J:記憶が薄れていく。
+
+E:You are splashed with acid!
+J:酸を浴びた！
+
+E:You hear the muffled toll of a bell above your head.
+J:頭上でくぐもった鐘の音が鳴った。
+
+E:You hear a bell toll loudly above your head.
+J:頭上で鐘が高らかに鳴り響いた。
+
+E:You step carefully amidst a field of caltrops.
+J:撒菱の原を慎重に踏み分けた。
+
+E:You step on a caltrop.
+J:撒菱を踏んだ。
+
+E:It pierces your foot.
+J:足の裏を貫かれた。
+
+E:There is a flutter of wings from high above.
+J:はるか頭上で羽ばたきの音がした。
+
+E:You are caught in a vast black web.
+J:巨大な黒い蜘蛛の巣に捕らわれた。
+
+E:A spider descends from the gloom.
+J:蜘蛛が薄闇から降りてきた。
+
+E:The ceiling collapses!
+J:天井が崩れ落ちた！
+
+E:You are severely crushed!
+J:ひどく押し潰された！
+
+E:You are struck by rubble!
+J:落石に打たれた！
+
+E:You nimbly dodge the falling rock!
+J:落ちてくる岩を身軽にかわした！
+
+E:You continue your attack!
+J:攻撃を続けた！
+
+E:You are knocked back.
+J:突き飛ばされた。
+
+E:Are you sure you wish to break your oath?\s
+J:誓いを破ってもよろしいですか？\s
+
+E:You break your oath of mercy.
+J:あなたは慈悲の誓いを破った。
+
+E:You are too afraid to attack %s!
+J:恐ろしくて%sに攻撃できない！
+
+E:You stop before you bump into %s.
+J:%sにぶつかる手前で立ち止まった。
+
+E:Are you sure you wish to attack?\s
+J:攻撃してもよろしいですか？\s
+
+E:Are you sure you wish to attack with no weapon?\s
+J:素手で攻撃してもよろしいですか？\s
+
+E:Are you sure you wish to attack with your shovel?\s
+J:シャベルで攻撃してもよろしいですか？\s
+
+E:%^s tries and fails to dodge your blow.
+J:%^sはあなたの一撃をかわしそこねた。
+
+E:Your song soars as %s falls before you.
+J:%sが目の前に倒れ、あなたの歌が高らかに響いた。
+
+E:Your foes are daunted!
+J:敵がひるんだ！
+
+E:The force of your blow knocks the Iron Crown off balance.
+J:一撃の勢いで鉄の王冠が傾いだ。
+
+E:%^s reels in pain!
+J:%^sは苦痛によろめいた！
+
+E:(It is very hard to dodge or attack from within a pit.)
+J:(落し穴の中からでは、かわすことも攻めることもひどく難しい。)
+
+E:(It is very hard to dodge or attack from within a web.)
+J:(蜘蛛の巣の中からでは、かわすことも攻めることもひどく難しい。)
+
+E:%^s ripostes!
+J:%^sが反撃した！
+
+E:You strike out at everything around you!
+J:周りのすべてに斬りかかった！
+
+E:You are too burdened to move.
+J:荷が重すぎて動けない。
+
+E:You cannot leap from within a pit.
+J:落し穴の中からは跳べない。
+
+E:You cannot leap from within a web.
+J:蜘蛛の巣の中からは跳べない。
+
+E:You cannot leap without a run up.
+J:助走が無ければ跳べない。
+
+E:You cannot leap over as there is no room to land.
+J:着地する場所が無いので跳び越せない。
+
+E:An unseen foe blocks your way.
+J:見えない敵が行く手を塞いでいる。
+
+E:Step into the chasm?\s
+J:深淵へ踏み出しますか？\s
+
+E:Are you sure you want to step on the trap?\s
+J:罠を踏んでもよろしいですか？\s
+
+E:You try to climb out of the pit, but fail.
+J:落し穴から這い出そうとしたが、失敗した。
+
+E:You climb out of the pit.
+J:落し穴から這い出した。
+
+E:You step into a patch of sunlight.
+J:陽の差す一角へ踏み込んだ。
+
+E:You step out of the sunlight.
+J:陽だまりから踏み出した。
+
+E:You enter the forge 'Orodruth' - the Mountain's Anger - where Grond was made in days of old.
+J:あなたは鍛冶場『オロドルース』――山の怒り――に入った。いにしえにグロンドが鍛えられた場所だ。
+
+E:The fires burn still.
+J:炉の火はいまも燃えている。
+
+E:You enter %s %s.
+J:%s%sに入った。
+
+# 遊びには出ない（cheat_skill_rolls のときだけ）。**わざと訳さない。**
+E:{%d+%d v %d+%d = %d}.
+J:
+
+# 上流のバグ報告用。英語のままにしておく（grep できることのほうが大事）。
+E:Bug detected! Quest invalid!
+J:
+
+E:Bug detected! Quest monster invalid!
+J:
+
+
+
+###############################################################################
+# cmd2.c ― 階段・箱・扉・入れ替わり・矢作り・掘削・解除・射撃・投擲（117 件）
+###############################################################################
+
+E:You see no up staircase here.
+J:ここには上り階段が無い。
+
+E:You have vowed to not to return until you hold a Silmaril.
+J:シルマリルを手にするまで戻らぬと誓ったはずだ。
+
+E:You break your oath of iron.
+J:あなたは鉄の誓いを破った。
+
+E:You enter a maze of staircases, but cannot find your way.
+J:階段の迷路に入り込み、道が分からなくなった。
+
+E:The stairs crumble beneath you!
+J:足元の階段が崩れた！
+
+E:As you climb the stair, a great cry of rage and anguish comes from below.
+J:階段を上るあなたの下から、怒りと苦悶の叫びが湧き上がった。
+
+E:Make quick your escape: it shall be hard-won.
+J:急いで逃げよ。この脱出は容易ではない。
+
+E:You see no down staircase here.
+J:ここには下り階段が無い。
+
+E:You have made it to the very gates of Angband and can once more taste the freshness on the air.
+J:ついにアングバンドの門にたどり着き、再び外気の清々しさを味わった。
+
+E:You will not re-enter that fell pit.
+J:あの禍々しい坑へ、二度と戻る気は無い。
+
+E:From up this stair comes the harsh din of feasting in Morgoth's own hall.
+J:この階段の上から、モルゴスの広間の荒々しい宴の喧噪が聞こえてくる。
+
+E:Are you completely sure you wish to descend?\s
+J:本当に降りてもよろしいですか？\s
+
+E:The chest is empty.
+J:箱は空だった。
+
+E:A small needle has pricked you!
+J:小さな針に刺された！
+
+E:A small needle just misses you.
+J:小さな針がすれすれで外れた。
+
+E:A noxious vapour escapes from the chest!
+J:箱から有毒な蒸気が噴き出した！
+
+E:You resist the effects.
+J:効果に耐えた。
+
+E:Acrid smoke pours from the chest!
+J:箱から刺すような煙が噴き出した！
+
+E:It fills your lungs and your mind reels.
+J:煙が肺を満たし、頭がくらくらする。
+
+E:There is a sudden burst of flame!
+J:突然、炎が噴き出した！
+
+E:You failed to find anything among the bones.
+J:骨の山からは何も見つからなかった。
+
+E:You find something among the bones!
+J:骨の山から何かを見つけた！
+
+E:You gather up %d arrows.
+J:矢を%d本拾い集めた。
+
+E:You have picked the lock.
+J:錠を開けた。
+
+E:Chest squelched after it was opened.
+J:開けた後の箱を自動で捨てた。
+
+E:You don't see any traps.
+J:罠は見当たらない。
+
+E:The chest is not trapped.
+J:この箱に罠は無い。
+
+E:You have disarmed the chest.
+J:箱の罠を外した。
+
+E:You failed to disarm the chest.
+J:箱の罠を外しそこねた。
+
+E:You set off a trap!
+J:罠を作動させてしまった！
+
+E:You see nothing there.
+J:そこには何も無い。
+
+E:The door appears to be stuck.
+J:扉は固く閉ざされているようだ。
+
+E:There is nothing in your square (or adjacent) to open.
+J:足元にも隣にも、開けられる物が無い。
+
+E:There is a monster in the way!
+J:敵が邪魔をしている！
+
+E:You see nothing there to close.
+J:そこに閉められる物は無い。
+
+E:The door appears to be broken.
+J:扉は壊れているようだ。
+
+E:You close the door, singing a song of trust unbroken.
+J:破られぬ信義の歌を歌いながら、扉を閉めた。
+
+E:You close the door, singing charms of binding.
+J:縛めの呪歌を歌いながら、扉を閉めた。
+
+E:You close the door, singing words of warding.
+J:守りの言葉を歌いながら、扉を閉めた。
+
+E:There is no adjacent door to close.
+J:隣に閉められる扉が無い。
+
+E:You need the ability 'exchange places' to use this command.
+J:この命令には能力「位置交換」が要る。
+
+E:You would have to escape the pit before being able to exchange places.
+J:位置を入れ替えるには、まず落し穴から出なければならない。
+
+E:You would have to escape the web before being able to exchange places.
+J:位置を入れ替えるには、まず蜘蛛の巣から抜け出さなければならない。
+
+E:You cannot see a monster there to exchange places with.
+J:そこに入れ替われる敵は見えない。
+
+E:You cannot enter the wall.
+J:壁の中へは入れない。
+
+E:You cannot enter the closed door.
+J:閉じた扉の中へは入れない。
+
+E:You cannot enter the rubble.
+J:瓦礫の中へは入れない。
+
+E:You cannot get past %s.
+J:%sの脇を通り抜けられない。
+
+E:There is a wall in the way.
+J:壁が行く手を塞いでいる。
+
+E:There is a door in the way.
+J:扉が行く手を塞いでいる。
+
+E:There is a pile of rubble in the way.
+J:瓦礫の山が行く手を塞いでいる。
+
+E:You cannot exchange places over the chasm.
+J:深淵ごしに位置を入れ替えることはできない。
+
+E:You exchange places with %s.
+J:%sと位置を入れ替えた。
+
+E:It attacks you as you slip past.
+J:すり抜けざまに攻撃を受けた。
+
+E:You need the ability 'fletchery' to use this command.
+J:この命令には能力「矢作り」が要る。
+
+E:You begin straightening and adjusting the feathering of the arrows.
+J:矢の歪みを直し、矢羽根を整え始めた。
+
+E:You improve %d arrows.
+J:矢を%d本仕上げた。
+
+E:You did not manage to improve any arrows.
+J:矢は 1 本も仕上がらなかった。
+
+E:You see nothing there to tunnel.
+J:そこに掘れる物は無い。
+
+E:You cannot tunnel through a door. Try bashing it.
+J:扉は掘り抜けない。体当たりを試すとよい。
+
+E:You cannot tunnel any further in that direction.
+J:その方向へはこれ以上掘り進めない。
+
+E:You bump into the rubble.
+J:瓦礫にぶつかった。
+
+E:You bump into the wall.
+J:壁にぶつかった。
+
+E:You are not carrying a shovel or mattock.
+J:シャベルもつるはしも持っていない。
+
+E:You notice that your %s is especially suited to tunneling.
+J:あなたの%sが掘削にとりわけ向いていることに気づいた。
+
+E:You are wielding %s.
+J:%sを構えている。
+
+E:You see nothing there to disarm.
+J:そこに外せる罠は無い。
+
+E:You fail to break free of the web.
+J:蜘蛛の巣から抜け出せなかった。
+
+E:You cut yourself free!
+J:切り裂いて抜け出した！
+
+E:You break free!
+J:引きちぎって抜け出した！
+
+E:You cannot disarm the %s.
+J:%sは外せない。
+
+E:You have scuffed the %s.
+J:%sを引っ掻いただけだった。
+
+E:You have disarmed the %s.
+J:%sを外した。
+
+E:You failed to disarm the %s.
+J:%sを外しそこねた。
+
+E:You set off the %s!
+J:%sを作動させてしまった！
+
+E:You see no door there to bash.
+J:そこに体当たりできる扉は無い。
+
+E:You slam into the door!
+J:扉に体当たりした！
+
+E:The door holds firm.
+J:扉はびくともしない。
+
+E:You strike, but there is nothing there.
+J:斬りつけたが、そこには何も無かった。
+
+E:You hit something hard.
+J:硬い何かに当たった。
+
+E:To close the door you would need to move out from the doorway.
+J:扉を閉めるには、戸口から出なければならない。
+
+E:Are you sure you wish to ascend?\s
+J:上ってもよろしいですか？\s
+
+E:Are you sure you wish to descend?\s
+J:降りてもよろしいですか？\s
+
+E:There is nothing here to use.
+J:ここに使える物は無い。
+
+E:There is a pile of rubble in the way!
+J:瓦礫の山が行く手を塞いでいる！
+
+E:There is a wall in the way!
+J:壁が行く手を塞いでいる！
+
+E:You are too confused!
+J:混乱していてできない！
+
+E:There is nothing here to get.
+J:ここには拾える物が無い。
+
+E:You provoke attacks of opportunity from adjacent enemies!
+J:隣の敵に隙を突かれた！
+
+E:You have nothing to fire with.
+J:射るための物を持っていない。
+
+E:You have no arrows in your 1st quiver.
+J:1 つ目の矢筒が空だ。
+
+E:You have no arrows in your 2nd quiver.
+J:2 つ目の矢筒が空だ。
+
+E:You are too afraid to aim properly!
+J:恐ろしくて狙いが定まらない！
+
+E:Your arrow flies true.
+J:矢は狙い違わず飛んだ。
+
+E:The %s finds a mark.
+J:%sが的を捉えた。
+
+E:The %s pierces %s%s
+J:%sが%sを射抜いた%s
+
+E:The %s tears into %s!
+J:%sが%sを引き裂いた！
+
+E:The %s hits %s in a vulnerable spot%s
+J:%sが%sの急所を捉えた%s
+
+E:The %s hits %s%s
+J:%sが%sに命中した%s
+
+E:%^s contorts as the shining arrow strikes it!
+J:輝く矢を受けて%^sが身をよじった！
+
+E:The force of your shot knocks the Iron Crown off balance.
+J:射た矢の勢いで鉄の王冠が傾いだ。
+
+E:Your shot cripples %^s!
+J:あなたの矢が%^sの動きを奪った！
+
+E:The arrow leaves behind a trail of light!
+J:矢が光の尾を引いた！
+
+E:You recognize your %s to be %s
+J:あなたの%sが%sだと分かった
+
+E:%^s appears for an instant!
+J:%^sが一瞬だけ姿を現した！
+
+E:%^s is no longer confused.
+J:%^sの混乱が解けた。
+
+E:%^s is no longer stunned.
+J:%^sのよろけが収まった。
+
+E:You threw %s.
+J:%sを投げた。
+
+E:You don't have anything designed for throwing in your inventory.
+J:投げるために作られた物は持っていない。
+
+E:With a great strength of will, you break the curse!
+J:強い意志の力で呪いを打ち破った！
+
+E:You cannot bear to part with it.
+J:手放すのが忍びない。
+
+E:No clear target for automatic throwing.
+J:自動で投げる先が定まらない。
+
+E:You stop before you hit %s.
+J:%sに当たる手前で手を止めた。
+
+E:The bottle breaks.
+J:瓶が砕けた。
+
+# 上流のバグ報告用。英語のままにしておく。
+E:BUG: Your damage sides for archery are %d.
+J:
+
+E:BUG: Recalculating them would give %d.
+J:
+
+E:BUG: j_ptr->ds is %d.
+J:
+
+
+
+###############################################################################
+# spells1.c ― 効果の飛び道具・物の破壊・扉と壁・歌（99 件）
+#
+# **`%.0s` は「引数を食って何も出さない」印である。**
+# 英語の文法をつなぐためだけの引数（`"Y"` / `"All of y"` / `"was"` / `"were"` /
+# 複数形の `"s"`）は**書式ではなく引数**なので訳が届かない（設計 §4 の追記）。
+# 消すこともできない――`vstrnfmt()` は変換指定の数だけ引数を食うので、
+# 数を減らすと後ろがずれる。そこで `%.0s` で**食って捨てる**。
+# 変換指定の並び（`format_signature`）は `%s` と同じなので検査も通る。
+###############################################################################
+
+E:Nothing happens.
+J:何も起こらなかった。
+
+E:Your %s breaks into two pieces!
+J:あなたの%sが真っ二つに折れた！
+
+E:Low hitpoint warning!
+J:生命力が危険な水準まで下がった！
+
+E:%sour %s (%c) %s destroyed!
+J:%.0sあなたの%s(%c)は%.0s壊れてしまった！
+
+E:Your %s is unaffected!
+J:あなたの%sは影響を受けなかった！
+
+E:Your %s is destroyed!
+J:あなたの%sは壊れてしまった！
+
+E:Your %s is damaged!
+J:あなたの%sが傷んだ！
+
+E:You feel deathly ill.
+J:死ぬほど気分が悪い。
+
+E:You feel seriously ill.
+J:ひどく気分が悪い。
+
+E:You feel quite ill.
+J:かなり気分が悪い。
+
+E:You feel ill.
+J:気分が悪い。
+
+E:You feel sick.
+J:吐き気がする。
+
+E:You feel a bit sick.
+J:少し吐き気がする。
+
+E:Your %s (%c) resist%s disenchantment!
+J:あなたの%s(%c)は劣化に耐えた%.0s！
+
+E:Your %s (%c) %s disenchanted!
+J:あなたの%s(%c)が%.0s劣化した！
+
+E:The door slams shut.
+J:扉が勢いよく閉まった。
+
+E:You hear a door slam shut.
+J:扉が勢いよく閉まる音がした。
+
+E:The door flies open.
+J:扉が勢いよく開いた。
+
+E:You hear a door burst open.
+J:扉が勢いよく開く音がした。
+
+E:The door is ripped from its hinges.
+J:扉が蝶番ごと引きちぎられた。
+
+E:The rubble is scattered across the floor.
+J:瓦礫が床一面に散らばった。
+
+E:You hear a loud rumbling.
+J:大きな地鳴りが聞こえた。
+
+E:The wall shatters!
+J:壁が砕け散った！
+
+E:The vein shatters!
+J:鉱脈が砕け散った！
+
+E:The rubble is blown away!
+J:瓦礫が吹き飛ばされた！
+
+E:The door is blown from its hinges!
+J:扉が蝶番ごと吹き飛ばされた！
+
+E:The %s %s unaffected!
+J:%sは%.0s影響を受けなかった！
+
+E:The %s%s
+J:%s%s
+
+E:%^s%s
+J:%^s%s
+
+E:You are hit by acid!
+J:酸を浴びた！
+
+E:You are hit by lightning!
+J:稲妻に打たれた！
+
+E:You are hit by fire!
+J:炎に焼かれた！
+
+E:You are hit by cold!
+J:冷気に凍えた！
+
+E:You are hit by something!
+J:何かが当たった！
+
+E:You are hit by poison!
+J:毒を浴びた！
+
+E:You are hit by something sharp.
+J:鋭い何かが当たった。
+
+E:It hits you.
+J:命中した。
+
+E:It hits!
+J:命中した！
+
+E:The shot tears into your thigh!
+J:矢が太腿を抉った！
+
+E:You are hit by something very heavy.
+J:非常に重い何かが当たった。
+
+E:Something sticky falls over you.
+J:粘つく何かが降りかかってきた。
+
+E:You are enveloped in a thick web.
+J:分厚い蜘蛛の巣に包まれた。
+
+E:You are hit by a cacophony of sound!
+J:耳を裂く不協和音に打たれた！
+
+E:You are unfazed.
+J:あなたは動じない。
+
+E:You hear a scream of agony!
+J:苦悶の悲鳴が聞こえた！
+
+E:You hear several screams of agony!
+J:いくつもの苦悶の悲鳴が聞こえた！
+
+E:%^s begins a song of binding.
+J:%^sが縛めの歌を歌い始めた。
+
+E:%^s sings of %s.
+J:%^sが%sを歌っている。
+
+E:You hear a song of %s.
+J:%sの歌が聞こえる。
+
+E:You hear singing in the distance.
+J:遠くで歌声が聞こえる。
+
+E:%^s begins a song of piercing.
+J:%^sが看破の歌を歌い始めた。
+
+E:You feel your mind laid bare before Morgoth's will.
+J:モルゴスの意志の前に、心を丸裸にされたように感じた。
+
+E:You feel the force of Morgoth's will searching for the intruder.
+J:モルゴスの意志が侵入者を探し回っているのを感じた。
+
+E:%^s begins a song of oaths.
+J:%^sが誓いの歌を歌い始めた。
+
+E:An Oathwraith appears.
+J:誓いの亡霊が現れた。
+
+E:An egg on %s's back hatches.
+J:%sの背中の卵が孵った。
+
+E:You were already singing that.
+J:すでにその歌を歌っている。
+
+E:You are already using that minor theme.
+J:すでにその副旋律を織り込んでいる。
+
+E:You change the order of your themes.
+J:旋律の順を入れ替えた。
+
+E:You end your song.
+J:歌を終えた。
+
+E:You end your minor theme.
+J:副旋律を終えた。
+
+E:You begin a song to the Queen of the Stars.
+J:星々の后への歌を歌い始めた。
+
+E:You add a minor theme about the Queen of the Stars.
+J:星々の后についての副旋律を織り込んだ。
+
+E:You change your minor theme to one about the Queen of the Stars.
+J:副旋律を星々の后についてのものに変えた。
+
+E:You begin a strident song of mockery and scorn.
+J:嘲りと侮蔑の耳障りな歌を歌い始めた。
+
+E:You add a minor theme of mockery and scorn.
+J:嘲りと侮蔑の副旋律を織り込んだ。
+
+E:You change your minor theme to one of mockery and scorn.
+J:副旋律を嘲りと侮蔑のものに変えた。
+
+E:You begin a song of freedom and safe passage.
+J:解放と安らかな道行きの歌を歌い始めた。
+
+E:You add a minor theme of freedom and safe passage.
+J:解放と安らかな道行きの副旋律を織り込んだ。
+
+E:You change your minor theme to one of freedom and safe passage.
+J:副旋律を解放と安らかな道行きのものに変えた。
+
+E:You begin a murmuring song of soft and soothing words.
+J:柔らかく心を鎮める言葉を、低く歌い始めた。
+
+E:You add a minor theme of soft and soothing words.
+J:柔らかく心を鎮める言葉の副旋律を織り込んだ。
+
+E:You change your minor theme to one of soft and soothing words.
+J:副旋律を柔らかく心を鎮める言葉のものに変えた。
+
+E:You feel your wounds close and your body heal.
+J:傷が塞がり、体が癒えていくのを感じた。
+
+E:You whisper a song of silence.
+J:静寂の歌をささやいた。
+
+E:You add a minor theme of silence.
+J:静寂の副旋律を織り込んだ。
+
+E:You change your minor theme to one of silence.
+J:副旋律を静寂のものに変えた。
+
+E:You begin a song about the rocky bones of the earth.
+J:大地の岩の骨を歌い始めた。
+
+E:You add a minor theme about the rocky bones of the earth.
+J:大地の岩の骨についての副旋律を織り込んだ。
+
+E:You change your minor theme to one about the rocky bones of the earth.
+J:副旋律を大地の岩の骨についてのものに変えた。
+
+E:You begin a song about the Two Trees of Valinor.
+J:ヴァリノールの二本の木を歌い始めた。
+
+E:You add a minor theme about the Two Trees of Valinor.
+J:ヴァリノールの二本の木についての副旋律を織り込んだ。
+
+E:You change your minor theme to one about the Two Trees of Valinor.
+J:副旋律をヴァリノールの二本の木についてのものに変えた。
+
+E:A memory of their light wells up around you.
+J:その光の記憶があなたの周りに湧き上がった。
+
+E:You begin a song about the courage of great heroes past.
+J:いにしえの英雄たちの勇気を歌い始めた。
+
+E:You add a minor theme about the courage of great heroes past.
+J:いにしえの英雄たちの勇気についての副旋律を織り込んだ。
+
+E:You change your minor theme to one about the courage of great heroes past.
+J:副旋律をいにしえの英雄たちの勇気についてのものに変えた。
+
+E:You begin a song of fury and dread.
+J:憤怒と戦慄の歌を歌い始めた。
+
+E:You add a minor theme of fury and dread.
+J:憤怒と戦慄の副旋律を織り込んだ。
+
+E:You change your minor theme to one of fury and dread.
+J:副旋律を憤怒と戦慄のものに変えた。
+
+E:You begin a soothing song about weariness and rest.
+J:疲れと安らぎについての、心を鎮める歌を歌い始めた。
+
+E:You add a minor theme about weariness and rest.
+J:疲れと安らぎについての副旋律を織り込んだ。
+
+E:You change your minor theme to one about weariness and rest.
+J:副旋律を疲れと安らぎについてのものに変えた。
+
+E:You begin a song of ways guarded and impassable.
+J:閉ざされ守られた道の歌を歌い始めた。
+
+E:You add a minor theme of ways guarded and impassable.
+J:閉ざされ守られた道の副旋律を織り込んだ。
+
+E:You change your minor theme to one of ways guarded and impassable.
+J:副旋律を閉ざされ守られた道のものに変えた。
+
+E:You begin a song of mastery and command.
+J:制圧と号令の歌を歌い始めた。
+
+E:You add a minor theme of mastery and command.
+J:制圧と号令の副旋律を織り込んだ。
+
+E:You change your minor theme to one of mastery and command.
+J:副旋律を制圧と号令のものに変えた。
+
+
+
+###############################################################################
+# melee1.c ― 敵の近接攻撃・遠隔攻撃・叫び・視線・ささやき（82 件）
+###############################################################################
+
+E:Your %s comes loose from its chain and falls!
+J:あなたの%sが鎖から外れて落ちた！
+
+E:Your %s slips from your finger and rolls away!
+J:あなたの%sが指から抜け、転がっていった！
+
+E:Your %s falls into a chasm!
+J:あなたの%sが深淵へ落ちていった！
+
+E:Your %s twists to cover your eyes!
+J:あなたの%sがねじれて目を覆った！
+
+E:Your %s feels suddenly heavy! You fail to %s the blow!
+J:あなたの%sが急に重くなった！一撃を%.0s防ぎそこねた！
+
+# 敵の近接攻撃の主文。**2 つ目の %s は `act`（`"hits you"` など）**で、
+# フック #9 が引く。3 つ目は `attack_punctuation()` が作る `.` `!!` などで、
+# **会心の段を表しているので ASCII のまま残す**（`。` に替えると段が消える）。
+E:%^s %s%s
+J:%^sが%s%s
+
+E:Energy drains from your pack!
+J:荷物袋から力が吸い取られていく！
+
+E:%^s looks healthier.
+J:%^sは健やかになったように見える。
+
+E:%^s sounds healthier.
+J:%^sは声に力を取り戻したようだ。
+
+E:%^s looks refreshed.
+J:%^sは生気を取り戻したように見える。
+
+E:%^s sounds refreshed.
+J:%^sは声に生気を取り戻したようだ。
+
+E:%sour %s (%c) was stolen!
+J:%.0sあなたの%s(%c)が盗まれた！
+
+E:%s %s (%c) was eaten!
+J:%.0sあなたの%s(%c)が食われた！
+
+E:You feel an unnatural hunger...
+J:不自然な飢えを覚えた……
+
+E:You are covered in acid!
+J:酸まみれになった！
+
+E:You are struck by electricity!
+J:電撃に打たれた！
+
+E:You are enveloped in flames!
+J:炎に包まれた！
+
+E:You are covered with frost!
+J:霜に覆われた！
+
+E:You stand your ground!
+J:あなたは踏みとどまった！
+
+E:You are unaffected!
+J:影響を受けなかった！
+
+E:%^s tries to disarm you, but you keep a grip on your weapon.
+J:%^sは武器を叩き落とそうとしたが、あなたは握りを離さなかった。
+
+E:%^s disarms you! Your %s falls to the ground nearby.
+J:%^sがあなたの武器を叩き落とした！あなたの%sがすぐそばの床に転がった。
+
+E:You feel vengeful!
+J:復讐の念が湧き上がった！
+
+E:You reel in pain!
+J:苦痛によろめいた！
+
+E:%^s attempts to knock you back, but you stand fast.
+J:%^sは突き飛ばそうとしたが、あなたは踏みとどまった。
+
+E:%^s just misses you.
+J:%^sの攻撃はすれすれで外れた。
+
+E:Her blow slams into the floor where you stood, and the ground shakes violently!
+J:彼女の一撃があなたの立っていた床に叩きつけられ、大地が激しく揺れた！
+
+E:You leap aside as his great hammer slams into the floor.
+J:彼の大槌が床に叩きつけられる寸前、あなたは横へ跳びのいた。
+
+E:The ground shakes violently with the force of the blow!
+J:一撃の勢いで大地が激しく揺れた！
+
+E:You leap aside as its stony fist slams into the floor.
+J:石の拳が床に叩きつけられる寸前、あなたは横へ跳びのいた。
+
+E:%^s misses you.
+J:%^sの攻撃は外れた。
+
+E:You riposte!
+J:あなたは反撃した！
+
+E:There is a puff of smoke!
+J:煙がぱっと立ち上がった！
+
+E:%^s lets out a muffled shout for help.
+J:%^sがくぐもった助けの声を上げた。
+
+E:%^s lets out a muffled shriek.
+J:%^sがくぐもった金切り声を上げた。
+
+E:%^s shouts for help.
+J:%^sが助けを呼んだ。
+
+E:%^s makes a high pitched shriek.
+J:%^sが甲高い金切り声を上げた。
+
+E:You hear a muffled shout for help.
+J:くぐもった助けの声が聞こえた。
+
+E:You hear a muffled shriek.
+J:くぐもった金切り声が聞こえた。
+
+E:You hear a shout for help.
+J:助けを呼ぶ声が聞こえた。
+
+E:You hear a shriek.
+J:金切り声が聞こえた。
+
+E:You hear a twang.
+J:弦のはじける音が聞こえた。
+
+E:%^s fires an arrow.
+J:%^sが矢を放った。
+
+E:You hear a loud thwang.
+J:太い弦のはじける音が聞こえた。
+
+E:You hear something grunt with exertion.
+J:何かが力を込めて唸る声が聞こえた。
+
+E:%^s hurls a rock at you.
+J:%^sが石を投げつけてきた。
+
+E:%^s hurls a boulder at you.
+J:%^sが岩を投げつけてきた。
+
+E:%^s breathes.
+J:%^sがブレスを吐いた。
+
+E:%^s breathes fire.
+J:%^sが炎のブレスを吐いた。
+
+E:%^s breathes frost.
+J:%^sが冷気のブレスを吐いた。
+
+E:%^s breathes poisonous gas.
+J:%^sが毒の息を吐いた。
+
+E:%^s breathes darkness.
+J:%^sが闇のブレスを吐いた。
+
+E:%^s slams his hammer into the ground.
+J:%^sが大槌を地面に叩きつけた。
+
+E:The air is filled with a muffled screeching.
+J:くぐもった金切り声が空気を満たした。
+
+E:The air is filled with an unearthly screeching.
+J:この世のものとも思えぬ金切り声が空気を満たした。
+
+E:%^s fixes its malevolent gaze upon you and lets out a muffled screech.
+J:%^sが悪意に満ちた目であなたを見据え、くぐもった金切り声を上げた。
+
+E:%^s fixes its malevolent gaze upon you and lets out a terrible screech.
+J:%^sが悪意に満ちた目であなたを見据え、恐ろしい金切り声を上げた。
+
+E:Your mind reels.
+J:頭がくらくらする。
+
+E:%^s mutters.
+J:%^sが何かをつぶやいた。
+
+E:%^s gestures in shadow.
+J:%^sが影の中で印を結んだ。
+
+E:%^s tries to blank your mind.
+J:%^sがあなたの意識を奪おうとした。
+
+E:You resist!
+J:抵抗した！
+
+E:%^s lets out a terrible cry.
+J:%^sが恐ろしい叫びを上げた。
+
+E:%^s looks into your eyes.
+J:%^sがあなたの目を覗き込んだ。
+
+E:You are unafraid.
+J:あなたは恐れない。
+
+E:%^s glares at you.
+J:%^sがあなたを睨みつけた。
+
+E:%^s stares deep into your eyes.
+J:%^sがあなたの目を深く覗き込んだ。
+
+E:You stare back unafraid!
+J:あなたは恐れずに睨み返した！
+
+E:%^s whispers of fading and decay.
+J:%^sが衰えと朽ちをささやいた。
+
+E:You resist.
+J:抵抗した。
+
+E:%^s whispers of the cold beneath the earth.
+J:%^sが地の底の冷たさをささやいた。
+
+E:%^s whispers of dusk turning into night.
+J:%^sが黄昏が夜に変わるさまをささやいた。
+
+E:%^s whispers of flames burning low in a gathering darkness.
+J:%^sが迫る闇の中で細る焔をささやいた。
+
+E:%^s whispers of an ancient gloom.
+J:%^sがいにしえの暗がりをささやいた。
+
+E:Your torch sputters.
+J:松明がじじっと音を立てた。
+
+E:Your lantern sputters.
+J:ランタンがじじっと音を立てた。
+
+E:You hear a whispering movement.
+J:ひそやかな動く気配が聞こえた。
+
+E:%^s tosses strands of sticky web at you.
+J:%^sが粘つく糸を投げつけてきた。
+
+E:You hear a rallying cry.
+J:鬨の声が聞こえた。
+
+E:%^s shouts a rallying cry.
+J:%^sが鬨の声を上げた。
+
+# 上流の作りかけ。英語のままにしておく。
+E:A monster tried to cast a spell that has not yet been defined.
+J:
+
+E:%^s has %i mana remaining.
+J:
+
+
+
+###############################################################################
+# xtra2.c ― 状態異常の出入り・空腹・目標選び（72 件）
+###############################################################################
+
+E:You are blind!
+J:目が見えなくなった！
+
+E:You can see again.
+J:再び目が見えるようになった。
+
+E:You are confused!
+J:混乱した！
+
+E:You feel less confused now.
+J:混乱が薄れてきた。
+
+E:You have been severely poisoned.
+J:ひどい毒を受けた。
+
+E:You have been badly poisoned.
+J:きつい毒を受けた。
+
+E:You have been poisoned.
+J:毒を受けた。
+
+E:You have been further poisoned.
+J:さらに毒を受けた。
+
+E:You recover from the poisoning.
+J:毒から回復した。
+
+E:You can feel the poison weakening.
+J:毒が薄れていくのを感じる。
+
+E:You are terrified!
+J:恐怖に襲われた！
+
+E:You feel bolder now.
+J:気が大きくなってきた。
+
+E:You fall into a deep trance!
+J:深い幻惑に陥った！
+
+E:The trance is broken!
+J:幻惑が解けた！
+
+E:Fantastic visions appear before your eyes.
+J:目の前に幻が広がった。
+
+E:You can see clearly again.
+J:再びはっきりと見えるようになった。
+
+E:You feel yourself moving faster!
+J:体が速く動くようになった！
+
+E:You feel yourself slow down.
+J:体の動きが元に戻った。
+
+E:You feel yourself moving slower!
+J:体の動きが鈍くなった！
+
+E:You feel yourself speed up.
+J:体の動きが元に戻った。
+
+E:You burst into a furious rage!
+J:激しい怒りに我を忘れた！
+
+E:Your rage subsides.
+J:怒りが収まった。
+
+E:Your strength returns to normal.
+J:腕力が元に戻った。
+
+E:Your dexterity returns to normal.
+J:敏捷が元に戻った。
+
+E:Your constitution returns to normal.
+J:耐久が元に戻った。
+
+E:Your grace returns to normal.
+J:恩寵が元に戻った。
+
+E:You feel your perceptions sharpen.
+J:知覚が研ぎ澄まされた。
+
+E:Your perception returns to normal.
+J:知覚が元に戻った。
+
+E:Your vision sharpens.
+J:視界が冴えた。
+
+E:Your eyes feel less sensitive.
+J:目の冴えが薄れた。
+
+E:Your light dims.
+J:明かりが暗くなった。
+
+E:Your light grows brighter again.
+J:明かりが再び明るくなった。
+
+E:You feel more resistant to fire!
+J:炎への耐性が強まった！
+
+E:You feel resistant to fire!
+J:炎への耐性を得た！
+
+E:You feel less resistant to fire.
+J:炎への耐性が薄れた。
+
+E:You feel more resistant to cold!
+J:冷気への耐性が強まった！
+
+E:You feel resistant to cold!
+J:冷気への耐性を得た！
+
+E:You feel less resistant to cold.
+J:冷気への耐性が薄れた。
+
+E:You feel more resistant to poison!
+J:毒への耐性が強まった！
+
+E:You feel resistant to poison!
+J:毒への耐性を得た！
+
+E:You feel less resistant to poison.
+J:毒への耐性が薄れた。
+
+E:You have been stunned.
+J:よろけた。
+
+E:You have been heavily stunned.
+J:朦朧となった。
+
+E:You have been knocked out.
+J:昏倒した。
+
+E:You wake up.
+J:目を覚ました。
+
+E:You are no longer stunned.
+J:よろけが収まった。
+
+E:You have been given a severe cut.
+J:深手を負った。
+
+E:You have been given a deep cut.
+J:深い傷を負った。
+
+E:You have been given a cut.
+J:傷を負った。
+
+E:The bleeding stops.
+J:出血が止まった。
+
+E:The bleeding slows.
+J:出血が弱まった。
+
+E:You are still weak.
+J:まだ衰弱している。
+
+E:You are still hungry.
+J:まだ空腹だ。
+
+E:You are no longer hungry.
+J:空腹が収まった。
+
+E:You are full!
+J:満腹だ！
+
+E:You are as full as you can be.
+J:これ以上は食べられない。
+
+E:You are beginning to starve!
+J:飢え始めた！
+
+E:You are getting weak from hunger!
+J:空腹で衰弱してきた！
+
+E:You are getting hungry.
+J:腹が減ってきた。
+
+E:You are no longer full.
+J:満腹ではなくなった。
+
+E:You feel comfortably full.
+J:ちょうどよく満たされた。
+
+E:%^s lets out a cry! The tension is broken.
+J:%^sが叫び声を上げた！張りつめた空気が破れた。
+
+E:The tension is broken.
+J:張りつめた空気が破れた。
+
+E:You are confused.
+J:混乱している。
+
+E:Illegal target.
+J:その的は選べない。
+
+E:Illegal command for target mode!
+J:目標選びでは使えない命令だ！
+
+E:Illegal aim direction!
+J:その向きへは狙えない！
+
+E:Illegal repeatable direction!
+J:その向きへは繰り返せない！
+
+# 上流のバグ報告用。英語のままにしておく（4 行で 1 続き）。
+E:BUG: Morgoth has been defeated in combat.
+J:
+
+E:But this is not possible within the fates Iluvatar has decreed.
+J:
+
+E:Please post an 'ultimate bug-report' on http://angband.oook.cz/forum/ explaining how this happened.
+J:
+
+E:But for now, let's run with it, since it's undeniably impressive.
+J:
+
+
+
+###############################################################################
+# melee2.c ― 敵の挙動・鳴き声・扉破り・モルゴス（63 件）
+###############################################################################
+
+E:%^s is agitated by your song.
+J:%^sがあなたの歌に苛立った。
+
+# 士気が変わったときの主文。**2 つ目の %s は strnfmt() が組む句**
+#（`"flees in terror!"` など）なので、書式として訳が効く。
+E:%^s %s
+J:%^sは%s
+
+E:%^s goes down the stairs.
+J:%^sが階段を降りていった。
+
+E:%^s goes up the stairs.
+J:%^sが階段を上っていった。
+
+E:%^s panics.
+J:%^sがうろたえた。
+
+E:%^s staggers into a door.
+J:%^sがふらついて扉にぶつかった。
+
+E:%^s staggers into some rubble.
+J:%^sがふらついて瓦礫にぶつかった。
+
+E:%^s bashes into a wall.
+J:%^sが壁にぶつかった。
+
+E:%^s shouts a muffled warning.
+J:%^sがくぐもった警告を叫んだ。
+
+E:You hear a muffled warning shout.
+J:くぐもった警告の叫びが聞こえた。
+
+E:%^s shouts a warning.
+J:%^sが警告を叫んだ。
+
+E:You hear a warning shout.
+J:警告の叫びが聞こえた。
+
+E:%^s lets out a muffled roar.
+J:%^sがくぐもった咆哮を上げた。
+
+E:You hear a muffled roar.
+J:くぐもった咆哮が聞こえた。
+
+E:%^s roars in anger.
+J:%^sが怒りの咆哮を上げた。
+
+E:You hear a loud roar.
+J:大きな咆哮が聞こえた。
+
+E:%^s lets out a muffled grunt.
+J:%^sがくぐもった唸り声を上げた。
+
+E:You hear a muffled grunt.
+J:くぐもった唸り声が聞こえた。
+
+E:%^s grunts in anger.
+J:%^sが怒りの唸り声を上げた。
+
+E:You hear a loud grunt.
+J:大きな唸り声が聞こえた。
+
+E:%^s makes a muffled howl.
+J:%^sがくぐもった遠吠えを上げた。
+
+E:You hear a muffled howl.
+J:くぐもった遠吠えが聞こえた。
+
+E:%^s makes a low howl.
+J:%^sが低い遠吠えを上げた。
+
+E:You hear a low howl.
+J:低い遠吠えが聞こえた。
+
+E:%^s cries out a muffled warning.
+J:%^sがくぐもった警告の声を上げた。
+
+E:You hear something cry out a muffled warning.
+J:何かがくぐもった警告の声を上げるのが聞こえた。
+
+E:%^s cries out a warning.
+J:%^sが警告の声を上げた。
+
+E:You hear something cry out a warning.
+J:何かが警告の声を上げるのが聞こえた。
+
+E:%^s shouts excitedly.
+J:%^sが興奮して叫んだ。
+
+E:You hear an shout.
+J:叫び声が聞こえた。
+
+E:You hear a distant shout.
+J:遠くで叫び声が聞こえた。
+
+E:%^s roars.
+J:%^sが咆哮した。
+
+E:You hear a distant roar.
+J:遠くで咆哮が聞こえた。
+
+E:%^s grunts.
+J:%^sが唸った。
+
+E:You hear a low grunt.
+J:低い唸り声が聞こえた。
+
+E:You hear a distant grunt.
+J:遠くで唸り声が聞こえた。
+
+E:You hear a distant howl.
+J:遠くで遠吠えが聞こえた。
+
+E:%^s makes a yowling sound.
+J:%^sが甲高く鳴いた。
+
+E:You hear yowling nearby.
+J:近くで甲高い鳴き声が聞こえた。
+
+E:You hear distant yowling.
+J:遠くで甲高い鳴き声が聞こえた。
+
+E:%^s exchanges places with you.
+J:%^sがあなたと位置を入れ替えた。
+
+E:You attack %s as %s slips past.
+J:%sがすり抜けざま、あなたは%sに斬りつけた。
+
+E:%^s attempts to exchange places with you, but you stand fast.
+J:%^sは位置を入れ替えようとしたが、あなたは踏みとどまった。
+
+E:You hear a door being smashed open.
+J:扉が打ち破られる音が聞こえた。
+
+E:You hear grinding noises.
+J:何かを削るような音が聞こえた。
+
+E:Your ward on the door is broken!
+J:扉に掛けた守りが破られた！
+
+E:The door bursts open!
+J:扉が勢いよく開いた！
+
+E:You hear a door burst open!
+J:扉が勢いよく開く音が聞こえた！
+
+E:You hear a 'click'.
+J:カチリという音が聞こえた。
+
+E:The glyph of warding is broken!
+J:守りのルーンが破られた！
+
+E:%^s attacks you as it moves by.
+J:%^sが通り過ぎざまに攻撃してきた。
+
+E:%^s passes under the door.
+J:%^sが扉の下をくぐり抜けた。
+
+E:%^s looks at %s, but moves on.
+J:%^sは%sを見たが、そのまま行ってしまった。
+
+E:%^s picks up %s.
+J:%^sが%sを拾い上げた。
+
+E:%^s crushes %s.
+J:%^sが%sを踏み潰した。
+
+E:Morgoth grows angry.
+J:モルゴスが怒りを募らせた。
+
+E:Morgoth unslings his mighty shield.
+J:モルゴスが巨大な盾を構えた。
+
+E:Morgoth grows desperate.
+J:モルゴスが死に物狂いになった。
+
+E:%^s ends his song.
+J:%^sが歌を終えた。
+
+E:The song ends.
+J:歌が終わった。
+
+E:%^s flees down the stairs.
+J:%^sが階段を駆け下りて逃げていった。
+
+E:%^s flees up the stairs.
+J:%^sが階段を駆け上がって逃げていった。
+
+# 遊びには出ない（cheat 用）。**わざと訳さない。**
+E:Spell rating: %i.
+J:
+
+
+
+###############################################################################
+# use-obj.c ― 薬草・薬・杖・角笛・アーティファクトの発動（61 件）
+###############################################################################
+
+E:You unwrap the foil and eat the chocolate egg.
+J:銀紙をはがしてチョコレートの卵を食べた。
+
+E:It is delicious!
+J:とてもおいしい！
+
+E:You feel nervous for a moment.
+J:一瞬、落ち着かない気分になった。
+
+E:It has the bitter taste of medicine.
+J:薬らしい苦い味がした。
+
+E:You thought you saw something for a moment.
+J:一瞬、何かが見えた気がした。
+
+E:You feel strangely peaceful for a moment.
+J:一瞬、不思議な安らぎに包まれた。
+
+E:It is hard and bitter.
+J:硬くて苦い。
+
+E:It tastes foul.
+J:ひどい味がする。
+
+E:It fills you with renewed energy and spirit.
+J:力と気概がよみがえってきた。
+
+E:It has a gentle warmth, and a taste as of flowers.
+J:ほのかに温かく、花のような味がする。
+
+E:You feel your power renew.
+J:力がよみがえるのを感じた。
+
+E:It burns your mouth and throat.
+J:口と喉が焼けるようだ。
+
+E:It is the cold clear water of mystic Esgalduin.
+J:神秘のエスガルドゥインの、冷たく澄んだ水だ。
+
+E:You feel lethargic for a moment.
+J:一瞬、体が重くなった。
+
+E:Your vision clouds for a moment.
+J:一瞬、視界がかすんだ。
+
+E:You feel dizzy for a moment.
+J:一瞬、めまいがした。
+
+E:You feel sanctified.
+J:身が清められた気がした。
+
+E:Your mind turns inward.
+J:意識が内へ向かった。
+
+E:The base of the staff glows an intense green...
+J:杖の石突きが濃い緑に輝いた……
+
+E:You trace out a glyph of warding upon the floor.
+J:床に守りのルーンを描いた。
+
+E:but you cannot draw a glyph without a clean expanse of floor.
+J:しかし、開けた床が無ければルーンは描けない。
+
+E:You are out of breath.
+J:息が切れた。
+
+E:You sound a loud note on the horn.
+J:角笛を高らかに吹き鳴らした。
+
+E:%^s is blown backwards by the force.
+J:%^sが衝撃で吹き飛ばされた。
+
+E:%^s is staggered by the force.
+J:%^sが衝撃によろめいた。
+
+E:%^s holds firm against the force of the blast.
+J:%^sは衝撃に耐えて踏みとどまった。
+
+E:The ceiling cracks and rock rains down upon you!
+J:天井に亀裂が走り、岩が降り注いだ！
+
+E:The blast hits the ceiling, but you did not blow hard enough to bring it down.
+J:衝撃は天井を打ったが、崩すほど強くは吹けなかった。
+
+E:Cracks spread across the floor, but it holds firm.
+J:床に亀裂が広がったが、崩れはしなかった。
+
+E:The blast hits the floor, but you did not blow hard enough to collapse it.
+J:衝撃は床を打ったが、抜くほど強くは吹けなかった。
+
+E:It glows and fades...
+J:輝いて、そして消えた……
+
+E:The %s wells with clear light...
+J:%sが澄んだ光をたたえた……
+
+E:The %s shines brightly...
+J:%sが明るく輝いた……
+
+E:The %s glows a deep green...
+J:%sが深い緑に輝いた……
+
+E:The %s glows brightly...
+J:%sが明るく輝いた……
+
+E:The %s glows deep red...
+J:%sが深い赤に輝いた……
+
+E:The %s glows bright white...
+J:%sが白く明るく輝いた……
+
+E:The %s glows deep blue...
+J:%sが深い青に輝いた……
+
+E:Your %s glows many colours...
+J:あなたの%sが色とりどりに輝いた……
+
+E:Your %s glows a bright white...
+J:あなたの%sが白く明るく輝いた……
+
+E:You are fully healed...
+J:傷がすべて癒えた……
+
+E:Your %s twists space around you...
+J:あなたの%sが周りの空間をねじ曲げた……
+
+E:Your %s glows deep blue...
+J:あなたの%sが深い青に輝いた……
+
+E:Your %s glows bright red...
+J:あなたの%sが赤く明るく輝いた……
+
+E:Your %s glows bright white...
+J:あなたの%sが白く明るく輝いた……
+
+E:An image forms in your mind...
+J:心に像が浮かび上がった……
+
+E:Your %s glows deep green...
+J:あなたの%sが深い緑に輝いた……
+
+E:Your %s glows bright yellow...
+J:あなたの%sが黄色く明るく輝いた……
+
+E:Your %s swirls around you...
+J:あなたの%sが周りに渦を巻いた……
+
+E:Your feel your renewed power in your voice.
+J:声に力がよみがえるのを感じた。
+
+E:Your %s is covered in sparks...
+J:あなたの%sが火花に包まれた……
+
+E:Your %s glows bright green...
+J:あなたの%sが緑に明るく輝いた……
+
+E:Your %s is covered in frost...
+J:あなたの%sが霜に覆われた……
+
+E:Your %s rages in fire...
+J:あなたの%sが炎を噴き上げた……
+
+E:Your %s lets out a long, shrill note...
+J:あなたの%sが長く甲高い音を放った……
+
+E:Your %s radiates deep purple...
+J:あなたの%sが深い紫の光を放った……
+
+E:Your %s glows with the light of a thousand stars...
+J:あなたの%sが千の星の光を放った……
+
+E:Your %s glows in anger...
+J:あなたの%sが怒りに輝いた……
+
+E:Your %s glows light red...
+J:あなたの%sが淡い赤に輝いた……
+
+E:Your %s glows light green...
+J:あなたの%sが淡い緑に輝いた……
+
+E:Oops.  That object cannot be activated.
+J:おっと。このアイテムは発動できない。
+
+
+###############################################################################
+# cmd6.c ― 自動銘・杖の残り（5 件）
+###############################################################################
+
+E:Autoinscribe this easter egg type?\s
+J:この復活祭の卵に自動で銘を付けますか？\s
+
+E:Autoinscribe this herb type?\s
+J:この薬草に自動で銘を付けますか？\s
+
+E:Autoinscribe this potion type?\s
+J:この薬に自動で銘を付けますか？\s
+
+E:The staff has no charges left.
+J:杖の魔力は尽きている。
+
+E:You could not draw upon its powers.
+J:その力を引き出せなかった。
+
+
+###############################################################################
+# cmd3.c ― 装備・落とす・壊す・銘・燃料・シルマリル（51 件）
+###############################################################################
+
+E:Refueling from this torch will waste some fuel. Proceed?\s
+J:この松明から補うと燃料が幾らか無駄になります。続けますか？\s
+
+E:Refueling from this flask will waste some fuel. Proceed?\s
+J:この油壺から補うと燃料が幾らか無駄になります。続けますか？\s
+
+E:Refueling from this lantern will waste some fuel. Proceed?\s
+J:このランタンから補うと燃料が幾らか無駄になります。続けますか？\s
+
+E:That can only be used to refuel a wielded lantern.
+J:それは手に持ったランタンにしか注げない。
+
+E:It is far too large to be worn.
+J:大きすぎて身に着けられない。
+
+E:To melt down pieces of mithril, take them to a forge and type (,).
+J:ミスリルを溶かすには、鍛冶場へ持っていって (,) を押す。
+
+E:You would need to put it down to open it.
+J:開けるには、いったん置かなければならない。
+
+E:It has no use.
+J:使い道が無い。
+
+E:Do you wish to wield it in your off-hand?\s
+J:利き手でないほうで構えますか？\s
+
+E:You cannot bear to give up the %s you are %s.
+J:%sを手放すのが忍びない。%.0s
+
+E:You would need to remove your shield, but cannot bear to part with it.
+J:盾を外さねばならないが、手放すのが忍びない。
+
+E:You would need to remove your off-hand weapon, but cannot bear to part with it.
+J:利き手でないほうの武器を外さねばならないが、手放すのが忍びない。
+
+E:This would require removing (and dropping) your shield. Proceed?\s
+J:盾を外して床に置くことになります。続けますか？\s
+
+E:This would require removing (and dropping) your off-hand weapon.
+J:利き手でないほうの武器を外して床に置くことになる。
+
+E:Proceed?\s
+J:続けますか？\s
+
+E:You would need to put down your weapon, but cannot bear to part with it.
+J:武器を置かねばならないが、手放すのが忍びない。
+
+E:This would require removing (and dropping) your weapon. Proceed?\s
+J:武器を外して床に置くことになります。続けますか？\s
+
+E:This would require removing (and dropping) your weapon.
+J:武器を外して床に置くことになる。
+
+E:You combine them with some that are already in your quiver.
+J:すでに矢筒にある矢とまとめた。
+
+E:%s %s (%c).
+J:%s%s(%c)。
+
+E:You have a bad feeling about this...
+J:いやな予感がする……
+
+E:You are no longer able to wield your %s as effectively.
+J:あなたの%sをうまく扱えなくなった。
+
+E:You can now wield your %s more effectively.
+J:あなたの%sをうまく扱えるようになった。
+
+E:You strive to free a second Silmaril, but it is not fated to be.
+J:二つ目のシルマリルを外そうとしたが、それは定めではなかった。
+
+E:You strive to free a third Silmaril, but it is not fated to be.
+J:三つ目のシルマリルを外そうとしたが、それは定めではなかった。
+
+E:As you strike the crown, your %s shatters into innumerable pieces.
+J:王冠を打った瞬間、あなたの%sが無数の破片に砕け散った。
+
+E:A shard strikes Morgoth upon his cheek.
+J:破片の一つがモルゴスの頬を打った。
+
+E:Looking into the hallowed light of the final Silmaril, you are filled with a strange dread.
+J:最後のシルマリルの聖なる光を覗き込み、あなたは奇妙な畏れに満たされた。
+
+E:Are you sure you wish to proceed?\s
+J:本当に続けてもよろしいですか？\s
+
+E:Morgoth howls with rage!
+J:モルゴスが怒りの咆哮を上げた！
+
+E:Try though you might, you were unable to free a Silmaril.
+J:力を尽くしたが、シルマリルは外せなかった。
+
+E:You hear a cry of vengeance echo through the iron hells.
+J:復讐の叫びが鉄の地獄に響き渡るのが聞こえた。
+
+E:You feel your doom awaiting you.
+J:己の定めが待ち受けているのを感じた。
+
+E:To prise a Silmaril from the crown, you would need to wield a weapon.
+J:王冠からシルマリルをこじり出すには、武器を構えていなければならない。
+
+E:Will you try to prise a Silmaril from the Iron Crown?\s
+J:鉄の王冠からシルマリルをこじり出そうとしますか？\s
+
+E:You would have to put it down first.
+J:まず置かなければならない。
+
+E:You decide to try to prise out a Silmaril after all.
+J:やはりシルマリルをこじり出すことにした。
+
+E:You destroy %s.
+J:%sを壊した。
+
+E:Inscription removed.
+J:銘を消した。
+
+E:That item had no inscription to remove.
+J:そのアイテムに消すべき銘は無かった。
+
+E:Inscribing %s.
+J:%sに銘を刻む。
+
+E:You fuel your lamp.
+J:ランタンに油を注いだ。
+
+E:Your lamp is full.
+J:ランタンは満タンだ。
+
+E:You combine the torches.
+J:松明をまとめた。
+
+E:Your torch is fully fueled.
+J:松明の燃料は満ちている。
+
+E:Your torch glows more brightly.
+J:松明が明るくなった。
+
+E:You are not wielding a light.
+J:明かりを持っていない。
+
+E:Your light cannot be refueled.
+J:その明かりには燃料を足せない。
+
+E:Target Selected.
+J:目標を定めた。
+
+E:Target Aborted.
+J:目標選びをやめた。
+
+E:Illegal direction for look (around dungeon)!
+J:見回すのにその向きは使えない！
+
+
+
+###############################################################################
+# `message()` / `message_format()` の文言（37 件）
+#
+# **ここを見落とすと、あなたの打撃と死の文が英語のまま残る。**
+# `msg_print()` / `msg_format()` の 2 つだけを追っていて丸ごと漏らした
+# ――あちらは文言が 1 番目の引数だが、こちらは**3 番目**である
+#（`externs.h:923-924`）。抜き出し器の `DISPLAY` 表に足して見つけた。
+###############################################################################
+
+# あなたの打撃。3 つ目の %s は `attack_punctuation()` の `.` `!!` で、
+# **会心の段を表しているので ASCII のまま残す**（melee1.c の敵の打撃と同じ）。
+E:You hit %s%s
+J:%sに命中した%s
+
+E:You smite %s%s
+J:%sを打ち据えた%s
+
+E:You impale %s%s
+J:%sを刺し貫いた%s
+
+E:You charge %s%s
+J:%sに突進した%s
+
+E:You stealthily attack %s%s
+J:%sに忍び寄って斬りつけた%s
+
+E:You miss %s.
+J:%sへの攻撃は外れた。
+
+E:You have killed %s.
+J:%sを倒した。
+
+E:You have slain %s.
+J:%sを討ち取った。
+
+E:You have destroyed %s.
+J:%sを打ち砕いた。
+
+E:%^s has been slain.
+J:%^sは討ち取られた。
+
+E:%^s has been destroyed.
+J:%^sは打ち砕かれた。
+
+E:%^s cowers.
+J:%^sが縮み上がった。
+
+E:*** LOW HITPOINT WARNING! ***
+J:*** 生命力が危険な水準まで下がった！ ***
+
+E:You die.
+J:あなたは死んだ。
+
+E:You activate it...
+J:それを発動させた……
+
+# 扉。**「押し破る」と「開く」は別の文**（体当たりの成否で分かれる）。
+E:A door crashes open!
+J:扉が音を立てて破れた！
+
+E:A door opens with a muffled crash!
+J:扉がくぐもった音を立てて破れた！
+
+E:The door crashes open!
+J:扉が音を立てて破れた！
+
+E:The door opens with a muffled crash!
+J:扉がくぐもった音を立てて破れた！
+
+E:You see nothing there to open.
+J:そこに開けられる物は無い。
+
+E:You failed to pick the lock.
+J:錠を開けそこねた。
+
+# 見えないまま進路を塞がれたとき（「見えた」と「手触りで分かった」の対）。
+E:There is a door blocking your way.
+J:扉が行く手を塞いでいる。
+
+E:There is a pile of rubble blocking your way.
+J:瓦礫の山が行く手を塞いでいる。
+
+E:There is a wall blocking your way.
+J:壁が行く手を塞いでいる。
+
+E:You feel a door blocking your way.
+J:手触りで扉が行く手を塞いでいると分かった。
+
+E:You feel a pile of rubble blocking your way.
+J:手触りで瓦礫の山が行く手を塞いでいると分かった。
+
+E:You feel a wall blocking your way.
+J:手触りで壁が行く手を塞いでいると分かった。
+
+# 階段。
+E:The divine light reveals the way.
+J:聖なる光が道を照らし出した。
+
+E:Try though you might, you cannot find your way back to Morgoth's throne.
+J:力を尽くしたが、モルゴスの玉座への道は見つからなかった。
+
+E:You emerge even deeper in the dungeon.
+J:さらに深いところへ出た。
+
+E:You emerge much deeper in the dungeon.
+J:ずっと深いところへ出た。
+
+E:You emerge near where you began.
+J:元いた辺りへ出た。
+
+E:You enter a maze of down staircases.
+J:下り階段の迷路に入り込んだ。
+
+E:You enter a maze of up staircases, but cannot find your way.
+J:上り階段の迷路に入り込み、道が分からなくなった。
+
+E:You enter a maze of up staircases.
+J:上り階段の迷路に入り込んだ。
+
+E:You rise up through the ceiling.
+J:天井を抜けて上がっていく。
+
+E:You sink through the floor.
+J:床を抜けて沈んでいく。
+
+
+
+###############################################################################
+# monster2.c ― 敵の出入り・支配域・足元のアイテム・物音（46 件）
+###############################################################################
+
+E:%^s leaps into the abyss!
+J:%^sが深淵へ跳び込んだ！
+
+E:%^s topples into the abyss!
+J:%^sが深淵へ転げ落ちた！
+
+E:You see %s %d.%1d lb.
+J:%sがある。%d.%1d ポンド。
+
+E:Your feet strike against %s.
+J:足元に%sが当たった。
+
+E:You see %s.
+J:%sがある。
+
+E:To attempt to prise a Silmaril from the crown, use the 'destroy' command ('Ctrl-k').
+J:王冠からシルマリルをこじり出すには、「壊す」命令（Ctrl-k）を使う。
+
+E:To attempt to prise a Silmaril from the crown, use the 'destroy' command (which is 'k' by default).
+J:王冠からシルマリルをこじり出すには、「壊す」命令（既定では k）を使う。
+
+E:%^s moves through your zone of control.
+J:%^sがあなたの間合いを通り抜けた。
+
+E:%^s moves away from you.
+J:%^sがあなたから離れた。
+
+E:%^s attacks you as you step away.
+J:離れようとしたあなたを%^sが攻撃した。
+
+E:You move through %s's zone of control.
+J:%sの間合いを通り抜けた。
+
+E:%^s comes into reach of your %s.
+J:%^sがあなたの%sの間合いに入った。
+
+E:%^s slows down.
+J:%^sの動きが鈍った。
+
+E:%^s starts moving faster.
+J:%^sの動きが速くなった。
+
+E:%^s speeds up.
+J:%^sの動きが速くなった。
+
+E:%^s starts moving slower.
+J:%^sの動きが鈍くなった。
+
+E:%s, forcing %s out of the way!
+J:%s、%sを押しのけた！
+
+E:%s!
+J:%s！
+
+E:You hear a snarl.
+J:唸り声が聞こえた。
+
+E:You hear a yelp.
+J:きゃんという鳴き声が聞こえた。
+
+E:You hear a feeble yelp.
+J:弱々しい鳴き声が聞こえた。
+
+E:You hear a hiss.
+J:しゅうという音が聞こえた。
+
+E:You hear a furious hissing.
+J:荒々しく威嚇する音が聞こえた。
+
+E:You hear thrashing about.
+J:のたうち回る音が聞こえた。
+
+E:You hear a feline snarl.
+J:猫のような唸り声が聞こえた。
+
+E:You hear a mewling sound.
+J:か細い鳴き声が聞こえた。
+
+E:You hear a pitiful mewling.
+J:哀れな鳴き声が聞こえた。
+
+E:You hear an angry droning.
+J:苛立った羽音が聞こえた。
+
+E:You hear a scuttling sound.
+J:せかせかと這う音が聞こえた。
+
+E:You hear a skittering sound.
+J:かさかさと走る音が聞こえた。
+
+E:You hear a squeal.
+J:甲高い鳴き声が聞こえた。
+
+E:You hear a shrieks.
+J:金切り声が聞こえた。
+
+E:You hear erratic fluttering.
+J:不規則な羽ばたきが聞こえた。
+
+E:You hear a grunt.
+J:唸り声が聞こえた。
+
+E:You hear a cry of pain.
+J:苦痛の叫びが聞こえた。
+
+E:You hear a feeble cry.
+J:弱々しい叫びが聞こえた。
+
+E:You hear a strange grunt.
+J:奇妙な唸り声が聞こえた。
+
+E:You hear a terrible cry.
+J:恐ろしい叫びが聞こえた。
+
+E:You hear a unnatural cry.
+J:不自然な叫びが聞こえた。
+
+E:Compacting monsters...
+J:敵の表を詰めています……
+
+E:Too many monsters!
+J:敵が多すぎる！
+
+E:Warning! Could not allocate a new monster.
+J:警告：新しい敵を置けなかった。
+
+# 遊びには出ない（cheat 用）。**わざと訳さない。**
+E:(+%d: %s).
+J:
+
+E:Unique (%s).
+J:
+
+E:Failed to place %d.
+J:
+
+E:Failed to place a %d ().
+J:
+
+
+###############################################################################
+# dungeon.c ― 明かり・魔法の再充填・落下・デバッグ命令・モルゴスの宣告（32 件）
+###############################################################################
+
+E:Your %s are all recharged.
+J:あなたの%sの魔力がすべて戻った。
+
+E:The %s has recharged.
+J:%sの魔力が戻った。
+
+E:Your %s has recharged.
+J:あなたの%sの魔力が戻った。
+
+E:The gates to ANGBAND are closing...
+J:アングバンドの門が閉じようとしている……
+
+E:Please finish up and/or save your game.
+J:切りのよいところで、遊びを終えるか保存すること。
+
+E:The gates to ANGBAND are now closed.
+J:アングバンドの門は閉じられた。
+
+E:Your light has gone out!
+J:明かりが消えた！
+
+E:Your light is growing faint.
+J:明かりが弱くなってきた。
+
+E:You can only enter wizard mode from within debug mode.
+J:ウィザードモードへはデバッグモードからしか入れない。
+
+E:You are about to use the dangerous, unsupported, debug commands!
+J:これから危険で無保証のデバッグ命令を使おうとしている！
+
+E:Your machine may crash, and your savefile may become corrupted!
+J:機械が落ちたり、セーブデータが壊れたりするかもしれない！
+
+E:Are you sure you want to use the debug commands?\s
+J:デバッグ命令を使ってもよろしいですか？\s
+
+E:Incorrect password.
+J:合言葉が違う。
+
+E:Wizard mode off.
+J:ウィザードモードを切った。
+
+E:Wizard mode on.
+J:ウィザードモードに入った。
+
+E:You fly through the air.
+J:宙を飛んだ。
+
+E:You slam into a wall of rubble.
+J:瓦礫の壁に叩きつけられた。
+
+E:You slam into a wall.
+J:壁に叩きつけられた。
+
+E:You slam into a door.
+J:扉に叩きつけられた。
+
+E:%^s blocks your landing.
+J:%^sが着地の邪魔をした。
+
+E:Some unseen foe blocks your landing.
+J:見えない敵が着地の邪魔をした。
+
+E:Cancelled.
+J:取りやめた。
+
+E:With a voice as of rolling thunder, Morgoth, Lord of Darkness, speaks:
+J:雷鳴のごとき声で、暗黒の王モルゴスが語りかけた。
+
+E:'You dare challenge me in mine own hall? Now is your death upon you!'
+J:「わが広間で我に挑むというのか。今こそ汝の死のときぞ！」
+
+E:You complete your work.
+J:仕事を仕上げた。
+
+E:You recover your footing.
+J:体勢を立て直した。
+
+E:You have entered %s.
+J:%sに足を踏み入れた。
+
+E:Your footsteps leave a trail of light!
+J:足跡が光の尾を引いた！
+
+E:There is a strange tension in the air.
+J:空気が奇妙に張りつめている。
+
+E:You feel that Morgoth's servants are reluctant to attack before he delivers judgment.
+J:モルゴスの下僕たちは、主の宣告があるまで手を出しかねているようだ。
+
+E:Die?\s
+J:死にますか？\s
+
+E:You invoke wizard mode and cheat death.
+J:ウィザードモードを呼び出して死を免れた。
+
+
+###############################################################################
+# spells2.c ― 治癒・能力値・探知・地形の変化・持ち物の報せ（25 件）
+#
+# `%s` に入る形容詞は `desc_stat_pos[]` / `desc_stat_neg[]` の 4 語ずつで、
+# **書式ではなく引数**なのでフック #9 が引く。訳語は
+# 「～く／～に」の連用形にして、下の 4 つの型のどれに入っても読めるようにしてある。
+###############################################################################
+
+E:You feel a little better.
+J:少し具合がよくなった。
+
+E:You feel better.
+J:具合がよくなった。
+
+E:You feel much better.
+J:だいぶ具合がよくなった。
+
+E:You feel very good.
+J:とても具合がよい。
+
+E:The object resists the spell.
+J:そのアイテムは術に抗った。
+
+E:You feel %s for a moment, but it passes.
+J:一瞬%sなりかけたが、持ちこたえた。
+
+E:You feel %s.
+J:%sなった気がする。
+
+E:You feel less %s.
+J:%sなっていたのが戻ってきた気がする。
+
+E:You feel %s!
+J:%sなった気がする！
+
+E:You sense the presence of traps!
+J:罠の気配を感じ取った！
+
+E:You sense the presence of stairs!
+J:階段の気配を感じ取った！
+
+E:You sense the presence of objects!
+J:アイテムの気配を感じ取った！
+
+E:You sense the presence of enchantments!
+J:魔法の気配を感じ取った！
+
+E:You sense the presence of your enemies!
+J:敵の気配を感じ取った！
+
+E:You sense the presence of invisible creatures!
+J:見えざる者の気配を感じ取った！
+
+E:The ground shakes for a moment.
+J:大地が一瞬揺れた。
+
+E:There is a searing blast of light!
+J:焼けつくような光が炸裂した！
+
+E:You are pummeled with debris!
+J:破片に打ちのめされた！
+
+E:%^s is hit by falling debris.
+J:%^sが落ちてきた破片に当たった。
+
+E:You fall back into the newly made pit!
+J:できたばかりの穴に落ちた！
+
+E:You are surrounded by a white light.
+J:白い光に包まれた。
+
+E:Darkness surrounds you.
+J:闇に包まれた。
+
+E:%^s: %s (%c).
+J:%^s：%s(%c)。
+
+E:In your pack: %s (%c).  %s
+J:荷物袋の中：%s(%c)。  %s
+
+E:On the ground: %s.  %s
+J:床の上：%s。  %s
+
+
+###############################################################################
+# object2.c ― アイテムの表の整理・破損・魔力の残り・荷物のあふれ（24 件）
+###############################################################################
+
+E:Compacting objects...
+J:アイテムの表を詰めています……
+
+E:Too many objects!
+J:アイテムが多すぎる！
+
+E:The %s break%s.
+J:%sが砕けた。%.0s
+
+E:The %s disappear%s.
+J:%sが消えた。%.0s
+
+E:You feel something roll beneath your feet.
+J:足元で何かが転がるのを感じた。
+
+E:Orodruth.
+J:オロドルース。
+
+E:Enchanted forge.
+J:魔法の鍛冶場。
+
+E:Forge.
+J:鍛冶場。
+
+E:You have %d charge%s remaining.
+J:残りの魔力は%d回ぶんだ。%.0s
+
+E:You no longer have the %s (%c).
+J:%s(%c)を失った。
+
+E:There are %d charge%s remaining.
+J:残りの魔力は%d回ぶんだ。%.0s
+
+E:Your pack overflows!
+J:荷物袋があふれた！
+
+E:You drop %s (%c).
+J:%s(%c)を落とした。
+
+E:You combine them with the arrows in your quiver.
+J:矢筒の矢とまとめた。
+
+E:You combine them with some items in your pack.
+J:荷物袋のアイテムとまとめた。
+
+E:You combine some items in your pack.
+J:荷物袋のアイテムをまとめた。
+
+E:You reorder some items in your pack.
+J:荷物袋のアイテムを並べ替えた。
+
+# 遊びには出ない（cheat 用）。**わざと訳さない。**
+E:No object (%d,%d)
+J:
+
+E:Artefact (%s)
+J:
+
+E:Ego-item (%s)
+J:
+
+E:Object (%s)
+J:
+
+E:Breakage (breakage).
+J:
+
+E:Breakage (no floor space).
+J:
+
+E:Breakage (too many objects).
+J:
+
+
+###############################################################################
+# load.c ― セーブの読み込み（22 件）
+###############################################################################
+
+E:Error reading smithing item
+J:鍛冶のアイテムを読めなかった
+
+E:Error reading item
+J:アイテムを読めなかった
+
+E:Too many items in the inventory!
+J:持ち物が多すぎる！
+
+E:Invalid monster index
+J:敵の番号が不正だ
+
+E:Loaded Randomizer Info
+J:乱数の状態を読み込んだ
+
+E:Loaded Option Flags
+J:設定を読み込んだ
+
+E:Loaded Messages
+J:記録を読み込んだ
+
+E:Loaded Monster Memory
+J:敵の思い出を読み込んだ
+
+E:Loaded Object Memory
+J:アイテムの覚え書きを読み込んだ
+
+E:Loaded Artefacts
+J:アーティファクトを読み込んだ
+
+E:Loaded extra information
+J:追加の情報を読み込んだ
+
+E:Loaded Random Artefacts
+J:ランダムアーティファクトを読み込んだ
+
+E:Loaded Notes
+J:覚え書きを読み込んだ
+
+E:Unable to read inventory
+J:持ち物を読めなかった
+
+E:Restoring Dungeon...
+J:迷宮を組み直しています……
+
+E:Error reading dungeon data
+J:迷宮のデータを読めなかった
+
+E:Invalid checksum
+J:検査符号が合わない
+
+E:Invalid encoded checksum
+J:符号化された検査符号が合わない
+
+E:Savefile "%s" does not exist.
+J:セーブデータ「%s」が見つからない。
+
+E:Savefile is currently in use.
+J:そのセーブデータは使用中だ。
+
+E:Converted a %d.%d.%d savefile.
+J:%d.%d.%d のセーブデータを変換した。
+
+E:Error (%s) reading %d.%d.%d savefile.
+J:誤り（%s）。%d.%d.%d のセーブデータを読めない。
+
+
+###############################################################################
+# init2.c ― 起動中の進捗（17 件。P0 で 2 件だけ入れた続き）
+###############################################################################
+
+E:[Initializing array sizes...]
+J:[配列の大きさを決めています...]
+
+E:[Initializing arrays... (features)]
+J:[配列を用意しています... (地形)]
+
+E:[Initializing arrays... (abilities)]
+J:[配列を用意しています... (能力)]
+
+E:[Initializing arrays... (artefacts)]
+J:[配列を用意しています... (アーティファクト)]
+
+E:[Initializing arrays... (special items)]
+J:[配列を用意しています... (特別なアイテム)]
+
+E:[Initializing arrays... (vaults)]
+J:[配列を用意しています... (地下室)]
+
+E:[Initializing arrays... (histories)]
+J:[配列を用意しています... (生い立ち)]
+
+E:[Initializing arrays... (races)]
+J:[配列を用意しています... (種族)]
+
+E:[Initializing arrays... (houses)]
+J:[配列を用意しています... (家)]
+
+E:[Initializing arrays... (flavors)]
+J:[配列を用意しています... (風味)]
+
+E:[Initializing arrays... (other)]
+J:[配列を用意しています... (その他)]
+
+E:[Initializing arrays... (alloc)]
+J:[配列を用意しています... (割り当て)]
+
+E:[Loading basic user pref file...]
+J:[基本の設定ファイルを読んでいます...]
+
+E:[Initializing Random Artefact Tables...]
+J:[ランダムアーティファクトの表を用意しています...]
+
+# データの誤りの報せ。**英語のままにしておく**――ファイル名と旗の名を
+# そのまま出したほうが、上流へ報せるときに通じる。
+E:Error at line %d of '%s.txt'.
+J:
+
+E:Record %d contains a '%s' error.
+J:
+
+E:Parsing '%s'.
+J:
+
+
+###############################################################################
+# files.c / object1.c / util.c / xtra1.c / squelch.c ― 品書きと鐘（27 件）
+###############################################################################
+
+E:Too many macro triggers!
+J:マクロの引き金が多すぎる！
+
+E:Cannot open '%s'.
+J:「%s」を開けない。
+
+E:Search string not found!
+J:探した字句は見つからなかった！
+
+E:You must choose a name.
+J:名前を決めなければならない。
+
+E:This will destroy the current character: are you sure?\s
+J:いまの冒険者を消します。よろしいですか？\s
+
+E:You cannot save games during the tutorial.
+J:チュートリアルの最中は保存できない。
+
+E:Score file unavailable.
+J:得点表が使えない。
+
+E:Cannot switch item selector!
+J:アイテムの選び先を切り替えられない！
+
+E:Cannot select floor!
+J:床は選べない！
+
+E:Illegal object choice (tag)!
+J:そのアイテムは選べない（銘）！
+
+E:No valid items found.
+J:選べるアイテムが無い。
+
+E:Illegal object choice (default)!
+J:そのアイテムは選べない（既定）！
+
+E:Illegal object choice (inven)!
+J:そのアイテムは選べない（荷物）！
+
+E:Illegal object choice (equip)!
+J:そのアイテムは選べない（装備）！
+
+E:Illegal object choice (floor)!
+J:そのアイテムは選べない（床）！
+
+E:Illegal object choice (normal)!
+J:そのアイテムは選べない！
+
+E:Illegal response to a 'more' prompt!
+J:「-more-」への答えとして使えない！
+
+E:Illegal edit key!
+J:編集に使えないキーだ！
+
+E:Illegal response to a 'yes/no' question!
+J:「y/n」への答えとして使えない！
+
+E:Invalid repeat count!
+J:繰り返しの数が不正だ！
+
+E:Are you sure?\s
+J:よろしいですか？\s
+
+E:You can no longer wield both weapons.
+J:もう二刀を構えていられない。
+
+E:This inscription (%s) cannot be added, because the inscription array is full!
+J:銘（%s）を足せない。銘の表がいっぱいだ！
+
+# 死んだあとの後始末。英語のままにしておく（落ちたときの手掛かり）。
+E:death save failed!
+J:
+
+E:Automatic character dump failed!
+J:
+
+E:Error %d in line %d of file '%s'.
+J:
+
+E:Parsing '%s'
+J:
+
+
+###############################################################################
+# birth.c ― 誕生の画面の鐘（5 件。画面そのものは P5）
+###############################################################################
+
+E:Your race cannot choose that house.
+J:その種族はその家を選べない。
+
+E:Illegal response to question!
+J:その答えは使えない！
+
+E:Excessive stats!
+J:能力値を使いすぎている！
+
+E:Excessive skills!
+J:技能を使いすぎている！
+
+# `strnfmt("%s", ...)` の配管。**わざと訳さない**（引数をそのまま通すだけ）。
+E:%s
+J:
+
+
+###############################################################################
+# cmd4.c ― 記録・歌・誓い・能力・鍛冶・マクロ・見た目（53 件）
+###############################################################################
+
+E:Character dump failed!
+J:記録の書き出しに失敗した！
+
+E:Character dump successful.
+J:記録を書き出した。
+
+E:Illegal command for character sheet!
+J:キャラクターシートでは使えない命令だ！
+
+E:You do not know any songs of power.
+J:力ある歌を一つも知らない。
+
+E:Illegal song choice.
+J:その歌は選べない。
+
+E:You break your oath of silence.
+J:あなたは沈黙の誓いを破った。
+
+E:You do not have enough experience to acquire this ability.
+J:この能力を得るには経験が足りない。
+
+E:Insufficient kills to become a bane.
+J:天敵となるには倒した数が足りない。
+
+E:This oath was broken before it was made.
+J:この誓いは、立てる前にすでに破られている。
+
+E:Are you sure you wish to gain this ability?\s
+J:この能力を得てもよろしいですか？\s
+
+E:Insufficient prerequisites for ability!
+J:この能力には前提が足りない！
+
+E:You do not have enough room in your pack.
+J:荷物袋に余地が足りない。
+
+E:You must free up another slot.
+J:もう一枠空けなければならない。
+
+E:You must free up %d more slots.
+J:あと%d枠空けなければならない。
+
+E:Are you sure you wish to melt this item down?\s
+J:このアイテムを溶かしてもよろしいですか？\s
+
+E:Invalid choice.
+J:その選び方はできない。
+
+E:You can only create items at a forge.
+J:アイテムを作れるのは鍛冶場だけだ。
+
+E:The resources of this forge are exhausted.
+J:この鍛冶場の資材は尽きている。
+
+E:You will be able to browse the options but not make new things.
+J:品書きを眺めることはできるが、新しく作ることはできない。
+
+E:You must first select a base item.
+J:まず元になるアイテムを選ばなければならない。
+
+E:You don't have any mithril items.
+J:ミスリルのアイテムを持っていない。
+
+E:You begin your work.
+J:仕事に取りかかった。
+
+E:Failed to load '%s'!
+J:「%s」を読み込めなかった！
+
+E:Loaded '%s'.
+J:「%s」を読み込んだ。
+
+E:Illegal command for normal options!
+J:設定の画面では使えない命令だ！
+
+E:Failed!
+J:失敗した！
+
+E:Done.
+J:終わった。
+
+E:Appended macros.
+J:マクロを書き足した。
+
+E:Found no macro.
+J:マクロは見つからなかった。
+
+E:Found a macro.
+J:マクロを見つけた。
+
+E:Added a macro.
+J:マクロを足した。
+
+E:Removed a macro.
+J:マクロを消した。
+
+E:Appended keymaps.
+J:キー割り当てを書き足した。
+
+E:Found no keymap.
+J:キー割り当ては見つからなかった。
+
+E:Found a keymap.
+J:キー割り当てを見つけた。
+
+E:Added a keymap.
+J:キー割り当てを足した。
+
+E:Removed a keymap.
+J:キー割り当てを消した。
+
+E:Illegal command for macros!
+J:マクロの画面では使えない命令だ！
+
+E:Dumped monster attr/chars.
+J:敵の色と記号を書き出した。
+
+E:Dumped object attr/chars.
+J:アイテムの色と記号を書き出した。
+
+E:Dumped feature attr/chars.
+J:地形の色と記号を書き出した。
+
+E:Dumped flavor attr/chars.
+J:風味の色と記号を書き出した。
+
+E:Visual attr/char tables reset.
+J:色と記号の表を元に戻した。
+
+E:Illegal command for visuals!
+J:見た目の画面では使えない命令だ！
+
+E:Dumped color redefinitions.
+J:色の定義を書き出した。
+
+E:Illegal command for colors!
+J:色の画面では使えない命令だ！
+
+E:You are playing %s %s.
+J:遊んでいるのは %s %s です。
+
+E:You stand once again upon the surface. Freedom awaits.
+J:あなたは再び地上に立っている。自由が待っている。
+
+E:You are still uncertain about this level...
+J:この階のことはまだよく分からない……
+
+E:%^s, the %^s %s
+J:%^s、%^sは%s
+
+E:HTML screenshot saved.
+J:HTML の画面写しを保存した。
+
+E:Illegal command for knowledge!
+J:知識の画面では使えない命令だ！
+
+E:Failed to create temporary file %s.
+J:一時ファイル %s を作れなかった。
+
+
+###############################################################################
+# 訳さないもの ― デバッグ・スポイラー・階の生成の記録
+#
+# **`J:` を空にしてある行は「わざと訳さない」の印**である（設計 §5）。
+# 未訳一覧から外れるが、カタログには載っているので、後で訳したくなったら
+# `J:` を埋めるだけでよい。ここに並ぶのは
+#   * `cheat_room` / `cheat_hear` を立てたときだけ出る階の生成の記録
+#   * ウィザードモード（`Ctrl-A`）とスポイラー書き出しの文言
+#   * 落ちたときに上流へ報せる文
+# で、いずれも**英語のほうが通じる**。
+###############################################################################
+
+E:%d chasms.
+J:
+
+E:Failed to place down stairs.
+J:
+
+E:Failed to place up stairs.
+J:
+
+E:Skipped a barrow wight vault.
+J:
+
+E:Bug: Could not find a record for an Interesting Room in vault.txt
+J:
+
+E:Bug: Could not find a record for a Lesser Vault in vault.txt
+J:
+
+E:LV (%s).
+J:
+
+E:GV (%s).
+J:
+
+E:Could not find a record for Morgoth's Vault in vault.txt
+J:
+
+E:Forge count is %d.
+J:
+
+E:Guaranteed forge: %s.
+J:
+
+E:Trying to force a forge:
+J:
+
+E:failed.
+J:
+
+E:succeeded.
+J:
+
+E:Not enough rooms.
+J:
+
+E:Couldn't connect the rooms.
+J:
+
+E:Couldn't place, rubble, or player.
+J:
+
+E:Failed connectivity.
+J:
+
+E:Failed to find a down staircase in the gates level
+J:
+
+E:Failed to find an up staircase in the throne-room
+J:
+
+E:Generation failed (%s)
+J:
+
+E:Creating a lot of %s items. Base level = %d.
+J:
+
+E:Changes accepted.
+J:
+
+E:Changes ignored.
+J:
+
+E:Allocated.
+J:
+
+E:You jump to dungeon level %d.
+J:
+
+E:Clearing level to display tiles
+J:
+
+E:Press any key.
+J:
+
+E:That is not a valid debug command.
+J:
+
+E:Cannot create spoiler file.
+J:
+
+E:Cannot close spoiler file.
+J:
+
+E:Successfully created a spoiler file.
+J:
+
+E:Illegal command for spoilers!
+J:
+
+E:Unknown %s flag '%s'.
+J:
+
+E:Unknown artefact activation '%s'.
+J:
+
+E:Illegal bow sval %s
+J:
+
+E:Failed to acquire primary buffer.
+J:
+
+# `//` の註記を跨いで拾われた鍵。**実在しない**（抜き出し器の見立ての癖）。
+E:(%d,%d) Disturbed on loss of\r\n                                // light.
+J:
+
+E:(%d,%d) Disturbed on gain of\r\n                                // light.
+J:
+
+# 階の生成で出るが遊びには関わらない。
+E:You remember the thrall told you of the passages here.
+J:ここの抜け道について、虜囚が教えてくれたことを思い出した。
+
+E:Your work is interrupted!
+J:仕事を邪魔された！
+
+
+###############################################################################
+# `%s` の引数として渡る断片（フック #9）
+#
+# **ここが無いと、敵の近接攻撃の文が英語のまま出る。**
+# `msg_format("%^s %s%s", m_name, act, punct)` の `act` は
+# `act = "hits you";` と代入されているだけなので、書式の訳では届かない。
+# 抜き出し器（`extract_ja_keys.py`）も**見つけられない**（表示関数の引数では
+# ないため）。ここは `grep -n 'act = "' silq/src/melee1.c` の類で探すこと。
+#
+# **鍵は句にする。** 裸の 1 語を載せると `format("%s.raw", name)` のような
+# 道の組み立てまで訳してしまう（`sq_lang_c.h` の `sq_tr_arg` の警告）。
+###############################################################################
+
+# melee1.c の `act`（敵の近接攻撃 14 種）。
+E:batters you
+J:あなたを打ちのめした
+
+E:hits you
+J:あなたを殴った
+
+E:touches you
+J:あなたに触れた
+
+E:claws you
+J:あなたを引っ掻いた
+
+E:bites you
+J:あなたに噛みついた
+
+E:pecks you
+J:あなたをつついた
+
+E:stings you
+J:あなたを刺した
+
+E:crushes you
+J:あなたを押し潰した
+
+E:engulfs you
+J:あなたを飲み込んだ
+
+E:crawls on you
+J:あなたに這い上がった
+
+E:tears at you
+J:あなたを引き裂いた
+
+E:releases a cloud of spores
+J:胞子の雲をまき散らした
+
+E:whips you
+J:あなたを打ち据えた
+
+E:charges you
+J:あなたに突進した
+
+# melee2.c の士気の変化（`strnfmt` 経由なので書式としても届くが、
+# 引数として渡る道もあるので 1 か所に置く）。
+E:flees in terror!
+J:恐怖して逃げ出した！
+
+# spells1.c の `note`（効果を受けた敵の様子）。**頭の空白ごとが鍵**である。
+E:\sdies.
+J:は死んだ。
+
+E:\sis destroyed.
+J:は消え去った。
+
+E:\sresists.
+J:は抵抗した。
+
+E:\sresists!
+J:は抵抗した！
+
+E:\sis badly hurt.
+J:はひどく傷ついた。
+
+E:\slooks healthier.
+J:は健やかになったように見える。
+
+E:\sis unaffected!
+J:は影響を受けなかった！
+
+E:\scringes from the light!
+J:は光にひるんだ！
+
+E:\spartly shatters!
+J:は半ば砕けた！
+
+E:\sshatters!
+J:は砕け散った！
+
+E:\schanges!
+J:は姿を変えた！
+
+E:\sdisappears!
+J:は消え失せた！
+
+E:\sis more dazed.
+J:はさらに目が回った。
+
+E:\sis dazed.
+J:は目が回った。
+
+E:\slooks more confused.
+J:はさらに混乱したように見える。
+
+E:\slooks confused.
+J:は混乱したように見える。
+
+# spells1.c の歌の題（`%^s sings of %s.` / `You hear a song of %s.` に入る）。
+E:durance
+J:幽閉
+
+E:chains
+J:鎖
+
+E:thralls
+J:虜囚
+
+E:prison walls
+J:牢の壁
+
+E:locks without keys
+J:鍵の無い錠
+
+E:binding
+J:縛め
+
+E:opening
+J:開くこと
+
+E:treachery
+J:裏切り
+
+E:revealing
+J:暴くこと
+
+E:uncovering
+J:あばくこと
+
+E:betraying
+J:売り渡し
+
+E:piercing
+J:看破
+
+E:vows broken
+J:破られた誓い
+
+E:promises
+J:約束
+
+E:duty
+J:務め
+
+E:tasks forgotten
+J:忘れられた務め
+
+E:redemption
+J:贖い
+
+E:oaths
+J:誓い
+
+# spells2.c の能力値の形容（`desc_stat_pos[]` / `desc_stat_neg[]`）。
+# **連用形で置く**――上の 4 つの書式のどれに入っても読めるようにするため。
+E:strong
+J:力強く
+
+E:dextrous
+J:器用に
+
+E:healthy
+J:健やかに
+
+E:attuned
+J:世界と調和して
+
+E:weak
+J:弱く
+
+E:awkward
+J:ぎこちなく
+
+E:sickly
+J:病弱に
+
+E:drained
+J:力なく
+
+# cmd1.c の殺戮の銘の句（`slay_desc()`。`Your %s %s.` に入る）。
+E:cuts deeply
+J:深く斬り込んだ
+
+E:cuts effortlessly
+J:苦もなく斬り裂いた
+
+E:strikes truly
+J:狙い違わず打ち据えた
+
+E:drains life from %s
+J:%sから命を吸い取った
+
+E:shocks %s with the force of lightning
+J:%sを稲妻の力で撃った
+
+E:burns %s with an inner fire
+J:%sを内なる炎で焼いた
+
+E:freezes %s
+J:%sを凍りつかせた
+
+E:poisons %s
+J:%sを毒に冒した
+
+
+
+###############################################################################
+# `strnfmt()` / `format()` で組んでから出す文言（仕分けの `plumbing` のうち、
+# **遊んでいて実際に出るもの**）
+#
+# `plumbing` の欄は「内部の配管」と「いったん組んでから `msg_print` / `get_check`
+# へ渡す文言」が混ざっている。**後者は P3 の仕事**なので、ここで訳す。
+# 残り（`spells2.c` の自己認識・`xtra2.c` の見回し・`squelch.c` の自動破棄）は
+# **画面なので P5 へ回す**。
+###############################################################################
+
+# cmd1.c ― アイテムの効果に気づいたときの報せ（`ident_...` が組んで msg_print する）。
+E:Your %s partly protects you from the chill.
+J:あなたの%sが冷気をいくらか防いだ。
+
+E:Your %s partly protects you from the flame.
+J:あなたの%sが炎をいくらか防いだ。
+
+E:Your %s partly protects you from the poison.
+J:あなたの%sが毒をいくらか防いだ。
+
+E:Your bleeding is slowed by your %s.
+J:あなたの%sが出血を和らげた。
+
+E:Your %s intensifies the chill.
+J:あなたの%sが冷気を強めた。
+
+E:Your %s intensifies the flame.
+J:あなたの%sが炎を強めた。
+
+E:Your %s intensifies the poison.
+J:あなたの%sが毒を強めた。
+
+E:Your %s fills you with courage.
+J:あなたの%sが勇気で満たした。
+
+E:Your %s protects your sight.
+J:あなたの%sが視界を守った。
+
+E:Your %s fills you with calm.
+J:あなたの%sが心を静めた。
+
+E:Your %s glows softly.
+J:あなたの%sが柔らかく輝いた。
+
+E:Your %s sustains your strength.
+J:あなたの%sが腕力を保った。
+
+E:Your %s sustains your dexterity.
+J:あなたの%sが敏捷を保った。
+
+E:Your %s sustains your constitution.
+J:あなたの%sが耐久を保った。
+
+E:Your %s sustains your grace.
+J:あなたの%sが恩寵を保った。
+
+# cmd1.c ― 跳ぶときの確認（`get_check` に渡る）。
+E:Are you sure you wish to leap into the unknown?\s
+J:見えない先へ跳んでもよろしいですか？\s
+
+E:Are you sure you wish to leap into the abyss?\s
+J:深淵へ跳び込んでもよろしいですか？\s
+
+E:Are you sure you wish to leap into %s?\s
+J:%sの上へ跳んでもよろしいですか？\s
+
+# cmd2.c ― 掘るとき。
+E:You are unable to break the granite with your %s.
+J:あなたの%sでは花崗岩を砕けない。
+
+E:You are not strong enough to break the granite.
+J:花崗岩を砕くには力が足りない。
+
+E:You are unable to break the quartz with your %s.
+J:あなたの%sでは石英を砕けない。
+
+E:You are not strong enough to break the quartz.
+J:石英を砕くには力が足りない。
+
+E:You are unable to shift the rubble with your %s.
+J:あなたの%sでは瓦礫をどけられない。
+
+E:You are not strong enough to shift the rubble.
+J:瓦礫をどけるには力が足りない。
+
+# cmd3.c / dungeon.c ― 確認の問い。**行末の空白は `\s` で守る**。
+E:Really destroy %s?\s
+J:本当に%sを壊しますか？\s
+
+E:Remove automatic inscription for %s?\s
+J:%sの自動の銘を消しますか？\s
+
+E:Automatically inscribe all %s with '%s'?\s
+J:%sすべてに自動で「%s」の銘を付けますか？\s
+
+E:Pick up %s?\s
+J:%sを拾いますか？\s
+
+# monster2.c ― 敵が階段から現れる。`up` / `down` は `strnfmt` が組む**書式**なので
+# フック #3 で訳が効く（引数として渡る道は無い。`grep '"up"' silq/src` で確かめた）。
+E:%^s comes %s the stair
+J:%^sが階段を%s来た
+
+E:A group of enemies come %s the stair
+J:敵の一団が階段を%s来た
+
+E:up
+J:上って
+
+E:down
+J:降りて
+
+# melee2.c ― 士気が戻ったとき（`%^s %s` の 2 つ目に入る）。
+E:turns to fight!
+J:向き直って戦う構えを取った！
+
+E:recovers its composure.
+J:落ち着きを取り戻した。
+
+# spells1.c ― 死んだときの記録（墓標にも出る）。
+E:Slain by %s.
+J:%sに討たれた。
+
+E:Died on %s.
+J:%sに没した。
+
+# object1.c ― アイテムを選ぶときの行（`Inven: a-c, ... , Drop which item?` の組み立て）。
+E:Inven:
+J:荷物:
+
+E:Equip:
+J:装備:
+
+E:Floor:
+J:床:
+
+# `verify_item()` の問い。1 つ目は `"Try"` / `"Really try"` で、
+# **語順が日本語と逆**なので `%.0s` で捨て、アイテムの名を前に出す。
+E:%s %s?\s
+J:%.0s%sを試しますか？\s
+
+# tables.c:247 window_flag_desc ― サブパネルに映せるものの名（M0.5 ②）。
+# `=` の窓の設定にも、機能メニューの一覧にも同じ字が出る。
+# **描画関数のある 7 つだけ**を出している（sq_sub_terms.c の表）。
+E:Display inven/equip
+J:持ち物
+
+E:Display equip/inven
+J:装備
+
+E:Display player (basic)
+J:冒険者
+
+E:Display combat rolls
+J:戦いの目
+
+E:Display monster recall
+J:敵の覚え書き
+
+E:Display messages
+J:前の伝言
+
+E:Display monster list
+J:見えている敵
+
+# sq_sub_panels.cpp ― 一覧の先頭。**コアには無い種類**なのでアダプタが鍵を決めている。
+E:UI default
+J:画面まかせ
+
+# sq_menu.cpp ― `[y/n]` の小窓に出す名札（M0.5 ①）。**コアの画面には出ない字**で、
+# 画面側のカーソル層が選択肢の見出しとして出す。鍵はアダプタが自分で決めている
+# （`silq/src` の文字列ではない）ので、ここを消すと英語の `Yes` / `No` が出る。
+E:Yes
+J:はい
+
+E:No
+J:いいえ
+
+# cmd3.c ― 装備の一覧の頭（`act = "You are wielding"` など。フック #9）。
+E:You are wielding
+J:構えているのは
+
+E:You are shooting with
+J:射るのに使うのは
+
+E:Your light source is
+J:明かりは
+
+E:In your quiver you have
+J:矢筒に入っているのは
+
+E:You are wearing
+J:身に着けているのは
+
+# cmd3.c / cmd2.c / spells2.c ― アイテムを選ぶ問いと、選べないときの断り
+#（`q` / `s` に代入して `get_item()` へ渡す。フック #9）。
+E:Use which item?\s
+J:どれを使いますか？\s
+
+E:You have no items use.
+J:使えるアイテムを持っていない。
+
+E:Wear/Wield which item?\s
+J:どれを装備しますか？\s
+
+E:You have nothing you can wear or wield.
+J:装備できるアイテムを持っていない。
+
+E:Replace which ring?\s
+J:どちらの指輪を外しますか？\s
+
+E:Replace which set of arrows?\s
+J:どちらの矢筒を入れ替えますか？\s
+
+E:Remove which item?\s
+J:どれを外しますか？\s
+
+E:You are not wearing anything to remove.
+J:外せる物を身に着けていない。
+
+E:Drop which item?\s
+J:どれを落としますか？\s
+
+E:You have nothing to drop.
+J:落とせるアイテムを持っていない。
+
+E:Destroy which item?\s
+J:どれを壊しますか？\s
+
+E:You have nothing to destroy.
+J:壊せるアイテムを持っていない。
+
+E:Examine which item?\s
+J:どれを調べますか？\s
+
+E:You have nothing to examine.
+J:調べられるアイテムを持っていない。
+
+E:Un-inscribe which item?\s
+J:どれの銘を消しますか？\s
+
+E:You have nothing to un-inscribe.
+J:銘を消せるアイテムを持っていない。
+
+E:Inscribe which item?\s
+J:どれに銘を刻みますか？\s
+
+E:You have nothing to inscribe.
+J:銘を刻めるアイテムを持っていない。
+
+E:Refill with which source of oil?\s
+J:どの油で満たしますか？\s
+
+E:You have no sources of oil.
+J:油になる物を持っていない。
+
+E:Refuel with which torch?\s
+J:どの松明から補いますか？\s
+
+E:You have no extra torches.
+J:予備の松明を持っていない。
+
+E:Throw which item?\s
+J:どれを投げますか？\s
+
+E:You have nothing to throw.
+J:投げられるアイテムを持っていない。
+
+E:Improve which arrows?
+J:どの矢を仕上げますか？
+
+E:You need ordinary arrows to do that.
+J:それには普通の矢が要る。
+
+E:Identify which item?\s
+J:どれを鑑定しますか？\s
+
+E:You have nothing to identify.
+J:鑑定できるアイテムを持っていない。
+
+E:Recharge which staff?\s
+J:どの杖に魔力を戻しますか？\s
+
+E:You have nothing to recharge.
+J:魔力を戻せるアイテムを持っていない。
+
+E:Give thrall which item?\s
+J:虜囚にどれを渡しますか？\s
+
+# cmd3.c ― シルマリルを外したとき（`%s` の引数として渡る）。
+E:You have freed a Silmaril!
+J:シルマリルを一つ外した！
+
+E:The fates be damned! You free a second Silmaril.
+J:定めなど知るものか！二つ目のシルマリルを外した。
+
+E:You free a second Silmaril.
+J:二つ目のシルマリルを外した。
+
+# dungeon.c ― デバッグの合言葉。**訳さない**（合言葉そのものと紛れる）。
+E:It is not mellon
+J:
+
+# 註記を跨いで拾われた鍵。**実在しない**（抜き出し器の癖）。
+E:Leap over the\r\n                            // %s?\s
+J:
+
+
+
+###############################################################################
+# 文言の流れに割り込むもの（P5 の欄だが、**メッセージを読む妨げになる**ので先に訳す）
+#
+# `-more-` は文言を 1 本読むごとに出る。ここだけ英語のままだと、
+# せっかく訳した文の続きが英語で途切れて見える。同じ理由で
+# 「何かキーを」「お待ちください」も先に入れる。**残りの画面は P5 で揃える。**
+###############################################################################
+
+E:-more-
+J:-続く-
+
+E:(press any key)
+J:(何かキーを押してください)
+
+E:Please wait...
+J:お待ちください……
+
+E:Direction (Escape to cancel)?\s
+J:方向（ESC で取り消し）？\s
+
+
+###############################################################################
+# **わざと訳さない**もの（`J:` を空にしてある。設計 §5）
+#
+# ここに載せるのは「未訳一覧に出続けると読めなくなるが、訳す物ではない」鍵である。
+# 印を付けておけば一覧から外れ、後で気が変わったら `J:` を埋めるだけでよい。
+###############################################################################
+
+# 深さと重さの単位。**決めたことで英字のまま**（用語表 §9 の問 1）。
+E:%d ft
+J:
+
+E:min %d ft
+J:
+
+E:%5s ft
+J:
+
+E:\s%d.%1d lb
+J:
+
+E:%3d.%1d lb
+J:
+
+E:%3d.%d lb
+J:
+
+# ファイルの道の組み立て。訳すと**ファイルが開かなくなる**。
+E:%s.prf
+J:
+
+E:%s.raw
+J:
+
+E:%s.txt
+J:
+
+E:%s.hlp
+J:
+
+# 日付の月。`Aug` などは `ctime()` が返す英語で、鍵にすると 12 件並ぶ。
+E:Aug
+J:
+
+
+
+###############################################################################
+# P5: わざと訳さないもの（ウィザードモード・スポイラー・上流のほかの画面）
+###############################################################################
+
+# wizard1.c:374
+E:Artefact Spoilers for %s %s
+J:
+
+# wizard1.c:415
+E:\s\s\s\s\s%d.%d lb
+J:
+
+# wizard1.c:433
+E:\n(level %u / rarity %u / quality %d)\n
+J:
+
+# wizard1.c:532
+E:* %c  %s
+J:
+
+# wizard1.c:536
+E:\s\s%c  %s
+J:
+
+# wizard1.c:560
+E:[%+2d
+J:
+
+# wizard1.c:567
+E:, %dd%d]
+J:
+
+# wizard1.c:581 wizard1.c:607
+E:(%dd%d)%c
+J:
+
+# wizard1.c:586 wizard1.c:612
+E:(%+2d, %dd%d)%c
+J:
+
+# wizard1.c:623 wizard1.c:799
+E:%s '%c'
+J:
+
+# wizard1.c:716
+E:*\t%c\t%s
+J:
+
+# wizard1.c:720
+E:\t%c\t%s
+J:
+
+# wizard1.c:743
+E:%d\t%d
+J:
+
+# wizard1.c:757 wizard1.c:783
+E:\t%d\t%d\t%c
+J:
+
+# wizard1.c:762 wizard1.c:788
+E:%+d\t%d\t%d\t%c
+J:
+
+# wizard1.c:860
+E:Monster Spoilers for %s Version %s\n
+J:
+
+# wizard1.c:896
+E:[U]\s
+J:
+
+# wizard1.c:904
+E:%s  (
+J:
+
+# wizard1.c:912
+E:\s'%c')\n
+J:
+
+# wizard1.c:920
+E:Num:%d\s\s
+J:
+
+# wizard1.c:924
+E:Lev:%d\s\s
+J:
+
+# wizard1.c:928
+E:Rar:%d\s\s
+J:
+
+# wizard1.c:932
+E:Spd:%d\s\s
+J:
+
+# wizard1.c:938
+E:Hp:%d\s\s
+J:
+
+# wizard1.c:943
+E:Hp:%dd%d\s\s
+J:
+
+# wizard1.c:984
+E:Create a spoiler file.
+J:
+
+# wizard1.c:987
+E:(1) Object List (obj-list.txt)
+J:
+
+# wizard1.c:988
+E:(2) Full Artefact Info (art-info.txt)
+J:
+
+# wizard1.c:989
+E:(3) Monster List (mon-list.txt)
+J:
+
+# wizard1.c:990
+E:(4) Full Monster Info (mon-info.txt)
+J:
+
+# wizard1.c:991
+E:(5) Monster Stat Spreadsheet (mon-ss.txt)
+J:
+
+# wizard2.c:286
+E:%s (%d to %d):\s
+J:
+
+# wizard2.c:311 wizard2.c:334
+E:%ld
+J:
+
+# wizard2.c:430
+E:kind = %-5d  level = %-4d  tval = %-5d  sval = %-5d
+J:
+
+# wizard2.c:434
+E:number = %-3d  wgt = %-6d  prt = %dd%d    damage = %dd%d
+J:
+
+# wizard2.c:439
+E:pval = %-5d  toev = %-5d  tohit = %-4d
+J:
+
+# wizard2.c:443
+E:name1 = %-4d  name2 = %-4d  cost = %ld
+J:
+
+# wizard2.c:447
+E:ident = %04x  timeout = %-d
+J:
+
+# wizard2.c:450
+E:+------------FLAGS1------------+
+J:
+
+# wizard2.c:451
+E:AFFECT..........SLAY.......BRAND
+J:
+
+# wizard2.c:452
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sae      xxxaefcp
+J:
+
+# wizard2.c:453
+E:siwdcc  ssitsasmnvudotgddduclioo
+J:
+
+# wizard2.c:454
+E:tnieoh  trnupthgiinmrrnrrmnierli
+J:
+
+# wizard2.c:455
+E:rtsxna..lcfndkttmldncltggnddceds
+J:
+
+# wizard2.c:458
+E:+------------FLAGS2------------+
+J:
+
+# wizard2.c:459
+E:SUST.......IMM..RESIST.........
+J:
+
+# wizard2.c:460
+E:\s\s\s\s\s\s\s\s\s\s\safecpaefcpfldbc s n\s\s
+J:
+
+# wizard2.c:461
+E:siwdcc     ciloocliooeialoshnecd
+J:
+
+# wizard2.c:462
+E:tnieoh     ireliierliatrnnnrethi
+J:
+
+# wizard2.c:463
+E:rtsxna.....decdsdcedsrekdfddxhss
+J:
+
+# wizard2.c:466
+E:+------------FLAGS3------------+
+J:
+
+# wizard2.c:467
+E:s   ts h     tadiiii   aiehs  hp
+J:
+
+# wizard2.c:468
+E:lf  eefoni   egrgggg  bcnaih  vr
+J:
+
+# wizard2.c:469
+E:we  lerler  ilgannnn  ltssdo  ym
+J:
+
+# wizard2.c:470
+E:da reiedvo  merirrrr  eityew ccc
+J:
+
+# wizard2.c:471
+E:itlepnelpn  ppanaefc  svaktm uuu
+J:
+
+# wizard2.c:472
+E:ghigavaiim  aoveclio  saanyo rrr
+J:
+
+# wizard2.c:473
+E:seteticfca  craxierl  etropd sss
+J:
+
+# wizard2.c:474
+E:trenhstekn  tttpdced  detwes eee
+J:
+
+# wizard2.c:593
+E:What Kind of %s?\s
+J:
+
+# wizard2.c:1175
+E:Jump to level (0-%d):\s
+J:
+
+# main-win.c:1065 main-win.c:973
+E:Term-%d
+J:
+
+# main-win.c:1216
+E:Please switch to high- or true-color mode.
+J:
+
+# main-win.c:1281
+E:Cannot create palette!
+J:
+
+# main-win.c:1295
+E:Cannot realize palette!
+J:
+
+# main-win.c:1370
+E:Cannot activate palette!
+J:
+
+# main-win.c:1745
+E:Cannot initialize sound!
+J:
+
+# main-win.c:1773
+E:Cannot initialize graphics!
+J:
+
+# main-win.c:2764
+E:Failed to create sub-window
+J:
+
+# main-win.c:3010 main-win.c:3031
+E:You cannot do that yet...
+J:
+
+# main-win.c:3014
+E:You can't start a new game while you're still playing!
+J:
+
+# main-win.c:3035
+E:You can't open a new game while you're still playing!
+J:
+
+# main-win.c:3080 main-win.c:3093 main-win.c:3176
+E:You may not do that right now.
+J:
+
+# main-win.c:3113
+E:You are not allowed to do that!
+J:
+
+# main-win.c:4193
+E:[Choose 'New' or 'Open' from the 'File' menu]
+J:
+
+# main-x11.c:1487
+E:%c%s%s%s%s_%lX%c
+J:
+
+# main-x11.c:1495
+E:%c%s%s%s%sK_%X%c
+J:
+
+# main-x11.c:2445
+E:SIL_X11_AT_X_%d
+J:
+
+# main-x11.c:2450
+E:SIL_X11_AT_Y_%d
+J:
+
+# main-x11.c:2455
+E:SIL_X11_COLS_%d
+J:
+
+# main-x11.c:2462
+E:SIL_X11_ROWS_%d
+J:
+
+# main-x11.c:2478
+E:SIL_X11_IBOX_%d
+J:
+
+# main-x11.c:2485
+E:SIL_X11_IBOY_%d
+J:
+
+# main-x11.c:2524
+E:XAllocClassHint failed
+J:
+
+# main-x11.c:2541
+E:XAllocSizeHints failed
+J:
+
+# main-x11.c:2793 main-x11.c:2825
+E:graf/%s
+J:
+
+# main-gcu.c:682
+E:Failed to setup curses window.
+J:
+
+# main-gcu.c:769
+E:Angband needs at least an 80x24 'curses' screen
+J:
+
+# maid-x11.c:104
+E:SIL_X11_FONT_%d
+J:
+
+# main.c:331
+E:setgid(): cannot set permissions correctly!
+J:
+
+# main.c:336
+E:setuid(): cannot set permissions correctly!
+J:
+
+# main.c:353
+E:The gates to Angband are closed (bad time).
+J:
+
+# main.c:550
+E:Unable to prepare any 'display module' (such as 'x11' or 'gcu')!
+J:
+
+# z-form.c:111
+E:(Max %d)
+J:
+
+# z-form.c:126
+E:%^-.*s
+J:
+
+# z-form.c:205
+E:Called vstrnfmt() with empty buffer!
+J:
+
+# z-util.c:256
+E:core() failed
+J:
+
+# randart.c:2678
+E:'%^s'
+J:
+
+# randart.c:2682
+E:of %^s
+J:
+
+# dump_items.c:174
+E:B-%d:%d:%d:%d:%d:%dd%d\n
+J:
+
+
+###############################################################################
+# P5: 左の状態列と最下段の帯（xtra1.c）
+###############################################################################
+
+# xtra1.c:326
+E:Exp\s
+J:経験
+
+# xtra1.c:439
+E:Hth\s\s\s\s\s\s\s\s
+J:生命力\s\s\s\s\s
+
+# xtra1.c:443
+E:Health\s\s\s\s\s\s
+J:生命力\s\s\s\s\s\s
+
+# xtra1.c:479
+E:Vce\s\s\s\s\s\s\s\s\s
+J:声\s\s\s\s\s\s\s\s\s\s
+
+# xtra1.c:481
+E:Voice\s\s\s\s\s\s\s
+J:声\s\s\s\s\s\s\s\s\s\s
+
+# xtra1.c:354
+E:2x
+J:
+
+# xtra1.c:1156
+E:cscscscs
+J:
+
+# xtra1.c:1158
+E:cccccccc
+J:
+
+# xtra1.c:1160
+E:ssssssss
+J:
+
+# xtra1.c:603
+E:Starving
+J:飢餓\s\s\s\s
+
+# xtra1.c:609
+E:Weak\s\s\s\s
+J:衰弱\s\s\s\s
+
+# xtra1.c:615
+E:Hungry\s\s
+J:空腹\s\s\s\s
+
+# xtra1.c:627 xtra1.c:632
+E:Full\s\s\s\s
+J:満腹\s\s\s\s
+
+# xtra1.c:643
+E:Blind
+J:盲目\s
+
+# xtra1.c:658
+E:Confused
+J:混乱\s\s\s\s
+
+# xtra1.c:673
+E:Afraid
+J:恐怖\s\s
+
+# xtra1.c:701
+E:Mortal wound
+J:致命傷\s\s\s\s\s\s
+
+# xtra1.c:705 xtra1.c:710
+E:Bleeding %-2d
+J:出血 %-2d\s\s\s\s\s
+
+# xtra1.c:729 xtra1.c:734
+E:Poisoned %-3d
+J:毒 %-3d\s\s\s\s\s\s
+
+# xtra1.c:845
+E:Rep. %3d00
+J:繰返 %3d00
+
+# xtra1.c:849
+E:Repeat %3d
+J:繰返 %3d\s\s
+
+# xtra1.c:883
+E:Fast
+J:加速
+
+# xtra1.c:890
+E:Slow
+J:鈍足
+
+# xtra1.c:904
+E:Pit
+J:落し穴\s\s
+
+# xtra1.c:908
+E:Web
+J:蜘蛛の巣
+
+# xtra1.c:912
+E:Sunlight
+J:陽光\s\s\s\s
+
+# xtra1.c:926
+E:Knocked out
+J:昏倒\s\s\s\s\s\s\s
+
+# xtra1.c:930
+E:Heavy stun\s
+J:朦朧\s\s\s\s\s\s\s
+
+# xtra1.c:934
+E:Stun\s\s\s\s\s\s\s
+J:よろけ\s\s\s\s\s
+
+# xtra1.c:3220
+E:Found %s
+J:%sを発見
+
+# xtra1.c:3224
+E:Found %s (from %d ft)
+J:%sを発見（%d ft より）
+
+E:Str\s
+J:腕力
+
+E:Dex\s
+J:敏捷
+
+E:Con\s
+J:耐久
+
+E:Gra\s
+J:恩寵
+
+E:Rest\s\s\s\s\s\s
+J:休息\s\s\s\s\s\s
+
+E:Entranced!
+J:幻惑！\s\s\s\s
+
+E:Smithing\s\s
+J:鍛冶中\s\s\s\s
+
+E:Fletching\s
+J:矢作り\s\s\s\s
+
+E:Stealth\s\s\s
+J:隠密行動\s\s
+
+E:Sleeping
+J:睡眠
+
+E:Unwary
+J:油断
+
+E:Mindless
+J:知性なし
+
+E:Fleeing
+J:逃走
+
+E:Confident
+J:自信
+
+E:Aggress
+J:攻勢
+
+E:Surface
+J:地上
+
+
+###############################################################################
+# P5: キャラクターシート（files.c）
+###############################################################################
+
+# files.c:1289
+E:Game Turn
+J:経過ターン
+
+# files.c:1294
+E:Exp Pool
+J:未使用経験
+
+# files.c:1299
+E:Total Exp
+J:総経験
+
+# files.c:1304
+E:Burden
+J:荷物の重さ
+
+# files.c:1313
+E:Max Burden
+J:重さの上限
+
+# files.c:1321
+E:Depth
+J:現在の深さ
+
+# files.c:1329
+E:Min Depth
+J:最も深い所
+
+# files.c:1335
+E:Light Radius
+J:光の半径
+
+# files.c:1345
+E:Melee
+J:打撃
+
+# files.c:1364
+E:Bows
+J:弓
+
+# files.c:1370
+E:Armor
+J:防護
+
+# files.c:1392
+E:Song
+J:歌唱
+
+# files.c:1379
+E:Health
+J:生命力
+
+# files.c:1384
+E:Voice
+J:声
+
+# files.c:1246
+E:Age
+J:年齢
+
+# files.c:1254
+E:Height
+J:身長
+
+# files.c:1279
+E:Weight
+J:体重
+
+# cmd4.c:10304 cmd4.c:10762 cmd4.c:11233
+E:Name
+J:名前
+
+# files.c:1626
+E:Race
+J:種族
+
+# files.c:1632
+E:House
+J:家
+
+# files.c:1430
+E:ESC restart the character
+J:ESC 冒険者を作り直す
+
+# files.c:1432
+E:q quit
+J:q やめる
+
+# birth.c:1419 birth.c:1854 cmd4.c:10353
+E:ESC
+J:
+
+# birth.c:1421 files.c:1438 files.c:2891
+E:q
+J:
+
+# files.c:1535 files.c:1609 files.c:1744
+E:abcdefghijkl@
+J:
+
+
+###############################################################################
+# P5: ヘルプの画（files.c の show_help_screen）
+###############################################################################
+
+# files.c:2570
+E:Use the numbers or arrow keys
+J:移動には数字または 矢印キー
+
+# files.c:2571
+E:numbers
+J:数字
+
+# files.c:2572
+E:arrow keys
+J:矢印キー
+
+# files.c:2573
+E:to move, attack, or open doors
+J:で歩き、殴り、扉を開く
+
+# files.c:2574
+E:(You may need numlock)
+J:（場合により、numlock が要る）
+
+# files.c:2575
+E:numlock
+J:
+
+# files.c:2576
+E:Use 5 or z to wait a turn (& search)
+J:\s\s\s\s5 か z で1手休む（探索も行う）
+
+# files.c:2579
+E:z
+J:
+
+# files.c:2583
+E:Use shift or . to move continuously
+J:\s\s\s\sshift か . で走り続ける
+
+# files.c:2584 files.c:2985
+E:shift
+J:
+
+# files.c:2587
+E:- direction 5 or z rests until healed
+J:- 向き＋5 か z で癒えるまで休む
+
+E:Use control or / to interact with a square:
+J:\s\s\s\scontrol か / でその升へ働きかける:
+
+# files.c:2594 files.c:2987
+E:control
+J:
+
+# files.c:2601
+E:- tunnels through rubble/walls
+J:- 瓦礫や壁を掘り進む
+
+# files.c:2603
+E:- closes open doors
+J:- 開いた扉を閉める
+
+# files.c:2605
+E:- bashes closed doors
+J:- 閉じた扉を打ち破る
+
+# files.c:2607
+E:- disarms floor traps
+J:- 床の罠を外す
+
+# files.c:2609
+E:- disarms/opens chests and searches skeletons
+J:- 箱の罠を外して開け、骸を探る
+
+# files.c:2612
+E:- attacks monsters without moving
+J:- 動かずに敵を攻める
+
+# files.c:2616
+E:Interacting with your own square also:
+J:自分の升へ働きかけると、さらに:
+
+# files.c:2619
+E:- picks up an item
+J:- アイテムを拾う
+
+# files.c:2621
+E:- uses a staircase/forge
+J:- 階段や鍛冶場を使う
+
+# files.c:2623
+E:- can be done by pressing ,
+J:- 押すのは次の鍵でもよい: ,
+
+# files.c:2560
+E:Movement etc
+J:移動など
+
+# files.c:2631
+E:Miscellaneous
+J:その他
+
+# files.c:2644
+E:fire from quiver 1/2
+J:矢筒 1/2 から射る
+
+# files.c:2650
+E:sing
+J:歌う
+
+# files.c:2653
+E:stealth mode
+J:隠密行動
+
+# files.c:2656
+E:repeat last command
+J:直前の命令を繰り返す
+
+# files.c:2662
+E:repeat next command
+J:次の命令を繰り返す
+
+# files.c:2666
+E:look (at things)
+J:見る（物を）
+
+# files.c:2669
+E:look (around dungeon)
+J:見回す（階を）
+
+# files.c:2672
+E:display map of level
+J:階の地図を出す
+
+# files.c:2676
+E:main menu
+J:主品書き
+
+# files.c:2679
+E:display ability screen
+J:能力の画を出す
+
+# files.c:2685
+E:display character sheet
+J:人物表を出す
+
+# files.c:2691
+E:set options
+J:設定を変える
+
+# files.c:2695
+E:save
+J:保存する
+
+# files.c:2698
+E:save and quit
+J:保存してやめる
+
+# files.c:2701
+E:abort current game
+J:今の冒険を投げ出す
+
+# files.c:2711
+E:Terrain\s
+J:地形\s
+
+# files.c:2725
+E:wall
+J:壁
+
+# files.c:2728
+E:quartz vein
+J:石英の鉱脈
+
+# files.c:2731
+E:rubble
+J:瓦礫
+
+# files.c:2734
+E:closed door
+J:閉じた扉
+
+# files.c:2737
+E:open door
+J:開いた扉
+
+# files.c:2742
+E:warded doors
+J:封じられた扉
+
+# files.c:2745
+E:staircase down
+J:下りの階段
+
+# files.c:2748
+E:staircase up
+J:上りの階段
+
+# files.c:2751
+E:forge
+J:鍛冶場
+
+# files.c:2754
+E:trap
+J:罠
+
+# files.c:2757
+E:warding glyph
+J:守りのルーン
+
+# files.c:2760
+E:empty floor
+J:何も無い床
+
+# files.c:2766
+E:Items
+J:アイテム
+
+# files.c:2769
+E:blades
+J:刀剣
+
+# files.c:2772
+E:axes & polearms
+J:斧と長柄
+
+# files.c:2775
+E:blunt weapons
+J:打撃武器
+
+# files.c:2778
+E:soft armour
+J:革の鎧
+
+# files.c:2781
+E:mail
+J:鎖と板の鎧
+
+# files.c:2784
+E:shields
+J:盾
+
+# files.c:2787
+E:misc armour
+J:その他の防具
+
+# files.c:2790
+E:rings
+J:指輪
+
+# files.c:2793
+E:amulets
+J:護符
+
+# files.c:2796
+E:light sources
+J:光る物
+
+# files.c:2799
+E:bows
+J:弓
+
+# files.c:2802
+E:arrows
+J:矢
+
+# files.c:2805
+E:food
+J:食べ物
+
+# files.c:2808
+E:potions
+J:薬
+
+# files.c:2811
+E:staves
+J:杖
+
+# files.c:2814
+E:instruments
+J:楽器
+
+# files.c:2817
+E:flasks of oil
+J:油の壺
+
+# files.c:2823
+E:Item Commands
+J:アイテムの命令
+
+# files.c:2829
+E:use
+J:使う
+
+# files.c:2832
+E:drop
+J:落とす
+
+# files.c:2838
+E:examine
+J:調べる
+
+# files.c:2844
+E:throw
+J:投げる
+
+# files.c:2850
+E:throw (auto-target)
+J:投げる（狙いは自動）
+
+# files.c:2853
+E:destroy
+J:壊す
+
+# files.c:2856
+E:inscribe
+J:銘を刻む
+
+# files.c:2867
+E:Superfluous
+J:無くても済む命令
+
+# files.c:2870
+E:display inventory
+J:荷物袋を見る
+
+# files.c:2873
+E:display equipped items
+J:身に着けたアイテムを見る
+
+# files.c:2877
+E:get
+J:拾う
+
+# files.c:2880
+E:wear/wield
+J:身に着ける・構える
+
+# files.c:2886
+E:remove
+J:外す
+
+# files.c:2889
+E:eat food
+J:食べる
+
+# files.c:2892
+E:quaff potion
+J:薬を飲む
+
+# files.c:2898
+E:activate staff
+J:杖を振るう
+
+# files.c:2901
+E:play instrument
+J:楽器を奏でる
+
+# files.c:2906
+E:open door/chest
+J:扉や箱を開ける
+
+# files.c:2909
+E:close door
+J:扉を閉める
+
+# files.c:2912
+E:bash door
+J:扉を打ち破る
+
+# files.c:2915
+E:disarm trap
+J:罠を外す
+
+# files.c:2918
+E:tunnel
+J:掘る
+
+# files.c:2921
+E:descend stairs
+J:階段を下りる
+
+# files.c:2924
+E:ascend stairs
+J:階段を上る
+
+# files.c:2927
+E:forge an item
+J:アイテムを鍛える
+
+# files.c:2933
+E:Advanced
+J:進んだ命令
+
+# files.c:2936
+E:write a note
+J:覚え書きを残す
+
+# files.c:2939
+E:save screen shot
+J:画面を写して残す
+
+# files.c:2946
+E:set macros
+J:巨手を組む
+
+# files.c:2949
+E:set colours
+J:色を決める
+
+# files.c:2953
+E:display prior messages
+J:前の文言を出す
+
+# files.c:2956
+E:redraw screen
+J:画面を描き直す
+
+# files.c:2959
+E:switch inven/equip display in windows
+J:副画面の荷物と装備を入れ替える
+
+# files.c:2963
+E:version information
+J:版の覚え書き
+
+# files.c:2970
+E:hjkl movement
+J:hjkl での移動
+
+# files.c:2980
+E:If the hjkl movement option is on
+J:hjkl 移動の設定が入っていれば
+
+# files.c:2981
+E:then these keys move you around
+J:これらの鍵で歩ける
+
+# files.c:2984
+E:Use shift to 'run'
+J:\s\s\s\sshift で走る
+
+# files.c:2986
+E:Use control for the underlying
+J:\s\s\s\scontrol を押すと
+
+# files.c:2988
+E:key-commands
+J:元のキー命令になる
+
+# files.c:2044 files.c:2409
+E:(press ESC to exit)
+J:（戻る ESC）
+
+# files.c:2053 files.c:2418
+E:(ESC to exit, Right or Space for the next page, Left for the previous, Up/Down to scroll)
+J:（ESC 戻る、右か Space で次の頁、左で前の頁、上下で 1 行ずつ）
+
+# birth.c:171 birth.c:301 files.c:2057
+E:Space
+J:
+
+# files.c:2058 files.c:2423
+E:Arrows
+J:
+
+# files.c:2059 files.c:2424
+E:Keypad
+J:
+
+
+###############################################################################
+# P5: 終わりの画・記録・書き付けを繰る画（files.c）
+###############################################################################
+
+# files.c:2633
+E:\r\n        // R
+J:
+
+# files.c:2635
+E:\sZ
+J:
+
+# files.c:2638 files.c:2661
+E:\sR
+J:
+
+# files.c:2642
+E:f F
+J:
+
+# files.c:2647 monster1.c:305
+E:\sa
+J:
+
+# files.c:2649
+E:\ss
+J:
+
+# files.c:2652
+E:\sS
+J:
+
+# files.c:2655
+E:\sn
+J:
+
+# files.c:2665
+E:\sl
+J:
+
+# files.c:2668
+E:\sL
+J:
+
+# files.c:2671
+E:\sM
+J:
+
+# files.c:2675
+E:\sm
+J:
+
+# files.c:2678 files.c:3138
+E:Tab
+J:
+
+# files.c:2682
+E:\sC
+J:
+
+# files.c:2690
+E:\sO
+J:
+
+# files.c:2694
+E:^s
+J:
+
+# files.c:2697
+E:^x
+J:
+
+# files.c:2700
+E:\sQ
+J:
+
+# files.c:2826
+E:U
+J:
+
+# files.c:2828 files.c:2895
+E:u
+J:
+
+# files.c:2831
+E:d
+J:
+
+# files.c:2835
+E:I
+J:
+
+# files.c:2837
+E:x
+J:
+
+# files.c:2841
+E:v
+J:
+
+# files.c:2843 files.c:2883 files.c:4138
+E:t
+J:
+
+# files.c:2847
+E:^v
+J:
+
+# files.c:2849
+E:^t
+J:
+
+# files.c:2852
+E:k
+J:
+
+# cmd4.c:297 files.c:2869
+E:i
+J:
+
+# files.c:2872
+E:e
+J:
+
+# files.c:2876
+E:g
+J:
+
+# files.c:2879
+E:w
+J:
+
+# cmd4.c:10352 cmd4.c:10809 cmd4.c:11277
+E:r
+J:
+
+# files.c:2888
+E:E
+J:
+
+# cmd4.c:296 files.c:2897
+E:a
+J:
+
+# files.c:2900
+E:p
+J:
+
+# files.c:2905
+E:o
+J:
+
+# cmd4.c:294 files.c:2908
+E:c
+J:
+
+# files.c:2911
+E:b
+J:
+
+# files.c:2914
+E:D
+J:
+
+# files.c:2917
+E:T
+J:
+
+# files.c:2952
+E:^p
+J:
+
+# files.c:2955
+E:^r
+J:
+
+# files.c:2958
+E:^e
+J:
+
+# files.c:2962
+E:\sV
+J:
+
+# files.c:2972
+E:y k u
+J:
+
+# files.c:2974
+E:h z l
+J:
+
+# files.c:2978
+E:b j n
+J:
+
+# birth.c:1417 birth.c:1650 birth.c:170
+E:Enter
+J:
+
+# files.c:3903
+E:\s\s\s\s\s\s\s\s\sV
+J:
+
+# files.c:4143 files.c:4152
+E:f
+J:
+
+# files.c:2636
+E:rest (until recovered)
+J:休む（癒えるまで）
+
+# files.c:2640
+E:interact with own square
+J:自分の升へ働きかける
+
+# files.c:3131
+E:Enter accept name
+J:Enter 名前を決める
+
+# files.c:3133
+E:\s\sTab random name
+J:\s\sTab 名前を振る
+
+# files.c:3143
+E:ESC abort name change\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:ESC 名前の変更をやめる\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+
+# files.c:2394
+E:[%s %s, %s, Line %d-%d/%d]
+J:[%s %s, %s, %d-%d/%d 行目]
+
+# files.c:2402
+E:[Press a Number, or ESC to exit.]
+J:[数字を押す。ESC で戻る。]
+
+# cmd4.c:6697 files.c:2445
+E:Show:\s
+J:表示:\s
+
+# cmd4.c:6713 files.c:2457
+E:Find:\s
+J:探す:\s
+
+# files.c:2478
+E:Goto Line:\s
+J:行へ飛ぶ:\s
+
+# files.c:3382
+E:You have escaped and kept your oath
+J:あなたは脱け出し、誓いを守り通した
+
+# files.c:3385
+E:You have escaped
+J:あなたは脱け出した
+
+# files.c:3389
+E:You have been slain
+J:あなたは討たれた
+
+# files.c:3216
+E:You escaped the Iron Hells on %s.
+J:%sに鉄の地獄より脱け出した。
+
+# files.c:3420
+E:You are using:
+J:身に着けていたもの:
+
+# files.c:3433
+E:You are carrying:
+J:持っていたもの:
+
+# files.c:3789
+E:\s\s\s\s\s%5s ft  %s of %s
+J:\s\s\s\s\s%5s ft  %s（%s）
+
+# files.c:3794
+E:%3d. %5s ft  %s of %s
+J:%3d. %5s ft  %s（%s）
+
+# files.c:3832
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sEscaped the iron hells
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s鉄の地獄より脱け出し
+
+# files.c:3850
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sLives still, deep within Angband's vaults
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sアングバンドの深き広間に、なお生きている
+
+# files.c:3857
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sSlain by %s
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s%sに討たれた
+
+# files.c:3873
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\safter %s turns.
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s%s ターン後。
+
+# files.c:3879
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\safter %s turns.  (%s)
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s%s ターン後。  (%s)
+
+# files.c:3887
+E:\s\sescaped
+J:\s\s脱出\s\s\s
+
+# files.c:3966 files.c:4037
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sNames of the Fallen
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s倒れし者の名
+
+# files.c:3971
+E:(from position %d)
+J:(%d 位から)
+
+# files.c:4172
+E:(no high score file found)
+J:（記録の綴りが見つからない）
+
+# files.c:4180
+E:(no high score for wizards)
+J:（ウィザードモードでは記録に残らない）
+
+# files.c:4189
+E:(no high score when interrupted)
+J:（中断したときは記録に残らない）
+
+# files.c:4197
+E:(no high score when quitting)
+J:（投げ出したときは記録に残らない）
+
+# files.c:4209 files.c:4217
+E:(no high score when cheating)
+J:（ずるをしたときは記録に残らない）
+
+# files.c:3329
+E:Saving game...
+J:保存しています...
+
+# files.c:3346
+E:Saving game... done.
+J:保存しています... 終わりました。
+
+# files.c:3353
+E:Saving game... failed!
+J:保存しています... 駄目でした！
+
+# files.c:3282
+E:Please verify ABORTING by typing the '@' sign:\s
+J:投げ出すなら '@' を打って確かめてください:\s
+
+# files.c:5353
+E:Contemplating suicide!
+J:自ら命を絶とうとしている！
+
+# dump_items.c:298 dump_items.c:486 dump_items.c:661
+E:Replace existing file %s?\s
+J:既にある %s を上書きしますか？\s
+
+# files.c:4738
+E:a) View scores
+J:a) 記録を見る
+
+# files.c:4740
+E:b) View inventory and equipment
+J:b) 荷物と装備を見る
+
+# files.c:4742
+E:c) View dungeon
+J:c) 階を見る
+
+# files.c:4744
+E:d) View final messages
+J:d) 最後の文言を見る
+
+# files.c:4746
+E:e) View character sheet
+J:e) 人物表を見る
+
+# files.c:4748
+E:f) Add comment to notes
+J:f) 覚え書きに書き足す
+
+# files.c:4750
+E:g) Save character sheet
+J:g) 人物表を書き出す
+
+# files.c:4752
+E:h) Exit
+J:h) 終わる
+
+# files.c:5389
+E:A gruesome software bug LEAPS out at you!
+J:おぞましい虫が飛び出してきた！
+
+# files.c:5393
+E:Panic save...
+J:非常保存をしています...
+
+# files.c:5410
+E:Panic save succeeded!
+J:非常保存ができました！
+
+# files.c:5416
+E:Panic save failed!
+J:非常保存に失敗しました！
+
+# files.c:5212
+E:panic save succeeded!
+J:非常保存ができました！
+
+# files.c:5209
+E:panic save failed!
+J:非常保存に失敗しました！
+
+# files.c:5183
+E:panic
+J:非常事態
+
+# files.c:5318 files.c:5340
+E:interrupt
+J:中断
+
+# files.c:5423
+E:software bug
+J:虫
+
+# files.c:31 files.c:61
+E:setegid(): cannot set permissions correctly!
+J:
+
+# files.c:38 files.c:68
+E:setregid(): cannot set permissions correctly!
+J:
+
+# files.c:4732
+E:Debugging info: %d forges generated
+J:
+
+# files.c:3695
+E:Jan
+J:
+
+# files.c:3698
+E:Feb
+J:
+
+# files.c:3701
+E:Mar
+J:
+
+# files.c:3704
+E:Apr
+J:
+
+# files.c:3707
+E:May
+J:
+
+# files.c:3710
+E:Jun
+J:
+
+# files.c:3713
+E:Jul
+J:
+
+# files.c:3719
+E:Sep
+J:
+
+# files.c:3722
+E:Oct
+J:
+
+# files.c:3725
+E:Nov
+J:
+
+# files.c:3728
+E:Dec
+J:
+
+
+###############################################################################
+# P5: 記録の行の継ぎ足し（files.c・フック #13）
+###############################################################################
+
+E:, who defeated Morgoth in his dark halls
+J:。モルゴスをその暗き広間にて討ち果たした
+
+E:, who freed a Silmaril
+J:。シルマリル 1 つを解き放った
+
+E:, who freed two Silmarils
+J:。シルマリル 2 つを解き放った
+
+E:, who freed all three Silmarils
+J:。シルマリル 3 つすべてを解き放った
+
+E:, who freed suspiciously many Silmarils
+J:。怪しいほど多くのシルマリルを解き放った
+
+E:\sand brought back the light of Valinor
+J:、ヴァリノールの光を持ち帰った
+
+E:\sempty-handed
+J:、手ぶらのままであった
+
+E:\sduring a daring escape
+J:（決死の脱出の途上で）
+
+
+###############################################################################
+# P5: 技能・能力・天敵・誓いの画（cmd4.c）
+###############################################################################
+
+# cmd4.c:290
+E:notes   change name   save to a file   abilities   increase skills   ESC
+J:n 覚書  c 名を変える  s 綴りに保存     a 能力取得  i 技能を伸ばす    ESC
+
+# cmd4.c:293 monster1.c:354
+E:n
+J:
+
+# cmd4.c:295 monster1.c:367
+E:s
+J:
+
+# cmd4.c:118 cmd4.c:82
+E:%s begin %s
+J:%s ここから %s
+
+# cmd4.c:107
+E:%s end %s
+J:%s ここまで %s
+
+# cmd4.c:495
+E:s)
+J:
+
+# cmd4.c:498
+E:Stop Singing
+J:歌をやめる
+
+# cmd4.c:526
+E:x)
+J:
+
+# cmd4.c:529
+E:Exchange themes
+J:主題を入れ替える
+
+# cmd4.c:593
+E:Songs: s
+J:歌: s
+
+# cmd4.c:621
+E:(%s) Sing which song:\s
+J:(%s) どの歌を歌いますか:\s
+
+# cmd4.c:1147
+E:Skills
+J:技能
+
+# cmd4.c:1247
+E:Abilities
+J:能力
+
+E:Archery
+J:射撃
+
+E:Evasion
+J:回避
+
+E:Stealth
+J:隠密
+
+E:Perception
+J:知覚
+
+E:Will
+J:意志
+
+E:Smithing
+J:鍛冶
+
+# cmd4.c:1342
+E:Prerequisites:
+J:必要なもの:
+
+# cmd4.c:1344
+E:%d skill points (you have %d)
+J:技能 %d 点（持っているのは %d 点）
+
+# cmd4.c:1349
+E:%d skill points
+J:技能 %d 点
+
+# cmd4.c:1368
+E:or %s
+J:または %s
+
+# cmd4.c:1401
+E:Quick Study
+J:早学び
+
+# cmd4.c:1415 cmd4.c:1423
+E:Current price:
+J:いまの値:
+
+# cmd4.c:1417
+E:%d experience (you have %d)
+J:経験 %d 点（持っているのは %d 点）
+
+# cmd4.c:1425
+E:%d experience
+J:経験 %d 点
+
+# cmd4.c:1681
+E:Ability gained.
+J:能力を得た。
+
+# cmd4.c:1757
+E:Ability now switched off.
+J:能力を切った。
+
+# cmd4.c:1770
+E:Ability now switched on.\s
+J:能力を入れた。\s
+
+# cmd4.c:871
+E:Enemy types
+J:敵の種類
+
+# cmd4.c:909
+E:You have slain %d of these foes.
+J:この類の敵を %d 体討ち取っている。
+
+# cmd4.c:914
+E:You have slain %d of these foes,   and need to slay %d more.
+J:この類の敵を %d 体討ち取っている。   あと %d 体で足りる。
+
+# cmd4.c:1438
+E:%s-Bane:
+J:%s殺し:
+
+# cmd4.c:1440
+E:\s\s%d slain, giving a %+d bonus
+J:\s\s%d 体討ち取り、%+d の補正を得ている
+
+E:Orc
+J:オーク
+
+E:Wolf
+J:狼
+
+E:Spider
+J:蜘蛛
+
+E:Troll
+J:トロル
+
+E:Wraith
+J:亡霊
+
+E:Rauko
+J:魔霊
+
+E:Serpent
+J:蛇
+
+E:Dragon
+J:竜
+
+E:Nothing
+J:
+
+# cmd4.c:1029
+E:Oath
+J:誓い
+
+# cmd4.c:1446
+E:Oath:
+J:誓い:
+
+E:Mercy
+J:慈悲
+
+E:Silence
+J:沈黙
+
+E:Iron
+J:鉄
+
+E:to leave Angband without shedding blood of Man or Elf
+J:人とエルフの血を流さずにアングバンドを去ること
+
+E:to leave Angband as you came, grim and silent
+J:来たときのまま、いかめしく黙してアングバンドを去ること
+
+E:that none will daunt you from facing Morgoth forthwith
+J:何者にも怯まず、直ちにモルゴスに立ち向かうこと
+
+E:attack Men or Elves
+J:人やエルフを攻める
+
+E:go up stairs without a Silmaril
+J:シルマリルを持たずに階段を上る
+
+E:+1 Grace
+J:恩寵 +1
+
+E:+1 Strength
+J:腕力 +1
+
+E:+2 Constitution
+J:耐久 +2
+
+# cmd4.c:1063
+E:It is too late to vow %s.
+J:いまから%sを誓うには遅すぎる。
+
+# cmd4.c:1068
+E:You vow %s.\n\n
+J:%sを誓った。\n\n
+
+# cmd4.c:1070
+E:You may not %s.\n
+J:これより%sことはできない。\n
+
+# cmd4.c:1072
+E:As long as you keep this oath, gain %s.\n\n
+J:この誓いを守るかぎり、%sを得る。\n\n
+
+# cmd4.c:1456
+E:You have sworn not to %s.
+J:あなたは%sまいと誓った。
+
+# cmd4.c:1465
+E:You are an oathbreaker.
+J:あなたは誓いを破った者である。
+
+# cmd4.c:1469
+E:Bonus: %s.
+J:恵み: %s。
+
+
+###############################################################################
+# P5: 鍛冶・主品書き・設定・知識（cmd4.c）
+###############################################################################
+
+# cmd4.c:3469
+E:In progress:
+J:作りかけ:
+
+# cmd4.c:3471
+E:%3d turns left
+J:残り %3d ターン
+
+# cmd4.c:3560
+E:Difficulty:
+J:難しさ:
+
+# cmd4.c:3575
+E:(max %d)
+J:(上限 %d)
+
+# cmd4.c:3582
+E:Weaponsmith
+J:武器鍛冶
+
+# cmd4.c:3587
+E:Armoursmith
+J:防具鍛冶
+
+# cmd4.c:3592
+E:Jeweller
+J:宝飾
+
+# cmd4.c:3597
+E:Enchantment
+J:魔法付与
+
+# cmd4.c:3602
+E:Artifice
+J:工夫
+
+# cmd4.c:3618
+E:%d Use
+J:%d 回
+
+# cmd4.c:3622
+E:%d Uses
+J:%d 回
+
+# cmd4.c:3626
+E:(of %d)
+J:(%d 中)
+
+# cmd4.c:3641
+E:%d Smithing
+J:鍛冶 %d
+
+# cmd4.c:3656
+E:%d.%d lb Mithril
+J:%d.%d lb ミスリル
+
+# cmd4.c:3674
+E:%d Str
+J:腕力 %d
+
+# cmd4.c:3691
+E:%d Dex
+J:敏捷 %d
+
+# cmd4.c:3708
+E:%d Con
+J:耐久 %d
+
+# cmd4.c:3725
+E:%d Gra
+J:恩寵 %d
+
+# cmd4.c:3740
+E:%d Exp
+J:経験 %d
+
+# cmd4.c:3750
+E:%d Turns
+J:%d ターン
+
+# cmd4.c:3764
+E:Cost:
+J:費え:
+
+# cmd4.c:5795
+E:Exploration mode:  Smithing requires a forge.
+J:探索の遊び方では、鍛冶に鍛冶場が要る。
+
+# cmd4.c:5800
+E:Exploration mode:  Smithing requires a forge with resources left.
+J:探索の遊び方では、まだ使える鍛冶場が要る。
+
+# cmd4.c:5830
+E:a) Base Item
+J:a) 基のアイテム
+
+# cmd4.c:5834
+E:b) Enchant
+J:b) 付与
+
+# cmd4.c:5838
+E:c) Artifice
+J:c) 工夫
+
+# cmd4.c:5840
+E:d) Numbers
+J:d) 数値
+
+# cmd4.c:5842
+E:e) Melt
+J:e) 溶かす
+
+# cmd4.c:5847
+E:f) Accept
+J:f) 決める
+
+# cmd4.c:5852
+E:f) Resume
+J:f) 続きから
+
+# cmd4.c:5861
+E:Start with a new base item.
+J:基のアイテムを選び直す。
+
+# cmd4.c:5867
+E:Choose a special enchantment to add
+J:基のアイテムに加える特別な付与を
+
+# cmd4.c:5869
+E:to the base item.
+J:選ぶ。
+
+# cmd4.c:5871
+E:(not compatible with Artifice)
+J:（工夫とは併せられない）
+
+# cmd4.c:5875
+E:(Enchantment cannot be changed
+J:（数値の品書きを使った後は
+
+# cmd4.c:5877
+E:after using the Numbers menu)
+J:付与を変えられない）
+
+# cmd4.c:5884
+E:Design your own artefact.
+J:自分の銘のアイテムを組み立てる。
+
+# cmd4.c:5887
+E:(not compatible with Enchant)
+J:（付与とは併せられない）
+
+# cmd4.c:5893
+E:Change the item's key numbers.
+J:アイテムの要となる数値を変える。
+
+# cmd4.c:5899
+E:Choose a mithril item to melt down.
+J:溶かすミスリルのアイテムを選ぶ。
+
+# cmd4.c:5907
+E:Create the item you have designed.
+J:組み立てたアイテムを作る。
+
+# cmd4.c:5909
+E:(to cancel it instead, just press Escape)
+J:（やめるなら Escape を押す）
+
+# cmd4.c:5914
+E:This forge has no resources left, so you
+J:この鍛冶場はもう使い切っており、アイテムを
+
+# cmd4.c:5916
+E:cannot create items. To exit, press Escape.
+J:作れない。Escape で戻る。
+
+# cmd4.c:5921
+E:You are not at a forge and thus cannot
+J:鍛冶場に居ないのでアイテムを作れない。
+
+# cmd4.c:5923
+E:create items. To exit, press Escape.
+J:Escape で戻る。
+
+# cmd4.c:6152
+E:This will drain your smithing skill by %d points. Proceed?\s
+J:鍛冶の技能が %d 点下がります。進めますか？\s
+
+# cmd4.c:6278
+E:Made %s  %d.%d lb
+J:%s を鍛えた  %d.%d lb
+
+# cmd4.c:4305
+E:a) increase attack bonus
+J:a) 命中の補正を上げる
+
+# cmd4.c:4307
+E:b) decrease attack bonus
+J:b) 命中の補正を下げる
+
+# cmd4.c:4315
+E:f) decrease evasion bonus
+J:f) 回避の補正を下げる
+
+# cmd4.c:4317
+E:g) increase protection sides
+J:g) 防護のダイスの面を増やす
+
+# cmd4.c:4319
+E:h) decrease protection sides
+J:h) 防護のダイスの面を減らす
+
+# cmd4.c:4321
+E:i) increase special bonus
+J:i) 特別な補正を上げる
+
+# cmd4.c:4323
+E:j) decrease special bonus
+J:j) 特別な補正を下げる
+
+# cmd4.c:4325
+E:k) increase weight
+J:k) 重さを増やす
+
+# cmd4.c:4327
+E:l) decrease weight
+J:l) 重さを減らす
+
+# cmd4.c:5606
+E:of %s
+J:%sの
+
+# cmd4.c:6337
+E:a) Return to game
+J:a) 冒険へ戻る
+
+# cmd4.c:6339
+E:b) Character sheet
+J:b) 人物表
+
+# cmd4.c:6341
+E:c) Options
+J:c) 設定
+
+# cmd4.c:6343
+E:d) Map
+J:d) 地図
+
+# cmd4.c:6345
+E:e) Names of the fallen
+J:e) 倒れし者の名
+
+# cmd4.c:6347
+E:f) Known objects
+J:f) 知っているアイテム
+
+# cmd4.c:6349
+E:g) Known artefacts
+J:g) 知っている銘のアイテム
+
+# cmd4.c:6351
+E:h) Known monsters
+J:h) 知っている敵
+
+# cmd4.c:6353
+E:i) Slain monsters
+J:i) 討ち取った敵
+
+# cmd4.c:6355
+E:j) Write a note
+J:j) 覚え書きを残す
+
+# cmd4.c:6357
+E:k) Take HTML screenshot
+J:k) 画面を HTML で写す
+
+# cmd4.c:6359
+E:l) Set macros
+J:l) 巨手を組む
+
+# cmd4.c:6361
+E:m) Set colours
+J:m) 色を決める
+
+# cmd4.c:6363
+E:n) Show old messages
+J:n) 前の文言を見る
+
+# cmd4.c:6365
+E:o) Sil version info
+J:o) Sil の版の覚え書き
+
+# cmd4.c:6367
+E:p) Abort current game
+J:p) 今の冒険を投げ出す
+
+# cmd4.c:6369
+E:q) Save game
+J:q) 保存する
+
+# cmd4.c:6371
+E:r) Save and quit
+J:r) 保存してやめる
+
+# cmd4.c:7216
+E:Options
+J:設定
+
+# cmd4.c:7218
+E:a) Interface Options
+J:a) 操作まわりの設定
+
+# cmd4.c:7220
+E:b) Visual Options
+J:b) 見え方の設定
+
+# cmd4.c:7222
+E:c) Challenge Options
+J:c) 手応えの設定
+
+# cmd4.c:7224
+E:d) Load a 'Pref' File
+J:d) 'Pref' の綴りを読み込む
+
+# cmd4.c:7226
+E:e) Append Options to a 'Pref' File
+J:e) 設定を 'Pref' の綴りへ書き足す
+
+# cmd4.c:7228
+E:f) Return to Game
+J:f) 冒険へ戻る
+
+# cmd4.c:7233
+E:g) Debugging Options
+J:g) 開発向けの設定
+
+# cmd4.c:6942
+E:Challenge Options can only be altered during character creation
+J:手応えの設定は冒険者を作るときか、
+
+# cmd4.c:6945
+E:or on the very first turn
+J:はじめの 1 手のあいだしか変えられない
+
+# cmd4.c:6950 cmd4.c:6961
+E:(direction keys to set, Return/Escape to accept)
+J:（向きの鍵で選び、Return か Escape で決める）
+
+# cmd4.c:6955
+E:(press Return to go back)
+J:（Return で戻る）
+
+# cmd4.c:6824 cmd4.c:7367
+E:(Escape to cancel)
+J:（Escape でやめる）
+
+# cmd4.c:6827 cmd4.c:7370 cmd4.c:7766
+E:File:\s
+J:綴り:\s
+
+# cmd4.c:6656
+E:Message Recall (%d-%d of %d), Offset %d
+J:前の文言（%d-%d / %d 件）、%d 件目から
+
+# cmd4.c:6661
+E:[Press 'p' for older, 'n' for newer, ..., or ESCAPE]
+J:['p' で古い方へ、'n' で新しい方へ、… ESCAPE で戻る]
+
+# cmd4.c:11438
+E:Display current knowledge
+J:いま知っていること
+
+# cmd4.c:11441
+E:(1) Display known artefacts
+J:(1) 知っている銘のアイテム
+
+# cmd4.c:11442
+E:(2) Display known monsters
+J:(2) 知っている敵
+
+# cmd4.c:11443
+E:(3) Display known objects
+J:(3) 知っているアイテム
+
+# cmd4.c:11444
+E:(4) Display names of the fallen
+J:(4) 倒れし者の名
+
+# cmd4.c:11445
+E:(5) Display kill counts
+J:(5) 討ち取った数
+
+# cmd4.c:11448
+E:(6) Display character notes file
+J:(6) 冒険者の覚え書き
+
+# cmd4.c:10302
+E:Knowledge - Artefacts
+J:知識 - 銘のアイテム
+
+# cmd4.c:10760
+E:Knowledge - Monsters
+J:知識 - 敵
+
+# cmd4.c:11231
+E:Knowledge - Objects
+J:知識 - アイテム
+
+# cmd4.c:10303 cmd4.c:10761 cmd4.c:11232
+E:Group
+J:類
+
+# cmd4.c:10308 cmd4.c:10764 cmd4.c:11235
+E:Idx
+J:番
+
+# cmd4.c:10309
+E:Dep
+J:深
+
+# cmd4.c:10310
+E:Rar
+J:稀
+
+# cmd4.c:10765
+E:Sym   Kills
+J:記号  討伐
+
+# cmd4.c:11236
+E:Sym
+J:記号
+
+# cmd4.c:10350 cmd4.c:10807 cmd4.c:11275
+E:<dir>   recall   ESC
+J:<向き>  r 思い出 ESC
+
+# cmd4.c:10351 cmd4.c:10808 cmd4.c:11276
+E:<dir>
+J:<向き>
+
+# cmd4.c:10691
+E:Total Creatures Slain: %d.\s
+J:討ち取った敵の総数: %d。\s
+
+# cmd4.c:10696
+E:Known Uniques: %d, Slain Uniques: %d.
+J:知っている固有の敵: %d、討ち取った固有の敵: %d。
+
+# cmd4.c:11666
+E:No visible monsters.
+J:見えている敵は居ない。
+
+# cmd4.c:11759
+E:No visible objects.
+J:見えているアイテムは無い。
+
+# cmd4.c:11776
+E:Monsters you can see (press [ to toggle):
+J:見えている敵（[ で切り替え）:
+
+# cmd4.c:11778
+E:Monsters on screen (press [ to toggle):
+J:画面の中の敵（[ で切り替え）:
+
+# cmd4.c:11796
+E:Objects you can see (press ] to toggle):
+J:見えているアイテム（] で切り替え）:
+
+# cmd4.c:11798
+E:Objects on screen (press ] to toggle):
+J:画面の中のアイテム（] で切り替え）:
+
+
+###############################################################################
+# P5: 巨手・見え方・色の画（cmd4.c）
+###############################################################################
+
+# cmd4.c:4309
+E:c) increase damage sides
+J:c) 打撃のダイスの面を増やす
+
+# cmd4.c:4311
+E:d) decrease damage sides
+J:d) 打撃のダイスの面を減らす
+
+# cmd4.c:4313
+E:e) increase evasion bonus
+J:e) 回避の補正を上げる
+
+# cmd4.c:7713
+E:Interact with Macros
+J:巨手を組む
+
+# cmd4.c:7716
+E:Current action (if any) shown below:
+J:いまの動き（あれば）は下のとおり:
+
+# cmd4.c:7725 cmd4.c:8214 cmd4.c:9390
+E:(1) Load a user pref file
+J:(1) 好みの綴りを読み込む
+
+# cmd4.c:7727
+E:(2) Append macros to a file
+J:(2) 巨手を綴りへ書き足す
+
+# cmd4.c:7728
+E:(3) Query a macro
+J:(3) 巨手を調べる
+
+# cmd4.c:7729
+E:(4) Create a macro
+J:(4) 巨手を作る
+
+# cmd4.c:7730
+E:(5) Remove a macro
+J:(5) 巨手を消す
+
+# cmd4.c:7731
+E:(6) Append keymaps to a file
+J:(6) 鍵の割り当てを綴りへ書き足す
+
+# cmd4.c:7732
+E:(7) Query a keymap
+J:(7) 鍵の割り当てを調べる
+
+# cmd4.c:7733
+E:(8) Create a keymap
+J:(8) 鍵の割り当てを作る
+
+# cmd4.c:7734
+E:(9) Remove a keymap
+J:(9) 鍵の割り当てを消す
+
+# cmd4.c:7735
+E:(0) Enter a new action
+J:(0) 新しい動きを打ち込む
+
+# cmd4.c:11451 cmd4.c:7739 cmd4.c:8228
+E:Command:\s
+J:命令:\s
+
+# cmd4.c:7763
+E:Command: Append macros to a file
+J:命令: 巨手を綴りへ書き足す
+
+# cmd4.c:7788
+E:Command: Query a macro
+J:命令: 巨手を調べる
+
+# cmd4.c:7791 cmd4.c:7830 cmd4.c:7865
+E:Trigger:\s
+J:引き金:\s
+
+# cmd4.c:7827
+E:Command: Create a macro
+J:命令: 巨手を作る
+
+# cmd4.c:7839 cmd4.c:7959
+E:Action:\s
+J:動き:\s
+
+# cmd4.c:7862
+E:Command: Remove a macro
+J:命令: 巨手を消す
+
+# cmd4.c:7883
+E:Command: Append keymaps to a file
+J:命令: 鍵の割り当てを綴りへ書き足す
+
+# cmd4.c:7908
+E:Command: Query a keymap
+J:命令: 鍵の割り当てを調べる
+
+# cmd4.c:7911 cmd4.c:7950 cmd4.c:7988
+E:Keypress:\s
+J:押した鍵:\s
+
+# cmd4.c:7947
+E:Command: Create a keymap
+J:命令: 鍵の割り当てを作る
+
+# cmd4.c:7985
+E:Command: Remove a keymap
+J:命令: 鍵の割り当てを消す
+
+# cmd4.c:8007
+E:Command: Enter a new action
+J:命令: 新しい動きを打ち込む
+
+# cmd4.c:8211
+E:Interact with Visuals
+J:見え方を変える
+
+# cmd4.c:8216
+E:(2) Dump monster attr/chars
+J:(2) 敵の色と記号を書き出す
+
+# cmd4.c:8217
+E:(3) Dump object attr/chars
+J:(3) アイテムの色と記号を書き出す
+
+# cmd4.c:8218
+E:(4) Dump feature attr/chars
+J:(4) 地形の色と記号を書き出す
+
+# cmd4.c:8219
+E:(5) Dump flavor attr/chars
+J:(5) 呼び名の色と記号を書き出す
+
+# cmd4.c:8220
+E:(6) Change monster attr/chars
+J:(6) 敵の色と記号を変える
+
+# cmd4.c:8221
+E:(7) Change object attr/chars
+J:(7) アイテムの色と記号を変える
+
+# cmd4.c:8222
+E:(8) Change feature attr/chars
+J:(8) 地形の色と記号を変える
+
+# cmd4.c:8223
+E:(9) Change flavor attr/chars
+J:(9) 呼び名の色と記号を変える
+
+# cmd4.c:8225
+E:(0) Reset visuals
+J:(0) 見え方を元へ戻す
+
+# cmd4.c:8253
+E:Command: Dump monster attr/chars
+J:命令: 敵の色と記号を書き出す
+
+# cmd4.c:8324
+E:Command: Dump object attr/chars
+J:命令: アイテムの色と記号を書き出す
+
+# cmd4.c:8395
+E:Command: Dump feature attr/chars
+J:命令: 地形の色と記号を書き出す
+
+# cmd4.c:8466
+E:Command: Dump flavor attr/chars
+J:命令: 呼び名の色と記号を書き出す
+
+# cmd4.c:8532
+E:Command: Change monster attr/chars
+J:命令: 敵の色と記号を変える
+
+# cmd4.c:8614
+E:Command: Change object attr/chars
+J:命令: アイテムの色と記号を変える
+
+# cmd4.c:8696
+E:Command: Change feature attr/chars
+J:命令: 地形の色と記号を変える
+
+# cmd4.c:8778
+E:Command: Change flavor attr/chars
+J:命令: 呼び名の色と記号を変える
+
+# cmd4.c:8546
+E:Monster = %d, Name = %-40.40s
+J:敵 = %d、名 = %-40.40s
+
+# cmd4.c:8628
+E:Object = %d, Name = %-40.40s
+J:アイテム = %d、名 = %-40.40s
+
+# cmd4.c:8710
+E:Terrain = %d, Name = %-40.40s
+J:地形 = %d、名 = %-40.40s
+
+# cmd4.c:8792
+E:Flavor = %d, Text = %-40.40s
+J:呼び名 = %d、字 = %-40.40s
+
+# cmd4.c:8551
+E:Default attr/char = %3u / %3u
+J:元の色と記号 = %3u / %3u
+
+# cmd4.c:8565
+E:Current attr/char = %3u / %3u
+J:いまの色と記号 = %3u / %3u
+
+# cmd4.c:8633 cmd4.c:8715 cmd4.c:8797
+E:Default attr/char = %3d / %3d
+J:元の色と記号 = %3d / %3d
+
+# cmd4.c:8647 cmd4.c:8729 cmd4.c:8812
+E:Current attr/char = %3d / %3d
+J:いまの色と記号 = %3d / %3d
+
+# cmd4.c:8578 cmd4.c:8660 cmd4.c:8742
+E:Command (n/N/a/A/c/C/'s'hade):\s
+J:命令 (n/N/a/A/c/C/'s' は濃淡):\s
+
+# cmd4.c:9387
+E:Interact with Colors
+J:色を決める
+
+# cmd4.c:9392
+E:(2) Dump colors
+J:(2) 色を書き出す
+
+# cmd4.c:9393
+E:(3) Modify colors
+J:(3) 色を変える
+
+# cmd4.c:9430
+E:Command: Dump colors
+J:命令: 色を書き出す
+
+# cmd4.c:9017 squelch.c:193 squelch.c:785
+E:Commands:
+J:命令:
+
+# cmd4.c:9018
+E:ESC: Return
+J:ESC: 戻る
+
+# cmd4.c:9019
+E:Arrows: Move to color
+J:矢印: 色を選ぶ
+
+# cmd4.c:9020
+E:k,K: Incr,Decr extra value
+J:k,K: 明るさを上下する
+
+# cmd4.c:9021
+E:r,R: Incr,Decr red value
+J:r,R: 赤を上下する
+
+# cmd4.c:9022
+E:g,G: Incr,Decr green value
+J:g,G: 緑を上下する
+
+# cmd4.c:9023
+E:b,B: Incr,Decr blue value
+J:b,B: 青を上下する
+
+# cmd4.c:9024
+E:c: Copy from color
+J:c: 別の色から写す
+
+# cmd4.c:9025
+E:v: Set specific values
+J:v: 値を直に打ち込む
+
+# cmd4.c:9026
+E:First column: base colors
+J:1 列目: 基の色
+
+# cmd4.c:9027
+E:Second column: first shade, etc.
+J:2 列目以降: その濃淡
+
+# cmd4.c:9029
+E:Shades look like base colors in 16 color ports.
+J:16 色しか出ない版では、濃淡は基の色と同じに見える。
+
+# cmd4.c:9070
+E:Color = %d (0x%02X), Name = %s
+J:色 = %d (0x%02X)、名 = %s
+
+# cmd4.c:9108
+E:K = %d / R,G,B = %d, %d, %d
+J:明 = %d / 赤,緑,青 = %d, %d, %d
+
+# cmd4.c:9210
+E:Copy from color (0-%d, def. base)\s
+J:どの色から写しますか (0-%d、既定は基の色)\s
+
+# cmd4.c:3487
+E:\s\s\s%d.%d lb
+J:
+
+# cmd4.c:5674
+E:%2d.%d lb
+J:
+
+# cmd4.c:9762
+E:%s.html
+J:
+
+
+###############################################################################
+# P5: 誕生の画（birth.c）
+###############################################################################
+
+# birth.c:1405
+E:Character Creation:
+J:冒険者を作る:
+
+# birth.c:1408
+E:Arrow keys navigate the menu    Enter select the current menu item
+J:矢印の鍵で品書きを選ぶ          Enter いまの項目を決める
+
+# birth.c:1416 birth.c:1648 birth.c:1865
+E:Arrow keys
+J:矢印
+
+# birth.c:1420
+E:O
+J:
+
+# birth.c:172 birth.c:302
+E:m
+J:
+
+# birth.c:1410
+E:\s\s\s\s\s\s\s\s\s* random menu item       ESC restart the character
+J:\s\s\s\s\s\s\s\s\s* 品書きを無作為に選ぶ   ESC 冒険者を作り直す
+
+# birth.c:1412
+E:\s\s\s\s\s\s\s\s\s= game options             q quit
+J:\s\s\s\s\s\s\s\s\s= 遊び方の設定             q やめる
+
+# birth.c:162
+E:Enter accept history
+J:Enter 生い立ちを決める
+
+# birth.c:164
+E:Space reroll history
+J:Space 生い立ちを振り直す
+
+# birth.c:166
+E:\s\s\s\sm manually enter history
+J:\s\s\s\sm 生い立ちを打ち込む
+
+# birth.c:292
+E:Enter accept age/height/weight
+J:Enter 年齢・身長・体重を決める
+
+# birth.c:294
+E:Space reroll
+J:Space 振り直す
+
+# birth.c:296
+E:\s\s\s\sm manually enter
+J:\s\s\s\sm 打ち込む
+
+# birth.c:271
+E:(a)ccept age/height/weight, (r)eroll, (m)anually enter\s
+J:(a) 年齢・身長・体重を決める、(r) 振り直す、(m) 打ち込む\s
+
+# birth.c:339
+E:Enter age (%d-%d):\s
+J:年齢を打ち込む (%d-%d):\s
+
+# birth.c:356
+E:Enter height in inches (%d-%d):\s
+J:身長をインチで打ち込む (%d-%d):\s
+
+# birth.c:373
+E:Enter weight in pounds (%d-%d):\s
+J:体重をポンドで打ち込む (%d-%d):\s
+
+# birth.c:1606 birth.c:1818
+E:Points Left:
+J:残りの点:
+
+# birth.c:1642
+E:Arrow keys allocate points to stats
+J:矢印の鍵で能力値に点を振る
+
+# birth.c:1644 birth.c:1861
+E:\s\s\s\s\sEnter accept current values
+J:\s\s\s\s\sEnter いまの値で決める
+
+# birth.c:1859
+E:Arrow keys allocate points to skills
+J:矢印の鍵で技能に点を振る
+
+# birth.c:1850
+E:ESC abort skill increases\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:ESC 技能の伸ばしをやめる\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:940
+E:bow mastery\s\s\s\s\s\s\s\s\s
+J:弓の熟達\s\s\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:946
+E:bow proficiency\s\s\s\s\s\s\s\s
+J:弓の心得\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:954
+E:axe mastery\s\s\s\s\s\s\s\s\s
+J:斧の熟達\s\s\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:960
+E:axe proficiency\s\s\s\s\s\s\s\s
+J:斧の心得\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:968
+E:melee mastery\s\s\s\s\s
+J:打撃の熟達\s\s\s\s\s\s\s\s
+
+# birth.c:974
+E:melee affinity\s\s\s\s
+J:打撃の素質\s\s\s\s\s\s\s\s
+
+# birth.c:980
+E:melee penalty\s\s\s\s\s
+J:打撃が苦手\s\s\s\s\s\s\s\s
+
+# birth.c:987
+E:archery mastery\s\s\s\s\s
+J:射撃の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:993
+E:archery affinity\s\s\s\s
+J:射撃の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1000
+E:archery penalty\s\s\s\s\s
+J:射撃が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1007
+E:evasion mastery\s\s\s\s\s
+J:回避の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1013
+E:evasion affinity\s\s\s\s
+J:回避の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1020
+E:evasion penalty\s\s\s\s\s
+J:回避が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1027
+E:stealth mastery\s\s\s\s\s
+J:隠密の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1033
+E:stealth affinity\s\s\s\s
+J:隠密の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1040
+E:stealth penalty\s\s\s\s\s
+J:隠密が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1047
+E:perception mastery\s\s
+J:知覚の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1053
+E:perception affinity\s
+J:知覚の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1060
+E:perception penalty\s\s
+J:知覚が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1067
+E:will mastery\s\s\s\s\s\s\s\s
+J:意志の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1073
+E:will affinity\s\s\s\s\s\s\s
+J:意志の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1080
+E:will penalty\s\s\s\s\s\s\s\s
+J:意志が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1087
+E:smithing mastery\s\s\s\s
+J:鍛冶の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1093
+E:smithing affinity\s\s\s
+J:鍛冶の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1100
+E:smithing penalty\s\s\s\s
+J:鍛冶が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1107
+E:song mastery\s\s\s\s\s\s\s\s
+J:歌唱の熟達\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1113
+E:song affinity\s\s\s\s\s\s\s
+J:歌唱の素質\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:1120
+E:song penalty\s\s\s\s\s\s\s\s
+J:歌唱が苦手\s\s\s\s\s\s\s\s\s\s
+
+# birth.c:2023
+E:%s of the %s\n
+J:%s（%s）\n
+
+# birth.c:2025
+E:Entered Angband on %s\n
+J:%sにアングバンドへ入った\n
+
+
+###############################################################################
+# P5: 装備の欄の名（object1.c / cmd3.c）
+###############################################################################
+
+# cmd3.c:236
+E:(Inventory) Command:\s
+J:（荷物袋）命令:\s
+
+# cmd3.c:280
+E:(Equipment) Command:\s
+J:（装備）命令:\s
+
+# cmd3.c:2318
+E:Recall details? (k/p/y/n):\s
+J:詳しく思い出しますか？ (k/p/y/n):\s
+
+# cmd3.c:2379 cmd3.c:2394
+E:\s[(r)ecall, ESC]
+J:\s[(r) 思い出, ESC]
+
+# object1.c:2060 object1.c:2321
+E:armour: %3d.%1d lb
+J:防具: %3d.%1d lb
+
+# object1.c:2035
+E:%3d.%1d lb\s
+J:
+
+E:Wielding
+J:利き手
+
+E:Shooting
+J:飛び道具
+
+E:Left ring
+J:左手の指輪
+
+E:Right ring
+J:右手の指輪
+
+E:Around neck
+J:首まわり
+
+E:Light
+J:明かり
+
+E:On body
+J:胴
+
+E:About body
+J:上着
+
+E:Off-hand
+J:逆手
+
+E:On head
+J:頭
+
+E:On hands
+J:手
+
+E:On feet
+J:足
+
+E:1st quiver
+J:矢筒 1
+
+E:2nd quiver
+J:矢筒 2
+
+E:In pack
+J:荷物袋
+
+E:wielding
+J:構えている
+
+E:wearing on your left hand
+J:左手にはめている
+
+E:wearing on your right hand
+J:右手にはめている
+
+E:wearing around your neck
+J:首に掛けている
+
+E:using to light the way
+J:明かりに使っている
+
+E:wearing on your body
+J:身に着けている
+
+E:wearing on your back
+J:上に羽織っている
+
+E:wearing on your arm
+J:腕に着けている
+
+E:wearing on your head
+J:頭にかぶっている
+
+E:wearing on your hands
+J:手にはめている
+
+E:wearing on your feet
+J:足に履いている
+
+E:carrying in your quiver
+J:矢筒に入れている
+
+E:carrying in your pack
+J:荷物袋に入れている
+
+
+###############################################################################
+# P5: 敵の思い出の地の文（monster1.c）
+###############################################################################
+
+E:it
+J:この敵
+
+E:he
+J:この敵
+
+E:she
+J:この敵
+
+E:its
+J:この敵
+
+E:his
+J:この敵
+
+E:her
+J:この敵
+
+E:him
+J:この敵
+
+E:.\s\s
+J:。
+
+E:,\s
+J:
+
+# monster1.c:705 monster1.c:765 monster1.c:876
+E:\sand\s
+J:、
+
+# monster1.c:134 monster1.c:203 monster1.c:256
+E:\sor\s
+J:あるいは
+
+# monster1.c:136 monster1.c:205 monster1.c:254
+E:, or\s
+J:、あるいは
+
+# monster1.c:594
+E:\sto\s
+J:で
+
+# monster1.c:1409 monster1.c:1417 monster1.c:1426
+E:, and
+J:。また
+
+# monster1.c:1655 wizard1.c:900
+E:The\s
+J:\s
+
+# monster1.c:128
+E:\smay\s
+J:は
+
+# monster1.c:199
+E:\smay breathe\s
+J:が吐くのは
+
+# monster1.c:244
+E:%^s may\s
+J:%sは
+
+# monster1.c:250
+E:attempt to\s
+J:次を試みる:\s
+
+# monster1.c:825
+E:fire
+J:火
+
+# monster1.c:827
+E:frost
+J:冷気
+
+# monster1.c:829
+E:poison
+J:毒
+
+# monster1.c:831
+E:darkness
+J:闇
+
+# monster1.c:291
+E:%^s may be found with
+J:%sのそばにあるのは
+
+# monster1.c:296
+E:%^s may carry
+J:%sが持っているのは
+
+# monster1.c:312
+E:\sone or two
+J:1 つか 2 つの
+
+# monster1.c:318
+E:\sup to %d
+J:最大 %d 個の
+
+E:\sexceptional
+J:見事な
+
+E:\sgood
+J:上等な
+
+# monster1.c:363
+E:\schest
+J:箱
+
+# monster1.c:365
+E:\sobject
+J:アイテム
+
+# monster1.c:572
+E:%^s can\s
+J:%sは
+
+# monster1.c:628
+E:%^s has no physical attacks.\s\s
+J:%sは直接の攻撃を持たない。
+
+# monster1.c:634
+E:Nothing is known about %s attack.\s\s
+J:%sの攻撃については何も判っていない。
+
+# monster1.c:699
+E:\shas the abilities:\s
+J:が持つ技は:\s
+
+# monster1.c:701
+E:\shas the ability:\s
+J:が持つ技は:\s
+
+# monster1.c:761
+E:\scan\s
+J:は
+
+# monster1.c:778
+E:%^s is very difficult to see.\s\s
+J:%sはひどく見つけにくい。
+
+# monster1.c:782
+E:%^s breeds explosively.\s\s
+J:%sは爆発的に増える。
+
+# monster1.c:786
+E:%^s regenerates quickly.\s\s
+J:%sは速く傷が塞がる。
+
+# monster1.c:790
+E:%^s cannot be critically hit.\s\s
+J:%sには会心の一撃が通らない。
+
+# monster1.c:794
+E:%^s is resistant to critical hits.\s\s
+J:%sは会心の一撃を受けにくい。
+
+# monster1.c:812
+E:%^s is surrounded by shimmering haze of ever changing elements (%dd%d).\s\s
+J:%sは移ろう属性の揺らめく靄に包まれている (%dd%d)。
+
+# monster1.c:820
+E:%^s is surrounded by a shimmering haze of\s
+J:%sを包む揺らめく靄は
+
+# monster1.c:839
+E:%^s is mindless.\s\s
+J:%sには知性が無い。
+
+# monster1.c:843
+E:%^s is a servant of the dark.\s\s
+J:%sは闇の下僕である。
+
+# monster1.c:847
+E:%^s is unintelligent.\s\s
+J:%sは頭が良くない。
+
+# monster1.c:872
+E:\sis vulnerable to\s
+J:が弱いのは
+
+# monster1.c:908
+E:\sresists\s
+J:が防ぐのは
+
+# monster1.c:946
+E:\scannot be\s
+J:に効かないのは
+
+E:shattering
+J:打ち砕き
+
+E:bright light
+J:まぶしい光
+
+E:cold
+J:冷気
+
+E:lightning
+J:稲妻
+
+E:slowed
+J:鈍足
+
+E:stunned
+J:朦朧
+
+E:frightened
+J:恐怖
+
+E:confused
+J:混乱
+
+E:put to sleep
+J:眠り
+
+# monster1.c:963
+E:%^s usually appears with escorts.\s\s
+J:%sはたいてい供を連れて現れる。
+
+# monster1.c:970
+E:%^s usually appears with many escorts.\s\s
+J:%sはたいてい多くの供を連れて現れる。
+
+# monster1.c:976
+E:%^s sometimes appears in groups.\s\s
+J:%sは時おり群れで現れる。
+
+# monster1.c:982
+E:%^s usually appears in groups.\s\s
+J:%sはたいてい群れで現れる。
+
+# monster1.c:1018
+E:%^s has slain %d of your predecessors
+J:%sはあなたの先達を %d 人討ち取っている
+
+# monster1.c:1024
+E:, but you have taken revenge!\s\s
+J:が、あなたが仇を討った！
+
+# monster1.c:1030
+E:, who %s unavenged.\s\s
+J:。その仇はまだ討たれていない%.0s。
+
+# monster1.c:1038
+E:You have slain this foe.\s\s
+J:あなたはこの敵を討ち取った。
+
+# monster1.c:1045
+E:You have encountered this foe.\s\s
+J:あなたはこの敵と出会ったことがある。
+
+# monster1.c:1049
+E:You are yet to encounter this foe.\s\s
+J:あなたはこの敵とまだ出会っていない。
+
+# monster1.c:1059
+E:%d of your predecessors %s been killed by this creature,\s
+J:あなたの先達 %d 人がこの敵に討たれており%.0s、
+
+# monster1.c:1065
+E:and you have slain %d of the %d you have encountered.\s\s
+J:あなたが %d 体を討ち取っている（出会ったのは %d 体）。
+
+# monster1.c:1073
+E:and %s have slain %d in return.\s\s
+J:%sが仕返しに %d 体を討ち取っている。
+
+E:your predecessors
+J:先達
+
+# monster1.c:1078 monster1.c:1094
+E:You have encountered %d.\s\s
+J:あなたは %d 体と出会っている。
+
+# monster1.c:1082 monster1.c:1098
+E:You are yet to encounter one.\s\s
+J:あなたはまだ一体も見ていない。
+
+# monster1.c:1090
+E:and it is not known to have been defeated.\s\s
+J:討ち取られた覚えは無い。
+
+# monster1.c:1109
+E:You have encountered %d of these creatures,\s
+J:あなたはこの類の敵と %d 体出会っており、
+
+# monster1.c:1115
+E:and your predecessors have slain %d.\s\s
+J:先達が %d 体を討ち取っている。
+
+# monster1.c:1122
+E:but no battles to the death are recalled.\s\s
+J:死力を尽くした戦いの覚えは無い。
+
+# monster1.c:1130
+E:You have slain %d of the %d you have encountered.\s\s
+J:あなたは %d 体を討ち取った（出会ったのは %d 体）。
+
+# monster1.c:1137
+E:You have encountered none of these creatures,\s
+J:あなたはこの類の敵と一度も出会っておらず、
+
+# monster1.c:1143
+E:but slain %d.\s\s
+J:それでも %d 体を討ち取っている。
+
+# monster1.c:1149
+E:but your predecessors have slain %d.\s\s
+J:先達は %d 体を討ち取っている。
+
+# monster1.c:1156
+E:and no battles to the death are recalled.\s\s
+J:死力を尽くした戦いの覚えも無い。
+
+# monster1.c:1183
+E:%^s has\s
+J:%sの生命力は
+
+# monster1.c:1194
+E:health\s
+J:、
+
+# monster1.c:1199 monster1.c:1205
+E:and a defence of\s
+J:守りは
+
+# monster1.c:1229
+E:%^s has %d Will,
+J:%sの意志は %d、
+
+# monster1.c:1231
+E:\s%d Stealth,
+J:隠密は %d、
+
+# monster1.c:1232
+E:\s%d Perception
+J:知覚は %d
+
+# monster1.c:1269
+E:, and %s.\s\s
+J:、そして%s。
+
+E:is usually found asleep
+J:たいてい眠っている
+
+E:is often found asleep
+J:しばしば眠っている
+
+E:is sometimes found asleep
+J:時おり眠っている
+
+E:is never found asleep
+J:眠っていることはない
+
+E:is quick to notice intruders
+J:侵入者に気づくのが速い
+
+E:is very quick to notice intruders
+J:侵入者に気づくのがとても速い
+
+E:is ever vigilant
+J:つねに油断がない
+
+# monster1.c:1296
+E:Encountering %s was worth
+J:%sと出会ったことの値打ちは
+
+# monster1.c:1299
+E:Encountering another would be worth
+J:もう一体と出会う値打ちは
+
+# monster1.c:1305
+E:Encountering %s would be worth
+J:%sと出会う値打ちは
+
+# monster1.c:1307
+E:Encountering one would be worth
+J:一体と出会う値打ちは
+
+# monster1.c:1314
+E:\s%ld experience.\s\s
+J:経験 %ld 点。
+
+# monster1.c:1322
+E:Killing %s was worth
+J:%sを討ち取ったことの値打ちは
+
+# monster1.c:1324
+E:Killing another would be worth
+J:もう一体を討ち取る値打ちは
+
+# monster1.c:1329
+E:Killing %s would be worth
+J:%sを討ち取る値打ちは
+
+# monster1.c:1331
+E:Killing one would be worth
+J:一体を討ち取る値打ちは
+
+# monster1.c:1338
+E:\s%ld.\s\s
+J:\s%ld 点。
+
+# monster1.c:1349
+E:This
+J:この
+
+# monster1.c:1352
+E:\sundead
+J:不死の
+
+# monster1.c:1355
+E:\sdragon
+J:竜
+
+# monster1.c:1357
+E:\sserpent
+J:蛇
+
+# monster1.c:1359
+E:\srauko
+J:魔霊
+
+# monster1.c:1361
+E:\stroll
+J:トロル
+
+# monster1.c:1363
+E:\sorc
+J:オーク
+
+# monster1.c:1365
+E:\swolf
+J:狼
+
+# monster1.c:1367
+E:\sspider
+J:蜘蛛
+
+# monster1.c:1369
+E:\sman
+J:人
+
+# monster1.c:1371
+E:\self
+J:エルフ
+
+# monster1.c:1373
+E:\screature
+J:生き物
+
+# monster1.c:1378
+E:\sdwells at the gates of Angband
+J:はアングバンドの門に住む
+
+# monster1.c:1384
+E:\sis found\s
+J:は
+
+# monster1.c:1386
+E:\sis normally found\s
+J:はふつう
+
+# monster1.c:1390
+E:guarding the gates of Angband
+J:アングバンドの門を守っている
+
+# monster1.c:1394 monster1.c:1399
+E:at depths of\s
+J:深さ\s
+
+# monster1.c:1395 monster1.c:1400
+E:%d feet
+J:%d ft に現れる
+
+# monster1.c:1410
+E:\scannot move
+J:動けない
+
+# monster1.c:1418
+E:\snever moves when you are looking
+J:見ているあいだは動かない
+
+# monster1.c:1427
+E:\smoves
+J:動きは
+
+# monster1.c:1435 monster1.c:1460
+E:\sextremely
+J:きわめて
+
+# monster1.c:1439
+E:\ssomewhat
+J:やや
+
+# monster1.c:1443
+E:\sa bit
+J:少し
+
+# monster1.c:1447
+E:\serratically
+J:気まぐれだ
+
+# monster1.c:1458
+E:\sincredibly
+J:恐ろしく
+
+# monster1.c:1462
+E:\svery
+J:とても
+
+# monster1.c:1463
+E:\squickly
+J:素早い
+
+# monster1.c:1467
+E:\sslowly
+J:遅い
+
+# monster1.c:1485
+E:%^s does not deign to pursue you.\s\s
+J:%sはあなたを追おうともしない。
+
+
+###############################################################################
+# P5: 自己認識の画（spells2.c）
+###############################################################################
+
+# spells2.c:1425 spells2.c:1448
+E:Your Attributes:
+J:あなたの様子:
+
+E:very\s
+J:とても
+
+E:greatly\s
+J:大いに
+
+E:highly\s
+J:ひどく
+
+E:heavily\s
+J:ひどく
+
+# spells2.c:427
+E:You feel doom hastening toward you
+J:破滅が近づいてくるのを感じる
+
+# spells2.c:428
+E:(you will be betrayed)
+J:（いずれ裏切られる）
+
+# spells2.c:435
+E:You are protected from serious harm
+J:大きな傷から護られている
+
+# spells2.c:436
+E:(you will survive a killing blow)
+J:（致命の一撃を耐え抜く）
+
+# spells2.c:443
+E:Your feet do not trigger traps
+J:足で罠を踏み抜かない
+
+# spells2.c:444
+E:(does not protect from webs, roosts and pits)
+J:（蜘蛛の巣・ねぐら・落し穴には効かない）
+
+# spells2.c:451
+E:You gain extra health from healing items
+J:癒しのアイテムから余分に生命力を得る
+
+# spells2.c:459
+E:You stand fast against your foes
+J:敵に対して踏みとどまる
+
+# spells2.c:460
+E:(you cannot be moved by enemy abilities)
+J:（敵の技で動かされない）
+
+# spells2.c:467
+E:You are moving slowly
+J:動きが遅い
+
+# spells2.c:468 spells2.c:475
+E:(speed %d)
+J:（速さ %d）
+
+# spells2.c:474
+E:You are moving quickly
+J:動きが速い
+
+# spells2.c:481
+E:You are moving carefully
+J:用心して動いている
+
+# spells2.c:482
+E:(+5 Stealth)
+J:（隠密 +5）
+
+# spells2.c:489
+E:You grow hungry %sslowly
+J:腹の減りが%s遅い
+
+# spells2.c:491
+E:(1/%d the normal rate)
+J:（ふつうの 1/%d）
+
+# spells2.c:497
+E:You burn with a%s unnatural hunger
+J:%.0s尋常でない飢えに焼かれている
+
+# spells2.c:499 spells2.c:621
+E:(%d times the normal rate)
+J:（ふつうの %d 倍）
+
+# spells2.c:507
+E:You cannot see
+J:目が見えない
+
+# spells2.c:512
+E:You are hallucinating
+J:幻を見ている
+
+# spells2.c:517
+E:You are confused
+J:混乱している
+
+# spells2.c:522
+E:You are terrified
+J:恐怖に囚われている
+
+# spells2.c:527
+E:You are bleeding
+J:出血している
+
+# spells2.c:532
+E:You are poisoned
+J:毒に冒されている
+
+# spells2.c:537
+E:You are %sstunned
+J:%s朦朧としている
+
+# spells2.c:539
+E:(-%d to all skills)
+J:（すべての技能に -%d）
+
+# spells2.c:546
+E:You are in a dark rage
+J:昏い怒りに駆られている
+
+# spells2.c:551
+E:You feel stronger
+J:力が湧いている
+
+# spells2.c:552
+E:(+3 Strength)
+J:（腕力 +3）
+
+# spells2.c:558
+E:You feel more agile
+J:身が軽い
+
+# spells2.c:559
+E:(+3 Dexterity)
+J:（敏捷 +3）
+
+# spells2.c:565
+E:You feel more resilient
+J:粘り強くなっている
+
+# spells2.c:566
+E:(+3 Constitution)
+J:（耐久 +3）
+
+# spells2.c:572
+E:You feel more attuned to the world
+J:世界とよく調和している
+
+# spells2.c:573
+E:(+3 Grace)
+J:（恩寵 +3）
+
+# spells2.c:579
+E:Your perceptions are heightened
+J:感覚が研ぎ澄まされている
+
+# spells2.c:580
+E:(+10 Perception)
+J:（知覚 +10）
+
+# spells2.c:587
+E:You occasionally become terrified in combat
+J:戦いのさなか、時おり恐怖に囚われる
+
+# spells2.c:588
+E:(when hit for %d+ damage)
+J:（%d 以上の打撃を受けたとき）
+
+# spells2.c:604
+E:(+%d ft)
+J:（+%d ft）
+
+# spells2.c:610
+E:You %senrage nearby creatures
+J:近くの敵を%s怒らせる
+
+# spells2.c:612
+E:(+%d to their perception)
+J:（敵の知覚に +%d）
+
+# spells2.c:619
+E:You regenerate %squickly
+J:傷の塞がりが%s速い
+
+# spells2.c:630
+E:You are %sadept at locating invisible creatures
+J:見えない敵を見つけるのが%s巧みだ
+
+# spells2.c:632 spells2.c:641 spells2.c:713
+E:(+%d to skill check)
+J:（判定に +%d）
+
+# spells2.c:639
+E:Your movement is %srarely hindered
+J:動きが妨げられることは%s少ない
+
+# spells2.c:649
+E:You are %svulnerable to cold
+J:冷気に%s弱い
+
+# spells2.c:651 spells2.c:669 spells2.c:687
+E:(damage x %d)
+J:（ダメージ ×%d）
+
+# spells2.c:657
+E:You are %sresistant to cold
+J:冷気に%s強い
+
+# spells2.c:659 spells2.c:677 spells2.c:695
+E:(damage / %d)
+J:（ダメージ ÷%d）
+
+# spells2.c:667
+E:You are %svulnerable to fire
+J:火に%s弱い
+
+# spells2.c:675
+E:You are %sresistant to fire
+J:火に%s強い
+
+# spells2.c:685
+E:You are %svulnerable to poison
+J:毒に%s弱い
+
+# spells2.c:693
+E:You are %sresistant to poison
+J:毒に%s強い
+
+# spells2.c:702
+E:You are resistant to bleeding
+J:出血に強い
+
+# spells2.c:704
+E:(damage reduced to 1)
+J:（ダメージは 1 になる）
+
+# spells2.c:711
+E:You are %sresistant to fear
+J:恐怖に%s強い
+
+# spells2.c:720
+E:You are %sresistant to blindness
+J:盲目に%s強い
+
+# spells2.c:729
+E:You are %sresistant to confusion
+J:混乱に%s強い
+
+# spells2.c:737
+E:You are %sresistant to stunning
+J:朦朧に%s強い
+
+# spells2.c:745
+E:You are %sresistant to hallucination
+J:幻覚に%s強い
+
+# spells2.c:754
+E:You are %sresistant to strength draining
+J:腕力の吸い取りに%s強い
+
+# spells2.c:762
+E:You are %sresistant to dexterity draining
+J:敏捷の吸い取りに%s強い
+
+# spells2.c:770
+E:You are %sresistant to constitution draining
+J:耐久の吸い取りに%s強い
+
+# spells2.c:778
+E:You are %sresistant to grace draining
+J:恩寵の吸い取りに%s強い
+
+# spells2.c:787
+E:Your strength is affected by your equipment
+J:腕力が装備の影響を受けている
+
+# spells2.c:788
+E:(%+d Strength)
+J:（腕力 %+d）
+
+# spells2.c:794
+E:Your dexterity is affected by your equipment
+J:敏捷が装備の影響を受けている
+
+# spells2.c:795
+E:(%+d Dexterity)
+J:（敏捷 %+d）
+
+# spells2.c:801
+E:Your constitution is affected by your equipment
+J:耐久が装備の影響を受けている
+
+# spells2.c:802
+E:(%+d Constitution)
+J:（耐久 %+d）
+
+# spells2.c:808
+E:Your grace is affected by your equipment
+J:恩寵が装備の影響を受けている
+
+# spells2.c:809
+E:(%+d Grace)
+J:（恩寵 %+d）
+
+# spells2.c:816
+E:Your melee is affected by your equipment
+J:打撃が装備の影響を受けている
+
+# spells2.c:817
+E:(%+d Melee)
+J:（打撃 %+d）
+
+# spells2.c:823
+E:Your archery is affected by your equipment
+J:射撃が装備の影響を受けている
+
+# spells2.c:824
+E:(%+d Archery)
+J:（射撃 %+d）
+
+# spells2.c:830
+E:Your stealth is affected by your equipment
+J:隠密が装備の影響を受けている
+
+# spells2.c:831
+E:(%+d Stealth)
+J:（隠密 %+d）
+
+# spells2.c:837
+E:Your perception is affected by your equipment
+J:知覚が装備の影響を受けている
+
+# spells2.c:838
+E:(%+d Perception)
+J:（知覚 %+d）
+
+# spells2.c:844
+E:Your will is affected by your equipment
+J:意志が装備の影響を受けている
+
+# spells2.c:845
+E:(%+d Will)
+J:（意志 %+d）
+
+# spells2.c:851
+E:Your smithing is affected by your equipment
+J:鍛冶が装備の影響を受けている
+
+# spells2.c:852
+E:(%+d Smithing)
+J:（鍛冶 %+d）
+
+# spells2.c:858
+E:Your singing is affected by your equipment
+J:歌唱が装備の影響を受けている
+
+# spells2.c:859
+E:(%+d Song)
+J:（歌唱 %+d）
+
+# spells2.c:866
+E:Your combat damage sides are specially affected by your equipment
+J:打撃のダイスの面が装備の影響を特に受けている
+
+# spells2.c:869
+E:(%+d side%s)
+J:（面 %+d%s）
+
+# spells2.c:877
+E:You remember being told of some passages nearby
+J:近くの通路について聞いた覚えがある
+
+# spells2.c:884
+E:Your equipment glows with an inner light
+J:装備が内なる光を放っている
+
+# spells2.c:885 spells2.c:892
+E:(%+d radius)
+J:（半径 %+d）
+
+# spells2.c:891
+E:Your equipment radiates an unnatural darkness
+J:装備が尋常でない闇を放っている
+
+# spells2.c:905
+E:Your bow fires shining arrows
+J:弓が輝く矢を放つ
+
+# spells2.c:913
+E:Your footsteps illuminate the dungeon
+J:歩いた跡が階を照らす
+
+# spells2.c:934
+E:Your weapon cuts easily through armour
+J:武器が鎧を易々と断つ
+
+# spells2.c:1107 spells2.c:935
+E:(ignore 50%% of protection)
+J:（防護の 50%% を無視する）
+
+# spells2.c:943
+E:Your weapon cuts exceptionally easily through armour
+J:武器が鎧を並外れて易々と断つ
+
+# spells2.c:1117 spells2.c:945
+E:(ignore 100%% of protection)
+J:（防護の 100%% を無視する）
+
+# spells2.c:953
+E:Your weapon drains life from your enemies
+J:武器が敵から命を吸い取る
+
+# spells2.c:1127 spells2.c:954
+E:(+7 health per kill)
+J:（1 体討つごとに生命力 +7）
+
+# spells2.c:962
+E:Your weapon is unusually well balanced
+J:武器の釣り合いが並外れて良い
+
+# spells2.c:1137 spells2.c:1385 spells2.c:963
+E:(reroll missed attacks)
+J:（外れた攻撃を振り直す）
+
+# spells2.c:971
+E:Your weapon is cumbersome
+J:武器が扱いにくい
+
+# spells2.c:1146 spells2.c:1394 spells2.c:972
+E:(no critical hits)
+J:（会心の一撃が出ない）
+
+# spells2.c:980
+E:Your weapon shocks your foes
+J:武器が敵に雷を浴びせる
+
+# spells2.c:1005 spells2.c:1015 spells2.c:1024
+E:(+1 damage die)
+J:（ダメージのダイス +1）
+
+# spells2.c:988
+E:Your weapon burns your foes
+J:武器が敵を焼く
+
+# spells2.c:996
+E:Your weapon freezes your foes
+J:武器が敵を凍らせる
+
+# spells2.c:1004
+E:Your weapon poisons your foes
+J:武器が敵を毒する
+
+# spells2.c:1014
+E:Your weapon is especially deadly against orcs
+J:武器がオークに特に強い
+
+# spells2.c:1022
+E:Your weapon is especially deadly against trolls
+J:武器がトロルに特に強い
+
+# spells2.c:1031
+E:Your weapon is especially deadly against wolves
+J:武器が狼に特に強い
+
+# spells2.c:1040
+E:Your weapon is especially deadly against spiders
+J:武器が蜘蛛に特に強い
+
+# spells2.c:1049
+E:Your weapon is especially deadly against raukar
+J:武器が魔霊に特に強い
+
+# spells2.c:1058
+E:Your weapon is especially deadly against dragons
+J:武器が竜に特に強い
+
+# spells2.c:1067
+E:Your weapon is especially effective against the undead
+J:武器が不死者によく効く
+
+# spells2.c:1076
+E:Your weapon is especially effective against men
+J:武器が人によく効く
+
+# spells2.c:1081
+E:Your weapon is especially effective against elves
+J:武器がエルフによく効く
+
+# spells2.c:1105
+E:Your off-hand weapon cuts easily through armour
+J:逆手の武器が鎧を易々と断つ
+
+# spells2.c:1114
+E:Your off-hand weapon cuts exceptionally easily through armour
+J:逆手の武器が鎧を並外れて易々と断つ
+
+# spells2.c:1125
+E:Your off-hand weapon drains life from your enemies
+J:逆手の武器が敵から命を吸い取る
+
+# spells2.c:1135
+E:Your off-hand weapon is unusually well balanced
+J:逆手の武器の釣り合いが並外れて良い
+
+# spells2.c:1145
+E:Your off-hand weapon is cumbersome
+J:逆手の武器が扱いにくい
+
+# spells2.c:1154
+E:Your off-hand weapon shocks your foes
+J:逆手の武器が敵に雷を浴びせる
+
+# spells2.c:1162
+E:Your off-hand weapon burns your foes
+J:逆手の武器が敵を焼く
+
+# spells2.c:1170
+E:Your off-hand weapon freezes your foes
+J:逆手の武器が敵を凍らせる
+
+# spells2.c:1178
+E:Your off-hand weapon poisons your foes
+J:逆手の武器が敵を毒する
+
+# spells2.c:1188
+E:Your off-hand weapon is especially deadly against orcs
+J:逆手の武器がオークに特に強い
+
+# spells2.c:1197
+E:Your off-hand weapon is especially deadly against trolls
+J:逆手の武器がトロルに特に強い
+
+# spells2.c:1206
+E:Your off-hand weapon is especially deadly against wolves
+J:逆手の武器が狼に特に強い
+
+# spells2.c:1215
+E:Your off-hand weapon is especially deadly against spiders
+J:逆手の武器が蜘蛛に特に強い
+
+# spells2.c:1224
+E:Your off-hand weapon is especially deadly against raukar
+J:逆手の武器が魔霊に特に強い
+
+# spells2.c:1233
+E:Your off-hand weapon is especially deadly against dragons
+J:逆手の武器が竜に特に強い
+
+# spells2.c:1242
+E:Your off-hand weapon is especially effective against the undead
+J:逆手の武器が不死者によく効く
+
+# spells2.c:1252
+E:Your off-hand weapon is especially effective against men
+J:逆手の武器が人によく効く
+
+# spells2.c:1257
+E:Your off-hand weapon is especially effective against elves
+J:逆手の武器がエルフによく効く
+
+# spells2.c:1280
+E:Your bow shocks your foes
+J:弓が敵に雷を浴びせる
+
+# spells2.c:1288
+E:Your bow burns your foes
+J:弓が敵を焼く
+
+# spells2.c:1296
+E:Your bow freezes your foes
+J:弓が敵を凍らせる
+
+# spells2.c:1304
+E:Your bow poisons your foes
+J:弓が敵を毒する
+
+# spells2.c:1314
+E:Your bow is especially deadly against orcs
+J:弓がオークに特に強い
+
+# spells2.c:1322
+E:Your bow is especially deadly against trolls
+J:弓がトロルに特に強い
+
+# spells2.c:1330
+E:Your bow is especially deadly against wolves
+J:弓が狼に特に強い
+
+# spells2.c:1338
+E:Your bow is especially deadly against spiders
+J:弓が蜘蛛に特に強い
+
+# spells2.c:1346
+E:Your bow is especially deadly against raukar
+J:弓が魔霊に特に強い
+
+# spells2.c:1354
+E:Your bow is especially deadly against dragons
+J:弓が竜に特に強い
+
+# spells2.c:1362
+E:Your bow is especially effective against the undead
+J:弓が不死者によく効く
+
+# spells2.c:1371
+E:Your bow is especially effective against men
+J:弓が人によく効く
+
+# spells2.c:1375
+E:Your bow is especially effective against elves
+J:弓がエルフによく効く
+
+# spells2.c:1384
+E:Your bow fires with unerring precision
+J:弓が狙い過たず放たれる
+
+# spells2.c:1393
+E:Your bow is cumbersome to use
+J:弓が扱いにくい
+
+# spells2.c:1412
+E:Your equipment grants you the ability: %s
+J:装備が技を与えている: %s
+
+
+###############################################################################
+# P5: 自動破棄・見出し・アイテムの説明・そのほか
+###############################################################################
+
+# squelch.c:194
+E:[a-t]: Go to item squelching and autoinscribing sub-menu.
+J:[a-t]: アイテムごとの破棄と自動銘の品書きへ。
+
+# squelch.c:195
+E:Q    : Go to quality squelching sub-menu*.
+J:Q    : 出来ごとの破棄の品書きへ*。
+
+# squelch.c:196
+E:E    : Go to special item squelching sub_menu.
+J:E    : 特別なアイテムの破棄の品書きへ。
+
+# squelch.c:197
+E:S    : Save squelch values to pref file.
+J:S    : 破棄の決めを綴りへ書き出す。
+
+# squelch.c:198
+E:L    : Load squelch values from pref file.
+J:L    : 破棄の決めを綴りから読む。
+
+# squelch.c:199
+E:B    : Save autoinscriptions to pref file.
+J:B    : 自動銘を綴りへ書き出す。
+
+# squelch.c:200
+E:G    : Load autoinscriptions from pref file.
+J:G    : 自動銘を綴りから読む。
+
+# squelch.c:202
+E:ESC  : Back to options menu.
+J:ESC  : 設定の品書きへ戻る。
+
+# squelch.c:203
+E:\s\s\s\s\s:*includes squelching opened chests.
+J:\s\s\s\s\s:*開けた箱の破棄も含む。
+
+# squelch.c:224
+E:Command: Dump Squelch Info
+J:命令: 破棄の決めを書き出す
+
+# squelch.c:280
+E:Squelch file saved successfully.  (Hit a key.)
+J:破棄の綴りを書き出した。（何かキーを押してください）
+
+# squelch.c:289
+E:Command: Load squelch info from file
+J:命令: 破棄の決めを綴りから読む
+
+# squelch.c:304
+E:Failed to load squelch file!  (Hit a key.)
+J:破棄の綴りを読めなかった！（何かキーを押してください）
+
+# squelch.c:309
+E:Squelch data loaded!  (Hit a key.)
+J:破棄の決めを読み込んだ！（何かキーを押してください）
+
+# squelch.c:318
+E:Command: Dump Autoinscribe Info
+J:命令: 自動銘を書き出す
+
+# squelch.c:363
+E:Autoinscribe file saved successfully.  (Hit a key.)
+J:自動銘の綴りを書き出した。（何かキーを押してください）
+
+# squelch.c:372
+E:Command: Load Autoinscribe info from file
+J:命令: 自動銘を綴りから読む
+
+# squelch.c:387
+E:Failed to load autoinscribe file!  (Hit a key.)
+J:自動銘の綴りを読めなかった！（何かキーを押してください）
+
+# squelch.c:393
+E:Autoinscribe data loaded!  (Hit a key.)
+J:自動銘を読み込んだ！（何かキーを押してください）
+
+# squelch.c:478
+E:No known objects of this type.
+J:この類で知っているアイテムは無い。
+
+# squelch.c:507
+E:Current Autoinscription: %-40s
+J:いまの自動銘: %-40s
+
+# squelch.c:566
+E:CTRL-N: No Squelch - defer to Never_pickup option
+J:CTRL-N: 破棄しない（Never_pickup の設定に任せる）
+
+# squelch.c:568
+E:Esc   : Return
+J:Esc   : 戻る
+
+# squelch.c:569
+E:CTRL-L: Never Pickup
+J:CTRL-L: 決して拾わない
+
+# squelch.c:570
+E:CTRL-A: Always Pickup
+J:CTRL-A: いつも拾う
+
+# squelch.c:571
+E:+/-     Toggle Selection
+J:+/-     選びを切り替える
+
+# squelch.c:572
+E:CTRL-S: Squelch
+J:CTRL-S: 破棄する
+
+# squelch.c:573
+E:Use direction keys to Navigate list; or enter a letter
+J:向きの鍵で一覧を動かす。符号を打ってもよい
+
+# squelch.c:576
+E:Enter: New autoinscription
+J:Enter: 新しい自動銘
+
+# squelch.c:583
+E:%s : Command?\s
+J:%s : 命令は？\s
+
+# squelch.c:773
+E:Secondary Squelching Menu
+J:出来ごとの破棄の品書き
+
+# squelch.c:775
+E:Legend:
+J:凡例:
+
+# squelch.c:777
+E:N  : Squelch Nothing
+J:N  : 何も破棄しない
+
+# squelch.c:778
+E:C  : Squelch Cursed Items
+J:C  : 呪われたアイテムを破棄
+
+# squelch.c:779
+E:V  : Squelch Average and Below
+J:V  : 並以下を破棄
+
+# squelch.c:780
+E:G  : Squelch Good (Strong Pseudo_ID and Identify)
+J:G  : 良いアイテムを破棄（強い勘と鑑定）
+
+# squelch.c:781
+E:W  : Squelch Good (Weak Pseudo-ID)
+J:W  : 良いアイテムを破棄（弱い勘）
+
+# squelch.c:782
+E:A  : Squelch All but Artefacts
+J:A  : 銘のアイテム以外すべて破棄
+
+# squelch.c:783
+E:O  : Squelch Chests After Opening
+J:O  : 開けた後の箱を破棄
+
+# squelch.c:786
+E:Arrows: Move and adjust settings
+J:矢印: 動かして決めを変える
+
+# squelch.c:787
+E:ncvgao : Change a single setting
+J:ncvgao : 決めを 1 つ変える
+
+# squelch.c:788
+E:NCVGWAO : Change all allowable settings
+J:NCVGWAO : 変えられる決めをすべて変える
+
+# squelch.c:789
+E:ESC   : Exit Secondary Menu
+J:ESC   : この品書きを出る
+
+# squelch.c:790
+E:Rings:   N, C or A only
+J:指輪:   N・C・A のみ
+
+# squelch.c:791
+E:Amulets: N, C or A only
+J:護符:   N・C・A のみ
+
+# squelch.c:792
+E:Opened Chests: N or O only
+J:開けた箱: N か O のみ
+
+# squelch.c:1265
+E:Squelch
+J:破棄
+
+# squelch.c:1268
+E:No squelch
+J:破棄しない
+
+# squelch.c:230 squelch.c:295
+E:%s.squ
+J:
+
+# init2.c:1524
+E:\s\sThe world was young, the mountains green,\s\s\s\s\s\s\s\s\s\s\s\s
+J:\s\s世界は若く、山々は緑であった、
+
+# init2.c:1526
+E:\s\s\s\s\sNo stain yet on the moon was seen...\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:\s\s\s\s\s月にはまだ翳りひとつ見えなかった……
+
+# init2.c:1529
+E:Welcome to Sil, a game of adventure set\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:Sil へようこそ。これは中つ国の第一紀を
+
+# init2.c:1531
+E:\s\sin the First Age of Middle-earth,\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:\s\s舞台とする冒険の物語である。
+
+# init2.c:1533
+E:\s\s\s\swhen the world still rang with elven song\s\s\s\s\s\s\s\s\s\s
+J:\s\s\s\s世界がなおエルフの歌に響き、
+
+# init2.c:1535
+E:\s\s\s\s\s\sand gleamed with dwarven mail.\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:\s\s\s\s\s\sドワーフの鎖帷子に輝いていたころの。
+
+# init2.c:1538
+E:Walk the dark halls of Angband.\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:アングバンドの暗き広間を歩め。
+
+# init2.c:1540
+E:\s\sSlay creatures black and fell.\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:\s\s黒く恐ろしき者どもを討て。
+
+# init2.c:1542
+E:\s\s\s\sWrest a shining Silmaril from Morgoth's iron crown.
+J:\s\s\s\sモルゴスの鉄の王冠より輝くシルマリルを奪い取れ。
+
+# init2.c:451
+E:Cannot open '%s.txt' file.
+J:'%s.txt' を開けない。
+
+# init2.c:566
+E:Cannot load '%s.raw' file.
+J:'%s.raw' を読めない。
+
+# init2.c:576
+E:Cannot parse '%s.raw' file.
+J:'%s.raw' を解せない。
+
+# init2.c:1637
+E:Cannot create the '%s' file!
+J:'%s' を作れない！
+
+# init2.c:1111 init2.c:1662
+E:Cannot initialize objects
+J:アイテムを用意できない
+
+# init2.c:1114 init2.c:1707
+E:Cannot initialize flavors
+J:呼び名を用意できない
+
+# init2.c:1117 init2.c:1677
+E:Cannot initialize special items
+J:特別なアイテムを用意できない
+
+# init2.c:1652
+E:Cannot initialize sizes
+J:大きさを用意できない
+
+# init2.c:1657
+E:Cannot initialize features
+J:地形を用意できない
+
+# init2.c:1667
+E:Cannot initialize abilities
+J:能力を用意できない
+
+# init2.c:1672
+E:Cannot initialize artefacts
+J:銘のアイテムを用意できない
+
+# init2.c:1682
+E:Cannot initialize monsters
+J:敵を用意できない
+
+# init2.c:1687
+E:Cannot initialize vaults
+J:地下室を用意できない
+
+# init2.c:1692
+E:Cannot initialize histories
+J:生い立ちを用意できない
+
+# init2.c:1697
+E:Cannot initialize races
+J:種族を用意できない
+
+# init2.c:1702
+E:Cannot initialize houses
+J:家を用意できない
+
+# init2.c:1712
+E:Cannot initialize other stuff
+J:そのほかを用意できない
+
+# init2.c:1717
+E:Cannot initialize alloc stuff
+J:割り当ての表を用意できない
+
+# init2.c:1732
+E:Cannot initialize random name generator stuff
+J:名前を振る仕掛けを用意できない
+
+# init2.c:1287
+E:No surface objects!
+J:地上のアイテムが無い！
+
+# init2.c:1371
+E:No surface monsters!
+J:地上の敵が居ない！
+
+# init2.c:1747
+E:Resurrecting a character is a form of cheating.
+J:死んだ冒険者を甦らせるのはずるである。
+
+# init2.c:1749
+E:You cannot get a high score with this character.
+J:この冒険者は記録に残らない。
+
+# load.c:731
+E:Invalid player race (%d).
+J:冒険者の種族が正しくない (%d)。
+
+# load.c:741
+E:Invalid player house (%d).
+J:冒険者の家が正しくない (%d)。
+
+# load.c:1662 load.c:998
+E:Too many (%u) artefacts!
+J:銘のアイテムが多すぎる (%u)！
+
+# load.c:1306
+E:Ignoring illegal dungeon depth (%d)
+J:正しくない深さを見送った (%d)
+
+# load.c:1315
+E:Ignoring illegal dungeon size (%d,%d).
+J:正しくない階の大きさを見送った (%d,%d)。
+
+# load.c:1324
+E:Ignoring illegal player location (%d,%d).
+J:正しくない冒険者の位置を見送った (%d,%d)。
+
+# load.c:1392
+E:Cannot place player (%d,%d)!
+J:冒険者を置けない (%d,%d)！
+
+# load.c:1404
+E:Too many (%d) object entries!
+J:アイテムの項目が多すぎる (%d)！
+
+# load.c:1436
+E:Cannot place object %d!
+J:アイテム %d を置けない！
+
+# load.c:1473
+E:Too many (%d) monster entries!
+J:敵の項目が多すぎる (%d)！
+
+# load.c:1495
+E:Cannot place monster %d
+J:敵 %d を置けない
+
+# load.c:1567
+E:Loading a %d.%d.%d savefile...
+J:%d.%d.%d のセーブを読んでいます...
+
+# load.c:1615
+E:Too many (%u) monster races!
+J:敵の種類が多すぎる (%u)！
+
+# load.c:1634
+E:Too many (%u) object kinds!
+J:アイテムの種類が多すぎる (%u)！
+
+# obj-info.c:143 obj-info.c:95
+E:It %s all your stats
+J:能力値をすべて%s
+
+# obj-info.c:100 obj-info.c:148 obj-info.c:197
+E:It %s your\s
+J:%sのは
+
+E:increases
+J:上げる
+
+E:decreases
+J:下げる
+
+# obj-info.c:108 obj-info.c:156 obj-info.c:203
+E:\sby %i.\s\s
+J:。上下は %i。
+
+# obj-info.c:532
+E:can be thrown effectively (%d squares)
+J:投げるのに向く（%d 升）
+
+# obj-info.c:695
+E:\severy %d+d%d turns
+J:（%d+d%d ターンごと）
+
+# obj-info.c:698
+E:\severy %d turns
+J:（%d ターンごと）
+
+# obj-info.c:701
+E:\severy d%d turns
+J:（d%d ターンごと）
+
+# obj-info.c:795
+E:It can shoot arrows %d squares (with your current strength).
+J:いまの腕力なら矢を %d 升飛ばせる。
+
+# obj-info.c:806
+E:It can be shot %d squares (with your current strength and bow).
+J:いまの腕力と弓なら %d 升飛ぶ。
+
+# obj-info.c:812
+E:They can be shot %d squares (with your current strength and bow).
+J:いまの腕力と弓なら %d 升飛ぶ。
+
+# obj-info.c:962
+E:The note here reads:\n\n
+J:書き付けにはこうある:\n\n
+
+# obj-info.c:1016 obj-info.c:969
+E:\n\n(press any key)\n
+J:\n\n（何かキーを押してください）\n
+
+# dungeon.c:1306
+E:Type '?' for help.
+J:'?' でヘルプが出ます。
+
+# dungeon.c:1686
+E:Challenge: %s
+J:手応え: %s
+
+# dungeon.c:2937
+E:main window does not exist
+J:主画面が無い
+
+# dungeon.c:2946
+E:main window is too small
+J:主画面が小さすぎる
+
+# dungeon.c:2961
+E:broken savefile
+J:セーブが壊れている
+
+# cave.c:2650
+E:Incorrect bit masks!
+J:ビットの覆いが違う！
+
+# util.c:1501
+E:Too many macros!
+J:巨手が多すぎる！
+
+# util.c:3684
+E:Quantity (0-%d):\s
+J:いくつ (0-%d):\s
+
+# util.c:4031
+E:Repeat how many times:\s
+J:何度繰り返しますか:\s
+
+# util.c:4046 util.c:4071 util.c:4089
+E:Repeat how many times: %d
+J:何度繰り返しますか: %d
+
+# spells1.c:610
+E:%s (while hallucinating)
+J:%s（幻を見ている）
+
+# monster2.c:769
+E:What you see is not to be believed.
+J:目に映るものは当てにならない。
+
+# xtra2.c:3512
+E:What you see is not to be believed.  [%s]
+J:目に映るものは当てにならない。  [%s]
+
+# monster2.c:1707
+E:Encountered %s
+J:%sと出会った
+
+# xtra2.c:2349
+E:Destroyed %s
+J:%sを壊した
+
+# xtra2.c:2351
+E:Slew %s
+J:%sを討ち取った
+
+# xtra2.c:2765
+E:asleep (%d),\s
+J:眠り (%d)、\s
+
+# xtra2.c:2767
+E:unwary (%d),\s
+J:油断 (%d)、\s
+
+# xtra2.c:2769
+E:alert (%d),\s
+J:警戒 (%d)、\s
+
+# xtra2.c:3578
+E:\s\s[(r)ecall, %s]
+J:\s\s[(r) 思い出, %s]
+
+# xtra2.c:3627
+E:%s%s%s%s %s%s [(r)ecall, %s] (%d:%d)
+J:%s%s%s%s %s%s [(r) 思い出, %s] (%d:%d)
+
+# xtra2.c:3634
+E:%s%s%s%s %s%s [(r)ecall, %s]
+J:%s%s%s%s %s%s [(r) 思い出, %s]
+
+E:(t)arget, (m)anual, <dir>
+J:(t) 狙う, (m) 手動, <向き>
+
+E:(m)anual, <dir>
+J:(m) 手動, <向き>
+
+# xtra2.c:3621
+E:-more-\s
+J:
+
+# monster1.c:149
+E:\s(%+d, 1d%d)
+J:
+
+# monster1.c:156
+E:\s(%+d, 2d%d)
+J:
+
+# monster1.c:163
+E:\s(%+d, 6d%d)
+J:
+
+# melee1.c:3277 melee1.c:3354
+E:\s\s[dd%d]
+J:
+
+# melee1.c:3375
+E:\s\s1/%d then
+J:
+
+# melee1.c:3380
+E:\s\sx%d then
+J:
+
+# util.c:3749
+E:%.70s[y/n/%c]\s
+J:
+
+# util.c:3803
+E:%.70s[y/n]\s
+J:
+
+# dungeon.c:2548
+E:exp:%d = s:5000 + e:%d + k:%d + d:%d +\r\n                // i:%d
+J:
+
+
+# spells2.c:594
+E:You are %shaunted by wraiths
+J:亡霊に%s取り憑かれている
+
+# spells2.c:596
+E:(%d%% chance each turn)
+J:（毎手 %d%% の見込み）
+
+# spells2.c:602
+E:You encounter %smore dangerous creatures
+J:%s危険な敵に出会いやすい
+
+
+###############################################################################
+# P5: アイテムの説明（obj-info.c。変数で渡る鍵）
+###############################################################################
+
+E:and\s
+J:と
+
+E:or\s
+J:あるいは
+
+E:all stats
+J:すべての能力値
+
+E:improves
+J:良くする
+
+E:worsens
+J:悪くする
+
+E:melee
+J:打撃
+
+E:archery
+J:射撃
+
+E:stealth
+J:隠密
+
+E:perception
+J:知覚
+
+E:will
+J:意志
+
+E:smithing
+J:鍛冶
+
+E:song
+J:歌唱
+
+E:tunneling
+J:掘削
+
+E:damage sides
+J:打撃のダイスの面
+
+E:It sustains all your stats.\s\s
+J:すべての能力値を保つ。
+
+E:It sustains your\s
+J:保つのは
+
+E:It slays\s
+J:特に強いのは
+
+E:They slay\s
+J:特に強いのは
+
+E:wolves
+J:狼
+
+E:orcs
+J:オーク
+
+E:trolls
+J:トロル
+
+E:spiders
+J:蜘蛛
+
+E:dragons
+J:竜
+
+E:raukar
+J:魔霊
+
+E:undead
+J:不死者
+
+E:men
+J:人
+
+E:elves
+J:エルフ
+
+E:It is branded with\s
+J:帯びているのは
+
+E:They are branded with\s
+J:帯びているのは
+
+E:flame
+J:炎
+
+E:venom
+J:毒
+
+E:It cuts easily through armour.\s\s
+J:鎧を易々と断つ。
+
+E:They cut easily through armour.\s\s
+J:鎧を易々と断つ。
+
+E:It cuts very easily through armour.\s\s
+J:鎧をたいそう易々と断つ。
+
+E:It drains life from your enemies.\s\s
+J:敵から命を吸い取る。
+
+E:It fires arrows with unerring precision (misses are rerolled).\s\s
+J:狙い過たず矢を放つ（外れた攻撃を振り直す）。
+
+E:It is unusually well balanced (misses are rerolled).\s\s
+J:釣り合いが並外れて良い（外れた攻撃を振り直す）。
+
+E:It is cumbersome (it does not score critical hits).\s\s
+J:扱いにくい（会心の一撃が出ない）。
+
+E:It does extra damage when wielded with both hands.\s\s
+J:両手で構えると余分に打撃を与える。
+
+E:It requires both hands to wield it properly.\s\s
+J:きちんと構えるには両手が要る。
+
+E:It counts as a type of polearm.\s\s
+J:長柄の一種として扱われる。
+
+E:It cannot be harmed by the elements.\s\s
+J:属性の攻撃では傷まない。
+
+E:It cannot be harmed by\s
+J:傷まないのは
+
+E:It provides resistance to\s
+J:守ってくれるのは
+
+E:It makes you more vulnerable to\s
+J:弱くなるのは
+
+E:bleeding
+J:出血
+
+E:fear
+J:恐怖
+
+E:blindness
+J:盲目
+
+E:confusion
+J:混乱
+
+E:stunning
+J:朦朧
+
+E:hallucination
+J:幻覚
+
+E:acid
+J:酸
+
+E:electricity
+J:雷
+
+E:It grants you\s
+J:与えるのは
+
+E:, but it also\s
+J:。ただし
+
+E:lights the dungeon around you
+J:あたりを照らす
+
+E:burns brightly, increasing your light radius by an additional square
+J:明るく燃え、光の届く範囲を 1 升広げる
+
+E:reduces your need for food
+J:食べ物を減らさずに済ませる
+
+E:fires shining arrows
+J:輝く矢を放つ
+
+E:lights your path behind you
+J:通った跡を照らす
+
+E:speeds your regeneration (which increases your hunger while active)
+J:傷の塞がりを速める（そのあいだ腹は減りやすくなる）
+
+E:preserves you from death once
+J:一度だけ死から護る
+
+E:lets you stand fast against your foes
+J:敵に対して踏みとどまらせる
+
+E:lets you step on traps without triggering them
+J:罠を踏んでも作動させない
+
+E:increases the health you get from healing items
+J:癒しのアイテムから得る生命力を増やす
+
+E:great speed
+J:大いなる速さ
+
+E:freedom of movement
+J:動きの自由
+
+E:the ability to see invisible creatures
+J:見えない敵を見る力
+
+E:makes you encounter more dangerous creatures (even when not worn)
+J:より危険な敵に出会わせる（身に着けていなくても）
+
+E:causes you to panic in combat
+J:戦いのさなかに取り乱させる
+
+E:increases your hunger
+J:腹の減りを速める
+
+E:creates an unnatural darkness
+J:尋常でない闇を生む
+
+E:slows your movement
+J:動きを鈍らせる
+
+E:enrages nearby creatures
+J:近くの敵を怒らせる
+
+E:draws wraiths to your level
+J:この階へ亡霊を引き寄せる
+
+E:may betray you when you need it most
+J:最も頼りたいときに裏切るかもしれない
+
+E:is permanently cursed
+J:永久に呪われている
+
+E:is heavily cursed
+J:ひどく呪われている
+
+E:is cursed
+J:呪われている
+
+E:Activation
+J:発動
+
+E:It activates for\s
+J:発動すると
+
+E:It grants you the ability:\s
+J:与える技は:\s
+
+E:It grants you the abilities:\s
+J:与える技は:\s
+
+E:illumination
+J:照らす
+
+E:magic mapping
+J:地図を得る
+
+E:clairvoyance
+J:千里眼
+
+E:protection from evil
+J:邪悪からの守り
+
+E:dispel evil (x5)
+J:邪悪を払う (x5)
+
+E:heal (500)
+J:癒し (500)
+
+E:heal (1000)
+J:癒し (1000)
+
+E:cure wounds (4d7)
+J:傷を癒す (4d7)
+
+E:haste self (20+d20 turns)
+J:加速 (20+d20 ターン)
+
+E:haste self (75+d75 turns)
+J:加速 (75+d75 ターン)
+
+E:fire bolt (9d8)
+J:火の矢 (9d8)
+
+E:fire ball (72)
+J:火の球 (72)
+
+E:large fire ball (120)
+J:大きな火の球 (120)
+
+E:frost bolt (6d8)
+J:冷気の矢 (6d8)
+
+E:frost ball (48)
+J:冷気の球 (48)
+
+E:frost ball (100)
+J:冷気の球 (100)
+
+E:frost bolt (12d8)
+J:冷気の矢 (12d8)
+
+E:large frost ball (200)
+J:大きな冷気の球 (200)
+
+E:acid bolt (5d8)
+J:酸の矢 (5d8)
+
+E:recharge item I
+J:魔力充填 I
+
+E:sleep II
+J:眠り II
+
+E:lightning bolt (4d8)
+J:稲妻の矢 (4d8)
+
+E:large lightning ball (250)
+J:大きな稲妻の球 (250)
+
+E:banishment
+J:追放
+
+E:mass banishment
+J:大追放
+
+E:*identify*
+J:*鑑定*
+
+E:drain life (90)
+J:生命力吸収 (90)
+
+E:drain life (120)
+J:生命力吸収 (120)
+
+E:bizarre things
+J:奇怪なこと
+
+E:star ball (150)
+J:星の球 (150)
+
+E:berserk rage, bless, and resistance
+J:狂戦士化・祝福・耐性
+
+E:phase door
+J:短距離転移
+
+E:door and trap destruction
+J:扉と罠の破壊
+
+E:detection
+J:感知
+
+E:resistance (20+d20 turns)
+J:耐性 (20+d20 ターン)
+
+E:teleport
+J:転移
+
+E:restore voice
+J:声の回復
+
+E:magic missile (2d6)
+J:魔法の矢 (2d6)
+
+E:a magical arrow (150)
+J:魔法の矢 (150)
+
+E:remove fear and cure poison
+J:恐怖を除き毒を癒す
+
+E:stinking cloud (12)
+J:悪臭雲 (12)
+
+E:stone to mud
+J:岩を泥に
+
+E:teleport away
+J:テレポートさせる
+
+E:word of recall
+J:帰還の言葉
+
+E:confuse monster
+J:敵を混乱させる
+
+E:probing
+J:探査
+
+E:fire branding of bolts
+J:矢に炎の銘を付ける
+
+E:starlight (10d8)
+J:星の光 (10d8)
+
+E:mana bolt (12d8)
+J:魔力の矢 (12d8)
+
+E:berserk rage (50+d50 turns)
+J:狂戦士化 (50+d50 ターン)
+
+E:resist acid (20+d20 turns)
+J:酸への耐性 (20+d20 ターン)
+
+E:resist electricity (20+d20 turns)
+J:雷への耐性 (20+d20 ターン)
+
+E:resist fire (20+d20 turns)
+J:火への耐性 (20+d20 ターン)
+
+E:resist cold (20+d20 turns)
+J:冷気への耐性 (20+d20 ターン)
+
+E:resist poison (20+d20 turns)
+J:毒への耐性 (20+d20 ターン)
+
+E:It can be shot by a bow.
+J:弓で射ることができる。
+
+E:They can be shot by a bow.
+J:弓で射ることができる。
+
+E:\n\n\s\s\sThis item has not been identified.
+J:\n\n\s\s\sこのアイテムはまだ鑑定されていない。
+
+E:\n\n\s\s\sThis item does not seem to possess any special abilities.
+J:\n\n\s\s\sこのアイテムに特別な力は無さそうだ。
+
+E:secondary bonuses
+J:
+
+E:something
+J:
+
+E:angband.h
+J:
+
+
+###############################################################################
+# P5: 敵の思い出の語の一覧（monster1.c。変数で渡る鍵）
+###############################################################################
+
+E:fire a shortbow
+J:短弓を射る
+
+E:fire a longbow
+J:長弓を射る
+
+E:throw boulders
+J:岩を投げる
+
+E:throw web
+J:蜘蛛の巣を投げる
+
+E:cause earthquakes
+J:地震を起こす
+
+E:call for help
+J:助けを呼ぶ
+
+E:cause a hideous screeching
+J:おぞましい金切り声をあげる
+
+E:create darkness
+J:闇を生む
+
+E:remove memories
+J:記憶を奪う
+
+E:terrify
+J:恐怖させる
+
+E:confuse
+J:混乱させる
+
+E:entrance
+J:幻惑する
+
+E:slow
+J:鈍足にする
+
+E:dim torches and lanterns
+J:松明とランタンを暗くする
+
+E:hit
+J:殴打
+
+E:touch (ignoring armour)
+J:接触（防具を無視）
+
+E:claw
+J:引っ掻き
+
+E:bite
+J:噛みつき
+
+E:peck
+J:つつき
+
+E:sting
+J:刺し
+
+E:whip
+J:鞭打ち
+
+E:crush
+J:押し潰し
+
+E:engulf
+J:呑み込み
+
+E:crawl on you
+J:這い上がり
+
+E:pierce you with thorns
+J:棘での突き刺し
+
+E:release spores (ignoring evasion and armour)
+J:胞子の放出（回避と防具を無視）
+
+E:do something weird
+J:奇妙な何か
+
+E:attack
+J:攻める
+
+E:wound
+J:傷つける
+
+E:stun
+J:朦朧とさせる
+
+E:disenchant
+J:魔力を削ぐ
+
+E:drain charges
+J:魔力を吸い取る
+
+E:drain mana
+J:声を吸い取る
+
+E:steal items
+J:アイテムを盗む
+
+E:eat your food
+J:食べ物を食う
+
+E:cause hunger
+J:飢えさせる
+
+E:corrode
+J:腐食させる
+
+E:shock
+J:感電させる
+
+E:burn
+J:焼く
+
+E:freeze
+J:凍らせる
+
+E:darken
+J:暗くする
+
+E:blind
+J:盲目にする
+
+E:induce hallucinations
+J:幻覚を起こす
+
+E:cause disease
+J:病を与える
+
+E:reduce strength
+J:腕力を減らす
+
+E:reduce dexterity
+J:敏捷を減らす
+
+E:reduce constitution
+J:耐久を減らす
+
+E:reduce grace
+J:恩寵を減らす
+
+E:reduce strength and constitution
+J:腕力と耐久を減らす
+
+E:reduce all stats
+J:すべての能力値を減らす
+
+E:disarm
+J:武器を落とさせる
+
+E:elf-bane
+J:エルフ殺し
+
+E:charge
+J:突撃
+
+E:knock back
+J:打ち飛ばし
+
+E:crippling shot
+J:挫きの射
+
+E:cruel blow
+J:残酷な一撃
+
+E:opportunist
+J:好機の一撃
+
+E:zone of control
+J:制圧圏
+
+E:exchange places
+J:位置交換
+
+E:riposte
+J:反撃
+
+E:flanking
+J:側面取り
+
+E:song of binding
+J:縛めの歌
+
+E:song of piercing
+J:貫きの歌
+
+E:song of oaths
+J:誓いの歌
+
+E:hatch spider
+J:蜘蛛を孵す
+
+E:rally foes
+J:味方を鼓舞する
+
+E:radiate light
+J:光を放つ
+
+E:use a light source
+J:明かりを持つ
+
+E:produce an unnatural darkness
+J:尋常でない闇を生む
+
+E:fly
+J:飛ぶ
+
+E:open doors
+J:扉を開ける
+
+E:pass through doors
+J:扉をすり抜ける
+
+E:unlock doors
+J:錠を開ける
+
+E:bash down doors
+J:扉を打ち破る
+
+E:pass through walls
+J:壁をすり抜ける
+
+E:bore through walls
+J:壁を穿つ
+
+E:tunnel through walls
+J:壁を掘り進む
+
+E:destroy weaker monsters
+J:弱い敵を屠る
+
+E:pick up objects
+J:アイテムを拾う
+
+E:destroy objects
+J:アイテムを壊す
+
+
+###############################################################################
+# P5: 表に入っている名前の拾い直し（cmd4.c）
+###############################################################################
+
+E:Sword
+J:剣
+
+E:Axe or Polearm
+J:斧か長柄
+
+E:Blunt Weapon
+J:打撃武器
+
+E:Digger
+J:掘る道具
+
+E:Bow
+J:弓
+
+E:Ring
+J:指輪
+
+E:Amulet
+J:護符
+
+E:Horn
+J:角笛
+
+E:Soft Armour
+J:革の鎧
+
+E:Mail
+J:鎖と板の鎧
+
+E:Cloak
+J:外套
+
+E:Shield
+J:盾
+
+E:Helm
+J:兜
+
+E:Gloves
+J:篭手
+
+E:Boots
+J:靴
+
+E:Stat bonuses
+J:能力値の補正
+
+E:Sustains
+J:能力値の維持
+
+E:Skill bonuses
+J:技能の補正
+
+E:Melee powers
+J:打撃の力
+
+E:Slays
+J:殺戮
+
+E:Resistances
+J:耐性
+
+E:Misc
+J:その他
+
+E:Str bonus
+J:腕力の補正
+
+E:Dex bonus
+J:敏捷の補正
+
+E:Con bonus
+J:耐久の補正
+
+E:Gra bonus
+J:恩寵の補正
+
+E:Str penalty
+J:腕力の罰
+
+E:Dex penalty
+J:敏捷の罰
+
+E:Con penalty
+J:耐久の罰
+
+E:Gra penalty
+J:恩寵の罰
+
+E:Damage bonus
+J:打撃の補正
+
+E:Sustenance
+J:腹持ち
+
+E:Regeneration
+J:傷の塞がり
+
+E:See Invisible
+J:透明を見る
+
+E:Free Action
+J:動きの自由
+
+E:Speed
+J:速さ
+
+E:Radiance
+J:輝き
+
+E:Cheat Death
+J:死をあざむく
+
+E:Stand Fast
+J:踏みとどまり
+
+E:Avoid Traps
+J:罠よけ
+
+E:Medicine Bonus
+J:癒しの補正
+
+E:Tunneling Bonus
+J:掘削の補正
+
+E:Sharpness
+J:鋭さ
+
+E:Vampiric
+J:吸血
+
+E:Accurate
+J:正確
+
+E:Slay Orc
+J:オーク殺し
+
+E:Slay Troll
+J:トロル殺し
+
+E:Slay Wolf
+J:狼殺し
+
+E:Slay Spider
+J:蜘蛛殺し
+
+E:Slay Undead
+J:不死者殺し
+
+E:Slay Rauko
+J:魔霊殺し
+
+E:Slay Dragon
+J:竜殺し
+
+E:Brand with Cold
+J:冷気の銘
+
+E:Brand with Fire
+J:炎の銘
+
+E:Brand with Poison
+J:毒の銘
+
+E:Sustain Str
+J:腕力の維持
+
+E:Sustain Dex
+J:敏捷の維持
+
+E:Sustain Con
+J:耐久の維持
+
+E:Sustain Gra
+J:恩寵の維持
+
+E:Looks like any other level.
+J:ほかの階と変わりない。
+
+E:You feel there is something special about this level.
+J:この階には何か特別なものがある気がする。
+
+E:You have a superb feeling about this level.
+J:この階にはこの上ない予感がする。
+
+E:You have an excellent feeling...
+J:すばらしい予感がする……
+
+E:You have a very good feeling...
+J:とても良い予感がする……
+
+E:You have a good feeling...
+J:良い予感がする……
+
+E:You feel strangely lucky...
+J:妙に運が向いている気がする……
+
+E:You feel your luck is turning...
+J:運が向いてきた気がする……
+
+E:You like the look of this place...
+J:この場所は悪くない……
+
+E:This level can't be all bad...
+J:この階もそう悪くはあるまい……
+
+E:What a boring place...
+J:なんとつまらない場所だ……
+
+E:challenges you from beyond the grave!
+J:墓の彼方からあなたに挑む！
+
+E:thunders 'Prove worthy of your traditions - or die ashamed!'.
+J:「伝統に恥じぬと示せ。さもなくば辱めのうちに死ね」と轟かせる。
+
+E:desires to test your mettle!
+J:あなたの気概を試そうとしている！
+
+E:has risen from the dead to test you!
+J:あなたを試すために死者の中から起き上がった！
+
+E:roars 'Fight, or know yourself for a coward!'.
+J:「戦え、さもなくば己が臆病者と知れ」と吼える。
+
+E:summons you to a duel of life and death!
+J:生死を賭けた一騎討ちにあなたを呼ぶ！
+
+E:desires you to know that you face a mighty champion of yore!
+J:相対するのが古の偉大な勇士であると知らしめようとしている！
+
+E:demands that you prove your worthiness in combat!
+J:戦いによって値打ちを示せと迫る！
+
+E:calls you unworthy of your ancestors!
+J:あなたを先祖に値しない者と呼ぶ！
+
+E:challenges you to a deathmatch!
+J:死ぬまでの勝負を挑む！
+
+E:walks Middle-Earth once more!
+J:再び中つ国を歩む！
+
+E:challenges you to demonstrate your prowess!
+J:腕前を見せてみよと挑む！
+
+E:demands you prove yourself here and now!
+J:いまここで己を示せと迫る！
+
+E:asks 'Can ye face the best of those who came before?'.
+J:「先を行きし者の最上と相対せるか」と問う。
+
+E:Uniques
+J:固有の敵
+
+E:Bats & Birds
+J:蝙蝠と鳥
+
+E:Canines
+J:犬の類
+
+E:Young Dragons
+J:幼い竜
+
+E:Great Dragons
+J:偉大な竜
+
+E:Felines
+J:猫の類
+
+E:Giants
+J:巨人
+
+E:Horrors
+J:恐怖の者
+
+E:Insects
+J:虫
+
+E:Young Spiders
+J:幼い蜘蛛
+
+E:Spiders
+J:蜘蛛
+
+E:Nameless Things
+J:名も無き者
+
+E:Orcs
+J:オーク
+
+E:Raukar
+J:魔霊
+
+E:Serpents
+J:蛇
+
+E:Ancient Serpents
+J:古の蛇
+
+E:Trolls
+J:トロル
+
+E:Vampires
+J:吸血鬼
+
+E:Valar
+J:ヴァラール
+
+E:Creeping Shadows
+J:這い寄る影
+
+E:Wights and Wraiths
+J:塚人と亡霊
+
+E:Plants
+J:草木
+
+E:People
+J:人々
+
+E:Herbs
+J:薬草
+
+E:Potions
+J:薬
+
+E:Rings
+J:指輪
+
+E:Amulets
+J:護符
+
+E:Staves
+J:杖
+
+E:Horns
+J:角笛
+
+E:Swords
+J:剣
+
+E:Axes & Polearms
+J:斧と長柄
+
+E:Blunt Weapons
+J:打撃武器
+
+E:Diggers
+J:掘る道具
+
+E:Light Sources
+J:光る物
+
+E:Shields
+J:盾
+
+E:Cloaks
+J:外套
+
+E:Helms
+J:兜
+
+E:Crowns
+J:王冠
+
+E:Chests
+J:箱
+
+E:File name:\s
+J:綴りの名:\s
+
+E:Broke your oath
+J:誓いを破った
+
+E:Return to Game
+J:冒険へ戻る
+
+E:Delay factor for animation (0 to 9)
+J:動きの間の取り方（0 ～ 9）
+
+E:Hitpoint warning threshold (0% to 90%)
+J:生命力の警告を出す割合 (0% to 90%)
+
+E:Monster attr/chars
+J:敵の色と記号
+
+E:Object attr/chars
+J:アイテムの色と記号
+
+E:Feature attr/chars
+J:地形の色と記号
+
+E:Flavor attr/chars
+J:呼び名の色と記号
+
+E:Command: Modify colors\s
+J:命令: 色を変える\s
+
+E:Kill counts
+J:討ち取った数
+
+
+###############################################################################
+# P5: 記号の凡例・自動破棄の類分け・終わりの覚え書き（変数で渡る鍵）
+###############################################################################
+
+E:A dark grid
+J:暗い升
+
+E:A potion (or oil)
+J:薬（または油）
+
+E:An amulet
+J:護符
+
+E:A wall
+J:壁
+
+E:A quartz vein
+J:石英の鉱脈
+
+E:A plant
+J:草木
+
+E:An open door
+J:開いた扉
+
+E:Soft armour
+J:革の鎧
+
+E:A shield
+J:盾
+
+E:A gem (or unseen monster)
+J:宝石（または見えない敵）
+
+E:A closed door
+J:閉じた扉
+
+E:Food
+J:食べ物
+
+E:Floor
+J:床
+
+E:An axe or polearm
+J:斧か長柄
+
+E:A forge
+J:鍛冶場
+
+E:Rubble
+J:瓦礫
+
+E:A glyph of warding
+J:守りのルーン
+
+E:A staircase up
+J:上りの階段
+
+E:A ring
+J:指輪
+
+E:A staircase down
+J:下りの階段
+
+E:An instrument
+J:楽器
+
+E:Elf, Dwarf, or Man
+J:エルフ・ドワーフ・人
+
+E:Canine
+J:犬の類
+
+E:Giant
+J:巨人
+
+E:Horror
+J:恐怖の者
+
+E:Insect
+J:虫
+
+E:Nameless Thing
+J:名も無き者
+
+E:Ancient Serpent
+J:古の蛇
+
+E:Wight/Wraith
+J:塚人・亡霊
+
+E:A blunt weapon (or digger)
+J:打撃武器（または掘る道具）
+
+E:Misc. armour
+J:その他の防具
+
+E:A trap
+J:罠
+
+E:A staff
+J:杖
+
+E:Bat/Bird
+J:蝙蝠・鳥
+
+E:Feline
+J:猫の類
+
+E:Young Spider
+J:幼い蜘蛛
+
+E:Vampire
+J:吸血鬼
+
+E:Creeping Shadow
+J:這い寄る影
+
+E:An edged weapon (sword/dagger/etc)
+J:刃物（剣・短剣など）
+
+E:A bow
+J:弓
+
+E:A tool (or miscellaneous item)
+J:道具（その他のアイテム）
+
+E:unused
+J:
+
+E:Unknown Symbol
+J:知らない記号
+
+E:Enter character to be identified:\s
+J:調べたい記号を打ってください:\s
+
+E:Full monster list.
+J:敵の一覧すべて。
+
+E:Unique monster list.
+J:固有の敵の一覧。
+
+E:Non-unique monster list.
+J:固有でない敵の一覧。
+
+E:Inscription:\s
+J:銘:\s
+
+E:Shift viewpoint in which direction?\s
+J:どちらへ視点を移しますか？\s
+
+E:You free the final Silmaril. You have a very bad feeling about this.
+J:最後のシルマリルを解き放った。ひどく嫌な予感がする。
+
+E:Cut a Silmaril from Morgoth's crown
+J:モルゴスの王冠からシルマリルを切り取った
+
+E:Weapons (Blades)
+J:武器（刃物）
+
+E:Weapons (Non Blades)
+J:武器（刃物以外）
+
+E:Body Armor
+J:胴の鎧
+
+E:Helmets
+J:兜
+
+E:Food Items
+J:食べ物
+
+E:Crown
+J:王冠
+
+E:Soft Armor
+J:革の鎧
+
+E:Open Chests
+J:開けた箱
+
+E:Skeletons
+J:骸
+
+E:Pieces of Metal
+J:金属の塊
+
+E:Lights
+J:光る物
+
+E:Flasks
+J:壺
+
+E:Autoinscription:\s
+J:自動銘:\s
+
+E:Item Squelching and Autoinscription Main Menu:\s
+J:アイテムの破棄と自動銘の品書き:\s
+
+E:[None]
+J:[無し]
+
+E:You have not seen any special items yet.
+J:特別なアイテムはまだ見ていない。
+
+E:Navigation: 2, 8, 3, 9, 1, 7 or movement keys - Shorcut: First letter
+J:動かし方: 2, 8, 3, 9, 1, 7 か移動の鍵 - 近道: 頭の 1 字
+
+E:Command? (SPACE, RET: Toggle selection - ESC: Return)\s
+J:命令は？（SPACE, RET: 選びを切り替え - ESC: 戻る）\s
+
+E:of the\s
+J:
+
+E:# Squelch bits\n\n
+J:
+
+E:\n\n# squelch_level array\n\n
+J:
+
+E:# Format: B:[Item Kind]:[Inscription]\n\n
+J:
+
+E:# Autoinscription for %s\n
+J:
+
+E:Your race affects your ability scores and other factors.
+J:種族は能力値やそのほかに影響する。
+
+E:Your house modifies your race bonuses.
+J:家は種族の補正をさらに変える。
+
+E:\n\s\s\sTurn\s\s\s\s\sDepth\s\s\sNote\n\n
+J:\n\s\s\sターン\s\s\s深さ\s\s\s覚え書き\n\n
+
+E:You returned empty handed.
+J:あなたは手ぶらで戻った。
+
+E:You brought back a Silmaril from Morgoth's crown!
+J:あなたはモルゴスの王冠からシルマリルを 1 つ持ち帰った！
+
+E:You brought back two Silmarils from Morgoth's crown!
+J:あなたはモルゴスの王冠からシルマリルを 2 つ持ち帰った！
+
+E:You brought back all three Silmarils from Morgoth's crown!
+J:あなたはモルゴスの王冠からシルマリルを 3 つとも持ち帰った！
+
+E:You brought back so many Silmarils that people should be suspicious!
+J:あなたは怪しまれるほど多くのシルマリルを持ち帰った！
+
+E:You will be remembered always as a shameful oathbreaker.
+J:あなたは誓いを破った恥ずべき者として永く記憶されよう。
+
+E:You kept your oath to the very end.
+J:あなたは最後まで誓いを守り通した。
+
+E:ripe old age
+J:天寿
+
+E:their own hand
+J:自らの手
+
+E:quit without save
+J:保存せずにやめた
+
+E:Illegal control char (0x%02X) in player name
+J:
+
+E:Out of bounds
+J:
+
+E:Cannot write the '%s' file!
+J:'%s' を書き出せない！
+
+E:intensely\s
+J:ひどく
+
+E:much\s
+J:ずっと
+
+E:the strain of casting Banishment
+J:追放を唱えた疲れ
+
+E:the strain of casting Mass Banishment
+J:大追放を唱えた疲れ
+
+E:an earthquake
+J:地震
+
+E:falling into a pit
+J:落し穴への転落
+
+E:Choose a monster race (by symbol) to banish:\s
+J:追放する敵の類を記号で選んでください:\s
+
+
+###############################################################################
+# P5: 見る画・狙う問い・チュートリアルの文・詩（xtra2.c）
+###############################################################################
+
+E:You see\s
+J:見えるのは
+
+E:You are\s
+J:あなたが居るのは
+
+E:It is\s
+J:それが在るのは
+
+E:He is\s
+J:彼が
+
+E:She is\s
+J:彼女が
+
+E:They are\s
+J:それらが在るのは
+
+E:carrying\s
+J:持っているのは
+
+E:also carrying\s
+J:さらに持っているのは
+
+E:on\s
+J:\s
+
+E:in\s
+J:\s
+
+E:a\s
+J:\s
+
+E:an\s
+J:\s
+
+E:the\s
+J:\s
+
+E:an enemy
+J:敵
+
+E:unknown square
+J:知らない升
+
+E:confused,\s
+J:混乱、\s
+
+E:stunned,\s
+J:朦朧、\s
+
+E:slowed,\s
+J:鈍足、\s
+
+E:hasted,\s
+J:加速、\s
+
+E:Direction ('f' for closest, '*' to choose a target, ESC to cancel)?\s
+J:向きは？（'f' で最も近い敵、'*' で狙いを選ぶ、ESC でやめる）\s
+
+E:Direction ('f' for target, '*' to re-target, ESC to cancel)?\s
+J:向きは？（'f' でいまの狙い、'*' で狙い直す、ESC でやめる）\s
+
+E:falling down a chasm
+J:裂け目への転落
+
+E:a collapsing stair
+J:崩れた階段
+
+E:a collapsing floor
+J:崩れた床
+
+E:You have killed it.
+J:
+
+E:%^s has been killed.
+J:
+
+E:Into the vast and echoing gloom,
+J:広大に響きわたる薄闇の中へ、
+
+E:more dread than many-tunnelled tomb
+J:幾多の坑を穿たれた墓所よりも恐ろしき所へ
+
+E:\s\sdown awful corridors that wind
+J:\s\s曲がりくねる恐ろしき廊を下り
+
+E:\s\s\s\sdown to a menace dark enshrined;
+J:\s\s\s\s暗きに祀られた脅威のもとへ下り、
+
+E:\s\s\s\s\s\sdown to the mountain's roots profound,
+J:\s\s\s\s\s\s山の深き根へと下る、
+
+E:devoured, tormented, bored and ground
+J:石より湧きし群がる虫どもに
+
+E:by seething vermin spawned of stone;
+J:喰らわれ、苛まれ、穿たれ、磨り減らされた道を。
+
+E:\s\sdown to the depths they went alone...
+J:\s\s彼らはただ二人、深みへと下っていった……
+
+E:You have finished the first half of the tutorial and are ready
+J:チュートリアルの前半を終えた。新しい
+
+E:to create a new character.
+J:作る用意ができている。
+
+E:Don't let the choices overwhelm you the first time.
+J:はじめのうちは選択の多さに気圧されなくてよい。
+
+E:Just start with the default Race and House, then invest most
+J:まずは既定の種族と家で始め、はじめの経験の多くを
+
+E:of your starting experience in Melee and Evasion.
+J:打撃と回避に注ぎ込むとよい。
+
+E:Once the game begins, finding some weapons and armour should
+J:冒険が始まったら、武器と鎧を見つけることを
+
+E:be your top priority.
+J:何より先に考えること。
+
+E:Remember that a key feature of Sil (and all Roguelike games)
+J:Sil（そしてすべてのローグライク）の要は、
+
+E:is that you cannot use savepoints: if you die, that's it.
+J:途中保存が使えないことである――死ねばそれまでだ。
+
+E:It is thus a challenging game where you need to really *think*.
+J:だからこそ、本当に *考える* ことが要る手応えのある遊びなのだ。
+
+E:You will die many times. When you do: reflect on what to learn
+J:何度も死ぬだろう。死んだら、そこから何を学べるかを省み、
+
+E:from that death, see if you set a high score, then think about
+J:記録が残ったかを見て、それから次の冒険者で
+
+E:all the things you want to do differently with the next character...
+J:何を変えたいかを考えるとよい……
+
+E:Congratulations. You have survived a fire-drake (usually found
+J:おめでとう。火竜（ふつうは 900 ft に居る）を切り抜け、
+
+E:at 900 ft!), and have finished the tutorial in fine form.
+J:見事にチュートリアルを終えた。
+
+E:You are more than ready to create a new character.
+J:新しい冒険者を作る用意は十分にできている。
+
+E:You have been slain.
+J:あなたは討たれた。
+
+E:A key feature of Sil (and all Roguelike games) is that you cannot
+J:Sil（そしてすべてのローグライク）の要は、
+
+E:use savepoints: if you die, that's it!
+J:途中保存が使えないことである――死ねばそれまでだ！
+
+E:However, it is a bit frustrating to die before the end of the
+J:とはいえチュートリアルの途中で死ぬのは歯がゆいだろう。
+
+E:tutorial, so we evidentally made it a bit too deadly.
+J:どうやら少し手厳しく作りすぎたようだ。
+
+E:Just restart the tutorial and you should be back to where you
+J:チュートリアルをやり直せば、数分で元の所まで
+
+E:were in a couple of minutes. Remember that if combat is not going
+J:戻れるはずである。戦いが思わしくないときは、
+
+E:your way, you can try to escape and heal, then either come back
+J:逃げて傷を癒し、それからまた挑むか、
+
+E:and again to defeat your adversary, or simply ignore it.
+J:あるいは相手を放っておくという手もある。
+
+E:Congratulations: you have finished the tutorial.
+J:おめでとう。チュートリアルを終えた。
+
+E:You have also just been through a rite of passage: dying.
+J:そしてあなたは通過儀礼――死――も経験した。
+
+E:You are now more than ready to create a character and start playing.
+J:これで冒険者を作って遊び始める用意は十分にできている。
+
+E:Loud rose a din of laughter hoarse,
+J:嗄れた笑いのどよめきが高く沸き、
+
+E:\s\sself-loathing yet without remorse;
+J:\s\s己を厭いながらも悔いは無く、
+
+E:\s\s\s\sloud came a singing harsh and fierce
+J:\s\s\s\s魂を貫く恐怖の剣のごとき
+
+E:\s\s\s\s\s\slike swords of terror souls to pierce.
+J:\s\s\s\s\s\s荒く猛き歌が高く響いた。
+
+E:Red was the glare through open doors
+J:開いた扉より漏れる輝きは赤く、
+
+E:\s\sof firelight mirrored on brazen floors,
+J:\s\s真鍮の床に映る火の光であった。
+
+E:\s\s\s\sand up the arches towering clomb
+J:\s\s\s\s穹窿は聳え立つ拱門を伝って昇り、
+
+E:\s\s\s\s\s\sto glooms unguessed, to vaulted dome
+J:\s\s\s\s\s\s測り知れぬ闇へ、丸天井へと届いた。
+
+E:\s\s\s\s\s\s\s\sswathed in wavering smokes and steams
+J:\s\s\s\s\s\s\s\sそれは揺らめく煙と靄に包まれ、
+
+E:\s\s\s\s\s\s\s\s\s\sstabbed with flickering lightning-gleams.
+J:\s\s\s\s\s\s\s\s\s\s明滅する稲妻の光に貫かれていた。
+
+E:Against all hope, you defeated the Dark Enemy,
+J:望みも絶えたはずの所で、あなたは暗黒の敵を打ち破り、
+
+E:\s\sand destroyed his physical form.
+J:\s\sその肉の形を滅ぼした。
+
+E:\s\s\s\sFor the rest of this age at least,
+J:\s\s\s\s少なくともこの時代のあいだは、
+
+E:\s\s\s\s\s\sArda shall be free from the tyrant's shadow.
+J:\s\s\s\s\s\sアルダは暴君の影から自由であろう。
+
+E:But there will be time later for reflection
+J:だがアルダの運命のこの大きな移り変わりを
+
+E:\s\son this great change to Arda's fate.
+J:\s\s省みる時は後にもある。
+
+E:\s\s\s\sYou are buried still in Angband's vaults
+J:\s\s\s\sあなたはなおアングバンドの地下に埋もれている――
+
+E:\s\s\s\s\s\s-- make quick your bold escape!
+J:\s\s\s\s\s\s大胆な脱出を急げ！
+
+
+###############################################################################
+# P5: 設定の項目（tables.c の option_desc[]）
+###############################################################################
+
+E:Interface Options
+J:操作まわりの設定
+
+E:Visual Options
+J:見え方の設定
+
+E:Challenge Options
+J:手応えの設定
+
+E:Debugging Options
+J:開発向けの設定
+
+E:Move with hjkl etc. (use ^ for underlying keys)
+J:hjkl などで移動する（元の鍵は ^ で）
+
+E:Dismiss '-more-' and 'y/n' prompts with any key
+J:'-more-' と 'y/n' の問いをどの鍵でも閉じる
+
+E:Use a keyset more closely based on Angband
+J:Angband に近い鍵の割り当てを使う
+
+E:Stop singing when you use the rest command
+J:休む命令を使ったら歌をやめる
+
+E:Forgo bonus attacks on non-alert enemies
+J:警戒していない敵への追撃を控える
+
+E:Audible beep (on errors/warnings)
+J:鐘を鳴らす（誤りと警告のとき）
+
+E:Highlight the player with the cursor
+J:冒険者をカーソルで示す
+
+E:Highlight the target with the cursor
+J:狙いをカーソルで示す
+
+E:Highlight sleeping and unwary creatures
+J:眠っている敵と油断している敵を目立たせる
+
+E:Display walls as solid blocks
+J:壁を塗り潰して描く
+
+E:Display walls as semi-solid
+J:壁を半分塗り潰して描く
+
+E:Faster display while running
+J:走っているあいだの描き直しを速くする
+
+E:Center map continuously (very slow)
+J:地図をつねに中央に寄せる（とても遅い）
+
+E:Avoid centering while running
+J:走っているあいだは中央に寄せない
+
+E:Automatically dismiss '-more-' messages
+J:'-more-' を自動で閉じる
+
+E:Know all monster info
+J:敵のことをすべて知っている
+
+E:Automatically display drop-down lists
+J:一覧を自動で開く
+
+E:Use the Escape key to access the main menu
+J:Escape で主品書きを開く
+
+E:Display a mark when something gets hit
+J:当たったときに印を出す
+
+E:Disconnected stairs
+J:階段がつながらない
+
+E:Straight down (no up stairs until endgame)
+J:下るのみ（終盤まで上りの階段が無い）
+
+E:No artefacts
+J:銘のアイテムを出さない
+
+E:Fixed XP - gain 50K at start and nothing after
+J:経験を固定（はじめに 50K、以後は無し）
+
+
+###############################################################################
+# P5: 死んだ因（take_hit の理由）
+###############################################################################
+
+E:a fatal wound
+J:致命の傷
+
+E:a collapsing ceiling
+J:崩れた天井
+
+E:a trapped chest
+J:罠の仕掛けられた箱
+
+E:starvation
+J:飢え
+
+
+E:yes
+J:入\s
+
+E:no\s
+J:切\s
+
+# ---------------------------------------------------------------------------
+# **キー設定の名札**（M1 の追補 A4。設計 §12.6）
+#
+# `silq/adapter/sq_pad_commands.cpp` のベタ書き表 25 件と、その分類 4 つ。
+# M0 はここを **ASCII で置いた**（あの TU の日本語リテラルは CP932 で焼かれ、
+# 名札は UTF-8 で載せる約束だから）。訳は M1 送りになっていたが P0〜P6 が
+# 届かなかったので、ここで当てる。引くのは `sq_pad_commands.cpp` である。
+#
+# `Abilities`（能力）と `Smithing`（鍛冶）は**既に上にある**ので足さない
+# ――鍵が重複するとコアは読み込みで失敗する（設計 §5）。
+# `Stealth mode` は小文字の `stealth mode`（隠密行動）とは**別の鍵**である。
+
+E:Move
+J:移動
+
+E:Action
+J:行動
+
+E:Info
+J:情報
+
+E:System
+J:システム
+
+# **行動の小分類**（2026-08-23。こう決めた——「行動メニューをグループ化し
+# もう 1 階層深くして」）。引くのは `sq_pad_commands.cpp` の `PadSeed::subgroup`。
+# `Action` の 23 件をこの 6 つに分けてある。鍵は分類名と重ならない語を選んだ
+# ——`Rest`（休憩）や `Look`（見る）は**既に命令の名札として使っている**ので、
+# 小分類の名前には使えない（鍵が重複するとコアは読み込みで失敗する。設計 §5）。
+
+E:Combat
+J:戦う
+
+E:Bearing
+J:構える
+
+E:Surroundings
+J:働きかける
+
+E:Carrying
+J:持ち運び
+
+E:Consuming
+J:道具を使う
+
+E:Inspecting
+J:調べる
+
+E:North
+J:北
+
+E:South
+J:南
+
+E:West
+J:西
+
+E:East
+J:東
+
+E:Northwest
+J:北西
+
+E:Northeast
+J:北東
+
+E:Southwest
+J:南西
+
+E:Southeast
+J:南東
+
+E:Stay
+J:その場で待つ
+
+E:Up staircase
+J:上り階段
+
+E:Down staircase
+J:下り階段
+
+E:Pick up
+J:拾う
+
+E:Rest
+J:休憩
+
+E:Stealth mode
+J:隠密行動
+
+E:Change song
+J:歌を変える
+
+E:Tunnel
+J:掘る
+
+E:Fire
+J:射る
+
+E:Throw
+J:投げる
+
+E:Wield
+J:装備する
+
+E:Inventory
+J:持ち物
+
+E:Equipment
+J:装備
+
+E:Level map
+J:全体図
+
+E:Save
+J:セーブ
+
+# W3で足した 11 件。
+# 上と同じく引くのは `sq_pad_commands.cpp` の表である。
+# `Examine`・`Alter` は**画面の動作名ではなく命令の名札**なので、
+# 「調べる」「何かする」と動詞で置く（`ui_action_label()` の語とは別の道）。
+
+E:Character sheet
+J:人物表
+
+E:Examine
+J:調べる
+
+E:Quaff
+J:飲む
+
+E:Eat
+J:食べる
+
+E:Use staff
+J:杖を使う
+
+E:Play instrument
+J:楽器を鳴らす
+
+E:Alter
+J:何かする
+
+E:Exchange places
+J:位置を交換
+
+E:Fletchery
+J:矢を作る
+
+E:Monster list
+J:敵の一覧
+
+E:Object list
+J:アイテムの一覧
+
+# SH-32（W3 の続き。2026-08-22）で足した 10 件。
+# `Look` は「見る」（`l` = 周りを見渡す）で、`Examine`（`x` = アイテムを調べる）とは別物。
+# `Close` は扉を閉じる——**境の歌を歌いながら閉めると護符の扉になる**（SH-21）。
+
+E:Close
+J:閉じる
+
+E:Take off
+J:外す
+
+E:Drop
+J:落とす
+
+E:Use item
+J:使う
+
+E:Fire second quiver
+J:第 2 矢筒で射る
+
+E:Look
+J:見る
+
+E:Inscribe
+J:銘を刻む
+
+E:Knowledge
+J:知識
+
+E:Help
+J:ヘルプ
+
+E:Main menu
+J:主メニュー
+
+# 追補 ④で足した 4 件。
+# リリース判定で「どこからも届かない」と数えた命令である。
+# `Run` は「走る」（`.`）、`Scroll map` は等倍のまま地図を送る `L` で、
+# 階全体を 1 枚に縮める `M`（全体図）とは別物。
+
+E:Throw at nearest
+J:狙いを任せて投げる
+
+E:Run
+J:走る
+
+E:Destroy
+J:壊す
+
+E:Scroll map
+J:地図を動かす

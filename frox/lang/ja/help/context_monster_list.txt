@@ -1,0 +1,58 @@
+<style:title>モンスター一覧</style>
+
+このコマンドは、いま見えているか居場所を知っているモンスターをすべて並べる。一覧表示の設定によって、視界の中のモンスターを上の段へ分けたり、起きているものを寝ているものより前に出したり、並べ順をモンスターのレベルにするか距離にするかを選べる。まとめ表示を有効にしたままなら、見た目が同じ種族のモンスターはまとめて並ぶ。ただし「起きているものが先」で並べると、起きているものと寝ているものが混じった行は分かれる。
+
+<topic:Summary><style:heading>操作の早見表</style>
+
+  <color:keypress>Up/Down</color>            1 行ずつ送る
+  <color:keypress>PageUp/PageDown</color>    1 頁ずつ送る
+  <color:keypress>Home/End</color>           一覧の先頭／末尾へ
+
+  <color:keypress>/ or R</color>             選んだモンスターの思い出を見る
+  <color:keypress>P</color>                  選んだモンスターを探査する（できるときだけ）
+  <color:keypress>N</color>                  選んだペットに名を付ける（できるときだけ）
+  <color:keypress>` or J</color>             選んだモンスターの所まで移動する
+  <color:keypress>* or T or 5</color>        選んだモンスターに狙いを定める
+  <color:keypress>+/-</color>                一覧の幅を変える
+
+  <color:keypress>ESC or Q</color>           このコマンドを終える
+  <color:keypress>?</color>                  このヘルプを出す
+
+  <color:keypress>[a-z]</color>              その字で始まる次の項目を選ぶ
+
+<style:note>註: 小文字のキーは項目探しに使うので、コマンドは大文字だけである。たとえば思い出を見るには、ふだんの <color:keypress>r</color> ではなく <color:keypress>R</color> を押す。例外はローグライクキー配置を使う人で、いつもの上下の <color:keypress>k</color> と <color:keypress>j</color> は――項目探しに使えなくなるのと引き換えに――そのまま上下の送りになる。</style>
+
+<style:note>註: <color:keyword>quick_messages</color> を有効にしていると、割り当ての無いキーを押した時点で一覧が閉じる。</style>
+
+<topic:Usage><style:heading>使いどころ</style>
+
+このコマンドは、敵がひしめいている場面でとても役に立つ。危ない敵が近くに潜んでいないかを一目で確かめられる。たとえばこうである:
+<style:screenshot>                                                                                
+19 体が見えている。うち 19 体は起きている:        #...<color:B>.</color>...<color:B>.</color>...<color:B>.</color>.<color:B>.</color>.<color:B>.</color> LEVEL <color:G>    33</color>
+ <color:u>C</color> <color:v>地獄の番犬『ガルム』                </color> S  2 W  0 #<color:B>.</color>##########<color:o>*</color>#%## EXP <color:G>   28.9k</color>
+ <color:v>W</color> ゼファーロード                       N  1 E  1 #<color:B>.</color>############### AU  <color:G>    475k</color>
+ <color:v>Z</color> ネクサス・ハウンド (8 体起きている)            #<color:B>.</color>############### <color:W>|</color><color:D>|</color><color:U>}~</color><color:g>==</color><color:y>"</color><color:o>~</color><color:y>(</color><color:g>(</color><color:u>]</color><color:U>]</color>
+ <color:D>C</color> ワーウルフ                           N  1 W  1 #.############<color:o>*</color>## STR : <color:G>18/113</color>
+ <color:u>C</color> 地雷犬 (8 体起きている)                        #.#########<color:o>*</color>##### INT : <color:G>    10</color>
+                                                  #.##%#####%<color:o>*</color>##### WIS : <color:G> 18/10</color>
+   <color:B>[ESC で戻る。? でヘルプ]</color>                       <color:B>...</color>.############# DEX : <color:G>18/161</color>
+#%####%###########..<color:B>.</color>.<color:B>..</color>..<color:B>...</color>.#####.##.##%###%.#..######%%##<color:o>*</color>###%## CON : <color:G>18/153</color>
+####<color:o>*</color>##########<color:o>*</color>##<color:B>.</color>#########..#####<color:B>.</color>#<color:o>*</color><color:B>.</color>###%###'##%##<color:B>....</color>.....<color:B>...</color>... CHR : <color:G>    16</color>
+###<color:o>*</color>##%###########<color:B>.</color>################.##.####%##.<color:D>\</color><color:B>.</color>.<color:B>.</color>.<color:B>.</color>###%####<color:o>*</color>###<color:o>*</color>% AC     <color:G>   93</color>
+%####<color:o>*</color>#####%######.###<color:o>*</color>#%%%%%%%%%%%'%%<color:B>.</color>%%%%%%%'%%%%%%###%########<color:o>*</color># HP <color:y> 495</color>/<color:G> 503</color>
+%%%%%%%%%%%%%%%###.##%#<color:o>*</color>%....<color:B>...</color>..<color:B>.</color>..<color:D>C</color><color:v>Z</color><color:R>W</color><color:v>ZZ</color><color:B>..</color>..<color:g>=</color><color:v>!</color><color:B>.</color>..<color:B>.</color>%############## SP <color:G> 100</color>/<color:G> 100</color>
+%..<color:B>.</color>..........%###<color:B>.</color>#####%<color:B>.</color>.<color:B>...</color><color:W>|</color>.<color:B>..</color>.<color:u>C</color><color:s>/</color>.@...<color:u>C</color><color:W>[</color>...<color:v>|</color><color:B>.</color>...%###%#%##%<color:o>*</color>%###             
+%...<color:B>.</color>.<color:B>..</color>.....<color:B>.</color>%###.#####%<color:B>...</color>.<color:B>.</color>.<color:W>|</color><color:B>..</color>.<color:v>Z</color>.<color:v>Z</color><color:u>C</color><color:v>ZZ</color><color:B>..</color><color:u>CC</color>......<color:B>.</color>%%############# <color:v>W</color>[<color:y>*******</color>--]
+%..<color:B>.</color>...<color:B>.</color>......'...<color:B>.</color>#####%<color:B>.</color>.<color:B>.</color>.<color:B>.</color>..<color:B>.</color>..<color:B>.</color><color:s>)</color><color:u>CC</color>...<color:B>.</color><color:s>/</color>....<color:B>.</color>..<color:B>.</color>%############<color:o>*</color>#             
+%<color:B>.</color>.<color:B>.</color>.<color:B>..</color>...<color:B>.</color>.<color:B>..</color>%###<color:B>.</color>#####%<color:B>.</color>.<color:B>..</color>...<color:B>.</color>.<color:B>.</color>..<color:v>Z</color><color:B>.</color>.<color:u>C</color>.<color:B>.</color>........<color:B>.</color>%#####<color:o>*</color>######<color:o>*</color>#             
+%.<color:B>.</color>.<color:B>...</color>..<color:B>.</color>..<color:B>.</color>.%###<#####%.<color:B>.</color>..<color:B>.</color>...<color:B>.</color>.<color:B>.</color>.<color:B>.</color>....<color:B>.</color>.<color:B>.</color>.<color:B>..</color>....%<color:o>*</color>#####<color:o>*</color>#######             
+%%%%%%%%%%%%%%%###%#####%.<color:B>.</color>..<color:B>.</color>.<color:B>..</color>.<color:B>.</color>...<color:u>C</color><color:B>..</color>...<color:B>...</color>...<color:B>..</color>%########<color:o>**</color>####             
+########################%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###%%#######<color:o>*</color>#             
+<color:U>###################################################################</color> <color:G>Fast (+8)</color>   
+                                                                    <color:G>Full</color>        
+                                                                    <color:B>Study (8)</color>   
+                                                                                
+                                                                                
+<color:B>水晶の城: L40</color>                                  <color:G>DTrap</color>                            
+</style>
+この画から、たったいま呼び出された地雷犬の 1 匹が、実は紛れ込んだガルムだと分かる。用心しなければならない。

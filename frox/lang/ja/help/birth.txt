@@ -1,0 +1,302 @@
+<style:note>註: 導入の画で <color:keypress>?</color> を押すとここへ来るし、この頁はゲームの多くをざっと見せてくれるが、ヘルプ全体の入口はここではない。FroxComposband のヘルプのほかの所を見たいなら <color:keypress>!</color> を押すこと。</style>
+
+<topic:CreateAt><style:title>冒険者を作る</style>
+
+FroxComposband は FrogComposband を今に引き継いだロールプレイングゲームで、あなたは、デーモン・ドラゴン・神々・アヒル、そのほか終わりの日のまれで奇妙な生き物たちが住む神話と魔法の危うい世界で、1 人の冒険者を操る。<color:keyword>混沌のサーペント</color>を討つ旅でいちばん大事な決めごとは、どんな冒険者で遊ぶかである。呪文を操る魔術師か、剣を振るう戦士か。忍びの盗賊か、歌う吟遊詩人か。聖なる僧か、カオスの邪悪な落とし子か。選択肢は数え切れないほどあり、新しい冒険者を作る手順をこのヘルプで説明する。ここではゲームの中心となる考え方の多くも紹介する。
+
+冒険者を作ること、すなわち誕生は、いくつもの選択で決まる。冒険者の種族（<color:keyword>人間</color>・<color:keyword>ドワーフ</color>・<color:keyword>ホビット</color>・<color:keyword>オーガ</color>・<color:keyword>吸血鬼</color>・<color:keyword>ワーウルフ</color>など）、職業（<color:keyword>戦士</color>・<color:keyword>メイジ</color>・<color:keyword>プリースト</color>・<color:keyword>法律家</color>など）、そして性格（<color:keyword>強力</color>・<color:keyword>賢い</color>・<color:keyword>混沌</color>・<color:keyword>分裂</color>など）を選ぶ。それぞれの説明はヘルプにある（<link:raceclass_contents.txt> を参照）。
+
+誕生の手順には主な画が 3 つある。1 つ目は短い歓迎の画で、遊び方の種類（<color:keyword>ゲームモード</color>）を選ぶ。次の画では種族・職業・性別・性格・名前を選んだり変えたりできる。最後の画では初めの能力値を割り振る。それぞれの画を順に、説明を添えながら見ていく。準備はよいか。
+
+<topic:Welcome><style:heading>歓迎の画</style>
+1 つ目は歓迎の画である。ゲームを紹介し、誕生の手順を決めるいくつかの選択肢を出すだけのものである。こんな見た目をしている。
+<style:screenshot>  <indent>
+<color:R>FroxComposband</color> へようこそ。<color:R>FrogComposband</color> を今に引き継いだ、      
+ダンジョン探索ロールプレイングゲームである。
+目指すは恐るべき<color:R>混沌のサーペント</color>の打倒だが、その前に                            
+数多くの敵と戦わねばならない。まずはこの旅のための冒険者を                      
+作ることから始める。次からの画がその手順を案内するので、                        
+すぐに遊び始められる。いつでも <color:o>?</color> を押せば                                       
+ヘルプが出る。                                                                  
+                                                                                
+まず、どの型で遊ぶかを決める。<color:R>初心者モード</color>は選択肢を                  
+絞り、新しい人のために物事を簡素にする。                                        
+                                                                                
+ <color:G>遊ぶ型を選んでください</color>                                                         
+  <color:y>b</color>) 初心者                                                                     
+  <color:y>n</color>) 通常                                                                       
+  <color:y>m</color>) モンスター                                                                    
+                                                                                
+  <color:y>i</color>) Frog のセーブ・設定を取り込む                                                    
+                                                                                
+  <color:y>=</color>) 設定                                                                       
+  <color:y>?</color>) ヘルプ                                                                       
+  <color:y>s</color>) 得点表を見る                                                                
+<color:y>Esc</color>) <color:v>終了</color>                                                                       
+                                                                                
+<color:G>助言:</color> コマンドの大文字を打つと、その項目のヘルプが出ることが多い。              
+       たとえばこの画で <color:o>B</color> と打てば、初心者モードの                              
+       ヘルプが出る。                                                           
+</indent></style>
+
+このゲームが初めてなら、<color:keyword>初心者</color>モードを考えるとよい。これを選べば、ふだんのように選択肢に圧倒されることなく、誕生の手順をさっと抜けてすぐに遊び（そして楽しみ）始められる。何度か遊んで、探るべき多彩なダンジョンを抱えた広大な荒野や、種族・職業・性格のすべての選択肢を含め、このゲームの持つものをもっと味わいたくなったら、<color:keyword>通常</color>モードを選ぶとよい。
+
+本当に大胆なら、いろいろな種類の怪物として遊べる<color:keyword>モンスター</color>の選択肢を試してみてもよい。怪物に職業は無く、代わりに経験を積んで強い姿へ進化していく。体つきもさまざまなので、装備をめぐる遊びがいっそう楽しく、そして手強くなる。
+
+この画には<color:keyword>クイックスタート</color>の選択肢が出ることもある。これは、おそらく非業の死を遂げたばかりの前の冒険者の誕生の選択をそのまま繰り返すだけのものである。序盤でよく死ぬなら、誕生の手順をぐっと速くしてくれる便利な選択肢である。
+
+FroxComposband が、新しい利用者のディレクトリへまだ写していない古い FrogComposband のセーブや設定ファイルを見つけると、この画に<color:keyword>Frog のセーブ・設定を取り込む</color>のコマンドが出ることもある。
+
+<topic:RaceClass><style:heading>種族と職業の画</style>
+この画では種族・職業と、（初心者モードを選んでいなければ）性格を変えられる。こんな見た目になる。
+<style:screenshot>  <indent>
+名前 : <color:B>Fatty Bolger</color>                      <color:o>速さ:</color> <color:v>コーヒーブレイク</color>
+性別 : <color:B>男</color><color:d>                  </color> 腕力 知能 賢さ 器用 耐久 魅力 生命 BHP  経験
+性格 : <color:B>ふつう</color><color:d>              </color> <color:G> +0</color><color:r>  </color><color:G> +0</color><color:r>  </color><color:G> +0</color><color:r>  </color><color:v> +0</color><color:r>  </color><color:G> +0</color><color:r>  </color><color:G> +0</color><color:r>  100%       100%</color>       
+種族 : <color:B>ホビット</color><color:d>            </color> <color:G> -2</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:v> +3</color><color:r>  </color><color:G> +2</color><color:r>  </color><color:G> +1</color><color:r>   92%  +14  120%</color>       
+職業 : <color:B>盗賊</color><color:d>                </color> <color:G> +2</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:G> -1</color><color:r>  </color><color:v> +3</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:G> +1</color><color:r>  100%  +12  125%</color>       
+魔法 : <color:B>盗み</color><color:d>               </color><color:R>== +0</color><color:r>  </color><color:R> +2</color><color:r>  </color><color:R> +0</color><color:r>  </color><color:v> +6</color><color:r>  </color><color:R> +3</color><color:r>  </color><color:R> +2</color><color:r>  </color><color:R> 92%  +26  150%</color>
+<color:d>                           </color>                                                     
+  <color:y>n</color>) 名前を変える<color:d>          </color> <color:y>  *</color>) 名前をおまかせ                                 
+  <color:y>s</color>) 性別を変える<color:d>           </color> <color:y>  ?</color>) ヘルプ                                        
+  <color:y>p</color>) 性格を変える<color:d>                </color> <color:y>  =</color>) 設定                                     
+  <color:y>r</color>) 種族を変える<color:d>            </color> <color:y>  Tab</color>) もっと見る                                   
+  <color:y>c</color>) 職業を変える<color:d>                </color> <color:y>Enter</color>) 次の画へ                                 
+  <color:y>m</color>) 魔法を変える<color:d>                </color> <color:y>  Esc</color>) 前の画へ                                 
+  <color:y>g</color>) 速さを変える<color:d>             </color>
+<color:d>                              </color>                                                  
+<color:G>助言:</color> コマンドの大文字を打つと、その項目のヘルプが出ることが多い。              
+       たとえばこの画で <color:o>R</color> と打てば、いま選んでいる                              
+       種族のヘルプが出る。                                                     
+</indent></style>
+さて、何が見えるだろうか。まず<color:B>青</color>の欄がこの画で変えられるものである。既定の選択はすでに入っていて（そのままでも十分遊べる）、たいていは自分の好みに変えたくなるだろう。性別はほぼ味付けで、遊びにはほとんど響かない（男と女だけだが、遊んでいる途中で入れ替える手立てがあるくらいにはこのゲームも進んでいる）。ほかの選択はずっと大事である。<color:keyword>種族</color>・<color:keyword>職業</color>・<color:keyword>性格</color>、そして（あれば）<color:keyword>魔法領域</color>が冒険者の要となる。
+
+右にあるのは、いま選んでいる種族・職業・性格から得られる能力値の恩恵などを並べた表である。どの冒険者も<color:keyword>能力値</color>と呼ばれる6 つの基本の値を持ち、これは遊びにたいそう大きく響く。能力値を上げる道を探すことが、冒険の主な狙いの一つになる。6 つの基本の能力値は、腕力（STR）・知能（INT）・賢さ（WIS）・器用（DEX）・耐久（CON）・魅力（CHR）である。詳しくは下の <link:birth.txt#PrimaryStats> を参照のこと。冒険者の呪文の能力値は（あれば）<color:v>紫</color>で出る。これは魔法の職業にとってたいそう大事な能力値で、呪文をどれだけうまく唱えられるかを決める。ふつうはできるだけ高くしておきたい。
+
+次の画ではこの冒険者の初めの能力値を選ぶ。選んだ値は表に示された分だけ増減する。表のいちばん下の行が合計で、いろいろな誕生の選択が積み重なった結果を見せてくれる。初めの能力値に足されるのは、この行の値である。
+
+表のほかの欄には次のものがある。
+  <color:keyword>Life</color>: <indent>生命力の倍率。最大 HP（ヒットポイント）に掛かる値である。HP は冒険者の健康で、0 を下回れば死んでゲームは終わる。最大 HP の求め方は <link:faq.txt#LifeRating> を参照のこと。</indent>
+  <color:keyword>BHP</color>:  <indent>基本 HP の略で、序盤を楽にするために初めの HP へまとめて足される値である。</indent>
+  <color:keyword>Exp</color>:  <indent>経験値の係数の略で、この割合が冒険者のレベルの上がる速さを決める。（誰もがレベル 1 から始まり、50 まで上がる。レベルが上がると HP が増え、技能が伸び、より強い呪文へ手が届き、そのほかの効き目や恩恵を得ることもある。）</indent>
+
+能力値のほかに、冒険者は技能も持つ（下の <link:birth.txt#PrimarySkills> を参照）。たとえば近接戦闘の技能は、素手や武器で敵に当てる腕前を決める。技能も能力値と同じく誕生の選択に左右され、この画と次の画の表に出る。ただし画面の幅には限りがあるので、<color:keypress>Tab</color> のキーを使う要がある。
+<style:screenshot>  <indent>
+名前 : <color:B>Fatty Bolger</color>                      <color:o>速さ:</color> <color:v>コーヒーブレイク</color>
+性別 : <color:B>男</color><color:d>                   </color>    罠外し     道具       魔法防御   隠密                                                          
+性格 : <color:B>ふつう</color><color:d>            </color>    <color:o>並        </color> <color:o>並        </color> <color:o>並        </color> <color:o>並        </color>                                                       
+種族 : <color:B>ホビット</color><color:d>          </color>    <color:g>絶妙      </color> <color:y>かなり良い</color> <color:y>良い      </color> <color:g>絶妙      </color>                                                       
+職業 : <color:B>盗賊</color><color:d>              </color>    <color:G>優秀      </color> <color:G>優秀      </color> <color:o>並        </color> <color:y>かなり良い</color>                                                       
+魔法 : <color:B>盗み</color><color:d>              </color> <color:R>== </color><color:g>絶妙      </color> <color:g>絶妙      </color> <color:y>良い      </color> <color:b>英雄的    </color>                                                       
+</indent></style>
+もう一度 <color:keypress>Tab</color> を押すと、
+<style:screenshot>  <indent>
+名前 : <color:B>Fatty Bolger</color>                      <color:o>速さ:</color> <color:v>コーヒーブレイク</color>
+性別 : <color:B>男</color><color:d>                   </color>    探索       知覚       近接戦闘   射撃                                                          
+性格 : <color:B>ふつう</color><color:d>            </color>    <color:o>並        </color> <color:o>並        </color> <color:o>並        </color> <color:o>並        </color>                                                       
+種族 : <color:B>ホビット</color><color:d>          </color>    <color:b>英雄的    </color> <color:g>絶妙      </color> <color:r>悪い      </color> <color:y>かなり良い</color>                                                       
+職業 : <color:B>盗賊</color><color:d>              </color>    <color:o>並        </color> <color:o>並        </color> <color:G>優秀      </color> <color:y>かなり良い</color>                                                       
+魔法 : <color:B>盗み</color><color:d>              </color> <color:R>== </color><color:y>良い      </color> <color:y>良い      </color> <color:y>かなり良い</color> <color:G>優秀      </color>                                                       
+</indent></style>
+なるほど、ホビットは近接戦闘があまり得意でないと分かる。だが盗賊という職業がそれを補って余りあり、合計の行を見れば、この冒険者の近接戦闘の技能はかなり良いと分かる。おおむね、技能には種族や性格より職業のほうが大きく響く。とりわけ後半ではそうである（レベルが上がると技能の恩恵も増えるが、その多くは職業から来る）。この決まりの主な例外は隠密で、こちらは恩恵が 0 になりがちである。
+
+冒険者の欄と表の下には、選べるコマンドが並んでいる。コマンドによっては、たとえば種族を変えるコマンドのように、選択肢の一覧を出すものもある。
+<style:screenshot>  <indent>
+名前 : <color:B>Fatty Bolger</color>                      <color:o>速さ:</color> <color:v>コーヒーブレイク</color>
+性別 : <color:B>男</color><color:d>                   </color>    探索       知覚       近接戦闘   射撃                                                          
+性格 : <color:B>ふつう</color><color:d>            </color>    <color:o>並        </color> <color:o>並        </color> <color:o>並        </color> <color:o>並        </color>                                                       
+種族 : <color:B>ホビット</color><color:d>          </color>    <color:b>英雄的    </color> <color:g>絶妙      </color> <color:r>悪い      </color> <color:y>かなり良い</color>                                                       
+職業 : <color:B>盗賊</color><color:d>              </color>    <color:o>並        </color> <color:o>並        </color> <color:G>優秀      </color> <color:y>かなり良い</color>                                                       
+魔法 : <color:B>盗み</color><color:d>              </color> <color:R>== </color><color:y>良い      </color> <color:y>良い      </color> <color:y>かなり良い</color> <color:G>優秀      </color>                                                       
+<color:d>                           </color>                                                     
+<color:G>遊ぶ種族を選んでください</color>                                                        
+  <color:y>a</color>) 人間                                                                       
+  <color:y>b</color>) エルフ                                                                        
+  <color:y>c</color>) ホビット・ドワーフ                                                               
+  <color:y>d</color>) 妖精                                                                       
+  <color:y>e</color>) 天使・デーモン                                                                
+  <color:y>f</color>) オーク・トロル・巨人                                                            
+  <color:y>g</color>) 変身するもの                                                               
+  <color:y>h</color>) アンデッド                                                                     
+  <color:y>i</color>) そのほか                                                                      
+  <color:y>*</color>) おまかせ                                                                     
+</indent></style>
+あるいは、性別を変えるコマンドのようにその場で効くものもある。名前を変えるコマンドなら、冒険者の名前をその場で書き換えられる。
+<style:screenshot>  <indent>
+名前 : <color:y>Skinny Dipper</color>                     <color:o>速さ:</color> <color:v>コーヒーブレイク</color>
+性別 : <color:B>男</color><color:d>                   </color>    探索       知覚       近接戦闘   射撃                                                          
+性格 : <color:B>ふつう</color><color:d>            </color>    <color:o>並        </color> <color:o>並        </color> <color:o>並        </color> <color:o>並        </color>                                                       
+種族 : <color:B>ホビット</color><color:d>          </color>    <color:b>英雄的    </color> <color:g>絶妙      </color> <color:r>悪い      </color> <color:y>かなり良い</color>                                                       
+職業 : <color:B>盗賊</color><color:d>              </color>    <color:o>並        </color> <color:o>並        </color> <color:G>優秀      </color> <color:y>かなり良い</color>                                                       
+魔法 : <color:B>盗み</color><color:d>              </color> <color:R>== </color><color:y>良い      </color> <color:y>良い      </color> <color:y>かなり良い</color> <color:G>優秀      </color>                                                       
+<color:d>                           </color>                                                     
+  <color:y>n</color>) 名前を変える<color:d>          </color> <color:y>  *</color>) 名前をおまかせ                                 
+  <color:y>s</color>) 性別を変える<color:d>           </color> <color:y>  ?</color>) ヘルプ                                        
+  <color:y>p</color>) 性格を変える<color:d>                </color> <color:y>  =</color>) 設定                                     
+  <color:y>r</color>) 種族を変える<color:d>            </color> <color:y>  Tab</color>) もっと見る                                   
+  <color:y>c</color>) 職業を変える<color:d>                </color> <color:y>Enter</color>) 次の画へ                                 
+  <color:y>m</color>) 魔法を変える<color:d>                </color> <color:y>  Esc</color>) 前の画へ                                 
+  <color:y>g</color>) 速さを変える<color:d>             </color>
+<color:d>                              </color>                                                  
+<color:G>助言:</color> コマンドの大文字を打つと、その項目のヘルプが出ることが多い。              
+       たとえばこの画で <color:o>R</color> と打てば、いま選んでいる                              
+       種族のヘルプが出る。                                                     
+</indent></style>
+<color:keyword>ゲームの速さ</color>を変えても冒険者そのものは変わらない。どんな遊び方をしたいかを選ぶものである。選べるのは<color:keyword>通常</color>（荒野のあるすべてを遊ぶ）・<color:keyword>コーヒーブレイク</color>（荒野の無い足早な遊び）・<color:keyword>インスタントコーヒー</color>（とてつもなく足早な遊び）である。初心者モードでは速さを選べず、いつでもコーヒーブレイクになる。
+
+冒険者の選択に満足したら <color:keypress>Enter</color> を押して次の画へ進む。いつでも <color:keypress>Esc</color> で戻って変えられるので、好きなだけ試してみるとよい。
+
+<topic:Stats><style:heading>能力値の画</style>
+この画では初めの能力値を入れる。それぞれの能力値へ点を割り振るのだが、使える点は全部で 30 である。まったく気にしない能力値へ負の点を割り振れば、いくらか増やせる。初めの能力値をたいそう高くするのは高くつく。既定ではゲームがまずまずの割り振りを見当してくれるので、新しい人はそのままでもよいだろう。
+
+こんな画になる。
+<style:screenshot>  <indent>
+名前 : <color:B>Fatty Bolger</color>                      <color:o>速さ:</color> <color:v>コーヒーブレイク</color>
+性別 : <color:B>男</color><color:d>                  </color> 腕力 知能 賢さ 器用 耐久 魅力 生命 BHP  経験        
+性格 : <color:B>ふつう</color><color:d>              </color> <color:G> +0</color><color:r>  </color><color:G> +0</color><color:r>  </color><color:G> +0</color><color:r>  </color><color:v> +0</color><color:r>  </color><color:G> +0</color><color:r>  </color><color:G> +0</color><color:r>  100%       100%</color>       
+種族 : <color:B>ホビット</color><color:d>            </color> <color:G> -2</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:v> +3</color><color:r>  </color><color:G> +2</color><color:r>  </color><color:G> +1</color><color:r>   92%  +14  120%</color>       
+職業 : <color:B>盗賊</color><color:d>                </color> <color:G> +2</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:G> -1</color><color:r>  </color><color:v> +3</color><color:r>  </color><color:G> +1</color><color:r>  </color><color:G> +1</color><color:r>  100%  +12  125%</color>       
+魔法 : <color:B>盗み</color><color:d>               </color><color:R>== +0</color><color:r>  </color><color:R> +2</color><color:r>  </color><color:R> +0</color><color:r>  </color><color:v> +6</color><color:r>  </color><color:R> +3</color><color:r>  </color><color:R> +2</color><color:r>  </color><color:R> 92%  +26  150%</color>
+<color:d>                           </color>                                                     
+<color:G>初めの能力値を入れてください</color><color:d>    </color>                                                
+          素   点   増減  合計<color:d>  </color>                                                
+<color:y>s</color>/<color:y>S</color>) 腕力  16   10  <color:R> +0</color>     16<color:d> </color> <color:y>  n</color>) 名前を変える                               
+<color:y>i</color>/<color:y>I</color>) 知能  16   10  <color:R> +2</color>     18<color:d></color> <color:y>  ?</color>) ヘルプ                                      
+<color:y>w</color>/<color:y>W</color>) 賢さ   9   -2  <color:R> +0</color>      9<color:d>     </color> <color:y>  =</color>) 設定                                   
+<color:y>d</color>/<color:y>D</color>) 器用  16   10  <color:R> +6</color>  18/40<color:d> </color> <color:y>  Tab</color>) もっと見る                                 
+<color:y>c</color>/<color:y>C</color>) 耐久  14    3  <color:R> +3</color>     17<color:d>  </color> <color:y>Enter</color>) <color:v>遊び始める</color>                                
+<color:y>r</color>/<color:y>R</color>) 魅力  10   -1  <color:R> +2</color>     12<color:d>     </color> <color:y>  Esc</color>) 前の画へ                               
+               <color:G> 30</color><color:d>              </color>                                                
+<color:d>                                </color>                                                
+<color:G>註: </color>示したキーで初めの能力値をそれぞれ動かせる。小文字で減り、                  
+    大文字で増える。値は 8 から 17 まで動かせて、入れた値ごとに                 
+    示された点を支払う。使える点は 30 しかないので、いちばん                    
+    大事な能力値を選んで動かすこと。                                            
+                                                                    
+                                                                                
+</indent></style>
+案内に従って変えること。点の合計が 30 を超えると、減らすまで遊び始める選択肢が使えなくなる。支度が整ったら <color:keypress>Enter</color> を押して遊び始めよう。
+
+<topic:WhatsNext><style:heading>ここから先は</style>
+ここから遊び始められる。ヘルプ（<color:keypress>?</color>）で基本のコマンドを覚えること。<link:general.txt> の全体の案内や <link:tang.txt> の初心者の手引きのようなほかのヘルプも読んでおくとよい。何を相手にするのか、そして始めるための手がかりが書いてある。ゲームの中のヘルプにはまだまだ多くがあるが、500 頁の文書に埋もれたくはないだろう。
+
+<topic:CharAttributes><style:heading>冒険者の値</style>
+遊んでいる間（そして誕生の手順の間でさえ）、冒険者の腕前と力を測り決めるいろいろな数を目にする。ざっと見ておこう。
+
+  <indent><color:B>能力値</color>
+どの冒険者も 6 つの基本の値（縮めて<color:keyword>能力値</color>）を持つ。腕力・知能・賢さ・器用・耐久・魅力で、これらが冒険者の力をいろいろな形で変える。たとえば腕力は運べる重さ、敵に当てたときのダメージ、武器の 1 手あたりの攻撃回数に響く。基本の能力値の詳しい話は下の <link:birth.txt#PrimaryStats> を参照のこと。
+</indent>
+  <indent><color:B>経験値（EXP／XP）</color>
+経験値は冒険者のほぼすべてに響く。経験値はおもに敵を倒して得るが、呪文を初めて唱えたとき、罠を外したとき、扉の錠を開けたときにも得られる。職業によってはダンジョンの魔法書を壊して得るものもあるし、飲めば経験値を押し上げる薬もダンジョンにある。アンドロイドの種族だけは独自の決まりに従う。
+
+経験値が決まった境を越えると新しい<color:keyword>レベル</color>（最大 50）へ上がる。そのとき HP の枠・（あれば）魔力の枠・主だった技能がすべて増える。新しい力を得たり、好きな能力値を 1 つ上げられたりすることもある。レベルの境は上で述べた経験値の係数で決まる。
+
+敵の中には経験値を「吸い取る」ものが居て、レベルを下げてしまうこともある。幸い、吸われた経験値は魔法の手立て・町の役務、あるいはただ稼ぎ直すことで取り戻せる。
+</indent>
+  <indent><color:B>金（AU）</color>
+どの冒険者もいくらかの金を持って始まり、町の店やそのほかの建物でアイテムと役務を買える。金は店へアイテムを売ったり、倒した敵から取ったり、掘ったり、ダンジョンの床に落ちているのを拾ったりして増やせる。
+</indent>
+  <indent><color:B>ヒットポイント（HP）</color>
+どの冒険者も HP を持ち、死ぬまでにどれだけのダメージに耐えられるかを表す。HP の枠はレベル・種族・職業・性格・耐久・装備・生命力の評点で決まり、魔法で一時的に押し上げられる。詳しい説明は <link:faq.txt#LifeRating> を参照のこと。失った HP は休むか、いろいろな魔法の手立てで戻せる。
+</indent>
+  <indent><color:B>魔力（SP／マナ）</color>
+多くの冒険者は魔力（マナ）を持ち、いくつ呪文を唱えられるかを表す。魔力の枠はレベル・職業・その職業の主な呪文の能力値、そして重すぎる防具のような罰で決まる（<link:magic.txt#CastingSpells> を参照）。失った魔力は休むか魔法の手立てで戻せる。
+</indent>
+  <indent><color:B>技能</color>
+どの冒険者もいくつかの主だった技能を持つ。罠外し・魔法の道具・魔法防御・隠密・探索・知覚・近接戦闘・射撃（弓と投擲）である。これらは種族・職業・性格・能力値・レベル・魔法の装備から導かれる。詳しくは下で説明する（<link:birth.txt#PrimarySkills> を参照）。
+</indent>
+  <indent><color:B>速さ</color>
+速さは信じられないほど大事な値である。速さの仕組みはいくらか込み入っているが、要は速さが高いほど（自分でも敵でも）ほかより多く手が回ってくるということである。本当に遅ければ、こちらの 1 手に対して敵が 4 手も 5 手も 6 手も動く。これが望ましくないのは言うまでもないが、速さを得て形勢を逆にできたときの楽しさもまた格別である。
+
+速さを失うのは実にたやすい。腕力に見合わないほどアイテムを持てばよいだけである。だが速さを増やすにはたいてい魔法が要る。呪文か薬の形か、あるいは魔法のかかった装備（<color:keyword>スピードのブーツ</color>など）の形である。スピードの薬は序盤の冒険者をよく助けてくれるので、手に負えそうにない相手（とりわけ依頼の敵と階の守護者）には惜しまず使うこと。深く潜るにつれ、魔法のかからない素の速さでは足りないとすぐ分かる。HP をどれだけ抱えていても、相手が速すぎれば 1 手も動けないまま満身の体力から死ぬことがある。
+</indent>
+<topic:PrimaryStats><style:heading>能力値</style>
+どの冒険者も 6 つの基本の能力値（腕力・知能・賢さ・器用・耐久・魅力）を持ち、これが冒険者の力をいろいろな形で変える。どの能力値にも数の値があり、下は 3 から 18 の分かれ目まで、そこから先は <color:keyword>18/01</color> から <color:keyword>18/220</color> の小数の幅で表される。18/220 が最大で、ふつうは <color:keyword>18/***</color> と出る。この書き方では 18/10 が新しい人の直感でいう 19 に当たり、18/20 が 20 に当たる。書き方が変わることで、18 に分かれ目があり、そこから先は能力値の永久の伸びがまったく違う働きをすることがはっきり分かる。
+
+遊んでいるうちに、能力値は魔法の手立てで、難しい仕事を果たした褒美として、あるいは要となるレベルへ上がった褒美として増える。やがて能力値は内側の上限（<color:keyword>能力値の上限</color>）に届く。これは 18/70 から 18/130 の間の値で、誕生のときに無作為に決まる。そこから先は、種族・職業・性格の増減、魔法の装備、ことによると奇妙な突然変異のような出どころが、18/*** の限りまで押し上げてくれる。
+
+<color:keyword>主たる能力値</color>（<color:keyword>呪文の能力値</color>）は、呪文の失敗率と魔力の枠の大きさを決めるし、本の呪文使いならいくつ呪文を覚えられるかも決める。おおむね、呪文の能力値が 7 以下まで落ちると魔力が尽きる。
+
+どの能力値が大事かは冒険者によって違う。とはいえ実のところ誰もがそこそこの腕力と知能を欲しがるし、耐久は冒険が進むほど値打ちを増す。近接の冒険者には器用が要るし、魔法を使う者には何より呪文の能力値が要る。それに合わせて点を割り振ること。
+
+  <indent><color:B>腕力（STR）</color>
+腕力は近接戦闘でも飛び道具でも、うまく戦うのに欠かせない。腕力が高いと近接武器の攻撃回数が増え、1 撃ごとのダメージが増え、重い武器を罰なしで使えるようになり、命中も少し良くなる。掘ること、扉に体当たりすること、そして重いアイテムを持っても遅くならないためにも役に立つ。マウラー・狂戦士・武器の達人など、多くの近接の職業が腕力を主たる能力値にしている。</indent>
+
+  <indent><color:B>知能（INT）</color>
+知能の高い冒険者は魔法の道具をうまく使い、錠を開け、罠を外すのが上手である。知能は経験から学ぶ速さにも響く。知能は魔術師寄りの呪文使いによくある主たる呪文の能力値である。</indent>
+
+  <indent><color:B>賢さ（WIS）</color>
+賢い冒険者は魔法防御が高く、邪悪な呪いと麻痺に抗いやすい。賢さは階の感触とアイテムの感触が出る速さにも響く。賢さは僧侶寄りの職業によくある呪文の能力値である。</indent>
+
+  <indent><color:B>器用（DEX）</color>
+器用は身のこなしと素早さを合わせたものである。器用が高いと武器の攻撃回数が増えて近接のダメージが大きく伸びるし、どの武器でも命中が良くなり、敵の一撃をかわせるので AC にも直に響く。錠を開けること、罠を外すこと、ダンジョンに住む盗人から身を守ることにも役立つ。器用は、既定で選ばれる盗みの盗賊をはじめ、いくつかの職業の呪文の能力値でもある。</indent>
+
+  <indent><color:B>耐久（CON）</color>
+耐久は体へのダメージに耐える力である。耐久の高い冒険者は HP が多く、傷と朦朧から早く立ち直る。ブラッドナイトは耐久を主たる能力値にしている。</indent>
+
+  <indent><color:B>魅力（CHR）</color>
+魅力は冒険者の人柄と意志の強さを表す。魅力の高い冒険者は店で有利な値を付けてもらえるし、魅了の効き目もすべてよく働く。さらに魅力は、冒険者と敵の恐怖を決めるのにも使われる。魅力の低い冒険者はよく怯え、ときにはすくんで動けなくなるほどである（<link:status.txt#Fear> を参照）。逆に魅力の高い冒険者は、敵の気をくじきやすい。吟遊詩人やソーサラーなど、いくつかの職業が魅力を主たる呪文の能力値にしている。</indent>
+
+<topic:PrimarySkills><style:heading>技能</style>
+これらの値はおおむね職業に大きく左右されるが、種族・性格・能力値・装備にも響く。いつもではないが、レベルとともに上がることが多い。
+
+  <indent><color:B>近接戦闘</color>
+近接戦闘の技能は、近接（武器でも素手でも）の命中の土台にすぎない。腕力と器用がこの技能を押し上げるし、装備の戦いの恩恵でさらに命中を高められる。この技能はレベルとともに上がる。ただしソーサラーだけは、いつまでも近接が苦手なままである。</indent>
+
+  <indent><color:B>射撃</color>
+この技能はおおむね飛び道具を使うことにもアイテムを投げることにも当てはまるが、別々に計算される場合もある。射撃の技能も近接戦闘と同じく命中の土台である。ただし飛び抜けて高い射撃の技能は射撃の速さも上げ、弾が当たって壊れる見込みも減らす。腕力と器用は射撃を押し上げるが、それは命中にだけ効き、いま述べた上乗せの恩恵には効かない。射撃は、狂戦士とソーサラーを除くすべての冒険者でレベルとともに自ずと伸びる。</indent>
+
+  <indent><color:B>魔法防御</color>
+魔法防御は、敵が唱えた呪文の効き目に抗う力である。いちばんよくあるのは、自分か装備への呪いを伴う呪文への抵抗である。魔法防御は麻痺にも役立つが、そのためには自由行動も要る。この技能はレベルとともに自ずと伸びる――もっとも、高いレベルではもっと厄介な呪いに出会うことにもなる……魔法防御は賢さに左右される。</indent>
+
+  <indent><color:B>隠密</color>
+音を立てずに動く力はたいそう役に立つ。隠密の高い冒険者はたいてい敵の不意を突けるので、先手を取れる（あるいは戦いそのものを避けられる）。隠密の低い冒険者は、近くの敵がみな目を覚まして群がってくる。隠密はおおむねレベルでは伸びず、種族・職業・性格・装備だけで決まる。新しい人は隠密を高く見積もるべきである。敵の群れをさばく経験が浅いほど、群れを招く余裕は無い。</indent>
+
+  <indent><color:B>罠外し</color>
+罠外しは罠を（安全に）取り除く力で、箱と扉の錠を開けることも含む。罠外しに成功すると経験値がいくらか入る。罠は見つけてからでないと外せない。器用と知能の両方が罠外しの技能に響き、この技能はレベルとともに伸びる。</indent>
+
+  <indent><color:B>魔法の道具の技能</color>
+魔法の道具を使うには経験と知識が要るので、メイジのような生まれながらの呪文使いのほうが近接の職業よりずっと上手である。道具の技能はすべての技能の中でいちばん大事で、とりわけ終盤ではそうである。道具の技能の大半は職業で決まるが、技能そのものが大事であるだけに種族と性格の恩恵も大事である。道具の技能は知能に左右され、レベルとともに伸びる。</indent>
+
+  <indent><color:B>知覚（探索の頻度）</color>
+<color:B>探索（探す腕前）</color>
+この 2 つの技能はたいそう近い間柄である。どちらも秘密の扉・床の罠・箱の罠に気づくのを助ける。探索は自分から探しているときに効き、知覚は探していなくても気づかせてくれる。探索は透明な敵を見る腕前も上げる。これらの技能は種族・職業・性格・装備で決まり、おおむねレベルでは伸びない。</indent>
+
+<topic:Abilities><style:heading>そのほかの力</style>
+
+能力値や技能と同じく、これらの力も冒険者が生き延び動き回るのを助ける。種族・職業・性格に左右されることもあるが、それは特別な場合に限られる（赤外線視力だけは別で、おもに種族で決まる）。だから誕生の手順では目立つ形で出ないが、遊びの中では確かに違いを生む。
+
+  <indent><color:B>回復力</color>
+回復力は、失った HP と魔力の戻る速さを決める。おおむね魔法の効き目か装備でしか変わらず、種族や職業では変わらない。ただし例外もある（たとえばアンバライト・ベオルニング・ワーウルフ・エインヘリヤルは飛び抜けて速く回復する）。回復力に響く邪悪な呪いを受けたり、それを鈍らせる恐ろしい突然変異に見舞われたりすると、痛みはたちまち襲ってくる……</indent>
+
+  <indent><color:B>赤外線視力</color>
+赤外線視力は熱の源を見る力である。ダンジョンは涼しいか冷たいので、赤外線視力で壁やアイテムは見えないが、ある距離までの温血の生き物は見つけられる。赤外線視力は光源のあるなしに関わらず同じように働く。多くの敵は冷血なので赤外線視力では見つからないが、とりわけ序盤（温血の敵が多く、透明視をまだ持たないことが多い）では赤外線視力が違いを生む。人間以外のたいていの種族は生まれつきいくらかの赤外線視力を持つし、どの種族も魔法の装備で得られる。</indent>
+
+  <indent><color:B>掘削</color>
+この力は財宝を掘り出し、新しい通路をうまく掘ることを可能にする。腕力・魔法の装備・つるはしやシャベルのような掘る道具、そして武器や掘る道具の重さ（重いほうがよく掘れる）に左右される。掘削はふつう種族・職業・性格では変わらないが、ここでも例外はある。たとえば法律家は掘るのがたいそう上手である。</indent>
+
+<topic:BirthOptions><style:heading>誕生の選択肢</style>
+冒険者を作っている間はいつでも「=」を押して誕生の選択肢を開ける。ただし<color:keyword>初心者モード</color>を選んだ場合は別で、そこではほぼ既定の選択肢が自動で割り当てられる。よく使われる誕生の選択肢には、ゲームを足早にする（が荒野を無くす）<color:keyword>コーヒーブレイクモード</color>、ダンジョンで出る金を増やす代わりにアイテムを売って金にすることを禁じる<color:keyword>売らない</color>、そして賛否のある能力値の入れ替えの仕組みを取り除き、邪悪だが賛否の少ない小さな呪いに差し替える<color:keyword>入れ替えなし</color>がある。そのほかにも数十の誕生の選択肢がある。よく使われるものも、ごく限られた用途のものもある。それぞれの詳しい説明は <link:option.txt#Birth> を参照のこと。
+
+<topic:Reference><style:heading>用語</style>
+
+<topic:BeginnerMode><style:keyword>初心者モード</style>  <indent>新しい人のためのモードで、選べる種族と職業を大きく絞る。さらに誕生の手順から<color:keyword>性格</color>を取り除き、（遊びにまったく響かない）ふつうの性格を自動で割り当てる。冒険者作りを速めるため、誕生の選択肢（<color:keypress>=</color>）も使えない。ほぼ既定の選択肢が自動で割り当てられた状態で遊ぶことになる。最後に、このモードは<color:keyword>コーヒーブレイクモード</color>を強いる。ゲームが足早になり、荒野が無くなり、特別な「小さな町」だけが町になる。コーヒーブレイクモードでは上りの階段が作られないので、初心者は帰還の詔の巻物を多めに持って始まる（願わくばダンジョンで立ち往生しないように）。</indent>
+
+<topic:NormalMode><style:keyword>通常モード</style>    <indent>これがふつうの遊び方、いわば「全部入り」である。まだ手を入れている途中で十分に試されていないものも含め、すべての種族と職業から選べる。誕生の選択肢と性格の仕組みの両方が使える。望むなら、探るべき数多くのダンジョンと町を抱えた広大な地上の荒野で遊べる。</indent>
+
+<topic:MonsterMode><style:keyword>モンスターモード</style>   <indent>ふつうの冒険者ではなく怪物として遊ぶモードである。職業は選ばない。代わりに種族（と下位の種族）の選択がどの怪物で遊ぶかを決め、それが実質、種族でも職業でもある。選択肢は多く、中にはずいぶん風変わりなものもある。たいていの怪物の姿は弱い姿から強い姿へ進化する（たとえば森トロルから火トロルへ、というように）。独自の体つきを持つ姿も多い（たとえばゾーンは腕が 2 対あり、近接武器を 4 本まで持てる）。さらに、たいていの怪物の種族には主が居て、倒すと洒落たアーティファクトを落とす。ただしゲームの狙いは変わらない。<color:keyword>混沌のサーペント</color>を討つことである。</indent>
+
+<topic:QuickStart><style:keyword>クイックスタート</style>    <indent>いま居る冒険者が死ぬと、同じセーブファイルから新しい冒険者を作れる。そのときこの選択肢が増える。クイックスタートを選ぶと、前の冒険者とまったく同じ種族・職業・選択肢・性格の新しい冒険者ができる。序盤で死ぬのはよくあることなので、同じ選択を何度も繰り返す退屈をクイックスタートが省いてくれる。</indent>
+
+<topic:CharacterName><style:keyword>冒険者の名前</style> <indent>誕生の手順では冒険者の名前を変えられる。この名前はセーブファイルの綴りになるし（すでに名の付いたセーブファイルの中でこの冒険者を作った場合は別）、設定や好みの保存先にもなる。だから名前は慎重に選ぶこと。ご想像のとおり、名前を変えるのは書類仕事（と高い手数料）を伴う込み入った法の手続きである。あとで名前を変えたくなったら、ウルドリック伯爵の城で訊ねれば進め方を教えてくれる。</indent>
+
+<color:D>
+最初     : (??)
+更新     : (??)
+更新     : Zangband 開発チーム
+更新     : 変愚蛮怒 1.5.2
+更新     : PosChengband 1.0.0
+更新     : PosChengband 4.0.0
+更新     : PosChengband 5.0.3
+更新     : FrogComposband 7.1.liquorice
+</color>

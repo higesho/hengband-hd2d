@@ -1,0 +1,45 @@
+<style:title>人物調書のコマンド</style>
+
+人物調書では、遊びの本編を離れずに、いまの能力値・耐性・ダメージ・装備・持ち物・覚えている呪文・依頼の記録、そのほか冒険者にまつわることを見返せる。この画から調書の写しを取って見比べることもできる。
+
+<style:heading>移動のキー</style>
+<color:keypress>    Q q     </color>(人物調書を閉じる)
+<color:keypress>    ESC     </color>(前のページへ戻る)
+
+<color:keypress>    Home    </color>(先頭へ)
+<color:keypress>  PageUp/-  </color>(1 ページ戻る)
+<color:keypress>  Up Arrow  </color>(1 行戻る)
+<color:keypress> Down Arrow </color>(1 行進む)
+<color:keypress>  PageDown  </color>(1 ページ進む)
+<color:keypress>  Spacebar  </color>(1 ページ進む)
+<color:keypress>    End     </color>(末尾へ)
+
+<color:keypress>     >      </color>(次の節へ)
+<color:keypress>     <      </color>(前の節へ)
+<color:keypress>  letters   </color>(調書に字の付いた節があれば、その字の次の節へ飛ぶ)
+
+<style:heading>調書のコマンド</style>
+<color:keypress>     |      </color>(人物の記録をファイルへ書き出す)
+<color:keypress>     ?      </color>(この人物調書のヘルプを出す)
+
+<topic:CharacterCompare><style:heading>見比べるコマンド</style>
+<color:keypress>     c      </color>(いま出ている調書を取っておく)
+<color:keypress>     C      </color>(いまの冒険者と既定の写しを行き来する)
+             註: 最初の 1 回だけ C を 2 度押す要がある。
+
+<style:heading>取っておく状態で</style>
+<color:keypress> c 0 Enter  </color>(既定の枠へ取っておく)
+<color:keypress>   7 8 9    </color>(追加の枠へ取っておく)
+
+<style:heading>写しを直に読む（多くのキーボードで Shift+7/8/9/0）</style>
+<color:keypress>   & or :   </color>(写し 7 を直に読む。もう一度でいまの調書へ戻る)
+<color:keypress>     *      </color>(写し 8 を直に読む。もう一度でいまの調書へ戻る)
+<color:keypress>     (      </color>(写し 9 を直に読む。もう一度でいまの調書へ戻る)
+<color:keypress>   ) or =   </color>(既定の写しを直に読む。もう一度でいまの調書へ戻る)
+
+US 以外の配列では数字段の Shift が違うので、直に見比べるときは代わりのキーも受け付ける。枠 7 には <color:keypress>&</color> か <color:keypress>:</color>、枠 8 には <color:keypress>*</color>、枠 9 には <color:keypress>(</color>、既定の枠には <color:keypress>)</color> か <color:keypress>=</color> である。同じ写しがすでに出ているときにこれらを押すと、いまの生きた調書へ戻る。配列によっては <color:keypress>&</color> を出す物理キーが <color:keypress>Shift+7</color> ではなく <color:keypress>Shift+6</color> のことがあるが、これは問題ではない。その仕組みでは写し 7 を直に読むのに shift+6 を押す、というだけである。
+
+<style:heading>そのほかのコマンド</style>
+<color:keypress> / or Ctrl+F</color>(前方へ文字列を探す ― 大文字と小文字を区別する)
+<color:keypress>   Enter    </color>(もう一度探す。次に当たる所へ)
+<color:keypress>     \      </color>(後方へ文字列を探す ― 大文字と小文字を区別する)

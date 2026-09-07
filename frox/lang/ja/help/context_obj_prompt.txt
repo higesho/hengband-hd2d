@@ -1,0 +1,101 @@
+<style:title>アイテムを選ぶ</style>
+
+<color:keyword>FrogComposband</color> はアイテムを扱うゲームである。薬を飲む・巻物を読むといった多くのコマンドは、使うアイテムを選ぶことを求めてくる。持っているアイテムや身に着けているアイテムを眺めたり調べたりするコマンドもある。このヘルプは、その「アイテムを見て選ぶ画」の使い方を説明する。
+
+<topic:Sample><style:heading>実例</style>
+
+手持ちを見るには、持ち物なら <color:keypress>i</color>、装備なら <color:keypress>e</color> を押す。どちらも同じ画を開き、押したキーに合った札を選んでくれる:
+<style:screenshot>
+<color:D>持ち物</color> <color:b>|</color> <color:G>装備</color> <color:b>|</color> <color:D>矢筒</color>                                                            
+ a) 右手      : ブロード・ソード (2d6) (+0,+0)              15.0 lb LEVEL <color:G>     1</color>
+ b) 左手      : <color:U>革製スモール・シールド [3,+0]</color>                5.0 lb EXP <color:G>      10</color>
+ c) 射撃      : <color:u>ショート・ボウ (x2.50) (+0,+0)</color>               3.0 lb AU  <color:G>   5.31k</color>
+ d) 矢筒      : <color:U>矢筒 [25 of 100]</color>                             1.0 lb <color:W>|</color><color:U>)}~</color><color:d>   </color><color:u>~</color><color:s>[</color><color:g>(</color><color:s>]</color><color:U>]</color>
+ e) 右手指    :                                                     STR : <color:G> 18/30</color>
+ f) 左手指    :                                                     INT : <color:G>     6</color>
+ g) 首        :                                                     WIS : <color:G>     6</color>
+ h) 光源      : <color:y>松明 (残り 2436 ターン)</color>                      3.0 lb DEX : <color:G> 18/10</color>
+ i) 体        : <color:s>鎖かたびら (-2) [14,+0]</color>                     22.0 lb CON : <color:G>    17</color>
+ j) クローク  : <color:U>クローク [1,+0]</color>                              1.0 lb CHR : <color:G>    10</color>
+ k) 頭        : <color:U>金属帽子 [3,+0]</color>                              2.0 lb AC     <color:G>   28</color>
+ l) 手        : <color:U>ガントレット [2,+0]</color>                          2.5 lb HP <color:G>  56</color>/<color:G>  56</color>
+ m) 足        : <color:U>硬革ブーツ [3,+0]</color>                            4.0 lb             
+                                                           <color:R> 58.5 lb</color>             
+持ち重り 113.9 ポンド（余力の <color:G>81%</color>）。                                           
+                                                                                
+<color:y>どのアイテムを調べますか </color>(<color:o>Esc</color> で戻る)<color:y>?</color>                                                
+                                                                                
+<color:U>####</color>.........<color:U>###</color><color:v>+</color><color:U>###</color>..<color:U>####</color>+<color:U>####</color>...<color:U>####</color><color:B>+</color><color:U>####</color>..<color:U>#######</color>.........<color:U>######</color>             
+<color:U>#####</color>.......................................................<color:U>#######</color>             
+<color:U>#####</color>.......................................................<color:v>+</color><color:U>######</color>             
+<color:U>#####</color>.......................................................<color:U>#######</color>             
+辺境の地                                                                        
+</style>
+まず目につくのは、アイテムが置き場ごとに札で分かれていることである。いちばん上の行が使える札で（この例では持ち物・装備・矢筒）、選んでいる札は<color:G>色つき</color>、選んでいない札は<color:D>暗く</color>出る。札は <color:keypress>/</color> で切り替えられる。
+<style:screenshot>
+<color:D>持ち物</color> <color:b>|</color> <color:D>装備</color> <color:b>|</color> <color:G>矢筒</color>                                                            
+ a) <color:U>矢×25 (3d4) (+0,+0)</color>                                     5.0 lb LEVEL <color:G>     1</color>
+                                                           <color:R>  5.0 lb</color> EXP <color:G>      10</color>
+持ち重り 113.9 ポンド（余力の <color:G>81%</color>）。                               AU  <color:G>   5.31k</color>
+                                                                    <color:W>|</color><color:U>)}~</color><color:d>   </color><color:u>~</color><color:s>[</color><color:g>(</color><color:s>]</color><color:U>]</color>
+<color:y>どのアイテムを調べますか </color>(<color:o>Esc</color> で戻る)<color:y>?</color>                              STR : <color:G> 18/30</color>
+                                                                    INT : <color:G>     6</color>
+......<color:U>#####</color>..<color:U>#######</color>..<color:U>#########</color>...<color:U>#########</color>..<color:U>#######</color>..<color:U>#####</color>......<color:U>##</color> WIS : <color:G>     6</color>
+......<color:U>##+##</color>..<color:U>###</color><color:o>9</color><color:U>###</color>..<color:U>####</color>3<color:U>####</color>...<color:U>####</color><color:r>6</color><color:U>####</color>..<color:U>###</color><color:g>4</color><color:U>###</color>..<color:U>##+##</color>......<color:U>##</color> DEX : <color:G> 18/10</color>
+.................................................................<color:U>##</color> CON : <color:G>    17</color>
+.................................................................<color:U>##</color> CHR : <color:G>    10</color>
+.................................................................<color:U>##</color> AC     <color:G>   28</color>
+................................<color:v>></color>.................................. HP <color:G>  56</color>/<color:G>  56</color>
+.................................................................<color:U>##</color>             
+..........................@......................................<color:U>##</color>             
+.................................................................<color:U>##</color>             
+......<color:U>##1##</color>..<color:U>###</color><color:D>7</color><color:U>###</color>..<color:U>####</color><color:s>2</color><color:U>####</color>...<color:U>####</color><color:b>5</color><color:U>####</color>..<color:U>###</color><color:y>8</color><color:U>###</color>..<color:U>##+##</color>......<color:U>##</color>             
+......<color:U>#####</color>..<color:U>#######</color>..<color:U>#########</color>...<color:U>#########</color>..<color:U>#######</color>..<color:U>#####</color>......<color:U>##</color>             
+<color:U>#+#</color>...<color:U>#####</color>..<color:U>#######</color>..<color:U>#########</color>...<color:U>#########</color>..<color:U>#######</color>..<color:U>#####</color>...<color:U>#</color><color:R>+</color><color:U>###</color>             
+<color:U>####</color>.........<color:U>###</color><color:v>+</color><color:U>###</color>..<color:U>####</color>+<color:U>####</color>...<color:U>####</color><color:B>+</color><color:U>####</color>..<color:U>#######</color>.........<color:U>######</color>             
+<color:U>#####</color>.......................................................<color:U>#######</color>             
+<color:U>#####</color>.......................................................<color:v>+</color><color:U>######</color>             
+<color:U>#####</color>.......................................................<color:U>#######</color>             
+辺境の地                                                                        
+</style>
+
+アイテムを選ぶには、示された字を押す。その後に何が起こるかは、その画が何のために開かれたかによって決まり、画のいちばん下の行に出ている。この例はただ手持ちを眺めているだけなので、アイテムを一つずつ調べられるのがいちばんありがたい:
+<style:screenshot>
+<color:U>矢×25 (3d4) (+0,+0)</color>                                                            
+  たくみに羽が付けられた真っ直な標準的な矢だ。                      LEVEL <color:G>     1</color>
+                                                                    EXP <color:G>      10</color>
+  <color:B>評点:</color> <color:D>2</color>                                                           AU  <color:G>   5.31k</color>
+                                                                    <color:W>|</color><color:U>)}~</color><color:d>   </color><color:u>~</color><color:s>[</color><color:g>(</color><color:s>]</color><color:U>]</color>
+<color:B>[</color><color:y>何かキーを押すと戻る</color><color:B>]</color>                                              STR : <color:G> 18/30</color>
+                                                                    INT : <color:G>     6</color>
+</style>
+
+この例では、アイテムを選んでも画が閉じなかったことに気づいてほしい。これは珍しく、また便利でもある――調べ終える前にいくつも見たいことがあるからである。銘を刻む（<color:keypress>{</color>）のようにこう振る舞うコマンドがほかにもあるが、たいていの画はアイテムを選んだ時点で閉じる。
+
+<topic:QuickRef><style:heading>早見表</style>
+  <indent>
+<color:G>選ぶ</color>
+<color:keypress>a-z</color>       示されたアイテムを選ぶ
+<color:keypress>A-Z</color>       示されたアイテムを調べる
+<color:keypress>Page Up</color>   長い品書きを送る
+<color:keypress>Page Down</color>
+<color:keypress>Space</color>
+<color:keypress>Esc</color>       選ぶのをやめる
+
+<color:G>札を切り替える</color>
+<color:keypress>/</color>         次の札へ
+<color:keypress>\</color>         前の札へ
+<color:keypress>^P</color>        持ち物の札へ
+<color:keypress>^E</color>        装備の札へ
+<color:keypress>^Q</color>        矢筒の札へ
+<color:keypress>^F</color>        床の札へ
+<color:keypress>- </color>        <indent>床の札へ。床にアイテムが 1 つしか無ければそれを選ぶ。</indent>
+<color:keypress>*</color>         矢筒の札: 矢弾をすべて外すか置く（確認あり）
+
+<color:G>表示の設定</color>
+<color:keypress>^W</color>        重さの表示を切り替える (<link:option.txt#show_weights> を見よ)
+<color:keypress>^G</color>        絵の表示を切り替える (<link:option.txt#show_item_graph> を見よ)
+<color:keypress>^D</color>        枠の名札の表示を切り替える (<link:option.txt#describe_slots> を見よ)
+<color:keypress>@</color>         銘による記号の差し替えを切り替える（初めは有効）
+
+</indent>

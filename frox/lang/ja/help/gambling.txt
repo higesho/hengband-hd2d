@@ -1,0 +1,25 @@
+<style:title>賭けの決まり</style>
+
+<color:G>ビトウィーン</color>: <indent>12 面のサイコロを 3 つ振る。黒 2 つ、赤 1 つ。赤が両方の黒の間に入れば勝ち。赤が黒と同じ目なら負け。配当は 3 倍。</indent>
+<color:G>クラップス</color>:   <indent>サイコロを 2 つ振る。最初の振りで 7 か 11 なら勝ち。2・3・12 なら負け。それ以外なら、最初の目と同じ目が出る（勝ち）か 7 が出る（負け）まで振り続ける。配当は 2 倍。</indent>
+<color:G>ルーレット</color>:   <indent>0〜9 から数を選ぶ。輪が止まったときにその数が出ていれば勝ち。配当は 9 倍。</indent>
+<color:G>スロット</color>:   <indent>絵柄が 3 つ出る。絵柄は 6 種で、どれも同じ見込みで出る。配当は次のとおり。
+<color:r>チェリー チェリー</color> <color:y>レモン</color>  2 倍   <color:r>チェリー チェリー</color> <color:o>オレンジ</color>  3 倍
+<color:r>チェリー チェリー</color> <color:W>剣</color>  4 倍   <color:r>チェリー チェリー</color> <color:s>盾</color>  5 倍
+<color:r>チェリー チェリー</color> <color:v>プラム</color>   6 倍
+<color:y>レモン 3 つ</color>    4 倍   <color:o>オレンジ 3 つ</color> 16 倍
+<color:W>剣 3 つ</color>    6 倍   <color:s>盾 3 つ</color> 25 倍
+<color:v>プラム 3 つ</color>       9 倍   <color:r>チェリー 3 つ</color> 36 倍</indent>
+<color:G>闘技場</color>:   <indent>4 体の敵の戦いに賭ける。勝った敵にだけ配当が付き、倍率は敵の強さで決まる。たいそう長引いた戦いは引き分けとなり、賭け金が戻る。</indent>
+<color:G>ポーカー</color>:   <indent>53 枚の札で遊ぶ（13 枚の組が 4 つとジョーカー 1 枚）。エースはいつも 1 で、14 にはならない。賭けられるのは最初の手札が配られる前だけ。札の入れ替えは 1 回で、最初の札を好きなだけ捨てられる。配当は次のとおり。
+ツーペア             1 倍   フォーカード        16 倍
+スリーカード         1 倍   ストレートフラッシュ 80 倍
+ストレート           4 倍   ロイヤルフラッシュ 200 倍
+フラッシュ           8 倍   ファイブカード     400 倍
+フルハウス          12 倍   ファイブエース    3000 倍</indent>
+
+<color:D>--
+最初       : ??
+更新       : Kangband 2.8.3i
+更新       : FrogComposband 7.1.liquorice
+</color>

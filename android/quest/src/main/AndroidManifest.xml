@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ヘッドトラッキング必須。**電話へ誤って入れる事故もこの 1 行が防ぐ**（罠 Q-9） -->
+    <uses-feature android:name="android.hardware.vr.headtracking"
+                  android:version="1" android:required="true" />
+    <uses-feature android:glEsVersion="0x00030000" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:hasFragileUserData="true"
+        android:theme="@style/HengbandTheme">
+
+        <!-- 野良では警告止まりだが、書いておくと機種判定が黙る -->
+        <meta-data android:name="com.oculus.supportedDevices"
+                   android:value="quest2|questpro|quest3|quest3s" />
+
+        <!--
+          アクティビティは電話版のものを**そのまま**使う（java は srcDirs で共有）。
+          向きは `landscape`——電話版の `fullUser` と違って **HMD に縦は無い**。
+        -->
+        <activity
+            android:name="org.hengband.hd2d.HengbandHd2dActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="false"
+            android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation">
+
+            <!-- システムメニューを開いた（フォーカスを失った）ときの作法。OpenXR では既定 true だが明示する -->
+            <meta-data android:name="com.oculus.vr.focusaware" android:value="true" />
+            <!-- 裏へ回ったらゲームスレッドを止める（電話版と同じ。セーブ保全が最優先） -->
+            <meta-data android:name="SDL_ENV.SDL_ANDROID_BLOCK_ON_PAUSE" android:value="1" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- 「提供元不明」に並べるために LAUNCHER も残す（罠 Q-8） -->
+                <category android:name="android.intent.category.LAUNCHER" />
+                <!-- VR アプリとして起動させる札。新旧 2 枚とも貼る -->
+                <category android:name="com.oculus.intent.category.VR" />
+                <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

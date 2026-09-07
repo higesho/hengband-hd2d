@@ -1,0 +1,27 @@
+<style:title>ヘルプの操作方法</style>
+
+<style:heading>移動のキー</style>
+<color:keypress>   Q q    </color>(ヘルプを閉じる)
+<color:keypress>   ESC    </color>(前のページへ戻る)
+<color:keypress>    !     </color>(ヘルプの目次へ戻る)
+
+<color:keypress>   Home   </color>(先頭へ)
+<color:keypress>  PageUp/- </color>(1 ページ戻る)
+<color:keypress> Up Arrow </color>(1 行戻る)
+<color:keypress>Down Arrow</color>(1 行進む)
+<color:keypress> PageDown </color>(1 ページ進む)
+<color:keypress> Spacebar </color>(1 ページ進む)
+<color:keypress>   End    </color>(末尾へ)
+
+<color:keypress>    >     </color>(次の節へ)
+<color:keypress>    <     </color>(前の節へ)
+<color:keypress> letters  </color>(その字で始まる次の節へ飛ぶ)
+
+<style:heading>そのほかのキー</style>
+<color:keypress>    /     </color>(前方へ文字列を探す ― 大文字と小文字を区別する)
+<color:keypress>    \     </color>(後方へ文字列を探す ― 大文字と小文字を区別する)
+<color:keypress>    |     </color>(ファイルへ書き出す)
+          <color:note>(<indent>註: 拡張子を htm か html にすると HTML で保存できる。それ以外では色の指定が落ちる。)</indent></color>
+
+<style:heading>リンク</style>
+リンクをたどるには、示された字 <color:link>[a-z]</color> を押す。たとえば「(see <link:monster.txt#Pets>)」と出ていたら <color:keypress>a</color> を押す。

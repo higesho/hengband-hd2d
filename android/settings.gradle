@@ -1,0 +1,26 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "Hengband"
+// ボクセル HD2D 版。電話・タブレット向け。
+// 旧 SDL2 UI 版（`:app`）は 2026-08-12 に削除した（「旧 HD2D と 2D は削除」と決めた）。
+include ':hd2d'
+// Meta Quest ネイティブ版。**中身は :hd2d と同じソースツリー**で、
+// 違うのは包み（minSdk 32・arm64 のみ・OpenXR loader・VR のマニフェスト）と
+// CMake の `-DHENGBAND_QUEST=ON` だけ。
+include ':quest'
+// 短愚蛮怒は別モジュールではなく**コア選択**で入っている（2026-08-18 に決めた。
+// :hd2d / :quest の APK に libhengcore.so と libtangcore.so の両方が載り、
+// 起動時のコア選択画面で選ぶ。

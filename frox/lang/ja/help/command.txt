@@ -1,0 +1,220 @@
+<style:title>コマンド</style>
+
+コマンドは、ゲームの側で決められた命令に結び付いた 1 つのキーを押して入力する。この打鍵と命令の結び付け方には、決まった 2 通りの<color:keyword>キー配列</color>がある――<color:keyword>元の配列</color>と<color:keyword>ローグ風の配列</color>である。既定は元の配列で、直感的なので（たとえばテンキーで動ける）新しい人にはこちらを勧める。ただ、腕の立つ人の多くはローグ風の配列を使うし、キーボードにテンキーが無いならそちらのほうがまず間違いない（テンキーの代わりに矢印キーで済ませようとすると、斜めに動かねばならなくなった時点で立ち行かなくなる）。配列は <color:o>=</color> の設定の画で入れ替えられる。
+
+この文書には、上の 2 つの配列のキーの割り当てが載っている。それぞれのコマンドの詳しい話は <link:commdesc.txt> を参照のこと。また、初めての人向けに、<color:keypress>ENTER</color> を押すとすべてのコマンドと対応する打鍵を並べた一枚の命令の一覧が開く。これは遊びながらコマンドを覚えるためのもので、正しいキーを覚えて打つよりずっと手間がかかるから、できるだけ早く卒業したい。（この一覧は入力の設定 command_menu で入切できる。設定の変え方は <link:option.txt> を参照。）
+
+コマンドの数の多さに気圧されないこと。ふだん使わないものや要らないものも多い。よく使うものは下の表で<color:y>黄</color>にしてある。まずはそれを覚えるとよい。多くのコマンドは、上で出た<color:keypress>E</color>at（食べる）のように英語の頭文字を手がかりにしてある。下の表の山形（^）は <color:keypress>CTRL</color> キーを押すことを表す（<color:keypress>^S</color> は <color:keypress>Ctrl-S</color> の意味）が、^ キーから始まる 2 打の並びとして打つこともできる。
+
+コマンドを選んだあと、さらに入力を求められることがある。たとえば腹が減って食べ物を食べようとすると（食べるはどちらの配列でも <color:keypress>E</color>）、ゲームは選べるものを並べて見せる（食料やいろいろなきのこ、そのほか袋に入っている食べられる物である）。この時点で ESC を押せばコマンドを取り消せる。
+
+とりわけ、何にでも使える <color:keypress>+</color> のコマンドは覚えておきたい。隣のマスの何かに手を出すとき、普段のコマンドを忘れたら、たいてい <color:keypress>+</color> で代わりが利く。<color:keypress>+</color> で掘れるし、<color:keypress>+</color> で扉を開けられるし、<color:keypress>+</color> で罠を外せるし、<color:keypress>+</color> で敵と戦うことさえできる……まだまだ続く。
+
+ヘルプそのものの中で使うコマンドは <color:keypress>?</color> で出る。
+
+<topic:OriginalKeyset><style:heading>元の配列</style>
+<style:table>
+       Movement
+       <color:y>7  8  9
+       4  5  6
+       1  2  3</color>
+
+   <color:y>a  魔法棒を向ける</color>                       A  装備を発動する
+   b  解説を見る                           B  扉に体当たり
+   c  扉を閉じる                           <color:y>C  人物調書</color>
+   d  アイテムを置く                       <color:y>D  罠を外す</color>
+   <color:y>e  装備の一覧</color>                           <color:y>E  食べる</color>
+   <color:y>f  射撃する</color>                             <color:y>F  燃料を足す</color>
+   <color:y>g  アイテムを拾う（Get）</color>                <color:y>G  呪文・祈りを学ぶ</color>
+   <color:D>h  （使わない）</color>                         H  目を引くアイテムまで歩く
+   <color:y>i  持ち物の一覧</color>                         <color:y>I  アイテムを調べる</color>
+   j  扉に楔を打つ／道のり                 J  歩きを続ける
+   k  アイテムを壊す                       <color:D>K  （使わない）</color>
+   <color:y>l  見回す</color>                               L  地図の中の位置
+   <color:y>m  呪文を唱える／精神の力を使う</color>         M  全体地図
+   <color:y>n  直前の命令をもう一度</color>                 <color:D>N  （使わない）</color>
+   <color:y>o  扉か箱を開ける</color>                       <color:y>O  アイテムの一覧</color>
+   p  ペットに命じる                       <color:D>P  （使わない）</color>
+   <color:y>q  薬を飲む</color>                             Q  終了（自殺する）
+   <color:y>r  巻物を読む</color>                           <color:y>R  一定の間 休む</color>
+   <color:y>s  罠と扉を探す</color>                         S  探索の入切
+   t  外す                                 T  掘る
+   <color:y>u  杖を使う</color>                             <color:y>U  種族・特別の力を使う</color>
+   v  アイテムを投げる                     V  版の情報
+   <color:y>w  身に着ける</color>                           W  指輪の指を替える
+   <color:D>x  （使わない）</color>                         <color:D>X  （使わない）</color>
+   y  要らないアイテムをまとめて捨てる     <color:y>Y  敵の一覧</color>
+   <color:y>z  ロッドを振る</color>                         Z  アイテムの銘を書く
+   !  pref の命令を打つ                   ^A  （特別 ― ウィザードの命令）
+   @  マクロの設定                        <color:D>^B  （使わない）</color>
+   <color:D>#  （使わない）</color>                        ^C  （特別 ― 中断）
+   $  モガミネーターの設定を読み直す      <color:D>^D  （使わない）</color>
+   %  見た目の設定                        ^E  マクロの設定
+   ^  （特別 ― コントロールキー）        ^F  階の感触をもう一度
+   &  色の設定                            ^G  近くのアイテムを自動で拾う
+   <color:y>*  敵か場所に狙いを定める</color>              <color:D>^H  （使わない）</color>
+   <color:D>(  （使わない）</color>                        ^I  サブウィンドウの入切
+   )  画面を書き出す                      ^J  （特別 ― 改行）
+   {  アイテムの銘を書く                  <color:D>^K  （使わない）</color>
+   }  ダンジョンの覚え書き                <color:y>^L  敵の足元を見る</color>
+   [  敵の一覧                            ^M  （特別 ― リターン）
+   ]  アイテムの一覧                      <color:D>^N  （使わない）</color>
+   -  歩く（拾うかどうかを裏返す）        ^O  アイテムの一覧
+   _  モガミネーターの設定を編集・実行    ^P  前のメッセージ
+   <color:y>+  隣のマスに手を出す</color>                  <color:y>^Q  依頼の一覧</color>
+   =  設定を変える                        ^R  画面を描き直す
+   ;  歩く                                ^S  セーブする（終わらない）
+   :  覚え書きを残す                      ^T  いまの時刻
+   '  記録した打鍵を流す                  <color:D>^U  （使わない）</color>
+   "  打鍵を記録する                      ^V  画面の中心を戻す
+   ,  その場に留まる                      ^W  （特別 ― ウィザードモード）
+   <color:y><  階段を上る／広域地図の入切</color>          <color:y>^X  セーブして終了</color>
+   <color:y>.  走る</color>                                ^Y  （特別 ― ウィザードモード）
+   <color:y>>  階段を下る／普通の地図へ入る</color>        ^Z  （特別 ― ボルグの命令）
+   \  （特別 ― キー割り当てを飛ばす）     <color:D>|  （使わない）</color>
+   `  道のりの近道                         ~  知識の一覧
+   /  記号を調べる                         <color:y>?  ヘルプ</color>
+</style>
+
+<topic:RogueKeyset><style:heading>ローグ風の配列</style>
+<style:table>
+       Movement
+       <color:y>y  k  u
+       h  .  l
+       b  j  n</color>
+
+   <color:y>a  ロッドを振る（Activate）</color>             A  装備を発動する
+   b  （歩く ― 南西）                     B  （走る ― 南西）
+   c  扉を閉じる                           <color:y>C  人物調書</color>
+   d  アイテムを置く                       <color:y>D  罠か箱の罠を外す</color>
+   <color:y>e  装備の一覧</color>                           <color:y>E  食べる</color>
+   f  扉に体当たり（Force）                <color:y>F  燃料を足す</color>
+   <color:y>g  アイテムを拾う（Get）</color>                <color:y>G  呪文・祈りを学ぶ</color>
+   h  （歩く ― 西）                       H  （走る ― 西）
+   <color:y>i  持ち物の一覧</color>                         <color:y>I  アイテムを調べる</color>
+   j  （歩く ― 南）                       J  （走る ― 南）
+   k  （歩く ― 北）                       K  （走る ― 北）
+   l  （歩く ― 東）                       L  （走る ― 東）
+   <color:y>m  呪文を唱える／精神の力を使う</color>         M  全体地図
+   n  （歩く ― 南東）                     N  （走る ― 南東）
+   <color:y>o  扉か箱を開ける</color>                       <color:y>O  種族・特別の力を使う</color>
+   p  ペットに命じる                       P  解説を見る（Peruse）
+   <color:y>q  薬を飲む</color>                             Q  終了（自殺する）
+   <color:y>r  巻物を読む</color>                           <color:y>R  一定の間 休む</color>
+   s  罠と扉を探す                         S  扉に楔を打つ／近道で動く
+   <color:y>t  射撃する</color>                             T  外す
+   u  （歩く ― 北東）                     U  （走る ― 北東）
+   v  アイテムを投げる                     V  版の情報
+   <color:y>w  身に着ける</color>                           W  地図の中の位置
+   <color:y>x  見回す</color>                               <color:y>X  直前の命令をもう一度</color>
+   y  （歩く ― 北西）                     Y  （走る ― 北西）
+   <color:y>z  魔法棒を向ける（Zap）</color>                <color:y>Z  杖を使う（Zap）</color>
+   !  pref の命令を打つ                   ^A  （特別 ― ウィザードの命令）
+   @  マクロの設定                        ^B  （掘る ― 南西）
+   #  探索の入切                          ^C  （特別 ― 中断）
+   $  モガミネーターの設定を読み直す      ^D  アイテムを壊す
+   %  見た目の設定                        ^E  目を引くアイテムまで歩く
+   ^  （特別 ― コントロールキー）        ^F  階の感触をもう一度
+   &  色の設定                            ^G  近くのアイテムを自動で拾う
+   <color:y>*  敵か場所に狙いを定める</color>              ^H  （掘る ― 西）
+   (  歩きを続ける                        ^I  サブウィンドウの入切
+   )  画面を書き出す                      ^J  （掘る ― 南）
+   {  アイテムの銘を書く                  ^K  （掘る ― 北）
+   }  ダンジョンの覚え書き                ^L  （掘る ― 東）
+   <color:y>[  敵の一覧</color>                            ^M  （掘る ― 南）
+   <color:y>]  アイテムの一覧</color>                      ^N  （掘る ― 南東）
+   -  歩く（拾うかどうかを裏返す）        <color:D>^O  （使わない）</color>
+   _  モガミネーターの設定を編集・実行    ^P  前のメッセージ
+   <color:y>+  隣のマスに手を出す</color>                  <color:y>^Q  依頼の一覧</color>
+   =  設定を変える                        ^R  画面を描き直す
+   ;  歩く                                ^S  セーブする（終わらない）
+   :  覚え書きを残す                      ^T  掘る
+   '  記録した打鍵を流す                  ^U  （掘る ― 北東）
+   "  打鍵を記録する                      ^V  画面の中心を戻す
+   ,  走る                                ^W  （特別 ― ウィザードモード）
+   <color:y><  階段を上る／広域地図の入切</color>          <color:y>^X  セーブして終了</color>
+   .  その場に留まる                      ^Y  （掘る ― 北西）
+   <color:y>>  階段を下る／普通の地図へ入る</color>        <color:D>^Z  （使わない）</color>
+   \  （特別 ― キー割り当てを飛ばす）     <color:D>|  （使わない）</color>
+   `  道のりの近道                         ~  知識の一覧
+   /  記号を調べる                         <color:y>?  ヘルプ</color>
+</style>
+
+<topic:CommandCounts><style:heading>コマンドの回数</style>
+
+コマンドによっては、前に回数を付けて決まった数だけ繰り返せる。回数付きのコマンドは、その数が尽きるか、繰り返しが妨げられるまで続く。コマンドが成功すると（たとえば掘り抜けると）繰り返しは止まる。敵からの攻撃や、遊ぶ人からの新しいコマンドでも止まる。
+
+既定で入っている <color:keyword>retry_obvious_count</color> の設定は、よく繰り返すコマンド（開ける・罠を外す・掘る・体当たりなど）に決められた回数（既定は 100）を自動で付ける。だからふだんは自分で回数を指定する要はないが、指定したければ <color:keypress>0</color> を打ち、続けて回数、そしてコマンドを打つ。
+
+<topic:CommandArguments><style:heading>コマンドの引数</style>
+
+<color:keypress>E</color>at の例で見たとおり、コマンドによってはさらに情報を訊いてくる。コマンドしだいで、向き・持ち物か装備のアイテム・呪文・敵の種族の記号・下位のコマンド・確認・回数・個数・文字列など、いろいろである。たいてい <color:keypress>ENTER</color> で「既定」の答えを選べ、<color:keypress>ESC</color> でコマンドごと取り消せる。
+
+向きを訊くコマンドは、いつでも<color:keyword>方角</color>を受け付ける。上に示した向きのキーで入力する。離れたマスや敵に効きうるコマンドは、たいてい<color:keyword>狙い</color>も受け付ける。狙いは <color:keypress>*</color> のキーで（あらかじめでも、訊かれたときでも）定める。前に狙いを定めてあれば <color:keypress>5</color> で同じ狙いを繰り返せる。<color:keyword>use_old_target</color> の設定を入れておけば、前の狙いが自動で繰り返される。この設定を大いに好む人も居れば、同じくらい嫌う人も居る。狙いの定め方の詳しい話は <link:commdesc.txt#Targetting> を参照のこと。
+
+<topic:SelectingObjects><style:heading>アイテムの札</style>
+
+多くのコマンドはアイテムを訊いてくる。この手のコマンドは、あてはまるアイテムをすべて並べて見せ、それぞれに 1 つずつ違う<color:keyword>札</color>を付ける。正しいアイテムは、その札のキーを押して選ぶ。
+
+札はふつう、あてはまる 1 つ目のアイテムの 'a' から 26 番目の 'z' まで並び、どの画でも同じ札になるとは限らない。下の例では、<color:keypress>d</color>rop（置く）のコマンドが持ち物のアイテムをすべて選べるようにしているので、抹殺の巻物の札は '<color:keypress>l</color>' である。
+<style:screenshot>
+<color:G>Inventory</color> <color:b>|</color> <color:D>Equipment</color> <color:b>|</color> <color:D>Quiver</color>                                                  
+ a) <color:g>?</color> <color:s>a Law Book [Obstacle Coursebook] {25% off, @mb!k}</color>      3.0 lb LEVEL<color:G>     50</color>
+ b) <color:b>?</color> <color:s>a Law Book [Building Alternative Realities] {@mc!sd</color>    3.0 lb EXP <color:G>********</color>
+ c) <color:b>?</color> <color:s>a Law Book [Acquiris Quodcumque Rapis] {@md!sdk}</color>       3.0 lb AU<color:G>      462k</color>
+ d) <color:g>,</color> <color:U>23 Mushrooms of Restoring {!E}</color>                         2.3 lb <color:W>|</color><color:U>)}~</color><color:g>==</color><color:y>"</color><color:o>~</color><color:U>(</color><color:g>(</color><color:y>]</color><color:U>]</color>
+ e) <color:v>!</color> <color:B>15 Potions of Speed {25% off, !kq}</color>                     6.0 lb STR!: <color:G>18/160</color>
+ f) <color:r>!</color> <color:B>15 Potions of Heroism</color>                                  6.0 lb INT!: <color:G>18/160</color>
+ g) <color:s>!</color> <color:B>41 Potions of Healing {!kq}</color>                           16.4 lb WIS!: <color:G>18/160</color>
+ h) ! <color:B>8 Potions of *Healing* {!kq}</color>                           3.2 lb DEX : <color:G>18/***</color>
+ i) ! <color:B>5 Potions of Life {!kq}</color>                                2.0 lb CON : <color:G>18/217</color>
+ j) <color:b>!</color> <color:B>18 Potions of Restore Mana {!kq}</color>                       7.2 lb CHR!: <color:G>18/150</color>
+ k) ? 12 Scrolls of Destruction {@r7!*}                      6.0 lb AC<color:G>       156</color>
+ l) ? 9 Scrolls of Genocide {!*}                             4.5 lb HP <color:y> 950</color>/<color:G> 951</color>
+ m) ? 8 Scrolls of Mass Genocide {!*}                        4.0 lb SP <color:y> 141</color>/<color:G> 402</color>
+ n) <color:r>-</color> <color:v>a Rod: </color><color:o>Clairvoyance</color><color:v> (2/2 charges) {47%}</color>                1.5 lb             
+ o) <color:r>-</color> <color:v>a Rod: </color><color:o>Detection</color><color:v> (7/7 charges) {1%, @zb!sdk}</color>           1.5 lb             
+ p) <color:r>-</color> <color:v>a Rod: </color><color:B>Recall</color><color:v> (5/5 charges) {1%, @zc!sdk}</color>              1.5 lb             
+ q) <color:B>-</color> <color:g>a Wand of Resistance: </color>Teleport Other<color:g> (29/29 charges</color>    0.2 lb             
+ r) <color:B>-</color> <color:g>a Wand of Regeneration: </color><color:D>Annihilation</color><color:g> (8/8 charges) </color>    0.2 lb             
+ s) <color:B>-</color> <color:g>a Wand of Regeneration: </color>Tsunami<color:g> (14/14 charges) (+5</color>    0.2 lb             
+ t) <color:U>_</color> <color:U>a Staff: </color>Teleport<color:U> (</color><color:y>17/28 charges</color><color:U>) {1%, @ua!sdk}</color>        5.0 lb             
+ u) <color:U>_</color> <color:U>a Staff: </color><color:r>Destruction</color><color:U> (</color><color:y>2/8 charges</color><color:U>) {1%, @ud!sdk}</color>       5.0 lb <color:G>Fast (+33)</color>  
+ v) <color:U>_</color> <color:U>a Staff of Resistance: </color><color:B>Telepathy</color><color:U> (</color><color:y>3/9 charges</color><color:U>) {1%,</color>    5.0 lb <color:D>Cursed</color>      
+ w) <color:U>_</color> <color:U>a Staff: </color><color:y>Cure Wounds</color><color:U> (</color><color:y>8/18 charges</color><color:U>) {1%, @uu!sdk}</color>      5.0 lb <color:B>Study (4)</color>   
+ x) <color:U>_</color> <color:U>a Staff of Holding: </color><color:R>Confusing Lights</color><color:U> (7/7 charges) </color>    5.0 lb             
+ y) <color:s>[</color> <color:s>Metal Scale Mail {special}</color>                            25.0 lb             
+ z) <color:U>(</color> <color:s>Soft Leather Armour {excellent}</color>                        8.0 lb             
+                                                          <color:R> 129.7 lb</color>             
+<color:y>Drop which item?</color>                                                                
+<color:o>Angband: L100</color>                           <color:o>Telepa</color> <color:G>DTrap</color>
+</style>
+
+ところが、<color:keypress>d</color>rop の代わりに <color:keypress>r</color>ead（読む）のコマンドを使うと、選べるのが巻物だけになるので、抹殺の巻物の札は '<color:keypress>b</color>' に変わる。
+<style:screenshot>
+<color:G>Inventory</color>                                                     <color:r>Fail</color>              
+ 7) ? 12 Scrolls of Destruction {@r7!*}                        2.8%
+ b) ? 9 Scrolls of Genocide {!*}                               2.8%
+ c) ? 8 Scrolls of Mass Genocide {!*}                          3.3%
+
+<color:y>Read which scroll? </color>
+</style>
+
+ただし、少し妙なことに気づくかもしれない。抹殺の巻物は 2 つ目に並ぶので思ったとおり 'b'、\*抹殺\*の巻物は 3 つ目なので 'c' だが、破壊の巻物は 'a' ではなく '<color:keypress>7</color>' になっている。これは、破壊の巻物に <color:keyword>@r7</color> という<color:keyword>銘</color>が書かれているからで、この銘は「'r'（巻物を読む）の画では札を '7' にせよ」という指示にすぎない。
+
+こうして銘を書いておくと、アイテムが増えたり減ったりしても札が変わらない。たとえば上の例の持ち物では、3 冊の魔法書に <color:keyword>@mb</color> から <color:keyword>@md</color> の銘が書いてある。これで、1 冊目の '<color:keypress>a</color>' の本が無くても、<color:keypress>m</color> の呪文を唱える画でいつもの「あるべき」札のままでいられる。
+
+銘は <color:keypress>Z</color>／<color:keypress>{</color> のコマンドで書く。札を決めるほかにも使い道は多い（詳しくは <link:objects.txt#Inscriptions>）。モガミネーターは、決まった銘をアイテムへ自動で書き入れることが多い――上の例の 3 冊の本もモガミネーターが書いたものである。銘はいつも<color:keyword>下敷きの配列</color>を基にすることに注意。これはおおむね元の配列と同じなので、ローグ風の配列を使っていても、「杖を使う」の画で杖の札を '<color:keypress>y</color>' にしたければ、<color:keyword>@Zy</color> ではなく <color:keyword>@uy</color> と書くこと。
+
+<style:note>註: アイテムを選ぶ画の多くは、いくつかの入れ物からアイテムを選べる。<color:keypress>/</color> で入れ物を切り替える。上の <color:keypress>d</color>rop の例では既定の入れ物は背負い袋だが、<color:keypress>/</color> を押せば装備や矢筒から選べる。</style>
+
+<color:D>
+最初       : Alexander Cutler・Andy Astrand
+更新       : (2.7.6) Russ Allbery (rra@cs.stanford.edu)
+更新       : (2.7.9) Ben Harrison (benh@phial.com)
+更新       : Zangband 2.2.0 から 2.2.6c まで Robert Ruehlmann
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.0.11
+更新       : PosChengband 6.0.0
+更新       : FrogComposband 7.1.liquorice
+</color>

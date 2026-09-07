@@ -1,0 +1,61 @@
+<style:title>狙いを定める</style>
+
+狙いを定める場面ではいろいろなことができ、二通りのやり方がある。<color:keyword>モンスターに狙いを定めるやり方</color>と、<color:keyword>好きなマスに狙いを定めるやり方</color>である。視界の中に敵対するモンスターが居れば、まずモンスターに狙いを定めるやり方で始まる。最初に示されるのはいちばん近いモンスターで、視界の中のほかの敵対するモンスターも候補になる。方向キーでモンスターを順に切り替えられる。<color:keypress>+</color> と <color:keypress>-</color> でも切り替えられるが、こちらは分かりにくい。敵対しないモンスターも候補に入れたいなら <color:keyword>target_pet</color> の設定（<link:option.txt#target_pet>）を有効にする。
+
+モンスターの居ないマスに狙いを定めたい（あるいは調べたい）ときは <color:keypress>p</color> か <color:keypress>o</color> を押す。すると好きなマスに狙いを定めるやり方に変わり、方向キーはただカーソルを動かすようになる。（視界の中に敵対するモンスターが 1 体も居なければ、初めからこちらになる。）<color:keypress>o</color> と <color:keypress>p</color> は 1 点だけ違う。<color:keypress>p</color>（<color:keyword>player</color> の p）はカーソルを自分の居るマスへ移すが、<color:keypress>o</color>（<color:keyword>offset</color> の o）は移さない。
+
+どの場面でも、<color:keypress>5</color>・<color:keypress>t</color>・<color:keypress>.</color> でいまの相手に決めて終える。<color:keypress>q</color> か <color:keypress>ESC</color> で何も選ばずに終える。<color:keypress>r</color> でそのマスに居るモンスターの思い出を見る。<color:keypress>x</color> でそのマスにあるアイテムをすべて見る（モンスターが盗んだり拾ったりして持っている物も出るが、モンスターがふつうに落とす物は出ない）。<color:keypress>(</color> でそのマスを移動先に選ぶ。オリジナルキー配置では <color:keypress>J</color> と <color:keypress>j</color> も移動先を選ぶキーとして働き、<color:keypress>(</color> と同じである。
+
+見えている（あるいはテレパシーで感じている）モンスターが、調べたい物の上に乗っていることがある。そのときはモンスターの記号を一時的に伏せて見回せる。オリジナルキー配置では <color:keypress>^L</color> でこの「下を見る」やり方に入る。移動先のカーソルからなら、どちらのキー配置でも <color:keypress>x</color> で入れる。このやり方では好きなマスに狙いを定めるやり方のままで、<color:keypress>5</color>・<color:keypress>t</color>・<color:keypress>.</color> はモンスターが乗っているマスでもそのマスを選べる。抜けるとモンスターの表示は元に戻る。
+
+ローグライクキー配置を使う人には、好きなマスに狙いを定めるやり方でもう一つ手がある。<color:keypress>Shift+DIR</color> でカーソルを一度に何マスも動かせる。
+
+<topic:Precision><style:heading>狙いの付け方の工夫</style>
+
+呪文を唱えたり飛び道具を放ったりすると、その先へは<color:keyword>まっすぐ</color>な道筋が選ばれる。それが望みの道筋とは限らない。横のマスをうまく選べば、まっすぐには見通せないマスを通せることもある:
+<style:screenshot>  <indent>
+Position: an unknown grid [q,t,p,m,x,j,+,-,?,<dir>]                             
+      ##........#.... #%%####
+      #........<color:U>\</color>......      #
+      %.......<color:U>}</color>{<color:u>\</color>@....      #
+    %#%..........<color:s>*</color>....      #
+   ##    ........<color:s>*</color>...   ... #
+   #       ......<color:s>*</color>...   .<color:G>d</color>. #
+   #        ..<color:W>(</color>.#<color:s>*</color>.     .#####
+   #          .##<color:s>*</color>       <color:y>T</color>   #
+   #    <color:g>^</color>   #####<color:s>*</color>           ##########                                         
+   ##       #   #<color:s>*</color>           <color:U>'</color>
+   #        #  ##<color:s>*</color>         ############                                         
+   #        #  #<color:R>*</color>        ###
+   #        # ##<color:s>*</color>       ##                                                      
+   ##       # # <color:s>*</color>        #                                                      
+    #       # ##<color:s>*</color>        #                                                      
+    #########  #<color:s>*</color>#########
+</indent></style>
+明るい赤の <color:R>*</color> に気づいてほしい。あのマスには竜が居て、直に狙いを定めることはできない。だが <color:keypress>p</color> で地図の南の縁のマスを選ぶことで、呪文の道筋にあのマスを通すことができた。
+
+なお、ボルトの呪文は道筋の最初のモンスターで必ず止まる。ビームとブレスの呪文は道筋のマスすべてに効き、ボールの呪文は必要ならモンスターの頭越しに飛んで目標のマスへ届く。
+
+<topic:TargetTypes><style:heading>マスを選ぶか、モンスターを選ぶか</style>
+
+狙いを定めるとき、選べるのは<color:keyword>モンスター</color>か<color:keyword>マス</color>のどちらかである。この違いは大きい。モンスターを選べば、そのモンスターが動くと狙いも一緒に動く。マスを選べば、たとえそこにモンスターが居ても狙いはその場に留まる。
+
+狙いを定める画を飛ばすと、<color:keyword>方角</color>を選ぶこともできる。この場合は、その方角に見るからにモンスターが居たとしても、常に<color:keyword>マス</color>を選んだのと同じ扱いになる。だから、真西にモンスターが居るときに西へ撃ち、<color:keypress>n</color>（ローグライクキー配置では <color:keypress>X</color>）を連打して繰り返すときは気をつけること。モンスターが真西に留まっている間は見事に決まるが、北か南へ動いた途端に狙いを定め直すことになる。モンスターのほうを選んでいれば、その手間は要らなかった。
+
+<topic:Summary><style:heading>操作の早見表</style>
+
+  <color:keypress>5 t .</color>        いまの相手に決めて終える
+  <color:keypress>ESC q</color>        何も選ばずに終える
+  <color:keypress>DIR</color>          その方角のマスかモンスターへ移る
+  <color:keypress>+</color>            より遠いモンスターへ移る
+  <color:keypress>-</color>            より近いモンスターへ移る
+  <color:keypress>( j J</color>        移動先に選ぶ（狙いを定めているのでなければ、終えてそこへ歩く）
+
+  <color:keypress>m</color>            モンスターに狙いを定めるやり方に入る
+  <color:keypress>p</color>            好きなマスに狙いを定めるやり方に入る（カーソルを自分の所へ）
+  <color:keypress>o</color>            好きなマスに狙いを定めるやり方に入る（カーソルはそのまま）
+
+  <color:keypress>r</color>            モンスターの思い出を見る
+  <color:keypress>x</color>            狙ったマスのアイテムを順に見る
+
+  <color:keypress>?</color>            このヘルプを出す

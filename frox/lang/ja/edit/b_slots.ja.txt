@@ -1,0 +1,71 @@
+# 装備の枠の名札（`b_info.txt` の `S:` 行の 3 欄目）。J6 第 2 回。
+#
+# 基準は の追記。読むのは tools/frox/fc_build_ja_edit.py。
+#
+# **番号で引かない。** 名札は 113 体の体の型で使い回されているので、
+# 「英語の名札 → 訳語」の 1 対 1 の表にしてある。ここに無い名札は英語のまま出る（制約 4）。
+#
+# **`b_info.txt` の `N:`（体の型の名前）は訳さない。** `r_info` が
+# `P:Body:Standard` の形で**名前で指している**（J3 の #11 #16 #17 と同じ穴）。
+#
+# 桁: 先方は `sprintf(buf, "%-14s: %s", …)` で描く（`equip.c:168`）。
+# **14 バイト＝全角 7 字まで**。超えると欄が崩れ、境で切れると 2 バイト文字が割れる。
+#
+# 書き方: `英語の名札<TAB>訳語`（タブ 1 つ）。註記は # で始める。
+
+Right Hand	右手
+Left Hand	左手
+Right Arm	右腕
+Left Arm	左腕
+Right Paw	右前足
+Left Paw	左前足
+Right Claw	右の爪
+Left Claw	左の爪
+Right Ring	右手指
+Left Ring	左手指
+Back Paws	後ろ足
+Eye Socket	眼窩
+Capture 1	捕獲 1
+Capture 2	捕獲 2
+Capture 3	捕獲 3
+Capture 4	捕獲 4
+Shooting	射撃
+Quiver	矢筒
+Neck	首
+Neck?	首?
+Light	光源
+Body	体
+Cloak	クローク
+Head	頭
+Hands	手
+Gloves	手袋
+Feet	足
+Foot	片足
+Boots	靴
+Ring	指輪
+Amulet	首飾り
+Helm	兜
+Helmet	兜
+Arm	腕
+Belly	腹
+Back	背中
+Tentacle	触手
+Any	任意
+Eyestalk	眼柄
+Claw	爪
+Talon	鉤爪
+Spine	背骨
+Spike	棘
+Branch	枝
+Trunk	鼻
+Tooth	歯
+Tusk	牙
+Pseudopod	仮足
+Finger	指
+Fin	ひれ
+Tail	尾
+Skull	頭蓋
+Orb	珠
+Horn	角
+Eye	目
+You	自分

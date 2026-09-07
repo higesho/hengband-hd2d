@@ -1,0 +1,412 @@
+# silq/lang/ja/edit/history.ja.txt
+#
+# 生い立ち（`lib/edit/history.txt`）。書式は と §6.4。
+#
+#   I: **並び順**（1 始まり。history の `N:` は 4 つの数で通し番号ではない）
+#   E: 英語の原文（照合用）/ N: 日本語
+#
+# **この表だけ訳を `N:` に書く。** history の説明文は `D:` に入っているが、
+# あれは「名前」の位置に当たる（`build_ja_edit.py` の `KINDS` が `history` を
+# 別扱いしている）。`sq_p4_desc.py todo history` もその形で出す。
+#
+# ## 断片は 1 つずつ文として閉じる（**継ぎ目には空白が入る**）
+#
+# `birth.c:97-126` の `get_history()` が chart を辿って断片を継ぎ足すが、
+# **1 つ足すごとに空白を 1 つ入れる**（`birth.c:122` の `my_strcat(..., " ")`）。
+# だから「あなたは数人兄弟の一人であり、その親は」＋「弓兵であった。」のように
+# **助詞で繋ぐ形は使えない**——`親は 弓兵であった。` と割れて出る（実測した）。
+#
+# 設計 §6.4 のとおり**断片ごとに「〜。」で閉じる**:
+#
+#   I:1「あなたは数人兄弟の一人である。」＋ I:5「親は弓兵であった。」
+#   ＋ I:10「フェアノール家の出である。」
+#
+# 見た目（chart 25〜28・50〜52・54〜56・57〜61）も同じ作りで、
+# 「目は焦茶色。」「髪は真っ直ぐ。」「髪の色は黒。」「肌の色は並。」と並ぶ。
+# **chart 52 と 56 だけは髪の色と肌が 1 つの断片**なので
+# 「髪の色は黒で、肌は色白。」の形にしてある。
+#
+# ## 250 バイトの上限
+#
+# `p_ptr->history[250]` は**セーブに文字列で入る**（設計 §6.4）。
+# 枝分かれの最悪値は `python tools/silq/check_ja.py` が出す（いまは 178 バイト。**継ぎ目の空白も数える**）。
+
+I:1
+E:You are one of several children
+N:あなたは数人兄弟の一人である。
+
+I:2
+E:You are one of two children
+N:あなたは二人兄弟の一人である。
+
+I:3
+E:You are the only child
+N:あなたは一人子である。
+
+I:4
+E:You awoke on the shores of lake Cuivienen.
+N:あなたはクイヴィエーネンの岸辺で目覚めた。
+
+I:5
+E:of an archer
+N:親は弓兵であった。
+
+I:6
+E:of a warrior
+N:親は戦士であった。
+
+I:7
+E:of a smith
+N:親は鍛冶師であった。
+
+I:8
+E:of a bard
+N:親は吟遊詩人であった。
+
+I:9
+E:of a prince
+N:親は王族であった。
+
+I:10
+E:from the house of Feanor.
+N:フェアノール家の出である。
+
+I:11
+E:from the house of Fingolfin.
+N:フィンゴルフィン家の出である。
+
+I:12
+E:from the house of Finarfin.
+N:フィナルフィン家の出である。
+
+I:13
+E:You are one of several children
+N:あなたは数人兄弟の一人である。
+
+I:14
+E:You are one of two children
+N:あなたは二人兄弟の一人である。
+
+I:15
+E:You are the only child
+N:あなたは一人子である。
+
+I:16
+E:You awoke on the shores of lake Cuivienen.
+N:あなたはクイヴィエーネンの岸辺で目覚めた。
+
+I:17
+E:of a Sindar archer.
+N:親はシンダールの弓兵であった。
+
+I:18
+E:of a Sindar warrior.
+N:親はシンダールの戦士であった。
+
+I:19
+E:of a Sindar smith.
+N:親はシンダールの鍛冶師であった。
+
+I:20
+E:of a Sindar bard.
+N:親はシンダールの吟遊詩人であった。
+
+I:21
+E:of a Sindar prince.
+N:親はシンダールの王族であった。
+
+I:22
+E:of a Sindar king.
+N:親はシンダールの王であった。
+
+I:23
+E:You are one of two children of a Dwarven
+N:あなたは二人兄弟の一人である。
+
+I:24
+E:You are the only child of a Dwarven
+N:あなたは一人子である。
+
+I:25
+E:Outcast.
+N:親はドワーフの爪弾き者であった。
+
+I:26
+E:Craftsman.
+N:親はドワーフの職人であった。
+
+I:27
+E:Warrior.
+N:親はドワーフの戦士であった。
+
+I:28
+E:Smith.
+N:親はドワーフの鍛冶師であった。
+
+I:29
+E:Prince.
+N:親はドワーフの王族であった。
+
+I:30
+E:You are the black sheep of the family.
+N:あなたは一族の厄介者である。
+
+I:31
+E:You are a credit to the family.
+N:あなたは一族の誇りである。
+
+I:32
+E:You were a well liked child.
+N:あなたは皆に好かれた子だった。
+
+I:33
+E:You are the illegitimate and unacknowledged child
+N:あなたは認知されぬ庶子である。
+
+I:34
+E:You are the illegitimate but acknowledged child
+N:あなたは庶子ながら認知された子である。
+
+I:35
+E:You are one of several children
+N:あなたは数人兄弟の一人である。
+
+I:36
+E:You are the first child
+N:あなたは長子である。
+
+I:37
+E:You are the only child
+N:あなたは一人子である。
+
+I:38
+E:of a farmer.
+N:親は農夫であった。
+
+I:39
+E:of a craftsman.
+N:親は職人であった。
+
+I:40
+E:of an archer.
+N:親は弓兵であった。
+
+I:41
+E:of a warrior.
+N:親は戦士であった。
+
+I:42
+E:of a prince.
+N:親は王族であった。
+
+I:43
+E:You are the black sheep of the family.
+N:あなたは一族の厄介者である。
+
+I:44
+E:You are a credit to the family.
+N:あなたは一族の誇りである。
+
+I:45
+E:You were a well liked child.
+N:あなたは皆に好かれた子だった。
+
+I:46
+E:You have dark brown eyes,
+N:目は焦茶色。
+
+I:47
+E:You have brown eyes,
+N:目は茶色。
+
+I:48
+E:You have hazel eyes,
+N:目は淡褐色。
+
+I:49
+E:You have green eyes,
+N:目は緑。
+
+I:50
+E:You have blue eyes,
+N:目は青。
+
+I:51
+E:You have blue-gray eyes,
+N:目は青灰色。
+
+I:52
+E:straight
+N:髪は真っ直ぐ。
+
+I:53
+E:wavy
+N:髪は波打っている。
+
+I:54
+E:curly
+N:髪は縮れている。
+
+I:55
+E:black hair,
+N:髪の色は黒。
+
+I:56
+E:brown hair,
+N:髪の色は褐色。
+
+I:57
+E:auburn hair,
+N:髪の色は赤褐色。
+
+I:58
+E:red hair,
+N:髪の色は赤。
+
+I:59
+E:golden hair,
+N:髪の色は金。
+
+I:60
+E:and an average complexion.
+N:肌の色は並。
+
+I:61
+E:and an average complexion.
+N:肌の色は並。
+
+I:62
+E:and a fair complexion.
+N:肌は色白。
+
+I:63
+E:and a very fair complexion.
+N:肌はたいそう色白。
+
+I:64
+E:You have light grey eyes,
+N:目は明るい灰色。
+
+I:65
+E:You have light blue eyes,
+N:目は明るい青。
+
+I:66
+E:You have light green eyes,
+N:目は明るい緑。
+
+I:67
+E:straight
+N:髪は真っ直ぐ。
+
+I:68
+E:wavy
+N:髪は波打っている。
+
+I:69
+E:golden hair, and a fair complexion.
+N:髪の色は金で、肌は色白。
+
+I:70
+E:black hair, and a fair complexion.
+N:髪の色は黒で、肌は色白。
+
+I:71
+E:brown hair, and a fair complexion.
+N:髪の色は褐色で、肌は色白。
+
+I:72
+E:auburn hair, and a fair complexion.
+N:髪の色は赤褐色で、肌は色白。
+
+I:73
+E:golden hair, and a fair complexion.
+N:髪の色は金で、肌は色白。
+
+I:74
+E:silver hair, and a fair complexion.
+N:髪の色は銀で、肌は色白。
+
+I:75
+E:You have light grey eyes,
+N:目は明るい灰色。
+
+I:76
+E:You have light blue eyes,
+N:目は明るい青。
+
+I:77
+E:You have light green eyes,
+N:目は明るい緑。
+
+I:78
+E:straight
+N:髪は真っ直ぐ。
+
+I:79
+E:wavy
+N:髪は波打っている。
+
+I:80
+E:black hair, and a fair complexion.
+N:髪の色は黒で、肌は色白。
+
+I:81
+E:brown hair, and a fair complexion.
+N:髪の色は褐色で、肌は色白。
+
+I:82
+E:auburn hair, and a fair complexion.
+N:髪の色は赤褐色で、肌は色白。
+
+I:83
+E:golden hair, and a fair complexion.
+N:髪の色は金で、肌は色白。
+
+I:84
+E:silver hair, and a fair complexion.
+N:髪の色は銀で、肌は色白。
+
+I:85
+E:You have dark brown eyes,
+N:目は焦茶色。
+
+I:86
+E:straight
+N:髪は真っ直ぐ。
+
+I:87
+E:wavy
+N:髪は波打っている。
+
+I:88
+E:black hair,
+N:髪の色は黒。
+
+I:89
+E:brown hair,
+N:髪の色は褐色。
+
+I:90
+E:a one foot beard,
+N:髭は一フィートの長さ。
+
+I:91
+E:a two foot beard,
+N:髭は二フィートの長さ。
+
+I:92
+E:a three foot beard,
+N:髭は三フィートの長さ。
+
+I:93
+E:a four foot beard,
+N:髭は四フィートの長さ。
+
+I:94
+E:and a dark complexion.
+N:肌は浅黒い。
+
+I:95
+E:and a ruddy complexion.
+N:肌は赤ら顔。

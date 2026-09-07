@@ -1,0 +1,134 @@
+plugins {
+    id 'com.android.application'
+}
+
+// 生成アセット（lib/・縮小タイル・voxel・フォント）の置き場。**電話版 :hd2d と同じ物**を読む
+// （読むだけなので同時に組んでも競らない）。リポジトリには入れない。
+def generatedAssets = file("${rootDir}/build-assets-hd2d")
+
+android {
+    // 電話版と**別の applicationId** にして、1 台に両方入れられるようにする
+    // （Quest には電話版を、電話には Quest 版を、それぞれ切り分けで入れることがある）。
+    namespace 'org.hengband.quest'
+    compileSdk 35
+    ndkVersion '27.2.12479018'
+
+    defaultConfig {
+        applicationId 'org.hengband.quest'
+        /*
+         * **32。33 のままだと Quest 2 に `adb install` が通らない**
+         * （Horizon OS は Android 12L = API 32 止まり。Quest 3/3S だけ 14）。
+         * `INSTALL_FAILED_OLDER_SDK` はビルドではなく install で出るので、
+         * 組めたことでは気づけない。
+         */
+        minSdk 32
+        targetSdk 35
+        versionCode 30203
+        versionName '3.0.2.3-hd2d-quest'
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_shared',
+                          '-DANDROID_ARM_NEON=ON',
+                          // これだけが電話版との違い（xr_session/xr_input の Android 島が立つ）
+                          '-DHENGBAND_QUEST=ON'
+                cppFlags '-std=c++20'
+            }
+        }
+        ndk {
+            // **Quest は arm64 だけ。**`hengbandAbi` は受けない（x86_64 を組む先が無い）。
+            abiFilters 'arm64-v8a'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            // CMakeLists は電話版と**同じ 1 本**（HENGBAND_QUEST で分岐する）。
+            // build ディレクトリはモジュールごとに分かれるので、同時に組んでも競らない。
+            path '../hd2d/src/main/cpp/CMakeLists.txt'
+            version '3.22.1'
+        }
+    }
+
+    sourceSets {
+        main {
+            /*
+             * java も res も**電話版のものをそのまま使う**（アクティビティ・アイコン・
+             * テーマ・文字列を分ける理由が無い）。マニフェストからは完全修飾名
+             * `org.hengband.hd2d.HengbandHd2dActivity` で指す。
+             */
+            java.srcDirs += ['../hd2d/src/main/java',
+                             "${rootDir}/../third_party/android/SDL2/android-project/app/src/main/java"]
+            res.srcDirs += ['../hd2d/src/main/res']
+            assets.srcDirs += [generatedAssets]
+        }
+    }
+
+    buildTypes {
+        debug {
+            externalNativeBuild { cmake { arguments += ['-DCMAKE_BUILD_TYPE=RelWithDebInfo'] } }
+        }
+        // 実機（Quest）へ野良で入れる APK。デバッグ鍵で署名する。
+        preview {
+            initWith debug
+            debuggable false
+            jniDebuggable false
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['debug']
+            externalNativeBuild { cmake { arguments += ['-DCMAKE_BUILD_TYPE=Release'] } }
+        }
+        release {
+            minifyEnabled false
+            signingConfig null
+            externalNativeBuild { cmake { arguments += ['-DCMAKE_BUILD_TYPE=Release'] } }
+        }
+    }
+
+    androidResources {
+        noCompress += ['png', 'mp3', 'otf', 'ttf', 'ttc']
+    }
+
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
+        /*
+         * **prefab は使う側のモジュールに要る。**loader AAR が抱えるヘッダと .so を
+         * CMake の `find_package(OpenXR)` へ見せるのはこの 1 行で、`:hd2d` に足しても
+         * `:quest` の CMake からは見えない（罠 Q-10）。
+         */
+        prefab true
+    }
+}
+
+dependencies {
+    /*
+     * Khronos 純正の loader。Meta は「1.0.34 以上の Khronos loader を使え。
+     * Meta 専用の loader は無い」と明言している（罠 Q-1）。
+     */
+    implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.49'
+}
+
+// アセットが未生成のままビルドすると「起動はするがデータが無い」APK ができてしまう。
+tasks.configureEach { task ->
+    if (task.name.startsWith('merge') && task.name.endsWith('Assets')) {
+        task.doFirst {
+            def marker = new File(generatedAssets, 'assets.manifest')
+            if (!marker.exists()) {
+                throw new GradleException(
+                    "アセットが未生成です。先に次を実行してください:\n" +
+                    "  python tools/build_android_hd2d_assets.py\n" +
+                    "（生成先: ${generatedAssets}）")
+            }
+        }
+    }
+}

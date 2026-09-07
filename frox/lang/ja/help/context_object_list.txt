@@ -1,0 +1,166 @@
+<style:title>アイテムの一覧</style>
+
+このコマンドは、いまの階で見つけているアイテムをすべて並べる。<color:keyword>モガミネーター</color>が拾いたがるアイテムは<color:keyword>望みのアイテム</color>として上のほうに、それ以外は<color:keyword>ほかのアイテム</color>として下に出る。どちらの群れも見積もりの値打ち順に並び、いまの居場所からの向きが <color:keyword>N 23 E 11</color> のように添う。アイテムの一覧にはダンジョンの入口・クエストの入口・町の店も出て、階段を入れるかどうかは切り替えられる。
+
+<topic:Summary><style:heading>操作の早見表</style>
+
+  <color:keypress>Up/Down</color>            1 行ずつ送る
+  <color:keypress>PageUp/PageDown</color>    1 頁ずつ送る
+  <color:keypress>Home/End</color>           一覧の先頭／末尾へ
+
+  <color:keypress>/ or I</color>             選んだアイテムを調べる
+  <color:keypress>J or ` or (</color>        選んだアイテムの所まで移動する
+  <color:keypress>+/-</color>                一覧の幅を変える
+  <color:keypress>A</color>                  矢弾を出すかどうか
+  <color:keypress>D</color>                  鑑定済みのアイテムを出すかどうか
+  <color:keypress>E</color>                  感じ取ったアイテムを出すかどうか
+  <color:keypress>N</color>                  まだ感じ取っていないアイテムを出すかどうか
+  <color:keypress>S</color>                  階段を入れるかどうか
+  <color:keypress>U</color>                  モガミネーターが無視・破壊するアイテムを出すかどうか
+
+  <color:keypress>ESC or Q</color>           このコマンドを終える
+  <color:keypress>?</color>                  このヘルプを出す
+
+  <color:keypress>[a-z]</color>              その字で始まる次の項目を選ぶ
+
+<style:note>註: 小文字のキーは項目探しに使うので、コマンドは大文字だけである。例外はローグライクキー配置を使う人で、いつもの上下の <color:keypress>k</color> と <color:keypress>j</color> は――項目探しに使えなくなるのと引き換えに――そのまま上下の送りになる。</style>
+
+<style:note>註: この画の絞り込みは、いま遊んでいる間だけ覚えている。</style>
+
+<style:note>註: <color:keyword>quick_messages</color> を有効にしていると、割り当ての無いキーを押した時点でアイテムの一覧が閉じる。</style>
+
+<topic:Usage><style:heading>使いどころ</style>
+
+そこら中に戦利品が落ち始めると、取りこぼしを見るにはアイテムの一覧がいちばん頼りになる。アイテム感知、とりわけ千里眼と組み合わせると効く。アイテムはまずモガミネーターが望むかどうかで並び、次に見積もりの値打ちで並ぶので、一覧がどれだけ長くても面白いアイテムはすぐ目につく。このキャラクターは未鑑定のアイテムをずいぶん溜め込んでいる:
+<style:screenshot>                                                                                
+望みのアイテムが 42 個ある:                       #####<color:s>.....</color><color:W>|</color><color:u>]</color><color:s>.....</color> LEVEL <color:G>    50</color>
+ <color:r>!</color> <color:B>Potion of 器用さ                    </color> N  3 E 28 <color:s>...</color>##<color:s>............</color> EXP <color:G>********</color>
+ <color:R>!</color> <color:B>Potion of 知能×2                   </color> S  1 E 47 <color:s>....</color>#<color:s>............</color> AU  <color:G>    214k</color>
+ <color:s>[</color> <color:s>ブラックドラゴン・スケイルメイル    </color> N  0 E 41 <color:s>.</color><color:U>~</color><color:v>!</color><color:s>.</color><color:U>'</color>##<color:s>........</color>#<color:s>.</color> <color:W>||</color><color:s>}</color><color:U>~</color><color:g>==</color><color:y>"</color><color:d> </color><color:b>(</color><color:G>(</color><color:s>]</color><color:U>]</color>
+ <color:s>[</color> <color:s>当世具足                            </color> N  5 E  9 <color:s>..</color><color:v>`</color><color:s>.</color><color:W>|</color>#<color:s>%</color>#<color:s>.......</color>#<color:s>%</color> STR : <color:G>18/182</color>
+ <color:s>[</color> <color:s>強化鎖かたびら                      </color> N  2 E 30 <color:s>.</color>#<color:s>.....</color><color:U>'</color><color:s>......</color>#<color:s>%%</color> INT : <color:G> 18/43</color>
+ <color:s>[</color> <color:s>重鎖かたびら                        </color> N  0 E 28 <color:s>..</color>#<color:s>.</color>#<color:s>............</color> WIS : <color:G> 18/71</color>
+ <color:v>]</color> <color:U>宝冠                                </color> N  2 E 28 <color:s>.</color>###<color:s>.............</color> DEX : <color:G>18/***</color>
+ <color:s>]</color> <color:U>鉄鋲底の靴                          </color> N 17 E  9 <color:s>.</color>###<color:s>.............</color> CON : <color:G>18/185</color>
+ <color:U>(</color> <color:s>皮ジャケット                        </color> N  2 E 42 <color:s>$</color><color:G>$</color>#<color:s>%.%......%....</color> CHR : <color:G>    17</color>
+ <color:y>"</color> <color:o>アミュレット {unidentified}         </color> N  1 E 30 <color:B>-</color><color:W>|$</color>#<color:u>$</color><color:G>$</color><color:s>......</color>#<color:s>.</color><color:U>`</color><color:s>..</color> AC     <color:G>  163</color>
+ <color:y>]</color> <color:U>金の冠                              </color> N  7 E 24 <color:o>*</color><color:v>]</color><color:U>)</color><color:r>$</color><color:s>/</color><color:g>(</color><color:s>......</color>#<color:G>$</color><color:s>.</color><color:U>(</color><color:s>.</color> HP <color:G> 904</color>/<color:G> 904</color>
+ <color:D>/</color> ロッホアーバー・アックス             S  1 E 40 #<color:r>|</color>#<color:y>"</color><color:B>{</color> <color:s>......%</color><color:g>=</color><color:s>]..</color>             
+ <color:r>|</color> 首切りソード                         N  1 E 28 <color:s>[</color><color:D>|</color>#<color:s>%</color>#<color:s>%......%</color><color:g>=</color><color:s>[</color><color:G>$</color><color:s>.</color>             
+ <color:r>[</color> <color:s>錆びた鎖かたびら                    </color> N 23 E 11 <color:W>(</color><color:s>%</color>##  <color:s>....</color><color:U>)</color><color:s>.</color>#<color:D>/</color><color:s>]..</color>             
+ <color:B>)</color> <color:U>ミスリル・シールド                  </color> S  2 E 46 <color:y>`</color><color:s>%</color> <color:s>%</color>#<color:s>.......</color>#<color:G>$</color><color:s>...</color>             
+ <color:B>)</color> <color:U>ミスリル・シールド                  </color> N  0 E 26 <color:s>.</color>### <color:s>............</color>             
+ <color:s>]</color> <color:U>鉄冠                                </color> N  0 E 27 <color:s>.</color>###<color:s>%</color>#<color:s>...........</color>             
+ <color:G>(</color> <color:U>エルフのクローク                    </color> N 45 E 23 <color:s>%.</color>## ###<color:s>%....</color>#<color:s>%%.</color>             
+ <color:g>=</color> <color:r>指輪 {unidentified}                 </color> N  1 E 40 ###     #<color:s>....</color><color:o>*</color> <color:s>%^</color>             
+ <color:g>=</color> <color:r>指輪 {unidentified}                 </color> N  3 E 29 #       <color:s>%</color>#<color:D>~</color><color:s>..%</color> <color:s>%</color># <color:y>Fast (+27)</color>  
+ <color:W>|</color> バスタード・ソード                   N 10 E 22 <color:s>%</color>        #<color:s>...</color>#  # <color:G>Full</color>        
+ <color:r>-</color> <color:v>ロッド                              </color> N 16 E 10          #<color:s>..</color><color:D>~</color>#  #             
+ <color:r>-</color> <color:v>ロッド                              </color> N  0 E 27          #<color:s>...</color>#  #             
+ <color:r>-</color> <color:v>ロッド                              </color> N  7 E 19          #####  <color:s>%</color>             
+   <color:B>[ESC で戻る。? でヘルプ]             </color>          <color:G>p</color>                             
+</style>
+鑑定済みのアイテムの山はもっと大きい:
+<style:screenshot>                                                                                
+ <color:W>(</color> <color:U>毛皮のクローク                      </color> S  1 E 27 #####<color:s>.....</color><color:W>|</color><color:u>]</color><color:s>.....</color> LEVEL <color:G>    50</color>
+ <color:D>|</color> 折れたダガー                         N  0 E 28 <color:s>...</color>##<color:s>............</color> EXP <color:G>********</color>
+ <color:s>]</color> <color:U>鉄冠                                </color> S  1 E 48 <color:s>....</color>#<color:s>............</color> AU  <color:G>    214k</color>
+ <color:g>(</color> <color:U>クローク                            </color> N  2 E 32 <color:s>.</color><color:U>~</color><color:v>!</color><color:s>.</color><color:U>'</color>##<color:s>........</color>#<color:s>.</color> <color:W>||</color><color:s>}</color><color:U>~</color><color:g>==</color><color:y>"</color><color:d> </color><color:b>(</color><color:G>(</color><color:s>]</color><color:U>]</color>
+ <color:g>(</color> <color:U>クローク                            </color> N  4 E 10 <color:s>..</color><color:v>`</color><color:s>.</color><color:W>|</color>#<color:s>%</color>#<color:s>.......</color>#<color:s>%</color> STR : <color:G>18/182</color>
+                                                  <color:s>.</color>#<color:s>.....</color><color:U>'</color><color:s>......</color>#<color:s>%%</color> INT : <color:G> 18/43</color>
+ほかのアイテムが 378 個ある:                      <color:s>..</color>#<color:s>.</color>#<color:s>............</color> WIS : <color:G> 18/71</color>
+ <color:W>[</color> <color:s>オログの強化プレート・アーマー      </color> N 18 E 71 <color:s>.</color>###<color:s>.............</color> DEX : <color:G>18/***</color>
+ <color:U>(</color> <color:s>天恵の鋲付硬革よろい                </color> N 11 E 49 <color:s>.</color>###<color:s>.............</color> CON : <color:G>18/185</color>
+ <color:y>(</color> <color:s>エルフの厚布よろい [5,+19] (+3)     </color> N 11 E 52 <color:s>$</color><color:G>$</color>#<color:s>%.%......%....</color> CHR : <color:G>    17</color>
+ <color:g>=</color> <color:r>守りの指輪 [+10] {SiWr?}            </color> N  0 E 40 <color:B>-</color><color:W>|$</color>#<color:u>$</color><color:G>$</color><color:s>......</color>#<color:s>.</color><color:U>`</color><color:s>..</color> AC     <color:G>  163</color>
+ ? <color:W>Life Spellbook [一角獣の書]         </color> S  5 E 26 <color:o>*</color><color:v>]</color><color:U>)</color><color:r>$</color><color:s>/</color><color:g>(</color><color:s>......</color>#<color:G>$</color><color:s>.</color><color:U>(</color><color:s>.</color> HP <color:G> 904</color>/<color:G> 904</color>
+ <color:r>?</color> <color:r>Daemon Spellbook [悪魔の叡知]       </color> N  0 E 46 #<color:r>|</color>#<color:y>"</color><color:B>{</color> <color:s>......%</color><color:g>=</color><color:s>]..</color>             
+ <color:u>?</color> <color:u>Thieves' Guide [大脱走]             </color> N 12 E 24 <color:s>[</color><color:D>|</color>#<color:s>%</color>#<color:s>%......%</color><color:g>=</color><color:s>[</color><color:G>$</color><color:s>.</color>             
+ <color:U>(</color> <color:s>天恵の軟革よろい                    </color> N 11 E 53 <color:W>(</color><color:s>%</color>##  <color:s>....</color><color:U>)</color><color:s>.</color>#<color:D>/</color><color:s>]..</color>             
+ <color:s>/</color> 切れ味のランス (4d10) (+16,+7)       S  6 E 12 <color:y>`</color><color:s>%</color> <color:s>%</color>#<color:s>.......</color>#<color:G>$</color><color:s>...</color>             
+ <color:U>(</color> <color:s>元素防護の鋲付硬革よろい            </color> S  5 E 76 <color:s>.</color>### <color:s>............</color>             
+ <color:y>"</color> <color:o>献身のアミュレット (+2) {Wi?}       </color> S  5 E 12 <color:s>.</color>###<color:s>%</color>#<color:s>...........</color>             
+ <color:g>=</color> <color:r>スピードの指輪 (+4) {Sp}            </color> N 19 E 71 <color:s>%.</color>## ###<color:s>%....</color>#<color:s>%%.</color>             
+ <color:W>|</color> (トランプ)シミター (2d6) (+15,+7)    N  2 E  8 ###     #<color:s>....</color><color:o>*</color> <color:s>%^</color>             
+ <color:g>=</color> <color:r>魔道の指輪 {?}                      </color> N  5 E 93 #       <color:s>%</color>#<color:D>~</color><color:s>..%</color> <color:s>%</color># <color:y>Fast (+27)</color>  
+ <color:B>-</color> <color:g>保持の魔法棒: Nexus Ball (2/5 c     </color> N  4 E 94 <color:s>%</color>        #<color:s>...</color>#  # <color:G>Full</color>        
+ <color:g>=</color> <color:r>戦闘の指輪 (+0,+11) (+1) {Cn}       </color> N 10 E 54          #<color:s>..</color><color:D>~</color>#  #             
+ <color:B>-</color> <color:g>簡便の魔法棒: Dragon's Frost        </color> N  0 E  8          #<color:s>...</color>#  #             
+ <color:g>=</color> <color:r>(元素)指輪 {Ac?}                    </color> N  6 E 19          #####  <color:s>%</color>             
+   <color:B>[ESC で戻る。? でヘルプ]             </color>          <color:G>p</color>                             
+</style>
+これを 1 つずつ手で確かめて、見落としが無いか調べるところを想像してほしい。
+
+<topic:Travel><style:heading>アイテムの所まで歩く</style>
+
+アイテムの一覧で選んだアイテムの所までは、<style:keypress>J</style> か <style:keypress>(</style> で歩ける。中断した移動を再開するのと同じキーである。（アイテムの一覧では、キー配置に関わらずどちらも同じように効く。）ただし階を横切って歩くときは気をつけること。手遅れになるまで邪魔をしてこない悪魔の群れの中へ歩いて行くこともある。遠くへの移動は、階があらかた空だと分かっているときに使うのがいちばんよい。ほかの場面でも使えはするが、用心して、<color:keyword>check_abort</color>（<link:option.txt#check_abort> を見よ）を入れておくこと。
+
+<topic:TravelShop><style:heading>店まで歩く</style>
+
+地上には面白いアイテムはあまり落ちていない。だが店・クエストの入口・ダンジョンの入口となれば話は別である。これらの地形もアイテムの一覧に出る:
+<style:screenshot>                                                                                
+目につく地形が 19 か所ある:                       <color:G>:</color><color:g>.........</color><color:G>:#:</color><color:g>..</color><color:G>::</color> LEVEL <color:G>     1</color>
+ <color:y>></color> <color:y>クエスト入口: The Thieves' Hideout  </color> S  1 E 26 <color:g>.......</color><color:G>:</color><color:g>.</color><color:G>:</color><color:g>.....</color><color:G>:</color><color:g>.</color> EXP <color:G>      15</color>
+ <color:U>1</color> <color:U>雑貨屋                              </color> S 12 W 29 <color:G>:</color><color:g>..</color><color:G>:</color><color:U>#</color><color:g>..</color><color:G>::</color><color:U>#</color><color:g>..</color><color:G>:#</color><color:g>::</color><color:G>:</color> AU  <color:G>     767</color>
+ <color:s>2</color> <color:s>防具屋                              </color> S  1 E 16 <color:U>#</color><color:g>:.</color><color:U>###</color><color:G>#</color><color:g>:</color><color:U>###</color><color:G>#</color><color:g>:</color><color:G>:</color><color:g>...</color> <color:W>|</color><color:d>       </color><color:U>(</color><color:d>   </color>
+ 3 武器専門店                           S  4 E 27 <color:U>############</color><color:G>##</color><color:g>...</color> STR : <color:G>    16</color>
+ <color:g>4</color> <color:g>寺院                                </color> S  2 W 29 <color:U>#############</color><color:G>#</color><color:g>...</color> INT : <color:G>    18</color>
+ <color:b>5</color> <color:b>錬金術の店                          </color> S 16 W 25 <color:U>##</color><color:g>..</color><color:s>.</color><color:g>..</color><color:U>###</color><color:g>.</color><color:G>#</color><color:g>.....</color> WIS : <color:G>     9</color>
+ <color:r>6</color> <color:r>魔法の店                            </color> S 16 W 15 <color:G>#</color><color:g>...</color><color:s>.</color><color:g>...</color><color:G>#</color><color:g>........</color> DEX : <color:G> 18/40</color>
+ <color:D>7</color> <color:D>ブラックマーケット                  </color> S 16 E 16 <color:s>.................</color> CON : <color:G>    17</color>
+ <color:y>8</color> <color:y>我が家                              </color> S 17 E 11 <color:r>.................</color> CHR : <color:G>    12</color>
+ <color:o>9</color> <color:o>書店                                </color> S 17 W 10 <color:b>~~~~~~~~~~~~~~~~~</color> AC     <color:G>    6</color>
+ <color:v>M</color> <color:v>博物館                              </color> S 19 W  2 <color:b>~~~~~~~~~~~~~~</color><color:U>###</color> HP <color:G>  37</color>/<color:G>  37</color>
+ <color:U>+</color> <color:U>The White Horse Inn                 </color> S  8 E 25 <color:U>#################</color> SP <color:G>  14</color>/<color:G>  14</color>
+ <color:U>+</color> <color:U>Count                               </color> N  4 W  2 <color:U>#################</color>             
+ <color:U>+</color> <color:U>Count                               </color> N  4 W  0 <color:s>...............</color><color:U>##</color>             
+ <color:U>+</color> <color:U>Count                               </color> N  4 W  1 <color:U>####</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color>             
+ <color:B>+</color> <color:B>Bounty Office                       </color> N  1 W 15 <color:U>####</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color>             
+ <color:v>></color> <color:v>ダンジョンへの入口                  </color> S 31 E 89 <color:U>####</color><color:s>.</color><color:U>####</color><color:y>></color><color:U>####</color><color:s>.</color><color:U>##</color>             
+ <color:v>></color> <color:v>ダンジョンへの入口                  </color> S  4 E 51 <color:s>...............</color><color:U>##</color>             
+ <color:G>0</color> <color:G>キノコ屋                            </color> N  1 W 21 <color:s>..........</color><color:U>####</color><color:s>.</color><color:U>##</color>             
+                                                  <color:s>..........</color>3<color:U>###</color><color:s>.</color><color:U>##</color> <color:B>Study (1)</color>   
+   <color:B>[ESC で戻る。? でヘルプ]             </color>          <color:s>..........</color><color:U>####</color><color:s>.</color><color:U>##</color>             
+<color:s>...........................</color>........<color:s>..............................</color><color:U>##</color>             
+<color:s>..........................</color>.........<color:s>................................</color>             
+<color:s>.........................</color>..........<color:s>....................</color><color:U>###+####</color><color:s>..</color><color:U>##</color>             
+辺境の地                                                                        
+</style>
+アイテムの一覧では、説明の最初の意味のある字を押すと素早く選べる。たとえば<color:D>ブラックマーケット</color>を選ぶには <color:keypress>b</color> を押す。<color:o>書店</color>なら <color:keypress>b</color> をもう一度押す。選んだら <color:keypress>J</color> でそこまで歩く。
+
+<topic:Stairs><style:heading>階段まで歩く</style>
+
+<color:keyword>list_stairs</color> の設定（<link:option.txt#list_stairs> を見よ）を入れると階段もアイテムの一覧に出る。アイテムの一覧の中で <color:keypress>S</color> を押しても切り替えられる。ダンジョンの深い所では、いちばん近い階段を探したいことがよくある――もっと深く下りたいときも、危ない階から逃げたいときもである:
+<style:screenshot>                                                                                
+目につく地形が 1 か所ある:                        <color:s>...</color>##<color:s>............</color> LEVEL <color:G>    50</color>
+ <color:U>></color> <color:U>下り坑道                            </color> N 12 E 51 <color:s>....</color>#<color:s>............</color> EXP <color:G>********</color>
+                                                  <color:s>.</color><color:U>~</color><color:v>!</color><color:s>.</color><color:U>'</color>##<color:s>........</color>#<color:s>.</color> AU  <color:G>    214k</color>
+望みのアイテムが 42 個ある:                       <color:s>..</color><color:v>`</color><color:s>.</color><color:W>|</color>#<color:s>%</color>#<color:s>.......</color>#<color:s>%</color> <color:W>||</color><color:s>}</color><color:U>~</color><color:g>==</color><color:y>"</color><color:d> </color><color:b>(</color><color:G>(</color><color:s>]</color><color:U>]</color>
+ <color:r>!</color> <color:B>Potion of 器用さ                    </color> N  3 E 28 <color:s>.</color>#<color:s>.....</color><color:U>'</color><color:s>......</color>#<color:s>%%</color> STR : <color:G>18/182</color>
+ <color:R>!</color> <color:B>Potion of 知能×2                   </color> S  1 E 47 <color:s>..</color>#<color:s>.</color>#<color:s>............</color> INT : <color:G> 18/43</color>
+ <color:s>[</color> <color:s>ブラックドラゴン・スケイルメイル    </color> N  0 E 41 <color:s>.</color>###<color:s>.............</color> WIS : <color:G> 18/71</color>
+ <color:s>[</color> <color:s>当世具足                            </color> N  5 E  9 <color:s>.</color>###<color:s>.............</color> DEX : <color:G>18/***</color>
+ <color:s>[</color> <color:s>強化鎖かたびら                      </color> N  2 E 30 <color:s>$</color><color:G>$</color>#<color:s>%.%......%....</color> CON : <color:G>18/185</color>
+ <color:s>[</color> <color:s>重鎖かたびら                        </color> N  0 E 28 <color:B>-</color><color:W>|$</color>#<color:u>$</color><color:G>$</color><color:s>......</color>#<color:s>.</color><color:U>`</color><color:s>..</color> CHR : <color:G>    17</color>
+ <color:v>]</color> <color:U>宝冠                                </color> N  2 E 28 <color:o>*</color><color:v>]</color><color:U>)</color><color:r>$</color><color:s>/</color><color:g>(</color><color:s>......</color>#<color:G>$</color><color:s>.</color><color:U>(</color><color:s>.</color> AC     <color:G>  163</color>
+ <color:s>]</color> <color:U>鉄鋲底の靴                          </color> N 17 E  9 #<color:r>|</color>#<color:y>"</color><color:B>{</color> <color:s>......%</color><color:g>=</color><color:s>]..</color> HP <color:G> 904</color>/<color:G> 904</color>
+ <color:U>(</color> <color:s>皮ジャケット                        </color> N  2 E 42 <color:s>[</color><color:D>|</color>#<color:s>%</color>#<color:s>%......%</color><color:g>=</color><color:s>[</color><color:G>$</color><color:s>.</color>             
+ <color:y>"</color> <color:o>アミュレット {unidentified}         </color> N  1 E 30 <color:W>(</color><color:s>%</color>##  <color:s>....</color><color:U>)</color><color:s>.</color>#<color:D>/</color><color:s>]..</color>             
+ <color:y>]</color> <color:U>金の冠                              </color> N  7 E 24 <color:y>`</color><color:s>%</color> <color:s>%</color>#<color:s>.......</color>#<color:G>$</color><color:s>...</color>             
+ <color:D>/</color> ロッホアーバー・アックス             S  1 E 40 <color:s>.</color>### <color:s>............</color>             
+ <color:r>|</color> 首切りソード                         N  1 E 28 <color:s>.</color>###<color:s>%</color>#<color:s>...........</color>             
+ <color:r>[</color> <color:s>錆びた鎖かたびら                    </color> N 23 E 11 <color:s>%.</color>## ###<color:s>%....</color>#<color:s>%%.</color>             
+ <color:B>)</color> <color:U>ミスリル・シールド                  </color> S  2 E 46 ###     #<color:s>....</color><color:o>*</color> <color:s>%^</color>             
+ <color:B>)</color> <color:U>ミスリル・シールド                  </color> N  0 E 26 #       <color:s>%</color>#<color:D>~</color><color:s>..%</color> <color:s>%</color>#             
+ <color:s>]</color> <color:U>鉄冠                                </color> N  0 E 27 <color:s>%</color>        #<color:s>...</color>#  # <color:y>Fast (+27)</color>  
+ <color:G>(</color> <color:U>エルフのクローク                    </color> N 45 E 23          #<color:s>..</color><color:D>~</color>#  # <color:G>Full</color>        
+ <color:g>=</color> <color:r>指輪 {unidentified}                 </color> N  1 E 40          #<color:s>...</color>#  #             
+ <color:g>=</color> <color:r>指輪 {unidentified}                 </color> N  3 E 29          #####  <color:s>%</color>             
+ <color:W>|</color> バスタード・ソード                   N 10 E 22                               
+   <color:B>[ESC で戻る。? でヘルプ]             </color>          <color:G>p</color>
+</style>  
+階段が 1 つしか無いのなら、たぶんクエストの階である。上と同じく、<color:keypress>J</color> か <color:keypress>(</color> でアイテムの一覧から階段まで歩ける。
+
+<topic:Window><style:heading>サブウィンドウ</style>
+
+アイテムの一覧はサブウィンドウに置いて出しっぱなしにもできる。アイテムの所まで歩いたりアイテムを調べたりはサブウィンドウからはできないが、取りこぼしと、階段や入口の在り処を見るには十分に役に立つ。サブウィンドウの設え方は <link:subwin.txt> にある。

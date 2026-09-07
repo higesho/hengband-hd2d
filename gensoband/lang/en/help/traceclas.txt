@@ -1,0 +1,2949 @@
+
+***** <TheRaces>
+=== The races ===
+
+Keine: "What follows sets out each race in detail, but skip it if you
+cannot be bothered.
+Poring over the fine detail to plan a strong character is a pleasure,
+but so is building one purely to taste with no thought for what suits.
+
+The hit dice are a sort of coefficient that decides HP; the higher, the
+more HP.
+The higher the experience penalty, the harder it is to gain levels.
+The score multiplier is applied to your score; the stronger the race, the
+lower it is.
+
+The number beside a resistance, ability or trait is the level at which you
+gain it.
+An ability with no number is held from level 1.
+
+For realm aptitude, 5 is average and higher is better; 0 means the realm
+cannot be learned at all.
+They are written in the order Element/Foreseeing/Enchant/Summon -
+Mystic/Life/Punish/Nature - Transform/Darkness/Necromancy/Chaos.
+Version 1.1.08 added the realm called Arcane, but every race has an average
+aptitude for it, so it is left out here.
+
+For a newcomer I recommend a strong race, penalty or no penalty."
+
+
+***** <Human>
+--- Human ---
+  Str:0  Int:0  Wis:0  Dex:0  Con:0  Chr:0
+  Dis:0  Dev:0  Sav:0  Stl:0  Src:0
+  Melee:0  Shoot:0
+Infravision:0
+Hit dice:10
+Experience penalty:0
+Score multiplier:100%
+
+Resistances, abilities and traits:
+  none
+Realm aptitude:
+  5/5/5/5 - 5/5/5/5 - 5/5/5/5
+Other:
+  none
+
+Keine: "An ordinary human, with no distinguishing feature at all -- unless
+you count growing quickly. Their physical abilities are the standard, but
+as the other races are mostly inhuman they come out rather weak.
+They have no real drawback either, so they manage any class tolerably well.
+A casting class makes the most of their quick growth.
+A hybrid class is no bad thing, but with no resistances of their own you
+may struggle to gather equipment.
+Familiar, so newcomers choose them easily -- but not really a newcomer's
+race."
+
+
+***** <Youkai>
+--- Youkai ---
+  Str:2  Int:-2  Wis:-3  Dex:0  Con:2  Chr:-2
+  Dis:-3  Dev:-5  Sav:0  Stl:0  Src:0
+  Melee:10  Shoot:-5
+Infravision:3
+Hit dice:11
+Experience penalty:25%
+Score multiplier:100%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+Realm aptitude:
+  4/4/4/4 - 2/2/1/3 - 7/7/6/6
+Other:
+  none
+
+Keine: "Youkai are of many sorts; these are the ones with comparatively
+little that stands out about their appearance.
+Think of Rumia and you will have the idea.
+Their bodies are plainly better than a human's, but their heads are less so.
+If you mean to work Witchcraft, a casting class is no bad choice.
+And youkai are, as a rule, weak to evil-breaking attacks."
+
+
+***** <Half-Youkai>
+--- Half-Youkai ---
+  Str:1  Int:0  Wis:-1  Dex:0  Con:1  Chr:-1
+  Dis:0  Dev:-1  Sav:1  Stl:0  Src:0
+  Melee:3  Shoot:0
+Infravision:0
+Hit dice:10
+Experience penalty:20%
+Score multiplier:90%
+
+Resistances, abilities and traits:
+  slow digestion
+  resist poison (20)
+Realm aptitude:
+  5/5/5/5 - 4/4/4/4 - 5/5/5/5
+Other:
+  none
+
+Keine: "Half human and half youkai, with stats to match.
+But a half-youkai's body seems unexpectedly resistant, and a small eater
+besides.
+They have no real weakness, so they manage any class.
+Their score is a little lower than a human's or a youkai's."
+
+
+***** <Sennin>
+--- Sennin ---
+  Str:-1  Int:2  Wis:3  Dex:0  Con:0  Chr:2
+  Dis:2  Dev:10  Sav:8  Stl:1  Src:5
+  Melee:0  Shoot:-10
+Infravision:2
+Hit dice:10
+Experience penalty:50%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  slow digestion
+  resistance to one of holy, chaos, poison, hell or dark (20)
+  sustain wisdom (25)
+  resist confusion (30)
+  clear mind (30, restores a little MP)
+Realm aptitude:
+  6/6/6/5 - 9/9/8/9 - 4/6/5/4
+Other:
+ hunger comes on very slowly
+  a death that you approach wakes at once and turns hostile
+  from level 20 an assassin from hell attacks you from time to time
+
+Keine: "Hermits who shut themselves in the mountains and train day by day.
+Their bare physical abilities are nothing much, but they have all manner of
+strange powers that more than make up for it.
+A casting class is fine, but the standard play is a hybrid class making use
+of their own MP recovery.
+
+The assassins from hell are chiefly deaths.
+The higher your level and the deeper you go, the tougher the assassin.
+If you move about the dungeon with a key held down, an assassin may appear
+out of nowhere and strike you again and again.
+The score and experience penalties are rather heavy."
+
+***** <Tennin>
+--- Tennin ---
+  Str:2  Int:3  Wis:3  Dex:2  Con:3  Chr:3
+  Dis:0  Dev:12  Sav:12  Stl:0  Src:5
+  Melee:10  Shoot:10
+Infravision:2
+Hit dice:12
+Experience penalty:85%
+Score multiplier:60%
+
+Resistances, abilities and traits:
+  immunity to holy
+  levitation
+  resist fear
+  free action
+  weak to hellfire +33%
+  see invisible (10)
+  resist confusion (15)
+  resist light (20)
+  sustain wisdom (25)
+  clear mind (30, restores a little MP)
+Realm aptitude:
+  6/7/6/5 - 9/9/9/7 - 0/0/0/2
+Other:
+  a bonus to AC
+  a death that you approach wakes at once and turns hostile
+  from level 20 an assassin from hell attacks you from time to time
+
+Keine: "Rather like a Sennin, already strong, made two sizes stronger.
+You will hardly ever come off worse in an early fight.
+Strong in every way, but the penalties are ferocious. A newcomer's race, as
+they say.
+Hellfire is their weakness, but only the deep floors hold enemies that use
+it."
+
+
+***** <Fairy>
+--- Fairy ---
+  Str:-4  Int:-4  Wis:-4  Dex:-2  Con:-3  Chr:-2
+  Dis:-5  Dev:-5  Sav:10  Stl:5  Src:0
+  Melee:-20  Shoot:-10
+Infravision:5
+Hit dice:7
+Experience penalty:50%
+Score multiplier:200%
+
+Resistances, abilities and traits:
+  slow digestion
+  regeneration
+  levitation
+  resist holy (20)
+Realm aptitude:
+  3/1/1/1 - 2/6/1/7 - 1/1/1/1
+Other:
+ hunger comes on very slowly
+ can hold a dagger in both hands
+ has one random ability or trait
+ (it can be checked from the "information about yourself" command)
+
+Keine: "Fairies, who turn up anywhere in Gensokyo.
+What can they be thinking, taking on a dangerous dungeon? Nothing at all,
+most likely.
+They are as weak as weak can be, so their score is twice a human's.
+If you are sure of your skill, give one a try."
+
+
+***** <Kappa>
+--- Kappa ---
+  Str:0  Int:1  Wis:-3  Dex:2  Con:1  Chr:-1
+  Dis:20  Dev:-4  Sav:3  Stl:2  Src:3
+  Melee:5  Shoot:10
+Infravision:0
+Hit dice:11
+Experience penalty:10%
+Score multiplier:90%
+
+Resistances, abilities and traits:
+  resist water
+  weak to lightning +33%
+  weak to holy +33%
+  water gun (12, a bolt of water)
+  resist acid (15)
+  long reach (25, a physical attack at a short distance, with fewer blows)
+  drag under (35, an adjacent attack; only at the waterside)
+Realm aptitude:
+  3/2/2/2 - 3/2/1/5 - 7/6/5/5
+Other:
+  eating a cucumber fills the stomach
+  on water terrain, gains +2 Str and Con and regeneration
+  as an Engineer, machines do not break down in water
+
+Keine: "The kappa are truly deft with their hands.
+Their arms are nothing special, but in water they become another creature
+altogether.
+Being always damp, perhaps, they are poor against lightning as well as holy.
+The class that suits them is the Engineer, of course. A warrior class is no
+bad thing either."
+
+
+***** <Magician>
+--- Magician ---
+  Str:-2  Int:4  Wis:3  Dex:-1  Con:-1  Chr:0
+  Dis:5  Dev:15  Sav:10  Stl:1  Src:5
+  Melee:-10  Shoot:-10
+Infravision:5
+Hit dice:8
+Experience penalty:30%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  levitation (10)
+  see invisible (15)
+  resist confusion (20)
+  sustain intelligence (25)
+  drain mana (25, touch an enemy to take its MP)
+Realm aptitude:
+  9/9/9/9 - 7/6/6/7 - 7/7/8/8
+Other:
+  needs no food at all (can still overeat)
+
+Keine: "The magician as a race rather than a class --
+a specialist in magic, as the name says.
+As a Mage they learn spell after spell and loose them freely; quite
+exhilarating.
+They have a way of restoring mana, so the Magic-Knight suits them too.
+They take a hit poorly, however, so mind your HP.
+Being curious they grow rather quickly, and their score is lower for it."
+
+
+***** <Karasu-Tengu>
+--- Karasu-Tengu ---
+  Str:1  Int:2  Wis:0  Dex:4  Con:2  Chr:0
+  Dis:5  Dev:7  Sav:6  Stl:2  Src:5
+  Melee:10  Shoot:10
+Infravision:0
+Hit dice:11
+Experience penalty:40%
+Score multiplier:70%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+  photography (take a photograph)
+  levitation
+  dash (20, move in an instant to a distant grid in sight; stops at an
+  obstacle)
+  fast movement (25)
+Realm aptitude:
+  4/5/4/3 - 5/3/2/8 - 6/7/6/5
+Other:
+  speed +level/7
+  very likely nullifies an enemy's bolt attacks
+  the only head equipment is the tokin
+  does not become drunk easily
+
+Keine: "The karasu-tengu, famous for the harm their reporting does. Above
+all they are quick.
+Their arms and their wits are both fine as well -- strong all round.
+But they seem obliged to wear a tokin on their heads at all times.
+Whether it is principle or rule I do not know, but you will sometimes have
+to swallow your tears before a legendary helm.
+The penalties are heavy too."
+
+***** <Hakurou-Tengu>
+--- Hakurou-Tengu ---
+  Str:3  Int:-2  Wis:-2  Dex:2  Con:3  Chr:-2
+  Dis:8  Dev:-3  Sav:0  Stl:2  Src:10
+  Melee:15  Shoot:5
+Infravision:8
+Hit dice:12
+Experience penalty:35%
+Score multiplier:85%
+
+Resistances, abilities and traits:
+  see invisible
+  weak to holy +33%
+  detect monsters (3, learn where the nearby monsters are)
+  create food (15, make food)
+  probe monsters (30, examine the abilities of the monsters around you)
+  warning (30)
+  resist poison (35)
+Realm aptitude:
+  2/3/1/1 - 1/2/1/4 - 5/5/4/4
+Other:
+  the only head equipment is the tokin
+  does not become drunk easily
+
+Keine: "The hakurou-tengu, watchmen of the mountain. Scouting and searching
+come naturally to them.
+They fight hand to hand as well as they look, though they are poor at magic.
+Like the karasu-tengu, they will not take off the tokin."
+
+
+***** <Oni>
+--- Oni ---
+  Str:7  Int:-3  Wis:1  Dex:1  Con:4  Chr:0
+  Dis:-10  Dev:5  Sav:0  Stl:-3  Src:-3
+  Melee:30  Shoot:0
+Infravision:0
+Hit dice:18
+Experience penalty:65%
+Score multiplier:60%
+
+Resistances, abilities and traits:
+  resist fear
+  regeneration
+  weak to holy +33%
+  resist dark (10)
+  berserk (12, enter the berserk state)
+  sustain strength (20)
+  sustain constitution (20)
+  roar (25, a sound attack at the top of your voice; wakes the sleeping
+  enemies around you)
+  resist insanity (35)
+Realm aptitude:
+  5/5/5/5 - 5/4/2/3 - 5/7/5/6
+Other:
+  has large horns
+  grows hungry quickly
+  becomes drunk only with great difficulty
+
+Keine: "The oni, who silence a crying child. Absurd strength and bottomless
+stamina.
+They dislike fiddling about in secret, so their disarming and stealth are low.
+Their aptitude for magic and magic devices is not so low, however.
+A warrior suits them, of course, but that much stamina benefits any class.
+The penalties are heavy, but in an early brawl they are the strongest there
+is. A newcomer's race.
+
+Every oni grows a splendid pair of horns.
+They can strike powerfully with the horns in melee, but the horns get in the
+way and they cannot wear a helmet."
+
+
+***** <Death>
+--- Death ---
+  Str:2  Int:1  Wis:2  Dex:-1  Con:2  Chr:-3
+  Dis:-3  Dev:8  Sav:25  Stl:3  Src:0
+  Melee:15  Shoot:-10
+Infravision:8
+Hit dice:12
+Experience penalty:60%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  resist hell
+  free action
+  see invisible (10)
+  resist confusion (20)
+  ESP of the dead (25)
+  ESP of humans (25)
+  resist dark (35)
+  resist insanity (45)
+Realm aptitude:
+  5/5/5/5 - 3/0/2/2 - 4/7/9/6
+Other:
+  a dice bonus when wielding a scythe
+
+Keine: "The death, whom everyone fears -- so much so that shopping in town
+is a little hard for them.
+They move a little slowly, but they are good at both melee and magic, and
+tough besides, with a variety of resistances.
+A death holding a scythe truly looks the part.
+They come with answers to paralysis, confusion and invisibility, which
+newcomers so often get wrong -- a newcomer's race.
+Being Yama's subordinates, they are not weak to evil-breaking attacks, which
+is another strength.
+The penalties are fairly heavy."
+
+
+***** <Warbeast>
+--- Warbeast ---
+  Str:1  Int:-1  Wis:-2  Dex:2  Con:2  Chr:-2
+  Dis:-2  Dev:-3  Sav:-3  Stl:2  Src:4
+  Melee:10  Shoot:-5
+Infravision:10
+Hit dice:11
+Experience penalty:40%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+  detect monsters (3, learn where the nearby monsters are)
+  berserk (25, enter the berserk state)
+  warning (30)
+Realm aptitude:
+  4/4/4/3 - 3/4/2/6 - 8/5/6/5
+Other:
+  speed +level/15
+  +2 to every stat on the night of the full moon (day 15 + 30x)
+
+Keine: "A warbeast has the features of both human and beast.
+The term covers both a magical beast in human shape and a human who turns
+into a beast.
+Quick and tough, though a little weak in the head.
+They have many useful abilities, and for all that their penalties and
+restrictions are rather light.
+
+This steps outside the story a little, but:
+in Gensokyo a warbeast and a magical beast are quite different things, but
+Gensoband treats them as one.
+Be warned."
+
+
+***** <Tsukumo>
+--- Tsukumo ---
+  Str:-1  Int:-1  Wis:-1  Dex:0  Con:1  Chr:-1
+  Dis:15  Dev:16  Sav:8  Stl:1  Src:2
+  Melee:0  Shoot:-5
+Infravision:2
+Hit dice:9
+Experience penalty:20%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+  weak to disenchantment +33%
+  resist poison
+ resist blindness
+ see invisible (10)
+Realm aptitude:
+  3/4/7/3 - 5/3/3/3 - 7/5/5/5
+Other:
+  can take off a cursed item without removing the curse (can fail)
+  sometimes stops an item's curse from going off
+  reduces the aggravation caused by equipment
+  cannot be cut or made ill
+  eats the magic of staves and wands rather than ordinary food
+
+Keine: "A tsukumo is an old or discarded tool that has begun to move.
+See that a tool you have finished with is properly laid to rest first.
+Being tools themselves, they are excellent with items of every kind.
+Much aggravating equipment is powerful, so their choice of equipment is
+much wider.
+And their bodies are unusual even for youkai, so they take neither poison
+nor cuts.
+Their bare physical abilities are low, however."
+
+
+***** <Youkai-Doll>
+--- Youkai-Doll ---
+  Str:1  Int:-1  Wis:-2  Dex:0  Con:1  Chr:0
+  Dis:0  Dev:5  Sav:-5  Stl:2  Src:-2
+  Melee:5  Shoot:5
+Infravision:0
+Hit dice:11
+Experience penalty:(special)
+Score multiplier:75%
+
+Resistances, abilities and traits:
+ self-repair (1, mends the wounds and damage to your own body)
+  weak to holy +33%
+  weak to disenchantment +33%
+  resist poison
+  resist cold
+ free action
+ see invisible (10)
+ resist fear (20)
+ resist insanity (40)
+Realm aptitude:
+  5/3/7/4 - 4/2/4/3 - 6/5/6/5
+Other:
+  gains no experience from fighting; the total value of what it wears counts
+as its experience
+ is never transformed, and no other race is ever transformed into one
+  cannot be cut or made ill
+  eats the magic of staves and wands rather than ordinary food
+  (from v1.66) cannot be cut or stunned, but can be damaged instead
+
+Keine: "The tsukumo of a doll -- a special race quite unlike any other.
+This race never gains a level however much it fights.
+It merges with the magic of the equipment it wears and makes it its own.
+Take off all its equipment and it returns to level 1 at once.
+
+It may find a powerful item by luck at the very start and leap up in level,
+but from the middle game it grows hard to secure level, resistances and
+parameters all at once.
+For a hybrid class that needs many parameters in particular, gathering the
+equipment is quite hard.
+Rings, amulets and light sources do not count towards its level.
+
+Stepping outside the story again: of course no such thing is true of the
+youkai dolls of Gensokyo.
+This carries over the behaviour of Hengband's "android" race."
+
+
+***** <Gyokuto>
+--- Gyokuto ---
+  Str:0  Int:0  Wis:-1  Dex:2  Con:1  Chr:1
+  Dis:8  Dev:8  Sav:8  Stl:2  Src:2
+  Melee:5  Shoot:15
+Infravision:7
+Hit dice:10
+Experience penalty:50%
+Score multiplier:85%
+
+Resistances, abilities and traits:
+  resist holy
+  weak to hellfire (+20%)
+  hear rumours (hear the gyokuto's rumours at any time)
+  detect monsters (5, learn where the nearby monsters are)
+  phase door (10, teleport a short distance)
+Realm aptitude:
+  4/4/4/3 - 5/5/4/3 - 4/2/2/4
+Other:
+  none
+
+Keine: "A rabbit of the moon, it seems. Why it is on the earth is unknown.
+They resemble warbeasts but do not fight hand to hand as well.
+They have had military training, though, so their magic device and shooting
+skills are high.
+Being unsullied people of the moon, they are not weak to evil-breaking
+attacks.
+They are occasionally seen using their great ears to send some message.
+Perhaps they are reporting the earth to the moon."
+
+
+***** <Youko>
+--- Youko ---
+  Str:-1  Int:3  Wis:3  Dex:2  Con:0  Chr:1
+  Dis:2  Dev:10  Sav:16  Stl:3  Src:4
+  Melee:-10  Shoot:-10
+Infravision:7
+Hit dice:9
+Experience penalty:70%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  weak to holy (+33%; it goes at level 30 unless you work Witchcraft)
+  see invisible
+  detect monsters (5, learn where the nearby monsters are)
+  resist confusion (10)
+  mind blast (15, attack one enemy with a wave of thought)
+  warning (20)
+  dazzle (25, confuse, stun and frighten the monsters in sight)
+  resist chaos (30)
+  telepathy (40)
+  resist holy (45, unless you work Witchcraft)
+Realm aptitude:
+  7/8/7/7 - 7/5/5/7 - 9/7/7/7
+Other:
+  eating fried tofu restores a little MP
+  when working Witchcraft, Witchcraft proficiency rises easily
+
+Keine: "The youkai fox. If two of the same face are drunk at a banquet, at
+least one of them is a fox.
+Unusually clever for a youkai, and suited to casting.
+Their bodies are not weak either, and their instincts are so keen that they
+survive well.
+
+When the first realm is not Witchcraft, experience removes their weakness
+to evil-breaking attacks.
+They gain divinity and become honoured foxes, I suppose.
+If the first realm is Witchcraft, their Witchcraft proficiency rises easily
+instead.
+There is said to be a place somewhere where foxes train their Witchcraft.
+
+At a high level they are quite powerful, but the penalties are heavy."
+
+
+***** <Yamawaro>
+--- Yamawaro ---
+  Str:1  Int:-1  Wis:-3  Dex:1  Con:2  Chr:-1
+  Dis:15  Dev:-6  Sav:0  Stl:2  Src:5
+  Melee:15  Shoot:10
+Infravision:0
+Hit dice:11
+Experience penalty:25%
+Score multiplier:90%
+
+Resistances, abilities and traits:
+  resist water
+  weak to holy +33%
+  long reach (25, a physical attack at a short distance, with fewer blows)
+Realm aptitude:
+  3/2/2/2 - 3/2/1/5 - 7/6/5/5
+Other:
+  can enter mountain terrain without levitation
+  on forest terrain, gains +2 Str and Con and regeneration
+  entering forest without levitation costs no extra energy
+
+Keine: "A kappa that climbs the mountain becomes a yamawaro, it seems.
+Some of the water abilities are gone, and forest and mountain suit them
+better instead.
+You may wonder that changing from work clothes into climbing clothes should
+change so much -- but that is youkai for you."
+
+
+***** <Bake-danuki>
+--- Bake-danuki ---
+  Str:0  Int:1  Wis:1  Dex:-1  Con:1  Chr:-1
+  Dis:2  Dev:2  Sav:3  Stl:4  Src:0
+  Melee:7  Shoot:0
+Infravision:5
+Hit dice:11
+Experience penalty:40%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+  detect monsters (5, learn where the nearby monsters are)
+  teleport (12, teleport a middling distance)
+  see invisible (15)
+  substitution (30, teleport without taking damage when an enemy strikes you)
+Realm aptitude:
+  5/4/4/5 - 3/4/2/5 - 8/6/5/7
+Other:
+ nothing in particular
+
+Keine: "The youkai tanuki. They and the foxes do not get on.
+They are good at disguising themselves, at vanishing and at hiding,
+and have fairly straightforward abilities and useful powers.
+They manage almost any class tolerably well."
+
+***** <Ningyo>
+--- Ningyo ---
+  Str:0  Int:0  Wis:0  Dex:1  Con:1  Chr:1
+  Dis:0  Dev:7  Sav:7  Stl:2  Src:2
+  Melee:0  Shoot:-5
+Infravision:0
+Hit dice:10
+Experience penalty:10%
+Score multiplier:95%
+
+Resistances, abilities and traits:
+  resist water
+  weak to holy +33%
+Realm aptitude:
+  6/6/7/5 - 5/5/3/4 - 8/6/7/6
+Other:
+  cannot wear boots
+  in melee, a powerful martial blow with the tail appears
+  on land without levitation, movement takes 33% longer
+  on water, gains speed +(3+level/15) and fast movement, levitating or not
+
+Keine: "A youkai whose lower half is a great fish tail.
+They move awkwardly on land but turn wonderfully quick in the water.
+Their bodies are much like a human's, but their aptitude for magic is
+rather higher."
+
+
+***** <Hofgoblin>
+--- Hofgoblin ---
+  Str:-1  Int:-1  Wis:-2  Dex:1  Con:2  Chr:-4
+  Dis:7  Dev:5  Sav:3  Stl:2  Src:2
+  Melee:5  Shoot:5
+Infravision:4
+Hit dice:8
+Experience penalty:10%
+Score multiplier:100%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+  slow digestion
+  free action
+  create food (5, make food)
+ resist poison (15)
+Realm aptitude:
+  5/5/5/5 - 3/3/2/4 - 5/5/5/5
+Other:
+  none
+
+Keine: "Do you remember the hofgoblin?
+The eerie youkai that came in the zashiki-warashi's place when it left the
+village, and was driven out by the shrine maiden.
+They are the size of an infant and do not look strong, but they turn out to
+be surprisingly handy at all sorts of things. Best of all, their penalties
+are light."
+
+
+***** <Nyudo>
+--- Nyudo ---
+  Str:3  Int:-1  Wis:-2  Dex:-3  Con:3  Chr:-1
+  Dis:-4  Dev:-3  Sav:0  Stl:2  Src:2
+  Melee:20  Shoot:0
+Infravision:0
+Hit dice:13
+Experience penalty:50%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  weak to holy +33%
+  phase door (5, teleport a short distance)
+  free action (10)
+  resist shards (20)
+  teleport back (25, draw a distant enemy close to you)
+  resist sound (30)
+Realm aptitude:
+  2/3/2/2 - 2/1/1/3 - 8/4/4/3
+Other:
+  a bonus to AC
+
+Keine: "Nyudo come in many sorts, but every one of them is splendidly built
+and yet oddly hard to grasp, a youkai of uncertain substance.
+Strong in melee and quite good defensively, though the penalties are rather
+heavy."
+
+
+***** <Imp>
+--- Imp ---
+  Str:-1  Int:2  Wis:-2  Dex:1  Con:0  Chr:-2
+  Dis:5  Dev:10  Sav:10  Stl:2  Src:2
+  Melee:0  Shoot:0
+Infravision:6
+Hit dice:9
+Experience penalty:30%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+  resist dark
+ complete resistance to insanity
+  weak to holy +66%
+  resist hell (20)
+Realm aptitude:
+  8/7/9/7 - 3/2/0/2 - 7/9/7/8
+Other:
+  none
+
+Keine: "A demon, but seemingly without much power.
+Rumour says they were summoned from another world,
+and perhaps for that reason they never flinch at the loathsome creatures of
+another world.
+They also resist dark and hell, but are extremely weak to evil-breaking
+attacks.
+Their abilities lean towards casting, but a hybrid class may suit them
+better if you want to make use of their traits.
+
+Stepping outside the story again: being summoned from another world is only
+a rumour.
+It carries over part of Hengband's "imp" race."
+
+
+***** <Golem>
+--- Golem ---
+  Str:4  Int:-5  Wis:-5  Dex:-3  Con:5  Chr:-2
+  Dis:-10  Dev:-10  Sav:20  Stl:-2  Src:-3
+  Melee:20  Shoot:0
+Infravision:0
+Hit dice:14
+Experience penalty:60%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+ self-repair (1, mends the wounds and damage to your own body)
+ weak to disenchantment (+33%)
+  resist lightning
+  resist fire
+  resist cold
+  resist poison
+  resist fear
+  resist blindness
+  free action
+  see invisible
+  regeneration (20)
+  slow digestion (20)
+  eat rock (25, eat a diggable dungeon wall for nourishment)
+  resist hell (30)
+  resist insanity (30)
+Realm aptitude:
+  6/2/6/3 - 2/1/1/1 - 5/4/4/3
+Other:
+
+  feeds on lumps of rock and ores
+  a large bonus to AC
+  speed -3 + (level/15)
+  cannot be petrified
+  (from v1.66) cannot be cut or stunned, but can be damaged instead
+
+Keine: "A lump of rock moved by magic, made by magicians and the like.
+There is a rumour of an army of golems, the very image of a certain ordinary
+magician, marching on the Scarlet Devil Mansion.
+With bodies of stone they are powerful and tough indeed, but almost no wit
+is to be seen.
+A warrior suits them, one would say -- but so extreme a build may give you
+trouble instead."
+
+
+***** <Kobito>
+--- Kobito ---
+  Str:-5  Int:0  Wis:0  Dex:0  Con:-4  Chr:0
+  Dis:20  Dev:12  Sav:0  Stl:20  Src:20
+  Melee:-20  Shoot:-5
+Infravision:0
+Hit dice:5
+Experience penalty:-50%
+Score multiplier:100%
+
+Resistances, abilities and traits:
+  none
+Realm aptitude:
+  5/5/5/5 - 5/5/5/5 - 5/5/5/5
+Other:
+  a bonus to AC (because attacks land poorly on it)
+  can carry little weight
+ cannot wear heavy arms or armour
+ can hold a dagger in both hands
+
+
+Keine: "A charming little people no taller than my knee.
+Outrageously frail and outrageously quick to grow.
+Daily life is probably already a training at risk of death for them.
+At hiding they are far and away the best, and they seem good with magic
+devices too."
+
+
+***** <Zombie>
+--- Zombie (Kyonshi) ---
+  Str:2  Int:-4  Wis:-3  Dex:-2  Con:3  Chr:-3
+  Dis:-5  Dev:-6  Sav:5  Stl:2  Src:-2
+  Melee:10  Shoot:-5
+Infravision:0
+Hit dice:12
+Experience penalty:50%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+  weak to holy (+66%)
+  resist hell
+  resist cold
+  resist poison
+  resist fear
+  free action
+  resist insanity
+  see invisible (15)
+  regeneration (15)
+  slow digestion (15)
+  resist dark (30)
+  levitation (30)
+Realm aptitude:
+  3/2/3/2 - 1/1/1/1 - 3/3/8/3
+Other:
+  cannot be cut
+
+Keine: "A corpse worked by some suspect art; talking with one is hard.
+The body is tough (physically) and the arms are strong.
+The joints are stiff, though, and they move awkwardly.
+Being corpses, they cannot stand an evil-breaking attack for a moment."
+
+
+***** <Vampire>
+--- Vampire ---
+  Str:4  Int:2  Wis:1  Dex:2  Con:7  Chr:2
+  Dis:-2  Dev:6  Sav:10  Stl:3  Src:1
+  Melee:20  Shoot:0
+Infravision:10
+Hit dice:16
+Experience penalty:75%
+Score multiplier:65%
+
+Resistances, abilities and traits:
+  weak to holy (+66%)
+  weak to light (+50%)
+  weak to water (+50%)
+  resist hell
+  complete resistance to dark
+  resist cold
+  resist poison
+  see invisible
+  regeneration
+  slow digestion
+  drain life (bite an enemy and drink its blood to fill the stomach)
+  resist insanity (20)
+  levitation (35)
+  fast movement (40)
+
+Realm aptitude:
+  7/7/7/7 - 1/0/0/1 - 8/8/9/6
+Other:
+  cannot take ordinary food; satisfies hunger by draining life
+  the body glows faintly (acts as a light source of radius 1 with no other
+  light)
+  -2 to every stat by day (only -1 with resistance to light)
+  +3 to every stat on the night of the full moon (day 15 + 30x)
+  speed +(level/10)
+  sometimes lands an HP-draining blow in martial arts
+  entering water without levitation drowns you, whatever your weight or
+  resistance to water
+ the penalty while drowning is quite heavy
+
+Keine: "The vampire, known as a mighty being.
+Body, aptitude for magic, resistances, abilities -- every one of them is
+powerful,
+but they have many weaknesses and many awkward traits, and the penalties
+are heavy.
+Strong, but not an easy race for a newcomer or an expert either."
+
+
+***** <Spectre>
+--- Spectre ---
+  Str:-3  Int:0  Wis:0  Dex:-1  Con:-2  Chr:-2
+  Dis:3  Dev:7  Sav:5  Stl:4  Src:1
+  Melee:-10  Shoot:-15
+Infravision:8
+Hit dice:7
+Experience penalty:70%
+Score multiplier:50%
+
+Resistances, abilities and traits:
+  weak to holy (+66%)
+  weak to light (+50%)
+  levitation
+  free action
+  absorbs the hell element
+  see invisible
+  resist poison
+  resist shards
+  resist cold
+  telepathy (35)
+
+Realm aptitude:
+  5/5/5/5 - 1/0/1/1 - 5/7/9/5
+Other:
+  passes through walls (it costs HP, but never below 0)
+  cannot be cut
+
+Keine: "The soul of a dead person held in this world by a strong feeling.
+Their greatest strength is that they can pass through walls.
+You can easily imagine what an advantage that is in a dungeon.
+You can flee into a wall mid-fight and heal somewhere safe, and inside a
+wall most of an enemy's breath and ball attacks do half damage.
+Their thin bodies also shrug off many elements -- and they absorb the hell
+element besides.
+Their bodies are quite weak, and yet they are one of the strongest races.
+The penalties are heavy, of course. The score falls to half a human's, a
+quarter of a fairy's.
+
+Stepping outside the story once more: Gensokyo has
+ghosts, phantoms, vengeful spirits, poltergeists and divine spirits, each
+of a different nature.
+Gensoband lumps every ghostly player race together as the Spectre and sets
+its traits close to Hengband's.
+Be warned."
+
+
+***** <Stray-god>
+--- Stray-god ---
+Base parameters:varies
+Hit dice:11 as a base
+Experience penalty:50%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+  varies
+Realm aptitude:
+  5/5/5/5 - 5/5/5/5 - 5/5/5/5
+ (it can change)
+Other:
+ is never transformed at all, and no other race ever becomes one
+  has the virtues "order", "belligerence" and "fame", which move with what
+  you do in the game
+   (Reimu at the Hakurei Shrine can tell you roughly where they stand)
+ at levels 30 and 45 the racial traits change greatly according to the
+  virtues at that moment
+   (the resistances and racial powers you had are carried over)
+
+Keine: "Minor gods among the myriad, with no shrine to enshrine them and no
+priest to serve them.
+At first almost nobody believes in them, so they are not strong, but as you
+adventure and gain a name, that becomes new belief.
+In time they gain a new divinity, and their racial abilities, resistances
+and powers change greatly.
+But keep abandoning quests, or fight meanly, and a bad name gathers and you
+become an odd sort of god.
+Most end up as quite a powerful divinity."
+
+
+***** <Daiyoukai>
+--- Daiyoukai ---
+  Str:4  Int:3  Wis:1  Dex:2  Con:4  Chr:2
+  Dis:2  Dev:10  Sav:20  Stl:1  Src:8
+  Melee:15  Shoot:5
+Infravision:8
+Hit dice:13
+Experience penalty:100%
+Score multiplier:60%
+
+Resistances, abilities and traits:
+  weak to holy (+33%)
+  levitation
+ resist dark
+ free action
+ see invisible
+ resist fire (5)
+  resist cold (10)
+  resist lightning (15)
+  resist acid (20)
+  resist poison (25)
+  resist chaos (30)
+  resist fear (35)
+  slow digestion (40)
+  regeneration (40)
+
+Realm aptitude:
+  7/6/6/7 - 4/3/0/3 - 7/9/6/7
+Other:
+  none
+
+Keine: "A great youkai that has gathered power over long, long years.
+In everything they far surpass an ordinary youkai, though they are still
+weak to holy.
+The penalties are extremely heavy: gaining a level takes twice a human's
+experience.
+A newcomer's race, as they say."
+
+
+***** <Demigod>
+--- Demigod ---
+  Str:1  Int:1  Wis:1  Dex:1  Con:1  Chr:1
+  Dis:0  Dev:3  Sav:3  Stl:0  Src:3
+  Melee:3  Shoot:3
+Infravision:0
+Hit dice:11
+Experience penalty:25%
+Score multiplier:75%
+
+Resistances, abilities and traits:
+  see invisible
+  slow digestion (25)
+  regeneration (25)
+Realm aptitude:
+  6/6/6/6 - 6/6/6/6 - 6/6/6/6
+Other:
+  none
+
+Keine: "A human of divine blood, or one revered into divinity, is called a
+demigod.
+They look no different from an ordinary human, but their stats are all a
+little higher.
+They can see what an ordinary person cannot."
+
+
+***** <Lunarian>
+--- Lunarian ---
+  Str:-2  Int:7  Wis:5  Dex:2  Con:1  Chr:2
+  Dis:10  Dev:15  Sav:12  Stl:3  Src:10
+  Melee:-30  Shoot:15
+Infravision:0
+Hit dice:11
+Experience penalty:90%
+Score multiplier:70%
+
+Resistances, abilities and traits:
+  immunity to holy
+  weak to dark (+33%)
+  weak to hell (+33%)
+  weak to force (+33%, except for the Martial-artist class)
+  weak to hellfire (+33%)
+  see invisible
+  sustain intelligence
+  word of recall (5)
+  resist confusion (10)
+  warning (20)
+  summon a pet (25)
+  reduce spell difficulty (30)
+  resist time and space (40)
+Realm aptitude:
+  8/8/8/8 - 9/2/9/2 - 4/0/0/4
+Other:
+  MP recovers twice as fast
+  cannot eat some foods
+  cannot drink a Potion of Life
+
+Keine: "The pure and noble folk who dwell on the moon, so I hear.
+Sharp-witted indeed, but plainly contemptuous of earth-dwellers and rather
+unpleasant company.
+Lunarians detest impurity.
+Not only dark, hell and hellfire but the energy of life itself seems impure
+to them, and these attacks do them heavy damage."
+
+
+***** <Half-Ghost>
+--- Half-Ghost ---
+  Str:-1  Int:1  Wis:1  Dex:0  Con:-1  Chr:-1
+  Dis:2  Dev:5  Sav:3  Stl:3  Src:2
+  Melee:-5  Shoot:-5
+Infravision:0
+Hit dice:9
+Experience penalty:50%
+Score multiplier:90%
+
+Resistances, abilities and traits:
+  weak to holy (+33%)
+  resist hell
+  slow digestion
+  see invisible (20)
+  resist cold (10)
+
+
+Realm aptitude:
+  5/5/5/5 - 5/3/3/3 - 7/5/8/5
+Other:
+  none
+
+Keine: "Youmu Konpaku, who comes to the village from the netherworld on
+errands, is of this race.
+She looks like an ordinary human, but look closely and something like a
+will-o'-the-wisp drifts beside her -- that too is part of the body.
+A cross between human and ghost... or rather, a family constitution passed
+down the generations.
+Being literally half dead, they resist attacks of the hell element.
+Watching Youmu you would never believe it, but they suit Witchcraft and
+stealth as well.
+They are long-lived, so growing takes rather longer."
+
+
+***** <Haniwa>
+--- Haniwa ---
+  Str:1  Int:-3  Wis:-2  Dex:-2  Con:1  Chr:-1
+  Dis:-5  Dev:-3  Sav:50  Stl:2  Src:-3
+  Melee:5  Shoot:5
+Infravision:0
+Hit dice:10
+Experience penalty:50%
+Score multiplier:70%
+
+Resistances, abilities and traits:
+  weak to shards (+25%)
+  weak to sound (+25%)
+  immunity to hell
+  resist fire
+  resist poison
+  free action
+  regeneration
+  see invisible (20)
+
+Realm aptitude:
+  3/3/3/3 - 3/3/3/3 - 3/3/3/3
+Other:
+  cannot be cut or stunned, but can be damaged instead
+  cannot be petrified
+  never grows hungry and never grows full
+  being drained does not heal the enemy
+  nullifies every mind attack
+  nullifies the melee attacks of ghostly (symbol G) monsters
+
+Keine: "Human-sized haniwa that have lately come welling up out of hell, for
+reasons unknown.
+They vary in workmanship, from the familiar clay figure to one that looks no
+different from a human.
+These haniwa are said to have souls but no spirit-body, and so they nullify
+most attacks by ghostly monsters.
+Being golem-like, they are strong against poison and paralysis too.
+But they are hollow, so a strong shock cracks them.
+A crack mends after a while, but until it does you are in no state to
+fight."
+
+
+***** <Animal-Ghost>
+--- Animal-Ghost ---
+  Str:1  Int:-1  Wis:-2  Dex:2  Con:2  Chr:-3
+  Dis:-5  Dev:-3  Sav:5  Stl:3  Src:0
+  Melee:10  Shoot:-5
+Infravision:12
+Hit dice:11
+Experience penalty:60%
+Score multiplier:70%
+
+Resistances, abilities and traits:
+  weak to holy (+66%)
+  weak to light (+50%)
+  absorbs the hell element
+  regeneration
+  levitation
+  free action
+  see invisible
+  resist poison
+  resist cold
+  warning (30)
+
+Realm aptitude:
+  3/3/3/3 - 1/0/1/3 - 8/7/8/6
+Other:
+  the faction you belong to is decided at random when the game begins, and it
+  decides which racial powers you learn
+  speed +level/15
+  gains almost no nourishment from ordinary food; draws vigour from killing
+  living creatures or undead
+  cannot be cut
+  a vampiric blow against you does not heal the enemy
+
+Keine: "Most animal ghosts are the useless spirits of small beasts, but the
+ones described here are the vicious sort that fight tooth and claw in the
+animal realm at the bottom of the earth.
+Nearly every one belongs to some gang; lone wolves are rare.
+In ability they are like a warbeast given the resistances and weaknesses of
+the undead -- quite strong.
+Ghosts though they are, they are poor at passing through walls."
+
+
+***** <Zashikiwarashi>
+--- Zashiki-warashi ---
+  Str:-2  Int:2  Wis:1  Dex:0  Con:-3  Chr:5
+  Dis:16  Dev:6  Sav:6  Stl:5  Src:10
+  Melee:-30  Shoot:-10
+Infravision:0
+Hit dice:7
+Experience penalty:10%
+Score multiplier:80%
+
+Resistances, abilities and traits:
+  weak to holy (+33%)
+  warning
+  ESP of humans (30)
+
+
+Realm aptitude:
+  5/9/6/5 - 6/6/4/5 - 4/5/5/3
+Other:
+  must wear one special object as a "portable house", apart from ordinary
+  equipment
+  on finding something that will serve as a new house, a racial power moves
+  you into it
+  the kind of portable house changes part of your stats and racial powers
+
+Keine: "A zashiki-warashi is a rare youkai that settles in a human house,
+but lately some have begun to walk abroad.
+By possessing an object they regard as a house and carrying it about as a
+portable house, it seems, they can leave the village.
+Even youkai make progress, it appears.
+If the object possessed has a history, they sometimes gain new abilities and
+powers to match.
+A zashiki-warashi is careful and observant, so its searching and stealth are
+very high.
+But its build is that of a child, as the name says, so it is quite unsuited
+to rough work."
+
+
+
+***** <TheClasses>
+=== The classes ===
+
+Keine: "Next, the ordinary classes in detail.
+A skill is written as 12(8) and the like, meaning the initial value is 12
+and it rises by 8 for every 10 levels.
+For magic and skill aptitudes, A is the highest.
+The lower the pet cost factor, the more powerful pets you can keep.
+
+A class marked "(dedicated caster)" has some of its magic strengthened and
+can also use the "barrier guard" ability."
+
+
+***** <Warrior>
+--- Warrior ---
+  Str:4  Int:-2  Wis:-2  Dex:2  Con:2  Chr:-1
+  Dis:25(9)  Dev:18(7)  Sav:31(10)  Stl:1(0)  Src:14(0)
+  Melee:70(30)  Shoot:55(30)
+Hit dice:+9
+Experience penalty:0
+Score multiplier:100%
+Base maximum blows:6
+MP:E
+Pet cost factor:60
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts B  Shield A  Riding C  TwoWeapons A  Throwing B
+  Dagger B  LongSword A  Katana B  Hafted A  Staff A
+  Axe A  Spear A  Polearm A  Bow B  Crossbow B
+  Gun D
+
+Class abilities:
+ none
+
+Resistances and so on:
+  resist fear (30)
+  regeneration (45)
+
+Other:
+  +1 melee blow at level 40
+
+Keine: "The Warrior is the most basic class, and the very type of the melee
+classes.
+A specialist with weapons, hard to knock down and quick to grow, but able to
+do almost nothing except fight hand to hand.
+Strong early on and plain about what to do, so a newcomer's class.
+From the middle depths, though, the want of supporting means makes fights
+hard.
+If you are used to the game and aiming at your first win, another class may
+be easier."
+
+
+
+***** <Mage>
+--- Mage ---
+  Str:-3  Int:3  Wis:1  Dex:0  Con:-2  Chr:1
+  Dis:30(12)  Dev:40(15)  Sav:40(13)  Stl:3(0)  Src:21(3)
+  Melee:34(6)  Shoot:20(7)
+Hit dice:+0
+Experience penalty:30%
+Score multiplier:85%
+Base maximum blows:3
+MP:B
+Pet cost factor:30
+
+Realm aptitude:
+  learns two realms
+  every realm B
+  (dedicated caster)
+
+Skill aptitude:
+  MartialArts E  Shield E  Riding E  TwoWeapons E  Throwing C
+  Dagger C  LongSword D  Katana E  Hafted D  Staff C
+  Axe E  Spear E  Polearm E  Bow E  Crossbow E
+  Gun D
+
+Class abilities:
+ eat magic (25, absorb charges from a device to restore MP)
+
+Resistances and so on:
+  none
+
+Other:
+  some spell and magic device rolls are slightly in your favour
+
+Keine: "The most basic casting class. Its class name changes with the realm
+you choose first.
+It learns two realms and improves quickly.
+It is good with magic devices as well as spells, and at higher levels gains
+an ability that restores MP.
+But it is hopeless in melee. Keep an eye on your MP at all times.
+
+A caster has low HP, so an attack you do not resist kills you quickly.
+And confusion or blindness stops you reading a spellbook, leaving you able
+to do nothing at all.
+You attack with spells, of course, but a spell whose element suits the enemy
+badly does almost nothing.
+Against a strong enemy you may cast until your MP is gone without finishing
+it.
+So a caster must choose its fights and plan more carefully than other
+classes.
+Without a fair knowledge of the basic elements and of the dangerous monsters
+it is hard to fight through as a caster.
+Once the powerful spells come, from the middle depths, your options widen at
+a stroke."
+
+
+
+***** <Priest>
+--- Priest / Shrine Maiden ---
+  Str:0  Int:1  Wis:3  Dex:-1  Con:0  Chr:2
+  Dis:25(7)  Dev:35(11)  Sav:50(15)  Stl:2(0)  Src:18(1)
+  Melee:40(13)  Shoot:40(12)
+Hit dice:+4
+Experience penalty:65%
+Score multiplier:80%
+Base maximum blows:5
+MP:B
+Pet cost factor:40
+
+
+Realm aptitude:
+  learns two realms
+  Life/Punish/Darkness/Necromancy B   Mystic/Nature/Transform/Chaos C
+  (cannot learn a realm from a great realm other than the first realm's)
+  (dedicated caster)
+
+Skill aptitude:
+  MartialArts C  Shield D  Riding E  TwoWeapons E  Throwing D
+  Dagger C  LongSword D  Katana C  Hafted B  Staff B
+  Axe E  Spear D  Polearm D  Bow C  Crossbow E
+  Gun E
+
+Class abilities:
+ offering (1, give an item to the god for experience)
+  bless (30, lay the god's blessing on a weapon; unusable if you learned
+  Witchcraft)
+
+Resistances and so on:
+  resist fear (30)
+  resist holy (40, only if you have learned Sorcery)
+  resist hell (40, only if you have learned Witchcraft)
+ resist insanity (45)
+
+Other:
+  some spell and magic device rolls are slightly in your favour
+  wielding an unsuitable weapon penalises your damage and your spell success
+  a large dice bonus while wielding the weapon "Great Haraegushi"
+  a large dice bonus when throwing the weapon "Needle"
+  as a shrine maiden (female), the armour "Miko Robes" gives a bonus to your
+  abilities
+
+Keine: "A priest or shrine maiden works magic as a gift of faith in a god.
+So they can only use the great realm that matches the god they believe in.
+Whether you learn Sorcery or Witchcraft changes which weapons are considered
+suitable and which offerings are welcome.
+With Sorcery, blessed things are welcome and edged weapons and cursed things
+are not.
+With Witchcraft it is the other way round: blessed things are unwelcome.
+Either god seems particularly pleased by an offering of liquor.
+
+A class that fights tolerably well hand to hand and casts besides.
+Such a class is generally called a dual class, or a hybrid class.
+A dual class often struggles a little early on:
+it needs many parameters, grows slowly, and wants a decisive blow in a fight.
+Early on, treating magic purely as support and concentrating on your body is
+one way.
+Reach the late game and they are quite powerful."
+
+
+
+***** <Explorer>
+--- Explorer ---
+  Str:1  Int:1  Wis:-2  Dex:2  Con:1  Chr:0
+  Dis:45(15)  Dev:37(12)  Sav:36(10)  Stl:4(1)  Src:40(7)
+  Melee:48(16)  Shoot:43(18)
+Hit dice:+4
+Experience penalty:20%
+Score multiplier:85%
+Base maximum blows:5
+MP:C
+Pet cost factor:55
+
+Realm aptitude:
+  learns one realm
+  every realm E
+
+Skill aptitude:
+  MartialArts C  Shield D  Riding D  TwoWeapons B  Throwing B
+  Dagger A  LongSword C  Katana C  Hafted D  Staff D
+  Axe D  Spear D  Polearm E  Bow D  Crossbow B
+  Gun C
+
+Class abilities:
+  detect traps (10)
+  spring trap (15, set off a detected trap at a distance; it can catch
+  monsters)
+  hit and away (20, strike an adjacent enemy and teleport at once; it can
+  fail)
+  identify (30)
+  probing (40)
+
+Resistances and so on:
+  see invisible (30)
+  mighty throw (40)
+
+Other:
+  +1 blow while wielding a dagger
+
+Keine: "A handy class with all sorts of useful abilities.
+Strong at exploring a dungeon, but rather short of the force to bring down a
+formidable enemy.
+Fight carefully, making full use of throwing, magic devices and hit-and-away.
+It can cast after a fashion, but learns very slowly, and some powerful
+spells it cannot learn at all."
+
+
+
+***** <Ranger>
+--- Ranger ---
+  Str:2  Int:0  Wis:-1  Dex:3  Con:1  Chr:-1
+  Dis:30(10)  Dev:23(9)  Sav:36(10)  Stl:3(2)  Src:35(5)
+  Melee:60(21)  Shoot:72(32)
+Hit dice:+5
+Experience penalty:30%
+Score multiplier:70%
+Base maximum blows:5
+MP:C
+Pet cost factor:40
+
+
+Realm aptitude:
+  learns one realm
+  Nature/Transform C
+
+Skill aptitude:
+  MartialArts C  Shield D  Riding B  TwoWeapons C  Throwing B
+  Dagger A  LongSword B  Katana D  Hafted C  Staff C
+  Axe A  Spear C  Polearm C  Bow A  Crossbow C
+  Gun C
+
+Class abilities:
+  quick swap (10, change equipment quickly)
+  probing (25)
+
+Resistances and so on:
+  free action (20)
+  ESP of animals (30)
+  resist poison (40)
+
+Other:
+  is not slowed when passing through forest terrain
+
+Keine: "A powerful dual class, good at a wide range of fighting skills.
+Good at melee and at shooting, and able to ride besides, so it fights
+steadily from the beginning of the game to the end.
+Its realms are limited, but it casts them tolerably well and wants for
+neither support nor detection.
+Only with magic devices is it a little poor."
+
+
+
+***** <Paladin>
+--- Paladin ---
+  Str:1  Int:-2  Wis:2  Dex:-1  Con:2  Chr:3
+  Dis:16(7)  Dev:20(10)  Sav:37(14)  Stl:1(0)  Src:18(2)
+  Melee:68(24)  Shoot:40(15)
+Hit dice:+8
+Experience penalty:45%
+Score multiplier:75%
+Base maximum blows:5
+MP:C
+Pet cost factor:40
+
+
+Realm aptitude:
+  none
+
+Skill aptitude:
+  MartialArts D  Shield A  Riding B  TwoWeapons C  Throwing D
+  Dagger C  LongSword A  Katana B  Hafted C  Staff C
+  Axe C  Spear A  Polearm B  Bow D  Crossbow D
+  Gun E
+
+Class abilities:
+  learns several abilities, chiefly defensive ones
+
+Resistances and so on:
+  resist fear (20)
+  resist holy (40)
+
+Other:
+  a dice bonus while wielding a blessed weapon
+  a penalty to damage while wielding a cursed weapon
+  a pet of the forces of chaos costs ten times as much
+
+Keine: "A class in the spirit of the paladin, or the guardian.
+High constitution, fine in melee, good at riding, and able to use barriers
+and healing.
+Taking a monster of the forces of chaos as a pet is hard, however, so its
+choice of mounts is rather narrow.
+Its hands are not deft either, and it is poor at disarming and with magic
+devices."
+
+
+
+***** <Teacher>
+--- Teacher ---
+  Str:0  Int:2  Wis:0  Dex:1  Con:0  Chr:1
+  Dis:30(9)  Dev:35(10)  Sav:36(10)  Stl:2(0)  Src:20(1)
+  Melee:45(15)  Shoot:45(15)
+Hit dice:+3
+Experience penalty:25%
+Score multiplier:80%
+Base maximum blows:5
+MP:B
+Pet cost factor:45
+
+
+Realm aptitude:
+  learns two realms
+  every realm C
+
+Skill aptitude:
+  MartialArts C  Shield C  Riding C  TwoWeapons C  Throwing C
+  Dagger C  LongSword C  Katana C  Hafted C  Staff C
+  Axe C  Spear C  Polearm C  Bow C  Crossbow C
+  Gun C
+
+Class abilities:
+  none
+
+Resistances and so on:
+  none
+
+Other:
+  every weapon proficiency starts rather high
+
+Keine: "A dual class that can do anything and has little character.
+Its skills have little room to grow, so it is hard to know what to do with
+it.
+Change how you fight to suit whatever your exploring turns up."
+
+
+
+***** <Maid>
+--- Butler / Maid ---
+  Str:0  Int:1  Wis:1  Dex:1  Con:1  Chr:1
+  Dis:40(12)  Dev:30(12)  Sav:36(12)  Stl:3(0)  Src:25(3)
+  Melee:63(22)  Shoot:50(18)
+Hit dice:+3
+Experience penalty:25%
+Score multiplier:85%
+Base maximum blows:5
+MP:C
+Pet cost factor:50
+
+Realm aptitude:
+  learns one realm
+  every realm D
+
+Skill aptitude:
+  MartialArts C  Shield B  Riding E  TwoWeapons B  Throwing B
+  Dagger B  LongSword B  Katana B  Hafted B  Staff B
+  Axe B  Spear B  Polearm B  Bow D  Crossbow D
+  Gun D
+
+Class abilities:
+  learns a variety of useful non-combat abilities
+
+Resistances and so on:
+  sustain dexterity (25)
+  sustain constitution (25)
+  resist fear (40)
+
+Other:
+  on gaining a level, receives a reward or a punishment from the master
+  for body armour, a butler can wear only a suit and a maid only a maid's
+  dress
+  is not mutated by the chaos patron Zom
+
+Keine: "A dual class good in melee, filling out its support and exploring
+with spells and abilities.
+Powerful for how light its penalties are, but somewhat unsteady.
+Its body armour is limited, which makes resistances hard to fill, and for a
+mainly melee class its armour class is hard to build and its HP grows a
+little slowly.
+With very bad luck an unreasonable punishment from the master may put you in
+real danger.
+With good luck a powerful reward from the master carries your exploring
+along nicely."
+
+
+
+***** <Martial-artist>
+--- Martial-artist ---
+  Str:2  Int:-2  Wis:1  Dex:3  Con:1  Chr:1
+  Dis:20(10)  Dev:18(7)  Sav:26(14)  Stl:2(1)  Src:22(3)
+  Melee:55(28)  Shoot:30(12)
+Hit dice:+4
+
+Experience penalty:20%
+Score multiplier:80%
+Base maximum blows:5
+MP:E
+Pet cost factor:80
+
+Realm aptitude:
+  none
+
+Skill aptitude:
+  MartialArts A  Shield E  Riding E  TwoWeapons E  Throwing C
+  Dagger D  LongSword E  Katana E  Hafted E  Staff B
+  Axe E  Spear E  Polearm E  Bow E  Crossbow E
+  Gun E
+
+Class abilities:
+ gather your spirit (raise MP above its maximum)
+  and more than a dozen other abilities, chiefly using "force"; most need
+  bare hands
+
+Resistances and so on:
+  resist fear (20)
+  sustain strength (30)
+  levitation (40)
+
+Other:
+  martial blows increase readily
+  extra blows increase readily when a staff is held in both hands
+  low weight limits for equipment and carrying, and a rather heavy penalty
+  for carrying a shield
+  weapons of Force do not work
+  reduces the damage of a "force" attack by level * 3
+  with light equipment, a bonus of (level+5)/15 to speed
+  with light equipment, a bonus of (level+10)/2 to AC
+  avoids an enemy's breath, spells and other special attacks with a moderate
+  to low chance
+    (attacks by high-level or powerful enemies are harder to avoid)
+  while your gathered spirit holds MP above its maximum, your damage, AC and
+  ability power rise
+
+Keine: "A melee class, and especially good at martial arts.
+It grows steadily stronger with level and proficiency, without depending on
+finding a weapon.
+In attack it is a match for a Warrior with a powerful weapon.
+Punching and kicking is not all it can do: gathering its spirit gives it
+powerful ranged attacks and supporting abilities.
+
+Its defence, however, is a worry.
+A martial artist normally carries no weapon, and a shield or heavy armour
+slows it and cuts its damage.
+You must secure enough resistances and parameters within those limits.
+And for a melee class its HP rises surprisingly slowly; it takes a hit
+poorly.
+It can stun an enemy with a martial blow, and avoid an enemy's special
+attacks with an ability, but neither is certain, so be ready for some risk.
+Like the other melee classes, it is poor with magic devices."
+
+
+***** <Mindcrafter>
+--- Mindcrafter ---
+  Str:0  Int:-1  Wis:3  Dex:1  Con:0  Chr:2
+  Dis:30(12)  Dev:33(11)  Sav:38(12)  Stl:3(0)  Src:24(4)
+  Melee:50(18)  Shoot:45(18)
+Hit dice:+3
+
+Experience penalty:20%
+Score multiplier:60%
+Base maximum blows:5
+MP:B
+Pet cost factor:30
+
+Realm aptitude:
+  special (psychic)
+
+Skill aptitude:
+  MartialArts B  Shield D  Riding E  TwoWeapons E  Throwing B
+  Dagger B  LongSword B  Katana D  Hafted C  Staff C
+  Axe C  Spear C  Polearm C  Bow D  Crossbow D
+  Gun E
+
+Class abilities:
+  clear mind (15, restores some MP)
+
+Resistances and so on:
+  resist fear (10)
+  sustain wisdom (20)
+  levitation (25)
+  resist confusion (30)
+  telepathy (40)
+
+Other:
+  a powerful special attack appears in martial arts
+
+Keine: "A dual class, but it uses psychic techniques rather than spells.
+Psychic success is rolled against wisdom rather than intelligence, so you
+can use the powers without raising intelligence at all.
+New psychic techniques come at set levels, and they cover defence, support
+and detection nicely.
+Its body and its martial arts are stronger than Hengband's mindcrafter, so
+it is quite powerful.
+Its score is much lower for it -- a newcomer's class, as they say."
+
+
+
+***** <High-Mage>
+--- High-Mage ---
+  Str:-4  Int:4  Wis:2  Dex:-1  Con:-2  Chr:0
+  Dis:30(7)  Dev:40(18)  Sav:40(13)  Stl:3(0)  Src:18(2)
+  Melee:34(6)  Shoot:20(7)
+Hit dice:+0
+Experience penalty:10%
+Score multiplier:90%
+Base maximum blows:3
+MP:A
+Pet cost factor:25
+
+
+Realm aptitude:
+  learns one realm
+  every realm A
+  (dedicated caster)
+
+Skill aptitude:
+  MartialArts E  Shield E  Riding E  TwoWeapons E  Throwing D
+  Dagger C  LongSword D  Katana E  Hafted D  Staff C
+  Axe E  Spear E  Polearm E  Bow E  Crossbow E
+  Gun E
+
+Class abilities:
+ eat magic (25, absorb charges from a device to restore MP)
+
+Resistances and so on:
+  warning (20, only with the Foreseeing realm)
+  regeneration (20, only with the Transform or Life realms)
+
+Other:
+  some spell and magic device rolls are slightly in your favour
+  with the Element or Chaos realm, casting costs (level/2)% less time
+  with the Foreseeing realm, from level 35 you sense every enemy around you
+  with the Summon realm, every pet costs a third to keep
+  with the Enchant realm, from level 40 devices and activations never fail
+  with the Mystic realm, +1 blow from level 40
+  with the Life realm, from level 40 your natural HP recovery and reactive
+  healing rise enormously
+  with the Punish realm, from level 40 you can hold two god-summonings at once
+  with the Nature realm, natural creatures and certain sacred beasts cost a
+  third to keep
+  with the Transform realm, your parameters are higher in dragon form
+  with the Necromancy realm, undead pets cost a third to keep
+  with the Darkness realm, demon pets cost a third to keep
+  with the Arcane realm, you gain resistance to insanity at level 40
+
+Keine: "This casting class learns only one realm and can never change it.
+But in that realm it handles magic better than anyone, and its MP is large.
+The choice of realm matters. The standard play is to choose a realm with
+powerful attack spells and rely on items for detection and defence."
+
+
+
+***** <Civilian>
+--- Civilian ---
+  Str:0  Int:0  Wis:0  Dex:0  Con:0  Chr:0
+  Dis:25(12)  Dev:20(9)  Sav:30(9)  Stl:3(0)  Src:20(2)
+  Melee:43(12)  Shoot:25(10)
+Hit dice:+3
+Experience penalty:0%
+Score multiplier:150%
+Base maximum blows:4
+MP:D
+Pet cost factor:80
+
+Realm aptitude:
+  learns one realm
+  every realm E
+
+Skill aptitude:
+  MartialArts C  Shield C  Riding C  TwoWeapons C  Throwing C
+  Dagger C  LongSword C  Katana C  Hafted C  Staff C
+  Axe C  Spear C  Polearm C  Bow C  Crossbow C
+  Gun C
+
+Class abilities:
+  none
+
+Resistances and so on:
+  none
+
+Other:
+  twice the starting money
+  can change how the class name reads, once, at the start of the game
+
+Keine: "An ordinary resident of Gensokyo -- not only the humans of the
+village but the youkai and fairies who live outside it.
+It is not built to fight, and there is nothing to see in its melee, its
+magic or its abilities.
+Consider it when you want a high score, or when you care about role-playing."
+
+
+
+***** <Monk>
+--- Monk ---
+  Str:1  Int:0  Wis:2  Dex:1  Con:1  Chr:0
+  Dis:25(7)  Dev:30(10)  Sav:36(15)  Stl:2(0)  Src:24(2)
+  Melee:60(18)  Shoot:40(16)
+Hit dice:+4
+Experience penalty:45%
+Score multiplier:75%
+Base maximum blows:5
+MP:B
+Pet cost factor:55
+
+Realm aptitude:
+  learns one realm
+  Mystic/Life/Punish/Nature/Transform/Necromancy C
+
+Skill aptitude:
+  MartialArts A  Shield E  Riding D  TwoWeapons E  Throwing C
+  Dagger C  LongSword D  Katana B  Hafted D  Staff A
+  Axe D  Spear D  Polearm D  Bow E  Crossbow E
+  Gun E
+
+Class abilities:
+  clear mind (30, restores some MP)
+
+Resistances and so on:
+  resist fear (20)
+  resist confusion (30)
+  resist holy (45, only if you have learned Sorcery)
+
+Other:
+  nothing in particular
+
+Keine: "A dual class good at martial arts. It learns rather slowly but casts
+tolerably well.
+Martial blows are decided by level, dexterity and proficiency.
+Early on its martial damage grows rather slowly, so fighting with a weapon
+may be better.
+In the end it masters both powerful magic and melee."
+
+
+
+***** <Magic-Knight>
+--- Magic-Knight ---
+  Str:1  Int:2  Wis:0  Dex:1  Con:0  Chr:1
+  Dis:28(9)  Dev:40(12)  Sav:34(11)  Stl:2(0)  Src:17(1)
+  Melee:50(16)  Shoot:33(10)
+Hit dice:+4
+Experience penalty:45%
+Score multiplier:75%
+Base maximum blows:5
+MP:B
+Pet cost factor:50
+
+Realm aptitude:
+  learns one realm
+  Element/Foreseeing/Enchant/Summon/Darkness/Chaos C
+
+Skill aptitude:
+  MartialArts D  Shield C  Riding D  TwoWeapons B  Throwing D
+  Dagger B  LongSword A  Katana B  Hafted E  Staff E
+  Axe E  Spear E  Polearm E  Bow E  Crossbow E
+  Gun E
+
+Class abilities (Element):
+  magic sword of flame (8)
+  magic sword of ice (16)
+  magic sword of lightning (24)
+  magic sword of acid (32)
+Class abilities (Foreseeing):
+  magic sword of foreseeing (32)
+Class abilities (Summon):
+  magic sword of warping (20)
+Class abilities (Enchant):
+  magic sword of empowering (25)
+Class abilities (Darkness):
+  demon blade (25)
+Class abilities (Chaos):
+  magic sword of chaos (20)
+
+Resistances and so on:
+  see invisible (20)
+  regeneration (30)
+
+Other:
+  nothing in particular
+
+Keine: "A standard dual class, good with the sword. It learns rather slowly
+but casts tolerably well.
+It also learns the "magic sword" abilities, which lay a special element or
+effect on its weapon.
+It is poor with weapons other than swords, so securing strong equipment
+takes some luck.
+With a powerful weapon, and spells and abilities that suit the enemy, it is
+quite strong."
+
+
+
+***** <Bullet-Researcher>
+--- Bullet-Researcher ---
+  Str:-2  Int:3  Wis:1  Dex:1  Con:0  Chr:-2
+  Dis:24(10)  Dev:32(12)  Sav:33(11)  Stl:2(0)  Src:21(3)
+  Melee:40(10)  Shoot:20(8)
+Hit dice:+1
+Experience penalty:45
+Score multiplier:70%
+Base maximum blows:3
+MP:C
+Pet cost factor:30
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts D  Shield E  Riding D  TwoWeapons E  Throwing D
+  Dagger C  LongSword D  Katana E  Hafted D  Staff D
+  Axe E  Spear E  Polearm E  Bow E  Crossbow E
+  Gun D
+
+Class abilities:
+  ability (1, use an ability you have learned)
+  probe monsters (20)
+  gather your spirit (30)
+  concentrate mana (40)
+
+Resistances and so on:
+  see invisible (15)
+  resist blindness (30)
+
+Other:
+  can learn an ability by watching a monster use it
+
+Keine: "An eccentric mage who learns and uses the spells, breaths and other
+abilities of monsters.
+To learn an ability you must watch a monster use it.
+Watching a monster cast at another monster teaches you something, but to
+learn it fully you must take the spell yourself.
+
+The spells of late monsters are very powerful, but if you cannot survive
+learning them it is all for nothing.
+Think carefully whether to learn only the bare minimum or to court danger
+again and again for overwhelming power.
+
+It resembles Hengband's blue mage, but this one can also learn supporting
+spells such as teleport and healing."
+
+
+
+***** <Archer>
+--- Archer ---
+  Str:2  Int:-1  Wis:-2  Dex:3  Con:1  Chr:0
+  Dis:40(13)  Dev:24(10)  Sav:35(10)  Stl:3(0)  Src:30(3)
+  Melee:45(15)  Shoot:85(40)
+Hit dice:+4
+Experience penalty:10
+Score multiplier:85%
+Base maximum blows:4
+MP:E
+Pet cost factor:60
+
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts D  Shield E  Riding E  TwoWeapons E  Throwing B
+  Dagger C  LongSword C  Katana D  Hafted D  Staff D
+  Axe D  Spear D  Polearm D  Bow A  Crossbow A
+  Gun B
+
+Class abilities:
+ make arrows (5, make arrows on forest terrain)
+  make bolts (10, make crossbow bolts on forest terrain)
+
+Resistances and so on:
+  see invisible (20)
+  resist blindness (40)
+
+Other:
+ a bonus to shots
+  the arrows and bolts you fire break less easily
+  can take materials to the archers' guild to improve arrows
+
+
+Keine: "A warrior devoted to shooting.
+It is poor in melee, but its shooting often does more than a Warrior's melee.
+It can make arrows from wood, and lay an element on arrows with materials.
+Unlike Hengband, Gensoband has no slot reserved for a bow, so a shield or a
+melee weapon now gets in the way of shooting.
+A considerable weakening, and yet it is by no means weak.
+For this class, making use of the "magic quiver", which moves arrows to and
+from your base of operations, matters a great deal."
+
+
+
+***** <Magic-Eater>
+--- Magic-Eater ---
+  Str:-1  Int:3  Wis:1  Dex:1  Con:-2  Chr:0
+  Dis:30(10)  Dev:45(22)  Sav:36(10)  Stl:3(0)  Src:22(2)
+  Melee:45(12)  Shoot:35(10)
+Hit dice:+2
+Experience penalty:30
+Score multiplier:80%
+Base maximum blows:4
+MP:C
+Pet cost factor:50
+
+Realm aptitude:
+  cannot be used
+  (dedicated caster)
+
+
+Skill aptitude:
+  MartialArts E  Shield C  Riding E  TwoWeapons E  Throwing C
+  Dagger C  LongSword D  Katana D  Hafted D  Staff C
+  Axe D  Spear D  Polearm D  Bow D  Crossbow D
+  Gun C
+
+Class abilities:
+  absorb device (1, take in a staff, wand or rod)
+  recharge I (10, restore the charges of a staff, wand or rod)
+  recharge II (20, restore the charges of the devices you have taken in)
+  recharge III (30, shorten the recharge of an activated item)
+  empowered use (40, use an absorbed device with greater power and effect)
+
+Resistances and so on:
+  none
+
+Other:
+  returning to your base of operations restores the charges of absorbed
+  devices
+  a Potion of Restore Mana and the like restores about a third of the charges
+  of absorbed devices
+  absorbing a second or later copy of the same device adds fewer charges than
+  the first
+
+Keine: "A dual class that cannot learn spellbooks and fights with magic items
+instead.
+Its chief feature is the power to take staves, wands and rods into its body.
+An absorbed device is carried without touching your inventory and is used
+with the m command.
+Nearly every kind of device can be absorbed, up to 99 charges.
+It can also recharge equipment that is activated, such as a "Ring of Flames",
+after use.
+
+Since it carries almost as many devices as it likes, it identifies and
+detects freely.
+Exploring a dungeon becomes extremely comfortable.
+The Magic-Eater is about the only class that can dive deep with an empty
+pack.
+
+Its fighting strength early and in the middle game is unsteady, however.
+The early attack devices are weak, and firing them repeatedly soon empties
+them.
+Its own melee is not high either, and there are surprisingly few devices
+that support a fight.
+It needs many parameters and has no resistances of its own, so gathering
+equipment is hard.
+Without patient exploring for powerful equipment and devices, getting past
+the middle game is hard.
+Once the late game comes and its things are gathered, it grows quite strong."
+
+
+
+***** <Engineer>
+--- Engineer ---
+  Str:1  Int:3  Wis:-3  Dex:2  Con:0  Chr:0
+  Dis:40(20)  Dev:15(6)  Sav:20(8)  Stl:2(0)  Src:25(4)
+  Melee:47(16)  Shoot:55(24)
+Hit dice:+2
+Experience penalty:20
+Score multiplier:85%
+Base maximum blows:4
+MP:D
+Pet cost factor:80
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts C  Shield C  Riding E  TwoWeapons E  Throwing B
+  Dagger B  LongSword D  Katana D  Hafted B  Staff C
+  Axe D  Spear D  Polearm D  Bow D  Crossbow B
+  Gun B
+
+Class abilities:
+  can store a machine in the backpack, use it, remove it, read its
+  description or reload its ammunition
+  volley (30, attack with every shooting device in your backpack)
+
+Resistances and so on:
+  levitation
+  resist blindness (25)
+  resist shards (40)
+
+Other:
+  the backpack holds (2 + level/6) machines
+ a machine in the backpack can break down for a time in water or lightning;
+  the chance varies with the attack's power and the kind of machine
+  can build new machines at the engineers' guild (for a fee; what you can
+  build varies with level, intelligence and dexterity)
+  can obtain ammunition and energy packs at the engineers' guild (for a fee,
+  at a floating price)
+  never fails to activate the weapon 'Crimson'
+
+Keine: "Counted as a dual class, but a rather different sort of animal.
+It builds machines in the workshop of the town's engineers' guild, stores
+them in its backpack and fights with them.
+Machine attacks are very powerful, and it can build machines with all sorts
+of fine functions besides attacking.
+
+A powerful class, with several drawbacks of course.
+Its magic device skill and magic defence are among the worst;
+lightning or water sometimes breaks a machine;
+and above all, buying machines and ammunition costs a great deal of money.
+Against weaker enemies you must save your ammunition and make do with a
+crossbow or a gun."
+
+
+
+***** <Librarian>
+--- Librarian ---
+  Str:1  Int:2  Wis:-1  Dex:1  Con:1  Chr:0
+  Dis:20(7)  Dev:34(11)  Sav:34(11)  Stl:3(0)  Src:16(2)
+  Melee:55(17)  Shoot:25(11)
+Hit dice:+4
+Experience penalty:30%
+Score multiplier:75%
+Base maximum blows:5
+MP:B
+Pet cost factor:60
+
+Realm aptitude:
+  has learned every realm (only up to the second book; the Arcane realm
+  cannot be used)
+
+Skill aptitude:
+  MartialArts D  Shield C  Riding D  TwoWeapons D  Throwing C
+  Dagger B  LongSword B  Katana C  Hafted B  Staff D
+  Axe D  Spear E  Polearm E  Bow D  Crossbow C
+  Gun D
+
+Class abilities:
+  fast casting (40, cast quickly at 30% more MP)
+
+Resistances and so on:
+  nothing in particular
+
+Other:
+  good at haggling over spellbooks (counts as +10 charisma when buying and
+  selling)
+
+Keine: "A special dual class.
+It casts without learning spells, as long as its level suffices and it
+carries the book.
+But it can only use the elementary spells of the first two books, and the
+levels at which it can cast come quite late.
+It has plenty of detection and support, so the early game is easy; late on,
+neither its magic nor its melee is decisive and it may struggle."
+
+
+
+***** <Samurai>
+--- Samurai ---
+  Str:3  Int:-2  Wis:1  Dex:2  Con:1  Chr:0
+  Dis:25(12)  Dev:18(7)  Sav:32(10)  Stl:2(0)  Src:16(1)
+  Melee:70(23)  Shoot:40(18)
+Hit dice:+6
+Experience penalty:30
+Score multiplier:90%
+Base maximum blows:5
+MP:E
+Pet cost factor:60
+
+Realm aptitude:
+  special (swordsmanship)
+
+Skill aptitude:
+  MartialArts D  Shield E  Riding C  TwoWeapons A  Throwing B
+  Dagger B  LongSword A  Katana A  Hafted D  Staff B
+  Axe D  Spear C  Polearm C  Bow B  Crossbow D
+  Gun E
+
+Class abilities:
+  gather your spirit (raises MP far above its maximum for a time)
+  stance (25, take a special stance that changes your resistances and status)
+
+Resistances and so on:
+  resist fear (30)
+
+Other:
+  while wielding a katana, the weapon dice gain +1 at level 25 and +2 at 45
+  weapons of Force do not work
+
+Keine: "A melee class, and especially good with the katana.
+Swordsmanship means techniques that use a weapon; obtain and read a book of
+swordsmanship and you learn what your level allows.
+Many of them raise the weapon's dice or attack with an element attached.
+Unlike Hengband proper, some techniques can be used only with a weapon of
+the matching class.
+It fights poorly unless you have some grasp of the enemy's resistances, but
+a technique that suits the enemy is extremely powerful.
+Like the Warrior, it is not much good at anything but fighting."
+
+***** <Soldier>
+--- Soldier ---
+  Str:2  Int:1  Wis:-1  Dex:2  Con:2  Chr:-3
+  Dis:32(14)  Dev:20(8)  Sav:20(8)  Stl:4(0)  Src:28(4)
+  Melee:55(20)  Shoot:60(25)
+Hit dice:+4
+Experience penalty:50
+Score multiplier:80%
+Base maximum blows:5
+MP:D
+Pet cost factor:120
+
+Realm aptitude:
+  none
+
+Skill aptitude:
+  MartialArts B  Shield E  Riding E  TwoWeapons B  Throwing B
+  Dagger A  LongSword C  Katana C  Hafted C  Staff D
+  Axe D  Spear E  Polearm E  Bow D  Crossbow B
+  Gun A
+
+Class abilities:
+ learn skills (gain skill points as you level, and spend them on abilities
+  and parameter increases)
+
+Resistances and so on:
+ resist fire (20)
+  resist fear (30)
+  warning (40)
+
+Other:
+a bonus of (level * 0.02) to crossbow shooting speed
+
+Keine: "A modern soldier armed with a gun and a knife.
+By choosing which skills to learn, it can become good at melee, at fighting
+at range, or at demolition."
+
+
+***** <Chemist>
+--- Chemist ---
+  Str:-1  Int:4  Wis:0  Dex:1  Con:0  Chr:2
+  Dis:37(11)  Dev:32(12)  Sav:32(10)  Stl:4(0)  Src:36(5)
+  Melee:47(18)  Shoot:52(20)
+Hit dice:+3
+Experience penalty:30
+Score multiplier:100%
+Base maximum blows:4
+MP:C
+Pet cost factor:60
+
+Realm aptitude:
+  special (compounding)
+
+Skill aptitude:
+  MartialArts C  Shield D  Riding E  TwoWeapons E  Throwing B
+  Dagger B  LongSword D  Katana D  Hafted C  Staff C
+  Axe D  Spear D  Polearm E  Bow D  Crossbow C
+  Gun D
+
+Class abilities:
+  medicine chest (uses the dedicated item area "medicine chest")
+  first aid (5, restore a little HP and cure poison and the like)
+  analyse (10, identify mushrooms and potions)
+  create food (16, obtain food)
+  survey plants (24, roughly sense the mushrooms and materials on the floor)
+
+Resistances and so on:
+  free action (15)
+  resist poison (30)
+
+Other:
+  the browse command shows the item "secret book of compounding"
+  can rent a town dispensary to combine potions and materials into new
+  potions
+  the chance of success varies with level, intelligence, the place, whether
+  you hold the matching secret book, and whether you have made it before
+  drinks a potion a little faster
+  from level 40 the potions you carry are no longer shattered by cold and
+  the like
+
+Keine: "A special class: poor at fighting, but able to make potions.
+What it makes is powerful -- strong acid, explosives, transformation
+potions.
+But potions are precious and cannot be spent without a plan.
+
+Gathering ingredients means exploring dangerous dungeons.
+That takes searching, stealth and, of course, a minimum of fighting
+strength.
+It also demands knowing what materials lie where, and which element works
+on which enemy.
+Prepare carefully and you may kill even a formidable enemy with ease.
+
+A secret book of compounding gives recipes, but they are only examples.
+Try all sorts of combinations."
+
+***** <Cavalry>
+--- Cavalry ---
+  Str:2  Int:-2  Wis:-2  Dex:2  Con:2  Chr:0
+  Dis:20(10)  Dev:18(7)  Sav:32(10)  Stl:1(0)  Src:16(0)
+  Melee:60(22)  Shoot:66(26)
+Hit dice:+5
+Experience penalty:20
+Score multiplier:90%
+Base maximum blows:5
+MP:E
+Pet cost factor:35
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts E  Shield B  Riding A  TwoWeapons C  Throwing D
+  Dagger D  LongSword B  Katana C  Hafted B  Staff B
+  Axe C  Spear A  Polearm A  Bow B  Crossbow C
+  Gun D
+
+Class abilities:
+  break a wild mount (10, leap onto a rideable hostile monster and tame it by
+  force)
+
+Resistances and so on:
+  none
+
+Other:
+  begins the game with a horse
+  while mounted, a weapon unsuited to riding carries little penalty
+  the monster you ride costs less to keep as a pet
+
+Keine: "A melee class, and especially good at riding.
+See the chapter on riding for the details; riding is a powerful skill.
+From the middle depths in particular, fighting and gathering equipment feel
+far easier than for an ordinary Warrior.
+It shoots well too, so with a bow it rarely gets into trouble even deep down.
+Outside fighting, though, it is poor at the supporting work."
+
+
+
+***** <Tsukumo-master>
+--- Tsukumo-master ---
+  Str:1  Int:2  Wis:-1  Dex:1  Con:1  Chr:-2
+  Dis:40(13)  Dev:36(14)  Sav:35(12)  Stl:2(0)  Src:24(3)
+  Melee:50(18)  Shoot:45(15)
+Hit dice:+4
+Experience penalty:35
+Score multiplier:80%
+Base maximum blows:4
+MP:C
+Pet cost factor:25
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts D  Shield D  Riding D  TwoWeapons D  Throwing A
+  Dagger B  LongSword C  Katana C  Hafted B  Staff C
+  Axe B  Spear C  Polearm C  Bow E  Crossbow D
+  Gun E
+
+Class abilities:
+  make a tsukumo (3, set a weapon fighting as a pet monster)
+  detect objects and traps (9)
+  destroy traps (15)
+  appraise (24)
+  recall order (30, gather in your tsukumo pets)
+
+Resistances and so on:
+  see invisible (10)
+
+Other:
+  tsukumo at one time: 1 + (level-5)/10
+  while fighting with a weapon that is not a fixed artifact, the weapon can
+  turn youkai and gain a new power up to twice
+  can take off cursed equipment without removing the curse (can fail)
+  you gain the experience and items from your tsukumo's attacks
+
+Keine: "An extremely unusual class that turns weapons into youkai and sets
+them fighting.
+A weapon made tsukumo counts as a pet, and its abilities vary with the
+strength of the original weapon.
+What is more, the tsukumo's attacks count as your own.
+You gain experience and items from its attacks, and it can kill unique
+monsters.
+Get a powerful weapon and simply turning it loose piles up experience.
+The weapon you wield can also turn tsukumo, become a youkai weapon and grow
+stronger.
+What it gains is hard to predict, but it becomes quite a powerful weapon.
+
+It is a specialist with tools besides, so its disarming and magic device
+skills are high.
+Its own fighting strength, however, can hardly be called high.
+Exploring a dungeon with it demands a strategy of its own."
+
+
+
+***** <Secondhand-dealer>
+--- Secondhand-dealer ---
+  Str:1  Int:2  Wis:0  Dex:1  Con:0  Chr:-1
+  Dis:40(12)  Dev:30(12)  Sav:30(10)  Stl:3(0)  Src:35(6)
+  Melee:48(17)  Shoot:45(18)
+Hit dice:+4
+Experience penalty:35
+Score multiplier:80%
+Base maximum blows:5
+MP:D
+Pet cost factor:70
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts E  Shield C  Riding D  TwoWeapons C  Throwing C
+  Dagger C  LongSword C  Katana C  Hafted C  Staff C
+  Axe C  Spear C  Polearm C  Bow C  Crossbow B
+  Gun C
+
+Class abilities:
+  appraise (5, identify)
+  sense a bargain (20, sense whether the floor holds a fine item or a curio)
+  true appraisal (40, identify every item lying around you)
+
+Resistances and so on:
+  none
+
+Other:
+  has a tool box apart from the pack and the equipment, holding up to five
+  kinds of item
+  at the town guild, can draw an ability (an essence) out of some equipment
+  and materials and add one to another piece of equipment
+  can carry 25% more weight
+  when trading, the price uses the higher of charisma and intelligence+5
+  the score rise from the "no fixed artifacts appear" option is rather lower
+
+Keine: "A melee class with the ability to improve arms and armour.
+It has no resistances of its own, but improving armour means it rarely
+struggles for them.
+It carries a great deal and identifies well, so exploring is comfortable.
+But it has no monster detection and no combat support at all, and its own
+fighting strength is not high.
+
+It resembles Hengband's weaponsmith, but this secondhand dealer is rather
+poorer in melee.
+And essences cannot be drawn inside a dungeon; you must go back to town each
+time.
+In exchange its magic device and appraisal skills are higher, and it can now
+handle essences such as vorpal, force and rapid fire.
+Against a formidable enemy, fighting with essence-laden arrows and a
+crossbow is no bad thing."
+
+
+
+***** <Jeweler>
+--- Jeweler ---
+  Str:-2  Int:2  Wis:0  Dex:2  Con:-2  Chr:2
+  Dis:30(10)  Dev:40(17)  Sav:36(12)  Stl:2(0)  Src:24(3)
+  Melee:40(15)  Shoot:30(10)
+Hit dice:+1
+Experience penalty:50
+Score multiplier:75%
+Base maximum blows:4
+MP:B
+Pet cost factor:45
+
+Realm aptitude:
+  learns one realm
+ every realm B
+
+Skill aptitude:
+  MartialArts E  Shield D  Riding E  TwoWeapons E  Throwing D
+  Dagger B  LongSword C  Katana D  Hafted C  Staff D
+  Axe D  Spear D  Polearm D  Bow D  Crossbow D
+  Gun E
+
+Class abilities:
+  eat magic (25, draw magic out of a gem to restore MP)
+
+Resistances and so on:
+  resist blindness (20)
+
+Other:
+ at the town guild, can draw an ability (an essence) out of ornaments and
+ materials and add one to another ornament
+  the score rise from the "no fixed artifacts appear" option is rather lower
+
+
+Keine: "A dual class leaning towards casting, with the ability to improve
+ornaments.
+The secondhand dealer's ornament-and-mage version, you might say.
+Essences can be drawn from rings, amulets, ribbons, light sources (except
+torches), materials and some curios.
+They can be added to melee weapons, rings, amulets, ribbons, head equipment
+and light sources (except torches).
+Essences cannot be drawn from arms and armour, so weapon brands and the like
+must come from materials and gems.
+The powerful brands such as vampiric and force will not come until late.
+Whether you choose a realm of attack spells or one of supporting spells
+changes your whole strategy."
+
+
+
+
+***** <Ninja>
+--- Ninja ---
+  Str:0  Int:1  Wis:0  Dex:3  Con:0  Chr:-2
+  Dis:45(15)  Dev:27(12)  Sav:27(10)  Stl:5(2)  Src:33(6)
+  Melee:55(24)  Shoot:63(18)
+Hit dice:+2
+Experience penalty:45
+Score multiplier:80%
+Base maximum blows:4
+MP:C
+Pet cost factor:90
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts A  Shield E  Riding E  TwoWeapons B  Throwing A
+  Dagger A  LongSword D  Katana C  Hafted D  Staff E
+  Axe E  Spear E  Polearm E  Bow C  Crossbow C
+  Gun E
+
+Class abilities:
+  learns ninjutsu, chiefly good for exploring and support
+
+Resistances and so on:
+  slow digestion
+  see invisible (10)
+  free action (15)
+  resist poison (20)
+  fast movement (20)
+  sustain dexterity (25)
+  resist fear (30)
+  mighty throw (35)
+  resist dark (40)
+  double resistance to poison (45)
+
+Other:
+ cannot use any shield, nor arms or armour above a certain weight
+ in a dark place you enter "super stealth" and enemies notice you poorly
+ a damage bonus when attacking a sleeping or fleeing enemy
+ attacking with martial arts or a dagger can kill outright, or land a blow
+  fiercer than a critical hit
+ can see around you even in the dark
+ speed +(level+15)/20
+ AC +(level/2)+5
+ no extra martial blow appears during a weapon attack except from a mutation
+ enemies that cast darkness cast light area instead
+ only half the to-hit and damage bonuses of armour and ornaments apply
+ a thrown weapon breaks less easily
+ the carrying limit is two thirds of an ordinary class's
+ a Staff or Scroll of Darkness does not blind you
+
+Keine: "A quite unusual melee class. As a rule it carries no light and
+fights in the dark.
+In the dark, enemies notice it poorly and it lands heavy damage by ambush.
+And fighting with martial arts or a dagger, it often strikes a vital spot
+for a fierce blow.
+That blow multiplies the weapon's dice and bonuses together several times
+over.
+With a dagger of large dice it does damage that seems almost against the
+rules.
+If no good weapon turns up, fight bare-handed.
+Bare hands are weak early on, but late in the game they may beat a poor
+weapon.
+
+It is good at throwing as well.
+Buy plenty of daggers and knives early on and you can kill most enemies
+without letting them near you.
+And a fine artifact good for throwing does fierce damage too.
+
+Its resistances are fine, but its armour restrictions are severe and its HP
+grows poorly.
+You will often have to explore with your defence unfinished, so search
+around you often and take only the fights you can certainly win."
+
+
+
+***** <Abilitycard-dealer>
+--- Abilitycard-dealer ---
+  Str:-1  Int:1  Wis:0  Dex:1  Con:-1  Chr:3
+  Dis:30(10)  Dev:32(16)  Sav:30(10)  Stl:2(0)  Src:27(3)
+  Melee:48(16)  Shoot:30(10)
+Hit dice:+1
+Experience penalty:30
+Score multiplier:80%
+Base maximum blows:4
+MP:C
+Pet cost factor:75
+
+Realm aptitude:
+  learns one realm
+ every realm C
+
+Skill aptitude:
+  MartialArts D  Shield D  Riding E  TwoWeapons E  Throwing C
+  Dagger C  LongSword C  Katana D  Hafted C  Staff C
+  Axe D  Spear D  Polearm D  Bow D  Crossbow D
+  Gun C
+
+Class abilities:
+  learns abilities that move cards in and out of a card case
+  identify (20)
+  buy up cards (30)
+
+Resistances and so on:
+  none
+
+Other:
+  can buy in cards at the "card stall" and at gambling houses
+
+Keine: "A new sort of magic item called the "ability card" has lately come
+into circulation.
+Carry one and you can use a technique just like those of the famous people
+and youkai of Gensokyo.
+Some buy these cards up hoping to make a fortune. Those are the card dealers.
+The dealers buy their cards around the Moriya Shrine and False Tentana.
+They also buy directly from people and youkai who hold cards.
+
+A card dealer's own fighting, physical or magical, is nothing much, but
+armed with a great many ability cards it becomes remarkably strong.
+The price of cards climbs steeply day by day, however, so buying in a great
+many means running about raising money with literally no time to sleep."
+
+
+
+***** <Beekeeper>
+--- Beekeeper ---
+  Str:0  Int:2  Wis:-1  Dex:1  Con:0  Chr:1
+  Dis:30(10)  Dev:36(12)  Sav:30(10)  Stl:3(0)  Src:24(3)
+  Melee:48(18)  Shoot:40(12)
+Hit dice:+3
+Experience penalty:30
+Score multiplier:85%
+Base maximum blows:4
+MP:C
+Pet cost factor:40
+
+Realm aptitude:
+  learns one realm
+ every realm C
+
+Skill aptitude:
+  MartialArts D  Shield D  Riding D  TwoWeapons D  Throwing C
+  Dagger B  LongSword D  Katana D  Hafted D  Staff C
+  Axe B  Spear D  Polearm D  Bow D  Crossbow D
+  Gun E
+
+Class abilities:
+  learns abilities suited chiefly to exploring and resupplying
+
+Resistances and so on:
+  sustain constitution (20)
+  resist poison (30)
+
+Keine: "The Forest of Magic is home to bees changed by the forest's magic
+until they are half youkai.
+A beekeeper keeps them and gathers their honey.
+A beekeeper has abilities that work the honey into liquor and magical
+potions, and can order the bees to fight or to look for items.
+Fail to make yourself understood, though, and the bees may attack you.
+The higher your charisma, the less the bees rebel.
+Eating honey directly brings poison and lowered constitution instead of MP,
+but a beekeeper of some level gains resistance to that.
+
+Its own fighting strength is not high, and it needs many kinds of stat, so
+the early game is a struggle.
+Think carefully whether to fight with attack spells, leaning on its ample MP
+recovery, or to fight hand to hand with the bees in support."
+
+
+
+***** <Outsider>
+--- Outsider ---
+  Str:-3  Int:-3  Wis:-3  Dex:-3  Con:-3  Chr:-3
+  Dis:10(10)  Dev:10(10)  Sav:10(10)  Stl:1(1)  Src:10(1)
+  Melee:30(12)  Shoot:30(12)
+Hit dice:+1
+Experience penalty:30
+Score multiplier:300%
+Base maximum blows:3
+MP:E
+Pet cost factor:90
+
+Realm aptitude:
+  cannot be used
+
+Skill aptitude:
+  MartialArts D  Shield D  Riding D  TwoWeapons D  Throwing D
+  Dagger D  LongSword D  Katana D  Hafted D  Staff D
+  Axe D  Spear D  Polearm D  Bow D  Crossbow D
+  Gun D
+
+Class abilities:
+ none
+
+Resistances and so on:
+ none
+
+Other:
+ the starting race is fixed as Human
+ begins with no money
+ carries neither food nor torch, but carries a "smartphone"
+ can finish the game (retire) at any time by having the Hakurei Shrine send
+ you back to the outside world
+
+Keine: "A resident of the outside world, spirited away into Gensokyo.
+As you see, hopelessly powerless.
+I should like them to reach the shrine safely, but there is no end of them
+meddling with incidents without a care."
+
+
+
+***** <ThePersonalities>
+=== The natures ===
+
+Keine: "Next, the material on the natures.
+Some of them are odd things that can hardly be called a nature,
+but never mind that until you are used to the game."
+
+***** <Ordinary>
+--- Ordinary ---
+  Str:0  Int:0  Wis:0  Dex:0  Con:0  Chr:0
+  Dis:0  Dev:0  Sav:0  Stl:0  Src:0
+  Melee:0  Shoot:0
+Hit dice bonus:0
+Other:
+  none
+
+***** <Mighty>
+--- Mighty ---
+  Str:2  Int:-2  Wis:-1  Dex:0  Con:1  Chr:0
+  Dis:-5  Dev:-5  Sav:-3  Stl:-1  Src:-2
+  Melee:10  Shoot:0
+Hit dice bonus:1
+Other:
+  spell and similar failure rates rise by 1%
+
+***** <Shrewd>
+--- Shrewd ---
+  Str:-2  Int:2  Wis:1  Dex:0  Con:-1  Chr:0
+  Dis:3  Dev:8  Sav:2  Stl:0  Src:3
+  Melee:-8  Shoot:-5
+Hit dice bonus:-1
+Other:
+  spell and similar failure rates fall by 3%
+
+***** <Pious>
+--- Pious ---
+  Str:0  Int:-1  Wis:2  Dex:-1  Con:1  Chr:1
+  Dis:-5  Dev:2  Sav:6  Stl:-1  Src:0
+  Melee:-3  Shoot:-6
+Hit dice bonus:0
+Other:
+  none
+
+***** <Nimble>
+--- Nimble ---
+  Str:-1  Int:1  Wis:-1  Dex:2  Con:-1  Chr:-1
+  Dis:7  Dev:2  Sav:-1  Stl:1  Src:5
+  Melee:0  Shoot:10
+Hit dice bonus:0
+Other:
+  none
+
+***** <Fearless>
+--- Fearless ---
+  Str:2  Int:1  Wis:1  Dex:-1  Con:-1  Chr:0
+  Dis:-5  Dev:5  Sav:-2  Stl:0  Src:2
+  Melee:10  Shoot:10
+Hit dice bonus:-1
+Other:
+  none
+
+***** <Combat>
+--- Trigger-Happy ---
+  Str:0  Int:4  Wis:4  Dex:2  Con:-4  Chr:5
+  Dis:-10  Dev:10  Sav:-10  Stl:-3  Src:-5
+  Melee:5  Shoot:50
+Hit dice bonus:-3
+Other:
+  spell and similar failure rates fall by 5%
+  shooting speed +(level/50) shots
+  throwing takes 20% less time
+  shooting with an Engineer's machine takes 20% less time
+  a gun reloads a little faster
+
+***** <Elegant>
+--- Elegant ---
+  Str:-1  Int:1  Wis:0  Dex:1  Con:-1  Chr:3
+  Dis:3  Dev:3  Sav:0  Stl:-1  Src:3
+  Melee:-5  Shoot:5
+Hit dice bonus:0
+Other:
+ carrying limit -20%
+
+***** <Sexy>
+--- Cannon-Baller ---
+  Str:1  Int:1  Wis:1  Dex:1  Con:1  Chr:3
+  Dis:10  Dev:5  Sav:3  Stl:0  Src:2
+  Melee:10  Shoot:10
+Hit dice bonus:0
+Other:
+  always aggravating
+ when you end the game in *victory*, a score bonus according to the days
+  elapsed
+
+***** <Lucky>
+--- Lucky ---
+  Str:-2  Int:-2  Wis:-2  Dex:-2  Con:-2  Chr:2
+  Dis:10  Dev:7  Sav:3  Stl:2  Src:10
+  Melee:15  Shoot:15
+Hit dice bonus:0
+Other:
+  always carries the mutation "white aura of luck"
+   (item generation and the like are in your favour)
+
+***** <Patient>
+--- Patient ---
+  Str:-1  Int:-1  Wis:1  Dex:-2  Con:2  Chr:0
+  Dis:-5  Dev:-3  Sav:3  Stl:1  Src:0
+  Melee:-6  Shoot:-6
+Hit dice bonus:1
+Other:
+  spell and similar failure rates rise by 1%
+
+***** <Munchkin>
+--- Munchkin ---
+  Str:10  Int:10  Wis:10  Dex:10  Con:10  Chr:10
+  Dis:20  Dev:40  Sav:30  Stl:10  Src:40
+  Melee:80  Shoot:80
+Hit dice bonus:15
+Other:
+  resist blindness
+ resist confusion
+ carries a light source
+ speed of level/10 + 5
+ begins the game with $10,000,000
+  every terrain and item on the floor is already detected
+  item generation favours good things
+  an item you pick up is identified at once
+ your score becomes one hundredth
+
+***** <Berserk>
+--- Berserk ---
+  Str:5  Int:-5  Wis:-5  Dex:5  Con:5  Chr:-5
+  Dis:-50  Dev:-50  Sav:-50  Stl:-10  Src:-50
+  Melee:150  Shoot:0
+Hit dice bonus:10
+Other:
+ always berserk
+ a higher ceiling on strength and constitution
+ sustain Str/Dex/Con, regeneration, free action, resist fear,
+  immunity to insanity, immune to petrifaction
+ gains fast movement and resistance to stunning at high levels
+ never falls down however drunk
+ smashes doors open easily
+ bonuses to speed, melee and blows as you gain levels
+ always fails with scrolls, staves, wands, rods and activations (a few
+  classes are exceptions)
+ spell power rises, but the failure rate never falls below a floor, and a
+  failure makes the spell go off wrongly with a bad effect
+ can use "word of recall" as a racial power
+ cannot use the item cards of EXTRA mode
+ moving towards a pet or a friendly monster attacks it instead of pushing
+  past
+ a Mask of Terror is generated without ancient malice and the like
+ a melee blow pierces a globe of invulnerability half the time
+ caught by an enemy's *Destruction*, you are blown away only one time in
+  seven (you still take the damage)
+ your score is halved
+
+
+

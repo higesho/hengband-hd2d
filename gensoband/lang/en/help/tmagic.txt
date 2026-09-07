@@ -1,0 +1,299 @@
+=== Spells, class abilities and racial powers ===
+
+Keine: "Most classes learn "abilities".
+These are the various techniques you pick up as you master your class.
+Once you reach the required level you can use them with the 'J' command.
+
+Some races also learn "racial powers".
+These are the bodily traits you were born with, put to use.
+Once you reach the required level you can use them with the 'U' command.
+Polymorph magic and mutations can change which racial powers you have.
+
+And a few classes can learn "spells".
+You study them by reading an item called a spellbook, and cast what you have
+learned with the 'm' command.
+Some of you will think of Royal Flare or Master Spark when you hear the word
+"magic", but those are implemented as abilities belonging to the unique
+classes alone. A handful of classes, such as the Esper, use the 'm' command
+for their abilities as well.
+
+Take the Kappa monk, for example.
+The 'J' command gives an ability that restores MP through meditation,
+the 'U' command gives a racial power that stretches out an arm to attack,
+and the 'm' command casts the spells that have been learned.
+
+None of these can be used while you are confused.
+Spells cannot be cast while you are blind or without a light source.
+
+When you want to know what an ability, a racial power or a spell does, the
+'b' command shows a short description."
+
+
+***** <MagicUse>
+=== Learning and casting spells ===
+
+Keine: "Let me go into learning and casting spells a little further.
+Some of this came up during character creation, but let us go over it again.
+
+First -- obviously -- you cannot learn spells unless your class can cast.
+And even a casting class can only learn spells belonging to the "realms" it
+has chosen. Realms I shall explain shortly.
+
+Once you have a spellbook of your own realm, the 'G' command learns a spell
+from it. Spells you can learn -- where your level and aptitude suffice -- are
+shown in blue; choose one and you learn it.
+That is one spell added to your repertoire.
+
+Spells you have learned are cast with the 'm' command.
+The book that contains the spell must be to hand when you do.
+Normally you keep it in your pack, but you can cast from a book lying at your
+feet as well. Type 'm', choose the book, then choose a spell you have learned,
+and it is cast.
+
+Spells have a difficulty, however, and a hard spell can fail.
+The difficulty comes from the spell's base difficulty together with your
+aptitude, your proficiency in the spell, your level and your intelligence.
+There is equipment that lowers spell difficulty.
+Wearing gloves or gauntlets raises it, but arm equipment with a special
+enchantment -- free action, a dexterity bonus, a magic device bonus -- carries
+no such penalty. High dexterity also reduces the penalty from arm equipment.
+
+You also cannot cast without enough MP.
+The MP cost comes from the spell's base cost together with your aptitude and
+your proficiency in the spell.
+There is equipment that lowers the MP cost.
+Equipment heavy enough to slow you down raises the MP cost.
+High strength reduces that penalty.
+
+As I said, you cannot read a spellbook while confused, while blind, or with
+your light gone out."
+
+***** <MagicBlast>
+=== The blast radius of attack spells ===
+
+Keine: "When you read the description of an attack spell you meet words like
+"bolt", "ball" and "beam". Let me explain them.
+
+- Bolt
+  A spell that hurls a magical arrow or shot. Common among the lower spells.
+  It damages the first enemy it strikes and does not pass through.
+  It will also be turned back by an enemy that "reflects bolt spells".
+  Some spells fire a volley of bolts around the target.
+
+- Ball
+  A spell that bursts. Sometimes a projectile flies out before it bursts, but
+  that projectile passes through enemies and does not strike them.
+  Taking the point of the burst as 100%, the next grid takes 50%, the one
+  beyond it 33%, and so on -- the power falls off with distance from the
+  centre.
+
+- Beam
+  A laser, if you like. It passes through enemies and is never reflected.
+  Some spells fire a broad beam.
+
+- Rocket
+  Something between a bolt and a ball.
+  A projectile flies out, and where it strikes an enemy it bursts on the spot.
+  It is not reflected.
+
+- Curses and the like
+  You name one target in your line of sight and the effect falls on that enemy
+  alone. Think of it as a ball spell with a radius of zero.
+
+- Attacks on everything in sight
+  These strike everything in your line of sight. Mind the items on the floor.
+
+- Adjacent
+  After casting you choose a direction with the direction keys.
+  If a monster stands there, the effect falls on it.
+
+- Breath
+  Something between a beam and a ball.
+  It damages every target along the line of fire, and deals reduced damage to
+  those standing near the line as well."
+
+
+***** <Realm>
+=== The magic realms ===
+Keine: "Now then, let me explain the magic realms.
+Gensoband has fourteen of them.
+Most realms have four spellbooks, each holding eight spells.
+At character creation, a casting class chooses one or two of the fourteen.
+The first is called the first realm and the second the second realm, and the
+second realm is a little harder to learn.
+
+I said you can only learn spells from the realms you chose at the start; for
+a class that may choose two realms, however, the second realm can be changed
+at any time. Changing it makes you forget every spell of the old second realm.
+The number of times you may learn a spell is limited, so I do not recommend
+changing without a plan. Reading the rare item called a Scroll of Spell does
+raise the number of spells you may learn by one.
+
+There is an exception: a few classes such as Patchouli and the Librarian have
+already learned every spell. They need no study, but neither can they change
+realm.
+
+The fourteen realms are Element, Foreseeing, Enchant, Summon, Mystic, Life,
+Punish, Nature, Transform, Darkness, Necromancy, Chaos, Occult and Incident.
+Each belongs to one of the four great realms: Magic, Sorcery, Witchcraft and
+Arts.
+Element, Foreseeing, Enchant and Summon belong to Magic;
+Mystic, Life, Punish and Nature belong to Sorcery;
+Transform, Darkness, Necromancy and Chaos belong to Witchcraft;
+Occult and Incident belong to Arts.
+
+If your first and second realms belong to different great realms, the level
+at which you learn the second realm's spells and their difficulty both rise
+sharply. Be warned.
+
+Let me describe the fourteen realms briefly.
+If you are a dedicated caster such as a Mage or a High-Mage, the safe course
+is to make your first realm one that is rich in attack spells.
+
+- Element (Magic)
+  A realm rich in attack spells of the elements -- acid, lightning, fire and
+  frost. The damage is comparatively high and the MP cost comparatively low.
+  But the elements are the basic ones, so many enemies resist them, and you
+  must judge what an enemy resists and pick the right spell.
+  Besides attack spells it holds defences against the elements and a few
+  supporting spells.
+
+- Foreseeing (Magic)
+  Extremely rich in detection: monster detection, terrain detection, temporary
+  telepathy and so on. In the end you learn outrageous spells that meddle with
+  causality itself, but until then you may as well assume you can do nothing
+  but detect.
+
+- Enchant (Magic)
+  Extremely well provided with defensive and supporting spells.
+  It suits a class that can also fight hand to hand, such as the
+  Magic-Knight. It is not entirely without attacks, but relying on them alone is
+  quite hard.
+
+- Summon (Magic)
+  Rich in summoning and teleport spells.
+  A dedicated caster makes a fine summoner.
+  But when a summoning fails, the monster you tried to summon attacks you.
+  Bear in mind that as a rule you gain neither the experience nor the items
+  from enemies your monsters kill.
+
+- Mystic (Sorcery)
+  It cannot attack, but it excels at a wide range of supporting spells and is
+  good at detection. It suits a class that can fight hand to hand, such as the
+  Monk.
+
+- Life (Sorcery)
+  Well provided with healing, and capable of a fair amount of defence and
+  support. Learning it will make you much harder to kill.
+
+- Punish (Sorcery)
+  Many attack spells that are highly effective against youkai, undead and
+  demons. It has a fair number of defensive spells as well.
+  The god-summoning arts in the last book are all powerful, but only one of
+  them can be in effect at a time.
+
+- Nature (Sorcery)
+  A balanced realm: attack, defence, detection, support and healing.
+  The attack spells are somewhat weak, though, and fighting with them alone
+  may prove hard.
+
+- Transform (Witchcraft)
+  A varied realm centred on attack, but its most distinctive part is the
+  polymorph magic. While transformed your physical powers rise sharply, but
+  you cannot read scrolls and some armour stops working.
+  Choose your moment with care. The spells of this realm also cost a great
+  deal of MP in general.
+
+- Darkness (Witchcraft)
+  Many dark-element attacks and sinister spells that borrow the power of
+  demons. It holds many aggressive supporting spells and suits a class that
+  can fight hand to hand.
+  You will do particularly well against living creatures and the forces of
+  order. Learning this realm makes you a little weaker to evil-breaking
+  attacks. And failing a spell of this realm can bring something unpleasant
+  upon you.
+
+- Necromancy (Witchcraft)
+  Many attacks of the hell element and of cursing, and sinister spells that
+  borrow the power of the dead. Compared with Darkness it has rather more
+  defence and summoning. It is strong against living creatures but at a real
+  disadvantage against the lifeless.
+  Learning this realm makes you a little weaker to evil-breaking attacks.
+
+- Chaos (Witchcraft)
+  Well provided with attack spells, and the MP cost is rather low for the
+  damage. Many of them use higher elements such as mana, so the enemy hardly
+  matters -- but items on the floor are easily destroyed.
+  It has a few supporting spells too, unreliable but very useful.
+  Failing a spell of this realm can bring something unpleasant upon you.
+
+- Occult (Arts)
+  Implemented in version 1.1.08 as "Arcane" and renamed "Occult" in version
+  2.1.1. It treats as magic the various occult phenomena that have begun to
+  take shape in Gensokyo.
+  Many attack and summoning spells, with a few supporting spells among them.
+  A good number are awkward to use: some will not work unless a particular
+  condition is met, others demand some price of you.
+  As for racial aptitude, humans are slightly better at it and the other
+  races seem to be about average.
+
+- Incident (Arts)
+  Implemented in version 2.1.1, and belonging with Occult to the great realm
+  of Arts. You learn its spells by studying the "incident stones" that have
+  come to be found in Gensokyo.
+  Unlike the other realms it has eight kinds of incident stone, each of which
+  makes four spells available.
+  Most of what you learn are powerful attack spells, with reasonable defensive
+  spells and a little detection.
+  The incident stones are somewhat rare, however, so early in your adventure
+  you may not find the stone you want and your choice of spells will be
+  limited. And a pack filling up with stones, leaving no room for anything
+  else, is a drawback of its own.
+
+That is about all."
+
+=== Secret books ===
+Keine: "There are also books resembling spellbooks called "secret books", but
+these are special volumes for the Samurai and the Chemist alone.
+A Samurai who reads a secret book of swordsmanship learns a technique, and
+unlike a spellbook it need not be to hand when the technique is used.
+A Chemist who reads a secret book of compounding can look up recipes, and
+carrying the book matching a given medicine raises the chance of compounding
+it successfully."
+
+
+
+***** <RealmApt>
+=== Aptitude for magic ===
+
+Keine: "Magic does not come to everyone alike.
+
+A High-Mage, for instance, learns spells sooner than a Mage and casts them for
+less MP. An Explorer or a Ranger, on the other hand, learns slowly, and there
+are powerful spells whose books they cannot even read, let alone learn.
+
+Race matters too.
+A Youkai has a hard time of it learning Sorcery, but takes to Witchcraft
+readily enough. For a Sennin or a Tennin it is the other way round; a Tennin
+in particular will find the Darkness and Necromancy realms wholly beyond
+reach.
+
+Your aptitudes are shown during character creation, so use them as your guide.
+Of course, if you would rather chase a dream and take a difficult realm on
+purpose, I shall not stop you."
+
+***** <MagicSkill>
+=== Spell proficiency ===
+
+Keine: "Just after you learn a spell it fails easily and costs a great deal
+of MP. Cast it again and again, however, and your proficiency in it rises and
+it grows easier to use.
+The "[Un]", "[Ex]" and similar marks in the spell list are that proficiency.
+"[Un]" is unskilled, "[Be]" is beginner, "[Sk]" is skilled, "[Ex]" is expert
+and "[Ma]" is master.
+A '!' beside the mark means it can rise no further in your class.
+
+Note also that learning a spell you already know raises its proficiency by one
+step. You must of course watch the limit on how many times you may learn, but
+the late spells cost so much MP that they are hard to practise, so buying
+proficiency by learning is one option worth considering."

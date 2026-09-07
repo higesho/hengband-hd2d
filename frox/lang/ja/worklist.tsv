@@ -1,0 +1,2054 @@
+# Frox 日本語化 J4: **凍結した作業の名簿**（設計 §8.58）。
+#
+# **この表は増やさない。** 途中で見つかった族は worklist_found.tsv へ、
+# 人の判断が要る物は worklist_hold.tsv へ回す（2026-08-30 に決めた）。
+# 済みかどうかは持たない——カタログに入ったか、frox/src から字が消えたかで
+# 毎回その場で決める（python tools/frox/fc_worklist.py）。
+#
+# 欄: ファイル<TAB>行<TAB>字（\n \t \s \\ はカタログと同じ印）
+#
+# 対象外 autopick.c     自動拾いの規則の語。**わざと訳さない**（決定済み。設計 §8.27）
+# 対象外 init2.c        `Cannot create '%s'` ほか**起動に失敗したときだけ**出る字
+# 対象外 load.c         セーブが壊れていたときだけ出る字
+# 対象外 object3.c      `cost_calc_hook` の記録。**呼び手は `obj_info.c:1415` の `#if 0` の中**しかなく、画に出ない（2026-08-30 に辿って確かめた）
+# 対象外 save.c         セーブの書き出しの札と `CharOutput.txt` の型
+# 対象外 wiz_obj.c      wizard の品作りの画（`^A c`）。`wizard1.c` `wizard2.c` と同じ族
+# 対象外 ALL_CAPS       パーサとセーブの札（HIT・CLAW・SPEED）。画に出ない
+#
+alky.c	776	Really break down %.50s? All chemicals will be lost due to lack of room. <color:y>[y/n]</color>
+alky.c	777	Really break down %.50s? Some of the chemicals will be lost due to lack of room. <color:y>[y/n]</color>
+alky.c	1173	Alchemists are masters of tinctures, concoctions and\s
+alky.c	1174	infusions. They can prepare themselves set infusions from\s
+alky.c	1175	potions that replicate the effect - without consuming inventory\s
+alky.c	1176	space or being in danger of shattering. They are reasonably good\s
+alky.c	1177	at melee, especially with the right potions, though they cannot\s
+alky.c	1178	rival melee specialists.\s
+alky.c	1179	Even bad potions are useful in their hands, as weapons or\s
+alky.c	1180	ingredients. Their other abilities include creating copies\s
+alky.c	1181	of potions and turning items to gold. They require intelligence\s
+alky.c	1182	for some of their abilities.\n
+archer.c	234	Archers are to bows what warriors are to melee. They are the best\s
+archer.c	235	class around with any bow, crossbow, or sling. They need a lot of\s
+archer.c	236	ammunition, but will learn how to make it from junk found in the\s
+archer.c	237	dungeon. An archer is better than a warrior at stealth,\s
+archer.c	238	perception, searching and magical devices.\n \n
+archer.c	239	Archers have a class power - 'Create Ammo' - which creates pebbles\s
+archer.c	240	or shots from rubble, and arrows and crossbow bolts from bones.
+arky.c	824	The Archaeologist is an erudite treasure hunter, seeking out the most valuable\s
+arky.c	825	prizes that the dungeon has to offer. At home in subterranean caverns and vaults,\s
+arky.c	826	he is rarely lost or snared in traps. His powers of perception and detection are\s
+arky.c	827	very great, as is his skill with arcane devices. At high levels he can use the\s
+arky.c	828	dark magic of the entombed Pharaohs. The powers of the Archaeologist are enhanced\s
+arky.c	829	by Wisdom.
+bard.c	181	Bards are traditional musicians, and songs and sound are the\s
+bard.c	182	foundation of their magic. Four songbooks are available to a Bard,\s
+bard.c	183	two of them sold in towns. Some songs are over in a quick yelp,\s
+bard.c	184	consuming no more time than a magic spell would; but most continue to be\s
+bard.c	185	sung, with continuing effects, until the bard either chooses to stop or\s
+bard.c	186	runs out of mental energy. A bard can only ever sing one tune at\s
+bard.c	187	a time. The primary spell stat of a bard is Charisma.
+beastmaster.c	47	Beastmasters see the fierce creatures of the world as opportunities rather than threats, and their\s
+beastmaster.c	48	riding skills are almost unparalleled. Between their class powers and access to Trump magic,\s
+beastmaster.c	49	they have many ways to summon or charm living creatures to serve as\s
+beastmaster.c	50	their hands and feet. Beastmasters are some of the best shooters outside archery specialists, and their\s
+beastmaster.c	51	melee skills are good enough to get by on. Charisma determines the spellcasting prowess of a Beastmaster.
+beorning.c	455	Beornings are a hardy, northern race of men, renowned for their ability\s
+beorning.c	456	to assume the shape of a bear. Bear-formed Beornings greatly resemble\s
+beorning.c	457	Berserkers: they are extremely strong in melee and very hard to kill, but\s
+beorning.c	458	incapable of reading scrolls, casting spells or using magical devices.\s
+beorning.c	459	Man-shaped Beornings are still stronger in combat than a regular human,\s
+beorning.c	460	but somewhat lacking in magical skills.\n\nThe equipment slots available\s
+beorning.c	461	to a Beorning depend on their shape, and like Werewolves, they carry a\s
+beorning.c	462	special satchel for keeping the items not needed in their current shape.
+berserker.c	193	A Berserker is a fearful fighter indeed, immune to fear and\s
+berserker.c	194	paralysis. At high levels, Berserkers can reflect bolt spells\s
+berserker.c	195	with their tough flesh. Furthermore, they can remove cursed equipment\s
+berserker.c	196	by force, and their special combat techniques are not affected by\s
+berserker.c	197	anti-magic barriers. Berserkers cannot, however, use any magical devices\s
+berserker.c	198	or read any scrolls, and are hopeless at all non-combat skills. To\s
+berserker.c	199	offset these great disadvantages, they gain an important class power -\s
+berserker.c	200	'Recall' - very early.
+birth.c	28	Armageddon is the most deadly offensive realm. You won't be lacking for firepower here.\s
+birth.c	29	However, every spell is an offensive spell, so this realm suffers from a lack of any\s
+birth.c	30	utility spells.
+birth.c	35	The books of Rage describe various techniques. To learn a new technique, you must perform a ritual of rage, destroying the book in the process.
+birth.c	36	\sOnce learned, you may use techniques without requiring the corresponding Rage book, but you will need to find many copies of each book in order
+birth.c	37	\sto learn all of the techniques.
+birth.c	38	Burglary is the preferred realm of rogues, allowing them to specialize in what they do best: Stealing!\s
+birth.c	39	This realm offers good detection and escapes, offers talents for picking pockets and setting traps,\s
+birth.c	40	and even allows for direct assassination of sleeping monsters. The books for this realm are only\s
+birth.c	41	available in the Black Market (or in the dungeon).
+bldg.c	2607	'Protection Rate' means how much damage is reduced by your armor.\n
+bldg.c	2608	Note that the Protection rate is effective only against normal\s
+bldg.c	2609	'attack' and 'shatter' type melee attacks,\s
+bldg.c	2610	and has no effect against any other types such as 'poison'.\n \n
+bldg.c	2611	'Dodge Rate' indicates the success rate on dodging the\s
+bldg.c	2612	monster's melee attacks.\s
+bldg.c	2613	It is depend on the level of the monster and your AC.\n \n
+bldg.c	2614	'Average Damage' indicates the expected amount of damage\s
+bldg.c	2615	when you are attacked by normal melee attacks with power=60.
+blood_knight.c	273	Create a potion of blood. Player is limited to 30 such potions, and may neither\s
+blood_knight.c	274	drop, throw nor sell them. Quaffing a potion of blood heals 100hp and cures\s
+blood_knight.c	275	blindness, confusion, poison and stuns.
+blood_knight.c	515	Blood-Knights are fighters who have delved into the dark arts and can perform\s
+blood_knight.c	516	some special offensive effects using their own health. In addition to the\s
+blood_knight.c	517	HP cost, using such an ability causes bleeding, with an amount proportional\s
+blood_knight.c	518	to the cost of the ability. These special abilities rely on Constitution.\n \n
+blood_knight.c	519	Blood-Knights are very unusual in that cuts and low health make them more powerful; at\s
+blood_knight.c	520	full health their melee is nothing special, but the more damaged and wounded they are,\s
+blood_knight.c	521	the faster and deadlier their attacks become. On the\s
+blood_knight.c	522	brink of death they are the strongest fighters imaginable, and stories of their\s
+blood_knight.c	523	legendary feats abound; but with great power comes great risk of death,\s
+blood_knight.c	524	and you don't recall ever meeting one of these heroes of legend in person!\n \n
+blood_knight.c	525	Blood-Knights, like Blood-Mages, receive reduced benefits from healing magic.\s
+blood_knight.c	526	Since a Blood-Knight relies on their own blood for their power, this class is restricted\s
+blood_knight.c	527	to certain races; no non-living race may walk the red path.
+blood_mage.c	97	A Blood-Mage is similar to a normal mage in his selection and\s
+blood_mage.c	98	variety of spells, but differs in that he has no separate\s
+blood_mage.c	99	mana pool; instead, spells are powered by hit points.\s
+blood_mage.c	100	Moreover, due to the Blood-Mage's abnormal constitution,\s
+blood_mage.c	101	all healing is much less effective than normal; indeed, Blood-Mages\s
+blood_mage.c	102	completely eschew healing spells to not disrupt the flow\s
+blood_mage.c	103	of blood that is the essence of their power. They shun the realm of\s
+blood_mage.c	104	Life as anathema to all they hold sacred.
+bluemage.c	186	Blue-Mages, like all mages, rely on magic rather than muscle;\s
+bluemage.c	187	but they are unique in the way they gain new spells, as they\s
+bluemage.c	188	learn from monsters rather than books. Blue-Mages' primary\s
+bluemage.c	189	spellcasting stat is Intelligence.\n \n
+bluemage.c	190	A Blue-Mage can learn and cast monster spells, summons, and even\s
+bluemage.c	191	ranged attacks as their own spells; this technique is called Blue magic.\s
+bluemage.c	192	Blue-Mages remember their spells permanently, but to learn a spell they\s
+bluemage.c	193	must be directly hit by it while their 'Learning' class power is\s
+bluemage.c	194	active. Because of this requirement, Blue-Mages never learn spells like\s
+bluemage.c	195	Haste or Healing that affect the monster itself.
+cavalry.c	129	Cavalry are masters of horsemanship and enjoy riding to battle. Being good at\s
+cavalry.c	130	both melee and archery, they take pride in their overwhelming offensive strength\s
+cavalry.c	131	on horseback; but spellcasting is a closed book to them, and magical devices\s
+cavalry.c	132	difficult to use. High-level Cavalry learn to forcibly saddle and\s
+cavalry.c	133	tame wild monsters with their 'Rodeo' class power.
+chaoswar.c	767	Chaos-Warriors are the feared servants of the terrible Demon Lords\s
+chaoswar.c	768	of Chaos. Every Chaos-Warrior has a patron demon, who may give him\s
+chaoswar.c	769	a reward on level-up; the Chaos-Warrior may be healed or polymorphed,\s
+chaoswar.c	770	have his stats increased, or be rewarded with an awesome weapon.\s
+chaoswar.c	771	On the other hand, though, he might be severely punished or simply ignored by\s
+chaoswar.c	772	the patron; the Demon Lords of Chaos are unpredictable indeed, although\s
+chaoswar.c	773	rewards are thankfully more common than punishments. The exact reward\s
+chaoswar.c	774	will not depend on anything the player does, and is up entirely to\s
+chaoswar.c	775	random chance and the patron; each patron gives out different rewards\s
+chaoswar.c	776	and punishments.\n \n
+chaoswar.c	777	Chaos-Warriors select one spell realm, either Chaos or Daemon; they have\s
+chaoswar.c	778	no interest in other forms of magic. They can learn every spell in\s
+chaoswar.c	779	their chosen realm. At level 40 they gain the powerful ability to emit\s
+chaoswar.c	780	confusing lights, with the potential to stun, scare and confuse every creature in sight.
+cmd4.c	7822	Disembodied hand
+cmd4.c	7824	Disembodied hands that strangled people
+cmd4.c	7826	Colour out of space
+cmd4.c	7828	Colours out of space
+cmd4.c	7830	stairway to hell
+cmd4.c	7832	stairways to hell
+cmd4.c	7834	Dweller on the threshold
+cmd4.c	7836	Dwellers on the threshold
+cmd4.c	7867	piles of\s
+cmd5.c	1208	<color:B>When casting an <color:R>L%d</color> spell on\s
+cmd5.c	1209	<color:R>DL%d</color> your max proficiency is <color:R>%d</color>\s
+cmd5.c	1210	(Current: <color:R>%d</color>).</color> <color:D>%d</color>
+demigod.c	431	The term demigod is commonly used to describe mythological figures whose one\s
+demigod.c	432	parent was a god and whose other parent was human; as such, demigods are\s
+demigod.c	433	human-god hybrids and are quite powerful. Demigods receive special abilities\s
+demigod.c	434	depending on their parentage.
+demigod.c	487	Aphrodite is the Greek goddess of love, beauty, pleasure, and procreation.\s
+demigod.c	488	You inherit her sex appeal. As such, your pets are more obedient and shopkeepers\s
+demigod.c	489	fawn over you in their efforts to please you. You may kiss monsters and they\s
+demigod.c	490	might even decide to follow you with slavish devotion, though sometimes this\s
+demigod.c	491	just angers them.
+demigod.c	502	Apollo has been variously recognized as a god of light and the sun,\s
+demigod.c	503	truth and prophecy, medicine, healing, plague, music, poetry, arts,\s
+demigod.c	504	archery, and more. You inherit powers of illumination and are completely\s
+demigod.c	505	immune to light based attacks. You are seldom blinded.
+demigod.c	514	Ares is the bold son of Zeus and Hera, whose very name is feared and respected\s
+demigod.c	515	by warriors and citizens alike. His legendary combat prowess exceeds that of\s
+demigod.c	516	Zeus and Poseidon, but he is less skilled in wiles than the other Olympians.\s
+demigod.c	517	You inherit exceptional bonuses to combat and have a firm grip on your strength.\s
+demigod.c	518	Later in life, you will be able to fly into a berserk rage on command. However,\s
+demigod.c	519	your lust for combat decreases your stealth as you call out challenges\s
+demigod.c	520	to all that you meet. And your resistance to magic is suspect as well.
+demigod.c	533	Artemis was often described as the daughter of Zeus and Leto, and the\s
+demigod.c	534	twin sister of Apollo. She was the Hellenic goddess of the hunt, wild\s
+demigod.c	535	animals, wilderness, childbirth, virginity and young girls, bringing\s
+demigod.c	536	and relieving disease in women; she often was depicted as a huntress\s
+demigod.c	537	carrying a bow and arrows. You inherit powers of archery and are very\s
+demigod.c	538	nimble. Your skills with the bow are unmatched and you shoot arrows\s
+demigod.c	539	with increased range and deadliness.
+demigod.c	549	Athena is the great goddess of wisdom and the protector of Athens. She was\s
+demigod.c	550	born of Zeus and the Titan Metis, and her cunning far surpasses that of the\s
+demigod.c	551	other deities. You inherit great clarity of thought and magic and will be\s
+demigod.c	552	able to cast spells more reliably than other mortals. And should you fail to\s
+demigod.c	553	cast a spell, you will pay a reduced casting cost rather than the full amount.\s
+demigod.c	554	You also have a firm grip on your mental prowess.
+demigod.c	564	Demeter is the goddess of the harvest, who presided over grains, the\s
+demigod.c	565	fertility of the earth, and the seasons. You gain powers of regeneration,\s
+demigod.c	566	healing, and temperance. Eventually, you will become resistant to the\s
+demigod.c	567	ravages of time.
+demigod.c	576	Hades is Ruler of the Underworld. You gain resistance to nether forces,\s
+demigod.c	577	increased fortitude and have a firm grasp on your life and health.
+demigod.c	589	Hephaestus was the god of technology, blacksmiths, craftsmen, artisans,\s
+demigod.c	590	sculptors, metals, metallurgy, fire and volcanoes. Like other mythic smiths\s
+demigod.c	591	but unlike most other gods, Hephaestus was lame, which gave him a\s
+demigod.c	592	grotesque appearance in Greek eyes. He served as the blacksmith of the\s
+demigod.c	593	gods. You inherit powers of enchantment and protection. Your equipment\s
+demigod.c	594	will not suffer diminution by corrosion or magical attack.
+demigod.c	603	Hera was the wife and one of three sisters of Zeus. Her chief function\s
+demigod.c	604	was as the goddess of women and marriage. You inherit great clarity of\s
+demigod.c	605	mind and capacity for magic. You are very wise and have a firm grasp on\s
+demigod.c	606	your magical energy, which is even augmented.
+demigod.c	617	Hermes, the Messenger, is the extremely cunning diplomat used by the Olympians\s
+demigod.c	618	to negotiate truces. With his Winged Sandals and his powerful magic, there\s
+demigod.c	619	is no place barred from him, and there is no way to detain him. You inherit\s
+demigod.c	620	great powers of motion and will never become slowed. Your stealth is better\s
+demigod.c	621	than your brethren and your speed will increase with experience.
+demigod.c	632	Poseidon, Brother of Zeus, is Lord of the Seas and Storm. You inherit\s
+demigod.c	633	elemental protection and corrosive attacks that melt the armor of your foes.
+demigod.c	644	Zeus, King of the gods and ruler of Mount Olympus, is god of the Sky\s
+demigod.c	645	and Thunder, and nominal husband of Hera. You inherit increased stature\s
+demigod.c	646	and your divine birth will be marked by your aura of electricity. You also\s
+demigod.c	647	resist lightning.
+devicemaster.c	497	Devicemasters are excellent with magical devices, but poor in most other skills.\s
+devicemaster.c	498	They may shoot or use melee in a pinch, but this will never be their forte; instead,\s
+devicemaster.c	499	they conquer through their arsenal of magical devices.\n \n
+devicemaster.c	500	Each Devicemaster chooses to specialize in a particular class of devices, and will\s
+devicemaster.c	501	gain extra bonuses for speciality items. These bonuses include increased\s
+devicemaster.c	502	damage, increased speed of activation, extra resistance to charge draining,\s
+devicemaster.c	503	and even the ability to occasionally power these devices without consuming charges;\s
+devicemaster.c	504	each of these abilities becomes stronger with experience. In addition, speciality devices\s
+devicemaster.c	505	are easier to use, although all Devicemasters are also good with devices of other types.\n \n
+devicemaster.c	506	Devicemasters have several useful device-related powers; they may detect magical devices from\s
+devicemaster.c	507	a distance, and gain the powerful talent of Recharging very early on.\s
+devicemaster.c	508	At higher levels, they gain the ability to move effects from\s
+devicemaster.c	509	one device to another, or to move magical essences from one item to another if they specialize\s
+devicemaster.c	510	in Potions or Scrolls. In times of desperate need, the Devicemaster may drain a speciality item\s
+devicemaster.c	511	of multiple charges at once; this greatly increases the power of the\s
+devicemaster.c	512	effect, but may destroy the device in the process.
+devices.c	488	It has unpredictable effects when you quaff it, either\s
+devices.c	489	1) curing 5000 HP and all temporary ailments,\s
+devices.c	490	2) increasing all stats, 3) decreasing all stats,\s
+devices.c	491	4) providing temporary light speed,\s
+devices.c	492	5) temporarily turning your skin to stone,\s
+devices.c	493	6) giving or curing mutations randomly,\s
+devices.c	494	7) repeatedly giving or curing mutations randomly,\s
+devices.c	495	8) temporarily making you gigantic,\s
+devices.c	496	9) triggering the Baby Foul Curse,\s
+devices.c	497	10) temporarily polymorphing you into an Ent,\s
+devices.c	498	11) making you hallucinate temporarily,\s
+devices.c	499	12) curing 420 HP and all ailments but making you\s
+devices.c	500	hallucinate temporarily,\s
+devices.c	501	or 13) exploding in your mouth for 11d66 damage,\s
+devices.c	502	massive stunning and a dangerous wound.
+disciple.c	4	Trusted followers of mysterious ancient spirits known as the 'Purples',\s
+disciple.c	5	the Disciples roam the world running errands for their masters,\s
+disciple.c	6	learning mighty spells and receiving rare items as rewards for their\s
+disciple.c	7	work. There are three main flavors of Purple Disciples - disciples\s
+disciple.c	8	of Karrot, disciples of Yeqrezh, and disciples of a group of\s
+disciple.c	9	Purples known as the Troika. Each of the Purples expects different\s
+disciple.c	10	things of their Disciples, and each helps them achieve their ends in\s
+disciple.c	11	very different ways.
+doppelganger.c	446	Doppelgangers are truly pathetic creatures. While nobody has actually ever seen\s
+doppelganger.c	447	their true form, they are rumored to be small, plain, pathetic creatures.\s
+doppelganger.c	448	Their one saving grace is the ability to mimic other races.
+duelist.c	626	The duelist is the ultimate one-on-one fighter, but finds himself at a severe\s
+duelist.c	627	disadvantage when facing numerous strong foes at once. To start a duel, the duelist\s
+duelist.c	628	first issues a challenge to his intended foe; of course, this will wake the monster\s
+duelist.c	629	up, as there is no honor in dueling a sleeping enemy! And while the duelist will\s
+duelist.c	630	honor the fight as a one-on-one affair, many monsters have no such scruples.\n \n
+duelist.c	631	Against a challenged foe the duelist is extremely strong, gaining bonuses to saving\s
+duelist.c	632	throws, armor class, damage reduction and combat prowess. On the other hand, due\s
+duelist.c	633	to the single-mindedness of their focus, the duelist is quite vulnerable to unchallenged\s
+duelist.c	634	opponents. Most of the special techniques of this class aim at enforcing the sanctity of the\s
+duelist.c	635	duel.\n \n
+duelist.c	636	The duelist only ever gains a single attack in combat, but they make the most of this\s
+duelist.c	637	blow by gaining enhanced effects as they gain experience. Able to wound, stun, and even\s
+duelist.c	638	hamstring their foes, the prowess of the duelist in a one-on-one encounter is legendary!\n \n
+duelist.c	639	Duelists favor light armors and weapons, and cannot equip a shield. They gain no extra bonus for\s
+duelist.c	640	wielding a weapon with both hands. For their techniques, the duelist relies on Dexterity.
+dungeon.c	6508	<color:B>Welcome!</color> You begin your adventure deep in the dungeon,\s
+dungeon.c	6509	a runaway slave of this dark pit's demonic masters. Your attempts to\s
+dungeon.c	6510	gather supplies for your escape have been detected, and now everybody\s
+dungeon.c	6511	is on high alert... \n
+dungeon.c	6512	This is the message line where important information is\s
+dungeon.c	6513	communicated to you while you play the game.\s
+dungeon.c	6514	Press <color:y>SPACE</color> every time you see a <color:B>-more-</color> prompt and\s
+dungeon.c	6515	you are finished reading the current messages.\s
+dungeon.c	6516	Press <color:y>CTRL+P</color> to review recent messages.\s
+dungeon.c	6517	You may press <color:y>?</color> at any time for help.\n\n
+dungeon.c	6518	<color:B>Welcome!</color> You begin life in the town where you may purchase\s
+dungeon.c	6519	supplies for the dangers that await you.\n
+equip.c	575	Failed! Your current quiver holds %d missiles but this quiver\s
+equip.c	576	only has a capacity for %d missiles.
+files.c	1267	SUN:XXXXXXXXXXXXXXXXXXXXXXXX
+files.c	1268	MON:XXXXXXXX.........XXXXXXX
+files.c	1269	TUE:XXXXXXXX.........XXXXXXX
+files.c	1270	WED:XXXXXXXX.........XXXXXXX
+files.c	1271	THU:XXXXXXXX.........XXXXXXX
+files.c	1272	FRI:XXXXXXXX.........XXXXXXX
+files.c	1273	SAT:XXXXXXXXXXXXXXXXXXXXXXXX
+files.c	1348	SUN:
+files.c	1349	MON:
+files.c	1350	TUE:
+files.c	1351	WED:
+files.c	1352	THU:
+files.c	1353	FRI:
+files.c	1354	SAT:
+files.c	1857	Replace existing file %s?\s
+files.c	2194	Info file '%s'
+files.c	2677	The name '%s' is too long!
+files.c	2690	The name '%s' contains control chars!
+flavor.c	621	Tele
+flavor.c	624	Nolv
+flavor.c	626	Lvng
+force_trainer.c	628	A Force-Trainer is a master of the spiritual Force. They prefer\s
+force_trainer.c	629	fighting with neither weapon nor armor. They are not as good\s
+force_trainer.c	630	fighters as are Monks, but they can use both magic and the\s
+force_trainer.c	631	spiritual Force. Wielding weapons or wearing heavy armor disturbs\s
+force_trainer.c	632	use of the Force. Wisdom is a Force-Trainer's primary stat.\n \n
+force_trainer.c	633	Force-Trainers use both spellbook magic and the special spiritual\s
+force_trainer.c	634	power called the Force. They can select a realm from Life,\s
+force_trainer.c	635	Nature, Craft, Death, and Crusade. To use The Force, you select\s
+force_trainer.c	636	it just as if it were spellbook 'F'; which means you need to press\s
+force_trainer.c	637	'm' and then 'F' to select the Force. The most important spell of\s
+force_trainer.c	638	the Force is 'Improve Force'; each time a Force-Trainer activates\s
+force_trainer.c	639	it, their Force power becomes more powerful, and their attack\s
+force_trainer.c	640	power in bare-handed melee fighting is increased temporarily. The\s
+force_trainer.c	641	strengthened Force can be released at one stroke when a\s
+force_trainer.c	642	Force-Trainer activates some other Force spell, typically an attack\s
+force_trainer.c	643	spell. They have a class power - 'Clear Mind' - which allows them\s
+force_trainer.c	644	to rapidly regenerate their mana.
+graymage.c	660	The Gray-Mage casts spells from memory rather than books; a\s
+graymage.c	661	spellbook is only required for the initial learning process.\s
+graymage.c	662	However, only ten spells may be memorized at any given time; and\s
+graymage.c	663	while a Gray-Mage may replace old spells with new ones, the total\s
+graymage.c	664	number of spells they can study is limited.\n\n
+graymage.c	665	Gray-Mages do not choose specific realms like book spellcasters;\s
+graymage.c	666	instead, they choose a general bias towards either Good, Neutral\s
+graymage.c	667	or Evil magic. So while all Gray-Mages may learn spells from the Arcane,\s
+graymage.c	668	Armageddon, Chaos, Craft, Sorcery and Trump realms, only a Good Bias allows\s
+graymage.c	669	access to Life and Crusade magic; only a Neutral Bias allows access to Nature\s
+graymage.c	670	magic; and only an Evil Bias allows access to Death and Daemon magic. At any one\s
+graymage.c	671	time, a Gray-Mage has relatively few spells directly at their disposal; but their ability\s
+graymage.c	672	to pick the best spells from an extremely large pool more than compensates for this.\s
+graymage.c	673	As with most mages, the key stat is Intelligence.
+hex_mage.c	44	A Hex-Mage is precisely what the name suggests: a mage\s
+hex_mage.c	45	between the warrior and mage classes. While their brothers, the\s
+hex_mage.c	46	rangers, specialize in Nature magic and survival skills, true\s
+hex_mage.c	47	Warrior-Mages attempt to reach the best of both worlds. As\s
+hex_mage.c	48	warriors they are much superior to the usual Mage class.\s
+hex_mage.c	49	Intelligence determines a Warrior-Mage's spell casting ability.\n \n
+hex_mage.c	50	Warrior-mages begin the game with Arcane magic, and they can\s
+hex_mage.c	51	freely select another realm of magic. Although they do not gain\s
+hex_mage.c	52	new spells as fast as regular mages, they will eventually learn\s
+hex_mage.c	53	every spell in both realms, thus making them a very competitive\s
+hex_mage.c	54	choice for players who appreciate Arcane magic. They have two\s
+hex_mage.c	55	class powers - 'Convert HP to SP' and 'Convert SP to HP' - which\s
+hex_mage.c	56	allow them to heal HP using mana or gain mana using HP.
+highmage.c	75	High-Mages are mages who specialize in one particular field of\s
+highmage.c	76	magic and learn it very well - much better than an ordinary mage.\n\n
+highmage.c	77	For the price of giving up a second realm of magic, High-Mages\s
+highmage.c	78	gain substantial benefits in the mana costs, power, minimum levels, and\s
+highmage.c	79	failure rates of the spells in their speciality realm. They are also the\s
+highmage.c	80	only class able to cast Hex spells. High-Mages have a class power -\s
+highmage.c	81	'Eat Magic' - which absorbs mana from wands, staves, or rods; although\s
+highmage.c	82	this power is not available to those who choose the Hex realm. Their\s
+highmage.c	83	primary spellcasting stat is Intelligence.
+home.c	227	Unrecognized command: <color:R>%c</color>.\s
+home.c	228	Press <color:keypress>?</color> for help.
+home.c	233	Unrecognized command: <color:R>^%c</color>.\s
+home.c	300	<color:keypress>g</color> to get an item.\s
+home.c	301	<color:keypress>d</color> to drop an item.\s
+home.c	307	<color:keypress>x</color> to begin examining items.\n
+home.c	308	<color:keypress>r</color> to begin removing (destroying) items.\n
+home.c	309	<color:keypress>Esc</color> to exit.\s
+home.c	310	<color:keypress>?</color> for help.
+home.c	342	<color:y>Get which item <color:w>(<color:keypress>Esc</color>\s
+home.c	343	to cancel)</color>?</color>
+home.c	548	<color:y>Really remove %s?</color> <color:v>The entire stack will\s
+home.c	549	be permanently destroyed!</color> <color:y>[Y,n]</color>
+home.c	551	<color:y>Really remove %s?</color> <color:v>It will\s
+igor.c	1663	The epitome of a self-made man, an Igor is generally easily recognizable by\s
+igor.c	1664	the ring of stitches around his neck, the tendency to limp with perfectly\s
+igor.c	1665	healthy legs, and the mysterious ability to appear suddenly\s
+igor.c	1666	and then disappear when the mob comes looking. An Igor is\s
+igor.c	1667	at home with lightning, and always carries a bag full of ice in case he\s
+igor.c	1668	should find something that needs to be kept cold.
+init1.c	4799	Error: Inconsistent map widths. Room width auto-calculated to %d but\s
+init1.c	4800	current line is %d. Please make all map lines the same length.
+karrot.c	1282	Karrot is a proud and ambitious Purple, convinced that it is his destiny\s
+karrot.c	1283	to one day rule the universe; but rather than getting personally involved,\s
+karrot.c	1284	he has assigned to his Disciples the task of eliminating any potential\s
+karrot.c	1285	rivals (like the Serpent of Chaos). Being so sure of his greatness, Karrot\s
+karrot.c	1286	sees little reason to vary his habits and is the only one of the Purples to\s
+karrot.c	1287	predictably teach all of his Disciples the same spells. Karrot occasionally\s
+karrot.c	1288	assigns side-quests to his Disciples, with the dual aim of testing their\s
+karrot.c	1289	mettle and removing lesser threats to his supremacy. These side-quests only\s
+karrot.c	1290	appear on fairly challenging levels; they can be avoided by sticking to\s
+karrot.c	1291	safer areas, but this will not make Karrot happy...\n\n
+karrot.c	1292	Karrot considers many artifacts to be his rightful personal property, and\s
+karrot.c	1293	will claim them immediately if you should find them. He will, however, give\s
+karrot.c	1294	you another artifact as a reward for your discovery. These replacement\s
+karrot.c	1295	artifacts tend to start out as fairly weak, but eventually become very\s
+karrot.c	1296	strong as you gain Karrot's respect by leveling up and by successfully\s
+karrot.c	1297	completing side-quests. If you're really lucky and do a particularly good job,\s
+karrot.c	1298	you might even receive the ultimate gift - Urog, Karrot's legendary blade of\s
+karrot.c	1299	shadows!\n\n
+karrot.c	1300	Disciples of Karrot tend to play as fighter-mages, relying on melee, spells\s
+karrot.c	1301	and devices alike. They are unique among Disciples in not having a mana pool;\s
+karrot.c	1302	casting a spell takes a toll on their hit points instead. They are also the only\s
+karrot.c	1303	Disciples to have a charming spell - but the greatest of Karrot's followers\s
+karrot.c	1304	are rumoured to eventually learn even rarer abilities...\n
+karrot.c	1305	Karrot's disciples depend on Intelligence to make their spells work.
+lawyer.c	664	Known for his unsurpassed expertise in the mysterious realm of Law,
+lawyer.c	665	\sthe Lawyer has a comprehensive skillset that allows him to set and
+lawyer.c	666	\sdetect traps, to slow or mystify his enemies, to quietly escape or
+lawyer.c	667	\savoid dangerous fights, to acquire knowledge about the world around
+lawyer.c	668	\shim, and to make friends and influence people. As he relies on his
+lawyer.c	669	\sfamiliarity with Law and with tricks and approaches that have
+lawyer.c	670	\sworked in the past, the lawyer uses Wisdom as his spellcasting stat.
+mage.c	44	A Mage is a spellcaster who must live by his wits, as he cannot\s
+mage.c	45	hope to simply hack his way through the dungeon like a warrior.\s
+mage.c	46	A Mage always carries his spellbooks with him, but also relies\s
+mage.c	47	on magical devices, which he can master easily. The primary\s
+mage.c	48	spellcasting statistic of a Mage is Intelligence.\n\n
+mage.c	49	Mages have few restrictions in choosing and learning spells;\s
+mage.c	50	they can freely choose any two realms when a character is created,\s
+mage.c	51	although their natural inclinations make Life magic fairly hard to learn.\s
+mage.c	52	See <link:magic.txt> for more information on magic, realms and book spellcasting.
+magic_eater.c	922	The Magic-Eater can absorb magical devices. Once absorbed,\s
+magic_eater.c	923	these devices will function like normal objects and can be\s
+magic_eater.c	924	used whenever charges are available. In effect, it is as\s
+magic_eater.c	925	if the Magic-Eater had extra inventory slots for devices.\s
+magic_eater.c	926	However, absorbed magic can not be drained the way normal\s
+magic_eater.c	927	devices can, nor can these objects be destroyed. The number of\s
+magic_eater.c	928	slots for each kind of device is limited, and the Magic-Eater\s
+magic_eater.c	929	will need to choose which object to replace once the slots are\s
+magic_eater.c	930	all used. Absorbed magic cannot be recharged through scrolls,\s
+magic_eater.c	931	spells, potions or activations; the Magic-Eater must rest to\s
+magic_eater.c	932	regain charges. The rate at which absorbed devices recharge\s
+magic_eater.c	933	is affected by Regeneration.
+mauler.c	689	The Mauler favors extremely heavy weapons, and possesses powerful abilities whose\s
+mauler.c	690	effectiveness depends on the weight of the weapon. While they only gain a limited\s
+mauler.c	691	number of blows which can never be magically increased, they are capable of\s
+mauler.c	692	hitting opponents exceptionally hard to make the most of each strike. Maulers\s
+mauler.c	693	must wield a single weapon with two hands for their talents to\s
+mauler.c	694	function properly.
+mindcrafter.c	290	Turns your skin to stone and provides temporary resistance to the elements.\s
+mindcrafter.c	291	More resistances are given at higher levels.
+mindcrafter.c	349	At low levels, generates a ball of psionic energy centered on you.\s
+mindcrafter.c	350	At level 25 and above, inflicts psionic damage on all monsters in line of sight.
+mindcrafter.c	394	Removes fear and stunning. Gives heroism and speed. Heals HP a little unless\s
+mindcrafter.c	395	you already have heroism and temporary speed boost.
+mindcrafter.c	459	Fires a ball which damages monsters and absorbs their mind power.\s
+mindcrafter.c	460	A successful absorption also consumes some of your own energy, costing an additional 0.01 to 1.50 turns.
+mindcrafter.c	669	Mindcrafters rely not on book magic, but on the powers of the mind.\s
+mindcrafter.c	670	These mind powers are specific to this class, and range\s
+mindcrafter.c	671	from extrasensory perception to psychic attacks and the mental domination\s
+mindcrafter.c	672	of others. Most mind powers become accessible fairly early, but gain in\s
+mindcrafter.c	673	strength with more experience. Wisdom determines a Mindcrafter's ability to\s
+mindcrafter.c	674	use mind powers.\n \n
+mindcrafter.c	675	Mindcrafters' combat skills are reasonably good but far from outstanding;\s
+mindcrafter.c	676	a combination of physical and mental attacks often works better\s
+mindcrafter.c	677	for them than either one alone. A seasoned mindcrafter is very hard to\s
+mindcrafter.c	678	confuse, and can effortlessly detect the minds of others. Mindcrafters\s
+mindcrafter.c	679	have a class power, 'Clear Mind', which allows them to rapidly regenerate\s
+mirror_master.c	864	Mirror-Masters are spellcasters; like mages, they must live\s
+mirror_master.c	865	by their wits. They can create magical mirrors, which they use to\s
+mirror_master.c	866	support their special Mirror-Magic spells. Intelligence determines a\s
+mirror_master.c	867	Mirror-Master's spellcasting ability.\n \n
+mirror_master.c	868	Mirror-Masters gain more spells with experience, and their spells also\s
+mirror_master.c	869	become more powerful over time. Much of their magic relies on the\s
+mirror_master.c	870	careful placement of mirrors, which can be used for both offense\s
+mirror_master.c	871	and defense. Mirror-Masters' abilities are also enhanced by standing on a mirror;\s
+mirror_master.c	872	for example, they can perform quick teleports from there or rapidly regenerate their mana.\s
+mirror_master.c	873	Nevertheless, not all Mirror-Magic requires a physical mirror; many effects\s
+mirror_master.c	874	rely simply on light or mirror-shards, or on uncertainty, reflection and illusion.\s
+mirror_master.c	875	The maximum number of Mirrors which can be controlled simultaneously depends\s
+mirror_master.c	876	on the player's level; sometimes, unnecessary mirrors may need to be broken.
+monk.c	765	Monks are very different from most other classes in that they prefer\s
+monk.c	766	to fight unarmed; while they can use a few select weapons reasonably\s
+monk.c	767	well, their training in martial arts makes them more powerful with\s
+monk.c	768	no weapons. Monks also gain bonuses from empty armor slots; to gain the\s
+monk.c	769	resistances necessary for survival, some kind of armor will still be\s
+monk.c	770	eventually needed, but if the armor is too heavy it will severely\s
+monk.c	771	disturb the Monk's martial arts maneuvers. As the Monk gains levels, more\s
+monk.c	772	powerful forms of unarmed attack will become available, and the defensive bonuses\s
+monk.c	773	for having empty armor slots likewise increase.\n\n
+monk.c	774	The various sects of monks are devoted to different areas of\s
+monk.c	775	magic; they select one realm from Life, Nature, Craft, Trump and Death.\s
+monk.c	776	Wisdom determines their spellcasting ability.\n\n
+monk.c	777	Monks have two class powers, 'Assume a Posture' and\s
+monk.c	778	'Double Attack'; they can choose different postures for\s
+monk.c	779	different situations, and use powerful combinations of attacks for\s
+monk.c	780	the finishing blow.
+mystic.c	539	Mystics are masters of bare-handed fighting, like Monks. Unlike Monks, though, they\s
+mystic.c	540	do not learn normal spells; instead, they gain mystical powers with experience,\s
+mystic.c	541	and these powers directly influence their martial arts. In this respect,\s
+mystic.c	542	Mystics are somewhat similar to Samurai; indeed, they even concentrate to boost\s
+mystic.c	543	their mana like the Samurai. Mystics eschew weapons of any kind, and require\s
+mystic.c	544	the lightest of armors in order to practice their martial arts. As with other\s
+mystic.c	545	martial artists, their attack speed depends on their level and Dexterity; their\s
+mystic.c	546	mana and fail rates, though, are influenced by Charisma. Mystics are in tune with\s
+mystic.c	547	the natural forces around them, and may even summon animals to their aid when\s
+mystic.c	548	necessary. It is whispered that mystics have discovered a way to kill an opponent\s
+mystic.c	549	with a single touch; but they do not share this knowledge with novices.
+necromancer.c	619	A Necromancer attempts to gain both power and knowledge through\s
+necromancer.c	620	communion with the dead. They rely on the special realm of Necromancy to\s
+necromancer.c	621	summon aid from the dead, whether directly in terms of undead\s
+necromancer.c	622	servitude, or indirectly through otherworldly knowledge. Necromancy\s
+necromancer.c	623	also offers many foul offensive spells; but all of these require direct\s
+necromancer.c	624	physical contact, and so need an empty, gloveless hand to work.\s
+necromancer.c	625	Yet this handicap is a cheap price to pay for the ability to kill a foe with\s
+necromancer.c	626	one deadly touch!\n\n
+necromancer.c	627	Necromancers forever hunt for the legendary Eye and Hand of Vecna\s
+necromancer.c	628	to complete their power.
+ninja.c	608	A Ninja is a fearful assassin lurking in darkness. He or she can\s
+ninja.c	609	navigate effectively with no light source, catch enemies by surprise,\s
+ninja.c	610	and kill with a single blow. Ninjas can use Ninjutsu, and are\s
+ninja.c	611	good at locating hidden traps and doors, disarming traps and\s
+ninja.c	612	picking locks. Since heavy armors, heavy weapons, or shields will\s
+ninja.c	613	restrict their motion greatly, they prefer light clothes, and\s
+ninja.c	614	become faster and more stealthy as they gain levels. A Ninja\s
+ninja.c	615	knows no fear and, at high level, becomes almost immune to poison\s
+ninja.c	616	and able to see invisible things. Dexterity determines a Ninja's\s
+ninja.c	617	ability to use Ninjutsu.\n \n
+ninja.c	618	A Ninja can use Ninjutsu for lurking and surprise attacks. They\s
+ninja.c	619	gain more Ninjutsu techniques as they gain levels. They have a\s
+ninja.c	620	class power - 'Quick Walk' - which makes their walking speed\s
+ninja.c	621	extremely fast.
+ninjalaw.c	178	The Ninja-Lawyer moves silently in the night, combining the\s
+ninjalaw.c	179	stealth, agility and offensive power of the ninja with the\s
+ninjalaw.c	180	subtle practical tools of the lawyer. Ninja-Lawyers, like\s
+ninjalaw.c	181	specialist ninjas, prefer light armour and stabbing weapons and\s
+ninjalaw.c	182	acquire the powerful 'Quick Walk' class power. A ninja-lawyer\s
+ninjalaw.c	183	relies on both wisdom and dexterity, requiring the former for\s
+ninjalaw.c	184	legal tricks and the latter for ninjutsu.
+paladin.c	73	A Paladin is a combination of a warrior and a priest. Paladins excel\s
+paladin.c	74	as melee fighters, but are only middling in ranged combat; their\s
+paladin.c	75	stealth, perception, and device skill are likewise mediocre,\s
+paladin.c	76	though their divine alliance gives them a decent saving throw. Wisdom\s
+paladin.c	77	determines a Paladin's success at praying to his deity.\n \n
+paladin.c	78	Paladins can select a realm from Life, Crusade, Daemon and Death.\s
+paladin.c	79	Like priests, they cannot select which prayers to learn, but are\s
+paladin.c	80	rewarded with new prayers by their deities. They can learn all spells,\s
+paladin.c	81	but not as fast as priests. They detest paganism so strongly that they\s
+paladin.c	82	even gain experience for destroying high-level pagan spellbooks:\s
+paladin.c	83	'pagan' means Life or Crusade spellbooks for a Death/Daemon\s
+paladin.c	84	Paladin, and all spellbooks other than Life or Crusade for a\s
+paladin.c	85	Life/Crusade Paladin. Paladins receive one class power, 'Holy Lance'\s
+paladin.c	86	or 'Hell Lance', depending on the alignment of their realm.
+personality.c	141	Chaotic adventurers are servants of the Demon Lords of Chaos, and\s
+personality.c	142	often receive a reward - or punishment - from their patrons when\s
+personality.c	143	they gain a level. Their strengths and weaknesses are\s
+personality.c	144	unpredictable; even their stat bonuses are subject to change.
+personality.c	168	Combative adventurers favor melee and shooting at the expense\s
+personality.c	169	of other skills such as disarming, device-skill, or saving throw;\s
+personality.c	170	yet this personality has more subtlety to it than the raw, untempered\s
+personality.c	171	muscle of Mighty.
+personality.c	217	A Craven person is a coward, preferring to avoid a fight at any\s
+personality.c	218	cost. Craven adventurers shoot and use devices well, their\s
+personality.c	219	stealth is impressive, and they can move fast when not fighting;\s
+personality.c	220	but their stats and other skills are somewhat wanting.
+personality.c	268	Being Fearless raises your melee skills and force of personality, besides helping you\s
+personality.c	269	resist fear; but your constitution and hit points are negatively affected.
+personality.c	327	As a Fragile adventurer, you lack both self-confidence and physical toughness.\s
+personality.c	328	Due to your incredibly low stamina, you are quickly exhausted by melee,\s
+personality.c	329	or ranged combat, or magical combat, or any other strenuous activity. (Maybe you\s
+personality.c	330	should just stay at home, quietly reading some book that isn't too heavy.)
+personality.c	381	A Hasty person endeavors to do all things quickly. Speed,\s
+personality.c	382	rather than skill or care, is paramount, and the Hasty\s
+personality.c	383	adventurer moves quickly through the dungeon, bungling much.
+personality.c	431	A Lazy person has no good stats and can do no action well.\s
+personality.c	432	All fail rates are negatively impacted. Yet some whisper\s
+personality.c	433	that the less hard you work, the greater the reward...
+personality.c	479	A Lucky adventurer has poor stats but, surprisingly, can do all\s
+personality.c	480	things well. For some reason, good things seem to happen\s
+personality.c	481	more often to lucky players.
+personality.c	524	Mighty raises your physical stats, skills and stamina, but reduces\s
+personality.c	525	your magical abilities and gives a slight penalty to your spell\s
+personality.c	526	fail rates. It is the most warrior-like personality.
+personality.c	591	The Munchkin personality is for players who love being overpowered.\s
+personality.c	592	It raises all your stats and skills; with this personality, you can\s
+personality.c	593	beat the game easily, but gain no honor in doing so, and your win\s
+personality.c	594	won't count.
+personality.c	644	Mundane adventurers have few talents to speak of, and\s
+personality.c	645	are incapable of using spells and not very good with\s
+personality.c	646	magical devices; but their anti-magic allows them to\s
+personality.c	647	resist the effects of many dangerous curses.
+personality.c	681	Nimbleness is good for your skills and allows you to move less noisily; but your\s
+personality.c	682	raw strength is somewhat lacking, and you cannot survive quite as many hits.
+personality.c	724	As a Noble person, you have the benefits of an upper-class upbringing\s
+personality.c	725	(at least, you consider them benefits). You start with extra\s
+personality.c	726	money, and seem to have a relatively easy time acquiring even\s
+personality.c	727	more money; but whether other aspects of the adventuring life\s
+personality.c	728	will come to you as naturally remains to be seen.
+personality.c	767	An ordinary person is average in every respect, gaining neither\s
+personality.c	768	skills, talents nor stat adjustments.
+personality.c	796	A Patient adventurer does everything with great care, but not always\s
+personality.c	797	with great speed or confident hands. Patient characters are highly\s
+personality.c	798	resilient, and their slow but measured movements make them relatively\s
+personality.c	839	Pious deepens your faith in your God. It makes your physical\s
+personality.c	840	ability average, and your stats suitable for a priest.
+personality.c	899	Sexy adventurers have excellent stats and skills, but their haughty\s
+personality.c	900	attitude aggravates all monsters.
+personality.c	945	Being Shrewd does not give you an impressive physique, but good device handling\s
+personality.c	946	embiggens the smallest man; this is the stereotypical Mage personality,\s
+personality.c	947	yet can also help a warrior complement his weaknesses.\s
+personality.c	948	Shrewdness has a direct positive influence on spell fail rates.
+personality.c	997	Sneaky adventurers are stealthy and at home with light stabbing\s
+personality.c	998	weapons; but face-to-face combat with heavier weapons plays\s
+personality.c	999	against their strengths.
+personality.c	1267	You have multiple personalities, and inherit the upsides and\s
+personality.c	1268	downsides of each. At all times, one of your personalities is\s
+personality.c	1269	dominant, and you receive the full effects of that personality;\s
+personality.c	1270	the remaining personalities are either partially suppressed\s
+personality.c	1271	or fully suppressed. A partially suppressed personality gives\s
+personality.c	1272	reduced stat and skill bonuses, and some other effects\s
+personality.c	1273	(like the walking speed bonus of Craven or the aggravation from\s
+personality.c	1274	Sexy) will be absent entirely, but other parts of the personality\s
+personality.c	1275	apply normally. A fully dormant personality has no effect on you\s
+personality.c	1276	at the moment, but may resurface later! Level gains, and the\s
+personality.c	1277	trauma of taking heavy damage, can cause previously suppressed\s
+personality.c	1278	personalities to become dominant and vice versa.
+personality.c	1382	An Unlucky adventurer looks impressive on paper and\s
+personality.c	1383	should, by rights, have an easy time - but somehow\s
+personality.c	1384	their fights don't go quite so smoothly, and the items\s
+personality.c	1385	they most need never seem to drop.
+polly.c	902	Politicians are masters of spinning and manipulation, seeking\s
+polly.c	903	to convert others to their cause and to destroy those they cannot\s
+polly.c	904	convert. They are not very good at either direct combat or at using\s
+polly.c	905	magical devices, and rely on their savvy and special skills and on\s
+polly.c	906	the help of their friends to win fights. They have the ability to\s
+polly.c	907	toggle between hit points, wealth and experience as the source of\s
+polly.c	908	their power, although the latter two only become available at higher\s
+polly.c	909	levels. Charisma is a key stat for Politicians.
+priest.c	116	A Priest is a character devoted to serving a higher power. They\s
+priest.c	117	explore the dungeon in the service of their God. They are fairly\s
+priest.c	118	familiar with magical devices, which they believe act as foci for divine\s
+priest.c	119	intervention in the natural order of things.\n \n
+priest.c	120	There are two types of priests: Good and Evil. If the priest chooses Life\s
+priest.c	121	or Crusade as their first realm, they will follow the path of good;\s
+priest.c	122	as such, they may not choose an evil realm for their second realm. Good\s
+priest.c	123	priests abhor bloodshed, and therefore are not comfortable with edged weapons,\s
+priest.c	124	although they eventually learn to bless such weapons and then use them without disrupting their prayers.\s
+priest.c	125	Should a priest choose Death or Daemon as their first realm, however,\s
+priest.c	126	they will serve an evil god; evil priests actually enjoy shedding blood, and\s
+priest.c	127	suffer no such weapon restrictions. Of course, evil priests abhor good things,\s
+priest.c	128	and are unable to choose Life or Crusade for their second realm.\n \n
+priest.c	129	Good priests have a strong affinity for Life prayers, and learn them very well, even better\s
+priest.c	130	than a High-Mage. Conversely, evil priests favor prayers of Death, and receive\s
+priest.c	131	strong bonuses when choosing this foul realm. Otherwise, priests learn magic less\s
+priest.c	132	efficiently than a Mage would; but their greater stamina and combat skills compensate for this.\s
+priest.c	133	Priests, unlike Mages, cannot choose to study specific spells; rather, they\s
+priest.c	134	are granted new prayers by the whim of their deity, presumably in accordance with\s
+priest.c	135	some greater divine plan. The primary stat for a priest is Wisdom.
+psion.c	1515	Mana Thrust grants you an offensive ranged attack.\s
+psion.c	1516	With this power, you will have good early offense as well as the\s
+psion.c	1517	ability to scale the damage of the mana thrust quite considerably.\s
+psion.c	1518	No monster can resist the Mana Thrust; but unlike Energy Blast this\s
+psion.c	1519	attack is a bolt, so it only affects a single monster at a time and\s
+psion.c	1520	some monsters might reflect the spell back.
+psion.c	1528	Energy Blast grants you an offensive ranged attack.\s
+psion.c	1530	ability to scale the damage of the blast quite considerably.\s
+psion.c	1531	The blast will produce an elemental ball whose type is of your\s
+psion.c	1532	choosing, although the range of choices will depend on how\s
+psion.c	1533	much focus you invest in the blast. Unlike most ball spells,\s
+psion.c	1534	this spell deals full damage to all monsters in its area of effect\s
+psion.c	1535	unless resisted, without any reduction away from the epicenter.
+psion.c	1543	Psionic Seeing grants you considerable powers of detection.\s
+psion.c	1544	Depending on how hard you focus, you may detect monsters, traps,\s
+psion.c	1545	doors, stairs, and objects; with enough concentration you can\s
+psion.c	1546	map your surroundings, gain temporary powers of telepathy, or even\s
+psion.c	1547	map the entire level!
+psion.c	1555	Weapon Grafting is a power unique to the psion. Invoking this power\s
+psion.c	1556	fuses your current weapon to your arm for a limited time; in a sense,\s
+psion.c	1557	your weapon becomes an extension of you and may be wielded much more\s
+psion.c	1558	effectively. However, while this spell is active, you will not be\s
+psion.c	1559	able to remove your weapon.
+psion.c	1567	Psionic Clarity focuses the mind of the psion. While only active for\s
+psion.c	1568	a short while, this power lowers the casting costs of all other psionic\s
+psion.c	1569	powers, which can be quite useful later in the game; take it as an early\s
+psion.c	1570	option if you already have an eye on the endgame and have no need for more\s
+psion.c	1571	immediate returns.
+psion.c	1579	Psionic Blending grants great powers of stealth. While active, you\s
+psion.c	1580	will be able to blend in with your surroundings and sneak up on many foes.\s
+psion.c	1581	With maximal focus, you may even suppress aggravation (from your equipment),\s
+psion.c	1582	though your stealth will still be somewhat disrupted.
+psion.c	1590	Psionic Shielding is a defensive power. While active you will gain Free Action\s
+psion.c	1591	as well as increased Armor Class; Free Action provides resistance to deadly\s
+psion.c	1592	paralysation attacks, while Armor Class makes monster melee attacks much\s
+psion.c	1593	more likely to miss and also reduces damage from some melee attack hits.
+psion.c	1601	Psionic Travel grants a wide array of teleportation powers. From inexpensive short-range\s
+psion.c	1602	'blinking' to long-range escapes, you will have it all. Indeed, with great\s
+psion.c	1603	focus you will even be able to control your teleportation and choose where you land!
+psion.c	1611	Psionic Protection is a defensive power. While active you will gain resistance to\s
+psion.c	1612	the elements (Fire, Cold, Lightning, Acid and Poison). The more of your mental\s
+psion.c	1613	focus you devote to this power, the more of these elements you will resist.
+psion.c	1621	Combat Transformation is an offensive power, channelling your mental focus into\s
+psion.c	1622	enhanced melee fighting. While active, your skills in combat will improve, affecting\s
+psion.c	1623	the accuracy of your blows; also, your reflexes will quicken in line with your mental\s
+psion.c	1624	acuity, affecting the speed of your attacks. This power requires your constant\s
+psion.c	1625	focus, and so increases the casting costs of all other psionic powers.
+psion.c	1633	Archery Transformation is an offensive power, channelling your mental focus into\s
+psion.c	1634	enhanced shooting. While active, your skills with all missile weapons will improve,\s
+psion.c	1635	affecting the accuracy of your shots; sufficient skill also allows you to shoot\s
+psion.c	1636	with increased speed. This power requires your constant focus, and thus\s
+psion.c	1637	increases the casting costs of all other psionic powers.
+psion.c	1645	Ego Whip is an offensive power which lashes a targetted monster repeatedly with your\s
+psion.c	1646	psychic energy; the effect lasts for multiple rounds, during which time you may\s
+psion.c	1647	perform other separate actions. However, monsters do get a saving throw against\s
+psion.c	1648	the ego whip every turn, and if they make a save, they are able to shake off the\s
+psion.c	1649	whip completely.
+psion.c	1657	Psionic Speed channels your mental energy into speed of motion, granting great\s
+psion.c	1658	powers of haste. With increased focus comes increased speed, and the total\s
+psion.c	1659	amount of haste can greatly exceed what is possible for other classes.
+psion.c	1667	Psionic Healing is a recovery spell. By focusing your mind, you will be able\s
+psion.c	1668	to heal your wounds, cuts and stunning; with sufficient focus, you can cure\s
+psion.c	1669	hallucination and even restore your stats.
+psion.c	1677	Brain Smash is an offensive spell. Although it does no physical damage, it inflicts\s
+psion.c	1678	a powerful mental attack on your foes which may confuse, stun or slow them.
+psion.c	1686	Mind Wave unleashes the effects of your mental focus on all visible monsters as psionic energy,\s
+psion.c	1687	dealing unresistable raw damage and potentially stunning, confusing, frightening and paralysing\s
+psion.c	1688	monsters; as the attack operates directly against monsters' minds, these side effects can sometimes bypass\s
+psion.c	1689	normal resistances, but mindless monsters are not affected at all. This spell does not pack quite as\s
+psion.c	1690	much raw power as Psionic Storm, but the lower cost and ability to affect more monsters compensate for this.
+psion.c	1698	Psionic Crafting channels your mental focus into an object, enchanting it in the\s
+psion.c	1699	process. With maximal focus, you can even craft excellent items!
+psion.c	1707	Psionic Storm unleashes your mental focus in a large, powerful ball of energy;\s
+psion.c	1708	this psionic energy not only deals unresistable damage, but can stun, confuse,\s
+psion.c	1709	frighten and even paralyze monsters, with a chance to bypass normal resistances.\s
+psion.c	1710	Mindless monsters are not affected.
+psion.c	1718	Psionic Backlash is a defensive spell. While active, any enemy that damages you will\s
+psion.c	1719	take a proportional amount of damage in retaliation; the greater your focus, the\s
+psion.c	1720	greater the retaliatory damage.
+psion.c	1728	Psychic Drain allows you to draw mental energy and focus from the magic around you.\s
+psion.c	1729	Whenever you are hit by a magic spell you will convert some of the damage into mana. This\s
+psion.c	1730	power has no effect on non-magical damage like breaths, rockets or melee.
+psion.c	1738	Psionic Disruption allows you to block the minds of others, hindering their ability\s
+psion.c	1739	to cast spells. But be warned: innate monster attacks (such as breaths, rockets and\s
+psion.c	1740	boulder throws) will not be affected!
+psion.c	1748	Mental Fortress grants immunity to Dispel Magic and Anti-Magic. In addition, it\s
+psion.c	1749	increases the power of your spells.
+psion.c	1765	Psionic Foresight allows you to see into the future. With knowledge\s
+psion.c	1766	of events before they take place, you will be able to avoid many attacks\s
+psion.c	1767	altogether!
+psion.c	2287	Psions, like Mindcrafters, rely on their innate mental powers; indeed, some of these\s
+psion.c	2288	powers resemble those of Mindcrafters. Unlike Mindcrafters, though, Psions can\s
+psion.c	2289	select which powers they wish to learn; together with their natural aptitude\s
+psion.c	2290	in a fairly broad range of skills, this makes Psions one of the most versatile\s
+psion.c	2291	classes. Most psionic powers are extremely strong, but the number of powers a\s
+psion.c	2292	Psion can learn is very limited: one each at levels 1, 10, 15, 20, 30, 35, 40 and 50.\n\n
+psion.c	2293	The potency of psionic powers can be scaled up or down as needed, within limits;\s
+psion.c	2294	the more mana is spent, the more powerful the effect. All psionic powers require\s
+psion.c	2295	great concentration, leaving the Psion no time for pets.\s
+psion.c	2296	Psions do not have one fixed spell stat; they can use either Intelligence, Wisdom\s
+psion.c	2297	or Charisma, whichever is the highest. In this respect they are truly unique!
+py_birth.c	445	Welcome to <color:keyword>FroxComposband</color>, an updated version\s
+py_birth.c	446	of <color:keyword>FrogComposband</color>, a dungeon exploration\s
+py_birth.c	447	role-playing game. Your goal is to defeat the dreaded\s
+py_birth.c	448	<color:keyword>Serpent of Chaos</color>, but before you can face it,\s
+py_birth.c	449	you must battle many foes. Your first step is to create a character\s
+py_birth.c	450	for this quest. The following screens will guide you through this\s
+py_birth.c	451	process so that you may quickly begin playing. You can get general\s
+py_birth.c	452	help at any time by pressing <color:keypress>?</color>.\n\n
+py_birth.c	456	First, you must decide what type of game to play. <color:keyword>Beginner Mode</color>\s
+py_birth.c	457	limits the options available, simplifying things for new players.\n\n\s
+py_birth.c	477	<color:G>Tip:</color> <indent>You can often get specific\s
+py_birth.c	478	help by entering the uppercase letter for a command. For\s
+py_birth.c	479	example, type <color:keypress>B</color> on this screen\s
+py_birth.c	480	to receive help on Beginner Mode.</indent>
+py_birth.c	691	example, type <color:keypress>R</color> on this screen\s
+py_birth.c	692	to receive help on your currently selected race.</indent>
+py_birth.c	2494	<color:G>Note: </color><indent>
+py_birth.c	2495	You may adjust each starting stat using the indicated\s
+py_birth.c	2496	keys. The lower case key decrements while the upper case increments\s
+py_birth.c	2497	the starting value. Values may range from 8 to 17 and each value that\s
+py_birth.c	2498	you enter is charged the indicated number of points. You only have 30\s
+py_birth.c	2499	points to spend, so be sure to adjust those stats that matter most.
+quest.c	1529	</color>. You may return to this quest later though.\s
+quest.c	1530	Are you sure you want to leave? <color:y>[Y,n]</color>
+quest.c	1547	</color>. <color:v>You will fail this quest if you leave!</color>\s
+quest.c	1578	</color>. <color:v>You will fail this quest if you leave it before completing it!</color>\s
+quest.c	1579	Are you sure you want to\s
+quest.c	1656	If you like, you may choose to intentionally fail this quest.\s
+quest.c	1657	Choose this option if you feel that you really cannot handle this opponent or\s
+quest.c	1658	would rather not wait until you can. <color:v>Fail this quest?</color>\s
+quest.c	2184	<color:keypress>m</color> to display map.\s
+quest.c	2185	<color:keypress>R</color> to reset all quests and re-assign all random quests.\n
+quest.c	2186	<color:keypress>$</color> to see reward.\s
+quest.c	2187	<color:keypress>c</color> to set complete.\s
+quest.c	2188	<color:keypress>f</color> to set failed.\s
+quest.c	2189	<color:keypress>t</color> to set taken.\s
+quest.c	2190	<color:keypress>u</color> to set untaken.\n
+quest.c	2191	<color:keypress>?</color> to analyze quest file.\n
+r_angel.c	4	Angels are heavenly beings on a holy mission. Their wings allow them to\s
+r_angel.c	5	fly over chasms and pits. They are rarely fooled by invisibility, and\s
+r_angel.c	6	become resistant to the elements as they mature. Their stats are truly awe-inspiring,\s
+r_angel.c	7	and their divine magic extremely strong, offering good offense combined with detection,\s
+r_angel.c	8	healing, melee enhancement and utility. Angels are one of the most powerful\s
+r_angel.c	9	races, but they also gain levels extremely slowly.\n \n
+r_angel.c	10	Angels have a humanoid body type; they use the same equipment slots as most normal\s
+r_angel.c	11	player races, and have no innate melee attacks. Wisdom is their primary spell stat.
+r_centip.c	11	Centipedes are natural creatures with many legs. As they\s
+r_centip.c	12	evolve, they change colors, but not much else seems to differentiate the various forms.\s
+r_centip.c	13	Perhaps you prefer blue to red or green? Eventually, once you have evolved into your\s
+r_centip.c	14	ultimate evolutionary form, you will be able to change colors at will and thereby become\s
+r_centip.c	15	very powerful indeed.\n \n
+r_centip.c	16	As a centipede, your main survival attribute will be the many pairs of boots you can wear.\s
+r_centip.c	17	Hopefully, this will be enough.
+r_demon.c	4	Demons are powerful servants of evil and come in many forms. They rely on their\s
+r_demon.c	5	devilish powers or their brutish strength to survive.\n \n
+r_demon.c	6	The various demonic races include the Balrogs, powerful demons of fire; the Servants\s
+r_demon.c	7	of Khorne, mighty warriors of destruction; the Tanar'ri, weaker demons whose ultimate\s
+r_demon.c	8	form has three sets of arms, but prefers to fight naked; and Cyberdemons, whose firepower\s
+r_demon.c	9	is unsurpassable.\n \n
+r_demon.c	10	Demons cannot eat normal food, but must feast upon the remains of their human\s
+r_demon.c	11	enemies. They are unaffected by the Eldritch Horror.
+r_demon.c	325	Khorne's servants come in many forms and are powerful forces of melee. They know nothing\s
+r_demon.c	326	save melee, and strike at all that dare oppose the will of their master. As they gain\s
+r_demon.c	327	experience, Khorne rewards his servants with new and more powerful forms.
+r_demon.c	579	Tanar'ri were originally slave demons, but rose up to overthrow their masters.\s
+r_demon.c	580	They generally take on a humanoid form and are classic demons full of malice and\s
+r_demon.c	581	cruelty. The ultimate form for this demon is the Marilith, a female demon with\s
+r_demon.c	582	three sets of arms and a serpent body capable of attacking with six melee weapons!
+r_demon.c	738	Balrogs are demons of shadow and flame. Their evil knows no bounds. Their spells are\s
+r_demon.c	739	the most powerful of all demonkind, and at very high levels they may even call forth\s
+r_demon.c	740	fires directly from hell.
+r_demon.c	910	Cyberdemons are giant humanoid forms, half demon and half machine. They are a bit\s
+r_demon.c	911	slow and move erratically, but their immense bodies and unsurpassable firepower\s
+r_demon.c	912	more than make up for this. The walls of the dungeon reverberate with their heavy steps!\n\n
+r_demon.c	913	Cyberdemons are one of the very few monster races not to undergo evolution, and so almost all\s
+r_demon.c	914	their might is available from the beginning, although they do gain even more\s
+r_demon.c	915	strength later on and their offense becomes stronger with experience.
+r_dragon.c	7	Dragons are powerful winged serpents. They are strong in combat,\s
+r_dragon.c	8	with razor-sharp claws and a bone-crushing bite; but even more legendary\s
+r_dragon.c	9	is their breath, which grows ever more deadly as the dragon matures.\n \n
+r_dragon.c	10	Due to their non-humanoid bodies, dragons are unable to wear armor, gloves\s
+r_dragon.c	11	or boots; however, being creatures of magic, they may equip up to six rings.\s
+r_dragon.c	12	They can also wear a helmet, a light source, a cloak and an amulet. Because\s
+r_dragon.c	13	of these equipment restrictions, dragons may have a difficult time covering\s
+r_dragon.c	14	all resistances; but each dragon has at least one innate resistance, maybe\s
+r_dragon.c	15	even an immunity.\n \n
+r_dragon.c	16	Dragons begin life in a weak form, being very young. As their bodies mature,\s
+r_dragon.c	17	their scales grow tough and their claws sharp. Their breaths become stronger and\s
+r_dragon.c	18	stronger, and they frequently gain additional magical powers and resistances.\s
+r_dragon.c	19	All dragons can fly, but younger dragons are not so quick as their elders.\n \n
+r_dragon.c	20	With the exception of Steel Dragons, who are far less intelligent than their kin\s
+r_dragon.c	21	and rely on brute force only, each dragon may choose to specialize in a\s
+r_dragon.c	22	specific type of magic. These special dragon-magic realms do not require books\s
+r_dragon.c	23	to learn. The selection of a realm has a direct influence on the stats and skills of the dragon.
+r_dragon.c	424	Dragons specializing in lore are seekers of knowledge. They are the most\s
+r_dragon.c	425	intelligent of dragonkind, and it is intellect that drives their magic.\s
+r_dragon.c	426	Armed with a vast array of detection and knowledge spells, dragons of lore\s
+r_dragon.c	427	seek power through knowledge. They eventually gain powers of telepathy and\s
+r_dragon.c	428	automatic object identification. Lore dragons are quick learners, and gain\s
+r_dragon.c	429	maturity much more rapidly than the rest of their kind.
+r_dragon.c	434	Dragon breath is the stuff of legends, and this realm seeks to enhance this most\s
+r_dragon.c	435	powerful attribute of dragonkind. With this speciality, you will be able to shape\s
+r_dragon.c	436	and control your breaths to maximize deadliness for a given situation. In addition,\s
+r_dragon.c	437	dragons of this realm may choose their breath types if applicable, and breathing\s
+r_dragon.c	438	becomes less costly as they mature. This focus requires great fortitude to master\s
+r_dragon.c	439	and somewhat diminishes the dragon's defenses and melee.
+r_dragon.c	444	Attack dragons seek melee supremacy above all else. This realm offers powerful attack\s
+r_dragon.c	445	spells to support a race that is already among the melee elite, and the result tends to be\s
+r_dragon.c	446	devastation and death. With this realm, the dragon may rend their opponents with\s
+r_dragon.c	447	extra sharp claws, may snatch an adjacent opponent in their powerful jaws and then\s
+r_dragon.c	448	toss them about like a rag doll, and may even augment their bite attacks with their\s
+r_dragon.c	449	breath element! A rampaging dragon is a truly awe-inspiring sight, one that is\s
+r_dragon.c	450	seldom witnessed, or perhaps just seldom survived. This focus values strength above all else.
+r_dragon.c	455	The most powerful magical items have long been believed forged by dragonflame. The\s
+r_dragon.c	456	craft dragon gains powers of enchantment, and may even reforge artifacts into the objects\s
+r_dragon.c	457	of their choosing! Otherwise, craft dragons are not particularly powerful, as they trade\s
+r_dragon.c	458	melee and breath prowess for magical understanding. This focus requires great wisdom.
+r_dragon.c	463	Dragon scales have thwarted many a would-be dragonslayer. Naturally tough and resistant,\s
+r_dragon.c	464	the dragon's armor is even further enhanced by this realm. This specialization gives enhanced\s
+r_dragon.c	465	armor class, reflection, resistance to cuts and stunning, resistance to poison\s
+r_dragon.c	466	and life draining, and sustaining of several key stats, albeit not all at once. With all\s
+r_dragon.c	467	of these extra innate bonuses, the magic spells of this realm are few in number but serve\s
+r_dragon.c	468	to offer temporary defensive augmentations. Unlike their kin, dragons of this order prize\s
+r_dragon.c	469	agility above all else.
+r_dragon.c	474	All dragons have a formidable presence and make fearsome opponents; but Domination dragons\s
+r_dragon.c	475	are truly a breed apart, seeking to bend and control the will of all they meet. Convinced\s
+r_dragon.c	476	of their right to rule, these dragons may subjugate the weak, terrify the uncertain,\s
+r_dragon.c	477	and stun the unwary with their awesome presence. They are the best dragons at controlling\s
+r_dragon.c	478	minions, and can summon mighty aid. Initially hostile monsters summoned to battle may switch sides\s
+r_dragon.c	479	when they notice whom they have been commanded to fight; and in the end, the dragon of\s
+r_dragon.c	480	domination may sever all oaths of allegiance, returning enemy summons to where they came from.\s
+r_dragon.c	481	Needless to say, dragons of this order value force of will above all else.
+r_dragon.c	486	Crusade dragons are on a mission to destroy the forces of evil. As such, this realm is only\s
+r_dragon.c	487	available to Gold Dragons and Law Dragons. Being of a single focus, the Crusade dragon is not\s
+r_dragon.c	488	as powerful in melee or breaths as other dragons, but their spells more than make up for this\s
+r_dragon.c	489	deficit, at least against evil opponents. Crusade dragons can breathe holy elements\s
+r_dragon.c	490	not normally accessible. At the sight of evil, they become enraged and may haste\s
+r_dragon.c	491	for battle. They can even heal a bit; and ultimately they may smite the forces of evil with\s
+r_dragon.c	492	holy power, both in melee and in breath. Strong in personality, dragons of this order\s
+r_dragon.c	493	may summon like-minded kin for the final battles.
+r_dragon.c	498	Death dragons are enemies of life itself, seeking to destroy all living creatures. With this\s
+r_dragon.c	499	realm, the dragon may bend their breath weapon to suit their necromantic desires, eventually\s
+r_dragon.c	500	breathing mastery over both death and life. At high levels, the death dragon's melee attacks\s
+r_dragon.c	501	gain a powerful draining effect against living creatures. This focus values strength above\s
+r_dragon.c	502	all else. This foul realm is only available to Shadow and Chaos dragons.
+r_dragon.c	2218	Red Dragons are elemental dragons of fire, and the second-strongest fighters among\s
+r_dragon.c	2219	dragons. Their fiery breaths are the stuff of legends with damage unsurpassed. Even their\s
+r_dragon.c	2220	bites are likely to burn their opponents, further enhancing their deadliness in melee.\s
+r_dragon.c	2221	As the Red Dragon matures, it becomes more and more resistant to fire, eventually gaining\s
+r_dragon.c	2222	total immunity.
+r_dragon.c	2226	White Dragons are to cold what Red Dragons are to fire. Their melee is awe-inspiring,\s
+r_dragon.c	2227	and their icy breath can be felt even in their bite. Together with Red Dragons, they\s
+r_dragon.c	2228	have the deadliest breaths among dragonkind; and they become more and more\s
+r_dragon.c	2229	resistant to cold as they mature, eventually attaining immunity.
+r_dragon.c	2233	Blue Dragons are elemental dragons of lightning. Their breaths are as\s
+r_dragon.c	2234	strong as those of their Red and White brethren, their melee somewhat weaker but still mighty,\s
+r_dragon.c	2235	and their bites eventually shock their foes. Blue Dragons become more and more\s
+r_dragon.c	2236	resistant to lightning as they mature, eventually gaining total immunity.
+r_dragon.c	2240	Black Dragons are to acid what Blue Dragons are to lightning. Their breaths are as strong\s
+r_dragon.c	2241	as those of their Red, White and Blue kin; and fewer monsters resist acid, giving them an extra\s
+r_dragon.c	2242	opening. As the Black Dragon matures, its bites become corrosive, and it grows more resistant to acid\s
+r_dragon.c	2243	until it reaches immunity.
+r_dragon.c	2247	Green Dragons are elemental dragons of venom. They are not quite as strong as Red or White dragons,\s
+r_dragon.c	2248	but are still fearsome opponents. As they mature, their bites poison their enemies.\s
+r_dragon.c	2249	Green Dragons become more and more resistant to poison over time, eventually achieving immunity.
+r_dragon.c	2470	Shadow Drakes are among the stealthiest of dragons. They are creatures of nether,\s
+r_dragon.c	2471	and eventually evolve into Death Drakes and Spectral Wyrms. Their melee is the weakest among dragonkind and\s
+r_dragon.c	2472	their breaths are also somewhat lacking, but they still make fearsome opponents. As they advance,\s
+r_dragon.c	2473	these dragons gain the ability to pass through walls, and acquire several resistances including\s
+r_dragon.c	2474	immunity to nether.
+r_dragon.c	2567	Law Drakes are powerful dragons of order. They can breathe sound or shards and eventually\s
+r_dragon.c	2568	evolve into Great Wyrms of Law, though not as quickly as you might hope. Their breaths\s
+r_dragon.c	2569	are much weaker than those of the elemental dragons, but far fewer monsters resist sound\s
+r_dragon.c	2570	or shards. Their melee is also on the weak side by dragon standards, but most lesser creatures\s
+r_dragon.c	2571	would be quite happy with it!
+r_dragon.c	2664	Chaos Drakes are powerful dragons of chaos. They can breathe chaos or disenchantment and eventually\s
+r_dragon.c	2665	evolve into Great Wyrms of Chaos, though not as quickly as you might hope. Their breaths\s
+r_dragon.c	2666	are much weaker than those of the elemental dragons, but far fewer monsters resist chaos\s
+r_dragon.c	2667	or disenchantment; and though their melee is weak for a dragon, by more typical standards\s
+r_dragon.c	2668	they fight quite well.
+r_dragon.c	2761	Balance Drakes are a blend of Chaos and Law Drakes. They can breathe sound, shards,\s
+r_dragon.c	2762	chaos or disenchantment and eventually evolve into Great Wyrms of Balance.\s
+r_dragon.c	2763	Their breaths and attacks are weaker than those of Chaos and Law Drakes, but not by much.
+r_dragon.c	2868	Ethereal Drakes are dragons of light and darkness. They begin life as modest Pseudo\s
+r_dragon.c	2869	Dragons, but quickly evolve into Ethereal Drakes and then Ethereal Dragons. As they\s
+r_dragon.c	2870	mature, they gain the ability to pass through walls and become more and more resistant\s
+r_dragon.c	2871	to light, darkness and confusion. They are fairly weak fighters and have the weakest\s
+r_dragon.c	2872	breaths in all of dragonkind, except for Steel Dragons which cannot breathe at all.
+r_dragon.c	2980	Crystal Drakes are dragons of a strange crystalline form. They breathe shards and fight\s
+r_dragon.c	2981	powerfully with their razor-sharp claws and teeth. At high levels, they gain the power of\s
+r_dragon.c	3082	Bronze Dragons are wyrms of perplexity. While they are not quite as strong as most other\s
+r_dragon.c	3083	dragons, they eventually confuse monsters with their bite attack; also, they become\s
+r_dragon.c	3084	more and more resistant to confusion as they mature.
+r_dragon.c	3185	Gold Dragons are wyrms of sound. While they are not quite as strong as most other\s
+r_dragon.c	3186	dragons, they are able to breathe sound on command, stunning their foes; also, they become\s
+r_dragon.c	3187	more and more resistant to sound as they mature.
+r_dragon.c	3296	Steel Dragons are magical dragons formed from rock. As they mature, their form hardens\s
+r_dragon.c	3297	from stone into steel. Needless to say, their armor class is phenomenal, but their\s
+r_dragon.c	3298	dexterity actually decreases with maturity. Steel dragons begin life being susceptible\s
+r_dragon.c	3299	to cold damage, though they will eventually outgrow this vulnerability. They are not\s
+r_dragon.c	3300	as fast as other dragons and have no powers whatsoever, not even the ubiquitous\s
+r_dragon.c	3301	dragon breath! But their fighting is impossibly strong, putting all the other dragons\s
+r_dragon.c	3302	to complete and utter shame. They also have extremely high hitpoints.
+r_elem.c	4	Elementals are mindless creatures animated from a single\s
+r_elem.c	5	elemental form. As a species, elementals can never be cut,\s
+r_elem.c	6	and being virtually mindless they are immune to sanity blasting.\s
+r_elem.c	7	They rarely feel fear, and are resistant to confusion and poison. In addition, they\s
+r_elem.c	8	gain specific powers and abilities depending on their form.\n \n
+r_elem.c	9	Earth Elementals are slow, but gain AC bonuses due to their tough bodies.\s
+r_elem.c	10	They are resistant to shards, and may even turn their skins to stone.\s
+r_elem.c	11	At home in elemental earth, they may travel freely through rocky confines.\s
+r_elem.c	12	Unfortunately, as they are made of earth, their magic potions frequently turn to mud!\n \n
+r_elem.c	13	Air Elementals are shockingly fast, but perhaps that is just the\s
+r_elem.c	14	crackle of their electrified bodies? They may hurl bolts and balls of\s
+r_elem.c	15	electricity at their enemies, and may even imbue their weapons with\s
+r_elem.c	16	deadly lightning. However, being surrounded by lightning, rings,\s
+r_elem.c	17	amulets, wands and rods are quickly destroyed!\n \n
+r_elem.c	18	Fire Elementals are somewhat fast (enough to run circles around\s
+r_elem.c	19	their earthen brethren) and are cloaked in flames. They may attack\s
+r_elem.c	20	with hell's fury, but need to be on the lookout for cold-wielding foes.\s
+r_elem.c	21	Being surrounded by fire, they rapidly burn scrolls and staves to ash!\n \n
+r_elem.c	22	Finally, there are the Water Elementals, creatures able to conjure deadly\s
+r_elem.c	23	water bolts. They are immune to stunning. Their attacks can be quite corrosive;\s
+r_elem.c	24	but alas, sometimes their own armor corrodes as well. Water Elementals also have a unique\s
+r_elem.c	25	energy system based on the speed of their internal water flow; fighting and\s
+r_elem.c	26	the use of elemental powers excite them and turn them into a raging torrent,\s
+r_elem.c	27	while resting or aimlessly splashing about slows them down again. High flow\s
+r_elem.c	28	rates make water elementals stronger, but their armor sometimes gets caught in\s
+r_elem.c	29	the flow and slips off!
+r_elem.c	1423	Earth Elementals are creatures of rock: Strong, tough and slow.\s
+r_elem.c	1424	They may move freely through the earth and are capable of conjuring\s
+r_elem.c	1425	sharp clods of earth to hurl at their foes. Their skin is very tough,\s
+r_elem.c	1426	and they can even turn their bodies to stone. However, being made of\s
+r_elem.c	1427	earth, their potions frequently turn to mud.
+r_elem.c	1429	Air Elementals are creatures of electricity. They are incredibly fast,\s
+r_elem.c	1430	blinking in and out of sight as they shower their enemies with confusing\s
+r_elem.c	1431	and shocking blows. Electricity crackles menacingly about their nimble frames,\s
+r_elem.c	1432	tending to destroy rings, amulets, wands and rods.
+r_elem.c	1434	Water Elementals are creatures of water, able to modify this ubiquitous\s
+r_elem.c	1435	liquid into a deadly and often corrosive weapon of destruction. Fear their\s
+r_elem.c	1436	rage! They cannot be stunned. Their corrosive nature erodes any armor that\s
+r_elem.c	1437	gets too close.
+r_elem.c	1439	Fire Elementals are creatures of flame. They have a vast arsenal of\s
+r_elem.c	1440	flaming attacks with which to singe the fiercest of foes. However, they\s
+r_elem.c	1441	must beware of cold based attacks! Being wreathed in flames, scrolls and\s
+r_elem.c	1442	staves are quickly burned to ash.
+r_eye.c	369	Beholders are floating orbs of flesh with a single central eye surrounded by\s
+r_eye.c	370	numerous smaller eyestalks. They attack with their gaze which often confuses or\s
+r_eye.c	371	even paralyzes their foes. They are unable to wield normal weapons or armor, but\s
+r_eye.c	372	may equip a single ring on each of their eyestalks, and the number of eyestalks\s
+r_eye.c	373	increases as the beholder evolves.\n \n
+r_eye.c	374	Beholders gain powers as they evolve, including some strong offensive spells;\s
+r_eye.c	375	but their primary offense will always be their powerful gaze. Intelligence is their\s
+r_eye.c	376	spell stat, and beholders are quite intelligent indeed. Their searching and\s
+r_eye.c	377	perception are legendary, and they are quite capable with magical devices.\s
+r_eye.c	378	However, they are not very strong and must be careful when surrounded by\s
+r_eye.c	379	foes.\n \n
+r_eye.c	380	The attack of the beholder is unique. Since their gaze is not a normal physical\s
+r_eye.c	381	attack, they receive no benefit to melee from their Strength and Dexterity. Also,\s
+r_eye.c	382	the number of attacks is determined by level rather than the normal way: in this\s
+r_eye.c	383	respect, they resemble monks. Finally, the beholder need not be next to their foes\s
+r_eye.c	384	in order to attack with melee; they may gaze at distant monsters, though the range\s
+r_eye.c	385	of their gaze is somewhat restricted, and prolonged long-distant gazing will tire them out.
+r_giant.c	4	Giants are humanoids of immense stature. There are several types of giants.\s
+r_giant.c	5	Fire, Frost and Storm giants are elemental giants, and gain elemental resistances,\s
+r_giant.c	6	slays and even attacks appropriate for their type. Titans are powerful immortal beings of legend;\s
+r_giant.c	7	their attacks often confuse their foes, and they rarely fight alone. Finally, there are the mighty\s
+r_giant.c	8	Hrus; they are so strong they can eventually crush the walls in their path, but their magical\s
+r_giant.c	9	powers are fairly limited.\n \n
+r_giant.c	10	Giants rely on their superior physical stature to pummel their opponents with mighty blows. Against a distant\s
+r_giant.c	11	foe, giants are capable of hurling large boulders with devastating effect.\s
+r_giant.c	12	Giants use the same equipment slots as most normal player races, and have no innate attacks.
+r_giant.c	1122	Fire Giants are massive giants of flame. At high levels they become\s
+r_giant.c	1123	wreathed in flames, and even their weapons will burn their foes. Like\s
+r_giant.c	1124	all giants, they may toss loose rubble at their foes. In addition,\s
+r_giant.c	1125	they have a few fire-based distance attacks up their sleeves.
+r_giant.c	1126	Frost Giants are massive giants of ice. At high levels they become\s
+r_giant.c	1127	wreathed in cold, and even their weapons will freeze their foes. Like\s
+r_giant.c	1129	they have a few cold-based distance attacks up their sleeves.
+r_giant.c	1130	Storm Giants are massive giants of lightning. At high levels they become\s
+r_giant.c	1131	wreathed in electricity, and even their weapons will shock their foes. Like\s
+r_giant.c	1133	they have a few lightning-based distance attacks up their sleeves.
+r_giant.c	1134	Titans are huge immortal beings of incredible strength and awesome power.\s
+r_giant.c	1135	Descended from Gaia and Uranus, they ruled during the legendary Golden Age,\s
+r_giant.c	1136	but were overthrown by the Olympians during the War of the Titans.
+r_giant.c	1137	Hrus are rock giants, made of stone. Their hides are tough and they are able\s
+r_giant.c	1138	to break through walls effortlessly. Hrus are incredibly strong, but lack\s
+r_giant.c	1139	much in the way of magical powers.
+r_golem.c	4	Golems are creatures animated by powerful magics: living stone conjured\s
+r_golem.c	5	to serve their creators. But you have broken loose and are running amok!\n \n
+r_golem.c	6	Golems are very slow when it comes to moving about; their non-movement actions\s
+r_golem.c	7	also tend to be slow, but not to the same extent. They excel in melee despite being limited to a\s
+r_golem.c	8	single (but mighty) blow; they can equip a weapon, but fight much better with their powerful fists.\s
+r_golem.c	9	Golems have a very high armor class and possess good resistances; they are also resistant to magic, and become\s
+r_golem.c	10	more resistant as they evolve, reducing the damage taken from all magical attacks.\n \n
+r_golem.c	11	There are several varieties of golem, all sharing a common evolutionary\s
+r_golem.c	12	heritage. First there is the mighty Colossus, the biggest (and slowest) of their\s
+r_golem.c	13	kind. Next is the Sky Golem, a creature of powerful magic, resistant to the\s
+r_golem.c	14	ravages of time. Finally, there is the Spellwarp Automaton, a creature of\s
+r_golem.c	15	utter destruction, almost completely immune to magic; unfortunately, this last form\s
+r_golem.c	16	takes nearly forever to build.
+r_golem.c	562	The Colossus is the biggest of all golems, truly immense.\s
+r_golem.c	563	Unfortunately, they are also the slowest of all golems on\s
+r_golem.c	564	account of their great size.
+r_golem.c	565	The Sky Golem is the product of powerful enchantments, resistant\s
+r_golem.c	566	to the ravages of time. They may even breathe time!
+r_golem.c	567	The Spellwarp Automaton is nearly indestructible, being\s
+r_golem.c	568	almost completely immune to magic. However, their great\s
+r_golem.c	569	power takes a seeming eternity to mature.
+r_hound.c	767	While Zephyr Hounds typically hunt in packs, you have chosen to go it alone.\s
+r_hound.c	768	You will begin life in the weak form of a Clear Hound. As you mature,\s
+r_hound.c	769	you will take a number of evolutionary steps. At each such step, the\s
+r_hound.c	770	form you evolve into will usually be randomly determined; but each tier offers\s
+r_hound.c	771	more powerful choices than the last, and you may guide your final evolution.\n \n
+r_hound.c	772	Hounds are not magical, and so cannot cast spells; however, they are\s
+r_hound.c	773	fantastic hunters, and learn a number of special abilities that will aid them\s
+r_hound.c	774	in this endeavour. And as you probably know all too well, hounds love to breathe!\n \n
+r_hound.c	775	Due to their canine bodies, Hounds cannot wield weapons; instead, they\s
+r_hound.c	776	attack with their vicious bite and razor-sharp claws. While their melee is\s
+r_hound.c	777	not as powerful as that of dragons, it usually gets the job done.\s
+r_hound.c	778	Hounds can wear four rings on their front paws, a pair of boots on their\s
+r_hound.c	779	hind legs, an amulet around their neck, and even a cloak and a suit of\s
+r_hound.c	780	body armor.
+r_hydra.c	5	Hydras are monsters with multiple heads. As they evolve, they grow\s
+r_hydra.c	6	additional heads, giving them extra attacks as well as the ability to\s
+r_hydra.c	7	wear more equipment (helmets and amulets). While not every head may\s
+r_hydra.c	8	wear a helmet and an amulet (imagine how powerful that would be!),\s
+r_hydra.c	9	each head is capable of attacking; so an 11-headed hydra can attack\s
+r_hydra.c	10	up to 11 times per round, provided it has enough strength\s
+r_hydra.c	11	and dexterity to command such a fearsome arsenal.\n \n
+r_hydra.c	12	Hydras are not very magical, and so play much like warriors but with a\s
+r_hydra.c	13	few extra abilities. Five- and seven-headed hydras resist poison and gain a few poison-based attacks.\s
+r_hydra.c	14	Nine- and eleven-headed hydras are creatures of flame: they resist fire, their attacks burn, and\s
+r_hydra.c	15	they are capable of breathing fire among other flame-based attacks. All hydras\s
+r_hydra.c	16	regenerate extremely rapidly.
+r_jelly.c	9	Jellies are acidic creatures, quietly patrolling their surroundings in search\s
+r_jelly.c	10	of objects to absorb. They are quite stealthy for most of their lives. They\s
+r_jelly.c	11	don't wear equipment on their bodies the way normal races do; instead, they\s
+r_jelly.c	12	are capable of absorbing objects into their gelatinous frames. In fact, each of their\s
+r_jelly.c	13	equipment slots (except their pseudopod) is capable of holding any type of\s
+r_jelly.c	14	equipment whatsoever, and the number of slots increases with experience.\s
+r_jelly.c	15	For attacking, jellies are capable of forming a single pseudopod which they\s
+r_jelly.c	16	may either use for grasping a normal melee weapon, or leave empty to use their\s
+r_jelly.c	17	innate acid-based attacks.\n \n
+r_jelly.c	18	Rather than relying on sight, jellies use a little-understood sense of their\s
+r_jelly.c	19	surroundings which allows them to see in the dark with neither light nor infravision.\s
+r_jelly.c	20	So while jellies can equip a torch or lantern, there is little reason for them to do so.\n \n
+r_jelly.c	21	Jellies feed off the objects they find, gaining nutrition in proportion to the\s
+r_jelly.c	22	weight of the object absorbed. They can eat rations of food if desired, but these\s
+r_jelly.c	23	are so light as to offer very little nutritional value. Jellies prefer to eat heavy\s
+r_jelly.c	24	armors and weapons. For convenience, destroyed objects are automatically eaten;\s
+r_jelly.c	25	and jellies never become bloated, their appetite being insatiable.\n \n
+r_jelly.c	26	Jellies begin life as a small puddle of black ooze, with very little carrying capacity for equipment.\s
+r_jelly.c	27	However, they quickly evolve into a Gelatinous Cube and then into an Acidic Cytoplasm.\s
+r_jelly.c	28	Jellies take one additional, powerful evolutionary step late in life.
+r_leprec.c	9	Leprechauns are small, mischievous creatures, always scheming for gold.\s
+r_leprec.c	10	They are weak, but quick and stealthy. For combat, they prefer not to use\s
+r_leprec.c	11	weapons at all; rather, by keeping their weapon hand free, they may pilfer\s
+r_leprec.c	12	objects or gold from their foes and flee to safety, all in a single action.\s
+r_leprec.c	13	They are capable of fighting with normal weapons should the need arise, but\s
+r_leprec.c	14	one seldom hears of leprechauns inspiring fear in combat!\n \n
+r_leprec.c	15	Leprechauns value riches above all else, and even begin the game with their\s
+r_leprec.c	16	legendary pot of gold. Leprechauns also have the luck of the Irish, and good\s
+r_leprec.c	17	drops are more common for them. For magic, the leprechaun has a few talents,\s
+r_leprec.c	18	even including some curses for offense; Malicious Leprechauns and Death Leprechauns are vile,\s
+r_leprec.c	19	evil creatures, after all. They are masters of teleportation and detection; and while\s
+r_leprec.c	20	their melee skills do not inspire much fear (except of poverty), they\s
+r_leprec.c	21	are great masters of bow and device alike. At high levels, they move with incredible\s
+r_leprec.c	22	speed and seem to be in multiple places at once. Dexterity determines the leprechaun's\s
+r_leprec.c	23	skill with their magic.\n \n
+r_leprec.c	24	A leprechaun uses gold for spellcasting the way most characters use mana. Gold is\s
+r_leprec.c	25	also used to pay for recharging devices or to power mana branded weapons. In addition,\s
+r_leprec.c	26	increasing the amount of gold on hand increases the power of the leprechaun, granting\s
+r_leprec.c	27	extra blows per round, extra shots per round, and increased AC and life rating; sufficient gold even\s
+r_leprec.c	28	increases the power of magical devices. Needless to say, greed is good when you're a leprechaun!
+r_lich.c	4	Liches are the undead forms of former sorcerers. Their magic is strong,\s
+r_lich.c	5	but their fighting skills weak. As undead, they quickly gain resistance to\s
+r_lich.c	6	cold, poison and nether, and these resistances increase as the lich\s
+r_lich.c	7	evolves.\n \n
+r_lich.c	8	Liches are born with magical powers, and gain additional powers as they advance; of all the\s
+r_lich.c	9	monster races, none can surpass the firepower of an Archlich, but managing\s
+r_lich.c	10	to evolve that far can be a challenge. Intelligence is their primary spell stat.\n \n
+r_lich.c	11	Liches are humanoid, and so use the standard set of equipment items; but should they\s
+r_lich.c	12	forgo the use of a normal weapon, they may touch their opponents for\s
+r_lich.c	13	various powerful effects. Even with this deadly touch, though, melee will\s
+r_lich.c	14	never be their strong suit.
+r_mimic.c	1073	Mimics are similar to Possessors; but instead of controlling the corpses of the\s
+r_mimic.c	1074	vanquished, the mimic imitates those about them. This allows the mimic to assume\s
+r_mimic.c	1075	the forms of foes they have yet to conquer, which is quite useful. However, there is\s
+r_mimic.c	1076	a small catch: mimics can only copy what they see! This limitation forces a\s
+r_mimic.c	1077	mimic to change forms much more often than a possessor would, as knowledge of their\s
+r_mimic.c	1078	current body rapidly fades when the original is no longer about. Occasionally, the\s
+r_mimic.c	1079	mimic is able to memorize a particular form well enough to use it again without the\s
+r_mimic.c	1080	original body to imitate, though this does not happen very often and the mimic can\s
+r_mimic.c	1081	only memorize a small number of forms. To have a chance of this, the mimic must be\s
+r_mimic.c	1082	in the desired form when slaying the original.\n \n
+r_mimic.c	1083	The stats, skills, spells, resistances and innate powers of a mimic are determined by the form they assume;\s
+r_mimic.c	1084	be sure to check both the racial power command (<color:keypress>U</color>/<color:keypress>O</color>) and the magic command (<color:keypress>m</color>) after assuming a new body.\s
+r_mimic.c	1085	The current form also determines the spell stat; for example, a novice priest mimic uses wisdom, while a novice mage mimic relies on intelligence.
+r_mummy.c	1498	Zombies and mummies are among the most feared of all undead races.\s
+r_mummy.c	1499	Evil curses are a mummy's bread and butter; not only can they hex their\s
+r_mummy.c	1500	opponents, they can also curse and uncurse their own equipment at will;\s
+r_mummy.c	1501	and the stronger and more numerous the curses they are wrapped in, the\s
+r_mummy.c	1502	greater their magical powers. Of course, they will also have to cope\s
+r_mummy.c	1503	with being cursed...\n\n
+r_mummy.c	1504	You begin unlife as a humble Zombified human, with few curses or other\s
+r_mummy.c	1505	abilities at your disposal; but soon you will evolve into a a\s
+r_mummy.c	1506	Mummified human, and things really start picking up. Mummy evolution is\s
+r_mummy.c	1507	somewhat random - you might find yourself a strong but stupid Draugr or a wily\s
+r_mummy.c	1508	but weak Mummified sorcerer - but ultimately, you will combine strength\s
+r_mummy.c	1509	and magic in the spine-chilling final form of a Mummy king.\n\n
+r_mummy.c	1510	Being creatures of tombs and the night, zombies and mummies can easily see\s
+r_mummy.c	1511	without a light; indeed, carrying a light source saps the dark energy of\s
+r_mummy.c	1512	their curses. In melee, they prefer to rely on their innate attacks;\s
+r_mummy.c	1513	equipping a weapon serves only to distract them from their real fighting\s
+r_mummy.c	1514	skills, and is only a viable offensive option in the earliest parts of the game.
+r_orc.c	4	Orcs are Morgoth's creation and the backbone of his armies. They are\s
+r_orc.c	5	accustomed to caves and tunnels, and resist darkness but tend to be\s
+r_orc.c	6	vulnerable to light. Orcs are ugly, brutish pillagers by reputation\s
+r_orc.c	7	and should not expect much love from shopkeepers. Morgoth's spirit\s
+r_orc.c	8	lives in orcs and drives them forward, making them hard to frighten.\s
+r_orc.c	9	What orcs lack in stealth and subtlety they make up for with their sheer\s
+r_orc.c	10	brute strength, and generally have little trouble brushing aside weak\s
+r_orc.c	11	enemies like kobolds; yet in the deep dungeons, where the strongest\s
+r_orc.c	12	fighters and most powerful magicians reside, orcs are rarely seen.
+r_orc.c	161	The most common and familiar type of orc, fighter orcs\s
+r_orc.c	162	are feared around the world for their strength, endurance,\s
+r_orc.c	163	brutality and low cunning. They start their careers as a\s
+r_orc.c	164	lowly Snaga, but will eventually develop into Uruk-hai or\s
+r_orc.c	165	even mighty warlords, capable of summoning and controlling\s
+r_orc.c	166	armies of lesser orcs.
+r_orc.c	387	Orc shamans and warlocks are more cunning than the average orc and\s
+r_orc.c	388	have learned rudimentary magic from their black masters.\s
+r_orc.c	389	They can detect threats, blink out of dangerous situations\s
+r_orc.c	390	and easily dispatch weak enemies with their offensive spells,\s
+r_orc.c	391	and are not quite as hopeless with magic devices as their\s
+r_orc.c	392	fighter kin, but like all orcs they tend to have trouble\s
+r_orc.c	393	when the going really gets tough.
+r_poss.c	1244	The Possessor is an odd creature, completely harmless in its natural form. However, they\s
+r_poss.c	1245	are capable of possessing the corpses of monsters they have slain, and gain powers and\s
+r_poss.c	1246	abilities based on their current body. As such, they can become quite powerful indeed!\s
+r_poss.c	1247	Unfortunately, not every type of monster will drop a corpse, and getting suitable corspes\s
+r_poss.c	1248	to inhabit can be difficult. If the possessor ever leaves their current body, all of\s
+r_poss.c	1249	their equipment will be removed (except a light source) and they will temporarily return\s
+r_poss.c	1250	to their native, vulnerable state. Finally, leaving their current body will destroy that\s
+r_poss.c	1251	corpse most of the time, so the possessor should only do so if they have a better corpse\s
+r_poss.c	1252	on hand (and also only if there are no monsters nearby!). Possessors normally have full\s
+r_poss.c	1253	control of the body they inhabit; but at very low health this control becomes hard to\s
+r_poss.c	1254	maintain, and a possessor who suffers serious damage has a small chance of being ejected from the body.\n \n
+r_poss.c	1255	The stats, skills, spells, resistances and innate powers of a possessor are determined by the body they inhabit;\s
+r_poss.c	1256	be sure to check both the racial power command (<color:keypress>U</color>/<color:keypress>O</color>) and the magic command (<color:keypress>m</color>) after possessing a new body.\s
+r_poss.c	1257	The current body also determines the spell stat; for example, a novice priest possessor uses wisdom, while a novice mage possessor relies on intelligence.
+r_pump.c	4	The creations of some differently normal scientist who thought sentient\s
+r_pump.c	5	blood-thirsty pumpkins would be a great idea, these creatures begin their lives\s
+r_pump.c	6	as pumpkin-headed humanoids; over time, however, the pumpkin bloats and crushes\s
+r_pump.c	7	the frail stick body underneath, leaving just a massive rolling fruit and an\s
+r_pump.c	8	unquenchable desire to kill. Death pumpkins lack most normal equipment slots,\s
+r_pump.c	9	but make up for it by the many lights they can store within their body.\s
+r_pump.c	10	Also, the bites of the deadliest pumpkins are said to be vampiric...
+r_quyl.c	975	Quylthulgs are disgusting, quivering mounds of pulsating flesh, scarcely\s
+r_quyl.c	976	able to move about. Physically, they are pathetic. However, their ability\s
+r_quyl.c	977	to control others to do their bidding is legendary, and they are quite\s
+r_quyl.c	978	capable of fleeing when the going gets tough. Quylthulgs have no physical\s
+r_rag.c	1029	A pile of dirty, old, timeworn clothing, brought to life and sentience\s
+r_rag.c	1030	by magic (or perhaps just by accumulating enough micro-organisms) and\s
+r_rag.c	1031	filled with a strong desire to get back at all those clean, polished,\s
+r_rag.c	1032	fashionable plate mails. Something, likely a thick layer of grime, has\s
+r_rag.c	1033	permanently attached an old pair of boots and two plain leather gloves\s
+r_rag.c	1034	to the original rag, allowing it to walk about and punch enemies. If\s
+r_rag.c	1035	you think the thing looks ugly now, just wait until it's found some\s
+r_rag.c	1036	other protective armour and has had the time to take it apart and\s
+r_rag.c	1037	absorb its magical qualities...
+r_ring.c	1829	Rings are sentient creatures animated by magical means.\n \n
+r_ring.c	1830	Rings cannot wear normal equipment; rather, they simply are a ring,\s
+r_ring.c	1831	magically enchanted. Rings have a small arsenal of innate powers. Since the ring\s
+r_ring.c	1832	is unable to move on its own, it will need to lure a nearby monster\s
+r_ring.c	1833	into wearing it. Magic rings tend to corrupt their owners, and over time,\s
+r_ring.c	1834	the ring-bearer will find that his will is not his own!\n \n
+r_ring.c	1835	Rings can absorb magic from the jewelry (rings or amulets) that they find,\s
+r_ring.c	1836	and gain resistances, attributes and additional spells this way.\s
+r_ring.c	1837	Rings have no physical attacks; instead, they may blast enemies with mighty\s
+r_ring.c	1838	spells (once absorbed, of course), or they may simply lie back and let their\s
+r_ring.c	1839	current bearer do the fighting for them.
+r_spider.c	12	Spiders are stealthy monsters that prefer to wait for their prey.\s
+r_spider.c	13	They have poisonous attacks and can weave sticky webs to entangle\s
+r_spider.c	14	their enemies. They have eight legs, enough for four rings and\s
+r_spider.c	15	two pairs of boots; they may also wear a helmet, an amulet, a cloak and\s
+r_spider.c	16	even a suit of body armor (after slight adjustments, of course), but\s
+r_spider.c	17	cannot wield a weapon or a bow. They also cannot equip light sources,\s
+r_spider.c	18	but this is not an issue, as spiders are accustomed to the dark.\n \n
+r_spider.c	19	There are two paths of evolution for the spider: the Phase Spider and\s
+r_spider.c	20	the Aranea. Araneas have greater fortitude and better stats, as well as\s
+r_spider.c	21	powerful melee capable of paralyzing an opponent; but Phase Spiders\s
+r_spider.c	22	compensate for their relative fragility with unsurpassed powers of teleportation.\n \n
+r_spider.c	23	All spiders begin in the very weak form of the Cave Spider. Lacking\s
+r_spider.c	24	any special talents, the cave spider must play carefully if it is to\s
+r_sword.c	1059	Death-Swords are mighty weapons animated by magical means. As such,\s
+r_sword.c	1060	they are unable to use equipment the way other players can; instead,\s
+r_sword.c	1061	they simply are a weapon of their current form. But never fear: Death\s
+r_sword.c	1062	Swords have the power to absorb magical essences from the weapons they\s
+r_sword.c	1063	find, gaining power in the process.\n\n
+r_sword.c	1064	As a Death-Sword gains levels, it will evolve into stronger and stronger weapons.\s
+r_sword.c	1065	More advanced weapons require more essences to enchant, sometimes causing a\s
+r_sword.c	1066	temporary loss of abilities; but magical weapons also become easier to\s
+r_sword.c	1067	find as you descend deeper into the pits, and so any lost powers are usually\s
+r_sword.c	1068	quickly recovered.
+r_troll.c	415	Ettins are large, two-headed trolls. They lack much in the way of\s
+r_troll.c	416	powers and abilities, but make up for this with the ability to\s
+r_troll.c	417	wield an extra helmet.
+r_troll.c	418	Storm Trolls are fast trolls with elemental powers. They may call\s
+r_troll.c	419	forth elemental balls and bolts. Their weapons are wreathed in\s
+r_troll.c	420	electricity as their fury rains down on all they meet.
+r_troll.c	421	Spirit trolls may pass through walls on their quest to demolish\s
+r_troll.c	422	all that oppose them.
+r_troll.c	423	Troll Kings are lords of their kind, fast and extremely deadly in\s
+r_troll.c	424	melee. They may blink themselves out of harm's way.
+r_troll.c	445	Trolls are disgusting creatures: big, strong and stupid. They make excellent warriors,\s
+r_troll.c	446	but are hopeless with magical devices. Trolls have incredible powers of regeneration.
+r_vamp.c	6	One of the mightier undead creatures, the Vampire is an awe-inspiring sight. Yet this\s
+r_vamp.c	7	dread creature has a serious weakness: the bright rays of sun are its bane, and it\s
+r_vamp.c	8	will need to flee the surface to the deep recesses of earth until the sun finally\s
+r_vamp.c	9	sets. Being undead, Vampires resist nether and have a firm hold on their life force;\s
+r_vamp.c	10	vampires also resists cold and poison, and darkness only makes them feel at home.\s
+r_vamp.c	11	Vampires are, however, susceptible to their\s
+r_vamp.c	12	perpetual hunger for fresh blood, which can only be satiated by sucking blood\s
+r_vamp.c	13	from a nearby monster.\n \n
+r_vamp.c	14	Vampires gain access to various dark powers as they evolve. Of course, they gain a vampiric bite at a\s
+r_vamp.c	15	very early stage, as they must use this power to feed on the living. Killing humans with this\s
+r_vamp.c	16	power is also a means of perpetuating the vampire species, and many are the servants of a\s
+r_vamp.c	17	true prince of darkness! Vampires are rumored to have limited shapeshifting abilities\s
+r_vamp.c	18	and a powerful, hypnotic gaze.
+r_vamp.c	839	You are a cloud of evil, sentient mist. As such you are incorporeal and are\s
+r_vamp.c	840	unable to attack enemies directly. Conversely, you are resistant to material damage\s
+r_vamp.c	841	and may pass through walls. Probably, you should run away upon assuming this form.
+r_vortex.c	780	Vortices are mindless whirlwinds of elemental forces twirling their way\s
+r_vortex.c	781	through the dungeon in search of prey. They are seldom confused\s
+r_vortex.c	782	and never blinded since they lack vision in the normal sense; indeed, they\s
+r_vortex.c	783	seem to be aware of their surroundings even without eyes, and need not wear a\s
+r_vortex.c	784	light source. They can be neither stunned nor cut, and their mindless\s
+r_vortex.c	785	nature renders them immune to fear. But, alas! they are hopeless with\s
+r_vortex.c	786	magical devices and somewhat weak in melee; and while they may breathe\s
+r_vortex.c	787	almost effortlessly, their breath attacks are not particularly strong.\n \n
+r_vortex.c	788	Vortices do not have normal bodies; rather, they are simply a rapidly\s
+r_vortex.c	789	spinning elemental mass. As such, they may incorporate objects into their\s
+r_vortex.c	790	rotating essence, gaining bonuses and protection in the process.\s
+r_vortex.c	791	The number of objects they may use increases with level, and there are no\s
+r_vortex.c	792	restrictions on the types of equipment they may 'wield' in each slot.\s
+r_vortex.c	793	While they may equip weapons this way, they cannot attack with them; instead,\s
+r_vortex.c	794	vortex melee relies on their innate ability to engulf nearby monsters in the\s
+r_vortex.c	795	whirling elements.\n \n
+r_vortex.c	796	Vortices evolve randomly, though all seem to end up with the evolutionary\s
+r_vortex.c	797	perfection of the Aether vortex. At level 50 they gain a special talent\s
+r_vortex.c	798	to augment their power.
+r_xorn.c	127	Xorns are massive creatures of earth. They begin life as an Umber Hulk, a bizarre\s
+r_xorn.c	128	creature with large mandibles capable of slicing through rock and glaring eyes capable of confusing foes.\s
+r_xorn.c	129	At this stage in their evolution their body is vaguely humanoid, allowing them to\s
+r_xorn.c	130	wear a helmet, an amulet, a cloak and even a pair of boots; once the Umber Hulk evolves further, however,\s
+r_xorn.c	131	it can no longer wear these items. Instead, a grown Xorn can use its four massive arms for weapons, shields, rings\s
+r_xorn.c	132	and gloves; mature Xorns can also pass effortlessly through rock.\n \n
+r_xorn.c	133	Xorns have no active magical powers, but instead rely on their ability to hide in rocks and the advantage that their\s
+r_xorn.c	134	extra arms provide them in melee. Xorns, like most warrior characters, are very effective at killing monsters\s
+r_xorn.c	135	but have problems with advanced magic devices.
+races_a.c	30	The Amberites are a reputedly immortal race, who are endowed with numerous\s
+races_a.c	31	advantages in addition to their longevity. They are very tough and their\s
+races_a.c	32	constitution cannot be reduced, and their ability to recover from wounds\s
+races_a.c	33	surpasses most other races. Having seen virtually everything, very\s
+races_a.c	34	little is new to them, and so they gain levels relatively slowly.
+races_a.c	224	An android is an artificial creation with a body of machinery. Their intelligence\s
+races_a.c	225	almost matches that of organic races, though their wisdom is no better than that of\s
+races_a.c	226	Golems. Of course, their mechanical body offers great physical advantages, far\s
+races_a.c	227	surpassing the powers of man. Uniquely among all races, Androids do not acquire\s
+races_a.c	228	experience from killing monsters, but rather gain in power as they attach new\s
+races_a.c	229	equipment to their frame. Rings, amulets, and lights do not influence growth.\s
+races_a.c	230	Androids are resistant to poison and immune to life-draining attacks; moreover,\s
+races_a.c	231	because of their hard metallic bodies, they get a bonus to AC. Androids have\s
+races_a.c	232	electronic circuits throughout their body, and so must beware of electric shocks.\s
+races_a.c	233	They gain very little nutrition from the food of mortals, but can use flasks\s
+races_a.c	234	of oil as their energy source.
+races_a.c	293	Archons are a higher class of angels. They are good at all skills, and are strong,\s
+races_a.c	294	wise, and a favorite with any people. They are able to see the unseen, and\s
+races_a.c	295	their wings allow them to safely fly over traps and other dangerous places. However,\s
+races_a.c	296	belonging to a higher plane as they do, the experiences of this world do not leave\s
+races_a.c	297	a strong impression on them and they gain levels slowly.
+races_a.c	375	Balrogs are a higher class of demons. They are strong, intelligent and tough, but\s
+races_a.c	376	lacking in wisdom and not suitable for priesthood. Balrogs are resistant to\s
+races_a.c	377	fire and nether, and have a firm hold on their life force; they also soon learn\s
+races_a.c	378	to see invisible things. They are good at almost all skills except stealth. They gain\s
+races_a.c	379	very little nutrition from the food of mortals, and need human corpses as sacrifices\s
+races_a.c	380	to regain their vitality.
+races_a.c	457	Barbarians are hardy men of the north; they are fierce in combat, and their wrath\s
+races_a.c	458	is feared throughout the world. Combat is their life: they feel no fear, and they\s
+races_a.c	459	learn to enter battle frenzy at will even sooner than half-trolls. Barbarians are,\s
+races_a.c	460	however, suspicious of magic, which makes magic devices fairly hard for them to use.\s
+races_a.c	461	Barbarians gain a demigod talent at level 30.
+races_a.c	531	This race is a blasphemous abomination produced by Chaos. It is not an independent\s
+races_a.c	532	race but rather a humanoid creature, most often a human, twisted by Chaos; or else\s
+races_a.c	533	a nightmarish crossbreed of a human and a beast. All Beastmen are accustomed\s
+races_a.c	534	to Chaos so much that they are untroubled by confusion and sound, although raw\s
+races_a.c	535	Logrus can still hurt them. Beastmen revel in chaos, as it twists them\s
+races_a.c	536	more and more. Beastmen are subject to mutations: when they have been created,\s
+races_a.c	537	they receive a random mutation, and have a small chance to gain more mutations\s
+races_a.c	538	every time they advance a level. Unlike normal races, Beastmen can have many\s
+races_a.c	539	mutations without ill effects on their regeneration.
+races_a.c	630	Boits are small bipedal creatures covered in yellow, lilac, brown or green\s
+races_a.c	631	fur, distantly related to the Yeeks. Boits move speedily, and can eject\s
+races_a.c	632	the contents of their stomachs at will, but they are not particularly\s
+races_a.c	633	well-suited for melee, ranged combat, use of magical devices, or spellcasting.
+races_a.c	786	Centaurs are creatures with the head, arms and torso of a human combined with the\s
+races_a.c	787	body and legs of a horse. As such, they are able to move more quickly as\s
+races_a.c	788	they gain experience and are capable of leaping great distances. Centaurs are\s
+races_a.c	789	skilled in fighting and archery and can attack monsters with their hooves in\s
+races_a.c	790	addition to normal melee weapons; but lacking normal feet, they cannot wear boots.\s
+races_a.c	791	Being at home in the forests of the world, Centaurs\s
+races_a.c	792	are able to move quickly through foliage.
+races_a.c	854	With but one eye, a Cyclops can see more than many with two eyes. They are\s
+races_a.c	855	headstrong, and loud noises bother them very little. They are not quite\s
+races_a.c	856	qualified for the magic using professions, but as a certain Mr. Ulysses\s
+races_a.c	857	can testify, their accuracy with thrown rocks can be deadly!
+races_a.c	919	A cave-dwelling race unhampered by darkness attacks, dark-elves have more\s
+races_a.c	920	in common with Nibelungs than with other elves. They have a great capacity\s
+races_a.c	921	for magic and spellcasting, and learn the Magic Missile spell at a low level\s
+races_a.c	922	regardless of their class. With their keen sight, they soon acquire the\s
+races_a.c	923	ability to see invisible things.
+races_a.c	1381	Draconians are a humanoid race with dragon-like attributes. There are several\s
+races_a.c	1382	subtypes of draconians with different resistances, breaths and attributes;\s
+races_a.c	1383	for example, Red Draconians are resistant to fire which they may also breathe\s
+races_a.c	1384	at will, while White Draconians breathe and resist cold instead. All draconians\s
+races_a.c	1385	levitate. In addition, when they mature enough, they may choose a special\s
+races_a.c	1386	draconian power.
+races_a.c	1432	Red Draconians have an affinity for fire, which they both breathe at will and resist.\s
+races_a.c	1433	Together with their White kin, they are the strongest in combat of the draconians;\s
+races_a.c	1434	but they are not so good with magic, and their stealth is quite poor. Should they choose\s
+races_a.c	1435	the power of Dragon Skin, they will gain a fiery aura as well. Should they choose the\s
+races_a.c	1436	power of Dragon Strike, their blows will burn their enemies.
+races_a.c	1448	White Draconians have an affinity for frost, which they both breathe at will and resist.\s
+races_a.c	1449	Together with their Red kin, they are the strongest in combat of the draconians;\s
+races_a.c	1451	the power of Dragon Skin, they will gain an aura of cold as well. Should they choose the\s
+races_a.c	1452	power of Dragon Strike, their blows will freeze their enemies.
+races_a.c	1464	Blue Draconians have an affinity for lightning, which they both breathe at will\s
+races_a.c	1465	and resist. They are strong in combat, but not so good with magic or stealth.\s
+races_a.c	1466	Should they choose the power of Dragon Skin, they will gain a shocking aura as well.\s
+races_a.c	1467	Should they choose the power of Dragon Strike, their blows will electrocute\s
+races_a.c	1468	their enemies.
+races_a.c	1478	Black Draconians have an affinity for acid, which they both breathe at will\s
+races_a.c	1480	With the power of Dragon Strike, their blows will corrode their enemies.
+races_a.c	1490	Green Draconians have an affinity for poison, which they both breathe at will\s
+races_a.c	1491	and resist. They are average in all respects among the draconians. With the\s
+races_a.c	1492	power of Dragon Strike, their blows will poison their enemies.
+races_a.c	1497	Bronze Draconians are the most intelligent of their kind, and the best with\s
+races_a.c	1498	magic as well. They are seldom confused, though the same may not be said of\s
+races_a.c	1499	their enemies. With the power of Dragon Strike, even the melee attacks of\s
+races_a.c	1500	the Bronze Draconian will baffle their enemies.
+races_a.c	1510	Hard of skin, the Crystal Draconian is difficult to hit in melee; but their agility\s
+races_a.c	1511	suffers, and they are not the brightest of their kind. They resist shards, which they\s
+races_a.c	1512	may also breathe on command. With the power of Dragon Skin, they gain an aura of\s
+races_a.c	1513	shards as well. With the power of Dragon Strike, even their melee attacks will shred\s
+races_a.c	1526	The wisest of their kind, Gold Draconians are resilient in the face of magical\s
+races_a.c	1527	attacks. They are resistant to sound, which they may also breathe at will, stunning\s
+races_a.c	1528	their opponents. With the power of Dragon Strike, even their melee attacks will\s
+races_a.c	1529	stun enemies.
+races_a.c	1539	Lithe, stealthy and nimble, the Shadow Draconian is seldom seen in this world.\s
+races_a.c	1540	They are resistant to the forces of nether, which they may also breathe. They are the\s
+races_a.c	1541	weakest of the draconians, and the poorest in melee; but they are better than average\s
+races_a.c	1542	with magic. With the power of Dragon Strike, they may steal life from their enemies\s
+races_a.c	1543	in melee.
+races_a.c	1602	Dunedain are a race of hardy men from the West. This elder race surpasses human\s
+races_a.c	1603	abilities in every field; however, being men of the world,\s
+races_a.c	1604	very little is new to them, and levels are very hard for them to gain. Dunedain\s
+races_a.c	1605	gain one demigod talent at level 30. Their constitution\s
+races_a.c	1606	is exceptionally good and cannot be reduced.
+races_a.c	1667	Dwarves are the headstrong miners and fighters of legend. They tend to be strong and tough,\s
+races_a.c	1668	but lack agility. Because they are so headstrong and also somewhat wise, dwarves are\s
+races_a.c	1669	relatively resistant to evil curses cast on them. They are very good at fighting, searching\s
+races_a.c	1670	and perception, and resist being blinded, but infamously have miserable stealth.
+races_a.c	1748	Dead heroes returning to the mortal world for one last fight, Einherjar are highly\s
+races_a.c	1749	skilled in hand-to-hand combat and start with the ability to enter a battle frenzy;\s
+races_a.c	1750	however, they are also passably good at using devices, and do not necessarily make\s
+races_a.c	1751	weak magic users. Already having one lifetime's adventures behind them, Einherjar are\s
+races_a.c	1752	very strong at the beginning but learn new things slowly. Like other undead races, they\s
+races_a.c	1753	are immune to life draining. Einherjar have one serious weakness: magical healing only\s
+races_a.c	1754	has a partial effect on them, healing them half as much as it would any other race.
+races_a.c	1822	The Ents are a powerful race dating from the beginning of the world, oldest of all\s
+races_a.c	1823	animals or plants who inhabit Arda. Spirits of the land, they guard the forests\s
+races_a.c	1824	of Middle-earth. Being much like trees, they are strong but very clumsy, and\s
+races_a.c	1825	highly susceptible to fire. Ents gain nourishment from drinking water;\s
+races_a.c	1826	the food of mortals is of little use to them. Ents have the special ability to\s
+races_a.c	1827	summon the trees of the forest to their side.
+races_a.c	1897	Gnomes are smaller than dwarves but larger than hobbits; and like hobbits, they\s
+races_a.c	1898	live in the earth in burrow-like homes. Gnomes make excellent mages, and have very\s
+races_a.c	1899	good saving throws. They are naturally skilled at most things, but not very strong\s
+races_a.c	1900	or good at hand-to-hand fighting. Gnomes have fair infra-vision, allowing them to\s
+races_a.c	1901	detect warm-blooded creatures at a distance. They are also intrinsically protected\s
+races_a.c	1902	against paralysis.
+races_a.c	1982	A Golem is an artificial creature, built from a lifeless raw material like clay,\s
+races_a.c	1983	and awakened to life. They are nearly mindless, making them useless for\s
+races_a.c	1984	professions which rely on magic, but as warriors they are very tough. They\s
+races_a.c	1985	are resistant to poison and paralysis and can see invisible things.\s
+races_a.c	1986	At higher levels, they also become resistant to attacks which threaten to\s
+races_a.c	1987	drain away their life force. Golems gain very little nutrition from ordinary\s
+races_a.c	1988	food, but can absorb mana from staves and wands as their power source. Golems\s
+races_a.c	1989	also gain a natural armor class bonus from their tough body. Golems become\s
+races_a.c	1990	slower with age.
+races_a.c	2052	Half-giants' limited intelligence makes it difficult for them to become full spellcasters,\s
+races_a.c	2053	but with their huge strength they make excellent warriors. Their thick skin makes\s
+races_a.c	2054	them resistant to shards, and like half-trolls, they have their strength sustained.
+races_a.c	2124	Half-orcs make excellent warriors, but are terrible at magic.\s
+races_a.c	2125	They are as bad as dwarves at stealth, and horrible at searching,\s
+races_a.c	2126	disarming, and perception. Being accustomed to living underground,\s
+races_a.c	2127	half-orcs are resistant to darkness attacks. Half-orcs are quite ugly,\s
+races_a.c	2128	and so tend to pay more for goods in town. The human part of their\s
+races_a.c	2129	heritage allows them to select a talent at level 30.
+races_a.c	2188	Half-mortal descendants of the mighty titans, these immensely powerful creatures\s
+races_a.c	2189	put almost any other race to shame. They may lack the fascinating special powers\s
+races_a.c	2190	some other races have, but their enhanced attributes more than make up for that.\s
+races_a.c	2191	They learn to estimate the strengths of their foes, and their love for law and\s
+races_a.c	2192	order makes them resistant to the effects of Chaos.
+races_a.c	2251	Half-trolls are incredibly strong, and have more hit points than most other races.\s
+races_a.c	2252	They are very stupid, and bad at searching, disarming, perception, and stealth;\s
+races_a.c	2253	but they make excellent fighters despite their poor agility. They are so ugly that a\s
+races_a.c	2254	half-orc grimaces in their presence. They also happen to be fun to run...\s
+races_a.c	2255	Half-trolls always have their strength sustained, and their regeneration is exceptionally fast.
+races_a.c	2309	High-elves are a race of immortal beings dating from the beginning of time.\s
+races_a.c	2310	They are masters of all skills, and are strong and intelligent, although\s
+races_a.c	2311	their wisdom is sometimes suspect. High-elves begin their lives able to\s
+races_a.c	2312	see the unseen, and resist light effects just like regular elves. However,\s
+races_a.c	2313	there are few things that they have not seen already, so new levels are\s
+races_a.c	2314	quite hard for them to gain.
+races_a.c	2362	Hobbits (or Halflings) have exceptional stealth and are very good at bows\s
+races_a.c	2363	and throwing; indeed, they are generally well-suited for the adventuring life.\s
+races_a.c	2364	Yet their small size is a handicap at times; they are not very good at melee\s
+races_a.c	2365	fighting, and cannot suffer as many hard hits as larger races. Hobbits are\s
+races_a.c	2366	known for their love of good cooking, and have an almost miraculous ability\s
+races_a.c	2367	to find food in the dark depths of the dungeon.
+races_a.c	2441	Humans are average at everything, and tend to gain levels rapidly due\s
+races_a.c	2442	to their short life spans. No racial adjustments or intrinsics occur\s
+races_a.c	2443	to characters choosing human. Humans receive one special talent at\s
+races_a.c	2444	level 20, which helps make up for their apparent mediocrity; but at\s
+races_a.c	2445	level 35 they acquire a special human weakness. See\s
+races_a.c	2446	<link:Demigods.txt#Weaknesses> for more information.
+races_a.c	2505	A demon-creature from the nether-world, naturally resistant to fire attacks,\s
+races_a.c	2506	and capable of learning fire bolt and fire ball attacks. They are little\s
+races_a.c	2507	loved by other races, but can perform fairly well in most professions.\s
+races_a.c	2508	As they advance levels, they gain the ability to perceive invisible creatures.
+races_k.c	32	Klackons are bizarre semi-intelligent ant-like insectoid creatures.\s
+races_k.c	33	They make great fighters, but their mental abilities are severely limited.\s
+races_k.c	34	Obedient and well-ordered, they are resistant to confusion. They are very\s
+races_k.c	35	nimble, and become faster as they advance levels. They are also very acidic,\s
+races_k.c	36	inherently resist acid, and become capable of spitting it at higher levels.
+races_k.c	93	Kobolds are a weak goblin race. They love poisoned weapons, and can learn to throw\s
+races_k.c	94	poisoned darts (of which they carry an unlimited supply). They are also inherently\s
+races_k.c	95	resistant to poison.
+races_k.c	153	A Kutar is not a dog, cat or bear. Despite their characteristic\s
+races_k.c	154	vacant expression, Kutars are beautiful and so have a high charisma.\s
+races_k.c	155	Their absent-mindedness hurts their searching and perception skills,\s
+races_k.c	156	but renders them resistant to being confused. Due to their unearthly\s
+races_k.c	157	calmness and serenity, Kutars are extremely stealthy. They learn the\s
+races_k.c	158	special ability to expand their body horizontally; this increases\s
+races_k.c	159	their armour class, but renders them vulnerable to curses.
+races_k.c	224	Mindflayers are a secretive and mysterious ancient race. Their civilization may well\s
+races_k.c	225	be older than any other; their intelligence and wisdom are naturally sustained,\s
+races_k.c	226	and so great as to make Mindflayers highly effective spellcasters, but their\s
+races_k.c	227	physical attributes are a good deal less admirable. As they gain levels, they\s
+races_k.c	228	learn to see invisible creatures, and eventually develop a telepathic sight.
+races_k.c	289	The hated and persecuted race of nocturnal dwarves, these cave-dwellers are\s
+races_k.c	290	not much bothered by darkness. Their natural inclination to magical items\s
+races_k.c	291	has made them resistant to effects which could disenchant magical energy.
+races_k.c	348	Ogres are big and ugly, but possessed of a low cunning and great strength.\s
+races_k.c	349	They have all the necessary attributes to be warriors, yet are also\s
+races_k.c	350	surprisingly adept as mages; and at high level, all Ogres learn the Ogre\s
+races_k.c	351	Mage skill of setting trapped runes. Being simple-minded, Ogres have their\s
+races_k.c	352	intelligence sustained.
+races_k.c	407	Shadow-fairies are one of the several fairy races. They have wings, and can fly over\s
+races_k.c	408	traps that may open up beneath them. Being creatures of darkness, shadow-fairies are\s
+races_k.c	409	vulnerable to bright light. They are physically weak, but naturally adept at using\s
+races_k.c	410	magic. Shadow-fairies are amazingly stealthy, and have a wonderful advantage in\s
+races_k.c	411	that they almost never aggravate monsters; aggravating equipment only gives them a slight\s
+races_k.c	412	penalty to stealth, but if they have an aggravating personality the advantage is lost.
+races_k.c	483	As undead beings, skeletons need worry very little about poison or attacks\s
+races_k.c	484	that can drain life. Skeletons do not really use eyes for perceiving things,\s
+races_k.c	485	and are thus not fooled by invisibility. Their bones are resistant to sharp shrapnel,\s
+races_k.c	486	and they will quickly become resistant to cold. Although the magical effects of\s
+races_k.c	487	potions and mushrooms will affect the skeleton even without entering its (non-existent)\s
+races_k.c	488	belly, the food itself will fall through the skeleton's jaws, giving no nutritional benefit;\s
+races_k.c	489	instead, skeletons feed themselves by absorbing the energy of magical devices.
+races_k.c	580	Snotlings are greenskins, and are cousins of Goblins and Orcs, smaller than the\s
+races_k.c	581	former and dumber than the latter, often used by them as cannon fodder, food\s
+races_k.c	582	or even cannon missiles. They are on the lowest rung of greenskin society and\s
+races_k.c	583	are bullied by all. Snotlings often wield mushrooms or sticks into battle.
+races_k.c	660	A powerful undead creature, the Spectre is a ghastly apparition, surrounded by\s
+races_k.c	661	an unearthly green glow. Spectres exist only partially on our plane of existence:\s
+races_k.c	662	half-corporeal, they can pass through walls, although the density of the wall\s
+races_k.c	663	will hurt them in the process of doing this. As undead, they have a firm hold\s
+races_k.c	664	on their life force, can see invisible creatures, and resist poison, cold and\s
+races_k.c	665	nether. Spectres make superb spellcasters, but their physical form is very weak.\s
+races_k.c	666	They gain very little nutrition from the food of mortals, but can absorb mana\s
+races_k.c	667	from magical devices as their energy source.
+races_k.c	731	One of the several fairy races, Sprites are very small. They have tiny wings and can\s
+races_k.c	732	fly over traps that may open up beneath them. They enjoy sunlight intensely, and\s
+races_k.c	733	need worry little about light based attacks. Although physically among the weakest\s
+races_k.c	734	races, Sprites are very talented in magic, and can become highly skilled wizards.\s
+races_k.c	735	Sprites have the special power of spraying Sleeping Dust, and at higher levels they\s
+races_k.c	736	learn to fly faster.
+races_k.c	828	Smaller and of lighter build than regular elves, Tomtes are nimble, intelligent,\s
+races_k.c	829	extremely stealthy and at home with magical devices, but their size handicaps them\s
+races_k.c	830	in physical combat. They greatly prefer light headwear, and cannot think clearly\s
+races_k.c	831	with a heavy helmet squeezing their brains. Tomtes have the ability to assess\s
+races_k.c	832	monsters and items at a glance (they gain auto-identify at level 40); and being\s
+races_k.c	833	accustomed to long winters, they are not much bothered by cold.
+races_k.c	918	Tonberries are lizard-like creatures who possess enormous strength\s
+races_k.c	919	and have a preference for cleavers and large knives. They are,\s
+races_k.c	920	however, sluggish in their movements and reactions; young and\s
+races_k.c	921	inexperienced tonberries are often preyed on by the other races.\s
+races_k.c	922	They possess human-like intelligence, but rarely become mages due\s
+races_k.c	923	to their culture and physiology. Tonberries attack very powerfully\s
+races_k.c	924	in melee, albeit with fewer attacks than normal. They are also\s
+races_k.c	925	easily confused and move with reduced speed.
+races_k.c	999	One of the mightier undead creatures, the vampire is an awe-inspiring sight. Yet this\s
+races_k.c	1002	sets. Darkness, on the other hand, holds few terrors to a vampire. Being undead,\s
+races_k.c	1003	vampires also resist nether, cold and poison and have a firm hold on their life force;\s
+races_k.c	1004	but they are susceptible to a perpetual hunger for fresh blood, which can only be\s
+races_k.c	1005	satiated by sucking the blood from a nearby monster.
+races_k.c	1056	Wood-Elves are the most common of elves. They prefer the seclusion of thick\s
+races_k.c	1057	forests and are unhampered when moving through dense foliage. Their skills\s
+races_k.c	1058	with tracking and bow are unsurpassed, and as they advance they gain the\s
+races_k.c	1059	power of Nature Awareness.
+races_k.c	1118	Yeeks are among the most pathetic creatures. Fortunately, their horrible screams\s
+races_k.c	1119	can scare away less confident foes, and their skin becomes more and more resistant\s
+races_k.c	1120	to acid as they gain experience. They are also fairly good at magic; but in combat,\s
+races_k.c	1121	even a mediocre monster can wipe the proverbial floor with an unwary Yeek.
+races_k.c	1194	Zombies are undead horrors, resistant to life draining and the forces\s
+races_k.c	1195	of the netherworld. The grave is cold, but this does not bother the undead, and\s
+races_k.c	1196	poison also scarcely affects the unliving. Zombies gain little nutrition from\s
+races_k.c	1197	ordinary food; instead, they absorb energy from magical devices to maintain\s
+races_k.c	1198	their undead existence.
+races_mf.c	368	Mangy Lepers are humans who have contracted a horrible wasting disease.\s
+races_mf.c	369	You cannot help but feel disgusted as your body rots before your very\s
+races_mf.c	483	Small Kobolds are a the runts of the kobold race, often relegated to the\s
+races_mf.c	484	performance of menial tasks deemed unworthy of their larger, more\s
+races_mf.c	485	respectable brethren.
+ragemage.c	1272	Rage-Mages are part of a secret sect, originally founded by Barbarians in\s
+ragemage.c	1273	response to their natural foes, the mages. With the passing of time, other\s
+ragemage.c	1274	races have also begun to study these arts.\n\n
+ragemage.c	1275	Rage techniques are learned from books, but differ from normal spells in many ways.\s
+ragemage.c	1276	First of all, the Rage-Mage must perform a special Ritual of Anger to\s
+ragemage.c	1277	learn a power, and this ritual destroys the book; as a result, it may take\s
+ragemage.c	1278	a long time for the Rage-Mage to learn all of their high-level powers.\s
+ragemage.c	1279	Books are required only for learning; the powers, once learned, can be\s
+ragemage.c	1280	used without them.\n\n
+ragemage.c	1281	Another unique aspect of Rage-Mages concerns their mana pool. Rage-Mage\s
+ragemage.c	1282	mana, unlike that of normal spellcasters, does not regenerate on its own;\s
+ragemage.c	1283	in fact, it actually decreases rapidly each turn, meaning Rage-Mages had\s
+ragemage.c	1284	better use their powers quickly while they still can. A Rage-Mage gains\s
+ragemage.c	1285	mana whenever he is the target of a magical spell; indeed, magic makes a\s
+ragemage.c	1286	Rage-Mage very angry! Rage-Mages can also fuel their mana by hurting\s
+ragemage.c	1287	those around them, which can be quite effective in crowded situations.
+ranger.c	61	A Ranger is a seasoned wanderer from the plains or woods, attuned\s
+ranger.c	62	to the natural world. Rangers have few weak points; like mages they\s
+ranger.c	63	are excellent with magic devices, yet they are also fairly good\s
+ranger.c	64	at using bows and melee weapons. Their stealth, searching and\s
+ranger.c	65	perception have been sharpened by their time in the wilderness,\s
+ranger.c	66	and their alliance with the spirits of nature even gives them a\s
+ranger.c	67	good saving throw.\n \n
+ranger.c	68	All rangers are trained in Nature magic, and all Nature spells are\s
+ranger.c	69	available to them; they even learn these spells almost as fast as\s
+ranger.c	70	mages. They can also select a secondary realm (Sorcery,\s
+ranger.c	71	Chaos, Death, Trump, Arcane, and Daemon); but they are slow\s
+ranger.c	72	learners here, and may find themselves unable to learn some of the\s
+ranger.c	73	highest level spells. Another downside is that rangers, like the\s
+ranger.c	74	priestly classes, lack the ability to choose their own spells;\s
+ranger.c	75	they will learn whatever the capricious nature gods choose to teach them.\n\n
+ranger.c	76	Rangers have a class power, 'Probe Monster',\s
+ranger.c	77	which allows them to assess the strengths and weaknesses of the\s
+ranger.c	78	monsters they meet. The magical powers of a ranger depend on Wisdom.
+red_mage.c	75	Red-Mages make better fighters than most mages, and are also\s
+red_mage.c	76	versatile spellcasters who can use many realms without needing\s
+red_mage.c	77	to specialize in only one or two. The downside of this wide scope is\s
+red_mage.c	78	that Red-Mages' magic is fairly shallow; they have high fail rates,\s
+red_mage.c	79	minimum levels and mana costs, and are limited to the first two\s
+red_mage.c	80	spellbooks in each realm except for Arcane.\n\n
+red_mage.c	81	Red-Mages have a class power, 'Double Magic', which allows them to\s
+red_mage.c	82	cast two spells at once. As with regular mages, their spellcasting stat\s
+red_mage.c	83	is Intelligence.
+rogue.c	796	A Rogue is a character who prefers to live by their cunning, yet is\s
+rogue.c	797	capable of fighting their way out of a tight spot when necessary. Rogues\s
+rogue.c	798	are good at locating secret doors and hidden traps, and are masters of\s
+rogue.c	799	trap-disarming and lockpicking. Their exceptional stealth allows\s
+rogue.c	800	rogues to sneak around sleeping creatures without having to fight;\s
+rogue.c	801	they can also backstab a fleeing monster or surprise an\s
+rogue.c	802	enemy with a telling first blow. Rogues are fairly good at ranged combat,\s
+rogue.c	803	and receive special bonuses when shooting with a sling.\n \n
+rogue.c	804	Rogues can select one realm - Sorcery, Death, Trump, Arcane, Craft, Law,\s
+rogue.c	805	or Burglary. Except for this last realm, rogues have certain limitations\s
+rogue.c	806	on which spells they can learn, and they do not learn new spells very quickly.\s
+rogue.c	807	The Burglary realm is unique to the rogue, and the speciality of the class; it\s
+rogue.c	808	offers spells for setting traps, picking pockets, negotiating with\s
+rogue.c	809	other thieves, and escaping from a tight spot. Burglary rogues are\s
+rogue.c	810	agents of the Black Market and receive favorable pricing from\s
+rogue.c	811	that shop. Burglary rogues use Dexterity as their spellcasting stat,\s
+rogue.c	812	and can use this special art from the beginning of their adventures; rogues of other\s
+rogue.c	813	realms, however, rely on Intelligence and cannot learn magic spells before they\s
+rogue.c	814	reach level 5.
+rune_kt.c	1885	Augment your equipment by attaching runes of various powers. Also, you may create\s
+rune_kt.c	1886	certain stand-alone runes that grant powers by virtue of being present in your\s
+rune_kt.c	1887	inventory. Be sure to always keep Absorption handy, for it is your only means\s
+rune_kt.c	1888	of regaining spell points!
+rune_kt.c	1955	These runes allow you to effect adjacent enemies. By creating a temporary rune\s
+rune_kt.c	1956	attached to your melee weapon, you may make a single attack with enhanced power.
+rune_kt.c	2126	The Rune-Knight is a mythical warrior,\s
+rune_kt.c	2127	dedicated to the discovery of ancient runes that hold immense power. They\s
+rune_kt.c	2128	may fix mystical runes of various types to their equipment in order to\s
+rune_kt.c	2129	gain permanent bonuses; even artifacts can be improved this way!\s
+rune_kt.c	2130	Alternatively, they may conjure a temporary rune which allows\s
+rune_kt.c	2131	them to attack with enhanced effects, or place one directly on\s
+rune_kt.c	2132	their person for a one-time or temporary bonus.\s
+rune_kt.c	2133	Finally, they may alter their surroundings with various runes of\s
+rune_kt.c	2134	change.\n \n
+rune_kt.c	2135	All runes (except <color:B>{Absorption}</color>) require mana for\s
+rune_kt.c	2136	creation; however, unlike ordinary spellcasters, Rune-Knights do not\s
+rune_kt.c	2137	regenerate mana on their own. Rather, they must siphon mana from\s
+rune_kt.c	2138	magical or elemental attacks directed against them, and doing so\s
+rune_kt.c	2139	requires the special rune of <color:B>{Absorption}</color>. This\s
+rune_kt.c	2140	rune should be worn at all times, or at least kept handy.\n \n
+rune_kt.c	2141	Despite having mana, the Rune-Knight does not play like an ordinary\s
+rune_kt.c	2142	spellcaster; they are more like a weaponsmith but can, on occasion,\s
+rune_kt.c	2143	cast useful spells. If you have mana available, consider using these\s
+rune_kt.c	2144	spells; otherwise, play as a warrior and wait to absorb mana. This\s
+rune_kt.c	2145	can take time, depending on the foes you face, but the Rune-Knight's\s
+rune_kt.c	2146	honor should prevent them from seeking out weak, defenseless spellcasters;\s
+rune_kt.c	2147	and in any case, weak attacks can only take your mana so high.
+samurai.c	1310	Samurai, masters of the art of the blade, are among the strongest\s
+samurai.c	1311	fighters and can use various special combat techniques.\s
+samurai.c	1312	Samurai are not good at most non-combat skills, and many\s
+samurai.c	1313	magical devices in particular may be too difficult for them to use.\s
+samurai.c	1314	Wisdom determines a Samurai's ability to use the special combat\s
+samurai.c	1315	techniques available.\n \n
+samurai.c	1316	Samurai use the art of the blade called Kendo (or Bugei). Books\s
+samurai.c	1317	of Kendo are similar to spellbooks, but do not need to be carried\s
+samurai.c	1318	around; they are only required for studying new combat techniques.\s
+samurai.c	1319	Samurai need to wield a weapon to use Kendo, and many of their techniques will\s
+samurai.c	1320	add special properties to their blows; these are often slays or brands such as\s
+samurai.c	1321	flaming or poisoning, but can be much more powerful than a normal brand.\s
+samurai.c	1322	The mana pool of a Samurai does not depend on their level but\s
+samurai.c	1323	solely on wisdom; and they can use the class power 'Concentration'\s
+samurai.c	1324	to temporarily increase their mana beyond its usual maximum value. The other\s
+samurai.c	1325	Samurai class power, 'Assume a Posture', allows them to choose\s
+samurai.c	1326	different postures depending on the needs of a situation.
+scores.c	463	<color:G>    <color:keypress>N</color>ame           \s
+scores.c	464	CL <color:keypress>R</color>ace        \s
+scores.c	465	<color:keypress>C</color>lass           \s
+scores.c	466	<color:keypress>S</color>core Rank <color:keypress>D</color>ate      \s
+scores.c	467	Status</color>\n
+scout.c	557	The scout is the vanguard of any attack, and excels at stealth and observation\s
+scout.c	558	skills. Scouts are not the best at one-on-one combat, but are unparalleled at\s
+scout.c	559	ambush techniques for destroying groups of weak sentries. Scouts are lightly\s
+scout.c	560	armored, and heavy armor disrupts their abilities. Unlike most characters,\s
+scout.c	561	scouts are not at home in cramped corridors; in open areas they can\s
+scout.c	562	dodge attacks effectively, but being confined severely hampers their\s
+scout.c	563	defensive abilities.
+shop.c	1717	\s [<color:o>x</color>] Examine  [<color:o>?</color>] Help \s
+shop.c	1718	[<color:o>q/Esc</color>] Exit\n
+shop.c	1719	[<color:o>R</color>] Reserve Item  [<color:o>S</color>] Shuffle Stock \s
+shop.c	1720	[<color:o>B</color>] Buy Everything\n
+shop.c	1721	[<color:o>Space/PgDn</color>] Next  [<color:o>-/PgUp</color>] Previous \s
+shop.c	1867	\s<color:keypress>Space</color>/<color:keypress>3</color>/<color:keypress>PgDn</color> next page.\s
+shop.c	1868	<color:keypress>9</color>/<color:keypress>PgUp</color> previous page.
+shop.c	2316	<color:y>Buy which item <color:w>(<color:keypress>Esc</color>\s
+skillmaster.c	91	<color:B>Melee</color> skills increase your ability to fight monsters in hand to hand combat.\s
+skillmaster.c	92	The total number of points spent in this group will determine your base fighting\s
+skillmaster.c	93	skill, as well as how much melee skill you gain with experience. In addition, this\s
+skillmaster.c	94	total gives bonuses to STR and DEX. The individual skills determine your base\s
+skillmaster.c	95	proficiency with the given type of weapon, as well as the maximum number of blows\s
+skillmaster.c	96	per round you may gain. For martial arts, the number of points determines your\s
+skillmaster.c	97	effective fighting level which is used to determine which types of hits you land.
+skillmaster.c	105	<color:B>Ranged</color> skills increase your ability to fight monsters using distance weapons\s
+skillmaster.c	106	such as bows and slings, as well as the ability to throw melee weapons\s
+skillmaster.c	107	effectively. The total number of points spent in this group will determine\s
+skillmaster.c	108	your base shooting skill, as well as how fast this skill increases with\s
+skillmaster.c	109	experience. Archery grants proficiency with the various classes of shooters\s
+skillmaster.c	110	as well as increasing your number of shots per round. Throwing grants the power\s
+skillmaster.c	111	to throw your leading melee weapon and perhaps have it return to you as well.
+skillmaster.c	116	<color:B>Magic</color> skills grant access to various spellcasting realms using INT rather\s
+skillmaster.c	117	than WIS as the spellcasting stat. Each point in a given realm increases\s
+skillmaster.c	118	your maximum spellcasting level as well as the decreasing the cost and fail\s
+skillmaster.c	119	rates of individual spells. You need not learn individual spells the way a\s
+skillmaster.c	120	mage might. Rather, you may cast any spell in a known realm provided your\s
+skillmaster.c	121	spellcasting level is high enough. The total number of points spent in this\s
+skillmaster.c	122	group provides a modest boost to device skills as well as increasing your\s
+skillmaster.c	123	INT. Unfortunately. this total also has a negative impact on your life rating,\s
+skillmaster.c	124	STR and CON.
+skillmaster.c	137	<color:B>Prayer</color> skills work like Magic skills, granting access to various realms of\s
+skillmaster.c	138	magic. However, prayer realms use WIS for the spellcasting stat rather than\s
+skillmaster.c	139	INT. Moreover, the total points in the Prayer group grants enhanced saving\s
+skillmaster.c	140	throws as well as increased WIS, but does not affect device skills or life\s
+skillmaster.c	141	rating. As in Magic, the number of points invested in a particular realm\s
+skillmaster.c	142	determines your maximum casting level and also influences casting costs and\s
+skillmaster.c	143	fail rates. Life magic is only available as a Prayer talent. The other prayer\s
+skillmaster.c	144	realms are duplicated as Magic talents, but you can only learn them in one\s
+skillmaster.c	145	way: as either INT based or WIS based.
+skillmaster.c	152	There are various <color:B>Skills</color> important for every player, including\s
+skillmaster.c	153	stealth, perception, health and magic devices. While these skills may be influenced by\s
+skillmaster.c	154	talents in other groups (e.g. Magic increases your device skills), it is often\s
+skillmaster.c	155	desirable to directly increase these skills even more. In addition, you can directly\s
+skillmaster.c	156	improve your starting stats by investing in some of the skills in this group\s
+skillmaster.c	157	(e.g. Agility improves DEX while Health improve CON).
+skillmaster.c	167	There are various specialty <color:B>Techniques</color> which you may want to\s
+skillmaster.c	168	learn, including the Riding and Dual Wielding talents, as well as access to the\s
+skillmaster.c	169	Burglary and Kendo techniques. These latter two function like spell realms, using\s
+skillmaster.c	170	DEX and WIS respectively as their primary spell stat. Kendo also makes your mana\s
+skillmaster.c	171	function like that of the Samurai, and this behavior is used no matter what other\s
+skillmaster.c	172	Magic or Prayer realms you have learned. Note that Kendo still requires you to\s
+skillmaster.c	173	carry the appropriate spellbooks since you really are not samurai.
+skillmaster.c	180	Many <color:B>Abilities</color> can be purchased for a single skill point. Often\s
+skillmaster.c	181	these grant an extra power which you may activate at will without cost, and usually\s
+skillmaster.c	182	without fail. Alternatively, abilities may grant a bonus such as regeneration or\s
+skillmaster.c	183	good fortune.
+skillmaster.c	1294	<color:v>Warning</color>: <indent>You are about to learn the <color:B>%s</color> skill.\s
+skillmaster.c	1295	Are you sure you want to do this? The skills you learn are permanent choices and you\s
+skillmaster.c	1296	won't be able to change your mind later!</indent>\n
+skillmaster.c	1457	You must choose which <color:B>skills</color> to learn. The various skills are grouped\s
+skillmaster.c	1458	into categories. Often, the total number of points in a given group determines broad level\s
+skillmaster.c	1459	skills and perhaps grants boosts to your starting stats, while the specific skill points\s
+skillmaster.c	1460	grant targetted benefits (such as proficiency with a class of weapons, or access to\s
+skillmaster.c	1461	a specific spell realm). Details are given in the submenu for each group. Feel free to\s
+skillmaster.c	1462	explore the various groups since you may always <color:keypress>ESC</color> to return here.\n\n
+skillmaster.c	1752	The Skillmaster is not your ordinary class. Instead, you\s
+skillmaster.c	1753	may design your own class, on the fly, using a point-based\s
+skillmaster.c	1754	skill system. Upon birth, you will get 5 points to spend;\s
+skillmaster.c	1755	use them wisely to set the basic direction of your class.\s
+skillmaster.c	1756	Every fifth character level, you will\s
+skillmaster.c	1757	receive an additional point to spend, for fifteen points\s
+skillmaster.c	1758	overall. You may use these points to learn melee, to\s
+skillmaster.c	1759	master a spell realm, to improve your speed or stealth,\s
+skillmaster.c	1760	to increase your magic device skills, to gain special\s
+skillmaster.c	1761	techniques, to learn riding, dual-wielding or martial\s
+skillmaster.c	1762	arts... no other class, even Psion or Yeqrezh Disciple,\s
+skillmaster.c	1763	offers as much flexibility.\n\n
+skillmaster.c	1764	Most skills allow the investment of multiple points for\s
+skillmaster.c	1765	increased proficiency, but some are abilities that you may\s
+skillmaster.c	1766	buy with a single point (e.g. Luck). This class is not recommended for\s
+skillmaster.c	1767	beginning players, despite being quite strong; you only have a limited\s
+skillmaster.c	1768	amount of points to spend, and your choices are irreversible.
+skills.c	201	<color:B>Against level <color:R>%d</color> foes, you can only train bow\s
+skills.c	202	proficiency to <color:R>%d</color> (Current Skill: <color:R>%d</color>).</color>
+skills.c	396	<color:B>Against level <color:R>%d</color> foes, you can only train weapon\s
+sniper.c	59	Concentrate your mind for more powerful shooting. As you increase\s
+sniper.c	60	your focus, you will gain access to more deadly archery techniques.\s
+sniper.c	61	In addition, you will land more critical shots as your aim improves.
+sniper.c	261	Shoot a glowing arrow that lights up the dungeon. This\s
+sniper.c	262	shot also does increased damage from light against\s
+sniper.c	263	enemies that are hurt by bright light.
+sniper.c	523	Snipers are specialists in marksmanship, but not like archers who\s
+sniper.c	524	fire off arrow after arrow in swift succession. They don't just\s
+sniper.c	525	increase accuracy and power of shots by concentration, they can use\s
+sniper.c	526	fearsome archery techniques.\n \n
+sniper.c	527	What they require is powerful bows or crossbows, good quality\s
+sniper.c	528	ammunition and the fortitude to bear up without flinching under\s
+sniper.c	529	any situation.\n \n
+sniper.c	530	Snipers know their enemies well and can shoot them from the shadows.\s
+sniper.c	531	They have no time for magic.
+sorcerer.c	87	Sorcerers are the all-around best magicians, being able to master\s
+sorcerer.c	88	all spells from almost any magic realm without needing to study them or\s
+sorcerer.c	89	gain proficiency with them. On the downside, they have by far the\s
+sorcerer.c	90	fewest hit points of any class; they are also the worst fighters in the\s
+sorcerer.c	91	dungeon, being unable to use any weapon but a Wizardstaff.\n \n
+sorcerer.c	92	Sorcerers have a class power - 'Eat Magic' - which absorbs mana from\s
+sorcerer.c	93	wands, staves or rods. Unlike other mages, they rely on Charisma as\s
+sorcerer.c	94	their spell stat.
+timelord.c	257	Fires a temporal bolt at chosen foe. Time based attacks may produce various\s
+timelord.c	258	effects on a monster including slowing, stasis, and many others.
+timelord.c	413	Fires a temporal blast at chosen foe. Time based attacks may produce various\s
+timelord.c	624	Breathe time at chosen foe. Time based attacks may produce various\s
+timelord.c	878	Time-Lords are masters of temporal magic, altering the flow of time\s
+timelord.c	879	to their advantage. They gain new powers as their experience grows,\s
+timelord.c	880	and are unique in their ability to use time-based spells against monsters.\s
+timelord.c	881	Not only do these attacks damage a foe, they also inflict a wide variety of possible effects,\s
+timelord.c	882	from slowing to amnesia, from evolution to devolution, from weakening to stasis.\s
+timelord.c	883	In addition to temporal attacks, Time-Lords gain great powers of speed, and\s
+timelord.c	884	become naturally faster with experience. Legend has it that masters of time can even see\s
+timelord.c	885	into the future, avoiding attacks that would otherwise prove fatal!\n \n
+timelord.c	886	Time-Lords are fairly proficient with magical devices, but are mediocre fighters and not\s
+timelord.c	887	good at archery at all. At high levels, they become resistant to time.\s
+timelord.c	888	Time-Lords' primary stat is Wisdom.
+tourist.c	144	Tourists have visited this world for the purpose of sightseeing.\s
+tourist.c	145	Their fighting skills are bad, and they cannot cast powerful\s
+tourist.c	146	spells. They are the most difficult class to win the game with.\s
+tourist.c	147	Intelligence determines a tourist's spellcasting ability.\n \n
+tourist.c	148	Tourists are always seeing more of the world to add to their stock\s
+tourist.c	149	of information; no other class can compete with their\s
+tourist.c	150	identification skills. They have two class powers - 'Take a\s
+tourist.c	151	Photograph' and 'Identify True'. Their magic is based on Arcane,\s
+tourist.c	152	and - aside from identify - is very weak indeed.
+troika.c	2374	The Troika is a group of three closely related Purples working together -\s
+troika.c	2375	Guntujant, Uxip and Sohoglyth. Guntujant is a capricious Purple who follows\s
+troika.c	2376	the careers of his servants very closely, and rewards and punishes them\s
+troika.c	2377	seemingly at random; the powers gained by his followers are unpredictable,\s
+troika.c	2378	but generally quite strong. Uxip delights in combat, and grants Troika\s
+troika.c	2379	disciples their prodigious endurance and skill with two-handed weapons;\s
+troika.c	2380	however, a number of common items are an abomination unto Uxip, and cannot\s
+troika.c	2381	be used by followers of the Troika. Sohoglyth is a mysterious spirit, but\s
+troika.c	2382	a profoundly powerful one. She occasionally sets bonus quests for Troika\s
+troika.c	2383	disciples; if enough of the quests are completed with no failures, she will\s
+troika.c	2384	reward the questor with the power of telepathy, remote object quality\s
+troika.c	2385	sensing, or even walking through walls.\n\n
+troika.c	2386	Troika Disciples are in general very strong, especially in combat but also\s
+troika.c	2387	sorcery, yet the limitations placed upon them by Uxip and Guntujant also make\s
+troika.c	2388	them in some ways vulnerable. In particular, they frequently suffer random\s
+troika.c	2389	punishments, risk being punished if they teleport from a fight while not at low health,\s
+troika.c	2390	cannot wear a shield or cure poison with mushrooms, and must earn the right to\s
+troika.c	2391	use a rod of Detection. The spells of Troika disciples are unique in that they\s
+troika.c	2392	are not learned at any particular character level; instead, Guntujant and Uxip\s
+troika.c	2393	will teach them as a reward for killing dangerous enemies, especially uniques.\s
+troika.c	2394	Strength determines the spellcasting ability of a Troika disciple.
+util.c	3705	TBDoc+
+warlock.c	506	The undead are tough creatures, each having already survived death at least once. Warlocks who make a pact\s
+warlock.c	507	with Undead will find themselves gaining additional resistances such as cold, poison, darkness and\s
+warlock.c	508	nether. In addition, they will be able to see invisible monsters and gain resistance to\s
+warlock.c	509	life-draining forces. They will also gain access to undeadly powers, which typically\s
+warlock.c	510	involve detection and control over the forces of the netherworld. Eventually, this pact will allow\s
+warlock.c	511	its practitioners to destroy monsters with a single word, and, perhaps, to even partially leave\s
+warlock.c	512	the world of the living altogether. Of course, allying with the undead substantially reduces the\s
+warlock.c	513	warlock's ability to fight these creatures.
+warlock.c	867	Molto allegro. A song of defiance, its melody captures the essence of\s
+warlock.c	868	the dragon's lust for treasure and conquest. Woe be to all that hear\s
+warlock.c	869	this ancient dragon song.
+warlock.c	1129	The bond between a Dragonrider and a Dragon is one of the strongest and most enduring ties\s
+warlock.c	1130	seen the world over. Each draws strength, power, and encouragement from the other, and together\s
+warlock.c	1131	they make a formidable foe. An alliance with Dragonkind enables this bond to form, and the Warlock\s
+warlock.c	1132	of this pact gains impressive powers for mounted combat. Indeed, they are among the elite riders\s
+warlock.c	1133	of the world, only slightly inferior to Cavalry and Beastmasters. But where they have a slight\s
+warlock.c	1134	deficiency in skill (and perhaps in melee as well), they have a strong advantage in riding techniques\s
+warlock.c	1135	and magical enhancements. Dragonriders favor the lance above all other weapons, and seek continuously\s
+warlock.c	1136	the legendary 'Dragonlance' which they view as their long-lost birthright.
+warlock.c	1237	Angels are heavenly beings who use a variety of techniques to smite those they view as evil.\s
+warlock.c	1238	Warlocks who make pacts with Angels will also find their saving throws significantly improved,\s
+warlock.c	1239	and (eventually) their body almost immune to bolt-like effects. Since Angels are strongly aligned\s
+warlock.c	1240	with the forces of good, making a pact with Angels will reduce damage done to all good monsters\s
+warlock.c	1241	by a substantial amount.
+warlock.c	1359	Demons are crafty creatures of Hell, using whatever means at their disposal to bring\s
+warlock.c	1360	down their enemies. Warlocks who make pacts with Demons will find their abilities to use\s
+warlock.c	1361	all magical devices improved, and learn the ability to Recharge these devices at will.\s
+warlock.c	1362	Eventually, Demon Warlocks attain the ability to crush walls beneath their footsteps, and\s
+warlock.c	1363	even gain immunity to fire. Making a pact with Demons will reduce damage done to all demons by a substantial amount.
+warlock.c	1540	An alliance with hounds is sneakily strong: hounds are fast, stealthy and nimble,\s
+warlock.c	1541	and the warlock will gain these attributes as well, in addition to basic elemental\s
+warlock.c	1542	resistances. They also gain decent melee, and the ability to channel the unpredictable\s
+warlock.c	1543	powers of the aether. Of course, Hound Warlocks may also call on their kin for assistance,\s
+warlock.c	1544	though this may not be enough against the more difficult foes of the world. Still, wouldn't\s
+warlock.c	1545	it be fun to have some of those annoying hounds on your side for a change?
+warlock.c	1752	Of all the icky, crawling things in the world, you have chosen to make an alliance\s
+warlock.c	1753	with spiders? Sure, they are stealthy, and fast, and very adept at hiding. Able\s
+warlock.c	1754	to extrude a fine sticky substance to ensnare the unwary, the spider lurks nearby,\s
+warlock.c	1755	or so you assume since you very seldom see them. Moreover, many spiders are adept at\s
+warlock.c	1756	the powers of teleportation, able to jump quickly from one location to another, which\s
+warlock.c	1757	can be quite baffling to a would be predator. They are comfortable with both poison\s
+warlock.c	1758	and nexus. They are a bit on the squishy side, though - that is, if you\s
+warlock.c	1759	manage to catch one!
+warlock.c	1896	An alliance with giants and titans grants impressive physical strength and fortitude,\s
+warlock.c	1897	but other stats will generally suffer. Later in life, you will gain giant-like resistances\s
+warlock.c	1898	including sound, shards and chaos. Your combat will be impressive; and like giants, you\s
+warlock.c	1899	will favor heavy weapons. Oh, and you won't mind tossing a boulder or two should the need\s
+warlock.c	1900	arise! This alliance offers much in the way of physical advantages, but very\s
+warlock.c	1901	little in the way of magical abilities or skill. Warlocks with this alliance are\s
+warlock.c	1902	excellent fighters, being nearly indistiguishable in skill from Warriors!
+warlock.c	2128	Warlocks are a magical class; they derive their spells and powers not from books,\s
+warlock.c	2129	but from an eldritch pact made with a given class of monsters. This pact is irrevocable\s
+warlock.c	2130	and is made at the outset of the Warlock's career. Depending on the class of monsters with whom\s
+warlock.c	2131	they ally, the warlock will gain unique bonuses, abilities and magical powers; for example,\s
+warlock.c	2132	alliance with the forces of the netherworld grants resistances to poison and nether, enhanced\s
+warlock.c	2133	constitution and spells to control and conjure the unliving, as well as spells to access\s
+warlock.c	2134	the damaging forces of the netherworld directly. Each such alliance has thematic bonuses\s
+warlock.c	2135	and powers, and you can read the details in the respective help sections.\n\n
+warlock.c	2136	Allying with a given class of monsters dramatically reduces the warlock's ability to fight\s
+warlock.c	2137	these foes. Instead, the warlock seeks cooperation with their brethren, or perhaps domination\s
+warlock.c	2138	over them; direct assaults are rarely successful.\n \n
+warlock.c	2139	In addition to pact-related spells, all warlocks gain access to the unique power of the\s
+warlock.c	2140	Eldritch Blast. Their primary spell stat is Charisma, since they seek dominion and alliance\s
+warlock.c	2141	with their chosen kin, and these monsters tend to have a strong will of their own.
+warrior.c	50	A Warrior is a hack-and-slash character, who solves most of his\s
+warrior.c	51	problems by cutting them to pieces, but will occasionally fall\s
+warrior.c	52	back on the help of a magical device. Unfortunately, many\s
+warrior.c	53	high-level devices may be forever beyond their use.\n \n
+warrior.c	54	Warriors cast no spells. They hate magic. In fact, they even\s
+warrior.c	55	gain experience for destroying high level spellbooks. They have a\s
+warrior.c	56	class power - 'Sword Dancing' - which allows them to conduct a\s
+warrior.c	57	melee attack in six random directions.
+warrior_mage.c	45	A Warrior-Mage is precisely what the name suggests: a cross\s
+warrior_mage.c	46	between a warrior and a mage. To support their good-for-mages combat\s
+warrior_mage.c	47	abilities, Warrior-Mages begin the game with Arcane magic and can\s
+warrior_mage.c	48	freely select another spell realm. Although they do not gain\s
+warrior_mage.c	49	new spells as fast as regular mages, they can eventually learn\s
+warrior_mage.c	50	all or almost all spells in both realms, making them a very competitive\s
+warrior_mage.c	51	choice for those who appreciate Arcane magic. Their class powers\s
+warrior_mage.c	52	allow them to convert either HP to mana, or mana to HP, as needed.
+weaponmaster.c	2256	The mighty axe! Your blows will cleave with damage unsurpassed.\s
+weaponmaster.c	2257	Specializing in axes gives great offensive prowess, especially when\s
+weaponmaster.c	2258	your axe is wielded with two hands. However, this speciality offers\s
+weaponmaster.c	2259	little in the way of utility. Kill quickly as your life depends on it!
+weaponmaster.c	2285	You will shoot to kill! The bowmaster gains techniques to enhance shooting,\s
+weaponmaster.c	2286	including more rapid firing, the ability to volley shots over the heads of\s
+weaponmaster.c	2287	intervening monsters, reduced ammo destruction, the ability to kill with a\s
+weaponmaster.c	2288	single arrow and much more. As a shooter, your missile prowess will be quite\s
+weaponmaster.c	2289	formidable, though your melee will be somewhat lacking.
+weaponmaster.c	2313	You will seek to club your opponents senseless! This speciality gains passive\s
+weaponmaster.c	2314	status effects against monsters, such as confusion, knock out and stunning. Also,\s
+weaponmaster.c	2315	you will gain some limited utility techniques. At high levels, your weapons will\s
+weaponmaster.c	2316	become more likely to score devastating, crushing blows against your hapless enemies.
+weaponmaster.c	2351	The crossbowmaster shoots deadly bolts for great damage. Their bolts may explode\s
+weaponmaster.c	2352	powerfully damaging nearby monsters. Also, they may shoot so hard as to knock\s
+weaponmaster.c	2353	their opponents backwards!
+weaponmaster.c	2377	A knife in the back! This speciality favors dual-wielding and rogue-type behavior.\s
+weaponmaster.c	2378	The daggermaster can even assume the posture of The Flying Dagger which greatly\s
+weaponmaster.c	2379	enhances their low level dagger toss capability. Indeed, their prowess with the\s
+weaponmaster.c	2380	dagger toss is legendary and appears almost magical! At high levels, you will also\s
+weaponmaster.c	2381	gain formidable melee prowess with the Frenzy Stance. Finally, daggermasters have\s
+weaponmaster.c	2382	very strong short ranged teleport techniques that synergize well with their toss\s
+weaponmaster.c	2415	You don a grim face before setting out to reap your harvest of death. You will swing\s
+weaponmaster.c	2416	your weapon wide often affecting multiple surrounding opponents.
+weaponmaster.c	2456	Specializing in shields gives excellent powers of defense and retaliation. In addition,\s
+weaponmaster.c	2457	you can even choose to melee with your shield rather than a normal weapon, bashing your\s
+weaponmaster.c	2458	opponents senseless. This form of combat is known as Shield Bashing and is unique to this\s
+weaponmaster.c	2489	Watch out, Goliath! As a master of slings you will shoot pebbles with uncanny speed. Your\s
+weaponmaster.c	2490	shots may even ricochet off other monsters to score multiple hits. As with other archery\s
+weaponmaster.c	2491	specializations, your ammo will break less often.
+weaponmaster.c	2513	Monkey King! You will battle opponents with a flurry of blows from your mighty\s
+weaponmaster.c	2514	staff and will be prepared to counter the attacks of your enemies. You can vault into\s
+weaponmaster.c	2515	battle and circle kick enemies for stunning effects, attacking them with your boots!\s
+weaponmaster.c	2516	You may even eventually clone yourself at great cost.
+weaponmaster.c	2542	You will become a true swordmaster! Mastery of the blade will augment\s
+weaponmaster.c	2543	your weapon with elemental, vorpal or vampiric powers.
+weaponmaster.c	2589	A master of digging. You prefer rocky enclosures and don't mind\s
+weaponmaster.c	2590	lugging around a corpse or two, which you can bury in a pinch for\s
+weaponmaster.c	2591	a temporary bonus. You can choose one of several postures which allow\s
+weaponmaster.c	2592	you to use the digging bonus of your current weapon as an additional\s
+weaponmaster.c	2593	bonus, such as increased strength, constitution, or even speed! So keep\s
+weaponmaster.c	2594	your eye open for those +8 diggers!
+weaponmaster.c	3832	A Weaponmaster is exceptionally good with a single class of weapons,\s
+weaponmaster.c	3833	obtaining special combat bonuses and powers which depend on their chosen\s
+weaponmaster.c	3834	speciality. Focus is the key to success; weaponmasters are truly lousy\s
+weaponmaster.c	3835	with off-speciality weapons, but few can match the prowess they gain\s
+weaponmaster.c	3836	with something more suitable in their hands.
+weaponsmith.c	2629	A Weaponsmith can improve weapons and armors for him or herself.\s
+weaponsmith.c	2630	They are good at fighting, and they have potential ability to\s
+weaponsmith.c	2631	become even better than Warriors using improved equipment. They\s
+weaponsmith.c	2632	cannot cast spells, and are poor at skills such as stealth or\s
+weaponsmith.c	2633	magic defense.\n \n
+weaponsmith.c	2634	A Weaponsmith extracts the essences of special effects from weapons\s
+weaponsmith.c	2635	or armors which have various special abilities, and can add these\s
+weaponsmith.c	2636	essences to another weapon or armor. Normally, each equipment can\s
+weaponsmith.c	2637	be improved only once, but they can remove a previously added\s
+weaponsmith.c	2638	essence from improved equipment to improve it with another\s
+weaponsmith.c	2639	essence. To-hit, to-damage bonus, and AC can be improved freely\s
+weaponsmith.c	2640	up to a maximum value depending on level. Weaponsmiths use class\s
+weaponsmith.c	2641	powers for Smithing commands.
+werewolf.c	510	Werewolves are fearsome hunters who can assume either human or wolf shape.\s
+werewolf.c	511	They are exceptionally durable in both forms, and have great powers of\s
+werewolf.c	512	regeneration, though they are infamously vulnerable to fire and silver,\s
+werewolf.c	513	and are not particularly good at using magical spells or devices in either\s
+werewolf.c	514	shape. While in wolf form, werewolves wield no weapons; instead, they\s
+werewolf.c	515	attack with their teeth and claws. As werewolves wear different equipment\s
+werewolf.c	516	in human form and wolf form, they use one inventory slot for a special\s
+werewolf.c	517	satchel in which they keep the items not needed in their current shape.
+wild_talent.c	645	Wild-Talents gain random talents and abilities as they\s
+wild_talent.c	646	level up. They are good fighters, and decent with magical devices,\s
+wild_talent.c	647	but their true forte is their vast array of potential random\s
+wild_talent.c	648	powers. Except you never know what those might be!\n \n
+wild_talent.c	649	Wild-Talents do not have a spell stat. Instead, each ability that\s
+wild_talent.c	650	they gain requires its own individual stat for the purposes of fail rate\s
+wild_talent.c	651	calculation; for example, Tossing a Boulder requires Strength,\s
+wild_talent.c	652	while Magic Missile requires Intelligence. Each spell requires mana\s
+wild_talent.c	653	to cast, but the amount of mana available is not influenced by any\s
+wild_talent.c	654	particular stat and is determined simply by experience.
+yellow_mage.c	50	A Yellow-Mage is a type of Mage who focuses on rapid spell casting.\s
+yellow_mage.c	51	The casting speed of Yellow-Mages improves with experience; low-level spells\s
+yellow_mage.c	52	are particularly quick to use, and can eventually be cast as many as five\s
+yellow_mage.c	53	times in one round! But even a level 50 spell requires less than half a\s
+yellow_mage.c	54	turn for an accomplished Yellow-Mage.\n\n
+yellow_mage.c	55	In most other respects, a Yellow-Mage is similar to a Mage; they use Intelligence\s
+yellow_mage.c	56	as their primary spell stat, and may learn spells from two spell realms of their choice.\s
+yellow_mage.c	57	However, due to their focus on hasty casting, some of the deepest\s
+yellow_mage.c	58	and most powerful magic will remain forever beyond their grasp.
+yeqrezh.c	1659	Disciples of Yeqrezh can choose five special gifts, one every ten levels.\s
+yeqrezh.c	1660	These gifts can take the form of new abilities, physical powers, or rare items;\s
+yeqrezh.c	1661	some can be chosen repeatedly, while others can only be picked once.\s
+yeqrezh.c	1662	Once you have selected a gift, you can never go back on your decision, so you\s
+yeqrezh.c	1663	might want to study this list to decide which gifts to choose for your character.\n\n
+yeqrezh.c	1733	Yeqrezh is the friendliest of the Purples, supportive of his Disciples\s
+yeqrezh.c	1734	and willing to let them find their own way. Disciples of Yeqrezh will\s
+yeqrezh.c	1735	learn 20 spells over the course of the game - one every two character\s
+yeqrezh.c	1736	levels, apart from levels 10, 20, 30, 40 and 50; seventeen of these\s
+yeqrezh.c	1737	spells are offered by Yeqrezh, while the other three (at levels 16,\s
+yeqrezh.c	1738	32 and 48) are chosen by you. Every ten levels, Yeqrezh offers direct\s
+yeqrezh.c	1739	help to his Disciples; depending on your choice, he can give you rare\s
+yeqrezh.c	1740	items or a permanent mental or physical ability, or share some of his\s
+yeqrezh.c	1741	life experience with you. Some of these abilities can be improved\s
+yeqrezh.c	1742	repeatedly, allowing you to accumulate exceptional mastery.\n\n
+yeqrezh.c	1743	Disciples of Yeqrezh gain many practical tools as well as solid offensive\s
+yeqrezh.c	1744	options, and a useful item as a gift from their patron every odd-numbered\s
+yeqrezh.c	1745	character level. They are the most mage-like of all Disciples, and lack of\s
+yeqrezh.c	1746	hit points is their only true weakness. Nevertheless, they are extremely\s
+yeqrezh.c	1747	versatile, and can also win through melee, archery or even sneaking about\s
+yeqrezh.c	1748	silently collecting loot.\n\n
+yeqrezh.c	1749	Yeqrezh is the recommended patron for new (or highly cautious) players, as he\s
+yeqrezh.c	1750	is the only Purple not to actively incentivize a demanding, push-the-envelope\s
+yeqrezh.c	1751	approach. Yeqrezh's disciples, like Karrot's, rely on Intelligence to\s
+yeqrezh.c	1752	power their spells.

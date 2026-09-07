@@ -1,0 +1,259 @@
+// 音の名前 → wav
+//
+// **これは生成物である。**元は lib/xtra/sound/sound.cfg と、道具の中の
+// 貸し表（BORROWED。別のコアだけが言ってくる綴りへ変愚の wav を貸す）で、
+// 作り直すのは `python tools/gen_sfx_catalog.py`。手で直すと次の生成で消える。
+//
+// dir     … 素材の置き場（リポジトリ直下からの相対）
+// sounds  … コアが言ってくる名前 → wav の候補。複数あればそのつど 1 つ選ぶ
+//
+// 名前が表に無い音は**鳴らさない**（落ちない）。素材は追跡していない
+// （lib/xtra は上流サブモジュール。.gitignore）ので、無い機では静かになるだけ。
+{
+  "dir": "lib/xtra/sound",
+  "sounds": {
+    "attack_failed": [
+      "miss1.wav",
+      "miss2.wav",
+      "miss3.wav"
+    ],
+    "bell": [
+      "fail.wav"
+    ],
+    "bite": [
+      "bite.wav"
+    ],
+    "breath": [
+      "breath.wav"
+    ],
+    "buy": [
+      "buy.wav"
+    ],
+    "carve_hit": [
+      "slash.wav"
+    ],
+    "claw": [
+      "claw.wav"
+    ],
+    "cleave_hit": [
+      "slash.wav"
+    ],
+    "crush": [
+      "crush.wav"
+    ],
+    "damage_over_time": [
+      "damage_over_time.wav"
+    ],
+    "death": [
+      "down.wav"
+    ],
+    "destitem": [
+      "destitem.wav"
+    ],
+    "drop": [
+      "drop1.wav",
+      "drop2.wav"
+    ],
+    "eat": [
+      "eat1.wav",
+      "eat2.wav",
+      "eat3.wav"
+    ],
+    "enemy_hit": [
+      "hit1.wav",
+      "hit2.wav",
+      "hit3.wav"
+    ],
+    "evil": [
+      "evil.wav"
+    ],
+    "eviscerate_hit": [
+      "slash.wav"
+    ],
+    "explode": [
+      "explode.wav"
+    ],
+    "fail": [
+      "fail.wav"
+    ],
+    "faint": [
+      "down.wav"
+    ],
+    "fall": [
+      "fall.wav"
+    ],
+    "flee": [
+      "flee.wav"
+    ],
+    "glass": [
+      "glass.wav"
+    ],
+    "good_hit": [
+      "critical.wav"
+    ],
+    "gouge_hit": [
+      "slash.wav"
+    ],
+    "great_hit": [
+      "critical.wav"
+    ],
+    "hit": [
+      "hit1.wav",
+      "hit2.wav",
+      "hit3.wav"
+    ],
+    "hitpoint_warn": [
+      "warn.wav"
+    ],
+    "hitwall": [
+      "hitwall1.wav",
+      "hitwall2.wav",
+      "hitwall3.wav"
+    ],
+    "hungry": [
+      "hungry1.wav"
+    ],
+    "kill": [
+      "kill1.wav",
+      "kill2.wav"
+    ],
+    "level": [
+      "level.wav"
+    ],
+    "lockpick_fail": [
+      "fail.wav"
+    ],
+    "maim_hit": [
+      "slash.wav"
+    ],
+    "miss": [
+      "miss1.wav",
+      "miss2.wav",
+      "miss3.wav"
+    ],
+    "moan": [
+      "moan.wav"
+    ],
+    "n_kill": [
+      "n_kill.wav"
+    ],
+    "nothing_to_open": [
+      "fail.wav"
+    ],
+    "opendoor": [
+      "opendoor1.wav",
+      "opendoor2.wav",
+      "opendoor3.wav"
+    ],
+    "pain": [
+      "pain.wav"
+    ],
+    "quaff": [
+      "quaff.wav"
+    ],
+    "reflect": [
+      "reflect.wav"
+    ],
+    "scroll": [
+      "scroll.wav"
+    ],
+    "sell": [
+      "sell.wav"
+    ],
+    "shoot": [
+      "shoot.wav"
+    ],
+    "shoot_hit": [
+      "shoot_hit1.wav",
+      "shoot_hit2.wav"
+    ],
+    "show": [
+      "show.wav"
+    ],
+    "shred_hit": [
+      "slash.wav"
+    ],
+    "shutdoor": [
+      "shutdoor1.wav",
+      "shutdoor2.wav",
+      "shutdoor3.wav"
+    ],
+    "slime": [
+      "slime.wav"
+    ],
+    "smite_hit": [
+      "slash.wav"
+    ],
+    "stairs": [
+      "stairway1.wav",
+      "stairway2.wav"
+    ],
+    "stairway": [
+      "stairway1.wav",
+      "stairway2.wav"
+    ],
+    "star_great_hit": [
+      "critical.wav"
+    ],
+    "star_superb_hit": [
+      "critical.wav"
+    ],
+    "sting": [
+      "sting.wav"
+    ],
+    "store1": [
+      "store1.wav"
+    ],
+    "store2": [
+      "store1.wav"
+    ],
+    "store3": [
+      "store2.wav"
+    ],
+    "store4": [
+      "store2.wav"
+    ],
+    "study": [
+      "study.wav"
+    ],
+    "summon": [
+      "summon.wav"
+    ],
+    "superb_hit": [
+      "critical.wav"
+    ],
+    "take_off": [
+      "take_off.wav"
+    ],
+    "teleport": [
+      "teleport.wav"
+    ],
+    "terrain_damage": [
+      "terrain_damage.wav"
+    ],
+    "touch": [
+      "touch.wav"
+    ],
+    "tplevel": [
+      "tplevel.wav"
+    ],
+    "tpother": [
+      "tpother.wav"
+    ],
+    "wail": [
+      "wail.wav"
+    ],
+    "warn": [
+      "warn.wav"
+    ],
+    "weak": [
+      "hungry2.wav"
+    ],
+    "wield": [
+      "wield.wav"
+    ],
+    "zap": [
+      "zap.wav"
+    ]
+  }
+}

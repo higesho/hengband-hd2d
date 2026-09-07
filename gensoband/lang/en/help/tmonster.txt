@@ -1,0 +1,596 @@
+=== The monsters of Gensoband ===
+
+Keine: "Gensoband holds more than a thousand kinds of monster, and most of
+them will come at you meaning to kill you.
+Let me explain these monsters.
+Note that in this game everything is called a monster, be it a human or a god.
+
+***** <MonsterSymbols>
+=== Monster classes and symbols ===
+
+Keine: "I touched on which symbol shows which monster when we went through
+the map, but let us go over it again.
+Several symbols have changed their meaning from Hengband.
+'t' is now tengu, 'S' is deities, 'K' is kappa, 'y' and 'Y' are youkai, and
+'F' is fairies.
+Spiders have moved to 'c', beetles to 'I', and yeti to the 'H' symbol.
+Yeeks and townspeople do not appear in Gensoband at all.
+
+a (ants)          Ants. Not very strong.
+b (bats)          Bats. Not very strong.
+c (spiders, centipedes) Vermin. Not very strong, though a few are formidable.
+d (dragons)       Smallish dragons. Fairly tough, and they breathe at you.
+e (eyes)          Many are nasty things that attack you with sleep. Some in
+                  the deep floors are quite strong.
+f (cats, feline beastmen) Many are quick and hit fairly hard.
+g (golems)        Golems and dolls. Mind attacks and weapon slays usually do
+                  almost nothing to them.
+h (humanoids)     Creatures resembling humans. Many shoot or cast.
+i (icky things)   Mysterious slimy creatures. Not very strong.
+j (jellies)       Flowing creatures. Not very strong, though something
+                  outrageous turns up rarely in the deep floors.
+k (kobolds, wolf beastmen) Most simply come and hit you. Not very strong.
+l (aquatic creatures) Fish, octopuses and the like. Surprisingly troublesome
+                  -- some use nasty spells and special attacks, and the deep
+                  floors hold enormous ones.
+m (molds)         They do not move; they throw spores. Not very strong, but
+                  some are dangerous.
+n (nagas, ningyo) Not very strong. Some cast.
+o (orcs)          They come at you in packs. Weak alone, but not to be taken
+                  lightly early on.
+p (humans)        Human enemies. Some are good at magic, some at the sword;
+                  they vary greatly.
+q (quadrupeds)    Horses, bears and so on. Not very strong, though the deep
+                  floors hold powerful sacred beasts.
+r (rodents, rabbits) Not very strong.
+s (skeletons)     Bony undead. Some in the deep floors cast fierce spells.
+t (tengu)         Tengu. Many are quick and strong -- formidable enemies.
+u (minor demons)  Demons, if minor ones. Many attack nastily with magic.
+v (vortices)      Vortices charged with magic. They usually drift about and
+                  breathe.
+w (worms)         Weaklings early on, but from the middle depths you meet
+                  worms you have to look up at.
+(There is no 'x'. Depending on your options it is used for a floor with an
+ undetected trap.)
+y (lesser youkai) Small youkai. Not very strong.
+z (zombies)       Walking corpses. Not very strong, though some cast
+                  powerful spells.
+
+A (angels)        From the middle depths they are quite formidable. They make
+                  heavy use of evil-breaking attacks.
+B (birds, winged creatures) Many attack quickly. From the middle depths some
+                  monstrous ones appear.
+C (dogs, wolves)  They attack in packs with real discipline. The deep floors
+                  hold legendary great beasts.
+D (ancient dragons) Truly formidable. The breath from those enormous bodies
+                  is overwhelming.
+E (elementals)    Their magic is nasty. From the middle depths some monstrous
+                  ones appear.
+F (fairies)       Not very strong, but they loose danmaku in groups, so do
+                  not let your guard down.
+G (ghosts)        Many are invisible and pass through walls. Their magic is
+                  dangerous too.
+H (chimerae and the like) Creatures that look like several beasts joined
+                  together. Many have high hit points and hit hard.
+I (insects)       Assorted vermin. Not very strong, though a monstrous one
+                  turns up occasionally.
+J (snakes)        Snakes. Not very strong, though a mighty one can appear in
+                  the deep floors.
+K (kappa)         Kappa. They often attack with water.
+L (liches)        Powerful undead spellcasters. Nasty attacks, all of them.
+M (many-headed reptiles) Hydras. The more heads, the stronger. A few are
+                  outrageous.
+N (mysterious shapes) Shapes of unknown identity. Probing magic and the like
+                  can see through them.
+O (ogres, oni)    Many hit hard physically. An oni is a formidable enemy.
+P (giants)        Many are formidable. Some have terrifying strength, others
+                  cast powerful spells.
+Q (quylthulgs)    Mysterious mounds of flesh that teleport and summon
+                  constantly.
+R (reptiles, amphibians) Lizards and frogs early on, but from the middle
+                  depths come monsters with dangerous breath.
+S (deities)       Divine spirits and stray gods are not very strong, but
+                  there are fierce vengeful gods among them.
+T (trolls)        Large humanoid monsters, hard to kill and found in groups.
+U (major demons)  Many attack with fire and hell. The deep floors hold quite
+                  formidable ones.
+V (vampires)      Their magic and their draining are nasty. The deep ones hit
+                  fiercely in melee as well.
+W (wights)        Something more sinister than a zombie. Many cast powerful
+                  spells.
+X (xorns)         Odd creatures that come through walls.
+Y (greater and humanoid youkai) Youkai of real power. They attack in many
+                  different ways.
+Z (zephyr hounds) A kind of elemental in the shape of a dog. They appear in
+                  packs and breathe.
+
+# (trees, tentacles, mist and so on)  Hard to sum up in a word.
+% (wall monsters) Moving walls. Leave them alone and they swell before you
+                  notice.
+* (spheres)       Exploding fireballs, floating magic circles and the like.
+
+Besides these there are mimics that take the shape of an item or of ordinary
+terrain, and even a symbol that is usually weak can hold a powerful unique in
+the deep floors.
+The same symbol and the same colour do not mean the same monster.
+
+You can tell what kind a monster is at once by looking properly with the look
+command. Get into the habit of checking anything you see with the look
+command. There is also a sub-window that lists the monsters in your line of
+sight; use that too.
+See the chapters on the commands and the options for details."
+
+
+***** <MonsterLevel>
+=== Monster levels ===
+
+Keine: "A monster's level is expressed as "normally appears on floor N".
+A monster of level 60 will normally not appear before floor 59.
+But in special structures such as vaults, and in special generation such as
+hordes, enemies of a higher level than the floor can appear.
+And even ordinary monster generation sometimes rolls the level upward.
+Muenzuka in particular seems to produce strong enemies readily. Never let your
+guard down."
+
+
+***** <MonsterAbl>
+=== Monster abilities ===
+Some monsters have various abilities and traits. Let me name a few.
+
+- Uses spells intelligently
+  This monster is clever: when it attacks you with a spell and judges that the
+  spell had little effect, it tries a different one next time.
+  This does not apply below the HARD difficulty.
+
+- Reflects bolts
+  A formidable enemy that turns back bolt-type abilities and spells.
+  Shooting with the 'f' command and throwing with the 'v' command are not
+  reflected. Bullets from an Engineer's machine are. Be careful.
+
+- Invisible
+  This monster is unseen even when it comes close, and your chance to hit it
+  is much reduced. See Invisible makes it visible as usual.
+
+- Mindless
+  Golems, lower creatures, or singular beings from another world.
+  Even with telepathy you cannot sense this monster.
+  Mind attacks and similar techniques do almost nothing to it.
+
+- Powerful
+  The spells this monster casts do more damage than usual.
+  It seems to resist several spells more strongly as well.
+
+- Drives you mad
+  A creature of another world whose shape is horrifying beyond imagination.
+  Seeing one may confuse you, root you to the spot, or -- if things go badly
+  -- show you hallucinations or damage your brain.
+  Confusion and paralysis are stopped by their resistances, hallucination by
+  resistance to chaos. Resistance to insanity softens the whole of it.
+
+- Multiplies
+  A monster that splits from time to time. The new one has full hit points.
+  They grow geometrically, and once there are too many you cannot cope.
+
+- Huge
+  A monster over about ten metres tall.
+  It is hard to stun and to afflict with bad status, and it recovers quickly.
+  Some techniques and spells also work less well on it.
+
+- Follows teleports
+  When this monster stands beside you and you teleport, it teleports with you.
+
+- Picks up (or destroys) items
+  Unpleasant creatures that pick up or destroy items lying on the floor.
+  An item that was picked up is yours again once you kill the thief.
+  Artifacts are never picked up or destroyed.
+
+- Aquatic
+  This monster appears only on water terrain and cannot leave it.
+
+- Flies
+  This monster comes at you across lava, dark pits and the like.
+
+- Passes through (or breaks) walls
+  This monster comes at you through walls, or by breaking them.
+
+- Changes into another monster
+  Only the youkai tanuki and the youkai fox have this.
+  The tanuki merely changes its appearance to another monster's, but there
+  are several kinds of tanuki and some are strong.
+  What you take for a weakling may turn out to be something else.
+  The fox changes its abilities completely as well, and you cannot tell until
+  you kill it. It may even change into another monster mid-fight.
+
+There are others, but those are the ones that are hard to make out."
+
+***** <MonsterMelee>
+=== Monster melee attacks ===
+
+Keine: "Most monsters standing next to you will attack.
+The chance to hit is decided by the monster's level and by your AC.
+The damage is decided by the attack's dice and by its effect.
+
+For an enemy that "hits to burn for 8d8", for instance, "to burn" is the
+effect. Let me give a few examples.
+
+- hits
+  An ordinary attack. High AC reduces the damage.
+
+- crushes
+  The attack sometimes causes an earthquake. Rocks may fall on your head and
+  do extra damage. The basic damage is reduced by AC.
+
+- hits fiercely
+  The attack sometimes lands as a "terrible blow" and the damage leaps up.
+  The basic damage is reduced somewhat by AC.
+
+- wounds
+  The attack cuts you.
+  The basic damage is reduced somewhat by AC.
+
+The attacks below are not reduced by AC.
+
+- spits acid, burns, freezes and so on
+  The attack takes an element and its damage is reduced by the matching
+  resistance. Without immunity or double resistance the element also destroys
+  things in your pack.
+
+- confuses
+  Without resistance to confusion you are confused. Extremely dangerous.
+  With resistance you are not confused, but the damage is not reduced.
+  From the middle depths the giant-type enemies often use confusion attacks
+  that do heavy damage.
+
+- paralyses
+  Without resistance you are paralysed.
+  Once paralysed you are attacked over and over and the game is as good as
+  over. Enemies with this attack begin to appear around floor 20.
+  I say it again: get free action equipment before then, whatever it takes.
+
+- lowers a stat (strength, intelligence, wisdom and so on)
+  It lowers one of the main stats a little, for a time. Bad in a long fight.
+  Sustain for that stat prevents the loss, but the damage is not reduced.
+
+- disenchants
+  Without resistance to disenchantment your equipment loses power.
+  Not only the AC bonus but possibly the stat bonuses as well.
+  Dreadfully, even an artifact's powers can be lowered.
+  Without the resistance, never go near an enemy with this attack.
+
+- drains mana
+  This attack damages your MP rather than your HP.
+
+- drains charges
+  This attack does more than damage: it empties one of the staves or wands in
+  your pack and heals the monster by that much.
+  An extremely unpleasant attack. High undead and spellcaster enemies use it
+  often.
+
+- steals gold
+  It steals about a tenth of the money you carry and teleports away at once.
+  Awkwardly, killing the thief does not get it back.
+  It flees at once, so landing a blow is difficult too.
+
+There are many other attacks, but those are the main ones.
+Even an ordinary blow can stun or cut you if it lands badly."
+
+
+***** <MonsterPower>
+=== Monster spells and the rest ===
+
+Keine: "Some monsters have various spells and abilities. Let me name a few.
+Most spells do more damage the higher the enemy's level.
+
+- Breath
+  A powerful cone of some element -- fire, acid and so on.
+  Almost every dragon has one breath or more.
+  A breath's damage depends solely on the monster's current HP, up to a
+  ceiling. From about floor 40 the enemies' hit points rise enormously and
+  breath becomes a real threat.
+
+- Elemental (acid, lightning, fire, frost) bolts, balls and storms
+  Standard elemental spells such as "fire ball".
+  They do no great damage, but early on, when your resistances are patchy,
+  they are not to be scoffed at.
+  The highest of them, "storm of fire", hurts a good deal without double
+  resistance. Having your items burnt or melted is nasty as well.
+
+- Higher-element bolts, balls and storms
+  Higher spells such as "storm of darkness", "hellfire ball", "mana bolt" and
+  "disintegration". All do comparatively high damage, and an enemy that has
+  one deserves care.
+
+- Confusion, blindness, fear, paralysis
+  Spells that try to inflict a bad status on you.
+  All are troublesome without an answer, but paralysis is dangerous in a class
+  of its own. Enemies casting paralysis begin to appear here and there from
+  about floor 25.
+
+- Mind attacks, brain smashes and the like
+  Spells that attack your mind directly.
+  Resist successfully and you take nothing, but with low magic defence you
+  will be hit often.
+  Besides the damage, being hit can confuse or slow you.
+  There is said to be an outrageous technique that cannot even be resisted
+  without resistance to insanity.
+
+- Curses
+  Magical attacks that curse you.
+  Resist successfully and you take nothing, but with low magic defence you
+  will be hit often.
+  Besides the damage, a curse can curse your equipment.
+  Some powerful curses halve your HP.
+
+- Exorcism
+  A magical attack that tries to purify you.
+  Resist successfully and you take nothing, but with low magic defence you
+  will be hit often.
+  If you are not a being weak to evil-breaking attacks it does nothing at all,
+  but a youkai takes a considerable blow.
+  Being hit can stun you in proportion to the damage.
+
+- Teleports and the like
+  Spells of instantaneous movement, of many kinds.
+  Some teleport you rather than themselves; some teleport to your side from
+  out of sight.
+
+- Summoning
+  They summon monsters of all kinds -- from a single weak one to a ring of
+  powerful dragons in an instant.
+  Almost every formidable enemy from the middle depths can summon, and you
+  cannot simply stand and fight. You will need some answer to it.
+
+- Haste, healing, invulnerability
+  A monster sometimes casts on itself.
+  Against an enemy with such spells a short fight is what you want.
+
+- Shrieking, alarms
+  Troublesome techniques that wake the enemies around with a shout or an
+  alarm. An alarm in particular hastes every monster in sight for a while.
+  Take care when you fight a monster that has one.
+
+- Dispel magic
+  It removes the various temporary effects of your spells and potions.
+  Invulnerability, a grand transformation -- anything at all, without appeal.
+  Higher spellcasters, demons and deities use it from time to time.
+
+- Rocket
+  A powerful weapon.
+  The enemy called the Cyberdemon, in the deep floors, uses it often, and it
+  does as much as 800 damage.
+  Because of them, resistance to shards is essential deep down. Even with it
+  you take 400.
+
+- Sword of light
+  A powerful beam attack. It ignores every resistance and every protective
+  spell.
+
+- Final Spark
+  I need hardly say who uses this. A fierce beam of disintegration.
+  It is fired even from behind a wall, straight through it.
+
+- Special actions
+  A very few monsters have techniques entirely their own.
+  Every one is distinctive -- and powerful.
+
+That is the gist of it."
+
+
+***** <MonsterMemory>
+=== Memories and probing ===
+
+Keine: "So each of these thousand-odd kinds of monster has its own abilities
+and traits. Ordinarily there would be no hope of remembering them all.
+
+But do not worry. You have, in fact, a prodigious memory.
+As you fight a monster you will see it cast some spell, or make some
+particular physical attack, or shrug off some element.
+Each time, you remember that fact, and you never forget it.
+
+Even if you fall short and the game ends, this memory alone is not erased.
+Start a game carrying on the same save data and everything you learned in
+your adventures so far is carried over as well.
+Adventure again and again and you will hold nearly everything about nearly
+every monster in your head. That is a great help.
+
+You need not watch every action of a monster: "probing" tells you almost
+everything, its abilities and resistances included.
+To probe, use a Staff of Probing, sold in the shops.
+There are also several spells with the probing effect, and the Maid, the
+Ranger and the Hakurou-Tengu can learn probing as an ability.
+
+What you have learned about a monster can be reviewed at any time: target it
+with the 'l' (look) command and press the 'r' key.
+You can also show the information about your current target in a sub-window.
+See the chapters on the commands and the options for details."
+
+
+***** <Uniques>
+=== Unique monsters ===
+
+Keine: "Among the monsters are formidable enemies called "unique monsters".
+Only one of each appears, and once killed it never appears again during that
+adventure.
+Unique monsters resist bad-status magic, resist many actions, and can never be
+killed by anything but you.
+And many are plainly stronger than their level suggests. Fight them with your
+wits about you, and if you cannot win, flee without hesitating.
+
+The danmaku girls of Gensokyo will all stand in your way as unique monsters.
+The name of a unique monster is usually written in the form
+"(title) 'Name'"."
+
+--- Special unique monsters ---
+Keine: "I said just now that a unique monster once killed never appears again;
+in fact there are two exceptions. The shrine maiden and the magician who have
+settled so many incidents.
+However often they fall they appear before you again, and their strength
+varies with the floor you are on.
+They are not strong early, but deep down they may have grown into terrible
+enemies.
+
+--- Random unique monsters ---
+Keine: "There is a still more unusual kind of unique monster: one you truly
+can never meet again once you have killed it or fled from it.
+So its abilities are wholly unknown until you meet it and fight, or probe it.
+The name gives you a rough idea of its strength and of what techniques it is
+likely to have, but do not trust that too far."
+
+
+***** <Pets>
+=== Pets ===
+
+Keine: "You can make a monster your pet and have it fight for you.
+Take a powerful monster as a pet and fighting becomes far easier at a stroke.
+A pet obeys you under considerable compulsion; even if you attack it, it will
+not turn on you.
+
+Pets are genuinely useful, but there are things to note.
+
+- As a rule you gain neither experience nor items from the enemies your
+  monsters kill. Think of it as their wages -- though a few pets are
+  exceptions.
+
+- Having pets slows your MP recovery.
+  With many pets your MP falls instead of rising, and when it reaches zero you
+  must release enough of them on the spot.
+  Compared with Hengband, Gensoband makes the penalty for high-level pets
+  heavier. High charisma lets you keep more of them.
+  A released pet vanishes from the floor. It does not turn on you.
+
+- When you move between maps or floors, pets that are not close by are left
+  behind.
+
+- Attacking your own pet gains you neither experience nor items.
+  You do gain a little proficiency. Training on a pet is all very well, but
+  do not overdo it.
+
+Now let me tell you how to make a monster a pet.
+The standard ways are to summon a monster or to charm one.
+The Summon, Necromancy and Nature realms, among others, hold summoning and
+charming spells. Some classes and unique classes may have such abilities too.
+There is also a scroll that summons a random monster as a pet.
+
+Next there is the "figurine".
+Now and then you find a curious item called a "Magical Figurine of X".
+Throw it somewhere with the 'v' command and the figurine turns into that
+monster and becomes your pet.
+Throw a cursed figurine, though, and it turns hostile and attacks you.
+
+Finally there is the "Capture Ball".
+A Capture Ball is a book written about youkai, and a monster can go inside it.
+Weaken an enemy until it is near death, wield the Capture Ball and activate
+it, and the enemy is drawn inside and becomes your pet.
+It draws in humans as well as youkai; please do not think about that too hard.
+A monster that is already your pet can be drawn in without weakening it.
+As a rule you will carry your favourite pets about in a Capture Ball.
+
+Capture Balls are sold now and then at the bookshop in the Human Village.
+By the way, in Hengband this item was called a "monster ball"."
+
+
+***** <Riding>
+=== Riding ===
+
+Keine: "Some pets, such as horses and dragons, can be ridden.
+When you ride, you stand on the pet's grid and it moves as you move.
+A pet you are riding still acts and attacks on its own.
+Riding has these further features.
+
+- Speed
+  Your speed becomes about the same as the monster you ride.
+  In other words you need not buy speed with equipment. That is a great
+  advantage. With low riding proficiency you are a little slower, but with
+  high proficiency you move faster than the monster itself.
+
+- Attacks are divided
+  An enemy's attack falls on either you or the pet you ride.
+  Simply by riding you will feel the enemy's attacks much reduced.
+  Breath and the like, however, hit both of you.
+
+- Aura damage
+  If the monster you ride is wrapped in an aura of fire or the like, you take
+  damage as well. Riding is hard without immunity to that element.
+
+- Being thrown
+  An enemy's attack can throw you from the saddle.
+  I said you need not buy speed with equipment while riding -- but being
+  thrown deep in the dungeon turns that on its head at once.
+  How easily you are thrown depends on the damage taken, on your riding skill
+  and on the level of the pet you ride.
+  The higher the pet's level, the harder it is to ride well.
+  If mounting gives you the impression that you have it completely in hand,
+  you may take it that no enemy attack will throw you.
+  But if the monster you ride is killed, down you go, of course.
+
+- A penalty to weapons, a bonus to some
+  While riding, your attacks land a little less easily.
+  A weapon that is "easy to use while riding", however, has little penalty.
+  Almost every spear and polearm is easy to use while riding.
+  And the lance and the heavy lance, being riding weapons proper, gain a bonus
+  to their weapon dice when used mounted.
+
+- The reins
+  One hand is taken up with controlling the monster you ride.
+  You can let go with the order command described below, but with low
+  proficiency there is no telling where the monster will go.
+  Letting go also makes you a little easier to throw.
+
+Riding is extremely useful, but sadly few classes have an aptitude for it.
+Aptitude B or so should serve well enough even in the deep floors.
+Raising your riding proficiency also takes considerable effort.
+You must ride the weaker monsters first and train in a planned way."
+
+
+***** <Order>
+=== Commanding your pets ===
+
+Keine: "You can give your pets various orders with the 'p' command.
+Let me name a few.
+
+- Release a pet
+  A released pet vanishes from the floor. It does not attack you the moment
+  it is freed.
+
+- Set a target
+  Use it when you want them to go after a particular enemy.
+
+- Stay close / keep your distance
+  You can order how far from you they keep.
+
+- Open doors, pick up items, use teleport spells, and so on
+  You decide whether a particular action is allowed or forbidden.
+
+- Include the player
+  Normally a pet will not use a breath or a spell that would hit you.
+  But if, say, you have immunity to fire and the pet is a behemoth that
+  attacks with nothing but fire, it is as well to give this order and let it
+  attack freely. Do not forget to turn it off when you change equipment.
+
+- Mount / dismount
+  Use it when you want to ride a pet.
+
+- Name a pet
+  Use it when you want to give a pet a name.
+  A named pet is treated a little more carefully by the game and is less
+  likely to be released or left behind by accident.
+
+- Hold your weapon in both hands / one hand
+  While riding, one hand is normally used to control the monster.
+  You can stop doing that and hold your weapon in both hands.
+  You are then easier to throw, and with low riding proficiency you cannot
+  control the monster at all.
+  In this variant, at riding proficiency 25 the mount stops wandering off when
+  you let go, and at 45 you can control it freely with your hands off."
+
+
+
+***** <Friendly>
+=== Friendly monsters ===
+
+Keine: "Some monsters are friendly.
+A friendly monster will not attack you and may attack your enemies alongside
+you. Unlike a pet it needs no MP to keep, but neither can you give it orders.
+Take care not to be caught in a friendly monster's attacks.
+And note that if you attack one, it and every other friendly monster nearby
+grow angry and turn hostile."

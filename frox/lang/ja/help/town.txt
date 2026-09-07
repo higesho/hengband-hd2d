@@ -1,0 +1,377 @@
+<style:title>町と荒野</style>
+
+冒険者を作り終えると、<color:keyword>辺境の地</color>という町から冒険が始まる。初心者モードか、そのほか荒野を切るモードで遊んでいるなら、これがこのゲームで唯一の町である。そうでなければ、広い世界にほかにも多くの町が見つかる。
+
+画面に出る記号は、建物・通り・店の入口・地形・町の人を表す。冒険者を導くには、1 文字のコマンドを打つ（<link:command.txt> を参照）。
+
+<topic:MapSymbols><style:heading>町と荒野の記号</style>
+
+地図の記号は大きく 3 つに分けられる。地形・拾えるアイテム・友好的なものも敵意のあるものも含めた生き物である。町と荒野でよく見かける地形の記号を下に挙げる。
+
+<style:table>
+<color:U>  町と荒野の地形                店と建物
+  ----------------------        -------------------------------</color>
+  <$:FF_TREE>   木・森                    <$:FF_PERMANENT>   建物の壁
+  <$:FF_GRASS>   草地                      <$:FF_GENERAL_STORE>   雑貨屋の入口
+  <$:FF_FLOWER>   花                        <$:FF_ARMOURY>   防具屋の入口
+  <$:FF_BRAKE>   やぶ                      <$:FF_WEAPON_SMITHS>   武器専門店の入口
+  <$:FF_SWAMP>   沼                        <$:FF_TEMPLE>   寺院の入口
+  <$:FF_SHALLOW_WATER>   浅い水                    <$:FF_ALCHEMY_SHOP>   錬金術の店の入口
+  <$:FF_DEEP_WATER>   深い水                    <$:FF_MAGIC_SHOP>   魔法の店の入口
+  <$:FF_SHALLOW_LAVA>   浅い溶岩                  <$:FF_BLACK_MARKET>   ブラックマーケットの入口
+  <$:FF_DEEP_LAVA>   深い溶岩                  <$:FF_HOME>   我が家の入口
+  <$:FF_DARK_PIT>   暗い穴                    <$:FF_BOOKSTORE>   書店の入口
+  <$:FF_MOUNTAIN>   山                        <$:FF_SHROOMERY>   キノコ屋の入口
+  <$:FF_FLOOR>   床・道                    <$:FF_JEWELER>   宝石商の入口
+  <$:FF_DIRT>   土                        <$:FF_MUSEUM>   博物館の入口
+  <$:FF_GRASS>   草                        <$:FF_BUILDING_1>   店でない建物の入口
+  <$:FF_ENTRANCE>   ダンジョンの入口          <$:FF_BUILDING_2>   店でない建物の入口
+  <$:FF_QUEST_ENTER>   依頼の入口
+</style>
+
+<topic:TownLevel><style:heading>町で見かけるもの</style>
+
+辺境の地の細かい見た目は荒野を入れて遊んでいるかどうかで変わるが、基本はどちらでも同じである。アイテムを売り買いできる店がいくつかあり、そのほかに、アイテムは並んでいないが役務や面白い依頼を出す建物がいくつかある。原則として、店の入口の記号はたいてい数字である（錬金術の店なら <$:FF_ALCHEMY_SHOP> など）。役務や依頼を出す建物は、いろいろな色の <$:FF_BUILDING_1> の字で表される。この決まりの外にあるのが我が家 <$:FF_HOME> と博物館 <$:FF_MUSEUM> で、この 2 つは店ではないが、依頼も役務も出さない。
+
+荒野を入れたときの辺境の地の様子を下に示す。
+<style:screenshot>
+<color:U>#</color><color:b>~~</color><color:g>.</color><color:U>#############</color><color:g>.</color><color:b>~~~~~~~~~~~~~~~~~~~~~~~~</color><color:U>####</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>...</color><color:G>:</color><color:g>......</color><color:G>::</color><color:g>.</color><color:G>:</color><color:g>...</color><color:G>#</color> レベル<color:G>     1</color>
+<color:U>#</color><color:b>~~</color><color:U>######+++######</color><color:b>~~</color><color:U>##########################</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>....</color><color:G>:##</color><color:g>:</color><color:G>##:</color><color:g>.......</color> 経験<color:G>      16</color>
+<color:U>#</color><color:b>~~</color><color:U>####</color><color:G>#</color><color:g>.</color><color:s>...</color><color:g>.</color><color:G>#</color><color:U>####</color><color:b>~~</color><color:U>##########################</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>......</color><color:G>####</color><color:g>......</color><color:G>#:</color> 金  <color:G>     595</color>
+<color:U>#</color><color:b>~~~~~</color><color:g>...</color><color:s>...</color><color:g>...</color><color:b>~~~~~</color><color:U>##</color><color:s>.....................</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>..........</color><color:G>##::</color><color:g>....</color> <color:W>|</color><color:d>       </color><color:U>(</color><color:d>   </color>
+<color:U>##</color><color:b>~~~~~~~</color><color:s>...</color><color:b>~~~~~~~~</color><color:U>##</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>....</color><color:G>::</color><color:g>....:</color><color:G>:#:</color><color:g>:</color><color:G>#</color><color:g>..</color> 腕力: <color:G>    16</color>
+<color:U>#########</color><color:s>...</color><color:U>##########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>...</color><color:G>#::</color><color:g>.</color><color:G>::##</color><color:g>:</color><color:G>#</color><color:g>:.:</color><color:G>::</color> 知能: <color:G>    14</color>
+<color:U>#########</color><color:s>...</color><color:U>#########</color>..<color:U>####</color><color:s>2</color><color:U>####</color>.<color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>......</color><color:G>::##::</color>:<color:g>.</color>:<color:g>.</color>:<color:g>.</color> 賢さ: <color:G>     8</color>
+<color:s>......</color><color:U>###</color><color:s>...</color><color:U>###</color><color:s>..</color>......................<color:s>....</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>...</color><color:G>:</color><color:g>..</color><color:G>::</color><color:g>..</color><color:G>:</color>:<color:g>.</color>::<color:g>.</color><color:G>#</color><color:g>.</color> 器用: <color:G> 18/50</color>
+<color:s>.................</color>.....................<color:U>####</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>....</color><color:G>#</color><color:g>.::::</color>::<color:D>##</color>:<color:D>#</color><color:g>.</color>: 耐久: <color:G>    17</color>
+<color:s>................</color>......................3<color:U>###</color><color:s>.</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>.....:</color><color:G>#</color><color:g>:::.</color>:<color:D>#</color><color:v>></color><color:D>##</color>:<color:G>:</color> 魅力: <color:G>    12</color>
+<color:s>................</color>......................<color:U>####</color>.<color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>............</color><color:s>..</color><color:D>#</color><color:g>...</color> AC     <color:G>   15</color>
+<color:s>...............</color>............................<color:U>###</color><color:b>~</color><color:u>.</color>........<color:s>...........</color> HP <color:G>  37</color>/<color:G>  37</color>
+<color:s>...............</color>....................@.............<color:g>..................</color>             
+<color:s>...............</color>..................<color:U>###+####</color>..<color:U>###</color><color:b>~</color><color:u>.</color>.<color:g>.....</color><color:G>#</color><color:g>..</color><color:G>##</color><color:g>.</color><color:G>#</color><color:g>.</color><color:G>#</color><color:g>....</color>             
+<color:s>................</color>..........<color:s>.......</color><color:U>########</color><color:s>..</color><color:U>###</color><color:b>~</color><color:r>.</color><color:s>.</color><color:g>.....</color><color:G>:</color><color:g>.</color><color:G>#</color><color:g>.....</color><color:G>::</color><color:g>.</color><color:G>:#</color>             
+<color:s>................</color>.....<color:s>............</color><color:U>########</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>................</color><color:G>#</color><color:g>.</color>             
+<color:s>....................................</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>.....</color><color:G>#</color><color:g>............</color>             
+<color:s>...................................</color><color:r>.</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>........</color><color:G>:</color><color:g>.</color><color:G>:</color><color:g>......</color><color:G>:</color>             
+<color:s>...............................</color><color:r>.</color><color:s>..</color><color:U>#######</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>..........</color><color:G>#</color><color:g>.</color><color:G>##</color><color:g>..</color><color:G>:</color><color:g>.</color>             
+<color:s>..........................</color><color:U>#####</color><color:s>...</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>....</color><color:G>:</color><color:g>.....::</color><color:G>##</color><color:g>.</color><color:G>::#</color>             
+<color:s>..........................</color><color:r>.</color><color:U>####</color><color:s>..</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>..........</color><color:G>#::#</color><color:g>....</color>             
+<color:U>##</color><color:s>......................</color><color:r>.</color><color:s>..</color><color:D>7</color><color:U>###</color><color:s>...</color><color:U>###</color><color:G>#</color><color:U>##</color><color:G>#</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>...</color><color:G>#</color><color:g>......</color><color:G>#</color><color:g>...</color><color:G>:##:</color>             
+<color:U>#</color><color:o>9</color><color:s>.....</color><color:g>.....</color><color:s>......</color><color:U>####</color><color:y>8</color><color:s>...</color><color:r>.</color><color:U>####</color><color:s>.</color><color:r>.</color><color:s>.</color><color:U>#######</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>..........</color><color:G>:</color><color:g>.</color><color:G>::</color><color:g>....</color>             
+<color:U>##</color><color:s>.....</color><color:g>.</color><color:G>#</color><color:g>.</color><color:G>#</color><color:g>.</color><color:s>......</color><color:U>#####</color><color:s>...</color><color:U>#####</color><color:s>..</color><color:r>.</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>.</color><color:g>....</color><color:G>:#</color><color:g>...</color><color:s>.........</color>             
+<color:s>.......</color><color:U>##</color><color:v>M</color><color:U>##</color><color:s>...........</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>..</color><color:s>..</color><color:r>.</color><color:s>......</color><color:r>.</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~~</color><color:r>.</color><color:s>..........</color><color:G>###:#</color><color:g>....</color>             
+Outpost
+</style>
+
+東の <color:v>></color> はダンジョンの入口で、実のところここからゲームが始まるのだが、すぐダンジョンへ入るのは良くない。まず買い物をし、できれば町の依頼もいくつか片づけるとよい。@ の記号が冒険者の居場所である。その真南東が白馬亭の入口で、荒野ありの辺境の地で依頼を出す 2 つの建物のうちのひとつである。もうひとつもここに見えている。北西の入口の多い大きな建物で、辺境の地の伯爵ウルドリックの城である。この 2 つを訪ねて <color:keypress>q</color> を押し、最初の依頼を求め、すぐ引き受けるだけの勇気があるかどうか決めるとよい。
+
+町の店もいくつか見えており、我が家 <color:y>8</color> も見える。この画面に映っていない店は西にあり、<color:keyword>雑貨屋</color>・<color:keyword>寺院</color>・<color:keyword>錬金術の店</color>がそこにある。この 3 つは、冒険で要るたいそう役に立つアイテムを売っているので、新しい遊びを始めるたびに必ず訪ねるべき店である。
+
+初めて町にいるときは昼である（夜から始まるアンデッドの種族で遊んでいるときは別である）。ただし時が経てば日は昇り沈むことに注意。夜に町へ入れば町は暗い。幸い、いろいろな店とそのほかの特別な建物は24 時間開いている。
+
+<topic:Townspeople><style:heading>町の人</style>
+
+町に住んでいるのは店主だけではない。通りにも人がいるだろう。イタズラ小僧は、冒険者に金をせがんで群がる子どもたちで、はしゃぐと壁の隙間から湧いて出るように見える。泣きわめく白痴はいつも煩わしいが、害は無い。酔いどれは歌いながら町をうろつき、誰にとっても脅威ではない。ブラックマーケットで働くこそ泥は、新しい「仕入れ」の当てにといつも欲張りにあなたの背負い袋を見つめている……。
+
+この町の人は、実のところ冒険で最初に出会う<color:keyword>敵</color>でもあり、店から店へ歩くときはできるだけ大きく避けるべき者もいる。とはいえ諍いは起きるので、備えておくこと。冒険者はこの陰謀の世で育ったので、町の住人を倒しても経験は得られない。ただし財宝は手に入るかもしれない。
+
+ひとつ忠告しておく。ふつうなら荒野とダンジョンにしかいない生き物が、ときおり町へ迷い込むことがある。これはふつうの町の人よりずっと用心して扱うべきである。ただし経験にはなるので、それはそれで良いことでもある。
+
+<topic:Shopping><style:heading>町での買い物</style>
+
+冒険者は基本のアイテムをいくつかと、追加の物資を買うための金を持って冒険を始める。訪ねたい店を選んで入口まで歩けば、心ゆくまで（あるいは金が尽きるまで、どちらが先であれ）買い物ができる。店の画面の使い方は <link:context_shop.txt> を参照のこと。
+
+店にいつも何でも並んでいるわけではない。遊びが進むと店は新しいアイテムを仕入れるので、ときどき見に行って欲しいものが入っていないか確かめるとよい。ただし逆のことも起きる。アイテムはほかの客に売れてしまう。それも、やっと買えるだけの金が貯まったところで、である。これを防ぐには、目を付けているがまだ手が届かないアイテムを<color:keyword>取り置き</color>できる。ただし取り置きそのものがかなり高くつくので、本当に欲しいアイテムかどうか確かめてからにすること。
+
+町にいる間は、ゲームを保存して戻ってきても新しいアイテムが店に並ばないことに注意。店主に在庫を捌かせて新しいアイテムを仕入れさせたければ、ダンジョンで時を過ごし、いくらか冒険をせねばならない。余った金が多いなら、店主に金を払ってアイテムを並べ直させる（これを<color:keyword>店の入れ替え</color>と呼ぶ）か、店のアイテムをすべて買い占めればよい。買い占めると店主は新しいアイテムを出してくるが、ときにはその金で隠居して店を新しい主へ売ってしまうこともある。
+
+店主は害のあるアイテムや役に立たないアイテムを買わない。未鑑定のアイテムなら、いくらかの元の値で買ってくれる。買い取ったアイテムは、その場で完全に鑑定される。良いアイテムなら品揃えに加え、損な買い物だったならそのまま捨てる。いずれにせよ、そのアイテムについての知識が得られ、この先似たアイテムを見分ける助けになる。良いアイテムを二束三文で売ってしまったと分かったときには気休めにもならないが、売ることの得は金だけではないということではある。<color:keyword>売却なし</color>の生まれの設定（<link:option.txt#no_selling>）を入れている人は、ただ完全に鑑定させるためだけに、アイテムをただで「売る」ことがある。
+
+<topic:ObjectPricing><style:heading>アイテムの値段</style>
+
+アイテムにはそれぞれ名目上の元の値打ちがあり、<color:keyword>アイテムの値打ち</color>と呼ばれることもある。これはアイテムの質から計られる。アイテムの値打ちは、そのアイテムを売り買いできる値段を決めるいちばん大きな要素である。持ち物を <color:keypress>I</color> 調べるか、店のアイテムを <color:keypress>x</color> 検分すればその値打ちが出るが、まだ完全に鑑定していなければ出る値打ちは当てにならない見積もりかもしれない。
+
+ただし、この名目の値でそのまま売り買いできるわけではない。店主は買うときに上乗せし、売るときには少なく払う。その度合いはいくつかのことで決まる。あなたの魅力・名声・種族、そして店主の種族と欲深さである。店主にはそれぞれ<color:keyword>買い取りの上限</color>もある。ひとつのアイテムに対して払う額の上限である。
+
+店主は魅力のある冒険者を好み、多く払い、安く売る。名の知れた冒険者も町では良く扱われる。だが駆け出しの冒険者はどこにでもいるので、店主にとっては良いカモである。ふつうの店主は、ランタンを買ってモルゴスを倒しに行けると思い込んでいる知ったかぶりの成り上がりをほとんど敬いはしない。ふん、というわけである。
+
+あなたの種族と店主の種族も値段に響く。あなたの種族は、魅力が高くても店主を不機嫌にすることがあり（バルログが店に入ってくれば店主はたいそう慌てる）、値段に大きく響きうる。店主の種族はそれほど大事ではないが、あなたと店主が同じ種族なら少し助けになる。
+
+値段に響く最後の要素は店主の欲深さで、これははっきりとは出ないが、結果から察することはできる。ブラックマーケットの主はみなきわめて欲深く、法外な値段を付けたがる。
+
+<topic:TheShops><style:heading>店の一覧</style>
+
+  <indent><color:B>雑貨屋</color> (<$:FF_GENERAL_STORE>)
+雑貨屋は食べ物・飲み物・いくらかの衣類・松明・ランプ・油・シャベル・つるはし・モンスター・ボール・鉄のくさびを売る。これらのアイテムと、ほかにいくつかのアイテムを雑貨屋へ売って金にできる。</indent>
+
+  <indent><color:B>防具屋</color> (<$:FF_ARMOURY>)
+防具屋は町の防具を仕立てる場所である。あらゆる種類の守りの道具を売り買いできる。</indent>
+
+  <indent><color:B>武器専門店</color> (<$:FF_WEAPON_SMITHS>)
+武器専門店は町の武器を仕立てる場所である。近接武器と飛び道具、そして矢・クロスボウの矢・スリングの弾を売り買いできる。</indent>
+
+  <indent><color:B>寺院</color> (<$:FF_TEMPLE>)
+寺院は回復と復活の薬、祝福の巻物、帰還の巻物、いくらかの認められた僧侶の武器、そしてプリーストとパラディンのための生命の魔法書を扱う。</indent>
+
+  <indent><color:B>錬金術の店</color> (<$:FF_ALCHEMY_SHOP>)
+錬金術の店はあらゆる種類の薬と巻物を扱う。</indent>
+
+  <indent><color:B>魔法の店</color> (<$:FF_MAGIC_SHOP>)
+魔法の店はあらゆる種類の指輪・魔法棒・アミュレット・杖、そしていくらかの魔法書を扱う。</indent>
+
+  <indent><color:B>ブラックマーケット</color> (<$:FF_BLACK_MARKET>)
+ブラックマーケットは法外な値段で何でも売り買いする。ただし、ときにたいそう良いアイテムが並ぶ。ここの主は寛容さで知られてはいない……。</indent>
+
+  <indent><color:B>我が家</color> (<$:FF_HOME>)
+旅に持ち歩けないアイテムや、後で要るアイテムをしまっておける家である。詳しくは <link:context_home.txt> を参照。</indent>
+
+  <indent><color:B>書店</color> (<$:FF_BOOKSTORE>)
+書店はあらゆる種類の魔法書を扱う。術者のための魔法書をここで売り買いできる。</indent>
+
+  <indent><color:B>キノコ屋</color> (<$:FF_SHROOMERY>)
+キノコ屋は役に立つ基本のキノコを多く売る。いつも重宝する解毒・混乱治癒・回復促進などである。</indent>
+
+  <indent><color:B>博物館</color> (<$:FF_MUSEUM>)
+アイテムを寄贈すると、それが永久に飾られる場所である。博物館を使っても遊びの上での得は無い。ただ思い出をしまっておくためのものである。詳しくは <link:context_home.txt#Museum> を参照。</indent>
+
+<topic:Buildings><style:heading>特別な建物</style>
+
+店のほかに、どの町にも独自の役務を出す特別な建物がいくつかある。建物は町ごとに、名前も出す役務も大きく違うが、よくあるもの、大事なものをいくつか下に挙げる。
+
+  <indent><color:B>宿屋</color> (<$:FF_BUILDING_0>)
+
+宿屋は食べ物を得たり、一晩休んだり、くつろいで最新の噂を聞いたり、（限りはあるが。下の <link:town.txt#TownTravel> を参照）ほかの宿屋へテレポートしたりできる場所である。辺境の地とライトタウンの宿屋は依頼を出す。ほぼすべての町に宿屋がある。
+
+<color:B>城</color> (<$:FF_BUILDING_1>)
+
+ほぼすべての町には、たいてい大きく目立つ、土地の支配者のいる建物がある。支配者はみな果たすべき依頼を持っている。辺境の地の伯爵ウルドリックは、（もちろん相応の礼金と引き換えに）アイテムを鑑定してもくれる。
+
+<color:B>図書館</color> (<$:FF_BUILDING_3>)
+
+司書はあらゆる知識に通じており、金と引き換えにアイテムを鑑定、あるいは *鑑定* してくれる。ライトタウンの図書館は敵の調査もしてくれる。これはふつう土地のビーストマスターの役目である。
+
+<color:B>神殿</color> (<$:FF_BUILDING_9>)
+
+多くの町には聖なる神殿があり、たいてい寺院につながっているか、そのすぐ近くにある。神殿は（供物を納める限り）回復と復活をしてくれる。
+
+<color:B>闘技場</color> (<$:FF_BUILDING_2>)
+
+闘技場はこのゲームにひとつしか無い（サロスかライトタウンのどちらかにある）。闘技場は、町の人の見世物として敵と 1 体ずつ戦える特別な建物である。この戦いの間は、魔法の道具を使うことも、巻物を読むことも、薬を飲むことも、装備を発動することも、（たいてい）助けを召喚することもできない。闘技場の戦いに勝つと名声が上がる（決まった値打ちのあるアイテムを落とす敵もいる）。だが負けると名声がひどく傷つき、この先の闘技場の試合から締め出される。闘技場で本当に死ぬことはない。HP 0 で外へ出され、切り傷と毒は癒えている。ただし、闘技場のすぐ外で死なないように気をつけること……。
+
+<color:B>賭博場</color> (<$:FF_BUILDING_6>)
+
+カード遊びや、敵どうしの戦いへの賭けなど、さまざまな遊びを出す賭場である。
+
+<color:B>戦士のホール</color> (<$:FF_BUILDING_7>)
+
+この建物にはたいてい、装備を魔法で強めてくれる鍛冶師がいる。……ただしどこまでやってくれるかは職業と冒険者のレベル、そしてもちろん払う額で決まる。戦士のホールによっては、依頼や打ち直し（<link:faq.txt#Reforging> を参照）も出す。</indent>
+
+この一覧はとても網羅的とは言えない。ほかにも多くの建物があり、多くの役務と依頼を出している。歩き回って見つけてほしい。
+
+<topic:TownQuests><style:heading>町の依頼</style>
+
+どの町にも、依頼を引き受ける機会を出す建物が少なくともひとつある。依頼はたいてい次のいずれかである。依頼の階の敵をすべて倒す（ほかに何も書いていなければこれだと思ってよい）、ある種類の敵を 1 体以上倒す（たとえば「オールド・マン・ウィローを倒す」「ワーグを 8 体倒す」）、あるいはあるアイテムを取り戻して依頼の階から逃げる、である。町の依頼を果たすことはこのゲームの要であり、いずれダンジョンと同じくらいの時を町の依頼で過ごすことになるだろう。
+
+依頼を求めると、依頼と目当ての短い説明と、その危なさの度合いが示される。たとえば、ここではサロスのスルタンに<color:keypress>q</color> を押して依頼を求めたところである。
+
+<style:screenshot>
+ スルタン・イドリス (人間)                           宮殿
+
+<color:R>古い見張り塔 (サロス)</color> (<color:U>レベル 32</color>): 残念ながら、サロスの                         
+民はいまだ安全ではない。先週、散歩に出た少年がひとり消え、数日後に              
+森でその亡骸が見つかった。息絶え、血を吸い尽くされていた。市の                  
+弁護士たちは世間に責められるのを恐れ、岸辺の古い見張り塔に                      
+巣くう吸血鬼を追い払えと私に迫っている。どうか吸血鬼を                          
+始末するのに力を貸してほしい。相応の礼はしよう。                                
+                                                                                
+                                                                                
+ q) 依頼を求める                                                                
+                                                                                
+ ESC) 建物を出る                                             所持金: 27.8k
+</style>
+
+たいていの町の依頼は、町かそのすぐ近くから入れる特別な<color:keyword>町の依頼の階</color>で行われる。依頼の入口は地図で <$:FF_QUEST_ENTER> の記号で示され、<color:keypress>]</color> のアイテムの一覧の先頭に出るので見つけやすい。すぐに引き受ける必要は無い。果たせる自信がつくまで先延ばしにしてよい。ときどき <color:keypress>Ctrl-Q</color> を押して依頼の履歴を見ておくとよい。まだ果たしていない依頼が順に並ぶので、果たし忘れずに済む。
+
+まれに<color:keyword>ダンジョンの依頼</color>を受けることがある。これは特別な依頼の階ではなく、ふつうのダンジョンの階で行われる。詳しくは <link:dungeon.txt#FixedQuests> を参照。
+
+（どちらの種類でも）依頼を果たしたら、その依頼をくれた人のところへ戻ってもう一度 <color:keypress>q</color> を押す。温かい感謝の言葉と、（たいていは）働きへの良い褒美がもらえる。そのうえで新しい依頼も求められる。ただし、依頼を果たす前に依頼の階を離れると、その依頼は取り返しのつかない失敗になる。名声が下がり、褒美ももらえない。
+
+依頼の流れは半ば決まっている。どの遊びでもたいてい同じ建物から同じ依頼をもらうが、依頼の並びにはいくらか無作為さがある。特別な町の依頼の階の造りも同じく半ば決まっている。地形はたいてい毎回同じか、ほぼ同じで、アイテムはたいてい違うか、ほぼ違う。敵は依頼によって同じこともあれば違うこともある。褒美も半ば決まっている。ほかより無作為なものもあり、すべてではないが多くは種族と職業の求めに合わせてある。前に見たことのある依頼は実際に大きな利点だが、何もかも同じだと思い込まないこと。
+
+<style:note>注意: 町の依頼の階にはいくつか特別な決まりがある。とりわけ、依頼の中では抹殺・大抹殺・消滅・破壊・地震・階のテレポートを使えない。</style>
+
+依頼の階のどこへでもテレポートできると思い込まないこと。たいていはできるが、依頼によっては見えないテレポート禁止の場が張られた区画がある。そこから外へはテレポートできるが、中へは入れない。
+
+<topic:Wilderness><style:heading>荒野の設定</style>
+
+辺境の地の（比べればの話だが）安全の外には、広く多彩な荒野が広がり、多くの町とダンジョンが待っている。あいにく、そこには危ない生き物も多く住んでいて、いまいる場所と行きたい場所の間はしばしば遠い。そこで、荒野の旅には縮めて描いた<color:keyword>全体の地図</color>（<color:keyword>俯瞰図</color>とも呼ぶ）を使うのが良い。
+
+<style:note>全体の地図: <color:keypress><</color> を押すと荒野を旅するための全体の地図へ入り、目当ての場所に着いたら<color:keypress>></color> でふつうの地図へ戻る。</style>
+<style:screenshot>
+You are in Outpost [q,p,o,x,j,+,-,?,<dir>] L0
+     <color:U>#</color><color:B>~~~~~~~</color><color:b>~~~~~</color><color:B>~~~~~~~~</color><color:g>.</color>.....<color:g>.</color><color:G>#</color><color:u>.</color>..<color:u>.....</color><color:v>></color><color:u>...</color><color:g>.....</color>.....<color:g>......</color><color:v>></color><color:g>.</color><color:G>#</color><color:B>~</color><color:G>#</color> レベル<color:G>     1</color>
+     <color:U>#</color><color:B>~~~~~~~~~~~~~~~~~~~~</color><color:g>.</color>.<color:g>...</color><color:B>..</color><color:G>#</color><color:u>..</color>..<color:u>.........</color><color:g>...</color>..<color:g>............</color><color:B>~~</color><color:G>#</color> 経験<color:G>      16</color>
+     <color:U>#</color><color:B>~~~~~~~~~~~~~~~~~~~~</color><color:g>.</color>.<color:g>..</color><color:G>#</color><color:B>...</color><color:G>#</color><color:u>..</color>....<color:u>......</color><color:g>..</color>..<color:g>...</color><color:o>###</color><color:g>.......</color><color:B>~</color><color:G>##</color> 金  <color:G>     595</color>
+     <color:U>#</color><color:B>~~~~~~~~~~~~~~~~~~~~</color><color:g>.</color>.<color:g>...</color><color:G>#</color><color:B>..</color><color:G>##</color><color:u>....</color>..<color:u>.....</color><color:g>.</color>..<color:g>.....</color><color:o>###</color><color:g>......</color><color:B>~~</color><color:G>#</color> <color:W>|</color><color:d>       </color><color:U>(</color><color:d>   </color>
+     <color:U>#</color><color:B>~~~~~~~~~~~~~~~~~~~~</color><color:g>.</color>.<color:g>....</color><color:G>##</color><color:o>##</color><color:u>.....</color>...<color:u>...</color>..<color:g>.....</color><color:o>#</color><color:g>.</color><color:o>#</color><color:g>........</color><color:B>~~</color> 腕力: <color:G>    16</color>
+     <color:U>#</color><color:B>~~~~~~~~~~~~~~~~~~~~</color><color:g>.</color>.<color:g>..</color><color:o>#####</color><color:v>></color><color:g>..</color><color:u>.....</color>...<color:g>.</color>.<color:g>....</color><color:v>></color><color:g>..............</color> 知能: <color:G>    14</color>
+     <color:U>#</color><color:B>~~~</color><color:g>...</color><color:B>~~~~~~~~~~</color><color:g>..</color>....<color:o>####</color><color:g>.............</color>...<color:g>............</color><color:B>....</color><color:g>...</color> 賢さ: <color:G>     8</color>
+     <color:U>#</color><color:B>~~</color><color:g>.....</color>......<color:g>.</color><color:B>~~</color><color:g>.</color>..<color:B>~</color><color:g>.</color>..<color:g>...</color>.......<color:g>........</color>.....<color:g>......</color><color:B>....~~</color><color:g>...</color> 器用: <color:G> 18/50</color>
+     <color:U>#</color><color:B>~</color><color:g>...</color><color:v>></color><color:g>.</color>..<color:g>....</color>......<color:B>~~</color><color:g>..</color>.....<color:g>.....</color>....<color:g>.........</color>..<color:g>....</color><color:B>...~~~~</color><color:g>...</color> 耐久: <color:G>    17</color>
+     <color:U>#</color><color:B>~</color><color:g>.....</color>.<color:g>..........</color><color:B>~~~~</color><color:g>.......</color><color:B>~~~</color><color:g>....</color>......<color:g>.....</color>.<color:g>....</color><color:B>..~~~~~</color><color:g>...</color> 魅力: <color:G>    12</color>
+     <color:U>#</color><color:B>~</color><color:g>...</color><color:B>..</color>.<color:g>....</color><color:o>##</color><color:g>....</color><color:B>~~~~~~~~~~~~~~~</color><color:g>........</color>......<color:W>*</color><color:g>...</color><color:B>..~~~~~</color><color:g>.</color>... AC     <color:G>   15</color>
+     <color:U>#</color><color:B>~</color><color:g>...</color><color:B>..</color>..<color:g>..</color><color:o>####</color><color:g>.</color><color:G>#</color><color:g>..</color><color:B>~~~~~~</color><color:g>.....</color><color:B>~~~~~~~~~~~</color>.<color:B>~~~</color><color:g>..</color>...<color:g>.</color><color:B>~~..</color>.....<color:G>#</color>. HP <color:G>  37</color>/<color:G>  37</color>
+     <color:U>#</color><color:B>~</color><color:g>...</color><color:B>..</color><color:g>.</color>.<color:g>.</color><color:o>##</color><color:r>~~</color><color:o>##</color><color:g>....</color><color:B>~~~~</color><color:g>....</color>@..<color:g>.</color><color:B>~~~~~~~~</color>..<color:B>~~~~~</color><color:g>..</color>.......<color:G>######</color>             
+     <color:U>#</color><color:B>~~</color><color:g>..</color><color:B>..</color><color:g>.</color>..<color:g>.</color><color:U>~</color><color:r>~</color><color:v>></color><color:o>##</color><color:g>....</color><color:B>~~~</color><color:g>...</color><color:G>#</color><color:g>...</color>..<color:g>.</color><color:B>~~~~</color><color:g>...</color>.<color:g>....</color><color:B>~~</color><color:v>></color><color:B>~~~</color><color:G>###########</color>             
+     <color:U>#</color><color:B>~~~</color><color:g>.</color><color:B>.</color><color:g>...</color>.<color:g>.</color><color:U>~~</color><color:r>~</color><color:o>##</color><color:g>.</color><color:G>#</color><color:g>..</color><color:B>~~</color><color:g>..</color><color:G>###</color><color:g>....</color>...<color:B>~~</color><color:g>..</color>...<color:g>......</color><color:B>~~~~~</color><color:G>##########</color>             
+     <color:U>#</color><color:B>~~~~~</color><color:g>...</color>.<color:g>...</color><color:o>##</color><color:g>.</color><color:G>#</color><color:g>.</color><color:B>~~~</color><color:g>..</color><color:G>###</color><color:g>.......</color>......<color:g>.</color><color:G>####</color><color:g>....</color><color:B>~~</color><color:G>############</color>             
+     <color:U>#</color><color:B>~~~~</color><color:G>###</color>..<color:g>..</color><color:o>##</color><color:g>.</color><color:G>#</color><color:g>..</color><color:B>~~~</color><color:g>.....</color><color:u>...</color><color:g>......</color>.<color:G>#########</color><color:g>...</color><color:B>~</color><color:G>#############</color>             
+     <color:U>#</color><color:B>~~~</color><color:G>###</color>..<color:G>#</color><color:g>......</color><color:G>#</color><color:g>..</color><color:B>~~</color><color:g>....</color><color:u>.....</color><color:g>.....</color>.<color:G>######</color><color:o>#</color><color:G>##</color><color:g>..</color><color:B>~~</color><color:G>#############</color>             
+     <color:U>#</color><color:B>~~</color><color:G>####</color>.<color:G>###</color><color:g>..</color><color:o>#</color><color:g>.....</color><color:B>~~</color><color:g>.....</color><color:u>.........</color>.<color:G>#####</color><color:o>#</color><color:v>></color><color:o>#</color><color:G>###</color><color:g>.</color><color:B>~</color><color:G>#############</color>             
+     <color:U>#</color><color:B>~</color><color:G>#####</color><color:v>></color><color:G>#</color><color:B>~~</color><color:u>..</color><color:g>.</color><color:o>#</color><color:g>.....</color><color:B>~</color><color:g>...</color><color:u>..........</color>..<color:g>..</color><color:G>####</color><color:o>#</color><color:G>####</color><color:g>.</color><color:B>~~</color><color:G>############</color>             
+     <color:U>#</color><color:B>~~</color><color:G>####</color><color:B>~~~~~</color><color:u>..</color><color:g>......</color><color:B>~~~</color><color:u>.......</color><color:B>~~~~~~</color><color:g>...</color><color:G>#######</color><color:g>..</color><color:B>~~~</color><color:G>###########</color>             
+     <color:U>#</color><color:B>~~</color><color:G>###</color><color:B>~~~</color><color:r>~~</color><color:B>~</color><color:u>...</color><color:g>...</color><color:B>~~~~~~</color><color:u>....</color><color:B>~~~~~~~~~~~~</color><color:g>.........</color><color:B>~~~</color><color:G>##########</color>             
+     <color:U>#</color><color:B>~~</color><color:G>###</color><color:B>~~~</color><color:r>~~</color><color:B>~</color><color:u>.....</color><color:g>.</color><color:B>~~~~~~~~~~~~~~~~</color><color:b>~~</color><color:B>~~~~~~~~~</color><color:g>..</color><color:B>~~~~~~~~</color><color:G>#######</color>             
+     <color:U>#</color><color:B>~</color><color:G>######</color><color:B>~~~</color><color:u>.....</color><color:B>~~~~~~~~~~~~~~~</color><color:b>~~~~~~~~</color><color:B>~~~~~~~~~~~~~~~~~~~~~~~</color>             
+     <color:U>#</color><color:B>~~~~~~~~~~~~~~~~~~~~~~~~~</color><color:b>~~~~~~~~~~~~~~~</color><color:B>~~~~~~~~</color><color:b>~~~~</color><color:B>~~~~~~~~~</color>             
+Surface
+</style>
+全体の地図に出るとおり、荒野は 97×62 のマスからなる世界である。1 マスは、ふつうの地図での最大の大きさのダンジョンの階に当たる広さで、森・山・平原といった主題のある地形が入っている。世界のあちこちに町がいくつもあり、それぞれが自分の荒野のマスに置かれている。上の画面では 2 つの町が見えている。始まりの地である辺境の地（実のところ @、つまりこちらに隠れている）と、東の * で表されたモリバントである。多くの（多すぎるほどの）ダンジョンの入口も見え、どれもおなじみの <color:v>></color> の記号で表されている。画面の右上、モリバントの北東には、恐るべきダンジョン<color:keyword>鉄獄</color>がかろうじて見える。ここには混沌のサーペントが住んでおり、このゲームに勝つには彼を倒さねばならない。
+
+俯瞰図を通る旅は、ふつうの地図を使うより速く、また安全である。ただし荒野にも住人はいて、危ない敵がなお待ち伏せている。うかつな冒険者はいきなり待ち伏せに踏み込み、ふつうの地図へ引き戻されるかもしれない。そうなったら、もう一度 <color:keypress><</color> を押して逃げることはできない。テレポートの巻物で逃げるしかない。
+
+待ち伏せに遭いにくくする道はいくつかある。できるだけ道の上にいること。道も完全に安全ではないが、道を外れて旅するよりずっと安全であり、道で待ち伏せに遭っても周りはおそらくそれほど危なくない。隠密の高い冒険者（と、たいそう強い冒険者）は待ち伏せに遭いにくい。さらに、昼のうちに旅する方が安全である。
+
+荒野のマスの危なさの度合いは、<color:keypress>l</color> の見るコマンドで見られる。上の画面の <color:y>L0</color> が示すとおり、辺境の地はレベル 0 のマスにある。溶岩の原や深い海のような地形はほぼ必ずたいそう危ないので、冒険者がもう少し強くなるまでは避けた方がよい。
+
+<topic:Dungeons><style:heading>ダンジョンを見つけて入る</style>
+
+いくつかのダンジョンは見つけやすく入りやすい。町から行けるからである。このゲームは、そうしたダンジョンのひとつ<color:keyword>兎の巣穴</color>の入口から始まりさえする。この町のダンジョンはいちばん危なくないダンジョンでもある。当たり前ではある――地獄の入口が隣にあったら、誰が町を建て、そこに住むだろうか。まあ、荒野の無い町の説明としてはそう悪くもないのだが……。
+
+ただし、ダンジョンの大半は荒野を通らなければ行けない。そこへは全体の地図で旅するのがいちばん良い。だがダンジョンには全体の地図からは実際には入れず、ふつうの地図からしか入れないので、目当てのマスに着いたら切り替えねばならない。そこでときに困ったことが起きる。縮めた全体の地図の 1 マスはふつうの地図ではかなり広い場所に当たるので、本当の入口のすぐ隣に降り立てるとは限らないのである。入口はいくらか離れていて、見えないことさえある（そのときはゲームが入口の方角を親切に教えてくれる）。示された向きへ進み、<color:keypress>]</color> のアイテム・地形の一覧のコマンドをこまめに使うとよい。画面に実際に見えるより先に入口を見つけてくれることが多い。
+
+ダンジョンに着く前に、もうひとつ立ちはだかるものがある。多くのダンジョンには<color:keyword>入口の守護者</color>がいる。入口の上に居座り、倒すまでどこうとしない敵である。入口の守護者はテレポートにも免疫なので、それで楽に済ませることもできない。その目をかいくぐって階段へ届けることもあるが、たいていは倒さねばならない。一般に、低レベルのダンジョンには入口の守護者がおらず、高レベルのダンジョンにはいる。クリスタルの城の入口にいるエセリアル・ドラゴンのように、たいそう危ないものもいる。
+
+ときおり、思いもしない場所でダンジョンの入口を見つける。これは無作為の 1 階だけのダンジョンで、危ないことが多いが、並外れたアイテムが眠っていることもある。無作為のダンジョンはふつうのダンジョンのかなり近くに生まれることがある。とりわけ無作為のダンジョンがよく出る深い海では、見つけた入口が本当に探していたものかどうか確かめ直した方がよいかもしれない。（これには <color:keypress>l</color> 見るコマンドか、<color:keypress>*</color> 狙いを定めるコマンドを使う。）
+
+ようやく入口に――できれば正しい入口に――たどり着いたら、<color:keypress>></color> を押せば中である。その後は、この荒野の旅を二度としなくてよい。そのダンジョンに自動で帰還の場所ができるので、いつでも帰還でそこへ戻れる。
+
+ダンジョンで何が待っているかは <link:dungeon.txt> を参照のこと。
+
+<topic:Visiting><style:heading>どのダンジョンへ行くべきか</style>
+
+ダンジョンを訪ねたくなる主な理由は 3 つある。そこで依頼を果たすため、最下層に住む最後の守護者（主）を倒すため、あるいはただ経験と戦利品を集めるためである。最後のものはもちろんどのダンジョンでもできるが、ときには、あるダンジョンが自分の冒険者と遊び方にぴたりと合っていると感じることもあるだろう。
+
+初めて遊ぶときは、主が誰か（どの深さに住んでいるか）はよく分からないし、ダンジョンの依頼もまだあまりもらっていないだろう。ごく早い駆除の依頼（<link:dungeon.txt#FixedQuests> を参照）くらいのものである。だから、まず町のダンジョンをやり、それから始まりの深さの順にほかを覗いてみるのが分かりやすい。その深さは<color:keypress>l</color> でダンジョンを見れば分かる。たとえば<color:keyword>兎の巣穴</color>・<color:keyword>隠れ家</color>・<color:keyword>ねばねば洞窟</color>を片づけたら（そしていくつか町の依頼をやったら）、次は<color:keyword>潮の洞窟</color>・<color:keyword>オークの洞窟</color>・<color:keyword>迷宮</color>・<color:keyword>キャメロット</color>へ入りたくなるかもしれない。
+
+鉄獄のダンジョンは少し変わっていて、たいそう低いレベル――レベル 1――から始まるのに、主（もちろん混沌のサーペントである）ははるか下のレベル 100 にいる。また鉄獄だけはあちこちに無作為の依頼が散らばっており、果たすと良い褒美が出ることが多い。このため鉄獄へいつ入るべきかは判じにくい。依頼のためにごく早く入る人もいれば、長く先延ばしにする人も、魔法の手立てでダンジョンのほとんどを飛ばしてしまう人もいる。
+
+ダンジョンをじゅうぶん降りると、そのダンジョンの主の居場所を突き止めたと知らされることがある。
+
+    <indent>下り階段の迷路に入った。<color:y>コボルドの王ムガシュが兎の巣穴の主としてこの階に住んでいる。</color></indent>
+
+主を倒すのは楽しく（実りもある）が、危なくもある。とりわけ初めて遊んでいて、主が何をするのかよく分からないときはなおさらである。知識を増やすには、土地のビーストマスター（すべてではないがたいていの町にいる）に金を払って主を調べてもらえばよい。これで主のすべてが明かされ、備えを整え、挑む用意ができているかどうかを確かな見通しの上で決められる。その主が混乱に耐性を持つかどうかにとりわけ気を配ること。深さのわりにたいそう手強く見える主でも、混乱に耐性が無ければそこが付け入る隙になる。ただし、<color:keyword>ウートガルザ・ロキ</color>のような高レベルの主のいくつかは、怪しいほど早く混乱から立ち直るようだが……。
+
+ときにはダンジョンからダンジョンへ跳び移り、最下層の守護者を倒しては跡に破壊の道を残していけることもある。またあるときは、町の依頼やダンジョンの浅い階で少し備えを整えねばならない。中盤の初めなら、<color:keyword>はなれ山</color>でそうすることが多い。地形がたいてい割合に良く、ドラゴンが多いので財宝も豊かなので、しばらく腰を据えるのに良いダンジョンだと思う人が多い。ただし、はなれ山はその名のとおり山であり、<color:keyword>浮遊</color>が無ければ初めて入るのはたいそう難しいことに注意。
+
+ここで大事なのは、<color:G>ダンジョンをやる順にただひとつの正しいものは無い</color>ということである。とても深いダンジョンへごく早くに潜り、入口の守護者など知ったことかという人もいる。いろいろ試して、自分に合うやり方、扱いやすいと感じる主、本当に好きなダンジョンを見つけてほしい。ひとつのダンジョンを一気に片づけることもあれば、途中まで入ったいくつかのダンジョンを行ったり来たりすることも、主と戦うつもりも無くひとつのダンジョンへ帰還で出入りを繰り返すこともあるだろう。
+
+ダンジョンの一覧は <link:dungeon.txt#List> を参照のこと。
+
+<topic:TownTravel><style:heading>町から町へ旅する</style>
+
+たいていの町は道の網でつながっており、（少なくとも初めのうちは）これがそこへ行くいちばん良く、いちばん簡単な道である。ここでも全体の地図を使うこと。できるだけ道から外れないこと。荒れ地を突っ切る近道が魅力に見えることもあるが、危ない待ち伏せに遭う見込みが上がる。
+
+ダンジョンと同じく、この荒野の旅も本当に必要なのは 1 度だけである。町の宿屋どうしはテレポートの網でつながっており、（相応の料金で）町から町へ跳び移るのに使える。宿の主は商人なのであなたの金を欲しがるが……客が生きていることも望んでいるので、新しい土地でやっていけると分からないうちは別の町へ送ってはくれない。だが、いちど歩いてその町に着いてそれを示せば、その後はいつでもテレポートで戻れる。この決まりにはひとつ例外がある。<color:keyword>サロス</color>の町は危ない海の真ん中にあるので、宿の主は歩いて行かせて客を失いたくない。そこで、辺境の地以外のどこかの町に着きさえすればそこへテレポートしてよいことになっている。（時空の連続体の妙な乱れによってテレポートの網から切り離された町がある、という噂もある……。あなたに何とかできるだろうか。）
+
+不自由なく払えるだけの金が貯まれば、町から町へ気軽にテレポートするようになるだろう。どの町にも果たすべき依頼と訪ねるべき店がある。それに、なぜか我が家はどの町でも同じ中身をそっくり抱えている。便利である。
+
+<topic:TownJourney><style:heading>町の中を移動する</style>
+
+いまいる町のどの建物や店へも、移動の近道で自動で歩いていける。元のキー設定では <color:keypress>j</color> を押してから行きたい場所のキーを押す。ローグライクのキー設定では代わりに<color:keypress>S</color> を押す。向きを押したときは、これまでどおり <color:keypress>j</color> は扉にくさびを打ち込む。<color:keypress>`</color> の移動のコマンドでも、行き先を選んでいる間、同じ移動のキーを受け付ける。ローグライクのキー設定では小文字がカーソルを動かすので、大文字の形を使う。移動の確かめの画面か、<color:keypress>`</color> の行き先のカーソルから<color:keypress>?</color> を押すと、いまのキー設定の字で移動の行き先をすべて並べた選ぶ画面が開く。この画面はどちらの字でも受け付ける。
+
+移動の近道は中身に沿っている。いまの町に実際にある場所だけが出て、当てはまる場所の無いキーは確かめの画面ではふつうの意味（くさびの向きなど）へ抜け、<color:keypress>`</color> の行き先を選んでいるときはベルとともに撥ねられる。階段のキー <color:keypress><</color> と<color:keypress>></color> は、行き先を選んでいる間狙いを定めるときと同じく階段を順に巡る意味を保ち、<color:keypress>0</color> もカーソルの位置を選ぶ意味を保つ。キノコ屋の <color:keypress>h</color> のキー（ローグライクのキー設定では<color:keypress>H</color>）は選ぶ画面から使える。中断した移動を <color:keypress>J</color>（ローグライクのキー設定では<color:keypress>(</color>）で再び始めると、同じ場所へ向かって続く。
+
+<style:table>
+<color:U>  キー 行き先                            キー 行き先</color>
+  s, j 我が家                            i    宿屋
+  g    雑貨屋                            h    キノコ屋
+  a    防具屋                            c    賭博場
+  w    武器専門店                        l    生命／マモンの神殿
+  t    寺院                              r    戦士のホール
+  y    錬金術の店                        p    トランプの塔
+  m    魔法の店                          q    依頼の目当て
+  b    ブラックマーケット
+  o    書店
+  u    博物館
+</style>
+
+<topic:NoWilderness><style:heading>荒野を無くす設定</style>
+
+多彩なダンジョンも、いくつもの町も、荒野も楽しい。だがときには、そのすべてを忘れて<color:keyword>荒野なし</color>の設定を選びたくなるかもしれない。このゲームを始めたばかりで、本編へ進む前にまず簡単にした版で基本を覚えたいのかもしれない。（<color:keyword>初心者モード</color>を選ぶと自動でコーヒーブレイクモードが入り、荒野が切れる。ただし、勢い込んだ新しい人がいきなりふつうのモードへ跳び込むこともあるが。）あるいは、もうどこへも行き何もかも見た古参で、気分を変えて速く無駄のない遊びを求めているのかもしれない。ただコーヒーブレイクモードが好きなだけかもしれない。
+
+荒野なしの遊びでは、町は辺境の地ひとつだけである。荒野なしの辺境の地は荒野ありの辺境の地といくらか違っており、<color:keyword>ライトタウン</color>と呼ばれることもある。ただし実のところ、ふつうの版よりずっと多くのものが詰まっている。荒野ありのとき、辺境の地はごく基本の簡素な町である。店と宿屋と城はあるが、面白い特別な建物を探すにはよそへ旅せねばならない。ライトタウンではそうではない。旅していくよそが無いので、ゲームに大事な特別な建物（と、それほど大事でないものもいくつか）がすべてこのひとつの町にある。ライトタウンで受けられる依頼の数もふつうの辺境の地よりずっと多いが、荒野の町すべてを合わせたよりはずっと少ない。
+
+この別の姿の辺境の地を下に示す。伯爵の城・宿屋・そのほかたいていの建物は同じ場所にあるが、建物がずっと多く、ダンジョンの入口も城壁の内側にある。
+
+<style:screenshot>
+<color:b>~~~~~~~~~~~~~~~~~~~~~~~~</color><color:U>####</color><color:g>.......</color><color:U>####</color><color:b>~~</color><color:r>..........................</color> レベル<color:G>     1</color>
+<color:U>######################</color><color:b>~~</color><color:U>###############</color><color:b>~~~~~~~~~~~~~~~~~~~~~~~~~~~~</color> 経験<color:G>      15</color>
+<color:U>######################</color><color:b>~~</color><color:g>.</color><color:U>#############</color><color:g>.</color><color:b>~~~~~~~~~~~~~~~~~~~~~~~~</color><color:U>####</color> 金  <color:G>     819</color>
+<color:G>#</color><color:g>...</color><color:G>#</color><color:g>..</color><color:G>#</color><color:U>#</color><color:s>...........</color><color:U>##</color><color:b>~~</color><color:U>######+++######</color><color:b>~~</color><color:U>##########################</color> <color:W>|</color><color:d>       </color><color:U>(</color><color:d>   </color>
+<color:G>#</color><color:g>..</color><color:U>#</color><color:g>.</color><color:G>#</color><color:g>..</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>.</color><color:U>######</color><color:s>.</color><color:U>##</color><color:b>~~</color><color:U>####</color><color:G>#</color><color:g>.</color>..<color:s>.</color><color:g>.</color><color:G>#</color><color:U>####</color><color:b>~~</color><color:U>##########################</color> 腕力: <color:G>    16</color>
+<color:g>.</color><color:G>#</color><color:g>.</color><color:U>#</color><color:g>....</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>.</color><color:U>######</color><color:s>.</color><color:U>##</color><color:b>~~~~~</color><color:g>...</color>..<color:s>.</color><color:g>...</color><color:b>~~~~~</color><color:U>##</color><color:s>.....................</color><color:U>###</color> 知能: <color:G>    18</color>
+<color:g>..</color><color:U>###</color><color:g>.</color><color:G>#</color><color:g>.</color><color:U>#</color><color:s>.</color><color:U>#</color><color:v>+</color><color:s>....</color><color:U>#</color><color:B>+</color><color:U>#</color><color:s>.</color><color:U>###</color><color:b>~~~~~~~</color>..<color:s>.</color><color:b>~~~~~~~~</color><color:U>##</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~</color> 賢さ: <color:G>     9</color>
+<color:g>.</color><color:U>#####</color><color:g>..</color><color:U>#</color><color:s>.</color><color:U>##</color><color:s>...</color>.<color:s>....</color><color:U>##########</color>...<color:U>##########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~</color> 器用: <color:G> 18/40</color>
+<color:g>.</color><color:U>#####</color><color:g>.</color><color:G>#</color><color:U>#</color><color:s>......</color>....<color:s>..</color><color:U>#########</color>...<color:U>#########</color>..<color:U>####</color><color:s>2</color><color:U>####</color><color:s>.</color><color:U>#########</color><color:s>.</color><color:U>##</color><color:b>~</color> 耐久: <color:G>    17</color>
+<color:U>###</color><color:g>4</color><color:U>###</color><color:g>.</color><color:U>#</color><color:s>....</color><color:U>###</color>...........<color:U>###</color>...<color:U>###</color>.................<color:s>...........</color><color:U>##</color><color:b>~</color> 魅力: <color:G>    12</color>
+<color:U>#</color><color:G>+</color><color:U>#</color><color:s>.</color><color:U>#</color>+<color:U>#</color><color:g>.</color><color:U>#</color><color:s>...</color><color:U>#####</color>..................................<color:U>######</color><color:s>..</color><color:U>####</color><color:s>.</color><color:U>##</color><color:b>~</color> AC     <color:G>    6</color>
+<color:g>...</color><color:s>.</color><color:g>....</color><color:U>#</color><color:s>...</color><color:U>#####</color>..................................<color:U>###</color><color:y>8</color><color:U>##</color><color:s>..</color>3<color:U>###</color><color:s>.</color><color:U>###</color> HP <color:G>  37</color>/<color:G>  37</color>
+<color:U>###</color><color:s>.</color><color:U>#####</color><color:s>....</color><color:U>#</color><color:B>+</color><color:U>#</color>.................@.................<color:g>...</color><color:s>.</color><color:U>##</color><color:s>..</color><color:U>####</color><color:s>.</color><color:U>###</color> SP <color:G>  14</color>/<color:G>  14</color>
+<color:s>.............</color>.........................................<color:s>..........</color><color:U>###</color>             
+<color:s>..............</color>.......................................<color:s>..............</color>             
+<color:s>..............</color>...............<color:U>##</color><color:r>6</color><color:U>##</color>........<color:U>##</color><color:v>++</color><color:U>####</color>...<color:s>.</color><color:U>###+####</color><color:s>..</color><color:U>###</color>             
+<color:s>..........</color><color:U>###</color><color:s>..</color>...........<color:s>..</color><color:U>#######</color>......<color:U>##########</color><color:s>...</color><color:U>########</color><color:s>..</color><color:U>###</color>             
+<color:s>.........</color><color:U>####</color><color:v>></color><color:s>.</color>..........<color:s>...</color><color:U>#######</color><color:s>.</color>....<color:U>###</color><color:s>....</color><color:U>#####</color><color:s>..</color><color:U>########</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~</color>             
+<color:U>####</color><color:s>....</color><color:U>#######</color><color:s>.</color>.......<color:s>.....</color><color:U>#######</color><color:s>.</color>....<color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>......</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~</color>             
+<color:U>###1</color><color:s>....</color><color:U>#######</color><color:s>.</color>.....<color:s>........</color><color:U>#####</color><color:s>..</color>....<color:v>+</color><color:U>#</color><color:s>......</color><color:U>##+</color><color:s>.....</color><color:r>.</color><color:U>#####</color><color:s>..</color><color:U>##</color><color:b>~</color>             
+<color:U>####</color><color:s>.....</color><color:U>#####</color><color:s>...</color>..<color:s>.........</color><color:U>#######</color><color:s>..</color>...<color:U>###</color><color:s>....</color><color:U>#####</color><color:r>.</color><color:s>..</color><color:U>#######</color><color:s>.</color><color:r>.</color><color:U>##</color><color:b>~</color> <color:B>Study (1)</color>   
+<color:U>####</color><color:s>......</color><color:U>###</color><color:s>...............</color><color:o>+</color><color:U>#####</color><color:B>+</color><color:s>..</color>.<color:u>.</color>..<color:U>##########</color><color:s>....</color><color:U>#######</color><color:s>..</color><color:U>##</color><color:b>~</color>             
+<color:s>............................</color><color:U>#######</color><color:s>...</color>.<color:u>..</color><color:s>.</color><color:U>##</color><color:v>++</color><color:U>####</color><color:s>.</color><color:r>..</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>..</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~</color>             
+<color:U>####</color><color:s>..</color><color:U>##</color><color:b>5</color><color:U>##</color><color:s>..</color><color:U>#####+#####</color><color:s>..............</color>...<color:u>.</color><color:s>.</color><color:r>.</color><color:s>.</color><color:r>.</color><color:s>....</color><color:r>..</color><color:G>#</color><color:U>#</color><color:s>.</color><color:U>##</color><color:D>7</color><color:G>#</color><color:U>##</color><color:G>#</color><color:s>..</color><color:U>##</color><color:b>~</color>             
+<color:U>####</color><color:s>.</color><color:U>#######</color><color:s>.</color><color:U>##########</color><color:o>9</color><color:s>....</color><color:g>.....</color><color:s>......</color><color:U>##</color><color:G>0</color><color:U>##</color><color:s>.</color><color:U>###</color><color:r>.</color><color:U>#</color><color:G>#</color><color:U>###</color><color:s>.</color><color:U>#######</color><color:r>.</color><color:s>.</color><color:U>##</color><color:b>~</color>             
+Outpost</style>
+
+<topic:Coffee><style:heading>コーヒーブレイクモード</style>
+
+コーヒーブレイクモードは、冒険者を作るときに <color:keypress>=</color> の設定のメニューから選べる<color:keyword>生まれの設定</color>である。最初の画面で初心者モードを選ぶと自動でコーヒーブレイクモードが入るが、ふつうのモードでもモンスターモードでも選べる。
+
+コーヒーブレイクモードはダンジョンでの（ダンジョンだけの）経験の伸びを大きく速め、敵の落とし物を増やし、その質も上げ、打ち直しやたいていの熟練度の伸びといった目立たない仕組みも速める。コーヒーブレイクモードはほかの点でもゲームを速く進める。序盤の階を小さくし、階段をすべて立坑に変え、上り階段をすべて無くす。進める道は<color:keyword>下</color>だけであり、たちまち戦いのただ中へ放り込まれる。コーヒーブレイクモードは（ほかの強制降下の遊び方と違い）町へ帰還して買い物をし、町の依頼を果たすことは許している。ダンジョンの依頼に失敗することも許されているが、そうすると特別に速い打ち直しの恩恵を永久に失う。
+
+荒野を入れたままコーヒーブレイクモードは使えない。荒野もコーヒーブレイクモードも切って遊ぶことはできるが、これは勧められない。
+
+<color:B>コーヒーブレイクモードでの立ち回り</color>
+
+コーヒーブレイクモードは初心者のために入るが、必ずしもゲームが易しくなるわけではない。たしかに冒険者はたいそう速く強くなるが、厄介な敵にもたいそう速く出くわす。だから計画を立てておくのがいちばんよい。
+
+コーヒーブレイクの冒険者には、ダンジョンへ入る前に多くの者が果たせる町の依頼がひとつある。ウルドリック伯爵が出す<color:keyword>盗賊の隠れ家</color>の依頼である。これを果たすと冒険者のレベルがいくつか上がり、伯爵から褒美をもらえ、そこそこの金も手に入る。これでより良い物資を買え、次の依頼<color:keyword>駆除</color>（ワーグの依頼）も求められる。この依頼はダンジョンにあるのでこれ以上そこへ行くのを先延ばしにはできないが、ワーグを倒せばかなりの経験が得られ、最初の無作為の依頼の敵に出会ったときの見込みが大きく良くなる。
+
+<color:B>無作為の依頼の敵</color>
+
+無作為の階の守護者は、コーヒーブレイクの遊びの序盤で出会ういちばん大きな危うさであり、いちばん大きな機会でもある。無作為の依頼の敵を倒すと能力値がただで 1 つ上がり、（どのみち落とすものに加えて）並外れたアイテムがもらえ、目に見えて前へ進んでいるという温かい手応えも得られる。
+
+一方で……無作為の階の守護者はどれも深みから外れたユニークであり、速く強くなれるとはいえ倒せるとは到底限らない。ときにはひどく運が悪く、とても歯が立たない守護者に当たることもある。そうした場面で奇跡のような勝ちをもぎ取った人も多い――落ち着いた頭ならあきらめるところで、追い詰められた頭が策を思いつくのである。だが、死ぬ前、あるいは果たそうとして物資を使い果たす前に、不運を受け入れてわざと依頼を失敗させる方が良いこともある。依頼を失敗する罰は厳しい（リンギルを指輪へ打ち直す夢はもう忘れてよいだろう）が、少なくとも命はある。
+
+いつ手強い守護者に出会うか分からないうえ、荒野ありの遊びのように物資を取りに家へ帰還することもできないので、つねに備えておくのがいちばんよい。薬を 1 本だけ家に置いてきたせいで守護者への英雄的な挑みがあと一歩で失敗するほど悔しいことは無い。
+
+無作為のダンジョンの依頼がどう働くかの基本は <link:dungeon.txt#RandomQuests> を見ること。
+
+<color:D>
+最初       : (??)
+更新       : (??)
+更新       : Zangband 開発チーム
+更新       : 変愚蛮怒 1.0.11
+更新       : PosChengband 4.0.0
+更新       : FrogComposband 7.0.nougat
+更新       : FrogComposband 7.1.liquorice
+</color>

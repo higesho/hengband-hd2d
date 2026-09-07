@@ -1,0 +1,386 @@
+#########################################
+# What each of the starting symbols do:
+#
+# (none) pick up items which match this rule
+#   ~    leave these items on the floor
+#   !    destroy these items automatically
+#   ;    prompt to pick up this item
+#   ?    auto-identify (if you have Identify available)
+#   (    hide from the map and object lists
+#   #    A line *beginning* with # is a comment, meaning it's not active, or is
+#        only being used to convey information to someone reading the pref file.
+#
+# #text  auto-inscribe matching items - when placed at the end of a rule, this
+#        means put an inscription on those items. One common use for this is to
+#        apply the same label (letter) to all items of a specified type, such as
+#        putting #@qc on the curing potions line in order to make all curing use
+#        the letter 'c' when you're in the drink ([q]uaff) menu.
+#
+# Rules apply in order: the first matching rule for an item wins.
+#########################################
+
+#########################################
+# Consumables
+#########################################
+
+potions:curing
+potions:heroism
+potions:speed#!kq
+
+# The next bit you see here is a 'conditional', which is a way of making a rule
+# only apply to some characters, or when you're above or below a certain level,
+# for example.  In this case it's being used to only automatically pick up the
+# fire/cold resist pots when the player is less than or equal to level 35, as a
+# player past this level will usually have better resistance options by then.
+#
+# See the Mogaminator help (press Esc then a) for full instructions and details.
+
+?:[LEQ $LEVEL 35]
+potions:resist heat and cold#!kq
+?:1
+potions:resistance#!kq
+potions:stone skin#!k
+potions:giant strength#!k
+
+potions:revelation
+potions:experience
+potions:self knowledge#!k
+
+
+# There's no such thing as too many stat points... Down the hatch, adventurer.
+
+potions:of strength#!k
+potions:of intelligence#!k
+potions:of wisdom#!k
+potions:of dexterity#!k
+potions:of constitution#!k
+potions:of charisma#!k
+potions:augmentation#!k
+
+potions:polymorph#!k
+potions:new life#!**
+
+potions:of life#!kq
+
+# No-one has ever complained of having too many hit points, either!
+# 
+# Because "potions:healing" actually matches both "Potion of Healing" and the
+# much rarer "Potion of *Healing*", this one rule applies to them both. This !kq
+# inscription means the game asks you for confirmation if you attempt to [q]uaff
+# or [k]ill (destroy) one of these potions.
+
+potions:healing#!kq
+
+# If instead one wanted to set custom labels for each of the two different pots,
+# that would require leaving a bit more of the original wording in - just like
+# how the stat potion lines above leave their 'of's in place, to avoid matching
+# common potions like 'restore dexterity' as well.  For the below more specific
+# rules to work, one would need to turn off (comment out or delete) the single
+# rule above, since higher rules in this file always override lower ones.
+
+potions:of healing#@qq!kq
+potions:of *healing*#@qh!kq
+
+
+# Berserkers no read so good...  They don't need to pick up these pretty bits of
+# paper, but some scrolls are mighty useful to the rest of us literate types.
+
+?:[NOT [EQU $CLASS Berserker]]
+scrolls:artifact creation#!*
+scrolls:of destruction#@r7!*
+scrolls:mass genocide#!*
+scrolls:genocide#!*
+scrolls:crafting
+scrolls:forest creation
+scrolls:wall of stone
+scrolls:acquirement#!*
+scrolls:banish
+potions:restore mana#!kq
+?:1
+
+mushroom of restoring#!E
+~mushroom of hallucination
+
+?:[EQU $RACE Snotling Doppelganger]
+~?unidentified items:mushroom
+~mushroom
+?:1
+
+#########################################
+# Devices
+#########################################
+#identified rings more value than 5000
+#identified amulets more value than 5000
+?unidentified rings
+?unidentified amulets
+#!identified rings
+#!identified amulets
+
+# Berserkers cannot use or sell magic devices: with selling off they are
+# destroyed (except for undead, who can still use them), with selling on they
+# are simply left on the ground. These blocks must stay above the normal
+# device rules below, since the first matching rule wins.
+?:[AND [EQU $SELLING Off] [EQU $CLASS Berserker]]
+!nameless shooters
+!scrolls
+!ammo
+!quiver
+!^capture ball
+!^magic whistle
+?:1
+
+?:[AND [EQU $SELLING Off] [EQU $CLASS Berserker] [NOT [EQU $RACE Skeleton Golem Zombie Spectre]] ]
+!rods
+!wands
+!staves
+?:1
+
+?:[AND [EQU $SELLING On] [EQU $CLASS Berserker]]
+~rods
+~wands
+~staves
+?:1
+
+rods:angelic healing#@zh!sdk
+rods:heroic speed#@zs!sdk
+rods:enlightenment
+?staves:healing#@uh!sdk
+?staves:speed#@us!sdk
+?staves:destruction#@ud!sdk
+?staves:confusing lights#@uz!sdk
+?staves:genocide#@ug!sdk
+?staves:restore mana#@um!sdk
+?wands:rocket#@ar!sdk
+?wands:disintegrate#@ad!sdk
+?wands:annihilation#@ah!sdk
+
+?:[LEQ $LEVEL 45]
+?staves:cure wounds#@uu!sdk
+?:1
+
+?:[OR [EQU $CLASS Mage High-Mage Sorcerer] [EQU $RACE Beholder Lich] ]
+wizardstaff
+?:1
+
+~?rods:illumination#@za!sdk
+~?rods:detection#@zb!sdk
+~?rods:recall#@zc!sdk
+~?staves:confuse monsters#@uz!sdk
+~?staves:enlightenment#@ue!sdk
+~?staves:*identify*#@uf!sdk
+~?staves:identify#@ui!sdk
+~?staves:teleport#@ua!sdk
+~?staves:cure wounds#@uu!sdk
+~?staves:telepathy#@ut!sdk
+~?wands:stone to mud#@ab!sdk
+~?wands:tsunami#@ac!sdk
+
+?unidentified rods
+?unidentified staves
+?unidentified wands
+
+#########################################
+# Artifacts
+#########################################
+
+?unidentified artifact items
+?unidentified ego items
+
+?:[AND [EQU $SELLING Off] [EQU $CLASS Weaponmaster Ninja Ninja-Lawyer] ]
+!nameless icky weapons
+?:1
+
+?:[AND [EQU $SELLING Off] [EQU $CLASS Mauler Ninja Ninja-Lawyer]]
+!shields
+?:1
+
+?:[AND [EQU $SELLING Off] [EQU $CLASS Ninja Ninja-Lawyer]]
+!suits more weight than 20
+?:1
+
+?:[AND [EQU $SELLING Off] [EQU $RACE Spider Hydra Beholder Death-Sword Filthy-Rag Xorn]]
+!nameless unusable items
+!ego unusable items
+!ammo
+?:1
+
+#########################################
+# Armor
+#########################################
+
+power dragon
+balance dragon
+t-shirt
+
+dragon gloves
+dragon boots
+dragon shield
+dragon helm
+dragon wings
+dragon fang
+~armors:dragon
+
+?:[EQU $CLASS Politician]
+sexy swimsuit#!sdk
+?:1
+
+~sexy swimsuit
+
+#elven cloak
+shadow cloak
+mirror shield
+
+#########################################
+# Weaponry
+#########################################
+
+weapons:poison needle
+diamond edge
+rune sword
+~blade of chaos
+
+?unidentified dice boosted weapons
+?unidentified dice boosted shooters
+~?unidentified ego items
+
+~dice boosted weapons
+~dice boosted shooters
+
+?:[EQU $CLASS Mauler]
+weapons more weight than 39
+?:1
+
+?:[AND [EQU $CLASS Weaponmaster] [EQU $SPECIALITY Bows] ]
+?unidentified ammo:arrow
+?:1
+
+?:[AND [EQU $CLASS Weaponmaster] [EQU $SPECIALITY Slings] ]
+?unidentified ammo:shot
+?unidentified ammo:pebble
+?:1
+
+?:[AND [EQU $CLASS Weaponmaster] [EQU $SPECIALITY Crossbows] ]
+?unidentified ammo:bolt
+?:1
+
+~^gun
+
+#########################################
+# Corpses
+#########################################
+
+?:[EQU $RACE Possessor]
+~wanted corpses#Wanted!kkk
+wanted skeletons#Wanted!kkk
+~corpses more level than 0
+
+?:[EQU $RACE Balrog Imp Demon]
+wanted human corpses#Wanted!EEEkkk
+?:1
+
+?:[NOT [EQU $RACE Possessor]]
+wanted corpses#Wanted!kkk
+wanted skeletons#Wanted!kkk
+?:1
+
+?:[EQU $RACE Igor]
+wanted ear#Wanted!kkk
+wanted head#Wanted!kkk
+corpses
+?:1
+
+#########################################
+# Spellbooks
+#########################################
+
+?:[AND [EQU $SELLING Off] [NOT [EQU $CLASS Skillmaster]]]
+!unreadable spellbooks
+?:1
+
+?:[EQU $CLASS Sorcerer]
+fourth spellbooks#!sdk
+third spellbooks#!k
+~second spellbooks#!k
+~first spellbooks#!k
+
+?:[EQU $CLASS Sorcerer Red-Mage]
+~second spellbooks#!k
+~first spellbooks#!k
+
+?:[NOT [EQU $CLASS Sorcerer Red-Mage]]
+first realm's fourth spellbooks#@md!sdk
+first realm's third spellbooks#@mc!k
+~first realm's second spellbooks#@mb!k
+~first realm's first spellbooks#@ma!k
+
+second realm's fourth spellbooks#@mh!sdk
+second realm's third spellbooks#@mg!k
+~second realm's second spellbooks#@mf!k
+~second realm's first spellbooks#@me!k
+?:1
+
+#########################################
+# Auto-ID Unaware and Collecting Items
+#########################################
+
+?unaware items
+
+collecting potions
+collecting scrolls
+collecting items
+
+#########################################
+# Destroy Junk
+#########################################
+
+?:[EQU $CLASS Archer]
+junk:^broken skull
+junk:^broken bone
+skeletons
+
+?:[EQU $CLASS Ninja Ninja-Lawyer]
+ego lights:of darkness
+feanorian
+Iron Spike#@vz
+?:1
+
+~average items:feanorian lamp
+?unidentified items:feanorian lamp
+
+!potions:apple juice
+#!statue
+#!figurine
+
+?:[GEQ $LEVEL 35]
+!nameless common armors
+
+?:[GEQ $LEVEL 30]
+!nameless common weapons
+!nameless common shooters
+
+?:[GEQ $LEVEL 20]
+!average common weapons
+!average common shooters
+!average common armors
+!cursed nameless common items
+?:1
+
+#If you are using the enhanced get command (auto_get_objects)
+#then I recommend the following 3 rules for the *entire* game.
+?:[LEQ $LEVEL 50]
+unsensed armors
+unsensed weapons
+unsensed shooters
+?:1
+
+?:[EQU $CLASS Tourist]
+~photograph
+?:1
+
+?:[EQU $SELLING Off]
+!statue of
+?:1
+
+~special items
+!worthless items
+#!unusable items

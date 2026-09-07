@@ -1,0 +1,266 @@
+# File: d_info.txt
+
+# This file is used to initialize the "lib/raw/d_info.raw" file, which is
+# used to initialize the "dungeon type" information for the Angband game.
+
+# Do not modify this file unless you know exactly what you are doing,
+# unless you wish to risk possible system crashes and broken savefiles.
+
+# After modifying this file, delete the "lib/raw/d_info.raw" file.
+
+# The dungeon type indexes are defined in "defines.h", and must not be
+# changed.
+
+# N:<index>:<name>
+# D:<long name>
+# W:<min depth>:<max depth>:<min player level>:<flags mode>:<min alloc>:<max alloc chance>:<obj good>:<obj great>:<pit>:<nest>
+# L:<floor1>:<%1>:<floor2>:<%2>:<floor3>:<%3>:<tunnel%>
+# A:<wall1>:<%1>:<wall2>:<%2>:<wall3>:<%3>:<outer wall>:<inner wall>:<stream1>:<stream2>
+# F:<flags>
+# M:<monster flags>
+# S:<monster spells>
+##P:É_ÉìÉWÉáÉìÇÃà íu Y:XÇÃèáÇ≈YÇÕè„í[Ç©ÇÁêîÇ¶ÇÈ
+
+#flags mode
+#d_info[].modeÇ…äiî[Ç≥ÇÍÇÈ
+#F:çsÇ≈éwíËÇµÇΩÉtÉâÉOÇANDÇ≈âéﬂÇ∑ÇÈÇ©ORÇ≈âéﬂÇ∑ÇÈÇ©Ç»Ç«Å@ïÅí ÇÕORÇÃ3Ç…ÇµÇ∆Ç≠
+
+#pit/nest
+#d_info[].pit/nestÇ…äiî[Ç≥ÇÍÇÈ
+#pit_types[]Ç∆nest_types[]Ç…íËã`Ç≥ÇÍÇΩpit/nestÇÃíÜÇ©ÇÁèoåªâ¬î\Ç»Ç‡ÇÃÇÉrÉbÉgÉtÉâÉOÇ≈ãLò^ÇµÇƒÇ¢ÇÈ
+
+# Note on the MONSTER_DIV_ dungeon flag
+# It defines the percentage of monsters affected by the restrictions
+# so MONSTER_PERCENT_70 will create 70% of restricted monsters and 30%
+# of absulutly random monsters.
+# by default MONSTER_PERCENT_ is 0%
+
+# Note for <flags mode> :
+# 0 = No restriction
+# 1 = AND
+# 2 = NAND
+# 3 = OR
+# 4 = NOR
+
+# Version stamp (required)
+
+V:0.0.1
+
+### Wilderness(purely cosmetic, never used) ###
+
+N:0:çrñÏ
+E:Wilderness
+D:çrñÏ
+D:$wilderness
+P:0:0
+W:0:0:0:0:14:160:75:20:0x0000:0x0000
+L:FLOOR:100:FLOOR:0:FLOOR:0:50
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:MAGMA_VEIN:QUARTZ_VEIN
+F:MONSTER_DIV_64
+
+
+### The principal dungeons, they were created by spliting the vanilla dungeon ###
+
+N:1:ìSçñ
+E:Angband
+D:$the entrance to the Dungeon of Angband
+D:ìSçñÇ÷ÇÃì¸ÇËå˚
+P:30:9
+W:1:100:30:0:14:160:75:20:0xffff:0xffff
+L:FLOOR:100:FLOOR:0:FLOOR:0:50
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:MAGMA_VEIN:QUARTZ_VEIN
+F:CAVERN | WATER_RIVER | LAVA_RIVER | ARENA | DESTROY | CURTAIN | GLASS_ROOM |
+F:LAKE_WATER | LAKE_LAVA | LAKE_RUBBLE | LAKE_TREE | ARCADE | NEW_RIVER | NEW_LAKE
+F:MONSTER_DIV_64
+F:FINAL_GUARDIAN_1379
+
+
+N:2:ñ≤ìaëÂ‚Jï_ÇÃì¥åA
+E:old shinrei byou
+D:$the entrance to the cave leading to the Yeek's den
+D:ñ≤ìaëÂ‚Jï_Ç…ë±Ç≠ì¥åA
+P:38:43
+W:1:30:1:0:14:240:60:15:0x0000:0x0000
+L:FLOOR:100:FLOOR:0:FLOOR:0:8
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:MAGMA_VEIN:QUARTZ_VEIN
+#F:FINAL_GUARDIAN_237
+F:NO_VAULT | BEGINNER
+F:MONSTER_DIV_0
+
+N:3:ñÇñ@ÇÃêXê[ïî
+E:Forest
+D:$a path leading to a Forest
+D:ñÇñ@ÇÃêXê[ïîÇ÷ë±Ç≠ñÿÇÃÉgÉìÉlÉã
+P:32:96
+W:24:36:5:3:14:160:75:20:0x0001:0x0052
+L:GRASS:75:SWAMP:15:SHALLOW_WATER:10:15
+A:TREE:80:RUBBLE:10:SWAMP:10:BRAKE:TREE:GRANITE:BRAKE
+F:NO_DOORS | WATER_RIVER | MONSTER_DIV_8 | NEW_RIVER | LAKE_WATER | NEW_LAKE
+F:FINAL_GUARDIAN_1212 | 
+F:FINAL_OBJECT_671
+M:ANIMAL | R_CHAR_,# | WILD_WOOD
+
+N:4:å∫ïêÇÃëÚ
+E:genbu
+D:$a submerged way to the lost land of Numenor
+D:å∫ïêÇÃëÚÇ÷Ç∆ë±Ç≠åkíJ
+P:23:90
+W:10:20:5:3:14:220:70:20:0x0000:0x0000
+L:FLOOR:60:SHALLOW_WATER:30:DEEP_WATER:10:100
+A:GRANITE:80:DEEP_WATER:20:GRANITE:0:GRANITE:DEEP_WATER:DEEP_WATER:DEEP_WATER
+F:MONSTER_DIV_32 | LAKE_WATER | WATER_RIVER | DESTROY | SMALL
+#F:FINAL_GUARDIAN_854 | FINAL_ARTIFACT_129
+M:CAN_SWIM | CAN_FLY | AQUATIC | WILD_OCEAN | R_CHAR_lF,#
+
+N:5:çgñÇäŸê[ïî
+E:Lakesidesugoiakaibuilding
+D:$the entrance to the Castle
+D:çgñÇäŸê[ïî
+P:21:48
+W:30:50:10:3:20:160:75:20:0x03af:0x021b
+L:FLOOR:100:FLOOR:0:FLOOR:0:100
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:NONE:NONE
+F:MONSTER_DIV_32 | ARENA | NO_CAVE | CURTAIN | GLASS_ROOM
+F:FINAL_GUARDIAN_1094
+M:DEMON | R_CHAR_ogF
+
+#v1.1.86 ínå`ÇMOUNTAIN_WALLÇ©ÇÁMOUNTAINÇ…ÇµÇΩ
+N:6:ínçñíJ
+E:Mountain
+D:$a way leading to the mountain
+D:ínçñíJÇ∆åƒÇŒÇÍÇÈÉKÉXÇ∆âÖóÏÇÃâQä™Ç≠ã¨íJ
+P:9:32
+W:35:50:10:3:12:160:75:20:0x0124:0x0232
+L:DIRT:70:SWAMP:25:GRASS:5:0
+#A:DARK_PIT:40:RUBBLE:30:MOUNTAIN_WALL:30:DARK_PIT:MOUNTAIN_WALL:DARK_PIT:NONE
+A:DARK_PIT:40:RUBBLE:30:MOUNTAIN:30:DARK_PIT:RUBBLE:SHALLOW_POISONOUS_PUDDLE:DEEP_POISONOUS_PUDDLE
+F:FINAL_GUARDIAN_1130
+#F:FINAL_OBJECT_581 |
+F:MONSTER_DIV_8 | CAVE | CAVERN | NO_DOORS | NEW_RIVER | NEW_LAKE
+M:CAN_FLY | WILD_MOUNTAIN | R_CHAR_Gsz | IM_POIS
+
+N:7:ñ≥âèíÀ
+E:Forest2
+D:$a path leading to a Forest
+D:ñ≥âèíÀÇ÷Ç∆ë±Ç≠è¨åa
+P:9:96
+W:40:50:5:3:30:100:85:40:0xffff:0xffff
+L:GRASS:70:FLOWER:25:SHALLOW_WATER:5:15
+A:GRASS:50:RUBBLE:10:TREE:40:BRAKE:FLOOR:SHALLOW_WATER:BRAKE
+F:NO_DOORS | WATER_RIVER | MONSTER_DIV_32
+#F:FINAL_GUARDIAN_481 | FINAL_OBJECT_87
+M:R_CHAR_GS
+
+N:8:ãåé‹îMínçñ
+E:Hell2
+D:$the stairway to the Hell2
+D:ãåé‹îMínçñÇ÷ë±Ç≠ínóÏìaíÜíÎÇÃåä
+P:63:76
+W:40:50:20:3:10:160:75:25:0x0188:0x0280
+L:SHALLOW_LAVA:55:DIRT:25:DEEP_LAVA:20:0
+A:DEEP_LAVA:80:SHALLOW_LAVA:10:DARK_PIT:10:DEEP_LAVA:DEEP_LAVA:NONE:NONE
+F:NO_DOORS | CAVERN | MONSTER_DIV_0 | LAKE_LAVA |
+F:BIG
+M:IM_FIRE | CAN_FLY
+
+N:9:ãtÇ≥èÈ
+E:Anti-magic cave
+D:$the entrance to the cave filled with anti-magic cloud
+D:íàÇ…ïÇÇ≠äÔñ≠Ç»ãtÇ≥ÇÃèÈ
+P:6:12
+W:30:45:10:0:14:160:60:15:0x01ff:0x01ed
+L:FLOOR:70:DARK_PIT:30:FLOOR:0:100
+A:DARK_PIT:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:NONE:NONE
+F:ARENA | NO_CAVE | CURTAIN | 
+F:MONSTER_DIV_0 | NO_MAGIC
+
+N:10:êÂäE
+E:Anti-melee cave
+D:$the entrance to the cave filled with restricting magical field
+D:êÂìπÇèCÇﬂÇÈé“íBÇÃèCçsÇÃèÍ
+P:46:3
+W:30:45:10:0:14:160:60:15:0x01ff:0x01ed
+L:FLOOR:100:FLOOR:0:FLOOR:0:50
+A:GLASS_WALL:100:GLASS_WALL:0:GLASS_WALL:0:GLASS_WALL:GLASS_WALL:NONE:NONE
+F:CAVERN | WATER_RIVER | LAVA_RIVER | ARENA | DESTROY | GLASS_ROOM | NO_DOORS
+F:LAKE_WATER | LAKE_LAVA |
+F:MONSTER_DIV_0 | NO_MELEE
+
+
+N:11:ó≥ÇÃèZÇ›Ç©
+E:Dragon's lair
+D:$a big tunnel leading to a Dragon's Lair
+D:ó≥ÇÃèZÇ›Ç©Ç÷ë±Ç≠ëÂÇ´Ç≠ÅAîñà√Ç¢ã∞ÇÈÇ◊Ç´ÉgÉìÉlÉã
+P:63:86
+W:60:72:25:3:20:140:75:20:0x00a6:0x00c1
+L:DIRT:100:FLOOR:0:FLOOR:0:0
+A:GRANITE:90:DARK_PIT:10:GRANITE:0:GRANITE:GRANITE:MAGMA_VEIN:DARK_PIT
+F:BIG | LAVA_RIVER | CAVERN | DESTROY
+F:MONSTER_DIV_10
+F:CAVE | LAKE_LAVA | LAKE_TREE | LAKE_RUBBLE | NEW_RIVER | NEW_LAKE
+M:DRAGON | R_CHAR_dD
+
+
+N:12:ç¨ì◊ÇÃóÃàÊ
+E:Lunar mare
+D:$the entrance to the Dungeon of Angband
+D:åéÇÃäCÇ÷Ç∆åqÇ™ÇÈìπ
+P:55:46
+W:101:127:30:0:14:30:90:70:0xffff:0xffff
+L:FLOOR:100:FLOOR:0:FLOOR:0:50
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:MAGMA_VEIN:QUARTZ_VEIN
+F:CAVERN | WATER_RIVER | LAVA_RIVER | ARENA | DESTROY | CURTAIN | GLASS_ROOM |
+F:LAKE_WATER | LAKE_LAVA | LAKE_RUBBLE | LAKE_TREE | WINNER | NEW_RIVER | NEW_LAKE
+F:MONSTER_DIV_64
+
+N:13:ñ≤ÇÃê¢äE
+E:Dream World
+D:$dream world
+D:ÉAÉ|ÉçåoòH
+P:2:71
+W:30:70:10:0:20:100:75:20:0x0000:0x0000
+L:FLOOR:100:FLOOR:0:FLOOR:0:100
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:NONE:NONE
+F:MONSTER_DIV_32 | NO_CAVE | DREAM_WORLD | BIG | NO_DOORS | ARCADE
+#F:FINAL_GUARDIAN_1094
+M:HUMAN | R_CHAR_F
+
+N:14:ínçñ
+E:Hell
+D:$a way leading to the mountain
+D:ínçñ
+P:1:94
+W:40:80:10:3:30:30:75:25:0x0188:0x0280
+L:DIRT:70:DEEP_LAVA:20:SHALLOW_LAVA:10:50
+A:NEEDLE_MAT:70:RUBBLE:20:DARK_PIT:10:DIRT:RUBBLE:SHALLOW_ACID_PUDDLE:DEEP_ACID_PUDDLE
+F:BIG | MONSTER_DIV_0 | CAVE | CAVERN | NO_DOORS | LAVA_RIVER | ARENA | DESTROY | NEW_RIVER | NEW_LAKE
+M:R_CHAR_GszuUOWw | FROM_HELL | ELDRITCH_HORROR
+F:FINAL_GUARDIAN_1389 | 
+F:FINAL_OBJECT_575
+
+N:15:ì¯ó¥ì¥
+E:Kouryuudou
+D:ì¯ó¥ì¥
+P:4:39
+W:30:65:10:3:18:80:80:25:0x0000:0x0000
+L:FLOOR:100:FLOOR:0:FLOOR:0:0
+A:GRANITE:60:MAGMA_TREASURE:20:QUARTZ_TREASURE:20:GRANITE:GRANITE:MAGMA_VEIN:QUARTZ_VEIN
+F:MONSTER_DIV_0 | WATER_RIVER | CAVE | CAVERN | SMALLEST
+F:LAVA_RIVER | DESTROY
+M:R_CHAR_$bcijmvwEFGIS | KWAI | DEITY | UNDEAD | NONLIVING
+F:FINAL_GUARDIAN_1364
+
+#ì¡éÍèàóùÇ≈51-55äKÇÕMAZEÉtÉâÉOÇñ≥éãÇ∑ÇÈ
+N:16:êÛä‘èÚ‚qéR
+E:Asamazyouesan
+D:êÛä‘èÚ‚qéRÇ÷ë±Ç≠ì¥åA
+P:9:38
+W:30:55:10:3:30:80:80:25:0x0006:0x0033
+L:FLOOR:100:FLOOR:0:FLOOR:0:0
+A:GRANITE:100:GRANITE:0:GRANITE:0:GRANITE:GRANITE:MAGMA_VEIN:QUARTZ_VEIN
+F:MONSTER_DIV_5 | MAZE | CAVE | CAVERN | LAKE_TREE
+M:FAIRY | DEITY | NONLIVING
+F:FINAL_GUARDIAN_1412 | 
+F:FINAL_OBJECT_915
+
+

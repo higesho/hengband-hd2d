@@ -1,0 +1,1689 @@
+kind,en,ja
+# 呪文・属性・召喚の名。
+# **人が直す種はここ。** カタログの節は
+#   python tools/frox/fc_build_ja_spell.py --catalog
+# で組み立てて frox/lang/ja/ui/messages.ja.txt へ貼る。
+#
+# kind は出どころ:
+#   display … monspell.c の `_parse_t` の表示名（63 本）
+#   mst     … monspell.c の `_mst_tbl[]` の系統名（14 本。**10 バイトまで**）
+#   gf      … gf.c の `_gf_tbl[]` の属性の名（130 本）
+#   summon  … init1.c の `_summon_type_tbl[]` の召喚の種別名（84 本）
+#
+# 同じ名が 2 つの表に出ることがある（`Heal` は gf と mst の両方）。**訳は 1 つ**で、
+# kind は先に出たほうを書いてある。
+display,Amnesia,記憶喪失
+display,Animate Dead,死者復活
+display,Blind,盲目
+display,Confuse,混乱
+display,Create Darkness,暗闇生成
+display,Paralyze,麻痺
+display,Terrify,恐怖
+display,Slow,減速
+display,Shriek,叫び
+display,Teleport Level,テレポート・レベル
+display,Teleport To,引きよせ
+display,Create Traps,トラップ創造
+display,Stop Time,時を止める
+display,Remove Air,空気除去
+display,Anti-Magic,反魔法
+display,Dispel Magic,魔力消去
+display,Polymorph Other,変身
+display,Haste Self,加速
+display,Invulnerability,無傷の球
+display,Invoke Logrus,純ログルス
+display,Darkness Storm,暗黒の嵐
+display,Starburst,スター・バースト
+display,Mana Storm,魔力の嵐
+display,Radiation Ball,放射能球
+display,Stinking Cloud,悪臭雲
+display,Whirlpool,大渦
+display,Brain Smash,脳攻撃
+display,Drain Mana,魔力吸収
+display,Mind Blast,精神攻撃
+display,Pulverise,念動衝撃弾
+display,Rocket,ロケット
+display,Throw Boulder,岩石投げ
+display,Chicken,ニワトリ
+display,Gaze,にらみつけ
+display,Magic Missile,マジック・ミサイル
+display,Shoot,射撃
+display,Time Wave,時間の波
+display,Psycho-Spear,光の剣
+display,Hell Lance,ヘル・ランス
+display,Holy Lance,ホーリー・ランス
+display,Wounding Curse,軽傷の呪い
+display,Evil Curse,重傷の呪い
+display,Mighty Curse,致命傷の呪い
+display,Death Curse,死の呪い
+display,Hand of Doom,破滅の手
+display,Teleport Away,テレポート・アウェイ
+display,Teleport,テレポート
+display,Blink,ショート・テレポート
+display,Blink Away,ショート・テレポート・アウェイ
+display,Heal Self,体力回復
+display,Something Weird,何か奇妙なこと
+display,Drop Monster,モンスター落とし
+display,Detect Traps,トラップ感知
+display,Detect Evil,邪悪感知
+display,Detect Monsters,モンスター感知
+display,Detect Objects,アイテム感知
+display,Identify,鑑定
+display,Mapping,魔法の地図
+display,Clairvoyance,千里眼
+display,Multiply,増殖
+display,Bless,祝福
+display,Heroism,士気高揚
+display,Berserk,狂戦士化
+mst,Breathe,ブレス
+mst,Ball,ボール
+mst,Bolt,ボルト
+mst,Beam,ビーム
+mst,Curse,呪い
+mst,Buff,強化
+mst,Biff,弱体化
+mst,Escape,逃走
+mst,Annoy,妨害
+mst,Summon,召喚
+mst,Heal,回復
+mst,Tactic,位置取り
+mst,Weird,特殊
+mst,Possessor,憑依
+gf,None,なし
+gf,Acid,酸
+gf,Lightning,電撃
+gf,Fire,火炎
+gf,Frost,冷気
+gf,Poison,毒
+gf,Light,閃光
+gf,Darkness,暗黒
+gf,Confusion,混乱
+gf,Nether,地獄
+gf,Nexus,因果混乱
+gf,Sound,轟音
+gf,Shards,破片
+gf,Chaos,カオス
+gf,Disenchantment,劣化
+gf,Time,時間逆転
+gf,Mana,魔力
+gf,Gravity,重力
+gf,Inertia,遅鈍
+gf,Plasma,プラズマ
+gf,Force,フォース
+gf,Toxic Waste,放射性廃棄物
+gf,Disintegration,分解
+gf,Storm Winds,暴風
+gf,Holy Fire,聖なる炎
+gf,Hell Fire,業火
+gf,Ice,極寒
+gf,Water,水
+gf,Rocket,ロケット
+gf,Meteor,隕石
+gf,Rock,岩
+gf,Arrow,矢
+gf,Missile,魔法の矢
+gf,Blood Curse,血の呪い
+gf,Psionics,超能力
+gf,Psionic Drain,精神力吸収
+gf,Ego Whip,精神の鞭
+gf,Psycho-Storm,精神の嵐
+gf,Domination,精神支配
+gf,Subjugation,制圧
+gf,Clone,クローン
+gf,Polymorph,変身
+gf,Heal,回復
+gf,Haste,加速
+gf,Sleep,睡眠
+gf,Drain,生命力吸収
+gf,Freeze,硬直
+gf,Freeze Evil,邪悪硬直
+gf,Stun,朦朧
+gf,Eldritch Horror,狂気
+gf,Anti-magic,反魔法
+gf,Crusade,破邪
+gf,Unholy Word,不浄の言葉
+gf,Unlife,非生命
+gf,Dark,暗黒
+gf,Stone to Mud,岩石溶解
+gf,Door Destruction,扉破壊
+gf,Trap Destruction,罠破壊
+gf,Remove Obstacle,障害物除去
+gf,Door Creation,扉生成
+gf,Trap Creation,罠生成
+gf,Forest Creation,森林生成
+gf,Glyph of Warding,守りのルーン
+gf,Wall Creation,壁生成
+gf,Wizard Lock,魔法の施錠
+gf,Flow of Water,水流
+gf,Flow of Lava,溶岩流
+gf,Web Spinning,蜘蛛の巣張り
+gf,Earthquake,地震
+gf,Banish Undead,アンデッド消滅
+gf,Banish Evil,邪悪消滅
+gf,Banishment,追放
+gf,Isolation,隔離
+gf,Turn Undead,アンデッド恐慌
+gf,Turn Evil,邪悪恐慌
+gf,Turn Monsters,モンスター恐慌
+gf,Dispel Undead,アンデッド退散
+gf,Dispel Evil,邪悪退散
+gf,Dispel Good,善良退散
+gf,Dispel Demon,悪魔退散
+gf,Dispel Living,生命退散
+gf,Dispel Monsters,モンスター退散
+gf,Enslave Undead,アンデッド従属
+gf,Dominate Demon,悪魔支配
+gf,Charm Animal,動物魅了
+gf,Charm Living,生物魅了
+gf,Control Pact Monster,契約モンスター支配
+gf,Charm Monster,モンスター魅了
+gf,Charm Ring Bearer,指輪所持者魅了
+gf,Capture Monster,モンスター捕獲
+gf,Raise Dead,死者復活
+gf,Death Ray,死の光線
+gf,Genocide,抹殺
+gf,Photograph,写真撮影
+gf,Attack,攻撃
+gf,Moon Dazzling,円月殺法
+gf,Seeker Ray,シーカーレイ
+gf,Super Ray,スーパーレイ
+gf,Blood,血
+gf,Eldritch Stun,狂気の朦朧
+gf,Eldritch Drain,狂気の吸収
+gf,Eldritch Dispel,狂気の退散
+gf,Eldritch Confuse,狂気の混乱
+gf,Eldritch Howl,狂気の咆哮
+gf,Entomb,埋葬
+gf,Mana Clash,魔力衝突
+gf,Pharaoh's Curse,ファラオの呪い
+gf,Draining Touch,吸収の接触
+gf,Touch of Death,死の接触
+gf,Steal,窃盗
+gf,Bomb,爆弾
+gf,Air,大気
+gf,Experience,経験値
+summon,Monsters,モンスター
+summon,Ants,アリ
+summon,Spiders,蜘蛛
+summon,Hounds,ハウンド
+summon,Hydras,ヒドラ
+summon,Angels,天使
+summon,Demons,デーモン
+summon,Undead,アンデッド
+summon,Dragons,ドラゴン
+summon,Mighty Undead,上級アンデッド
+summon,Ancient Dragons,古代ドラゴン
+summon,Foul Demons,上級デーモン
+summon,Amberites,アンバーの王族
+summon,Uniques,ユニークモンスター
+summon,Mold,モルド
+summon,Bats,コウモリ
+summon,Quylthulgs,クイルスルグ
+summon,Vortices,ボルテックス
+summon,Creeping Coins,クリーピングコイン
+summon,Mimics,ミミック
+summon,Cyberdemons,サイバーデーモン
+summon,Kin,仲間
+summon,Warriors of the Dawn,暁の戦士
+summon,Animals,動物
+summon,Phantom Beasts,幽体獣
+summon,Blue Horrors,ブルー・ホラー
+summon,Life,生命
+summon,Golems,ゴーレム
+summon,Elementals,エレメンタル
+summon,Abominations,忌まわしきもの
+summon,Birds,鳥
+summon,Fanatics,狂信者
+summon,Manes,古代の死霊
+summon,Lice,シラミ
+summon,Dungeon Guardians,ダンジョンの守護者
+summon,Knights,騎士
+summon,Eagles,鷲
+summon,Piranhas,ピラニア
+summon,Holy Monsters,聖なるモンスター
+summon,Foul Monsters,邪悪なモンスター
+summon,Software Bugs,ソフトウェア・バグ
+summon,Gods,神
+summon,Rats,ネズミ
+summon,Wolves,狼
+summon,Dread,ドリード
+summon,Zombies,ゾンビ
+summon,Skeletons,スケルトン
+summon,Ghosts,ゴースト
+summon,Vampires,バンパイア
+summon,Wights,ワイト
+summon,Liches,リッチ
+summon,Kraken,クラーケン
+summon,Thieves,盗賊
+summon,Ents,エント
+summon,Camelot Knights,キャメロットの騎士
+summon,Nightmares,ナイトメア
+summon,Yeeks,イーク
+summon,Orcs,オーク
+summon,Dark Elves,ダークエルフ
+summon,Giants,巨人
+summon,Undead Summoners,アンデッドの召喚者
+summon,Mature Dragons,中級ドラゴン
+summon,Dragon Summoners,ドラゴンの召喚者
+summon,Clubber Demons,撲殺の悪魔
+summon,Balrogs,バルログ
+summon,Demon Summoners,デーモンの召喚者
+summon,Ultimate,究極
+summon,Human,人間
+summon,Horses,馬
+summon,Magical Monsters,魔法生物
+summon,Trolls,トロル
+summon,Good Monsters,善良なモンスター
+summon,Evil Monsters,邪悪なモンスター
+summon,Ring Bearers,指輪所持者
+summon,Archers,アーチャー
+summon,Monks,修行僧
+summon,Mages,メイジ
+summon,Special,特別
+summon,Reptiles,爬虫類
+summon,Dead Uniques,撃破したユニークモンスター
+summon,Cats,猫
+summon,Vanaras,ヴァナラ
+summon,Serpents,蛇
+summon,Nagas,ナーガ
+#
+# device … devices.c の効果の名（226 本。うち 34 本は上の表と同じ名なので、
+#          ここには書かない）。**訳は 20 バイトまで**——py_info.c:1738 が
+#          `%-20.20s` の欄に並べる（設計 §8.45）。
+device,Nothing,何も起きない
+device,Illumination,イルミネーション
+device,Magic Mapping and Illumination,魔法の地図と照明
+device,Enlightenment,啓蒙
+device,Detection,全感知
+device,Detect Treasure,財宝感知
+device,Detect Invisible,透明感知
+device,Detect Doors & Stairs,扉と階段の感知
+device,Phase Door,ショート・テレポート
+device,Teleport Other,テレポート・アウェイ
+device,Strafing,近距離テレポート
+device,Dimension Door,次元の扉
+device,Getaway,逃走
+device,Recall,帰還
+device,Destruction,破壊
+device,Mass Genocide,周辺抹殺
+device,Recharging,魔力充填
+device,*Recharging*,*魔力充填*
+device,Enchantment,強化
+device,*Identify*,*鑑定*
+device,Probing,調査
+device,Explosive Rune,爆発のルーン
+device,Rune of Protection,守りのルーン
+device,Satisfy Hunger,空腹充足
+device,Trap and Door Destruction,周囲の罠と扉の破壊
+device,Unbarring Ways,罠と扉を壊す光線
+device,Whirlwind Attack,カマイタチ
+device,List Uniques,ユニーク一覧
+device,List Artifacts,アーティファクト一覧
+device,Banish,モンスター追放
+device,Telekinesis,テレキネシス
+device,Alchemy,錬金術
+device,Self Knowledge,自己認識
+device,Annihilation,モンスター消滅
+device,Stone Skin,石の肌
+device,Resist Acid,酸への耐性
+device,Resist Lightning,電撃への耐性
+device,Resist Fire,火炎への耐性
+device,Resist Cold,冷気への耐性
+device,Resist Poison,毒への耐性
+device,Resistance,全耐性
+device,Protection from Evil,対邪悪結界
+device,Healing and Magic Resistance,回復と魔法防御
+device,Holy Prayer,聖なる祈り
+device,Speed,加速
+device,Heroic Speed,士気高揚と加速
+device,Heroic Song,英雄の歌
+device,Light Speed,光速移動
+device,Enlarge Weapon,武器の巨大化
+device,Telepathy,テレパシー
+device,Wraithform,幽体化
+device,Globe of Invulnerability,無傷の球
+device,Summon Monsters,モンスター召喚
+device,Summon Hounds,ハウンド召喚
+device,Summon Ants,アリ召喚
+device,Summon Hydras,ヒドラ召喚
+device,Summon Octopus,タコ召喚
+device,Summon Legion of the Dawn,暁の戦士団召喚
+device,Summon Phantasmal Servant,幻霊召喚
+device,Summon Elemental,エレメンタル召喚
+device,Summon Dragon,ドラゴン召喚
+device,Summon Undead,アンデッド召喚
+device,Summon Demon,デーモン召喚
+device,Summon Cyberdemon,サイバーデーモン召喚
+device,Summon Angel,天使召喚
+device,Summon Kraken,クラーケン召喚
+device,Return Pets,ペット呼び戻し
+device,Capture Pet,ペット捕獲
+device,Restore Stats,能力値復活
+device,Restore Life,生命力復活
+device,Restoring,全復活
+device,Curing,治癒
+device,Cure Wounds,傷の治癒
+device,Healing,体力回復
+device,Angelic Healing,天使の癒し
+device,Restore Mana,魔力復活
+device,Cure Poison,毒の治癒
+device,Boldness,勇気
+device,Cure Fear and Poison,恐怖と毒の治癒
+device,Remove Curse,解呪
+device,*Remove Curse*,*解呪*
+device,Clarity,魔力回復
+device,Great Clarity,大魔力回復
+device,Acid Bolt,アシッド・ボルト
+device,Lightning Bolt,サンダー・ボルト
+device,Fire Bolt,ファイア・ボルト
+device,Frost Bolt,アイス・ボルト
+device,Poison Dart,毒のダート
+device,Light Bolt,閃光の矢
+device,Dark Bolt,暗黒の矢
+device,Confusion Bolt,混乱の矢
+device,Nether Bolt,地獄の矢
+device,Nexus Bolt,因果混乱の矢
+device,Sound Bolt,轟音の矢
+device,Shard Bolt,破片の矢
+device,Chaos Bolt,カオス・ボルト
+device,Disenchantment Bolt,劣化の矢
+device,Time Bolt,時間逆転の矢
+device,Water Bolt,ウォーター・ボルト
+device,Mana Bolt,魔力の矢
+device,Ice Bolt,極寒の矢
+device,Plasma Bolt,プラズマ・ボルト
+device,Moonbeam,月光のビーム
+device,Beam of Light,閃光のビーム
+device,Beam of Gravity,重力のビーム
+device,Beam of Disintegration,分解のビーム
+device,Shoot Acid,酸を飛ばす
+device,Lightning Strike,落雷
+device,Line of Fire,火炎のビーム
+device,Ray of Cold,冷気の光線
+device,Sound Strike,轟音のビーム
+device,Chaos Strike,カオスのビーム
+device,Acid Ball,アシッド・ボール
+device,Lightning Ball,サンダー・ボール
+device,Fire Ball,ファイア・ボール
+device,Frost Ball,アイス・ボール
+device,Star Burst,スター・バースト
+device,Confusion Ball,混乱の球
+device,Nether Ball,地獄の球
+device,Nexus Ball,因果混乱の球
+device,Sound Ball,轟音の球
+device,Shard Ball,破片の球
+device,Disenchantment Ball,劣化の球
+device,Time Ball,時間逆転の球
+device,Mana Ball,魔力の球
+device,Disintegrate,分解の球
+device,Breathe Acid,酸のブレス
+device,Breathe Lightning,電撃のブレス
+device,Dragon's Flame,ドラゴンの炎
+device,Dragon's Frost,ドラゴンの冷気
+device,Breathe Poison,毒のブレス
+device,Breathe Light,閃光のブレス
+device,Breathe Darkness,暗黒のブレス
+device,Breathe Confusion,混乱のブレス
+device,Breathe Nether,地獄のブレス
+device,Breathe Nexus,因果混乱のブレス
+device,Breathe Sound,轟音のブレス
+device,Breathe Shards,破片のブレス
+device,Breathe Chaos,カオスのブレス
+device,Breathe Disenchantment,劣化のブレス
+device,Breathe Inertia,遅鈍のブレス
+device,Tsunami,津波
+device,Breathe Time,時間逆転のブレス
+device,Dragon's Breath,ドラゴンのブレス
+device,Breathe Elements,元素のブレス
+device,Dispel Life,生命退散
+device,Dispel Demons,悪魔退散
+device,Vampirism,吸血
+device,Star Ball,多重電撃球
+device,Wrath of the God,神の怒り
+device,Confusing Lights,幻惑の光
+device,Magic Arrow,魔法の矢
+device,Holiness,聖なる力
+device,Pesticide,殺虫剤
+device,Terrify Monsters,周辺モンスター恐慌
+device,Sleep Monsters,周辺モンスター睡眠
+device,Slow Monsters,周辺モンスター減速
+device,Freeze Monsters,モンスター硬直
+device,Hypnotize,催眠
+device,Confuse Monsters,周辺モンスター混乱
+device,Fishing,釣り
+device,Charge,突撃
+device,Piercing Shot,貫通射撃
+device,Endless Quiver,矢筒の補充
+device,Wall Building,石の壁の生成
+device,Sleep Monster,モンスター睡眠
+device,Slow Monster,モンスター減速
+device,Confuse Monster,モンスター混乱
+device,Scare Monster,モンスター恐慌
+device,Starlight,星の光
+device,Aggravate Monsters,モンスター覚醒
+device,Heal Monster,モンスター回復
+device,Haste Monster,モンスター加速
+device,Haste Monsters,周辺モンスター加速
+device,Clone Monster,モンスター複製
+device,Summoning,敵の召喚
+device,Slowness,減速
+device,Clairvoyance and Recall,千里眼と帰還
+device,Haste and Dimension Door,加速と次元の扉
+device,Create Arrows,矢の製造
+device,Flame of Demeter,デメテルの炎
+device,Eye of Vecna,ヴェクナの目
+device,"Heroism, Resistance and Breathe Elements",士気・耐性・ブレス
+device,Reveal Identity,正体を明かす
+device,Change Zokusei,属性変更
+device,Dispel Curse and Probing,*解呪*と調査
+device,Bang a Gong,銅鑼を鳴らす
+device,Gain Strength,腕力の上昇
+device,Change Sex,性別変更
+device,Stunning Stomp,朦朧の踏みつけ
+device,Mighty Arrow,強力な矢
+device,Unfocus Rage,怒りを解く
+#
+# realm … do_spell(…, SPELL_NAME) が返す**魔法領域の呪文の名**（17 領域 469 本。
+#         うち 115 本は上の表と同じ名なので、ここには書かない）。**訳は 20 バイトまで**
+#         ——graymage.c:68 と skillmaster.c:979 が `%-20.20s` の欄に並べる（設計 §8.50）。
+#         出どころは do-spell.c（13 領域）＋ lawyer.c・samurai.c・necromancer.c・rogue.c。
+#         並びは領域の出た順（life → sorcery → … → burglary）。
+realm,Cure Light Wounds,軽傷の治癒
+realm,Regeneration,回復力強化
+realm,Call Light,光の召喚
+realm,Detect Doors & Traps,罠 & 隠し扉感知
+realm,Cure Medium Wounds,重傷の治癒
+realm,Fasting,断食
+realm,Cure Critical Wounds,致命傷の治癒
+realm,Resist Heat and Cold,耐熱耐寒
+realm,Sense Surroundings,周辺感知
+realm,Dispel Curse,*解呪*
+realm,Perception,鑑識
+realm,Sustaining,能力維持
+realm,Cure Mutation,突然変異治癒
+realm,Word of Recall,帰還の詔
+realm,Transcendence,超越
+realm,Warding True,真・結界
+realm,Sterilization,不毛化
+realm,Annihilate Undead,アンデッド消滅
+realm,Restoration,全復活
+realm,Healing True,*体力回復*
+realm,Holy Vision,聖なるビジョン
+realm,Ultimate Resistance,究極の耐性
+realm,Detect Doors and Traps,罠と扉感知
+realm,Light Area,ライト・エリア
+realm,Magic Mapping,魔法の地図
+realm,Mass Sleep,周辺スリープ
+realm,Mass Stasis,モンスター全停止
+realm,Detection True,真・感知
+realm,Identify True,真・鑑定
+realm,Mass Identify,一括鑑定
+realm,Inventory Resistance,持ち物保護
+realm,Stair Creation,階段生成
+realm,Sense Minds,精神感知
+realm,Teleport to Town,街移動
+realm,Device Mastery,魔道具強化
+realm,Detect Creatures,モンスター感知
+realm,Produce Food,食糧生成
+realm,Daylight,日の光
+realm,Wind Walker,風の歩み
+realm,Resist Environment,環境への耐性
+realm,Cure Wounds & Poison,傷と毒治療
+realm,Nature Awareness,自然の覚醒
+realm,Ray of Sunlight,太陽光線
+realm,Entangle,足かせ
+realm,Nature's Gate,自然の門
+realm,Herbal Healing,薬草治療
+realm,Stair Building,階段生成
+realm,Resistance True,真・耐性
+realm,Stone Tell,試金石
+realm,Wall of Stone,石の壁
+realm,Protect from Corrosion,腐食防止
+realm,Call Sunlight,陽光召喚
+realm,Fire Storm,炎の嵐
+realm,Blizzard,ブリザード
+realm,Lightning Storm,稲妻嵐
+realm,Gravity Storm,重力の嵐
+realm,Nature's Wrath,自然の脅威
+realm,Trap / Door Destruction,トラップ/ドア破壊
+realm,Flash of Light,閃光
+realm,Touch of Confusion,混乱の手
+realm,Mana Burst,魔力炸裂
+realm,Fist of Force,力の拳
+realm,Teleport Self,テレポート
+realm,Wonder,ワンダー
+realm,Sonic Boom,ソニック・ブーム
+realm,Doom Bolt,破滅の矢
+realm,Word of Destruction,破壊の言葉
+realm,Chain Lightning,連鎖稲妻
+realm,Arcane Binding,魔力封入
+realm,Alter Reality,真実の祭壇
+realm,Magic Rocket,マジック・ロケット
+realm,Chaos Branding,混沌の刃
+realm,Meteor Swarm,流星群
+realm,Flame Strike,焔の一撃
+realm,Call Chaos,混沌召来
+realm,Polymorph Self,自己変容
+realm,Breathe Logrus,ログルスのブレス
+realm,Call the Void,虚無召来
+realm,Detect Unlife,無生命感知
+realm,Malediction,呪殺弾
+realm,Black Sleep,黒い眠り
+realm,Undead Resistance,アンデッド耐性
+realm,Horrify,恐慌
+realm,Orb of Entropy,エントロピーの球
+realm,Cloud Kill,殺戮雲
+realm,Genocide One,モンスター消滅
+realm,Poison Branding,毒の刃
+realm,Vampiric Drain,吸血ドレイン
+realm,Invoke Spirits,悪霊召喚
+realm,Battle Frenzy,狂乱戦士
+realm,Vampiric Branding,吸血の刃
+realm,Vampirism True,真・吸血
+realm,Nether Wave,死の言魂
+realm,Raise the Dead,死者召喚
+realm,Esoteria,秘伝
+realm,Polymorph Vampire,吸血鬼変化
+realm,Nether Storm,地獄嵐
+realm,Trump Spiders,蜘蛛のカード
+realm,Shuffle,シャッフル
+realm,Reset Recall,フロア・リセット
+realm,Trump Spying,感知のカード
+realm,Trump Animals,動物のカード
+realm,Trump Reach,移動のカード
+realm,Trump Kamikaze,カミカゼのカード
+realm,Phantasmal Servant,幻霊召喚
+realm,Swap Position,位置交換のカード
+realm,Trump Undead,アンデッドのカード
+realm,Trump Reptiles,爬虫類のカード
+realm,Trump Monsters,モンスターのカード
+realm,Trump Hounds,ハウンドのカード
+realm,Trump Branding,トランプの刃
+realm,Living Trump,人間トランプ
+realm,Trump Cyberdemon,サイバーのカード
+realm,Trump Divination,予見のカード
+realm,Trump Lore,知識のカード
+realm,Trump Dragon,ドラゴンのカード
+realm,Trump Meteor,隕石のカード
+realm,Trump Demon,デーモンのカード
+realm,Trump Greater Undead,地獄のカード
+realm,Trump Ancient Dragon,古代ドラゴンのカード
+realm,Zap,電撃
+realm,Detect Invisibility,透明体感知
+realm,Trap & Door Destruction,罠と扉 破壊
+realm,Phlogiston,燃素
+realm,Detect Enchantment,魔法 感知
+realm,Ray of Light,閃光
+realm,See Invisible,透明視認
+realm,Minor Enchantment,簡易強化
+realm,See Invisibility,透明視認
+realm,Elemental Branding,精霊の刃
+realm,Polish Shield,盾磨き
+realm,Weaponmastery,武器熟達
+realm,Magical Armor,魔法の鎧
+realm,Remove All Curse,呪い粉砕
+realm,Simplification,単純化
+realm,Knowledge True,完全なる知識
+realm,Crafting,銘器作成
+realm,Immunity,属性への免疫
+realm,Mana Branding,魔法剣
+realm,Evil Bless,邪なる祝福
+realm,Summon Manes,古代の死霊召喚
+realm,Hellish Flame,地獄の焔
+realm,Vision,ビジョン
+realm,Resist Nether,耐地獄
+realm,Fire Branding,炎の刃
+realm,Devilish Eye,悪魔の目
+realm,Devilish Cloak,悪魔のクローク
+realm,The Flow of Lava,溶岩流
+realm,Plasma Ball,プラズマ球
+realm,Polymorph Demon,悪魔変化
+realm,Kiss of Succubus,サキュバスの接吻
+realm,Doom Hand,破滅の手
+realm,Raise the Morale,士気高揚
+realm,Immortal Body,不滅の肉体
+realm,Insanity Circle,狂気の円環
+realm,Explode Pets,ペット爆破
+realm,Summon Greater Demon,上級デーモン召喚
+realm,Hellfire,地獄の劫火
+realm,Send to Hell,地獄送り
+realm,Polymorph Demonlord,魔王変化
+realm,Punishment,懲罰
+realm,Remove Fear,恐怖除去
+realm,Sanctuary,聖域
+realm,Portal,入口
+realm,Star Dust,スターダスト
+realm,Purify,身体浄化
+realm,Scatter Evil,邪悪飛ばし
+realm,Holy Orb,聖なる光球
+realm,Exorcism,悪魔祓い
+realm,Sense Unseen,透明体視認
+realm,Judgment Thunder,裁きの雷
+realm,Holy Word,聖なる御言葉
+realm,Arrest,捕縛
+realm,Angelic Cloak,天使のクローク
+realm,Dispel Undead & Demons,アンデッド・悪魔退散
+realm,Holy Blade,聖なる刃
+realm,Armageddon,ハルマゲドン
+realm,An Eye for an Eye,目には目を
+realm,Divine Intervention,神威
+realm,Song of Holding,遅鈍の歌
+realm,Song of Blessing,祝福の歌
+realm,Wrecking Note,崩壊の音色
+realm,Stun Pattern,朦朧の旋律
+realm,Flow of Life,生命の流れ
+realm,Song of the Sun,太陽の歌
+realm,Song of Fear,恐怖の歌
+realm,Heroic Ballad,戦いの歌
+realm,Clairaudience,霊的知覚
+realm,Soul Shriek,魂の歌
+realm,Song of Lore,知識の歌
+realm,Hiding Tune,隠遁の歌
+realm,Illusion Pattern,幻影の旋律
+realm,Doomcall,破滅の叫び
+realm,Firiel's Song,フィリエルの歌
+realm,Fellowship Chant,旅の仲間
+realm,Sound of disintegration,分解の旋律
+realm,Finrod's Resistance,フィンロドの護り
+realm,Hobbit Melodies,ホビットのメロディ
+realm,World Contortion,歪んだ世界
+realm,Dispelling chant,退散の歌
+realm,The Voice of Saruman,サルマンの甘言
+realm,Song of the Tempest,嵐の音色
+realm,Ambarkanta,もう一つの世界
+realm,Wrecking Pattern,破壊の旋律
+realm,Stationary Shriek,停滞の歌
+realm,Endurance,守りの歌
+realm,The Hero's Poem,英雄の詩
+realm,Relief of Yavanna,ヤヴァンナの助け
+realm,Goddess' rebirth,再生の歌
+realm,Wizardry of Sauron,サウロンの魔術
+realm,Fingolfin's Challenge,フィンゴルフィンの詩
+realm,Evily blessing,邪なる祝福
+realm,Cure light wounds,軽傷の治癒
+realm,Demonic aura,悪魔のオーラ
+realm,Stinking mist,悪臭霧
+realm,Extra might,腕力強化
+realm,Curse weapon,武器呪縛
+realm,Evil detection,邪悪感知
+realm,Patience,我慢
+realm,Ice armor,氷の鎧
+realm,Cure serious wounds,重傷の治癒
+realm,Inhail potion,薬品吸入
+realm,Vampiric mist,吸血の霧
+realm,Swords to runeswords,魔剣化
+realm,Touch of confusion,混乱の手
+realm,Building up,肉体強化
+realm,Anti teleport barrier,反テレポート結界
+realm,Cloak of shock,衝撃のクローク
+realm,Cure critical wounds,致命傷の治癒
+realm,Curse armor,防具呪縛
+realm,Cloak of shadow,影のクローク
+realm,Pains to mana,苦痛を魔力に
+realm,Eye for an eye,目には目を
+realm,Anti multiply barrier,反増殖結界
+realm,Restore life,経験値復活
+realm,Drain curse power,呪力吸収
+realm,Swords to vampires,吸血の刃
+realm,Word of stun,朦朧の言葉
+realm,Moving into shadow,影移動
+realm,Anti magic barrier,反魔法結界
+realm,Revenge sentence,復讐の宣告
+realm,Gravity Bolt,重力の矢
+realm,Thunderclap,大音響
+realm,Windblast,烈風
+realm,Hellstorm,業火の嵐
+realm,Water Ball,ウォーター・ボール
+realm,Breathe Frost,冷気のブレス
+realm,Breathe Fire,炎のブレス
+realm,Breathe Plasma,プラズマのブレス
+realm,Breathe Gravity,重力のブレス
+realm,Breathe Disintegration,分解のブレス
+realm,Breathe Mana,魔力のブレス
+realm,Detect Money,金銭感知
+realm,Basic Trap,基本の罠
+realm,Disarm Traps,罠解除
+realm,Dig,掘削
+realm,Semicolon of Punishment,処罰のセミコロン
+realm,Confuse Everybody,全員混乱
+realm,Create Doors,扉作成
+realm,Semicolon of Warding,守りのセミコロン
+realm,Expert Trap,熟練の罠
+realm,Blame Undead,アンデッド糾弾
+realm,Probe,調査
+realm,Spin,言い逃れ
+realm,Advanced Bloodsucking,上級吸血
+realm,Tread Softly,忍び足
+realm,Map Surroundings,周辺の地図
+realm,Dig Deep,深掘り
+realm,Unholy Rage,不浄なる激昂
+realm,Subpoena,召喚令状
+realm,Dazzle,目くらまし
+realm,Tobi-Izuna,飛飯綱
+realm,3-Way Attack,五月雨斬り
+realm,Boomerang,ブーメラン
+realm,Burning Strike,焔霊
+realm,Detect Ferocity,殺気感知
+realm,Strike to Stun,みね打ち
+realm,Counter,カウンター
+realm,Harainuke,払い抜け
+realm,Serpent's Tongue,サーペンツタン
+realm,Zammaken,斬魔剣弐の太刀
+realm,Wind Blast,裂風剣
+realm,Judge,刀匠の目利き
+realm,Rock Smash,破岩斬
+realm,Midare-Setsugekka,乱れ雪月花
+realm,Spot Aiming,急所突き
+realm,Majingiri,魔神斬り
+realm,Desperate Attack,捨て身
+realm,Lightning Eagle,雷撃鷲爪斬
+realm,Rush Attack,入身
+realm,Bloody Maelstrom,赤流渦
+realm,Earthquake Blow,激震撃
+realm,Crack,地走り
+realm,War Cry,気迫の雄叫び
+realm,Musou-Sandan,無双三段
+realm,Vampire's Fang,吸血鬼の牙
+realm,Hundred Slaughter,百人斬り
+realm,Dragonic Flash,天翔龍閃
+realm,Twin Slash,二重の剣撃
+realm,Kofuku-Zettousei,虎伏絶刀勢
+realm,Keiun-Kininken,慶雲鬼忍剣
+realm,Harakiri,切腹
+realm,Cold Touch,冷気の手
+realm,Summon Rat,ネズミ召喚
+realm,Detect Life,生命感知
+realm,Poison Touch,毒の手
+realm,Summon Bats,コウモリ召喚
+realm,Black Touch,暗黒の手
+realm,Summon Wolves,狼召喚
+realm,Black Cloak,暗黒のクローク
+realm,Undead Sight,死者の視界
+realm,Undead Lore,死者の知識
+realm,Repelling Touch,反発の手
+realm,Vampiric Touch,吸血の手
+realm,Dread of Night,夜の恐怖
+realm,Summon Zombies,ゾンビ召喚
+realm,Summon Skeletons,スケルトン召喚
+realm,Summon Ghosts,ゴースト召喚
+realm,Summon Vampires,吸血鬼召喚
+realm,Summon Wraiths,レイス召喚
+realm,Summon Liches,リッチ召喚
+realm,Lost Cause,捨て身の一撃
+realm,Unhallow Ground,不浄なる地
+realm,Shield of the Dead,死者の盾
+realm,Rending Touch,分解の手
+realm,Repose of the Dead,死者の安息
+realm,Sepulchral Wind,墓場の風
+realm,Deadly Touch,死の手
+realm,Necromancy,死霊術
+realm,See in the Dark,暗視
+realm,Minor Getaway,小逃走
+realm,Set Minor Trap,弱い罠設置
+realm,Map Escape Route,逃走路の地図
+realm,Pick Pocket,すり
+realm,Negotiate,交渉
+realm,Fetch Object,アイテム引き寄せ
+realm,Eye for Danger,危険察知
+realm,Examine Loot,戦利品の鑑定
+realm,Set Major Trap,強い罠設置
+realm,Make Haste,急ぎ足
+realm,Create Stairs,階段作成
+realm,Panic Hit,一撃離脱
+realm,Panic Shot,射撃離脱
+realm,Panic Summons,召喚離脱
+realm,Panic Traps,罠設置離脱
+realm,Flee Level,階からの脱出
+realm,New Beginnings,出直し
+realm,Major Getaway,大逃走
+realm,Protect Loot,戦利品の保護
+realm,Master Thievery,盗賊の極意
+realm,Shadow Storm,影の嵐
+realm,Hide in Shadows,影に隠れる
+realm,Den of Thieves,盗賊の巣
+realm,Set Ultimate Trap,究極の罠設置
+realm,Assassinate,暗殺
+
+# ----------------------------------------------------------------------------
+# 職と種族の力の名（`case SPELL_NAME: var_set_string(res, "…")` の族。第 29 回。設計 §8.51）。
+# **20 バイトまで**（力の一覧の `%-23.23s` と呪文のサブウィンドウの欄）。
+
+power,Create Infusion,煎じ薬の作成
+power,Evaporate,蒸発
+power,Break Down Potion,薬の分解
+power,Reproduce Infusion,煎じ薬の複製
+power,Create Ammo,弾/矢の製造
+power,Ancient Protection,古の守護
+power,Double Crack,二重の鞭打ち
+power,Escape Rope,脱出の縄
+power,Excavation,発掘
+power,Extended Crack,伸びる鞭打ち
+power,Fetch,引き寄せ
+power,First Aid,応急手当
+power,Magic Blueprint,魔法の見取り図
+power,Remove Obstacles,障害物の除去
+power,Stop Singing,歌を止める
+power,Change Skin,皮を変える
+power,Swipe,薙ぎ払い
+power,Mauling Charge,突進の一撃
+power,Sniff,匂いを嗅ぐ
+power,Raging Swipe,怒りの薙ぎ払い
+power,Smash Trap,罠壊し
+power,Blood Flow,流血
+power,Blood Sight,血の視覚
+power,Blood Spray,血しぶき
+power,Blood Bath,血の風呂
+power,Blood Shield,血の盾
+power,Blood Seeking,血を求める
+power,Blood Rage,血の狂乱
+power,Blood Feast,血の饗宴
+power,Blood Revenge,血の復讐
+power,Blood Pool,血だまり
+power,Blood Explosion,血の爆発
+power,Cauterize Wounds,傷の焼灼
+power,Blood Rite,血の儀式
+power,Learning,ラーニング
+power,Rodeo,荒馬ならし
+power,Kiss,口づけ
+power,Shine,輝く
+power,Desperation,捨て身
+power,Detect Devices,魔道具感知
+power,Identify Device,魔道具鑑定
+power,Transfer Effect,効果の転写
+power,Stop Mimicry,変身を解く
+power,Acrobatic Charge,軽業の突進
+power,Darting Duel,疾走の決闘
+power,Disengage,離脱
+power,Mark Target,標的の指定
+power,Phase Charge,転移の突進
+power,Small Force Ball,小龍
+power,Flying Technique,舞空術
+power,Kamehameha,カメハメ波
+power,Magic Resistance,対魔法防御
+power,Improve Force,練気
+power,Aura of Force,纏闘気
+power,Shock Power,衝波
+power,Large Force Ball,彗龍
+power,Summon Ghost,幻霊召喚
+power,Exploding Flame,爆発波
+power,Super Kamehameha,超カメハメ波
+power,Stop Spelling,詠唱を止める
+power,Dissect Corpse,死体の解剖
+power,Surgery,外科手術
+power,Freeze Body Part,部位の冷凍
+power,Device Focus,魔道具集中
+power,Force Field,力場
+power,Shadow Projection,影の投射
+power,Absorb Magic,魔力の取り込み
+power,Block,受け止め
+power,Close In,間合い詰め
+power,Critical Blow,会心の一撃
+power,Crushing Blow,粉砕の一撃
+power,Killing Spree,殺戮の宴
+power,Knockback,吹き飛ばし
+power,Maul,打ちのめし
+power,Scatter,蹴散らし
+power,Shatter,粉砕
+power,Smash,破砕
+power,Splatter,飛び散らし
+power,Stunning Blow,朦朧の一撃
+power,Tunnel,掘削
+power,Precognition,霊視
+power,Neural Blast,神経攻撃
+power,Major Displacement,虚空の幻影
+power,Character Armour,鎧化
+power,Psychometry,擬似鑑定
+power,Mind Wave,精神波動
+power,Adrenaline Channeling,アドレナリン開放
+power,Psychic Drain,サイキック・ドレイン
+power,Banishing Mirror,追放の鏡
+power,Binding Field,封魔結界
+power,Break Mirrors,鏡割り
+power,Drip of Light,光のしずく
+power,Illusion Light,幻惑の光
+power,Make Mirror,鏡の生成
+power,Mirror Clashing,鏡砕き
+power,Mirror Concentration,静水
+power,Mirror of Light,閃光鏡
+power,Mirror of Recall,帰還の鏡
+power,Mirror of Ruffnor,ラフノールの鏡
+power,Mirror of Seeing,真見の鏡
+power,Mirror of Wandering,彷える鏡
+power,Mirror Shifting,鏡の現実変容
+power,Mirror Sleeping,催眠鏡
+power,Mirror Tunnel,鏡抜け
+power,Multishadow,影分身
+power,Robe of Dust,微塵隠れ
+power,Seal of Mirror,鏡の封印
+power,Shield of Water,水鏡の盾
+power,Warped Mirror,歪んだ鏡
+power,Double Attack,百裂拳
+power,Assume a Posture,構える
+power,Albino,アルビノ
+power,Alcohol,アルコール生成
+power,Ambidexterity,両手利き
+power,Arcane Mastery,秘術の熟達
+power,Arthritis,関節炎
+power,Astral Guide,星幽の導き手
+power,Attract Animals,動物を引き寄せる
+power,Attract Demons,悪魔を引き寄せる
+power,Attract Dragon,竜を引き寄せる
+power,Black Marketeer,闇市の手先
+power,Blank Face,のっぺらぼう
+power,Black Aura,黒いオーラ
+power,Beak,クチバシ
+power,Berserk Rage,狂戦士化
+power,Cerebral Pultitis,脳軟化症
+power,Chaos Deity,混沌の神の寵愛
+power,Cowardice,臆病
+power,Cult of Personality,個人崇拝
+power,Demonic Grasp,悪魔の握力
+power,Deadly Breath,強烈なブレス
+power,Ancient Knowledge,古の口伝
+power,Metamorphosis,変身
+power,Dragon Skin,竜の皮膚
+power,Dragon Strike,竜の一撃
+power,Easy Tiring,疲れやすい
+power,Very Easy Tiring,非常に疲れやすい
+power,Eat Light,光喰い
+power,Living Computer,生きた計算機
+power,Electric Aura,電撃オーラ
+power,Evasion,回避
+power,Extra Eyes,余分な目
+power,Extra Legs,余分な足
+power,Extra Noise,余分な物音
+power,Fantastic Frenzy,驚異の狂乱
+power,Fast Learner,覚えが早い
+power,Extra Fat,極度の肥満
+power,Fearless,恐れ知らず
+power,Fell Sorcery,邪悪な魔術
+power,Fire Aura,炎のオーラ
+power,Flatulence,鼓腸
+power,Fleet of Foot,俊足
+power,Fumbling,不器用
+power,White Aura,白いオーラ
+power,Hallucination,幻覚
+power,He-man,超人的な力
+power,Horns,角
+power,Overconfidence,過信
+power,Pushed to the Limits,無理のしすぎ
+power,Nimbler than Your Body,体が付いてこない
+power,Overactive Imagination,過剰な想像力
+power,Unbalancing Strikes,体勢を崩す一撃
+power,Attuned to God,神との調和
+power,Acute Hypochondria,極度の心気症
+power,Reassuring Image,安心させる幻影
+power,Impotence,不能
+power,Infernal Deal,悪魔との契約
+power,Infravision,赤外線視
+power,Inspired Smithing,鍛冶の霊感
+power,Limber,しなやかな体
+power,Limp,足を引きずる
+power,Loremaster,博識家
+power,Merchant's Friend,商人の友
+power,Moron,白痴
+power,Motion,正確な動き
+power,Nausea,吐き気
+power,No Inhibitions,抑制がきかない
+power,Normality,正常化
+power,One with Magic,魔法との一体化
+power,Peerless Sniper,無双の狙撃手
+power,Peerless Tracker,無双の追跡者
+power,Polymorph Wounds,変異する傷
+power,Potion Chugger,薬の早飲み
+power,Produce Mana,魔力放出
+power,Puny,ひ弱
+power,Purple Patron,紫の庇護者
+power,Random Banish,突然の追放
+power,Random Teleportation,不規則なテレポート
+power,Raw Chaos,純粋な混沌
+power,Resilient,頑健
+power,Rotting Flesh,腐乱する肉体
+power,Sacred Vitality,聖なる生命力
+power,Scales,鱗
+power,Scorpion Tail,サソリの尾
+power,Sensitive Eyes,敏感な目
+power,Shadow Walk,影渡り
+power,Short Legs,短い足
+power,Silly Voice,間抜けな声
+power,Speed Flux,変動する速度
+power,Speed Reader,速読
+power,Steel Skin,鋼の皮膚
+power,Strong Mind,強靭な精神
+power,Subtle Casting,気付かれぬ詠唱
+power,Tentacles,触手
+power,Elephantine Trunk,象の鼻
+power,Untouchable,不可触
+power,Unyielding,不屈
+power,Deadly Whirl,必殺の旋回
+power,Tornado Speed,竜巻の速さ
+power,Breath Control,呼吸の制御
+power,Vulnerability,脆弱
+power,Warning,警告
+power,Warts,いぼ
+power,Horrible Wasting,恐ろしい消耗病
+power,Waybread Intolerance,行糧不耐症
+power,Weapon Versatility,武器の多才
+power,Random Telepathy,不規則なテレパシー
+power,Weird Mind,精神歪
+power,Wings,翼
+power,Corrosive Blow,腐食の一撃
+power,Icy Fists,氷の拳
+power,Defensive Stance,防御の構え
+power,Quick Approach,迅速な接近
+power,Flaming Strike,火炎の一撃
+power,Knockout Blow,昏倒の一撃
+power,Mystic Insights,神秘の洞察
+power,Death Stance,死の構え
+power,Aura of Retaliation,反撃のオーラ
+power,Stealthy Approach,隠密の接近
+power,Summon Spiders,クモ召喚
+power,Absconding,高飛び
+power,Bind Monster,金縛り
+power,Bunshin,分身
+power,Chain Hook,鎖鎌
+power,Detect Near,周辺調査
+power,Floating,浮雲
+power,Glyph of Explosion,爆発のルーン
+power,Hide in Flame,火遁
+power,Hide in Leaves,葉隠れ
+power,Hide in Mist,霧隠れ
+power,Hit and Away,一撃離脱
+power,Kawarimi,変わり身
+power,Nyusin,入身
+power,Quick Walk,速駆け
+power,Rengoku-Kaen,煉獄火炎
+power,Smoke Ball,煙玉
+power,Syuriken Spreading,八方手裏剣
+power,Detect Threats,脅威感知
+power,Sleep-Inducing Speech,眠りの演説
+power,Mystification,煙に巻く
+power,Background Check,身元調査
+power,Remove Aggravation,反感の除去
+power,Summon Aide,側近の召喚
+power,Spying,諜報
+power,Spinning,情報操作
+power,Doctoring,手当て
+power,Diplomatic Impunity,外交特権
+power,Filibuster,議事妨害
+power,Create Chaos,混沌生成
+power,Grit,気概
+power,Grease,賄賂
+power,Glory,名声
+power,Cone,扇状ブレス
+power,Split Beam,分裂ビーム
+power,Retreating Breath,後退ブレス
+power,Detect Magic,魔法感知
+power,Reforging,再鍛造
+power,Dragon's Roar,竜の咆哮
+power,Rend,切り裂き
+power,Rage,狂乱
+power,Deadly Bite,必殺の噛みつき
+power,Snatch,咥え投げ
+power,Rapid Strike,連続の一撃
+power,Power Strike,強力な一撃
+power,Shard Skin,破片の皮膚
+power,Dragon Cloak,竜の外套
+power,Breathe Retribution,報復のブレス
+power,Breathe Holiness,聖なるブレス
+power,Smite Evil,破邪
+power,Breathe Fear,恐怖のブレス
+power,Breathe Reanimation,蘇生のブレス
+power,Breathe Vampirism,吸血のブレス
+power,Breathe Unholiness,不浄のブレス
+power,Breathe Genocide,抹殺のブレス
+power,Frightful Presence,恐怖の威圧
+power,Detect Minions,手下感知
+power,Baffling Presence,惑わす威圧
+power,Enslave,隷属化
+power,Breathe Subjugation,服従のブレス
+power,Aura of Domination,支配のオーラ
+power,Banish Summons,召喚物の追放
+power,Reach,間合い伸ばし
+power,Tail Sweep,尾薙ぎ
+power,Wing Storm,翼の嵐
+power,Elemental Rage,元素の憤怒
+power,Earthen Healing,大地の癒し
+power,Earthen Portal,大地の門
+power,Wall of Earth,土の壁
+power,Confusing Strike,混乱の一撃
+power,Whirlwind,カマイタチ
+power,Sky Gate,天空の門
+power,Adjust Armour,鎧の調整
+power,Acid Strike,酸の一撃
+power,Water Gate,水の門
+power,Healing Bath,癒しの水浴
+power,Fire Whip,炎の鞭
+power,Fire Door,炎の扉
+power,Healing Flames,癒しの炎
+power,Throw Monster,モンスター投げ
+power,Ice Storm,氷の嵐
+power,Breathe Storm,嵐のブレス
+power,Big Punch,大打撃
+power,Breathe Cold,冷気のブレス
+power,Stone Smash,岩砕き
+power,Bark,吠える
+power,Pounce,飛びかかり
+power,Run,疾走
+power,Stalk,忍び寄り
+power,Divide,分裂
+power,Cytomorph,細胞変形
+power,Blinking Death,瞬く死神
+power,Hoarding,蓄財
+power,Fanaticism,狂信
+power,Browse Forms,姿の一覧
+power,Mimic,擬態
+power,Purge Curse,呪い解き
+power,Curse Item,アイテムを呪う
+power,Blasphemy,冒涜の言葉
+power,Lesser Curse,弱い呪い
+power,Curse of Impotence,無力の呪い
+power,Dimensional Lock,次元の封鎖
+power,Absorb Curse Power,呪い浄化
+power,Drain Curse Power,呪力吸収
+power,Umbra,影の帳
+power,Assess Curses,呪いの鑑定
+power,Unleash Malice,悪意の解放
+power,Summon Orcs,オーク召喚
+power,Orcish Curse,オークの呪い
+power,Curse of Morgul,モルグルの呪い
+power,Possess,憑依
+power,Unpossess,憑依解除
+power,Summon Ancient Dragon,古代ドラゴンの召喚
+power,Summon Balrog,バルログ召喚
+power,Summon Clubber Demon,撲殺の悪魔召喚
+power,Summon Dark Elf,ダークエルフ召喚
+power,Summon Demon Summoner,悪魔召喚士の召喚
+power,Summon Dragon Summoner,竜召喚士の召喚
+power,Summon Giant,巨人召喚
+power,Summon Golem,ゴーレム召喚
+power,Summon Greater Dragons,上級ドラゴン召喚
+power,Summon Greater Demons,上級悪魔召喚
+power,Summon Greater Undead,強力なアンデッド召喚
+power,Summon Lich,リッチ召喚
+power,Summon Mature Dragon,成竜召喚
+power,Summon Ultimate,究極召喚
+power,Summon Undead Summoner,死霊召喚士の召喚
+power,Summon Wight,ワイト召喚
+power,Summon Yeeks,イーク召喚
+power,Absorb Powers,力の吸収
+power,Detect Armour,防具感知
+power,Identify Armour,防具鑑定
+power,Absorb Jewelry,装身具の吸収
+power,Detect Jewelry,装身具感知
+power,Identify Jewelry,装身具鑑定
+power,Glitter,輝き
+power,Detect Prey,獲物感知
+power,Spider Web,蜘蛛の巣
+power,Phase Shield,転移の盾
+power,Absorb Weapon,武器の吸収
+power,Detect Weapons,武器感知
+power,Identify Weapon,武器鑑定
+power,Breathe Gas,毒のブレス
+power,Powerful Attack,強力な攻撃
+power,Vampiric Bite,吸血の牙
+power,Vampiric Gaze,魅了の眼力
+power,Vampiric Grasp,引き寄せの手
+power,Return to Vampire,吸血鬼へ戻る
+power,Polymorph Bat,コウモリ変身
+power,Polymorph Mist,霧への変身
+power,Polymorph Wolf,狼への変身
+power,Elemental Escape,元素の逃走
+power,Elemental Explosion,元素の爆発
+power,Spin Away,回転離脱
+power,Unleash Elements,元素の解放
+power,Vomit,嘔吐
+power,Jump,跳躍
+power,Devour Flesh,肉を喰らう
+power,Antimagic Ray,反魔法の光線
+power,Armor of Fury,憤怒の鎧
+power,Barbarian Lore,蛮族の知識
+power,Barbaric Resistance,蛮族の耐性
+power,Crude Mapping,粗い地図
+power,Detect Magical Foes,魔法使い感知
+power,Evasive Leap,回避の跳躍
+power,Focus Rage,憤怒の集中
+power,Force Brand,フォースの刃
+power,Focus *Rage*,＊憤怒＊の集中
+power,Greater Shout,大喝
+power,Ragestrike,憤怒の一撃
+power,Rage Sustenance,憤怒の糧
+power,Resist Curses,呪い耐性
+power,Resist Disenchantment,劣化耐性
+power,Shatter Device,魔道具破壊
+power,Shout,一喝
+power,Spell Reaction,呪文反応
+power,Spell Turning,呪文返し
+power,Dispel Curses,呪い解除
+power,Summon Horde,群れの召喚
+power,Veteran's Blessing,古強者の祝福
+power,Double Magic,連続魔
+power,Absorption,吸収
+power,Protection,守護
+power,Shadow,影
+power,Earth,大地
+power,Understanding,理解
+power,Preservation,保存
+power,Seeing,千里眼
+power,Stability,安定
+power,Reflection,反射
+power,Death,死
+power,Mind,精神
+power,Might,剛力
+power,Luck,幸運
+power,Immortality,不死
+power,Daemon,悪魔
+power,Concentration,気合いため
+power,Assume a Guard Position,型に構える
+power,Cavern Creation,洞窟生成
+power,Dark Stalker,闇の忍び
+power,Greater Mapping,広域地図
+power,Greater Ambush,大待ち伏せ
+power,Lookout,見張り
+power,Nimble Dodge,素早い回避
+power,Reconnaissance,偵察
+power,Retreat,退却
+power,Sniping,狙撃
+power,Stealthy Snipe,隠密の狙撃
+power,Ambush,待ち伏せ
+power,Throw Weapon,武器投げ
+power,Shining Arrow,輝きの矢
+power,Shoot and Away,撃ち逃げ
+power,Disarming Shot,罠壊しの射撃
+power,Burning Shot,火炎の射撃
+power,Freezing Shot,冷気の射撃
+power,Evil Shot,邪悪の射撃
+power,Holy Shot,聖なる射撃
+power,Exploding Shot,爆裂の射撃
+power,Double Shot,二重射撃
+power,Thunder Shot,電撃の射撃
+power,Needle Shot,針の射撃
+power,Saint Stars Arrow,聖なる星の矢
+power,Unknown Spell,未知の呪文
+power,Ray Gun,レイガン
+power,Blaster,ブラスター
+power,Bazooka,バズーカ
+power,Beam Cannon,ビームキャノン
+power,Rocket Launcher,ロケット発射
+power,Awesome Blow,強力な殴打
+power,Bless Weapon,武器祝福
+power,Building Up,肉体強化
+power,Cause Light Wounds,軽傷
+power,Cause Medium Wounds,重傷
+power,Cause Critical Wounds,致命傷
+power,Cause Mortal Wounds,秘孔を突く
+power,Clear Mind,明鏡止水
+power,Create Food,食糧生成
+power,Create Major Trap,強力な罠の設置
+power,Create Minor Trap,弱い罠の設置
+power,Create Ultimate Trap,究極の罠の設置
+power,Day of the Dove,凪の刻
+power,Breathe Fire/Nether,火炎/地獄のブレス
+power,Detect Curses,呪い感知
+power,Dominate a Living Thing,生物支配
+power,Dominate Living Things,真・生物支配
+power,Eat Magic,魔力食い
+power,Eat Rock,岩食い
+power,Evocation,召魂
+power,Force Branding,フォースの刃
+power,Grow Mold,カビ発生
+power,Hide in Mud,土遁
+power,Convert HP to SP,変換: ＨＰ→ＭＰ
+power,Hypnotic Gaze,催眠睨み
+power,Expand Horizontally,横に伸びる
+power,Laser Eye,レーザー・アイ
+power,Massacre,皆殺し
+power,Pattern Mindwalking,パターン・ウォーク
+power,Polymorph Colossus,巨像への変身
+power,Throw Object,アイテム投げ
+power,Probe Monster,モンスター調査
+power,Emit Radiation,放射能
+power,Resist Elements,エレメント耐性
+power,Magic Rocket I,ロケットＩ
+power,Magic Rocket II,ロケットＩＩ
+power,Shadow Shifting,シャドウ・シフト
+power,Shoot Arrow,矢を射る
+power,Sleeping Dust,眠り粉
+power,Smell Metal,金属嗅覚
+power,Smell Monsters,敵臭嗅覚
+power,Convert SP to HP,変換: ＭＰ→ＨＰ
+power,Spit Acid,酸の唾
+power,Sterility,増殖阻止
+power,The World,完全な世界
+power,Summon Amberites,アンバーの王族召喚
+power,Summon Ancient Dragons,古代ドラゴン召喚
+power,Summon Kin,同族召喚
+power,Summon Monster,単体召喚
+power,Summon Trees,樹木召喚
+power,Summon Uniques,ユニーク召喚
+power,Hide in Darkness,闇に隠れる
+power,Sword Dancing,剣の舞い
+power,Weigh Magic,魔力感知
+power,Foretell,予知
+power,Quicken,小加速
+power,Wither,風化
+power,Blast,時の衝撃
+power,Revert,復元
+power,Wave,時の波
+power,Shield,シールド
+power,Rewind,巻き戻し
+power,Breath,ブレス
+power,Remembrance,追憶
+power,Stasis,停止
+power,Travel,旅行
+power,Double Move,二重行動
+power,Foresee,予見
+power,Take Photograph,写真撮影
+power,Triple Attack,三方攻撃
+power,Wave of Death,死の波動
+power,Berserk Frenzy,狂戦士の狂乱
+power,Purple Vampirism,紫の吸血
+power,Purple Slaughter,紫の連撃
+power,Slay Orcs,オーク殺し
+power,Slay Animals,動物殺し
+power,Slay Trolls,トロル殺し
+power,Slay Humans,人間殺し
+power,Flame Tongue,焼棄
+power,Winter's Chill,冬の凍気
+power,Caustic Coating,酸の被膜
+power,Thunder Strike,雷撃
+power,Slay Giants,巨人殺し
+power,Slay Dragons,ドラゴン殺し
+power,Long Attack,遠間攻撃
+power,Slay Demons,悪魔殺し
+power,Slay Undead,不死殺し
+power,Purple Sharpness,紫の鋭利
+power,Mark of Chaos,混沌
+power,Purple Stunning,紫の朦朧
+power,Mana Brand,魔力の刃
+power,Eldritch Blast,魔弾
+power,Blast: Easy,魔弾：無消費
+power,Blast: Extended,魔弾：延伸
+power,Blast: Spear,魔弾：ビーム
+power,Blast: Burst,魔弾：爆発
+power,Blast: Stunning,魔弾：朦朧
+power,Blast: Empowered,魔弾：増幅
+power,Blast: Draining,魔弾：吸収
+power,Blast: Dragon,魔弾：ブレス
+power,Dragon's Lore,竜の知識
+power,Dragon's Eye,竜の眼
+power,Word of Command,命令の言葉
+power,Joyful Song,喜びの歌
+power,Song of Haste,加速の歌
+power,Song of Life,生命の歌
+power,Song of War,戦いの歌
+power,Guided Attack,攻撃指示
+power,Guided Breath,ブレス指示
+power,Dragons' Fury,竜たちの怒り
+power,Blast: Dispelling,魔弾：魔力消去
+power,Blast: Vengeful,魔弾：復讐
+power,Blast: Aether,魔弾：エーテル
+power,Dog Whistle,犬笛
+power,Aether Shield,エーテルの盾
+power,Blast: Phasing,魔弾：転移
+power,Poison Jump,毒の跳躍
+power,Nexus Jump,因果の跳躍
+power,Greater Nexus Jump,上級因果跳躍
+power,Blast: Confusing,魔弾：混乱
+power,Giant's Healing,巨人の治癒
+power,Crusaders Strike,聖戦士の一撃
+power,Power Attack,強打
+power,Vicious Strike,凶悪な一撃
+power,Arrow of Slaying,必殺の矢
+power,Disintegration Arrow,分解の矢
+power,Piercing Arrow,貫通の矢
+power,Readied Shot,反撃の矢
+power,Tranquilizing Arrow,眠りの矢
+power,Volley,曲射
+power,Cunning Strike,巧妙な一撃
+power,Smash Ground,地面叩き
+power,Trade Blows,打ち合い
+power,Careful Aim,慎重な狙い
+power,Elemental Bolt,元素のボルト
+power,Exploding Bolt,爆裂のボルト
+power,Overdraw,強引き
+power,Rapid Reload,速装填
+power,Shattering Bolt,砕裂のボルト
+power,Dagger Toss,短剣投げ
+power,Flying Dagger Stance,飛刃の構え
+power,Elusive Strike,幻惑の一撃
+power,Frenzy Stance,狂乱の構え
+power,Shadow Stance,影の構え
+power,Calamity of the Living,生者の災厄
+power,Bury Dead,埋葬
+power,Barricade,バリケード
+power,Strength of Undertaker,葬儀屋の膂力
+power,Stoicism,堅忍
+power,Industrious Mortician,勤勉な葬儀屋
+power,Many Strike,一斉攻撃
+power,Piercing Strike,貫通の一撃
+power,Trip,足払い
+power,Knock Back,押し返し
+power,Reaping,刈り取り
+power,Shield Bash,盾殴り
+power,Bulwark,防壁
+power,Revenge,復讐
+power,Bouncing Pebble,跳弾
+power,Greater Many Shot,上級一斉射撃
+power,Many Shot,一斉射撃
+power,Rapid Shot,速射
+power,Shoot on the Run,走り撃ち
+power,Monkey King's Technique,孫悟空の術
+power,Circle Kick,回し蹴り
+power,Vault Attack,跳躍攻撃
+power,Flurry of Blows,乱れ打ち
+power,Burning Blade,灼熱の刃
+power,Ice Blade,氷の刃
+power,Thunder Blade,雷の刃
+power,Blood Blade,血の刃
+power,Order Blade,秩序の刃
+power,Wild Blade,荒ぶる刃
+power,Smithing,鍛冶
+power,Change Shape,姿を変える
+power,Cone of Plasma,プラズマの扇
+power,Purple Healing,紫の治癒
+power,Shuffle Trumps,カード引き
+power,Purple Hook,紫の鉤爪
+power,Creep in Shadows,影に潜む
+power,Word of Banishment,追放の言葉
+power,Wrecking Yelp,破壊の叫び
+power,Easy Casting,容易な詠唱
+power,Essence of Life,生命の精髄
+power,Notes of Death,死の手記
+power,Nervous Casting,神経質な詠唱
+power,Object Lessons,実物教育
+power,Power Sorcery,強力な魔術
+power,Purple Deadliness,紫の必殺
+power,Purple Muscles,紫の筋力
+power,Purple Protection,紫の守護
+power,Purple Speed,紫の加速
+power,Purple Stealth,紫の隠密
+power,Purple Vitality,紫の活力
+power,Rapid Shooting,高速射撃
+power,Speedy Recovery,速やかな回復
+power,Trump Shuffling,トランプ術
+power,Lottery Tickets,宝くじ
+power,Quick Spelling,高速詠唱
+power,Yeqrezh's Memories,イェクレジュの記憶
+# --- 第 32 回: 書式へ組み立てる力の名（設計 §8.54）。`case SPELL_NAME:` が
+# `format()` や表の引きで名を作る 26 か所ぶん。**枠は訳せない**（返り値が
+# `spell_stats_aux()` と `power_labels[]` の鍵。§8.51 ②）ので、
+# **組み上がった字**をここへ書いて `fc_spell_name()` で引く。
+built,Archery I,射撃 I
+built,Archery II,射撃 II
+built,Archery III,射撃 III
+built,Archery IV,射撃 IV
+built,Archery V,射撃 V
+built,Brain Smash I,脳攻撃 I
+built,Brain Smash II,脳攻撃 II
+built,Brain Smash III,脳攻撃 III
+built,Brain Smash IV,脳攻撃 IV
+built,Brain Smash V,脳攻撃 V
+built,Combat I,格闘 I
+built,Combat II,格闘 II
+built,Combat III,格闘 III
+built,Combat IV,格闘 IV
+built,Combat V,格闘 V
+built,Ego Whip I,精神の鞭 I
+built,Ego Whip II,精神の鞭 II
+built,Ego Whip III,精神の鞭 III
+built,Ego Whip IV,精神の鞭 IV
+built,Ego Whip V,精神の鞭 V
+built,Blast I,エネルギー爆発 I
+built,Blast II,エネルギー爆発 II
+built,Blast III,エネルギー爆発 III
+built,Blast IV,エネルギー爆発 IV
+built,Blast V,エネルギー爆発 V
+built,Graft Weapon I,武器接合 I
+built,Graft Weapon II,武器接合 II
+built,Graft Weapon III,武器接合 III
+built,Graft Weapon IV,武器接合 IV
+built,Graft Weapon V,武器接合 V
+built,Mana Thrust I,マナの一撃 I
+built,Mana Thrust II,マナの一撃 II
+built,Mana Thrust III,マナの一撃 III
+built,Mana Thrust IV,マナの一撃 IV
+built,Mana Thrust V,マナの一撃 V
+built,Mental Fortress I,精神の砦 I
+built,Mental Fortress II,精神の砦 II
+built,Mental Fortress III,精神の砦 III
+built,Mental Fortress IV,精神の砦 IV
+built,Mental Fortress V,精神の砦 V
+built,Mindspring I,精神の泉 I
+built,Mindspring II,精神の泉 II
+built,Mindspring III,精神の泉 III
+built,Mindspring IV,精神の泉 IV
+built,Mindspring V,精神の泉 V
+built,Backlash I,精神の報復 I
+built,Backlash II,精神の報復 II
+built,Backlash III,精神の報復 III
+built,Backlash IV,精神の報復 IV
+built,Backlash V,精神の報復 V
+built,Blending I,精神の潜行 I
+built,Blending II,精神の潜行 II
+built,Blending III,精神の潜行 III
+built,Blending IV,精神の潜行 IV
+built,Blending V,精神の潜行 V
+built,Clarity I,精神の明晰 I
+built,Clarity II,精神の明晰 II
+built,Clarity III,精神の明晰 III
+built,Clarity IV,精神の明晰 IV
+built,Clarity V,精神の明晰 V
+built,Crafting I,精神の作成 I
+built,Crafting II,精神の作成 II
+built,Crafting III,精神の作成 III
+built,Crafting IV,精神の作成 IV
+built,Crafting V,精神の作成 V
+built,Disruption I,精神攪乱 I
+built,Disruption II,精神攪乱 II
+built,Disruption III,精神攪乱 III
+built,Disruption IV,精神攪乱 IV
+built,Disruption V,精神攪乱 V
+built,Drain I,精神力吸収 I
+built,Drain II,精神力吸収 II
+built,Drain III,精神力吸収 III
+built,Drain IV,精神力吸収 IV
+built,Drain V,精神力吸収 V
+built,Foresight I,精神の予見 I
+built,Foresight II,精神の予見 II
+built,Foresight III,精神の予見 III
+built,Foresight IV,精神の予見 IV
+built,Foresight V,精神の予見 V
+built,Healing I,精神の治癒 I
+built,Healing II,精神の治癒 II
+built,Healing III,精神の治癒 III
+built,Healing IV,精神の治癒 IV
+built,Healing V,精神の治癒 V
+built,Shielding I,精神の盾 I
+built,Shielding II,精神の盾 II
+built,Shielding III,精神の盾 III
+built,Shielding IV,精神の盾 IV
+built,Shielding V,精神の盾 V
+built,Speed I,精神の加速 I
+built,Speed II,精神の加速 II
+built,Speed III,精神の加速 III
+built,Speed IV,精神の加速 IV
+built,Speed V,精神の加速 V
+built,Storm I,精神の嵐 I
+built,Storm II,精神の嵐 II
+built,Storm III,精神の嵐 III
+built,Storm IV,精神の嵐 IV
+built,Storm V,精神の嵐 V
+built,Mind Wave I,精神波動 I
+built,Mind Wave II,精神波動 II
+built,Mind Wave III,精神波動 III
+built,Mind Wave IV,精神波動 IV
+built,Mind Wave V,精神波動 V
+built,Resist Fire and Cold,火炎と冷気の耐性
+built,Elemental Protection,属性の守り
+built,"and Traps, Objects",+罠とアイテム
+built,and Surroundings,+周辺の地形
+built,and Telepathy,+テレパシー
+built,and Clairvoyance,+千里眼
+built,Psionic Portal,精神の門
+built,Breathe Force,フォースのブレス
+built,Breathe Toxic Waste,放射性廃棄物のブレス
+built,Breathe Storm Winds,暴風のブレス
+built,Breathe Holy Fire,聖なる炎のブレス
+built,Breathe Hell Fire,業火のブレス
+built,Breathe Air,大気のブレス
+# --- 第 32 回: メニューに並ぶ名（設計 §8.54 の #53）。`case MENU_TEXT:` が素の
+# `char *` を返す 5 つの表。`menu.c` の `sprintf()` は `vstrnfmt()` を通らないので、
+# **画へ出す所（`_list()`）で `fc_spell_name()` が引く。**
+menu,Mana Thrust,マナの一撃
+menu,Energy Blast,エネルギー爆発
+menu,Psionic Seeing,精神感知
+menu,Graft Weapon,武器接合
+menu,Psionic Clarity,精神の明晰
+menu,Psionic Blending,精神の潜行
+menu,Psionic Shielding,精神の盾
+menu,Psionic Travel,精神の移動
+menu,Psionic Protection,精神の守り
+menu,Combat Transformation,格闘変容
+menu,Archery Transformation,射撃変容
+menu,Psionic Speed,精神の加速
+menu,Psionic Healing,精神の治癒
+menu,Psionic Crafting,精神の作成
+menu,Psionic Storm,精神の嵐
+menu,Psionic Backlash,精神の報復
+menu,Psionic Disruption,精神攪乱
+menu,Mental Fortress,精神の砦
+menu,Mindspring,精神の泉
+menu,Psionic Foresight,精神の予見
+menu,Cold,冷気
+menu,Anger Management,怒りの制御
+menu,Northern Frights,北方の戦慄
+menu,The Sound and the Fury,響きと怒り
+menu,Dire Ire,凄まじい憤怒
+menu,Runes of Creation,創造のルーン
+menu,Runes of Enhancement,強化のルーン
+menu,Runes of Alteration,変転のルーン
+menu,Runes of Battle,戦のルーン
+menu,Wild Beginnings,野生のはじまり
+menu,Wild Musings,野生の思索
+menu,Wild Destructions,野生の破壊
+# --- 第 32 回: 指輪の種族の系統の名（r_ring.c の `_groups[]`）。メニューに並ぶ名で、
+# 問いかけの `%s` にも入る（`Use which type of %s?`）。
+menu,Offense: Bolt,攻撃: ボルト
+menu,Offense: Ball,攻撃: ボール
+menu,Offense: Breath,攻撃: ブレス
+menu,Offense: Other,攻撃: その他
+menu,Healing/Recovery,治癒と回復
+menu,Detection/Knowledge,感知と知識
+menu,Teleportations,テレポート
+menu,Utility,便利な力
+menu,Other,その他
+# --- 第 33 回: 耐性の名（resist.c の `_resist_map[]`。設計 §8.55 の #54）。
+# `_get_res_name()` が `<color:%c>%s</color>` へ差し込む**前**に引く。
+# 14 本は属性の名として既に上に在るので、足りないのはこの 4 本だけ。
+res,Electricity,電撃
+res,Blindness,盲目
+res,Fear,恐怖
+res,Teleportation,テレポート
+
+# 呪文の系統の見出し（青魔法と憑依の「どの系統の呪文を唱えますか？」。#55）。
+# 7 本のうち Breath / Ball / Summon / Utility は別の表の名として既に上に在るので、
+# 新しいのはこの 3 本だけ。
+group,Bolt/Beam,ボルト/ビーム
+group,Offense,攻撃
+group,Defense,防御

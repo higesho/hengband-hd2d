@@ -1,0 +1,422 @@
+=== Creating a character ===
+
+Keine: "The adventure is about to begin, but something must come first.
+What race are you, what class, and what powers do you have?
+How hard is this adventure to be? Declare all of that for me."
+
+***** <Difficulty>
+=== The difficulty setting ===
+
+Keine: "First, settle the difficulty of your adventure.
+There are five to choose from: EASY, NORMAL, HARD, LUNATIC and EXTRA.
+Let me go into them a little.
+
+  "EASY" is a simple practice mode.
+You are unnaturally strong, the enemies are weak, and the adventure is easy.
+What is more, if you fall you may continue as often as you please.
+A newcomer who knows nothing at all might well choose this difficulty.
+Note that this mode is won by killing Yukari Yakumo on floor 50. There is
+nothing beyond that. Your score falls pitifully low, too. That is the sort of
+difficulty it is.
+
+  "NORMAL" is the ordinary mode -- though it is a good deal easier than
+Hengband. The enemies have only about 75% of Hengband's hit points.
+Enemies do not cast spells or breathe twice in a row without letting you act
+in between. And they pay no attention at all to which elements you are weak
+against. Also, powerful enemies rarely appear in the dungeon until you have
+killed Yukari Yakumo on floor 50.
+This mode counts as won when you kill Yukari Yakumo on floor 50, but you may
+go on beyond that if you wish.
+Proceed carefully and you should win it fairly easily.
+
+  "HARD" is set at roughly the same level as Hengband.
+Enemies learn which elements work on you and stop using the ones that do not.
+Now and then they may move suddenly fast and land a fierce run of attacks.
+Enemies strong enough to kill you in a moment will turn up as well.
+The score is twice that of NORMAL.
+
+  "LUNATIC" is close to what Hengband calls "nightmare mode".
+Every enemy gets +5 speed and has its HP doubled, up to a ceiling of 30000.
+They are awake from the start and know your weak elements from the start.
+That alone is hard enough, but on top of it powerful enemies from the deep
+levels sometimes prowl the very shallowest floors of the dungeon.
+If you meet one, there is nothing left but to say your prayers.
+
+Furthermore, calamity falls upon you at midnight every day.
+Sleeping at an inn brings nightmares and drives you mad.
+Sustain sometimes fails, and a lowered stat is sometimes lowered forever.
+Mutations sometimes cannot be cured.
+Enemies that arrive by summoning or ambush catch you unawares more easily.
+Digging ore sometimes brings the roof down on you.
+Keeping pets costs twice as much.
+
+Well -- once you are used to the game and start to miss being beaten
+unreasonably, give it a try. The score is eight times that of NORMAL.
+
+  "EXTRA" is a highly unusual mode with a great many rules of its own.
+Explaining them in full would take too long, so they have a chapter to
+themselves; in a word, how you handle supplies and equipment matters enormously.
+It is the sort of difficulty to attempt after you have won a few times on
+HARD. The score is four times that of NORMAL."
+
+
+***** <Status_main>
+=== The main stats ===
+
+Keine: "Next you settle your race and class, but before that let me explain
+the stats. A stat is, quite literally, one of your abilities -- your strength.
+
+First the six main stats:
+strength, intelligence, wisdom, dexterity, constitution and charisma.
+How they are understood and what they do differ a little from Hengband.
+
+- "Strength" is bodily power.
+It affects your melee damage, how heavy the equipment you can carry is, how
+many blows you get with a weapon, and how much you can carry.
+It matters to a warrior, of course, but a caster cannot neglect it either --
+equipment that is too heavy raises the MP a spell costs.
+
+- "Intelligence" is quickness of mind and memory.
+It affects your spell success rate, how many spells you can learn, and your
+success rate with magic devices.
+It matters a great deal to a caster and perhaps very little to a warrior.
+Unlike Hengband, Gensoband decides spell success by intelligence for the
+faith-based classes such as the Shrine Maiden as well.
+
+- "Wisdom" is force of mind, or faith -- strength of heart, if you like.
+It affects the size of your MP pool and your magic defence.
+A pure warrior scarcely needs it, but every other class does.
+For a pure caster it goes straight to fighting strength.
+
+- "Dexterity" is deftness of hand and quickness of movement.
+It affects how many melee blows you get and your ability to disarm traps.
+It matters to a warrior and hardly at all to a caster.
+Though if it is very low, a thief may steal something precious and leave you
+in tears.
+
+- "Constitution" is bodily toughness.
+It affects the size of your HP pool and how quickly you recover from bad
+status effects. It matters to a warrior and to a caster alike.
+Without a decent pool of HP the middle depths are far too dangerous to enter.
+
+- "Charisma" is beauty, or popularity.
+It chiefly affects your dealings in the shops. With low charisma you will
+struggle for money. Also, many of the unique-class abilities described later
+grow stronger with high charisma.
+"Danmaku is a contest of beauty", after all.
+
+These stats sometimes rise when you gain a level, and they can be raised by
+drinking magical potions.
+
+The maximum for a bare main stat is 30.
+With the adjustments from race, class, nature and equipment the maximum is 40,
+and a temporary boost by special means can reach 50.
+
+By the way: in Hengband a main stat above 18 was shown as "18/40" and so on,
+reaching at most "18/***" -- it never got to 19.
+That was a venerable notation founded on D&D's idea that "19 is the realm of
+the gods", but Gensoband does not use it.
+Well, in Gensokyo gods are rather thick on the ground..."
+
+
+***** <Status_other>
+=== The other parameters ===
+
+Keine: "Now let me explain the parameters other than the main stats.
+If you are a newcomer who knows nothing, skip this.
+Come back when you can descend to about floor 30.
+
+- "Stealth" is the ability not to wake sleeping enemies.
+With low stealth, nearby enemies wake one after another and come at you, and
+exploring the dungeon becomes a good deal harder.
+Stealth is decided almost entirely by your race's base value, your class's
+base value and your equipment.
+Hardly any class raises stealth as it gains levels.
+
+- "Speed" is the ability to move quickly. +10 is twice as fast, +20 three
+times. It affects not only movement but everything you do. It matters greatly
+when you fight a strong enemy.
+Equipment that raises speed appears mostly from the middle depths on; early
+on you must buy speed temporarily with Potions of Speed and the like.
+To go deep you want +20 or better without help.
+Beyond about +30, raising it further changes rather little.
+
+- "Infravision" is the ability to sense warm-blooded creatures in the dark.
+Each +1 lets you see an enemy ten feet -- one grid -- further off.
+It is useful enough early on, but from the middle depths the enemies without
+body heat, the demons and undead, grow more common.
+By then you will need some other means of detection, such as ESP.
+
+- "Digging" is the ability to dig through walls. The higher it is, the faster
+you dig. To dig out the treasure buried in walls, wield a pick or the like to
+raise your digging. From the middle depths on it will rarely be of use.
+
+- "Searching" is the ability to find what is hidden.
+High searching finds traps and secret doors easily and senses the feeling of
+a floor quickly.
+It also finds the materials each dungeon yields more readily.
+The higher the better, but doing without is no great hardship.
+It may matter, though, if you attempt the "EXTRA" difficulty.
+
+- "Magic device" is the ability to use magical devices.
+It affects your success rate with staves, wands, rods and the activation of
+equipment. Early on you can manage without, but late in the game it matters a
+great deal. In the deep floors, however strong you are, more enemies appear
+than you can possibly handle, and powerful devices such as a Staff of
+*Destruction* or a Staff of Healing become essential.
+A pure warrior has a low magic device skill and must make it up from equipment
+somehow.
+
+- "Magic defence" is your defence against magic.
+That does not mean a high value blocks every spell; it is your resistance to
+"curses" and "mind attacks".
+Resist successfully and you take no damage.
+Powerful attacks grow more common from the middle depths, so the higher the
+better. Magic defence is decided chiefly by race, class, level and wisdom.
+Equipment that raises magic defence can raise it further.
+Being "blessed" raises it a little.
+Anti-magic equipment guarantees anyone a certain magic defence, but you can no
+longer cast spells yourself.
+
+- "Disarming" is the ability to disarm traps and pick locked doors.
+It moves chiefly with race, class, level and dexterity. Some equipment raises
+it. From the middle depths it is little used -- opening things with a magic
+device is faster and safer.
+
+- "Melee" is your ability to attack with fists or weapons.
+It affects your chance to hit, and so it goes straight to your fighting
+strength. It is decided almost entirely by class, level and equipment, though
+early on race is not to be dismissed either.
+The oni and the vampire are high; the magician and the kobito are low.
+
+- "Shooting" is your ability to attack by shooting or throwing.
+This too affects your chance to hit, and is decided almost entirely by class
+and level.
+
+- "HP" hardly needs saying. Go below zero and the game is over.
+It is decided by level and constitution, and by race and class.
+At the same class, level and constitution, a kobito and an oni have very
+different HP.
+
+- "MP" hardly needs saying either. Without enough of it you cannot cast.
+MP is decided mostly by level, class and wisdom, and varies by a few per cent
+with the wisdom adjustments of your race and class.
+Spells always spend MP, but some class abilities spend HP rather than MP.
+Racial powers normally spend MP, and fall back on HP when MP runs short.
+A warrior has a little MP, but will scarcely use it except when wielding a
+weapon of Force.
+Spells, abilities and racial powers have a chapter of their own later.
+
+- "Experience" will be familiar too. You need it to gain levels.
+What the game calls your "life force" is the same number. Quite how to read
+that is debatable; think of it as you like.
+It is temporarily reduced by attacks of the hell element and by undead.
+Drink a Potion of Restore Life Levels and it comes back.
+
+- "AC" is short for armour class. The higher it is, the better you stand up to
+an enemy's ordinary attacks. Above 150 the extra does rather less.
+
+That is about all for the stats.
+You can check these numbers with the 'C' command."
+
+
+***** <Race>
+=== Races ===
+
+Keine: "Gensokyo is home to beings of a truly wide variety.
+Choose here what race you are.
+Your race greatly changes your abilities, your aptitude for the classes, your
+resistances to enemy attacks -- everything.
+While you are new to adventuring, a strong race that grows slowly, such as the
+Oni, the Daiyoukai or the Tennin, is the safe choice.
+A sharp-eared race such as the Warbeast or the Gyokuto is good too, since you
+can tell where the enemies are.
+Races with low abilities such as the Human, the Fairy and the Kobito, and
+races with too much character such as the Vampire and the Youkai-Doll, are
+better left until you are used to the game.
+That said, choosing as the heart moves you without thinking too hard may well
+be the greatest pleasure of all.
+
+The races are described in detail in a chapter of their own."
+
+***** <Class>
+=== Classes ===
+
+Keine: "The choice of class matters.
+Your class makes your whole strategy in the dungeon a different thing.
+
+With a warrior class the basics are to gather good weapons and to train your
+strength, dexterity and constitution.
+Early on you can kill most enemies simply by hitting them, but from the middle
+depths, when enemies begin attacking in many different ways, you will often
+struggle.
+
+With a caster class you should raise intelligence and wisdom so you can cast
+often. And you must judge your own strength against the enemy's and see
+exactly when you can win.
+A caster can answer the tangled situations of the middle depths in many ways,
+but it takes practice.
+
+There are also classes that use both weapons and magic tolerably well, and
+classes that fight in some special way that is neither.
+While you are new, a warrior class such as the Warrior or the Archer is a good
+choice.
+
+The classes are described in detail in a chapter of their own.
+
+The broad features of a race or a class are shown as you choose it.
+During the game you can see them at any time by choosing "information about
+yourself" from the '~' command."
+
+***** <UniqueClass>
+=== What is a unique class? ===
+
+Keine: "There are also special classes peculiar to Gensoband.
+They are the girls whose names became known throughout Gensokyo through the
+incidents that have happened again and again.
+If you are one of them, say so.
+A class of her own is set for you, and race, sex and name are fixed.
+Such a class has its own parameters, magic realms, abilities and various other
+traits, just as an ordinary class does.
+Let us call these the unique classes, for convenience.
+There are more than a hundred of them at present, and no doubt they will go on
+increasing with every new work in the Touhou Project."
+
+***** <Outsider>
+=== What is an Outsider? ===
+
+Keine: "What? You have never so much as heard of Gensokyo and you find
+yourself here? I see -- so you are an Outsider, come from the world beyond.
+
+Take my advice. If you want to get home alive, go to the Hakurei Shrine, far
+to the southeast of the Human Village.
+There is a shrine maiden there called Reimu Hakurei, and if you ask her she
+will send you back outside.
+And whatever you do, do not get it into your head to meddle with an incident."
+
+
+***** <Personality>
+=== Natures ===
+
+Keine: "You may be a person of reason, or you may be quick to pick a fight.
+Such a nature affects your stats slightly. Choose as you please.
+Choosing the "Munchkin" nature strengthens everything about you absurdly, but
+think of it as a practice mode.
+
+Some unique classes can also choose a special nature of their own, and doing so
+changes their abilities and their techniques utterly from the ordinary ones.
+
+There are a few other clearly frivolous natures, which I do not recommend to
+anyone unfamiliar with the game."
+
+
+***** <Realm>
+=== Choosing magic realms ===
+
+Keine: "Some classes can learn spells.
+By a spell I mean here the sort you obtain in a spellbook, learn, and then
+cast with the 'm' command by spending MP while carrying the book.
+A spell cannot be learned before a certain level, and fails easily if you are
+not clever. There are other restrictions besides, and in return spells are
+powerful and varied.
+While you are new to adventuring a class that cannot cast is easier to handle,
+but I hope you will master spells in time.
+
+Spells are divided among three great realms -- Magic, Sorcery and Witchcraft --
+and twelve realms.
+Magic holds the [Element], [Foreseeing], [Enchant] and [Summon] realms;
+Sorcery holds the [Mystic], [Life], [Punish] and [Nature] realms;
+Witchcraft holds the [Transform], [Darkness], [Necromancy] and [Chaos] realms.
+Each realm has four spellbooks from the first volume to the last, and each
+book holds eight spells.
+
+Anyone who has played Hengband will see at a glance that several of the realms
+have been changed a great deal here.
+Chaos is much the same as Hengband's Chaos realm.
+Life and Nature are more than half the same.
+Summon resembles Trump, Enchant resembles Craft, and Punish resembles
+Hengband's Crusade.
+The rest have mostly been rearranged heavily or built anew.
+
+Of these twelve realms you may, as a rule, learn only the one you choose now.
+But several classes -- the Mage, the Teacher, the Shrine Maiden -- can use two
+realms. The second realm is learned a little more slowly, but in exchange it
+can be changed at any time.
+Change it once, however, and every spell of the old realm is forgotten.
+The number of spells you may learn is limited, so changing realms again and
+again is not to be recommended.
+And if the second realm's great realm differs from the first's, a penalty
+makes it harder to use.
+
+Aptitude for a realm also depends on your class.
+Suppose an Explorer and a Mage have both chosen the Element realm.
+Even with the same intelligence, the Explorer needs a higher level than the
+Mage to learn a spell. Casting costs more MP and fails more often.
+Some of the higher spells the Explorer may not even be able to learn.
+
+Race gives an aptitude too, though less than class.
+Many youkai, for instance, are poor at Sorcery and good at Witchcraft. For the
+Sennin and the Tennin it is the other way round.
+The Magician is superb at Magic and reasonably capable in the rest.
+
+Note that from version 1.1.08 a thirteenth realm called "Arcane" was added on
+top of these. It is almost entirely unlike the Arcane realm of Hengband
+proper, and the racial aptitude for it is the same for every race.
+
+That is the outline.
+Spells are described in detail in a chapter of their own."
+
+
+***** <BirthOptions>
+=== The birth options ===
+
+Keine: "Quite apart from the game's difficulty, you may choose a number of
+options that adjust the difficulty or place restrictions on your game.
+Adventuring with a hard option turned on raises your score.
+Press '?' at any option's setting and you can read a full description of it."
+
+
+***** <BonusPoint>
+=== Spending your bonus points ===
+
+Keine: "Once race, class and nature are settled, your base main stats are
+fixed. You may then add bonus points on top of your strength, intelligence,
+wisdom, dexterity, constitution and charisma.
+
+How many bonus points you get is purely a matter of luck.
+If you are not satisfied you may reroll with the r key after allotting them.
+Compared with a certain famous dungeon game the bonus is rather less inclined
+to spike. Twenty-five is a fine result.
+If you would rather not bother, a birth option fixes the bonus points at 20.
+That raises your score a little."
+
+
+***** <BackgroundEditor>
+=== The history editor ===
+
+Keine: "Where were you born, and what sort of life did you lead?
+And with what in mind do you throw yourself into the dungeon?
+If you wish to declare it, write it down here. Put as much of yourself into it
+as you like.
+Once written, it is not changed except in special cases.
+If you never want it changed, I advise you not to put on that odd mask
+inscribed "Ninja Slayer", should you find one."
+
+
+***** <Name>
+=== Your name and your class name ===
+
+Keine: "Now then -- late in the day, but let me ask your name.
+If you are a unique class your name is known already and you need not give it.
+If your class is "Civilian" you may change the name of your class here, once
+only.
+If you started the game from "new", settle the name of your save file here too."
+
+
+***** <QuickStart>
+=== Quick start ===
+
+Keine: "If your strength fails you and you fall, the game starts again from
+the beginning, as I have said more than once.
+But the details of this character creation are kept, and if you wish you can
+begin a new adventure in exactly the state you began the last one."

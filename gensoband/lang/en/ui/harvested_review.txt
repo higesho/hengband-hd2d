@@ -1,0 +1,3025 @@
+# 機械で抜けなかった対（tools/gensoband/extract_en_pairs.py --write）。
+# **これは一覧であってカタログではない**——読み込まれない。
+# 直した対は ui/messages.en.txt へ J:/E: の形で書く。
+#
+# argmismatch … 書式の引数が日英で食い違う（当てると %s が画面に出る）
+# count       … 日英で文字列の本数が違う
+# nested      … 枠の中にさらに #if がある
+# conflict    … 同じ日本語に別の英語（多数決で 1 つ採った。他はここ）
+# noascii     … 英語側に 0x80 以上がある
+
+# [argmismatch] artifact.c:4933
+#   JP: 「者ども、ひかえおろう！！！このお方をどなたとこころえる。」
+#   EN: %^s says 'WHO do you think this person is! Bow your head, down your knees!'
+
+# [argmismatch] birth.c:8191
+#   JP: 種族: %s(%s)\n
+#   EN: Race: %s\n
+
+# [argmismatch] bldg.c:4547
+#   JP: クエスト: %sを %d体倒す
+#   EN: Your quest: kill %d %s
+
+# [argmismatch] bldg.c:10028
+#   JP: よし。修復が済んだぞ。
+#   EN: Repaired into %s for %d gold.
+
+# [argmismatch] bldg.c:10302
+#   JP: ＄%dで%sに修復しました。
+#   EN: Repaired into %s for %d gold.
+
+# [argmismatch] bldg.c:10450
+#   JP: ＄%dで%sに改良しました。
+#   EN: Improved into %s for %d gold.
+
+# [argmismatch] bldg.c:10698
+#   JP: %sを再充填するには＄%d 必要です！
+#   EN: You need %d gold to recharge %s!
+
+# [argmismatch] cmd1.c:8958
+#   JP: %sの上に行けない。
+#   EN: Can't swim.
+
+# [argmismatch] cmd1.c:8969
+#   JP: %sから上がれない。
+#   EN: Can't land.
+
+# [argmismatch] cmd1.c:8980
+#   JP: %sの上に行けない。
+#   EN: Too hot to go through.
+
+# [argmismatch] cmd4.c:462
+#   JP: %d階(%s):
+#   EN: %s L%d:
+
+# [argmismatch] cmd4.c:558
+#   JP: \s%2d:%02d %20s %sの最深階%d階に到達した。\n
+#   EN: \s%2d:%02d %20s reached level %d of %s for the first time.\n
+
+# [argmismatch] cmd4.c:567
+#   JP: \s%2d:%02d %20s %s%sの最深階を%d階にセットした。\n
+#   EN: \s%2d:%02d %20s reset recall level of %s to %d %s.\n
+
+# [argmismatch] cmd4.c:608
+#   JP: \s%2d:%02d %20s 帰還を使って%sの%d階へ下りた。\n
+#   EN: \s%2d:%02d %20s recalled to dungeon level %d of %s.\n
+
+# [argmismatch] cmd4.c:682
+#   JP: \s%2d:%02d %20s 闘技場の%d回戦で、%sの前に敗れ去った。\n
+#   EN: \s%2d:%02d %20s beaten by %s in the %d%s fight.\n
+
+# [argmismatch] cmd4.c:690
+#   JP: \s%2d:%02d %20s 闘技場の%d回戦(%s)に勝利した。\n
+#   EN: \s%2d:%02d %20s won the %d%s fight (%s).\n
+
+# [argmismatch] cmd4.c:10051
+#   JP: \s\s%-40s (%3d階)            - レベル%2d%s\n
+#   EN: \s\s%-40s (Dungeon level: %3d) - level %2d\n
+
+# [argmismatch] cmd4.c:10064
+#   JP: \s\s%-40s (危険度:%3d階相当) - レベル%2d%s\n
+#   EN: \s\s%-40s (Danger  level: %3d) - level %2d\n
+
+# [argmismatch] cmd5.c:373
+#   JP: %s(MP%d, 失敗率%d%%)を%sますか?\s
+#   EN: %^s %s (%d mana, %d%% fail)?\s
+
+# [argmismatch] do-spell.c:201
+#   JP: 最大重量:%d.%dkg
+#   EN: max wgt %d
+
+# [argmismatch] dungeon.c:8434
+#   JP: %sが釣れた！
+#   EN: You have a good catch!
+
+# [argmismatch] effects.c:6516
+#   JP: 『究極の生命体%sの誕生だッーっ！』
+#   EN: You turn into %s %s%s!
+
+# [argmismatch] effects.c:6516
+#   JP: あなたは%s%sに変化した！
+#   EN: a
+
+# [argmismatch] files.c:1342
+#   JP: ファイル'%s'の%d行でエラー番号%dのエラー。
+#   EN: Error %d in line %d of file '%s'.
+
+# [argmismatch] files.c:7586
+#   JP: …あなたは現在、 %s の %d 階で探索している。
+#   EN: ...Now, you are exploring level %d of %s.
+
+# [argmismatch] files.c:8497
+#   JP: \n 闘技場: %d回戦で%sの前に敗北\n
+#   EN: \n Arena: Defeated by %s in the %d%s fight\n
+
+# [argmismatch] flavor.c:3477
+#   JP: %引き
+#   EN: % off
+
+# [argmismatch] init2.c:541
+#   JP: '%s.txt'ファイルの %d 行目にエラー。
+#   EN: Error %d at line %d of '%s.txt'.
+
+# [argmismatch] mane.c:1006
+#   JP: しかし効果がなかった！
+#   EN: %^s is unaffected!
+
+# [argmismatch] melee1.c:243
+#   JP: 相手が襲いかかる前に素早く武器を振るった。
+#   EN: You took sen, draw and cut in one motion before %s move.
+
+# [argmismatch] melee1.c:1156
+#   JP: %^sに%s
+#   EN: %^s %s%s
+
+# [argmismatch] melee1.c:1619
+#   JP: %s(%c)を%s盗まれた！
+#   EN: %sour %s (%c) was stolen!
+
+# [argmismatch] melee1.c:1723
+#   JP: %s(%c)を%s食べられてしまった！
+#   EN: %sour %s (%c) was eaten!
+
+# [argmismatch] melee1.c:3623
+#   JP: 攻撃が%s自身を傷つけた！
+#   EN: The attack of %s has wounded %s!
+
+# [argmismatch] melee2.c:3695
+#   JP: 地面に落とされた。
+#   EN: You have fallen from %s.
+
+# [argmismatch] melee2.c:6878
+#   JP: %^sは勇気を取り戻した。
+#   EN: %^s recovers %s courage.
+
+# [argmismatch] melee2.c:7062
+#   JP: 「『ザ・ワールド』！時は止まった！」
+#   EN: %s yells 'The World! Time has stopped!'
+
+# [argmismatch] melee2.c:7073
+#   JP: 「時よ！」
+#   EN: %s yells 'Time!'
+
+# [argmismatch] mind.c:320
+#   JP: \s最大重量:%d.%dkg
+#   EN: \smax wgt %d
+
+# [argmismatch] mind.c:2011
+#   JP: %sの集中に失敗した！
+#   EN: You failed to concentrate hard enough!
+
+# [argmismatch] mind.c:2074
+#   JP: %sの力が制御できない氾流となって解放された！
+#   EN: Your mind unleashes its power in an uncontrollable storm!
+
+# [argmismatch] mind.c:2112
+#   JP: %sの力が制御できない氾流となって解放された！
+#   EN: Your mind unleashes its power in an uncontrollable storm!
+
+# [argmismatch] mind.c:2215
+#   JP: %sを集中しすぎて気を失ってしまった！
+#   EN: You faint from the effort!
+
+# [argmismatch] monster1.c:2401
+#   JP: に進化する。
+#   EN: \swhen %s gets enugh experience.\s\s
+
+# [argmismatch] monster1.c:2594
+#   JP: %^sは侵入者%s、 %d フィート先から侵入者に気付くことがある。
+#   EN: %^s %s intruders, which %s may notice from %d feet.\s\s
+
+# [argmismatch] monster1.c:3253
+#   JP: %^sは
+#   EN: ,\s
+
+# [argmismatch] monster1.c:3253
+#   JP: 、
+#   EN: \s%dd%d
+
+# [argmismatch] monster2.c:3561
+#   JP: 地面に落とされた。
+#   EN: You have fallen from %s.
+
+# [argmismatch] mspells1.c:817
+#   JP: %sは呪いを跳ね返した！
+#   EN: Your %s resist%s cursing!
+
+# [argmismatch] mspells1.c:4586
+#   JP: %^sが自分の体に念を送った。
+#   EN: %^s concentrates on %s body.
+
+# [argmismatch] mspells1.c:4639
+#   JP: %^sが自分の傷に集中した。
+#   EN: %^s concentrates on %s wounds.
+
+# [argmismatch] mspells1.c:4713
+#   JP: %^sは勇気を取り戻した。
+#   EN: %^s recovers %s courage.
+
+# [argmismatch] mspells1.c:5225
+#   JP: 攻撃が%s自身を傷つけた！
+#   EN: The attack of %s has wounded %s!
+
+# [argmismatch] mspells1.c:5579
+#   JP: %^sは魔法で%sを召喚した。
+#   EN: %^s magically summons %s %s.
+
+# [argmismatch] mspells2.c:2700
+#   JP: %^sが%^sに向かって手榴弾を投げた。
+#   EN: %^s throws a hand grenade.
+
+# [argmismatch] mspells2.c:3438
+#   JP: %^sが恐ろしげな幻覚を作り出した。
+#   EN: %^s casts a fearful illusion in front of %s.
+
+# [argmismatch] mspells2.c:3701
+#   JP: %^sが自分の体に念を送った。
+#   EN: %^s concentrates on %s body.
+
+# [argmismatch] mspells2.c:3755
+#   JP: %^sは自分の傷に念を集中した。
+#   EN: %^s concentrates on %s wounds.
+
+# [argmismatch] mspells2.c:3823
+#   JP: %^sは勇気を取り戻した。
+#   EN: %^s recovers %s courage.
+
+# [argmismatch] mspells2.c:4193
+#   JP: 攻撃が%s自身を傷つけた！
+#   EN: The attack of %s has wounded %s!
+
+# [argmismatch] mspells2.c:4575
+#   JP: %sが魔法で%sを召喚した。
+#   EN: %^s magically summons %s %s.
+
+# [argmismatch] mspells3.c:1438
+#   JP: しかし効果がなかった！
+#   EN: %^s is unaffected!
+
+# [argmismatch] object2.c:7124
+#   JP: もう魔力が残っていない。
+#   EN: You have %d charges remaining.
+
+# [argmismatch] object2.c:7315
+#   JP: この床上のアイテムは、もう魔力が残っていない。
+#   EN: There are %d charges remaining.
+
+# [argmismatch] object2.c:7856
+#   JP: %s(%c)%s。
+#   EN: %s %s (%c).
+
+# [argmismatch] object2.c:10595
+#   JP: %d個あるのでエッセンスは%d必要です。
+#   EN: It will take %d essences.
+
+# [argmismatch] object2.c:11419
+#   JP: %d個あるのでエッセンスは%d必要です。
+#   EN: It will take %d essences.
+
+# [argmismatch] racial.c:160
+#   JP: %sを作った。
+#   EN: You make some ammo.
+
+# [argmismatch] racial.c:221
+#   JP: %sを作った。
+#   EN: You make some ammo.
+
+# [argmismatch] racial.c:292
+#   JP: %sを作った。
+#   EN: You make some ammo.
+
+# [argmismatch] spells1.c:4963
+#   JP: %^sの強さが戻った。
+#   EN: %^s recovers %s vitality.
+
+# [argmismatch] spells1.c:5007
+#   JP: %^sは勇気を取り戻した。
+#   EN: %^s recovers %s courage.
+
+# [argmismatch] spells1.c:7383
+#   JP: もっと弱らせないと。
+#   EN: You need to weaken %s more.
+
+# [argmismatch] spells1.c:7408
+#   JP: 地面に落とされた。
+#   EN: You have fallen from %s.
+
+# [argmismatch] spells1.c:7422
+#   JP: うまく捕まえられなかった。
+#   EN: You failed to capture %s.
+
+# [argmismatch] spells1.c:12347
+#   JP: 攻撃が%s自身を傷つけた！
+#   EN: The attack of %s has wounded %s!
+
+# [argmismatch] spells3.c:1252
+#   JP: %sの帰還レベルを %d 階にセット。
+#   EN: Recall depth set to level %d (%d').
+
+# [argmismatch] spells3.c:5766
+#   JP: %s(%c)が%s壊れてしまった！
+#   EN: %sour %s (%c) %s destroyed!
+
+# [argmismatch] xtra2.c:6432
+#   JP: %s %d個のアイテム%s%s ['x'で一覧, %s]
+#   EN: %s%s%sa pile of %d items [x,%s]
+
+# [argmismatch] xtra2.c:6467
+#   JP: %s %d個のアイテム%s%s [Enterで次へ, %s]
+#   EN: %s%s%sa pile of %d items [Enter,%s]
+
+# [conflict] artifact.c:4126
+#   JP: 白く明るく輝いている...
+#   EN: It glows a bright white... (x1) | It glows bright white... (x1)
+
+# [conflict] autopick.c:5150
+#   JP: この行は後で削除されます。
+#   EN: This line will be delete later. (x1) |   This line will be delete later. (x1)
+
+# [conflict] autopick.c:5159
+#   JP: この行は現在は無効な状態です。
+#   EN: This line is bypassed currently. (x1) |   This line is bypassed currently. (x1)
+
+# [conflict] birth.c:946
+#   JP: ランダム
+#   EN: Random (x10) | random (x7)
+
+# [conflict] birth.c:1054
+#   JP: 初期オプション((*)はスコアに影響)
+#   EN: Birth Option((*)s effect score) (x8) | Birth option((*)s effect score) (x1) | Birth Options((*)s effect score) (x1)
+
+# [conflict] birth.c:1830
+#   JP: (なし)
+#   EN: (NONE) (x1) | do nothing special. (x1) | (nothing) (x1) | (none) (x1)
+
+# [conflict] birth.c:4886
+#   JP: の
+#   EN: \s\s(x3) | 's (x1)
+
+# [conflict] bldg.c:468
+#   JP: オレンジ
+#   EN: \sOrange  (x1) | Orange (x1)
+
+# [conflict] bldg.c:911
+#   JP: ★
+#   EN: [] (x1) | an  (x1)
+
+# [conflict] bldg.c:1128
+#   JP: ┃
+#   EN: \s| (x1) | |  (x1)
+
+# [conflict] bldg.c:3545
+#   JP: あなたは閉所恐怖症になった！
+#   EN: You become paranoid! (x2) | You become an incredible coward! (x1)
+
+# [conflict] bldg.c:10439
+#   JP: 改良に失敗した。
+#   EN: You failed to enchant. (x4) | The improvement failed. (x1)
+
+# [conflict] bldg.c:10657
+#   JP: この魔法棒はもう充分に充填されています。
+#   EN: These wands are already fully charged. (x1) | This wand is already fully charged. (x1)
+
+# [conflict] bldg.c:10677
+#   JP: この杖はもう充分に充填されています。
+#   EN: These staffs are already fully charged. (x1) | This staff is already fully charged. (x1)
+
+# [conflict] bldg.c:14330
+#   JP: お金が足りません！
+#   EN: You do not have the gold! (x1) | You don't have enough money! (x1)
+
+# [conflict] cmd1.c:1268
+#   JP: \s$%ld の価値がある%sを見つけた。
+#   EN: You collect %ld gold pieces worth of %s. (x1) | You have found %ld gold pieces worth of %s. (x1)
+
+# [conflict] cmd1.c:1485
+#   JP: 落とし戸に落ちた
+#   EN: You have fallen through a trap door! (x2) | fell through a trap door (x1)
+
+# [conflict] cmd1.c:1555
+#   JP: 落とし穴を飛び越えた。
+#   EN: You fly over a trap door. (x1) | You fly over a pit trap. (x1)
+
+# [conflict] cmd1.c:2319
+#   JP: トラップ
+#   EN: a trap (x1) | create traps (x1)
+
+# [conflict] cmd1.c:5945
+#   JP: 手の輝きがなくなった。
+#   EN: Your hands stop glowing. (x3) | Brightness on your hands disappeard. (x1)
+
+# [conflict] cmd1.c:5959
+#   JP: %^sには効果がなかった。
+#   EN: %^s is unaffected. (x12) | %^s is unaffected! (x4)
+
+# [conflict] cmd1.c:5977
+#   JP: %^sは混乱したようだ。
+#   EN: %^s appears confused. (x2) | %^s seems confused. (x1)
+
+# [conflict] cmd1.c:8907
+#   JP: 動けない！
+#   EN: Can't move! (x1) | You are paralyzed! (x1)
+
+# [conflict] cmd1.c:10045
+#   JP: 目が見えない！
+#   EN: You cannot see! (x4) | You are blind! (x1)
+
+# [conflict] cmd1.c:10363
+#   JP: その方向にはモンスターはいません。
+#   EN: There is no monster. (x15) | You don't see any monster in this direction (x6)
+
+# [conflict] cmd4.c:581
+#   JP: 地上
+#   EN: the surface (x4) | on the surface (x1) | Surface (x1) | Surf. (x1) | Quest (x1)
+
+# [conflict] cmd4.c:1147
+#   JP: コマンド:
+#   EN: Command:  (x3) | You may:  (x1)
+
+# [conflict] cmd4.c:3339
+#   JP: マクロを追加しました。
+#   EN: Appended macros. (x1) | Added a macro. (x1)
+
+# [conflict] cmd4.c:3533
+#   JP: キー配置を追加しました。
+#   EN: Appended keymaps. (x1) | Added a keymap. (x1)
+
+# [conflict] cmd4.c:4801
+#   JP: 未定義
+#   EN: undefined (x1) | something undefined (x1)
+
+# [conflict] cmd4.c:7148
+#   JP: %sの魔法書\n
+#   EN: %s Spellbook\n (x1) | \n%s Spellbook\n (x1)
+
+# [conflict] cmd5.c:3794
+#   JP: %sを使いますか？\s
+#   EN: Use %s?  (x2) | Use %s? (x1)
+
+# [conflict] cmd6.c:1193
+#   JP: 杖
+#   EN: staff (x1) | Staffs (x1)
+
+# [conflict] cmd6.c:1193
+#   JP: 魔法棒
+#   EN: wand (x1) | Wands (x1)
+
+# [conflict] cmd6.c:4340
+#   JP: 止まった時の中ではうまく働かないようだ。
+#   EN: Nothing happen. (x1) | Nothing happen. Maybe this staff is freezing too. (x1) | Nothing happen. Maybe this wand is freezing too. (x1) | Nothing happen. Maybe this rod is freezing too. (x1) | It shows no reaction. (x1)
+
+# [conflict] cmd6.c:7762
+#   JP: 使えるものがありません。
+#   EN: You have nothing to use. (x1) | You have nothing you can use. (x1)
+
+# [conflict] cmd6.c:7982
+#   JP: どの種類の魔法を使いますか？
+#   EN: Which type of magic do you use? (x1) | use which type of magic?  (x1)
+
+# [conflict] do-spell.c:1408
+#   JP: 悪魔は現れなかった。
+#   EN: No demons arrive. (x3) | No Greater Demon arrive. (x1)
+
+# [conflict] do-spell.c:1702
+#   JP: 軽傷の治癒
+#   EN: Cure Light Wounds (x3) | Cure light wounds (x1)
+
+# [conflict] do-spell.c:1746
+#   JP: 軽傷
+#   EN: Cause Light Wounds (x1) | cause light wounds (x1) | Cause Light Wound (x1) | somewhat wounded (x1)
+
+# [conflict] do-spell.c:1815
+#   JP: 重傷の治癒
+#   EN: Cure Medium Wounds (x2) | Cure serious wounds (x1)
+
+# [conflict] do-spell.c:1855
+#   JP: 空腹充足
+#   EN: Satisfy Hunger (x4) | Heroism (x1) | satisfy hunger (x1)
+
+# [conflict] do-spell.c:1896
+#   JP: 重傷
+#   EN: Cause Medium Wounds (x1) | cause serious wounds (x1) | Cause Serious Wound (x1)
+
+# [conflict] do-spell.c:1919
+#   JP: 致命傷の治癒
+#   EN: Cure Critical Wounds (x1) | Cure critical wounds (x1)
+
+# [conflict] do-spell.c:1943
+#   JP: 耐熱耐寒
+#   EN: Resist Heat and Cold (x2) | Resist Lightning (x1)
+
+# [conflict] do-spell.c:1943
+#   JP: 一定時間、火炎と冷気に対する耐性を得る。装備による耐性に累積する。
+#   EN: Gives resistance to fire and cold. These resistances can be added to which from equipment for more powerful resistances. (x2) | Gives resistance to electricity. This resistance can be added to which from equipment for more powerful resistance. (x1)
+
+# [conflict] do-spell.c:2003
+#   JP: 体力回復
+#   EN: Healing (x2) | heal-self (x1) | Heal-self (x1)
+
+# [conflict] do-spell.c:2084
+#   JP: アンデッド退散
+#   EN: Dispel Undead (x1) | Detect Evil (x1)
+
+# [conflict] do-spell.c:2127
+#   JP: 致命傷
+#   EN: Cause Critical Wounds (x1) | cause critical wounds (x1) | Cause Critical Wound (x1)
+
+# [conflict] do-spell.c:2150
+#   JP: 帰還の詔
+#   EN: Word of Recall (x1) | word of recall (x1)
+
+# [conflict] do-spell.c:2233
+#   JP: 全感知
+#   EN: Detection (x3) | Detection True (x1) | detection (x1)
+
+# [conflict] do-spell.c:2401
+#   JP: モンスター感知
+#   EN: Detect Monsters (x4) | Detect Creatures (x2) | Smell Monsters (x1)
+
+# [conflict] do-spell.c:2422
+#   JP: ショート・テレポート
+#   EN: Phase Door (x4) | Blink (x3) | Probing (x2) | blink-self (x1) | blink (x1)
+
+# [conflict] do-spell.c:2489
+#   JP: パニック・モンスター
+#   EN: Confuse Monster (x1) | confuse (x1) | confuse monster (x1)
+
+# [conflict] do-spell.c:2512
+#   JP: テレポート
+#   EN: Teleport (x7) | Teleport Self (x2) | teleport-self (x2) | teleportation (x1) | teleport (x1)
+
+# [conflict] do-spell.c:2533
+#   JP: スリープ・モンスター
+#   EN: Sleep Monster (x1) | sleep (x1)
+
+# [conflict] do-spell.c:2556
+#   JP: 魔力充填
+#   EN: Recharging (x3) | recharging (x1) | recharge item (x1)
+
+# [conflict] do-spell.c:2598
+#   JP: 鑑定
+#   EN: Identify (x4) | identify spell (x1)
+
+# [conflict] do-spell.c:2615
+#   JP: スロウ・モンスター
+#   EN: Slow Monster (x1) | slow (x1)
+
+# [conflict] do-spell.c:2682
+#   JP: スピード
+#   EN: Haste Self (x2) | speed (x1)
+
+# [conflict] do-spell.c:2844
+#   JP: テレポート・レベル
+#   EN: Teleport Level (x4) | teleport level (x2)
+
+# [conflict] do-spell.c:2888
+#   JP: 次元の扉
+#   EN: Dimension Door (x4) | dimension door (x1)
+
+# [conflict] do-spell.c:3029
+#   JP: 錬金術
+#   EN: Alchemy (x1) | alchemy (x1)
+
+# [conflict] do-spell.c:3046
+#   JP: 怪物追放
+#   EN: Banishment (x1) | Banish (x1)
+
+# [conflict] do-spell.c:3067
+#   JP: 無傷の球
+#   EN: Globe of Invulnerability (x2) | make invulnerable (x1) | Invulnerable (x1)
+
+# [conflict] do-spell.c:3067
+#   JP: 一定時間、ダメージを受けなくなるバリアを張る。切れた瞬間に少しターンを消費するので注意。
+#   EN: Generates barrier which completely protect you from almost all damages. Takes a few your turns when the barrier breaks or duration time is exceeded. (x1) | Generates barrier which completly protect you from almost all damages. Takes a few your turns when the barrier breaks or duration time is exceeded. (x1)
+
+# [conflict] do-spell.c:3135
+#   JP: 稲妻
+#   EN: lightning (x2) | Lightning (x1)
+
+# [conflict] do-spell.c:3185
+#   JP: 食糧生成
+#   EN: Produce Food (x2) | Create Food (x1)
+
+# [conflict] do-spell.c:3215
+#   JP: 日の光
+#   EN: Daylight (x2) | daylight (x2)
+
+# [conflict] do-spell.c:3323
+#   JP: 岩石溶解
+#   EN: Stone to Mud (x4) | stone to mud (x1)
+
+# [conflict] do-spell.c:3348
+#   JP: アイス・ボルト
+#   EN: Frost Bolt (x1) | produce frost bolts (x1) | frost bolt (x1)
+
+# [conflict] do-spell.c:3397
+#   JP: ファイア・ボルト
+#   EN: Fire Bolt (x4) | produce fire bolts (x1) | fire bolt (x1)
+
+# [conflict] do-spell.c:3420
+#   JP: 太陽光線
+#   EN: Ray of Sunlight (x2) | beam of sunlight (x1)
+
+# [conflict] do-spell.c:3449
+#   JP: 足かせ
+#   EN: Entangle (x1) | Resist Acid (x1)
+
+# [conflict] do-spell.c:3470
+#   JP: 動物召喚
+#   EN: Summon Animal (x2) | Trump Spiders (x1) | summon animal (x1)
+
+# [conflict] do-spell.c:3519
+#   JP: 階段生成
+#   EN: Stair Building (x1) | Enchant Weapon (x1)
+
+# [conflict] do-spell.c:3600
+#   JP: 動物友和
+#   EN: Animal Friendship (x2) | animal friendship (x1)
+
+# [conflict] do-spell.c:3672
+#   JP: 地震
+#   EN: Earthquake (x3) | Quake (x1) | an earthquake (x1) | earthquake (x1)
+
+# [conflict] do-spell.c:3672
+#   JP: 周囲のダンジョンを揺らし、壁と床をランダムに入れ変える。
+#   EN: Shakes dungeon structure, and results in random swapping of floors and walls. (x3) | Shakes dungeon structure, and results in random swaping of floors and walls. (x1)
+
+# [conflict] do-spell.c:3693
+#   JP: カマイタチ
+#   EN: Cyclone (x1) | whirlwind attack (x1)
+
+# [conflict] do-spell.c:3891
+#   JP: マジック・ミサイル
+#   EN: Magic Missile (x4) | magic missile (x1)
+
+# [conflict] do-spell.c:3936
+#   JP: 閃光
+#   EN: light (x3) | Flash of Light (x2) | Ray of Light (x1) | Flash Light (x1) | create light (x1) | Light (x1)
+
+# [conflict] do-spell.c:3959
+#   JP: 混乱の手
+#   EN: Touch of Confusion (x2) | Touch of confusion (x1)
+
+# [conflict] do-spell.c:4194
+#   JP: ファイア・ボール
+#   EN: Fire Ball (x3) | produce fire balls (x1) | fire ball (x1)
+
+# [conflict] do-spell.c:4218
+#   JP: テレポート・アウェイ
+#   EN: Teleport Other (x2) | teleport away (x2) | Teleport Away (x1)
+
+# [conflict] do-spell.c:4376
+#   JP: 現実変容
+#   EN: Alter Reality (x2) | alter reality (x1)
+
+# [conflict] do-spell.c:4445
+#   JP: 悪魔召喚
+#   EN: Summon Demon (x2) | Trump Spiders (x1) | summon a demon (x1) | summon demon (x1)
+
+# [conflict] do-spell.c:4539
+#   JP: 自分を中心とした超巨大な炎の球を発生させる。
+#   EN: Generate a huge ball of fire centered on you. (x1) | Generates a huge ball of frame which centered on you. (x1)
+
+# [conflict] do-spell.c:4561
+#   JP: 混沌召来
+#   EN: Call Chaos (x2) | call chaos (x1)
+
+# [conflict] do-spell.c:4591
+#   JP: 変身します。よろしいですか？
+#   EN: You will polymorph yourself. Are you sure?  (x1) | You will polymorph your self. Are you sure?  (x1)
+
+# [conflict] do-spell.c:4602
+#   JP: 魔力の嵐
+#   EN: Mana Storm (x2) | invoke mana storms (x1) | mana storm (x1) | Mana storm (x1)
+
+# [conflict] do-spell.c:4766
+#   JP: 邪悪感知
+#   EN: Detect Evil (x1) | Evil detection (x1)
+
+# [conflict] do-spell.c:4787
+#   JP: 悪臭雲
+#   EN: Stinking Cloud (x3) | produce poison balls (x1) | stinking cloud (x1)
+
+# [conflict] do-spell.c:4855
+#   JP: 恐慌
+#   EN: Horrify (x2) | scare (x1) | Scare (x1) | terror (x1)
+
+# [conflict] do-spell.c:4879
+#   JP: アンデッド従属
+#   EN: Enslave Undead (x2) | enslave undead (x1)
+
+# [conflict] do-spell.c:4936
+#   JP: 地獄の矢
+#   EN: Nether Bolt (x3) | produce nether bolts (x1) | nether bolt (x1) | Nether (x1)
+
+# [conflict] do-spell.c:5092
+#   JP: 抹殺
+#   EN: Genocide (x3) | genocide (x1)
+
+# [conflict] do-spell.c:5136
+#   JP: 悪霊召喚
+#   EN: Invoke Spirits (x1) | Orb of Entropy (x1)
+
+# [conflict] do-spell.c:5207
+#   JP: 吸血の刃
+#   EN: Vampiric Branding (x1) | Swords to vampires (x1)
+
+# [conflict] do-spell.c:5277
+#   JP: 暗黒の嵐
+#   EN: Darkness Storm (x2) | invoke darkness storms (x1) | darkness storm (x1) | Darkness storm (x1)
+
+# [conflict] do-spell.c:5421
+#   JP: 生命力復活
+#   EN: Restore Life (x1) | Restore life (x1)
+
+# [conflict] do-spell.c:5438
+#   JP: 周辺抹殺
+#   EN: Mass Genocide (x3) | mass genocide (x1)
+
+# [conflict] do-spell.c:5459
+#   JP: 地獄の劫火
+#   EN: Hellfire (x2) | hellfire (x1)
+
+# [conflict] do-spell.c:5576
+#   JP: 召喚された蜘蛛は怒っている！
+#   EN: The summoned spiders get angry! (x1) | Summoned spiders are angry! (x1)
+
+# [conflict] do-spell.c:5790
+#   JP: 召喚されたモンスターは怒っている！
+#   EN: The summoned creatures get angry! (x2) | The summoned monster is angry! (x1) | Summoned monsters are angry! (x1)
+
+# [conflict] do-spell.c:5802
+#   JP: 幻霊召喚
+#   EN: Phantasmal Servant (x1) | Summon Ghost (x1) | summon phantasmal servant (x1)
+
+# [conflict] do-spell.c:5802
+#   JP: 1体の幽霊を召喚する。
+#   EN: Summons a ghost. (x1) | Summons ghosts. (x1)
+
+# [conflict] do-spell.c:5951
+#   JP: 1体のモンスターと位置を交換する。
+#   EN: Swap positions of you and a monster. (x2) | Swaps positions of you and a monster. (x1)
+
+# [conflict] do-spell.c:6001
+#   JP: 召喚されたアンデッドは怒っている！
+#   EN: The summoned undead creature gets angry! (x1) | Summoned undeads are angry! (x1)
+
+# [conflict] do-spell.c:6108
+#   JP: 召喚されたハウンドは怒っている！
+#   EN: The summoned hounds get angry! (x1) | Summoned hounds are angry! (x1)
+
+# [conflict] do-spell.c:6193
+#   JP: 召喚されたサイバーデーモンは怒っている！
+#   EN: The summoned Cyberdemon gets angry! (x1) | The summoned Cyberdemon are angry! (x1)
+
+# [conflict] do-spell.c:6298
+#   JP: 召喚されたドラゴンは怒っている！
+#   EN: The summoned dragon gets angry! (x1) | Summoned dragons are angry! (x1)
+
+# [conflict] do-spell.c:6353
+#   JP: 召喚されたデーモンは怒っている！
+#   EN: The summoned demon gets angry! (x1) | Summoned demons are angry! (x1)
+
+# [conflict] do-spell.c:6386
+#   JP: 召喚された上級アンデッドは怒っている！
+#   EN: Summoned greater undeads are angry! (x2) | The summoned greater undead creature gets angry! (x1)
+
+# [conflict] do-spell.c:6427
+#   JP: 召喚された古代ドラゴンは怒っている！
+#   EN: The summoned ancient dragon gets angry! (x1) | Summoned ancient dragons are angry! (x1)
+
+# [conflict] do-spell.c:6458
+#   JP: 電撃
+#   EN: Lightning (x4) | Zap (x1) | electricity! (x1) | lightning (x1)
+
+# [conflict] do-spell.c:6713
+#   JP: アイテム感知
+#   EN: Detect Objects (x1) | Detect Curses (x1)
+
+# [conflict] do-spell.c:6772
+#   JP: 一定時間、炎への耐性を得る。装備による耐性に累積する。
+#   EN: Gives resistance to fire. This resistance can be added to which from equipment for more powerful resistance. (x2) | Gives resistance to fire, cold and electricity for a while. These resistances can be added to which from equipment for more powerful resistances. (x1)
+
+# [conflict] do-spell.c:6968
+#   JP: 透明視認
+#   EN: See Invisible (x1) | See Invisibility (x1) | Sense Unseen (x1)
+
+# [conflict] do-spell.c:6989
+#   JP: エレメンタル召喚
+#   EN: Conjure Elemental (x2) | Trump Spiders (x1) | summon elemental (x1)
+
+# [conflict] do-spell.c:7184
+#   JP: 赤外線視力
+#   EN: Infravision (x1) |  to infravision (x1)
+
+# [conflict] do-spell.c:7285
+#   JP: 士気高揚
+#   EN: Heroism (x2) | Raise the Morale (x1) | heroism (x1)
+
+# [conflict] do-spell.c:7478
+#   JP: 癒し
+#   EN: Cure (x1) | curing (x1)
+
+# [conflict] do-spell.c:7937
+#   JP: 邪なる祝福
+#   EN: Evil Bless (x1) | Evily blessing (x1)
+
+# [conflict] do-spell.c:8129
+#   JP: 耐地獄
+#   EN: Resist Nether (x2) | Resist Poison (x1)
+
+# [conflict] do-spell.c:8150
+#   JP: プラズマ・ボルト
+#   EN: Plasma bolt (x1) | produce plasma bolts (x1) | plasma bolt (x1)
+
+# [conflict] do-spell.c:8215
+#   JP: 地獄球
+#   EN: Nether Ball (x1) | produce nether balls (x1) | nether ball (x1) | Nether (x1)
+
+# [conflict] do-spell.c:8460
+#   JP: 破滅の手
+#   EN: Doom Hand (x2) | invoke the Hand of Doom (x1) | the Hand of Doom (x1) | Hand of doom (x1)
+
+# [conflict] do-spell.c:8612
+#   JP: 血の呪い
+#   EN: Bloody Curse (x2) | Blood curse (x2)
+
+# [conflict] do-spell.c:9173
+#   JP: スターバースト
+#   EN: Star Burst (x1) | Starburst (x1)
+
+# [conflict] do-spell.c:9335
+#   JP: 目には目を
+#   EN: An Eye for an Eye (x1) | Eye for an eye (x1)
+
+# [conflict] do-spell.c:9629
+#   JP: 歌を通して体に活気が戻ってきた．．．
+#   EN: Life flows through you as you sing a song of healing... (x1) | Life flows through you as you sing the song... (x1)
+
+# [conflict] do-spell.c:10148
+#   JP: 電撃への耐性が薄れた気がする。
+#   EN: You feel less resistant to elec. (x1) | You feel less resistant to electricity. (x1)
+
+# [conflict] do-spell.c:10175
+#   JP: 毒への耐性が薄れた気がする。
+#   EN: You feel less resistant to pois. (x1) | You feel less resistant to poison. (x1)
+
+# [conflict] do-spell.c:11366
+#   JP: 殺気感知
+#   EN: Detect Ferocity (x2) | Detect Atmosphere of Menace (x1)
+
+# [conflict] do-spell.c:12324
+#   JP: 失敗！
+#   EN: Failed! (x3) | You cannot move to that place! (x1)
+
+# [conflict] do-spell.c:12714
+#   JP: どれを呪いますか？
+#   EN: Which weapon do you curse? (x1) | Which piece of armour do you curse? (x1)
+
+# [conflict] do-spell.c:13034
+#   JP: 肉体強化
+#   EN: Building up (x1) | Resist Poison (x1)
+
+# [conflict] do-spell.c:13142
+#   JP: 死者復活
+#   EN: Animate Dead (x1) | raise dead (x1) | Raise dead (x1)
+
+# [conflict] do-spell.c:13503
+#   JP: 呪いを全て吸い取った。
+#   EN: Heavy curse vanished away. (x1) | Curse vanished away. (x1)
+
+# [conflict] do-spell.c:14387
+#   JP: 魔力消去
+#   EN: dispel-magic (x2) | Beam of Gravity (x1) | Dispel-magic (x1)
+
+# [conflict] do-spell.c:16093
+#   JP: 伝説の品感知
+#   EN: Resist Cold (x1) | Detect Artifact (x1)
+
+# [conflict] do-spell.c:16165
+#   JP: シャドウ・シフト
+#   EN: Teleport Level (x1) | Shadow Shifting (x1)
+
+# [conflict] do-spell.c:18148
+#   JP: 金縛り
+#   EN: Black Sleep (x1) | Bind Monster (x1)
+
+# [conflict] do-spell.c:18481
+#   JP: 魔力吸収
+#   EN: drain mana (x2) | Animate dead (x1) | Drain mana (x1)
+
+# [conflict] do-spell.c:18506
+#   JP: 死の言霊
+#   EN: Genocide (x1) | cause mortal wounds (x1)
+
+# [conflict] do-spell.c:19123
+#   JP: 治癒
+#   EN: Cure Critical Wounds (x2) | heal-self (x1)
+
+# [conflict] do-spell.c:20088
+#   JP: 目からビーム
+#   EN: Resist Lightning (x1) | Laser Eye (x1)
+
+# [conflict] do-spell.c:21023
+#   JP: 暗闇
+#   EN: create darkness (x2) | Scare Monster (x1) | Create darkness (x1)
+
+# [conflict] do-spell.c:21165
+#   JP: 追放
+#   EN: Resist Nether (x1) | Genocide One (x1)
+
+# [conflict] do-spell.c:21496
+#   JP: ヘル・ランス
+#   EN: Plasma Ball (x1) | Hell Lance (x1)
+
+# [conflict] do-spell.c:21743
+#   JP: 上位悪魔召喚
+#   EN: Summon Demon (x1) | Trump Spiders (x1)
+
+# [conflict] do-spell.c:21936
+#   JP: 虫召喚
+#   EN: Trump Spiders (x1) | summon spiders (x1)
+
+# [conflict] do-spell.c:22161
+#   JP: モンスター一体召喚
+#   EN: Trump Spiders (x1) | summon a monster (x1)
+
+# [conflict] do-spell.c:22419
+#   JP: ハウンド召喚
+#   EN: Trump Spiders (x1) | summon hounds (x1) | summon hound (x1)
+
+# [conflict] do-spell.c:22477
+#   JP: 神格召喚
+#   EN: Trump Spiders (x1) | Summon Demon (x1)
+
+# [conflict] do-spell.c:22632
+#   JP: モンスター複数召喚
+#   EN: summon monsters (x2) | Trump Spiders (x1)
+
+# [conflict] do-spell.c:22793
+#   JP: サイバーデーモン召喚
+#   EN: Trump Demon (x1) | summon Cyberdemons (x1)
+
+# [conflict] do-spell.c:22824
+#   JP: 古代ドラゴン召喚
+#   EN: Trump Spiders (x1) | summon Ancient Dragons (x1)
+
+# [conflict] do-spell.c:23387
+#   JP: *鑑定*
+#   EN: Identify True (x1) | identify true (x1)
+
+# [conflict] do-spell.c:24305
+#   JP: 閃光の嵐
+#   EN: Star Burst (x1) | invoke starburst (x1)
+
+# [conflict] dungeon.c:2139
+#   JP: 毒
+#   EN: poison (x5) | poison! (x1) | Poison (x1)
+
+# [conflict] dungeon.c:4121
+#   JP: 悪意に満ちた黒いオーラが%sをとりまいた...
+#   EN: There is a malignant black aura surrounding your %s... (x2) | There is a malignant black aura surrounding %s... (x1)
+
+# [conflict] dungeon.c:7323
+#   JP: 超能力
+#   EN: mindcraft (x2) | psionic powers (x1)
+
+# [conflict] dungeon.c:7329
+#   JP: ものまね
+#   EN: imitation (x1) | Monomane (x1)
+
+# [conflict] dungeon.c:7335
+#   JP: 必殺剣
+#   EN: hissatsu (x1) | special attack (x1)
+
+# [conflict] dungeon.c:7341
+#   JP: 鏡魔法
+#   EN: mirror magic (x1) | magic (x1)
+
+# [conflict] dungeon.c:10274
+#   JP: セーブファイルが壊れています
+#   EN: broken savefile (x1) | Broken savefile (x1)
+
+# [conflict] effects.c:3595
+#   JP: 魔法への耐性がついた。
+#   EN: You have been protected from magic! (x1) | You become resistant to magic. (x1)
+
+# [conflict] effects.c:3610
+#   JP: 魔法に弱くなった。
+#   EN: You are no longer protected from magic. (x1) | You become susceptible to magic again. (x1)
+
+# [conflict] effects.c:4290
+#   JP: 酸
+#   EN: Acid (x4) | acid (x3) | acid! (x1)
+
+# [conflict] effects.c:4290
+#   JP: 火炎
+#   EN: fire (x4) | Fire (x4) | fire! (x1)
+
+# [conflict] effects.c:4290
+#   JP: 冷気
+#   EN: cold (x4) | Cold (x2) | Frost (x2) | cold! (x1) | frost (x1)
+
+# [conflict] effects.c:6179
+#   JP: 美しく
+#   EN: beautiful (x2) | cute (x1)
+
+# [conflict] effects.c:7363
+#   JP: クエスト
+#   EN: in a quest (x1) | Quest (x1)
+
+# [conflict] effects.c:7565
+#   JP: 何か
+#   EN: something (x5) | it (x3) | Something (x2) | something's (x1) | arrows (x1) | missile (x1) | missiles (x1) | Arrows (x1) | Missile (x1) | Missiles (x1)
+
+# [conflict] effects.c:7800
+#   JP: 生命力が体から吸い取られた気がする！
+#   EN: You feel your life draining away... (x2) | You feel your life draining away! (x1)
+
+# [conflict] files.c:6629
+#   JP: 能力
+#   EN: Ability (x2) | Stat (x1) | power (x1)
+
+# [conflict] files.c:7982
+#   JP: なし
+#   EN: None (x1) | nothing (x1)
+
+# [conflict] files.c:11878
+#   JP: 強制終了
+#   EN: interrupt (x2) | Interrupting (x1) | Abortion (x1)
+
+# [conflict] files.c:12109
+#   JP: 緊急セーブ失敗！
+#   EN: panic save failed! (x1) | Panic save failed! (x1)
+
+# [conflict] files.c:12117
+#   JP: 緊急セーブ成功！
+#   EN: panic save succeeded! (x1) | Panic save succeeded! (x1)
+
+# [conflict] flavor.c:3252
+#   JP: 加速
+#   EN: \sto speed (x1) | haste-self (x1) | Smell Metal (x1) | Speed (x1)
+
+# [conflict] flavor.c:3288
+#   JP: 探索
+#   EN: \sto searching (x1) | Sear (x1)
+
+# [conflict] mane.c:905
+#   JP: 「時よ！」
+#   EN: You yell 'Time!' (x2) | 'Time!' (x1)
+
+# [conflict] mane.c:968
+#   JP: %sを引き戻した。
+#   EN: You command %s to return. (x2) | You pull back %s. (x1)
+
+# [conflict] mane.c:1035
+#   JP: 呪文を唱えて邪悪に微笑んだ。
+#   EN: You cast a spell and cackles evilly. (x1) | You cast a spell and cackle evilly. (x1)
+
+# [conflict] mane.c:1078
+#   JP: サイバーデーモンを召喚した！
+#   EN: You summon Cyberdemons! (x1) | You summon a Cyberdemon! (x1)
+
+# [conflict] mane.c:1157
+#   JP: ヒドラを召喚した。
+#   EN: You summon hydras. (x1) | You summon a hydras. (x1)
+
+# [conflict] mane.c:1170
+#   JP: 天使を召喚した！
+#   EN: You summon angel! (x1) | You summon an angel! (x1)
+
+# [conflict] mane.c:1209
+#   JP: ドラゴンを召喚した！
+#   EN: You summon dragon! (x1) | You summon a dragon! (x1)
+
+# [conflict] mane.c:1222
+#   JP: 強力なアンデッドを召喚した！
+#   EN: You summon greater undead! (x1) | You summon a greater undead! (x1)
+
+# [conflict] mane.c:1235
+#   JP: 古代ドラゴンを召喚した！
+#   EN: You summon ancient dragons! (x1) | You summon an ancient dragon! (x1)
+
+# [conflict] mane.c:1248
+#   JP: アンバーの王族を召喚した！
+#   EN: You summon Lords of Amber! (x1) | You summon a Lord of Amber! (x1)
+
+# [conflict] mane.c:1261
+#   JP: 特別な強敵を召喚した！
+#   EN: You summon special opponents! (x1) | You summon a special opponent! (x1)
+
+# [conflict] melee1.c:1797
+#   JP: 酸を浴びせられた！
+#   EN: You are covered in acid! (x1) | You are covered in element! (x1)
+
+# [conflict] melee1.c:1824
+#   JP: 電撃を浴びせられた！
+#   EN: You are struck by electricity! (x1) | You are covered in element! (x1)
+
+# [conflict] melee1.c:3390
+#   JP: は倒れた。
+#   EN: \sdissolves! (x7) |  collapses, a mindless husk. (x3) |  is destroyed. (x2)
+
+# [conflict] melee2.c:452
+#   JP: %^sに振り落とされた！
+#   EN: %^s has thrown you off! (x3) | You have thrown off from %s! (x1)
+
+# [conflict] melee2.c:1741
+#   JP: %sを殴った。
+#   EN: punches %s. (x1) | You punch %s. (x1)
+
+# [conflict] melee2.c:1753
+#   JP: %sを蹴った。
+#   EN: You kick %s. (x2) | kicks %s. (x1)
+
+# [conflict] melee2.c:1825
+#   JP: %sに体当りした。
+#   EN: crushes %s. (x1) | You butt %s. (x1)
+
+# [conflict] melee2.c:4094
+#   JP: 地面に落とされた。
+#   EN: You have fallen from riding pet. (x2) | You have fallen from your riding pet. (x1)
+
+# [conflict] mind.c:23
+#   JP: 光の剣
+#   EN: psycho-spear (x2) | Psycho-Spear (x1) | Psycho-spear (x1)
+
+# [conflict] mind.c:75
+#   JP: 煉獄火炎
+#   EN: Exploding Frame (x1) | Rengoku-Kaen (x1)
+
+# [conflict] mind.c:179
+#   JP: 幻惑の光
+#   EN: Illusion Light (x1) | Confusing Light (x1)
+
+# [conflict] mind.c:1233
+#   JP: 何も現れなかった。
+#   EN: Nothing happen. (x1) | No one have appeared. (x1)
+
+# [conflict] mind.c:1630
+#   JP: うまく逃げられなかった。
+#   EN: You failed to run away. (x1) | You failed to teleport. (x1) | You are failed to run away. (x1)
+
+# [conflict] mindtips.h:1
+#   JP: 全ての攻撃が、1/2の確率で無効になる。
+#   EN: Completely protects you from any attacks at one in two chance. (x1) | Creates shadows of yourself which gives you abillity to completely evade any attacks at one in two chance for a while. (x1)
+
+# [conflict] monster1.c:518
+#   JP: 、
+#   EN: , and  (x1) | ,  (x1)
+
+# [conflict] monster1.c:527
+#   JP: %^sは
+#   EN: %^s (x5) | %^s  (x2) | %^s is (x1) | %^s may carry (x1)
+
+# [conflict] monster1.c:545
+#   JP: かなり
+#   EN: \sfairly (x2) |  extremely (x1)
+
+# [conflict] monster1.c:681
+#   JP: 。
+#   EN: .   (x4) | .  (x2)
+
+# [conflict] monster1.c:1174
+#   JP: 地獄
+#   EN: nether (x5) | Nether (x1)
+
+# [conflict] monster1.c:1186
+#   JP: 暗黒
+#   EN: darkness (x2) | dark (x2) | Dark (x1)
+
+# [conflict] monster1.c:1191
+#   JP: 破邪
+#   EN: confusion (x1) | nexus (x1) | holy (x1)
+
+# [conflict] monster1.c:1207
+#   JP: 水
+#   EN: water (x2) | sound (x1)
+
+# [conflict] monster1.c:1213
+#   JP: カオス
+#   EN: chaos (x4) | Chaos (x1)
+
+# [conflict] monster1.c:1219
+#   JP: 劣化
+#   EN: disenchantment (x3) | Disenchantment (x1) | disenchant (x1)
+
+# [conflict] monster1.c:1225
+#   JP: 因果混乱
+#   EN: nexus (x2) | Nexus (x1)
+
+# [conflict] monster1.c:1231
+#   JP: 時間逆転
+#   EN: time (x1) | Time (x1)
+
+# [conflict] monster1.c:1237
+#   JP: 遅鈍
+#   EN: inertia (x2) | Inertia (x1)
+
+# [conflict] monster1.c:1243
+#   JP: 重力
+#   EN: gravity (x2) | Gravity (x1)
+
+# [conflict] monster1.c:1249
+#   JP: 破片
+#   EN: shards (x3) | Shards (x1) | shard (x1)
+
+# [conflict] monster1.c:1255
+#   JP: プラズマ
+#   EN: plasma (x2) | Plasma (x1) | Plasm (x1)
+
+# [conflict] monster1.c:1263
+#   JP: フォース
+#   EN: force (x2) | Force (x1)
+
+# [conflict] monster1.c:1269
+#   JP: 魔力
+#   EN: mana (x2) | Mana (x1)
+
+# [conflict] monster1.c:1281
+#   JP: 分解
+#   EN: disintegration (x1) | Disintergrate (x1)
+
+# [conflict] monster1.c:1326
+#   JP: アシッド・ボール
+#   EN: produce acid balls (x1) | acid ball (x1)
+
+# [conflict] monster1.c:1332
+#   JP: サンダー・ボール
+#   EN: produce lightning balls (x1) | lightning ball (x1)
+
+# [conflict] monster1.c:1344
+#   JP: アイス・ボール
+#   EN: produce frost balls (x1) | frost ball (x1)
+
+# [conflict] monster1.c:1362
+#   JP: ウォーター・ボール
+#   EN: produce water balls (x1) | water ball (x1)
+
+# [conflict] monster1.c:1370
+#   JP: 放射能球
+#   EN: produce balls of radiation (x1) | nuke ball (x1) | Nuke (x1)
+
+# [conflict] monster1.c:1394
+#   JP: 純ログルス
+#   EN: invoke raw Logrus (x1) | raw Logrus (x1) | Logrus (x1)
+
+# [conflict] monster1.c:1418
+#   JP: 精神攻撃
+#   EN: cause mind blasting (x1) | Mind Blast (x1) | mind blast (x1) | Mind blast (x1)
+
+# [conflict] monster1.c:1424
+#   JP: 脳攻撃
+#   EN: cause brain smashing (x1) | brain smash (x1) | Brain smash (x1)
+
+# [conflict] monster1.c:1454
+#   JP: アシッド・ボルト
+#   EN: produce acid bolts (x1) | acid bolt (x1)
+
+# [conflict] monster1.c:1460
+#   JP: サンダー・ボルト
+#   EN: produce lightning bolts (x1) | lightning bolt (x1)
+
+# [conflict] monster1.c:1484
+#   JP: ウォーター・ボルト
+#   EN: produce water bolts (x1) | water bolt (x1)
+
+# [conflict] monster1.c:1490
+#   JP: 魔力の矢
+#   EN: produce mana bolts (x1) | mana bolt (x1) | Mana (x1)
+
+# [conflict] monster1.c:1502
+#   JP: 極寒の矢
+#   EN: produce ice bolts (x1) | ice bolt (x1)
+
+# [conflict] monster1.c:1508
+#   JP: マジックミサイル
+#   EN: produce magic missiles (x1) | Magic missile (x1)
+
+# [conflict] monster1.c:1526
+#   JP: 混乱
+#   EN: confusion (x5) | confuse (x1) | Confusion (x1) | Confuse (x1)
+
+# [conflict] monster1.c:1532
+#   JP: 減速
+#   EN: slow (x1) | Slow (x1)
+
+# [conflict] monster1.c:1568
+#   JP: ショートテレポート
+#   EN: blink-self (x1) | Blink (x1)
+
+# [conflict] monster1.c:1580
+#   JP: 時を止める
+#   EN: stop the time (x1) | The world (x1)
+
+# [conflict] monster1.c:1592
+#   JP: テレポートアウェイ
+#   EN: teleport away (x1) | Teleport away (x1)
+
+# [conflict] monster1.c:2288
+#   JP: 轟音
+#   EN: sound (x4) | Sound (x1)
+
+# [conflict] monster2.c:22
+#   JP: 忌まわしい
+#   EN: abominable (x1) | loathsome (x1)
+
+# [conflict] monster2.c:22
+#   JP: 恐ろしい
+#   EN: dreadful (x1) | terrible (x1)
+
+# [conflict] monster2.c:22
+#   JP: 地獄の
+#   EN: hellish (x1) | infernal (x1)
+
+# [conflict] monster2.c:2003
+#   JP: 彼
+#   EN: he (x1) | him (x1)
+
+# [conflict] monster2.c:2025
+#   JP: 彼女
+#   EN: she (x1) | her (x1)
+
+# [conflict] monster2.c:6530
+#   JP: %^sはうめいた。
+#   EN: %^s grunts. (x1) | %^s groans. (x1) | %^s moans. (x1)
+
+# [conflict] monster2.c:6580
+#   JP: %^sは吠えた。
+#   EN: %^s roars. (x1) | %^s howls. (x1) | %^s shrieks in agony. (x1)
+
+# [conflict] monster2.c:6644
+#   JP: %^sはよろめいた。
+#   EN: %^s stumbles. (x1) | %^s staggers. (x1)
+
+# [conflict] monster2.c:6665
+#   JP: %^sはうなった。
+#   EN: %^s grunts. (x1) | %^s shrugs off the attack. (x1) | %^s snarls with pain. (x1) | %^s grunts with pain. (x1)
+
+# [conflict] monster2.c:6728
+#   JP: %^sは甲高い声を上げた。
+#   EN: %^s squeals in pain. (x1) | %^s shrieks in pain. (x1)
+
+# [conflict] mspells1.c:3186
+#   JP: %^sがあなたに向けて衝撃波を放った！
+#   EN: %^s breathes. (x1) | %^s breathes sound. (x1)
+
+# [conflict] mspells1.c:3393
+#   JP: %^sが何かを放った。
+#   EN: %^s breathes. (x1) | %^s makes a strange noise. (x1) | %^s mumbles. (x1)
+
+# [conflict] mspells1.c:4683
+#   JP: %^sは体力を回復したようだ。
+#   EN: %^s looks healthier. (x2) | %^s sounds healthier. (x1)
+
+# [conflict] mutation.c:1678
+#   JP: 脚力が並に戻った。
+#   EN: Your flesh rots no longer. (x1) | Your flesh is no longer afflicted by a rotting disease! (x1)
+
+# [conflict] mutation.c:1688
+#   JP: 肌が元に戻った。
+#   EN: You lose your warts. (x1) | Electricity stops running through you. (x1) | Your body is no longer enveloped in flames. (x1) | Your warts disappear! (x1) | Your scales vanish! (x1) | Your skin reverts to flesh! (x1)
+
+# [conflict] mutation.c:1770
+#   JP: 尻尾が消えた。
+#   EN: Your nose is no longer elephantine. (x1) | Your nose returns to a normal length. (x1) | Your tentacles vanish from your sides. (x1)
+
+# [conflict] object1.c:961
+#   JP: それは明かりの半径を狭める(半径に-1)。
+#   EN: It decreases radius of light source by 1. (x1) | It decreases radius of your light source by 1. (x1)
+
+# [conflict] object1.c:4154
+#   JP: 本当に
+#   EN: Try (x3) | Really try (x1)
+
+# [conflict] object2.c:7807
+#   JP: を装備からはずした
+#   EN: You were wielding (x1) | You were wearing (x1)
+
+# [conflict] object2.c:10126
+#   JP: その他
+#   EN: Others (x1) | Other commands (x1) | Misc (x1)
+
+# [conflict] racial.c:729
+#   JP: もともと構えていない。
+#   EN: You are not assuming a posture. (x1) | You are not assuming posture. (x1)
+
+# [conflict] racial.c:3641
+#   JP: 剣の舞い
+#   EN: Sword Dancing (x1) | sword_dance (x1)
+
+# [conflict] racial.c:3720
+#   JP: ヒット＆アウェイ
+#   EN: Hit and Away (x1) | Panic Hit (x1)
+
+# [conflict] racial.c:3736
+#   JP: モンスター調査
+#   EN: Probe Monster (x1) | Probing (x1)
+
+# [conflict] racial.c:3985
+#   JP: 連続魔
+#   EN: Double Magic (x1) | heal 500 hit points (x1)
+
+# [conflict] racial.c:4157
+#   JP: 吸血の牙
+#   EN: Drain Life (x1) | Vampiric Drain (x1)
+
+# [conflict] racial.c:4808
+#   JP: 幻惑
+#   EN: Dazzle (x1) | dazzle (x1)
+
+# [conflict] racial.c:5316
+#   JP: モンスター恐慌
+#   EN: Scare Monster (x2) | frighten monsters (x1)
+
+# [conflict] racial.c:5440
+#   JP: 経験値復活
+#   EN: Restore Life (x1) | restore life levels (x1)
+
+# [conflict] racial.c:5564
+#   JP: ロケット
+#   EN: Rocket (x2) | rocket (x1)
+
+# [conflict] racial.c:5589
+#   JP: 酸のブレス
+#   EN: Spit Acid (x1) | breath acid (x1)
+
+# [conflict] racial.c:5605
+#   JP: 炎のブレス
+#   EN: Fire Breath (x1) | breath fire (x1)
+
+# [conflict] racial.c:5812
+#   JP: 冷気のブレス
+#   EN: Illuminate (x1) | breath cold (x1)
+
+# [conflict] rooms.c:1960
+#   JP: アンデッド
+#   EN: Undead (x2) | undead (x1) | the undead (x1)
+
+# [conflict] rooms.c:1989
+#   JP: 妖怪
+#   EN: orc (x1) | Troll (x1)
+
+# [conflict] rooms.c:1989
+#   JP: ドラゴン
+#   EN: Dragon (x2) | dragon (x1)
+
+# [conflict] rooms.c:1989
+#   JP: デーモン
+#   EN: demon (x1) | demons (x1)
+
+# [conflict] scores.c:852
+#   JP: \s\s\s%3d) %sの%s (レベル %2d)
+#   EN: %3d) %s the %s (Level %2d) (x1) | %3d) %s the %s (Level %3d) (x1)
+
+# [conflict] scores.c:865
+#   JP: あなた) %sの%s (レベル %2d)
+#   EN: You) %s the %s (Level %2d) (x1) | You) %s the %s (Level %3d) (x1)
+
+# [conflict] snipe.c:55
+#   JP: セイントスターアロー
+#   EN: Saint Stars Arrow (x1) | heal 500 hit points (x1)
+
+# [conflict] spells1.c:2702
+#   JP: には完全な耐性がある！
+#   EN: \sis immune. (x62) |  is immune! (x4)
+
+# [conflict] spells1.c:2732
+#   JP: にはかなり耐性がある！
+#   EN: \sresists a lot. (x4) |  is immune! (x1)
+
+# [conflict] spells1.c:3101
+#   JP: には耐性がある。
+#   EN: \sresists. (x19) |  is immune. (x1) |  resists somewhat. (x1)
+
+# [conflict] spells1.c:3255
+#   JP: にはかなり耐性がある。
+#   EN: \sresists somewhat. (x1) |  resists a lot. (x1)
+
+# [conflict] spells1.c:3457
+#   JP: はいくらか耐性を示した。
+#   EN: \sresists somewhat. (x2) |  resists. (x1)
+
+# [conflict] spells1.c:3986
+#   JP: には耐性がある！
+#   EN: \sresists! (x4) |  resists. (x2)
+
+# [conflict] spells1.c:4054
+#   JP: には効果がなかった。
+#   EN: \sis unaffected! (x3) |  is unaffected. (x2) | is unaffected! (x1)
+
+# [conflict] spells1.c:4601
+#   JP: には効果がなかった！
+#   EN: \sis unaffected! (x21) |  is immune. (x15) |  is immune! (x3) | is unaffected! (x1)
+
+# [conflict] spells1.c:5621
+#   JP: はあなたに服従した。
+#   EN: \sis in your thrall! (x2) |  is tamed! (x1)
+
+# [conflict] spells1.c:11795
+#   JP: 霊的エネルギーで精神が攻撃された。
+#   EN: Your mind is blasted by psyonic energy. (x1) | Your mind is blasted by psionic energy. (x1)
+
+# [conflict] spells2.c:246
+#   JP: あなたは %d ダメージの地獄か火炎のブレスを吐くことができる。(%d MP)
+#   EN: You can nether breathe, dam. %d (cost %d). (x1) | You can breathe nether, dam. %d (cost %d). (x1)
+
+# [conflict] spells2.c:883
+#   JP: あなたは素早く移動することができる。
+#   EN: You can walk extremery fast. (x1) | You can RUN. (x1)
+
+# [conflict] spells2.c:5847
+#   JP: 混沌
+#   EN: evil (x1) | Evil (x1)
+
+# [conflict] spells2.c:5847
+#   JP: 秩序
+#   EN: good (x1) | Giant (x1)
+
+# [conflict] spells2.c:5847
+#   JP: 中立
+#   EN: neutral (x1) | Neutral (x1)
+
+# [conflict] spells2.c:5970
+#   JP: これで全部です。
+#   EN: Entire inventory is shown. (x2) | That's all. (x1)
+
+# [conflict] spells2.c:7721
+#   JP: 失敗した。
+#   EN: Failed to swap. (x1) | Failed. (x1)
+
+# [conflict] spells3.c:6340
+#   JP: 武器
+#   EN: surround your weapon (x1) | Weapons (x1)
+
+# [conflict] store.c:3707
+#   JP: 価格
+#   EN: Price (x1) | Final Offer (x1)
+
+# [conflict] tables.c:7966
+#   JP: 剣士
+#   EN: Swordsman (x4) | Bowman (x1)
+
+# [conflict] tables.c:7966
+#   JP: 練習生
+#   EN: Apprentice (x4) | Trainee (x1)
+
+# [conflict] tables.c:7966
+#   JP: 奇術師
+#   EN: Trickster (x4) | Jagguler (x1)
+
+# [conflict] tables.c:7966
+#   JP: 魔道師
+#   EN: Sorcerer (x4) | Wizard (x1)
+
+# [conflict] tables.c:7966
+#   JP: マスター
+#   EN: Master Thief (x1) | Master Harper (x1)
+
+# [conflict] tables.c:7966
+#   JP: 見習い
+#   EN: Novice (x2) | Acolyte (x1) | Apprentice (x1)
+
+# [conflict] tables.c:7966
+#   JP: 入門者
+#   EN: Initiate (x3) | Beginner (x1)
+
+# [conflict] tables.c:7966
+#   JP: 秘術師
+#   EN: Skilled (x1) | Conjurer (x1)
+
+# [conflict] tables.c:8772
+#   JP: 叫ぶ
+#   EN: shriek (x1) | Shriek (x1)
+
+# [conflict] tables.c:8772
+#   JP: 射撃
+#   EN: arrow (x1) | Arrow (x1)
+
+# [conflict] tables.c:8772
+#   JP: 秘孔を突く
+#   EN: cause mortal wounds (x1) | Cause Mortal Wound (x1)
+
+# [conflict] tables.c:8772
+#   JP: スター・バースト
+#   EN: starburst (x1) | star burst (x1)
+
+# [conflict] tables.c:8772
+#   JP: 盲目
+#   EN: blind (x1) | Blind (x1)
+
+# [conflict] tables.c:8772
+#   JP: 引きよせる
+#   EN: teleport to (x1) | Teleport to (x1)
+
+# [conflict] tables.c:8772
+#   JP: トラップ創造
+#   EN: create traps (x1) | Create traps (x1)
+
+# [conflict] tables.c:8772
+#   JP: 記憶喪失
+#   EN: cause amnesia (x1) | Amnesia (x1)
+
+# [conflict] tables.c:8972
+#   JP: 悪魔
+#   EN: Daemon (x1) | Demon (x1)
+
+# [conflict] tables.c:12898
+#   JP: 腕力
+#   EN: STR (x2) | STR :  (x1)
+
+# [conflict] tables.c:12898
+#   JP: 知能
+#   EN: INT (x2) | INT :  (x1)
+
+# [conflict] tables.c:12898
+#   JP: 賢さ
+#   EN: WIS (x2) | WIS :  (x1)
+
+# [conflict] tables.c:12898
+#   JP: 魅力
+#   EN: CHR (x2) | CHR :  (x1)
+
+# [conflict] xtra1.c:1806
+#   JP: 学習
+#   EN: lear (x1) | Stud (x1)
+
+# [conflict] xtra2.c:1575
+#   JP: を倒した。
+#   EN: \sis destroyed. (x1) |  dies. (x1)
+
+# [conflict] xtra2.c:4801
+#   JP: %sを倒した。
+#   EN: You have killed %s. (x1) | You have destroyed %s. (x1) | You have slain %s. (x1)
+
+# [conflict] xtra2.c:7780
+#   JP: 変異した。
+#   EN: mutation (x1) | polymorphing (x1)
+
+# [conflict] xtra2.c:7903
+#   JP: 上質なアイテムを手に入れた。
+#   EN: a good item (x1) | good items (x1)
+
+# [conflict] xtra2.c:7925
+#   JP: 高級品のアイテムを手に入れた。
+#   EN: an excellent item (x1) | excellent items (x1)
+
+# [conflict] xtra2.c:8139
+#   JP: モンスターを召喚された。
+#   EN: summoning hostile monsters (x2) | summoning many hostile monsters (x1)
+
+# [conflict] xtra2.c:8566
+#   JP: モンスターが抹殺された。
+#   EN: genociding monsters (x1) | genociding nearby monsters (x1)
+
+# [count] artifact.c:4236
+#   JP: 全てを受け入れる境地に至った気がする... / 様々な色に輝いている...
+#   EN: It glows many colours...
+
+# [count] artifact.c:4899
+#   JP: 『助さん』が現れた。
+#   EN: Suke-san apperars. / Suke-san
+
+# [count] artifact.c:4909
+#   JP: 『格さん』が現れた。
+#   EN: Kaku-san appears. / Kaku-san
+
+# [count] autopick.c:88
+#   JP: すべての / 未判明の / 未鑑定の / 鑑定済みの / *鑑定*済みの / 収集中の / アーティファクト / エゴ / 上質の / 無銘の / 並の / 無価値の / レアな / ありふれた / ダイス目の違う / ダイス目 / 以上の / 修正値 / 以上の / 珍品 / リボン / 酒 / 読めない / 第一領
+#   EN: all / unaware / unidentified / identified / *identified* / collecting / artifact / ego / good / nameless / average / worthless / rare / common / dice boosted /\s
+
+# [count] autopick.c:2428
+#   JP: アイテム / 収集中で既に持っているスロットにまとめられる / 未鑑定でその効果も判明していない / 未鑑定の / 鑑定済みの / 完全に鑑定済みの / ダメージダイスが通常より大きい / 武器 / ___ / ダメージダイスの最大値が / 武器 / %d / 以上の / ___ / 修正値が(+ / %d / )以上
+#   EN: items / can be absorbed into an existing inventory slot / unidentified / basic abilities are not known / unidentified / identified / fully identified / very rar
+
+# [count] autopick.c:4241
+#   JP: セーブ無しで終了 / セーブして終了 / 全ての変更を破棄 / ヘルプ / カーソル移動 / 左          (←矢印キー) / 下          (↓矢印キー) / 上          (↑矢印キー) / 右          (→矢印キー) / 行の先頭 / 行の終端 / 上のページ  (PageUpキ
+#   EN: Quit without save / Save & Quit / Revert all changes / Help / Move cursor / Left     (Left Arrow key) / Down     (Down Arrow key) / Up       (Up Arrow key) / Ri
+
+# [count] birth.c:77
+#   JP: あなたは普通の人間です。人間は主に人里に住んでいますが、外界から迷い込んでくることもあります。幻想郷のほかの住人達に比べると寿命が短く肉体的にも貧弱ですが、成長の速さには特筆すべきものがあります。秀でた点がない代わりに弱点らしい弱点もなく、どのような職業でもそれなりにこなすことが可能です。 / あなたは幻想郷のあちこち
+#   EN: The human is the base character.  All other races are compared to them.  Humans can choose any class and are average at everything.  Humans tend to go up levels
+
+# [count] birth.c:247
+#   JP: あなたは武器の扱いに熟達し、圧倒的な剛腕で道を切り開くことができます。直接殴る斬るだけが能ではなく弓矢や投擲の技術も習得しています。1対1の戦いで敵に後れを取る事はほとんどありませんが、戦闘以外のことは極めて不得手です。中盤以降のダンジョンで生き延びるためには、苦手な魔道具や隠密能力などをどうにかして補う事が必要です。
+#   EN: A Warrior is a hack-and-slash character, who solves most of his problems by cutting them to pieces, but will occasionally fall back on the help of a magical dev
+
+# [count] birth.c:385
+#   JP: あなたは特に特筆するべき部分がない性格です。あらゆる技能を平均的にこなします。 / あなたは考えるより先に手が出るタイプです。肉体的な能力や技能が上昇します。しかし、魔法に関係する能力や技能は劣り、戦士よりのステータスを持ちます。 / あなたは頭の回転が速くそして思慮深い性格です。肉体的な能力は下がりますが、知能や魔法
+#   EN: "Ordinary" is a personality with no special skills or talents, with unmodified stats and skills. / "Mighty" raises your physical stats and skills, but reduces s
+
+# [count] birth.c:902
+#   JP: (ここで選択した魔法はルナサにしか使えません) / 注意：魔法の領域の選択によりあなたが習得する呪文のタイプが決まります。
+#   EN: Note: The realm of magic will determine which spells you can learn.
+
+# [count] birth.c:1183
+#   JP: あなたにはその領域を修得することはできそうにない。 / よろしいですか？
+#   EN: Are you sure?\s
+
+# [count] birth.c:4536
+#   JP: の職業修正 / の職業修正 / 腕力 知能 賢さ 器用 耐久 魅力 経験 スコア
+#   EN: : Class modification / Str  Int  Wis  Dex  Con  Chr   EXP\s
+
+# [count] birth.c:4690
+#   JP: 注意：《性格》によってキャラクターの能力やボーナスが変化します。 / 灰色の性格は未実装です。
+#   EN: Note: Your personality determines various intrinsic abilities and bonuses.
+
+# [count] birth.c:4766
+#   JP: の性格修正 / の性格修正 / 腕力 知能 賢さ 器用 耐久 魅力\s\s\s\s\s\s
+#   EN: : Personality modification / Str  Int  Wis  Dex  Con  Chr\s\s\s\s\s\s\s
+
+# [count] birth.c:8131
+#   JP: \s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s性格に%sを選択した。 /                             性格に%sを選択した。
+#   EN: \s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\schoose %s.
+
+# [count] birth.c:8228
+#   JP: 職業: %s(%s)\n / 職業: %s(%s)\n
+#   EN: Class: %s\n
+
+# [count] birth.c:8249
+#   JP: 性格: %s\n / 性格: %s\n
+#   EN: Pesonality: %s\n
+
+# [count] bldg.c:1546
+#   JP: ダイス・スロット / レモン   レモン            2 / レモン   レモン   レモン   5 / オレンジ オレンジ オレンジ 10 / 剣       剣       剣       20 / 盾       盾       盾       50 / プラム   プラム   プラム   200 /\s
+#   EN: Dice Slots
+
+# [count] bldg.c:3228
+#   JP: これで合計 %d ポイント獲得しました。
+#   EN: You earned %d point%s total. / s /\s
+
+# [count] bldg.c:3714
+#   JP: 宿屋に泊まった。
+#   EN: stay over daytime at the inn. / stay over night at the inn.
+
+# [count] bldg.c:10754
+#   JP: %sを＄%d で再充填しました。
+#   EN: %^s %s recharged for %d gold. / were / was
+
+# [count] bldg.c:14918
+#   JP: q_info.txt / ここにはクエスト「%s」(レベル%d)への入口があります。 / ここにはクエストへの入口があります。 / クエストに入りますか？
+#   EN: There is an entry of a quest. / Do you enter?\s
+
+# [count] cave.c:1912
+#   JP: の魔法書 /\s
+#   EN: ^Ring of  / = / ^Amulet of  / " / ^Scroll of  / ? / ^Scroll titled  / ? / ^Wand of  / - / ^Rod of  / - / ^Staff of  / _ / ^Potion of  / ! /  Spellbook  /  / ^Bo
+
+# [count] cmd1.c:1143
+#   JP: こうして、%sは『クリムゾン』を手に入れた。 / しかし今、『混沌のサーペント』の放ったモンスターが、 / %sに襲いかかる．．． / %s(%c)を持っている。 / %s拾って、%s(%c)を持っている。 / %s(%c)を拾った。
+#   EN: You have %s (%c).
+
+# [count] cmd1.c:1463
+#   JP: 落とし戸に飛び込んだ！ / 落とし戸に落ちた！
+#   EN: You have fallen through a trap door!
+
+# [count] cmd1.c:5636
+#   JP: %sは全く無防備に一撃を受けた！ / 必殺の一太刀だ！ / 刃が%sに深々と突き刺さった！ / 鋭い一撃が%sに突き刺さった！
+#   EN: You critically injured %s!
+
+# [count] cmd1.c:5656
+#   JP: %sは全く無防備に一撃を受けた！ / 必殺の一太刀だ！ / 刃が%sの急所を貫いた！ / %sの急所へ強烈な一撃を加えた！
+#   EN: You fatally injured %s!
+
+# [count] cmd1.c:5672
+#   JP: %sの意識は途切れた。 / %sを一刀のもとに斬り伏せた！ / 刃が%sの急所を貫いた！ / %sを昏倒させた。
+#   EN: You hit %s on a fatal spot!
+
+# [count] cmd1.c:7625
+#   JP: %s攻撃できない。 / 両手がふさがって /\s
+#   EN: You cannot do attacking.
+
+# [count] cmd1.c:9111
+#   JP: %sが行く手をはばんでいるようだ。
+#   EN: You feel %s %s blocking your way. / an / a
+
+# [count] cmd1.c:9147
+#   JP: %sが行く手をはばんでいる。
+#   EN: There is %s %s blocking your way. / an / a
+
+# [count] cmd2.c:2675
+#   JP: %sはがっちりと閉じられていたようだ。 / %sはがっちりと閉じられているようだ。
+#   EN: The %s appears to be stuck.
+
+# [count] cmd2.c:3218
+#   JP: %sを切り払った。 / 落盤だ！ / 一瞬で壁に大穴が開いた！ / 壁が引っ込んだ。 / 穴を掘り終えた。
+#   EN: You have cleared away the %s. / You have finished the tunnel.
+
+# [count] cmd2.c:3452
+#   JP: %sはがっちりと閉じられていたようだ。 / %sはがっちりと閉じられているようだ。
+#   EN: The %s appears to be stuck.
+
+# [count] cmd2.c:3723
+#   JP: %sを破壊した。 / %sを踏み潰した。 / %sを解除した。
+#   EN: You have disarmed the %s.
+
+# [count] cmd3.c:2052
+#   JP: 呪われた装備を力づくで剥がした！ / 呪われた品をなだめて何とか外れてもらった。
+#   EN: You teared a cursed equipment off by sheer strength!
+
+# [count] cmd3.c:3175
+#   JP: 真上
+#   EN: 
+
+# [count] cmd4.c:920
+#   JP: 最強の肉体を求めて / 人生それははかない / 明日に向かって / 棚からぼたもち / あとの祭り / それはいい考えだ / 何とでも言え / 兎にも角にも / ウソだけど / もはやこれまで / なんでこうなるの / それは無理だ / 倒すべき敵はゲ○ツ / ん～？聞こえんなぁ / オレの名を言ってみろ / 頭が変に
+#   EN: Quest of The World's Toughest Body / Attack is the best form of defence. / Might is right. / An unexpected windfall / A drowning man will catch at a straw / Don
+
+# [count] cmd4.c:1001
+#   JP: 「%s%s%sの伝説 -%s-」 / の /  / 「%s%s%sの伝説 -%s-」 / の /\s
+#   EN: Legend of %s %s '%s'
+
+# [count] cmd4.c:1129
+#   JP: (1) 記録を見る / (2) 文章を記録する / (3) 直前に入手又は鑑定したものを記録する / (4) 記録を消去する
+#   EN: (1) Display your record / (2) Add record / (3) Record item you last get/identify / (4) Delete your record / (R) Record playing movie / or stop it
+
+# [count] cmd4.c:1306
+#   JP: ['c'で職業名変更, 'f'でファイルへ書出, 'h'でモード変更, ESCで終了] / ['c'で名前変更, 'f'でファイルへ書出, 'h'でモード変更, ESCで終了]
+#   EN: ['c' to change name, 'f' to file, 'h' to change mode, or ESC]
+
+# [count] cmd4.c:5205
+#   JP: ユニーク / 乗馬可能なモンスター / アンバーの王族 / アリ / コウモリ / クモ・ムカデ等 / ドラゴン / 目玉 / 猫・猫型獣人 / ゴーレム・機械 / 標準人間型生物 / ベトベト / ゼリー / 犬型獣人 / 水棲生物 / モルド / ナーガ / オーク / 人間 / 四足獣 / ネズミ / スケルトン
+#   EN: Uniques / Ridable monsters / Wanted monsters / Ambertite / Ant / Bat / Centipede / Dragon / Floating Eye / Feline / Golem / Hobbit/Elf/Dwarf / Icky Thing / Jell
+
+# [count] cmd4.c:5545
+#   JP: キノコ / 食物 / 菓子 / 飲み物 / 酒 / 素材 / 珍品・記念品 / 薬 / 油つぼ / 巻物 / 指輪 / アミュレット / 笛 / 光源 / 魔法棒 / 杖 / ロッド / 機械 / 妖魔本 / 写真 / 箱 / 人形 / 短剣 / 長剣 / 刀 / 鈍器 / 棒 / 斧 / 槍 / 長柄武器 / 弓 /
+#   EN: Mushrooms / Potions / Flasks / Scrolls / Rings / Amulets / Whistle / Lanterns / Wands / Staves / Rods / Cards / Capture Balls / Parchments / Spikes / Boxs / Sta
+
+# [count] cmd4.c:7245
+#   JP: 格闘 / 盾 / 乗馬 / 二刀流 / 投擲 /  /  /  /  /  / 短剣 / 長剣 / 刀 / 鈍器 / 棒 / 斧 / 槍 / 長柄武器 / 弓 / クロスボウ / 銃
+#   EN: Martial Arts     / Dual Wielding    / Riding\s\s\s\s\s\s\s\s\s\s
+
+# [count] cmd4.c:7514
+#   JP: \s\s\s\s合計: %d 体の配下\n /  維持コスト: %d%% MP\n
+#   EN: \s\s\sTotal: %d pet%s.\n /  / s /    Upkeep: %d%% mana.\n
+
+# [count] cmd4.c:7779
+#   JP: あなたは%ld体の敵を倒している。\n\n
+#   EN: You have defeated %ld %s.\n\n / enemy / enemies
+
+# [count] cmd4.c:7827
+#   JP: pt /      %3d 人の %s\n /      %3d 体の %s\n
+#   EN: coins /      1 pile of %s\n /      1 %s\n /      %d %s\n
+
+# [count] cmd4.c:7861
+#   JP: \s\s\s\s合計: %lu 体を倒した。\n
+#   EN: \s\s\sTotal: %lu creature%s killed.\n /  / s
+
+# [count] cmd4.c:9623
+#   JP: 現在の体力ランク : %d/100\n / 現在の体力ランク : ???\n / あなたのスコア倍率 : %d%%\n / あなたの移動屋敷 : %s\n / \n
+#   EN: Your current Life Rating is %d/100.\n\n / Your current Life Rating is ???.\n\n / Limits of maximum stats\n\n
+
+# [count] cmd4.c:10362
+#   JP: \n ( %d ページ )\n / %c%s %s\n / %c%s %.*s\n /    %.77s\n
+#   EN: %c%s %s\n
+
+# [count] cmd4.c:10541
+#   JP: (1) 既知の伝説のアイテム                 の一覧 / (2) 既知のアイテム                       の一覧 / (3) 既知の未打倒ユニーク・モンスター     の一覧 / (4) 既知のモンスター                     の一覧 / (5) 倒した敵の数\s\s\s
+#   EN: (1) Display known artifacts / (2) Display known objects / (3) Display remaining uniques / (4) Display known monster / (5) Display kill count / (6) Display wante
+
+# [count] cmd5.c:23
+#   JP: 必殺技 / レシピ / オカルト / 呪文 / 異変の力 / 呪文
+#   EN: art / prayer / song / spell
+
+# [count] cmd5.c:929
+#   JP: あと %d つの%sを学べる。 / あと %d 個の%sを学べる。
+#   EN: You can learn %d new %s%s. /  / s
+
+# [count] cmd5.c:1105
+#   JP: その石には学ぶべき%sがない。 / その本には学ぶべき%sがない。
+#   EN: You cannot learn any %ss in that book.
+
+# [count] cmd5.c:1298
+#   JP: あと %d つの%sを学べる。 / あと %d 個の%sを学べる。
+#   EN: You can learn %d more %s%s. / s /\s
+
+# [count] cmd5.c:1782
+#   JP: 唱える / その%sには知っている%sがない。 / 石 / 本
+#   EN: recite / cast / You don't know any %ss in that book.
+
+# [count] cmd5.c:1892
+#   JP: その%sを%sのに十分なマジックポイントがない。 / 唱える
+#   EN: You do not have enough mana to %s this %s. / recite / cast
+
+# [count] cmd5.c:2694
+#   JP: %sから離れた。 / %sから降りた。
+#   EN: You have got off %s.\s
+
+# [count] cmd5.c:2718
+#   JP: %s と別れた。 / %s を放した。
+#   EN: Dismissed %s.
+
+# [count] cmd5.c:2746
+#   JP: %d 体の配下を放しました。
+#   EN: You have dismissed %d pet%s. /  / s
+
+# [count] cmd5.c:3022
+#   JP: そちらには行けない。 / そちらには降りられません。
+#   EN: You cannot go to that direction.
+
+# [count] cmd5.c:3512
+#   JP: 寄生を中断する / 踊りを止める / 配下から降りる
+#   EN: get off a pet
+
+# [count] cmd5.c:3525
+#   JP: 配下に寄生する / 配下の背後で踊る / 配下に乗る
+#   EN: ride a pet
+
+# [count] cmd6.c:517
+#   JP: 動物 / あなたは戒律により肉を食べられない。 / この食物は穢れに満ちていて食べられない。 / 歯ごたえがあっておいしい。 / 粘菌 / これは肉なのか植物なのか？念のために止めておこう。 / こんな気持ちの悪いものを食べたくない。 / これはなんとも形容しがたい味だ。 / 穀物 / 香ばしいが味気ない。 / むむ・
+#   EN: That tastes good.
+
+# [count] cmd6.c:7946
+#   JP: 魔道具を隠し持っていない！ / 魔法を覚えていない！
+#   EN: You don't have any magic!
+
+# [count] cmd6.c:8425
+#   JP: 混乱していて魔道具を取り出せない！ / 混乱していて唱えられない！
+#   EN: You are too confused!
+
+# [count] cmd6.c:8470
+#   JP: 隠し持った魔道具をうまく使えなかった！ / 呪文をうまく唱えられなかった！
+#   EN: You failed to get the magic off!
+
+# [count] do-spell.c:11221
+#   JP: \s/ 飛飯綱 / (2+レベル/16)マス離れたところにいるモンスターを攻撃する。刀を持っていないと使えない。
+#   EN: Tobi-Izuna / Attacks a two squares distant monster.
+
+# [count] do-spell.c:11419
+#   JP: \s/ カウンター / 相手に攻撃されたときに反撃する。反撃するたびにMPを消費する。
+#   EN: Counter / Prepares to counterattack. When attack by a monster, strikes back using SP each time.
+
+# [count] do-spell.c:11589
+#   JP: \s/ 裂風剣 / 攻撃した相手を後方へ吹き飛ばす。剣か刀を装備していないと使えない。
+#   EN: Wind Blast / Attacks an adjacent monster, and blow it away.
+
+# [count] do-spell.c:11673
+#   JP: \s/ 刀匠の目利き / 武器・防具を1つ識別する。レベル45以上で武器・防具の能力を完全に知ることができる。
+#   EN: Judge / Identifies a weapon or armor. Or *identifies* these at level 45.
+
+# [count] do-spell.c:11696
+#   JP: \s/ 破岩斬 / 岩を壊し、岩石系のモンスターに大ダメージを与える。刃のある武器を装備していないと使えない。
+#   EN: Rock Smash / Breaks rock. Or greatly damage a monster made by rocks.
+
+# [count] do-spell.c:11809
+#   JP: \s/ 魔神斬り / 攻撃が当たれば必ず会心の一撃になる。斧を装備していないと使えない。
+#   EN: Majingiri / Attempts to attack with critical hit. But this attack is easy to evade for a monster.
+
+# [count] do-spell.c:11847
+#   JP: \s/ 捨て身 / 強力な攻撃を繰り出す。次のターンまでの間、食らうダメージが増える。
+#   EN: Desperate Attack / Attacks with all of your power. But all damages you take will be doubled for one turn.
+
+# [count] do-spell.c:11882
+#   JP: \s/ 雷撃鷲爪斬 / 電撃耐性のないモンスターに非常に大きいダメージを与える。剣か刀を装備していないと使えない。
+#   EN: Lightning Eagle / Attacks a monster with more damage unless it has resistance to electricity.
+
+# [count] do-spell.c:11921
+#   JP: \s/ 入身 / 素早く相手に近寄り攻撃する。
+#   EN: Rush Attack / Steps close to a monster and attacks at a time.
+
+# [count] do-spell.c:11937
+#   JP: \s/ 赤流渦 / 自分自身も傷を作りつつ、その傷が深いほど大きい威力で全方向の敵を攻撃できる。生きていないモンスターには効果がない。
+#   EN: Bloody Maelstrom / Attacks all adjacent monsters with power corresponding to your cut status. Then increases your cut status. No effect to unliving monsters.
+
+# [count] do-spell.c:11988
+#   JP: \s/ 激震撃 / 地震を起こす。5kg以上の武器を装備していないと使えない。
+#   EN: Earthquake Blow / Shakes dungeon structure, and results in random swapping of floors and walls.
+
+# [count] do-spell.c:12020
+#   JP: \s/ 地走り / 衝撃波のビームを放つ。武器を装備していないと使えない。
+#   EN: Crack / Fires a beam of shock wave.
+
+# [count] do-spell.c:12077
+#   JP: \s/ 気迫の雄叫び / 視界内の全モンスターに対して轟音の攻撃を行う。ただし近くにいるモンスターが起きる。
+#   EN: War Cry / Damages all monsters in sight with sound. Aggravate nearby monsters.
+
+# [count] do-spell.c:12099
+#   JP: \s/  / 無双三段 / 強力な3段攻撃を繰り出す。槍か長柄武器を装備していないと使えない。
+#   EN: Musou-Sandan / Attacks with powerful 3 strikes.
+
+# [count] do-spell.c:12197
+#   JP: \s/ 吸血鬼の牙 / 攻撃した相手の体力を吸いとり、自分の体力を回復させる。生命を持たないモンスターには通じない。
+#   EN: Vampire's Fang / Attacks with vampiric strikes which absorbs HP from a monster and gives them to you. No effect to unliving monsters.
+
+# [count] do-spell.c:12231
+#   JP: \s/ 幻惑 / 視界内の起きている全モンスターに朦朧、混乱、眠りを与えようとする。
+#   EN: Moon Dazzling / Attempts to stun, confuse and sleep all waking monsters.
+
+# [count] do-spell.c:12242
+#   JP: 武器を不規則に揺らした．．． / 不思議な踊りを踊った。
+#   EN: You irregularly wave your weapon...
+
+# [count] do-spell.c:12256
+#   JP: \s/ 百人斬り / 連続して入身でモンスターを攻撃する。攻撃するたびにMPを消費。MPがなくなるか、モンスターを倒せなかったら百人斬りは終了する。
+#   EN: Hundred Slaughter / Performs a series of rush attacks. The series continues while killing each monster in a time and SP remains.
+
+# [count] do-spell.c:12300
+#   JP: \s/ 天翔龍閃 / 視界内の場所を指定して、その場所と自分の間にいる全モンスターを攻撃し、その場所に移動する。刀を装備していないと使えない。
+#   EN: Dragonic Flash / Runs toward given location while attacking all monsters on the path.
+
+# [count] do-spell.c:12347
+#   JP: \s/ 二重の剣撃 / 1ターンで2度攻撃を行う。剣か刀を装備していないと使えない。
+#   EN: Twin Slash / double attacks at a time.
+
+# [count] do-spell.c:12391
+#   JP: \s/ 虎伏絶刀勢 / 強力な攻撃を行い、近くの場所にも効果が及ぶ。刀を装備していないと使えない。
+#   EN: Kofuku-Zettousei / Performs a powerful attack which even effect nearby monsters.
+
+# [count] do-spell.c:12465
+#   JP: \s/ 慶雲鬼忍剣 / 自分もダメージをくらうが、相手に非常に大きなダメージを与える。アンデッドには特に効果がある。刀を装備していないと使えない。
+#   EN: Keiun-Kininken / Attacks a monster with extremely powerful damage. But you also takes some damages. Hurts a undead monster greatly.
+
+# [count] do-spell.c:12508
+#   JP: \s/ 時を斬る / 「時を斬れる様になるには二百年は掛かると言う。」　　　　　　　　　　　　　　　　　　　　　　　　　　(東方萃夢想)　　　　視界内の全てに対し因果混乱属性の攻撃を仕掛ける。この攻撃では行動時間をほとんど消費しない。刀を装備していないと使えない。
+#   EN: Harakiri / 'Busido is found in death'
+
+# [count] do-spell.c:12988
+#   JP: あなたの武器が黒く輝いた。
+#   EN: Your weapons glow bright black. / Your weapon glows bright black.
+
+# [count] do-spell.c:12999
+#   JP: 武器の輝きが消え去った。
+#   EN: Brightness of weapon%s disappeared. /  / s
+
+# [count] do-spell.c:13535
+#   JP: あなたの武器が血を欲している。
+#   EN: Your weapons want more blood now. / Your weapon wants more blood now.
+
+# [count] do-spell.c:13546
+#   JP: 武器の渇望が消え去った。
+#   EN: Thirsty of weapon%s disappeared. /  / s
+
+# [count] do-spell.c:15247
+#   JP: ……嫌な予感がする。やっぱりやめておこう。 / 変身します。よろしいですか？
+#   EN: You will polymorph yourself. Are you sure?\s
+
+# [count] do-spell.c:20243
+#   JP: あなたは火炎のブレスを吐いた！ / あなたは冷気のブレスを吐いた！ / あなたは電撃のブレスを吐いた！ / あなたは酸のブレスを吐いた！ / あなたはガスのブレスを吐いた！
+#   EN: You breathe fire.
+
+# [count] dungeon.c:1515
+#   JP: %sは%sという感じがする...
+#   EN: You feel that the %s %s %s... / is / are
+
+# [count] dungeon.c:2404
+#   JP: 溺れ
+#   EN: You are drowning! / drowning
+
+# [count] dungeon.c:3252
+#   JP: 突然あなたの激情が爆発した！
+#   EN: RAAAAGHH! / You feel a fit of rage coming over you!
+
+# [count] dungeon.c:10340
+#   JP: セーブ失敗！ / 引き続き待機します。
+#   EN: standing by for future registration...
+
+# [count] effects.c:64
+#   JP: 構えを解いた。 / あなたの纏う雰囲気が普段通りに戻った。 / 型を崩した。
+#   EN: You stop assuming the posture.
+
+# [count] effects.c:81
+#   JP: 叫ぶのをやめた。 / 煙草を消した。 / 音を止めた。 / 演奏を止めた。 / 歌うのをやめた。
+#   EN: You stop singing.
+
+# [count] effects.c:601
+#   JP: あなたは山のような巨体になった！ / あなたは巨大な獣に変身した！ / あなたの体は溶け崩れて広がった！ / あなたは白黒の魔法使いに変身した！ / あなたの体の輪郭がぼやけ始めた・・ / あなたは巨大な竜へと変身した！ / あなたは猫の姿になった。 / あなたは正体不明の怪物に変身した！ / 伝説の一寸法師のように体
+#   EN: You feel that your body changes.
+
+# [count] effects.c:682
+#   JP: 体の大きさが元に戻った。 / あなたの体の輪郭は再びはっきりした。 / 「じゃじゃーん！」 / あなたの姿は元に戻った。 / あなたは正気に戻った。 / 鬼の影はあなたから離れた。 / あなたは憑依を解いた。 / あなたはこの体から抜け出した。 / 変身が解けた。
+#   EN: You are no longer transformed.
+
+# [count] effects.c:939
+#   JP: あなたは技を中断した。 / 型が崩れた。
+#   EN: Your posture gets loose.
+
+# [count] effects.c:2487
+#   JP: あなたの体は闇に溶けた。 / 物質界を離れて幽鬼のような存在になった！
+#   EN: You leave the physical world and turn into a wraith-being!
+
+# [count] effects.c:2517
+#   JP: あなたの体は再びはっきりした形をとった。 / 不透明になった感じがする。
+#   EN: You feel opaque.
+
+# [count] effects.c:3819
+#   JP: あなたの分身は神社に戻った。 / 幻影が消えた。
+#   EN: Your Shadow disappears.
+
+# [count] effects.c:3892
+#   JP: 棘が消えた。 / 回転する刃が消えた。 / 宙に描いた九字が消えた。 / ギアの回転が止まった。 / 護符が消えた。 / 鏡のオーラが消えた。
+#   EN: The mirror shards disappear.
+
+# [count] effects.c:6936
+#   JP: 無限の胃袋を突き破られた！ / 回避不可能の攻撃を受けた！
+#   EN: The attack cuts your shield of invulnerability open!
+
+# [count] effects.c:6951
+#   JP: 攻撃の吸収に失敗した！ / 攻撃を無効化できなかった！
+#   EN: The attack penetrates your shield of invulnerability!
+
+# [count] effects.c:7325
+#   JP: %s%s%s /  / 彫像状態で / 麻痺状態で / 幻覚に歪んだ /\s
+#   EN: %s%s /  /  while helpless
+
+# [count] effects.c:7413
+#   JP: \s\s満身創痍！　Game over
+#   EN: You are broken. / You die.
+
+# [count] effects.c:7448
+#   JP: 辞世の句:  / 負けセリフ:\s
+#   EN: Last word:\s
+
+# [count] effects.c:7464
+#   JP: \s\s満身創痍！　Game over
+#   EN: You are broken. / You die.
+
+# [count] effects.c:8565
+#   JP: 幸運がやってくる気がする！ / 幸運の仕組みがわかった気がする！
+#   EN: You feel nether resistant!
+
+# [count] effects.c:8583
+#   JP: 運気が普段通りに戻った。 / 幸運とは何だったのかわからなくなった。
+#   EN: You feel less nether resistant
+
+# [count] files.c:1713
+#   JP: 打撃修正(格闘) / 打撃修正(両手) / 打撃修正(右手) / 打撃修正(左手) / 打撃修正(左手) / 打撃修正(右手) /  / 射撃攻撃修正 / 射撃武器倍率 / 加速 / ＡＣ / レベル / 経験値 / 最大経験 / 次レベル / 所持金 / 日付 / ＨＰ / ＭＰ / プレイ時間 / 打撃攻撃  :\s
+#   EN: Bare hand / Two hands / Right hand / Left hand / Left hand / Right hand / Posture / Shooting / Multiplier / Speed / AC / Level / Experience / Max Exp / Exp to A
+
+# [count] files.c:2286
+#   JP: %3d-最低 / 最低
+#   EN: Very Bad
+
+# [count] files.c:2303
+#   JP: %3d-悪い / 悪い
+#   EN: Bad
+
+# [count] files.c:2315
+#   JP: %3d-劣る / 劣る
+#   EN: Poor
+
+# [count] files.c:2328
+#   JP: %3d-普通 / 普通
+#   EN: Fair
+
+# [count] files.c:2340
+#   JP: %3d-良い / 良い
+#   EN: Good
+
+# [count] files.c:2352
+#   JP: %3d-大変良い / 大変良い
+#   EN: Very Good
+
+# [count] files.c:2365
+#   JP: %3d-卓越 / 卓越
+#   EN: Excellent
+
+# [count] files.c:2381
+#   JP: %3d-超越 / 超越
+#   EN: Superb
+
+# [count] files.c:2396
+#   JP: %3d-英雄的 / 英雄的
+#   EN: Heroic
+
+# [count] files.c:2408
+#   JP: %3d-伝説的[%d] / 伝説的[%d]
+#   EN: Legendary[%d]
+
+# [count] files.c:6349
+#   JP: 混沌 倍打 : / 混沌 倍打 : / 秩序 倍打 : / 秩序 倍打 : / 人間 倍打 : / 人間 倍打 : / 動物 倍打 : / 動物 倍打 : / 不死 倍打 : / 不死 倍打 : / 竜   倍打 : / 竜   倍打 : / 悪魔 倍打 : / 悪魔 倍打 : / 神格 倍打 : / 神格 倍打 :\s
+#   EN: Slay Evil : / Slay Evil : / Slay Und. : / Slay Und. : / Slay Demon: / Slay Demon: / Slay Drag.: / Slay Drag.: / Slay Human: / Slay Human: / Slay Anim.: / Slay A
+
+# [count] files.c:6419
+#   JP: テレパシー : / ユニークESP: / 無生物ESP  : / 混沌ESP    : / 秩序ESP    : / 人間ESP    : / 動物ESP    : / 不死ESP    : / 竜ESP      : / 悪魔ESP    : / 神格ESP    : / 妖怪ESP    : / 腕力維持   :\s
+#   EN: Telepathy  : / ESP Evil   : / ESP Noliv. : / ESP Good   : / ESP Undead : / ESP Demon  : / ESP Dragon : / ESP Human  : / ESP Animal : / ESP Orc    : / ESP Troll\s
+
+# [count] files.c:6471
+#   JP: 加速        : / 追加攻撃    : / 赤外線視力  : / 魔法道具支配: / 隠密        : / 探索        : / 採掘        : / 罠解除　　　: / 魔法防御上昇: / 魔法難度減少: / 消費魔力減少: / 祝福        : / 光源        : / 乗馬\s
+#   EN: Add Blows   : / Add Tunnel  : / Add Infra   : / Add Device  : / Add Stealth : / Add Search  : / Riding      : / Throw       : / Blessed     : / No Teleport : /\s
+
+# [count] files.c:7259
+#   JP: %s%s%s / の /  / %s%s%s / の /\s
+#   EN: %s %s
+
+# [count] files.c:7461
+#   JP: hourai / …あなたは永遠を生きる蓬莱人となった。 / true_loser / …あなたは誰一人勝者のいない世界をもたらした。 / triumph / …あなたは幻想郷の英雄として外界へ帰還した。 / …あなたは幻想郷に永住した。 / …あなたは勝利の後引退した。
+#   EN: ...You %s after the winning. / Seppuku / did Seppuku / retired from the adventure
+
+# [count] files.c:8525
+#   JP: \n 闘技場: %2d勝\n
+#   EN: \n Arena: %2d Victor%s\n / ies / y
+
+# [count] files.c:8605
+#   JP: %ld体の敵を倒しています。\n
+#   EN: You have defeated %ld %s.\n / enemy / enemies
+
+# [count] files.c:8615
+#   JP: %ld体のユニーク・モンスターを含む、合計%ld体の敵を倒しています。\n
+#   EN: You have defeated %ld %s including %ld unique monster%s in total.\n / enemy / enemies /  / s
+
+# [count] files.c:8918
+#   JP: \n ルナサはかつて%s魔法を使えた。 / \n あなたはかつて%s魔法を使えた。
+#   EN: \n You were able to use %s magic before.
+
+# [count] files.c:9895
+#   JP: [キー:(RET/スペース)↑ (-)↓ (?)ヘルプ (ESC)終了] / [キー:(RET/スペース)↓ (-)↑ (?)ヘルプ (ESC)終了]
+#   EN: [Press Return, Space, -, =, /, |, or ESC to exit.]
+
+# [count] files.c:10529
+#   JP: 幻想郷に永住しますか?  / この冒険を終えますか?\s
+#   EN: Do you want to retire?\s
+
+# [count] files.c:11366
+#   JP: イージーローグライカー / ノーマルローグライカー / ハードローグライカー / ルナティックローグライカー / エクストラローグライカー
+#   EN: Magnificent
+
+# [count] files.c:11435
+#   JP: 途中終了 / <放棄> / ripe / 幻想郷に永住した。 / triumph / 幻想郷の英雄となったのち、外界へと帰還した。 / hourai / 永遠の命を手にした。 / true_loser / 自分を含めて全てに敗北をもたらした。 / mission_failed / 姫を守りきれなかった。 / escap
+#   EN: Killed on Level %d / by %s. / ...
+
+# [count] flavor.c:213
+#   JP: 『%s』 / %s
+#   EN: '%s'
+
+# [count] flavor.c:654
+#   JP: 攻 / At / 速 / Sp / 腕 / St / 知 / In / 賢 / Wi / 器 / Dx / 耐 / Cn / 魅 / Ch / 道 / Md / 隠 / Sl / 探 / Sr / 赤 / If / 掘 / Dg / 解 / Da / 抗 / Sv / 酸 / Ac / 電 / El / 火 / Fi\s
+#   EN: At / Sp / St / In / Wi / Dx / Cn / Ch / Md / Sl / Sr / If / Dg / Ac / El / Fi / Co / Ac / El / Fi / Co / Po / Li / Dk / Sh / Bl / Cf / So / Nt / Nx / Ca / Di /\s
+
+# [count] flavor.c:1862
+#   JP: %の薬 / %の#薬 / #薬 / %薬 / %#薬 / #薬
+#   EN: & Potion~ of % / & # Potion~ of % / & # Potion~
+
+# [count] flavor.c:1909
+#   JP: 生命の魔法書%
+#   EN: & Book~ of Life Magic % / & Life Spellbook~ %
+
+# [count] flavor.c:1923
+#   JP: 仙術の魔法書%
+#   EN: & Book~ of Sorcery % / & Sorcery Spellbook~ %
+
+# [count] flavor.c:1937
+#   JP: 自然の魔法書%
+#   EN: & Book~ of Nature Magic % / & Nature Spellbook~ %
+
+# [count] flavor.c:1951
+#   JP: カオスの魔法書%
+#   EN: & Book~ of Chaos Magic % / & Chaos Spellbook~ %
+
+# [count] flavor.c:1965
+#   JP: 暗黒の魔法書%
+#   EN: & Book~ of Death Magic % / & Death Spellbook~ %
+
+# [count] flavor.c:1979
+#   JP: トランプの魔法書%
+#   EN: & Book~ of Trump Magic % / & Trump Spellbook~ %
+
+# [count] flavor.c:1993
+#   JP: 秘術の魔法書%
+#   EN: & Book~ of Arcane Magic % / & Arcane Spellbook~ %
+
+# [count] flavor.c:2007
+#   JP: 匠の魔法書%
+#   EN: & Book~ of Craft Magic % / & Craft Spellbook~ %
+
+# [count] flavor.c:2021
+#   JP: 悪魔の魔法書%
+#   EN: & Book~ of Daemon Magic % / & Daemon Spellbook~ %
+
+# [count] flavor.c:2035
+#   JP: 破邪の魔法書%
+#   EN: & Book~ of Crusade Magic % / & Crusade Spellbook~ %
+
+# [count] flavor.c:2071
+#   JP: 呪術の魔法書%
+#   EN: & Book~ of Crusade Magic % / & Crusade Spellbook~ %
+
+# [count] flavor.c:2402
+#   JP: 【 / 】 / 『 / 《 / 『 / 』 / 『 / 『 / 』 / (空) /  (ERROR:アイテム内のr_idx値が不正(%d)) /  (%s)
+#   EN: \sof %s the Smith
+
+# [count] hissatsu.c:504
+#   JP: あと %d つの必殺技を学べる。 / あと %d 個の必殺技を学べる。
+#   EN: You can learn %d new special attack%s. /  / s
+
+# [count] main-win.c:1182
+#   JP: ＭＳ ゴシック
+#   EN: 8X13.FON / Courier
+
+# [count] main-win.c:1328
+#   JP: Font / ＭＳ ゴシック
+#   EN: Font / 8X13.FON / Font / Courier
+
+# [count] main-win.c:3300
+#   JP: ■ / ■
+#   EN: 
+
+# [count] main-win.c:3702
+#   JP: (テストサーバ)幻想蛮怒(テストサーバ) / 幻想蛮怒
+#   EN: 
+
+# [count] main-win.c:3864
+#   JP: 幻想蛮怒
+#   EN: 
+
+# [count] melee1.c:102
+#   JP: があなたを侮辱した！ / があなたの母を侮辱した！ / があなたを軽蔑した！ / があなたを辱めた！ / があなたを汚した！ / があなたの回りで踊った！ / が猥褻な身ぶりをした！ / があなたをぼんやりと見た！！！ / があなたをパラサイト呼ばわりした！ / があなたをサイボーグ扱いした！
+#   EN: insults you! / insults your mother! / gives you the finger! / humiliates you! / defiles you! / dances around you! / makes obscene gestures! / moons you!!!calls\s
+
+# [count] melee1.c:481
+#   JP: 撃退した。 / %^sは撃退された。
+#   EN: %^s is repelled.
+
+# [count] melee1.c:872
+#   JP: 「♪お～れはジャイアン～～ガ～キだいしょう～」 / 「♪て～んかむ～てきのお～とこだぜ～～」 / 「♪の～び太スネ夫はメじゃないよ～～」 / 「♪け～んかスポ～ツ～どんとこい～」 / 「♪うた～も～～う～まいぜ～まかしとけ～」 / 「♪ま～ちいちば～んのに～んきもの～～」 / 「♪べんきょうしゅくだいメじゃないよ～～」
+#   EN: horribly sings 'I AM GIAAAAAN. THE BOOOSS OF THE KIIIIDS.'
+
+# [count] melee1.c:1119
+#   JP: の楽器が爆音を放った！ / の楽器が奇妙な音色を奏でた。
+#   EN: hits you.
+
+# [count] melee1.c:1909
+#   JP: どうだッ！この血の目潰しはッ！
+#   EN: 
+
+# [count] melee1.c:3560
+#   JP: %sかわした。 / 奇妙な動きで /  / %s%^sの攻撃をかわした。 / 奇妙な動きで /\s
+#   EN: %^s misses you.
+
+# [count] melee2.c:2192
+#   JP: %^sは%s
+#   EN: %s %s. / %^s %s
+
+# [count] melee2.c:4083
+#   JP: %sは背後のあなたを振り払った！ / %sはあなたの束縛から脱出した。
+#   EN: %^s succeeded to escape from your restriction!
+
+# [count] melee2.c:4114
+#   JP: %^sはこのフロアから離脱した。
+#   EN: %^s read a scroll of teleport level. / %^s disappears.
+
+# [count] mind.c:1888
+#   JP: 精神 / 気 / 鏡魔法 / 精神 / 超能力
+#   EN: 
+
+# [count] monster1.c:21
+#   JP: それ / 彼 / 彼女 / 彼女たち
+#   EN: it / he / she
+
+# [count] monster1.c:28
+#   JP: それの / 彼の / 彼女の / 彼女たちの
+#   EN: its / his / her
+
+# [count] monster1.c:309
+#   JP: が、すでに仕返しは済ませている。
+#   EN: , but you have avenged %s!   / him / them
+
+# [count] monster1.c:321
+#   JP: 。仕返しはまだだ。
+#   EN: , who %s unavenged.   / remains / remain
+
+# [count] monster1.c:352
+#   JP: このモンスターはあなたを過去に %d 回倒している
+#   EN: %d of your ancestors %s been killed by this creature,  / has / have
+
+# [count] monster1.c:375
+#   JP: が、あなたは過去にこのモンスターを少なくとも %d 回は倒している。
+#   EN: and %s have exterminated at least %d of the creatures.   / your ancestors
+
+# [count] monster1.c:696
+#   JP: この
+#   EN: Killing this / A kill of this
+
+# [count] monster1.c:781
+#   JP: にして / 人間型生物
+#   EN: \sgiant
+
+# [count] monster1.c:792
+#   JP: にして / 神格
+#   EN: \stroll
+
+# [count] monster1.c:803
+#   JP: にして / 妖怪
+#   EN: \sorc
+
+# [count] monster1.c:814
+#   JP: にして / 人間
+#   EN: \shuman
+
+# [count] monster1.c:827
+#   JP: にして / 量子生物
+#   EN: \squantum creature
+
+# [count] monster1.c:838
+#   JP: にして / 妖精
+#   EN: \sfairy
+
+# [count] monster1.c:870
+#   JP: \s%lu レベルのキャラクタにとって /  約%ld.%02ld ポイントの経験となる。
+#   EN: \sis worth about %ld.%02ld point%s /  / s / th / st / nd / rd /  / n /  for a%s %lu%s level character.\s\s
+
+# [count] monster1.c:1111
+#   JP: り / 、
+#   EN: \smay  / ,  /  or\s
+
+# [count] monster1.c:1306
+#   JP: や
+#   EN: \smay breathe  / ,  /  or\s
+
+# [count] monster1.c:1811
+#   JP: 極めて的確に / 的確に / 魔法を使うことができ、
+#   EN: \smagical, casting spells /  intelligently
+
+# [count] monster1.c:1831
+#   JP: 、
+#   EN: \swhich  / ,  /  or\s
+
+# [count] monster1.c:2021
+#   JP: 、
+#   EN: \scan  / ,  /  and\s
+
+# [count] monster1.c:2164
+#   JP: 電撃 / 水 / 破邪 / 衝撃
+#   EN: cold
+
+# [count] monster1.c:2192
+#   JP: や
+#   EN: \sis hurt by  / ,  /  and\s
+
+# [count] monster1.c:2368
+#   JP: と
+#   EN: \sresists  / ,  /  and\s
+
+# [count] monster1.c:2464
+#   JP: し、
+#   EN: \scannot be  / ,  /  or\s
+
+# [count] monster1.c:2696
+#   JP: アイテム
+#   EN: \sobject / s
+
+# [count] monster1.c:2727
+#   JP: 財宝
+#   EN: \streasure / s
+
+# [count] monster1.c:3015
+#   JP: 強烈な攻撃を加える / 攻撃する
+#   EN: attack
+
+# [count] monster1.c:3220
+#   JP: カオスで攻撃する / エレメントで攻撃する / 突然変異を誘発する / 浄化する / 溺れさせる / 死に誘う / 呪う / 写真撮影する / 消化する / 怪我を負わせる / 狂気をもたらす / 飢餓をもたらす
+#   EN: OTHER
+
+# [count] monster2.c:2073
+#   JP: 』 / %s？』 / %s？
+#   EN: %s?
+
+# [count] monster2.c:2097
+#   JP: 』 / %s？』 / %s？
+#   EN: %s?
+
+# [count] monster2.c:2180
+#   JP: (寄生中) / (強化中) / (乗馬中)
+#   EN: (riding)
+
+# [count] monster2.c:2457
+#   JP: %sの顔を見てしまった！コワイ！ / 「イッツ、ルナティックターイム！」 / %s%sの顔を見てしまった！
+#   EN: You behold the %s visage of %s!
+
+# [count] monster2.c:2487
+#   JP: アイエエエ！ニンジャ！？ニンジャナンデ！？ / %sの松明の光が目に焼き付いた・・ / %s%sの顔を見てしまった！
+#   EN: You behold the %s visage of %s!
+
+# [count] mspells1.c:4972
+#   JP: %^s「燃え尽きろ！スピキュール！」
+#   EN: %^s spreads something. / %^s throws some hand grenades.
+
+# [count] mspells1.c:5279
+#   JP: %^sがあなたを引き戻した。ドウグ社のフックロープは、マッポーの世に失われつつある職人の技を継承しつづけているのだ。 / %^sがあなたを引き戻した。
+#   EN: %^s commands you to return.
+
+# [count] mspells1.c:7138
+#   JP: %^sの持つ松明が煌々と輝いた！ / %^sは強烈な警報音を発した！
+#   EN: %^s makes a high pitched shriek.
+
+# [count] mspells2.c:3484
+#   JP: %sは呪文を唱えて%sの目を焼き付かせた。
+#   EN: %^s casts a spell, burning %s%s eyes. / it / s / 's
+
+# [count] mspells2.c:3590
+#   JP: %sが%sの筋肉から力を吸いとった。
+#   EN: %^s drains power from %s%s muscles. / it / s / 's
+
+# [count] mspells2.c:3839
+#   JP: %^sの体が実体を失い暗く透き通った・・ / %sは無傷の球の呪文を唱えた。
+#   EN: %^s casts a Globe of Invulnerability.
+
+# [count] mspells2.c:3989
+#   JP: %^s「燃え尽きろ！スピキュール！」
+#   EN: %^s spreads something. / %^s throws some hand grenades.
+
+# [count] mutation.c:993
+#   JP: 額に第四の目が開眼した！ / 額に第三の目が開眼した！
+#   EN: You grow an extra pair of eyes!
+
+# [count] mutation.c:1464
+#   JP: 一瞬頭がぼうっとしたが何も起こらなかった。 / 一瞬背中がムズムズしたが何も起こらなかった。 / 一瞬体中が痒くなったが何も起こらなかった。 / 一瞬髪が逆立ったが何も起こらなかった。
+#   EN: You feel normal.
+
+# [count] mutation.c:3406
+#   JP: \sあなたはゾムのお気に入りの玩具だ。\n /  あなたはゾムの玩具だ。\n
+#   EN: \sYour mind randomly expands and contracts.\n
+
+# [count] mutation.c:3591
+#   JP: \sあなたは額に第四の目を持っている。\n /  あなたは額に第三の目を持っている。\n
+#   EN: \sYou have an extra pair of eyes (+15 search).\n
+
+# [count] object1.c:2772
+#   JP: 運搬中 /  両手 /  左手 /  右手
+#   EN: Just lifting / Wielding / On arm
+
+# [count] object1.c:2780
+#   JP: 運搬中 /  両手 /  右手 /  左手
+#   EN: Just lifting / Wielding / On arm
+
+# [count] object1.c:2788
+#   JP: リボン
+#   EN: Just holding / Shooting
+
+# [count] object1.c:2878
+#   JP: 運搬中の / 両手に装備している / 左手に装備している / 右手に装備している
+#   EN: just lifting / attacking monsters with / wearing on your arm
+
+# [count] object1.c:2884
+#   JP: 運搬中の / 両手に装備している / 右手に装備している / 左手に装備している
+#   EN: just lifting / attacking monsters with / wearing on your arm
+
+# [count] object1.c:2890
+#   JP: 身を飾っている
+#   EN: just holding / shooting missiles with
+
+# [count] object2.c:6445
+#   JP: %sは消えた。
+#   EN: The %s disappear%s. /  / s
+
+# [count] object2.c:6562
+#   JP: %sは消えた。
+#   EN: The %s disappear%s. /  / s
+
+# [count] object2.c:6622
+#   JP: %sは消えた。
+#   EN: The %s disappear%s. /  / s
+
+# [count] object2.c:6709
+#   JP: %sは消えた。
+#   EN: The %s disappear%s. /  / s
+
+# [count] object2.c:7165
+#   JP: もう%sを持っていない。 / まだ %sを持っている。
+#   EN: You have %s.
+
+# [count] object2.c:7355
+#   JP: 床上には、もう%sはない。 / 床上には、まだ %sがある。
+#   EN: You see %s.
+
+# [count] object2.c:9597
+#   JP: %sは%s無くなります。よろしいですか？ / 全て /\s
+#   EN: Really extract from %s?\s
+
+# [count] object2.c:11321
+#   JP: どのアイテムを改良しますか？ / 改良できるアイテムがありません。 / どのアイテムに造形を行いますか？ / 改良できるアイテムがありません。 / どのアイテムへ装飾を施しますか？ / 装飾に適したアイテムがありません。
+#   EN: Improve which item?  / You have nothing to improve.
+
+# [count] object2.c:11971
+#   JP: \s%s エッセンス一覧 / 》 /    /  %s エッセンス抽出 / 》 /    /  %s エッセンス消去 / 》 /    /  %s エッセンス付加 / 》 /    /  %s 武器/防具強化 / 》 /    / どの種類の技術を%sますか？ / 調べ / 使い
+#   EN: \s%s List essences / >  /    /  %s Extract essence / >  /    /  %s Remove essence / >  /    /  %s Add essence / >  /    /  %s Enchant weapon/armor / >  /    / Ch
+
+# [count] object2.c:12019
+#   JP: \s\sa) エッセンス一覧 /   b) エッセンス抽出 /   c) エッセンス消去 /   d) エッセンス付加 /   e) 武器/防具強化 / どの能力を%sますか: / 調べ / 使い
+#   EN: \s\sa) List essences /   b) Extract essence /   c) Remove essence /   d) Add essence /   e) Enchant weapon/armor / Command :
+
+# [count] racial.c:340
+#   JP: どの魔道具を隠し持ちますか？  / 魔道具を持っていない。 / どのアイテムの魔力を取り込みますか?  / 魔力を取り込めるアイテムがない。
+#   EN: Gain power of which item?  / You have nothing to gain power.
+
+# [count] racial.c:383
+#   JP: 鑑定されていないと扱えない。 / 鑑定されていないと取り込めない。
+#   EN: You need to identify before absorbing.
+
+# [count] racial.c:396
+#   JP: 充填中のアイテムは扱えない。 / 充填中のアイテムは取り込めない。
+#   EN: This item is still charging.
+
+# [count] racial.c:443
+#   JP: %sをこっそり仕舞い込んだ。 / %sの魔力を取り込んだ。
+#   EN: You absorb magic of %s.
+
+# [count] racial.c:6132
+#   JP: あなたは意識して使うような特殊能力を持っていない。 / (特殊能力 %c-%c, *'で一覧, ESCで中断) どの特殊能力の説明を見ますか？ / (特殊能力 %c-%c, *'で一覧, ESCで中断) どの特殊能力を使いますか？
+#   EN: (Powers %c-%c, *=List, ESC=exit) Use which power?\s
+
+# [count] report.c:557
+#   JP: %s%s / の /\s
+#   EN: %s\s
+
+# [count] scores.c:301
+#   JP: %3d.%9s  %s%s%s - %s%s (レベル %d) / の /  / %3d.%9s  %s%s%s - %s%s (レベル %d) / の /\s
+#   EN: %3d.%9s  %s %s the %s %s, Level %d
+
+# [count] scores.c:349
+#   JP: \s\s\s\s最高%3d階 /               / yet /   ゲームプレイ中 (%d%s) / 階 / ripe /   幻想郷に永住 (%d%s) / 階 / ripe / true_loser /   ゲームクリア (%d%s) / 階 / lost /   消滅 / hourai /   永遠の命を得
+#   EN: \s\s\s\s\s\s\s\s\s\s\s\s\s\s\sKilled by %s on the surface /                Killed by %s on %s %d / Dungeon Level /  (Max %d)
+
+# [count] scores.c:433
+#   JP: %d%s/%.5s /         (ユーザー:%s, 日付:%s, 所持金:%s, ターン:%s)
+#   EN: \s\s\s\s\s\s\s\s\s\s\s\s\s\s\s(User %s, Date %s, Gold %s, Turn %s).
+
+# [count] scores.c:1073
+#   JP: Veni, Vidi, Vici! / 来た、見た、勝った！ / 幻想の少女万歳！ / 偉大なる%s万歳！
+#   EN: Veni, Vidi, Vici! / I came, I saw, I conquered! / All Hail the Mighty %s!
+
+# [count] spells1.c:1221
+#   JP: %sが溶けた！ / %sが溶けて泥になった！
+#   EN: The %s turns into mud!
+
+# [count] spells1.c:1905
+#   JP: 融けてしまった！
+#   EN: \smelt! /  melts!
+
+# [count] spells1.c:1922
+#   JP: 壊れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:1939
+#   JP: 燃えてしまった！
+#   EN: \sburn up! /  burns up!
+
+# [count] spells1.c:1955
+#   JP: 砕け散ってしまった！
+#   EN: \sshatter! /  shatters!
+
+# [count] spells1.c:1973
+#   JP: 燃えてしまった！
+#   EN: \sburn up! /  burns up!
+
+# [count] spells1.c:1985
+#   JP: 壊れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:2003
+#   JP: 燃えてしまった！
+#   EN: \sburn up! /  burns up!
+
+# [count] spells1.c:2015
+#   JP: 砕け散ってしまった！
+#   EN: \sshatter! /  shatters!
+
+# [count] spells1.c:2037
+#   JP: 砕け散ってしまった！
+#   EN: \sshatter! /  shatters!
+
+# [count] spells1.c:2054
+#   JP: 壊れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:2067
+#   JP: 蒸発してしまった！
+#   EN: \sevaporate! /  evaporates!
+
+# [count] spells1.c:2079
+#   JP: 壊れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:2093
+#   JP: 崩れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:2109
+#   JP: 壊れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:2127
+#   JP: 壊れてしまった！
+#   EN: \sare destroyed! /  is destroyed!
+
+# [count] spells1.c:2217
+#   JP: 灰になった。
+#   EN: \sbecome dust. /  becomes dust.
+
+# [count] spells1.c:2235
+#   JP: 灰になった。
+#   EN: \sbecome dust. /  becomes dust.
+
+# [count] spells1.c:2268
+#   JP: %sは影響を受けない！
+#   EN: The %s %s unaffected! / are / is
+
+# [count] spells1.c:4238
+#   JP: の皮膚がただれた！ / は蒸発した！ / は目を回して倒れた。
+#   EN: \sloses some skin! /  evaporates!
+
+# [count] spells1.c:4314
+#   JP: %^sの堕落した精神は攻撃を跳ね返した！
+#   EN: %^s%s corrupted mind backlashes your attack! / 's / s
+
+# [count] spells1.c:4633
+#   JP: %^sの堕落した精神は攻撃を跳ね返した！
+#   EN: %^s%s corrupted mind backlashes your attack! / 's / s
+
+# [count] spells1.c:5514
+#   JP: の説得に失敗した。 / には効果がなかった！
+#   EN: \sis unaffected!
+
+# [count] spells1.c:5538
+#   JP: の説得に成功した！ / は突然友好的になったようだ！
+#   EN: \ssuddenly seems friendly!
+
+# [count] spells1.c:6202
+#   JP: の皮膚がただれた！ / は溶けた！ / は目を回して倒れた。
+#   EN: \sloses some skin! /  dissolves!
+
+# [count] spells1.c:8043
+#   JP: は倒れた。
+#   EN: \sis blasted by psionic energy. /  collapses, a mindless husk.
+
+# [count] spells1.c:9411
+#   JP: は吹っ飛ばされた！ / が消え去った！
+#   EN: \sdisappears!
+
+# [count] spells1.c:9941
+#   JP: 何かが跳ね返った！ / 風の如く武器を振るって弾き返した！ / 攻撃が跳ね返った！
+#   EN: Something bounces! / The attack bounces!
+
+# [count] spells1.c:14063
+#   JP: 「北斗神拳奥義・二指真空把！」 / ディオ・ブランドーは指一本で攻撃を弾き返した！ / 攻撃は跳ね返った！
+#   EN: The attack bounces!
+
+# [count] spells1.c:15285
+#   JP: 「北斗神拳奥義・二指真空把！」 / ディオ・ブランドーは指一本で攻撃を弾き返した！ / 攻撃は跳ね返った！
+#   EN: The attack bounces!
+
+# [count] spells2.c:1398
+#   JP: あなたはゾムのお気に入りの玩具だ。 / あなたはゾムの玩具だ。
+#   EN: Your mind randomly expands and contracts.
+
+# [count] spells2.c:1574
+#   JP: あなたは額に第四の目を持っている。 / あなたは額に第三の目を持っている。
+#   EN: You have an extra pair of eyes (+15 search).
+
+# [count] spells2.c:2061
+#   JP: あなたは一時的に闇に溶けている。 / あなたは一時的に幽体化している。
+#   EN: You are temporarily incorporeal.
+
+# [count] spells2.c:2213
+#   JP: あなたはあまり恐怖を感じない。 / あなたは全く恐怖を感じない。
+#   EN: You are completely fearless.
+
+# [count] spells2.c:4600
+#   JP: 周囲に漂う感情を感じとった。 / 殺気を感じとった！
+#   EN: You sense the presence of someone's mind!
+
+# [count] spells2.c:5298
+#   JP: あなたの配下%sはスピードを上げた! / 達 /  / 付近の敵が弾かれたように素早く動いた！ / 周辺の寝ている者が起きた感じがする・・
+#   EN: You feel a sudden stirring nearby! / You hear a sudden stirring in the distance!
+
+# [count] spells2.c:5797
+#   JP: 読心中... / 調査中...
+#   EN: Probing...
+
+# [count] spells2.c:8895
+#   JP: 何かに当たった！
+#   EN: There is %s in the way! / another monster / a monster / someone
+
+# [count] spells2.c:9023
+#   JP: %s%sが立ちふさがっている！ / 別の /  / モンスター / 何か
+#   EN: There is %s in the way! / another monster / a monster / someone
+
+# [count] spells3.c:871
+#   JP: %^sは床を突き破って沈んでいく。
+#   EN: %^s sink%s through the floor. /  / s
+
+# [count] spells3.c:917
+#   JP: %^sは天井を突き破って宙へ浮いていく。
+#   EN: %^s rise%s up through the ceiling. /  / s
+
+# [count] spells3.c:941
+#   JP: %^sは天井を突き破って宙へ浮いていく。
+#   EN: %^s rise%s up through the ceiling. /  / s
+
+# [count] spells3.c:962
+#   JP: %^sは床を突き破って沈んでいく。
+#   EN: %^s sink%s through the floor. /  / s
+
+# [count] spells3.c:1330
+#   JP: %s(%c)は劣化を跳ね返した！
+#   EN: Your %s (%c) resist%s disenchantment! /  / s
+
+# [count] spells3.c:1370
+#   JP: %s(%c)は劣化してしまった！
+#   EN: Your %s (%c) %s disenchanted! / were / was
+
+# [count] spells3.c:2024
+#   JP: あなたは%sを壁に近すぎる場所で唱えてしまった！ / 呪文 / 大きな爆発音があった！
+#   EN: You %s the %s too close to a wall! / recite / cast / prayer / spell / There is a loud explosion!
+
+# [count] spells3.c:2918
+#   JP: %s は明るく輝いた！
+#   EN: %s %s glow%s brightly! / Your / The /  / s
+
+# [count] spells3.c:3028
+#   JP: %s は眩い光を発した！
+#   EN: %s %s radiate%s a blinding light! / Your / The /  / s
+
+# [count] spells3.c:3038
+#   JP: %sは既に伝説のアイテムです！
+#   EN: The %s %s already %s! / are / is / artifacts / an artifact
+
+# [count] spells3.c:3051
+#   JP: %sは既に名のあるアイテムです！
+#   EN: The %s %s already %s! / are / is / ego items / an ego item
+
+# [count] spells3.c:3064
+#   JP: %sは既に強化されています！
+#   EN: The %s %s already %s! / are / is / customized items / a customized item
+
+# [count] spells3.c:4056
+#   JP: %sを覆う黒いオーラは祝福を跳ね返した！
+#   EN: The black aura on %s %s disrupts the blessing! / your / the
+
+# [count] spells3.c:4067
+#   JP: %s から邪悪なオーラが消えた。
+#   EN: A malignant aura leaves %s %s. / your / the
+
+# [count] spells3.c:4102
+#   JP: %s は既に祝福されている。
+#   EN: %s %s %s blessed already. / Your / The / were / was
+
+# [count] spells3.c:4117
+#   JP: %sは輝いた！
+#   EN: %s %s shine%s! / Your / The /  / s
+
+# [count] spells3.c:4175
+#   JP: %s は劣化した！
+#   EN: %s %s %s disenchanted! / Your / The / were / was
+
+# [count] spells3.c:4250
+#   JP: %sは輝いた！
+#   EN: %s %s shine%s! / Your / The /  / s
+
+# [count] spells3.c:5772
+#   JP: 全部 / 何個か / 一個 /\s
+#   EN: All of y / Some of y / One of y / Y / were / was
+
+# [count] spells3.c:6156
+#   JP: %sは新品同様になった！
+#   EN: %s %s look%s as good as new! / Your / The /  / s
+
+# [count] spells3.c:6167
+#   JP: %sは腐食しなくなった。
+#   EN: %s %s %s now protected against corrosion. / Your / The / are / is
+
+# [count] store.c:3760
+#   JP: (%s:%c-%c, ESCで中断) %s / アイテム / 商品
+#   EN: (Items %c-%c, ESC to exit) %s
+
+# [count] store.c:4658
+#   JP: 「どれを家から取って来ましょうか？ 」 / 「何を取って来ればいいんだい？ 」 / どのアイテムを取りますか?  / どれ?  / 何をお探しですか?\s
+#   EN: Which item do you want to take?  / Which item are you interested in?\s
+
+# [count] tables.c:2201
+#   JP: ニンジャ / Ninja
+#   EN: Balrog
+
+# [count] tables.c:11514
+#   JP: はあなたの家の漬物を残らず食い尽くした。 / があなたの回りを3回回ってワンと言った。 / にしばきまわされた。 / は一人で背水の陣を敷いた。 / は慈悲のあるドヤ顔をした。 / にジャン拳で攻撃された。 / があなたの頬を札束でしばいた。 / があなたの前でポージングをした。 / にアカンベーされた。 / に「神の
+#   EN: smothers / hugs / humiliates / whips / kisses / disgusts / pees all over / passes the gas on / makes obscene gestures at / licks / stomps on / swallows / drools
+
+# [count] util.c:4498
+#   JP: 超能力/特殊能力 / 超能力/特殊能力 / ものまね/特殊能力 / 歌/特殊能力 / 必殺技/特殊能力 / 練気術/魔法/特殊能力 / 鏡魔法/特殊能力 / 忍術/特殊能力 / 広域マップ(<) / 通常マップ(>) /\s
+#   EN: MindCraft/Special / Imitation/Special / Song/Special / Technique/Special / Mind/Magic/Special / BrutalPower/Special / Technique/Special / MirrorMagic/Special /\s
+
+# [count] util.c:5594
+#   JP: 。 / 、 / ィ / ー
+#   EN: 
+
+# [count] wizard1.c:190
+#   JP: 巻物 / 薬 / 食料 / 菓子 / 飲料 / 酒 / 素材 / 珍品 / 機械 / キノコ
+#   EN: Scrolls / Potions / Food
+
+# [count] wizard1.c:260
+#   JP: 笛 / 妖魔本
+#   EN: Whistle / Capture Ball / Express Card
+
+# [count] wizard1.c:275
+#   JP: 人形
+#   EN: Magical Figurines / Statues / Corpses
+
+# [count] wizard1.c:575
+#   JP: 短剣 / 長剣 / 刀 / 鈍器 / 棒 / 斧 / 槍 / 長柄武器 / 特殊武器 / 弓 / クロスボウ / 銃 / 矢 / リボンなど / 服 / 鎧 / 竜鎧 / クローク / 盾 / 頭装備 / 籠手 / 靴 / 光源 / アミュレット / 指輪
+#   EN: Edged Weapons / Polearms / Hafted Weapons / Shovels/Picks / Bows / Ammo / Body Armor / Cloaks / Shields / Helms/Crowns / Gloves / Boots / Light Sources / Amulet
+
+# [count] wizard1.c:693
+#   JP: 魔法道具使用能力 / 隠密 / 探索 / 赤外線視力 / 採掘 / 攻撃回数 / スピード / 罠解除 / 魔法防御
+#   EN: Stealth / Searching / Infravision / Tunneling / Attacks / Speed
+
+# [count] wizard1.c:779
+#   JP: 溶解 / 電撃 / 焼棄 / 凍結 / 毒殺 / 理力 / 混沌 / 吸血 / 地震 / 切れ味 / *切れ味*
+#   EN: Acid Brand / Lightning Brand / Flame Tongue / Frost Brand / Poisoned / Force / Mark of Chaos / Vampiric / Earthquake impact on hit / Very sharp
+
+# [count] wizard1.c:817
+#   JP: 酸 / 電撃 / 火炎 / 冷気 / 毒 / 閃光 / 暗黒 / 轟音 / 破片 / 地獄 / 破邪 / 時空 / 水 / カオス / 劣化
+#   EN: Acid / Lightning / Fire / Cold / Poison / Fear / Light / Dark / Blindness / Confusion / Sound / Shards / Nether / Nexus / Chaos / Disenchantment
+
+# [count] wizard1.c:904
+#   JP: 投擲 / 反射 / 麻痺知らず / 混乱耐性 / 恐怖耐性 / 盲目耐性 / 狂気耐性
+#   EN: Throwing / Reflection / Free Action / Hold Life
+
+# [count] wizard1.c:933
+#   JP: 火炎オーラ / 電撃オーラ / 冷気オーラ / 反テレポート / 反魔法 / 浮遊 / 二刀 / 可視透明 / テレパシー / 動物感知 / 不死感知 / 悪魔感知 / 神格感知 / 妖怪感知 / ドラゴン感知 / 人間感知 / 邪悪感知 / 善良感知 / 無生物感知 / ユニーク感知 / 遅消化 / 俊足 / 急速回
+#   EN: Fiery Aura / Electric Aura / Coldly Aura / Prevent Teleportation / Anti-Magic / Levitation / See Invisible / ESP / Sense Animal / Sense Undead / Sense Demon / S
+
+# [count] wizard1.c:2129
+#   JP: 。 / 、 / ィ / ー
+#   EN: 
+
+# [count] xtra1.c:558
+#   JP: つ / つよし / 幻 / 幻覚 / 盲 / 盲目 / 痺 / 麻痺 / 乱 / 混乱 / 毒 / 毒 / 恐 / 恐怖 / 浮 / 浮遊 / 反 / 反射 / 壁 / 壁抜け / 幽 / 幽体 / 邪 / 防邪 / 変 / 変わり身 / 魔 / 魔法鎧 / 死 / 死霊オーラ / 壁 / 物理防御 / 分 / 分身\s
+#   EN: Ts / Tsuyoshi / Ha / Halluc / Bl / Blind / Pa / Paralyzed / Cf / Confused / Po / Poisoned / Af / Afraid / Lv / Levit / Rf / Reflect / Pw / PassWall / Wr / Wrait
+
+# [count] xtra1.c:1264
+#   JP: *真・敗北者* / *真・勝利者*
+#   EN: *TRUEWINNER*
+
+# [count] xtra1.c:1613
+#   JP: 満腹 / %d分
+#   EN: Full\s\s
+
+# [count] xtra1.c:1859
+#   JP: 煙草 / 歌\s\s
+#   EN: Sing
+
+# [count] xtra1.c:2072
+#   JP: %s(+%d) / 乗馬 / 加速
+#   EN: Fast(+%d)
+
+# [count] xtra1.c:2093
+#   JP: %s(-%d) / 乗馬 / 減速
+#   EN: Slow(-%d)
+
+# [count] xtra1.c:3499
+#   JP: あと %d つの%sを学べる。 / あと %d 個の%sを学べる。
+#   EN: You can learn %d more %s%s. / s /\s
+
+# [count] xtra1.c:11949
+#   JP: 寄生中は隣接攻撃をしにくい。 / 背後で踊っているので格闘攻撃が届きにくい。 / この武器はダンス中に使うにはむかないようだ。 / この武器は乗馬中に使うにはむかないようだ。
+#   EN: This weapon is not suitable for use while riding.
+
+# [count] xtra1.c:11969
+#   JP: 武器を振り回しやすくなった。 / この武器は徒歩で使いやすい。
+#   EN: This weapon was not suitable for use while riding.
+
+# [count] xtra1.c:11981
+#   JP: この武器は少しは使いやすい。 / この武器はダンス中にも少しは使いやすい。 / これなら乗馬中にぴったりだ。
+#   EN: This weapon is suitable for use while riding.
+
+# [count] xtra1.c:12042
+#   JP: %s馬を操れない。 / 両手がふさがっていて /\s
+#   EN: You are using both hand for fighting, and you can't control a riding pet.
+
+# [count] xtra1.c:12050
+#   JP: %s馬を操れるようになった。 / 手が空いて /\s
+#   EN: You began to control riding pet with one hand.
+
+# [count] xtra2.c:4069
+#   JP: バリアを引き裂いた！ / バリアを切り裂いた！
+#   EN: The barrier is penetrated!
+
+# [count] xtra2.c:5440
+#   JP: 大ダメージ
+#   EN: badly wounded / badly damaged
+
+# [count] xtra2.c:5452
+#   JP: 倒れかけ
+#   EN: almost dead / almost destroyed
+
+# [count] xtra2.c:6153
+#   JP: あなたは / の上 / にいる
+#   EN: You are  / on\s
+
+# [count] xtra2.c:6318
+#   JP: を / 持っている
+#   EN: carrying\s
+
+# [count] xtra2.c:6381
+#   JP: の上 / にいる
+#   EN: on\s
+
+# [count] xtra2.c:6571
+#   JP: の下 / の上 / に見える
+#   EN: on\s
+
+# [noascii] do-spell.c:12728
+#   JP: 本当に %s を呪いますか？
+#   EN: Do you curse %s, really？
+
+# [noascii] do-spell.c:13194
+#   JP: 本当に %s を呪いますか？
+#   EN: Do you curse %s, really？

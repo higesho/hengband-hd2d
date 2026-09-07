@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SilCore.vcxproj ── Sil-Q コア側の実行ファイル。
+
+  定義の置き場: （§2 配置 / §7 手入れ許可 / §8 P1）
+
+  中身は `silq/src/` の C と `silq/adapter/` だけ。
+  変愚側の `src/`・`hd2d/` は **1 本も入れない**（`presentation/` の共用 TU は P2 で足す）。
+
+  ## ビルド定義
+  先方の `msvc2022/sil-q.vcxproj` を写している（`_MBCS` / `_CRT_NONSTDC_NO_DEPRECATE` /
+  `_CRT_SECURE_NO_WARNINGS`・文字セットはマルチバイト）。**`WINDOWS` は定義しない**——
+  `silq/src/h-config.h:19` が `_WIN32` から自分で立てる。
+
+  違うのは **サブシステムだけ**。先方は WINDOWS だがこちらは **CONSOLE** である
+  （設計 §2。窓を持たず、stdout がプロトコル・stderr がログ。HengbandCore.exe と同じ）。
+
+  ## コンパイル除外（設計 §7。除外はパッチではない）
+  `main.c`・`main-win.c`・`main-x11.c`・`main-gcu.c`・`maid-x11.c`・`readdib.c` の 6 本。
+  入口と描画はアダプタが持つ。`sil.rc` / `Sil.ico` も使わない。
+  `main-win.c` の非 static は `get_tile_width_from_font` / `get_tile_height_from_font` の
+  2 本だけで、**どこからも呼ばれていない**ので穴埋め TU は要らない（設計 §7）。
+
+  ## 文字コード
+  `silq/src/` の写しは **ASCII**（非 ASCII は main-win.c と types.h に各 1 バイトだけ）、
+  `silq/adapter/` の新規コードは **UTF-8（BOM 付き）**。MSVC は BOM のあるファイルだけ
+  UTF-8 として読み、それ以外は ACP（932）として読むので、指定を足さなくても両方通る。
+
+  写しの `types.h:139` と `main-win.c:642` にはダッシュ（U+2013 / U+2014）が
+  **コメントの中に 1 バイトずつ**入っており、ACP で読むと C4819 が出る。
+  中身はコメントなので害は無い——**警告番号 4819 を切って黙らせてある**
+  （直すには写しを書き換えることになり、設計 §1 制約 2 に反する）。
+
+  **コンパイラに文字コードを指示する類の指定は足さないこと**（`/source-charset` も
+  `/execution-charset` も）。P2 で `presentation/` のヘッダを include する C++ TU にだけ、
+  ファイル単位で `/source-charset:utf-8` を付ける（あちらは UTF-8 だが BOM が無いため）。
+
+  ## 構成は Win32 だけ宣言する
+  HengbandCore / GensobandCore / TangbandCore と同じやり方。この vcxproj は
+  Debug・Win32 と Release・Win32 しか持たず、ソリューション構成の x64 は
+  **Hengband.sln 側の** ProjectConfigurationPlatforms（ActiveCfg / Build.0）で Win32 へ写される。
+  だから `/p:Platform=x64` でもこの exe は Win32 で組まれる。
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D06}</ProjectGuid>
+    <RootNamespace>SilCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <!-- 成果物はリポジトリ直下（HengbandCore.exe と同格・同じ場所。設計 §2）。 -->
+    <OutDir>..\..\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <TargetName>SilCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_MBCS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;4267;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--
+        並びが効く。**`silq\src` を先頭に置く**こと。後ろの `presentation` /
+        `external-lib` は P2 で足す共用 TU のためだけに要るもので、同名の頭文字
+        （`types.h` 等）があっても写しが勝つようにしておく。
+      -->
+      <AdditionalIncludeDirectories>..\..\silq\src;..\..\silq\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- 窓は持たない。stdout がプロトコル、stderr がログ（v1 §1.1）。 -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_MBCS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;4267;4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>..\..\silq\src;..\..\silq\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <!--
+    Sil-Q 本体の C。**除外は 6 本**（設計 §7）:
+      main.c / main-win.c / main-x11.c / main-gcu.c / maid-x11.c / readdib.c
+    入口と描画はアダプタが持つ。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\silq\src\birth.c" />
+    <ClCompile Include="..\..\silq\src\cave.c" />
+    <ClCompile Include="..\..\silq\src\cmd1.c" />
+    <ClCompile Include="..\..\silq\src\cmd2.c" />
+    <ClCompile Include="..\..\silq\src\cmd3.c" />
+    <ClCompile Include="..\..\silq\src\cmd4.c" />
+    <ClCompile Include="..\..\silq\src\cmd5.c" />
+    <ClCompile Include="..\..\silq\src\cmd6.c" />
+    <ClCompile Include="..\..\silq\src\dump_items.c" />
+    <ClCompile Include="..\..\silq\src\dungeon.c" />
+    <ClCompile Include="..\..\silq\src\files.c" />
+    <ClCompile Include="..\..\silq\src\generate.c" />
+    <ClCompile Include="..\..\silq\src\init1.c" />
+    <ClCompile Include="..\..\silq\src\init2.c" />
+    <ClCompile Include="..\..\silq\src\load.c" />
+    <ClCompile Include="..\..\silq\src\melee1.c" />
+    <ClCompile Include="..\..\silq\src\melee2.c" />
+    <ClCompile Include="..\..\silq\src\monster1.c" />
+    <ClCompile Include="..\..\silq\src\monster2.c" />
+    <ClCompile Include="..\..\silq\src\obj-info.c" />
+    <ClCompile Include="..\..\silq\src\object1.c" />
+    <ClCompile Include="..\..\silq\src\object2.c" />
+    <ClCompile Include="..\..\silq\src\randart.c" />
+    <ClCompile Include="..\..\silq\src\save.c" />
+    <ClCompile Include="..\..\silq\src\spells1.c" />
+    <ClCompile Include="..\..\silq\src\spells2.c" />
+    <ClCompile Include="..\..\silq\src\squelch.c" />
+    <ClCompile Include="..\..\silq\src\tables.c" />
+    <ClCompile Include="..\..\silq\src\use-obj.c" />
+    <ClCompile Include="..\..\silq\src\util.c" />
+    <ClCompile Include="..\..\silq\src\variable.c" />
+    <ClCompile Include="..\..\silq\src\wizard1.c" />
+    <ClCompile Include="..\..\silq\src\wizard2.c" />
+    <ClCompile Include="..\..\silq\src\xtra1.c" />
+    <ClCompile Include="..\..\silq\src\xtra2.c" />
+    <ClCompile Include="..\..\silq\src\z-form.c" />
+    <ClCompile Include="..\..\silq\src\z-rand.c" />
+    <ClCompile Include="..\..\silq\src\z-term.c" />
+    <ClCompile Include="..\..\silq\src\z-util.c" />
+    <ClCompile Include="..\..\silq\src\z-virt.c" />
+  </ItemGroup>
+  <!--
+    アダプタ（新規コード。設計 §3）。C の皮と C++ の芯。
+    P2 で `sq_frame.cpp` / `sq_manifest.cpp` / `sq_pad_commands.cpp` と、
+    `presentation/frame` の共用 TU がここへ増える。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\silq\adapter\sq_bootstrap.c" />
+    <ClCompile Include="..\..\silq\adapter\sq_null_term.c" />
+    <ClCompile Include="..\..\silq\adapter\sq_shim.c" />
+    <!--
+      日本語層の C 側。`silq/src` から見えるのは
+      `sq_lang_c.h` だけで、実体はここと `sq_lang.cpp` に分かれている。
+      **BOM 付き UTF-8 なので `/source-charset:utf-8` は要らない。**
+    -->
+    <ClCompile Include="..\..\silq\adapter\sq_lang_c.c" />
+    <!--
+      名前の日本語での組み立て。**C である**
+      ——`object_type` / `k_info` / `a_info` の中身が要るので、`sq_shim.c` と
+      同じ「Sil-Q のヘッダを見てよい C の TU」に置いた。
+    -->
+    <ClCompile Include="..\..\silq\adapter\sq_name_ja.c" />
+    <!--
+      サブパネル用の Term 7 枚。**C である**
+      ——`angband_term` / `op_ptr->window_flag` / `term_init` を触るので、
+      `sq_shim.c` と同じ「Sil-Q のヘッダを見てよい C の TU」に置いた。
+    -->
+    <ClCompile Include="..\..\silq\adapter\sq_sub_terms.c" />
+    <ClCompile Include="..\..\silq\adapter\sq_frame.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\silq\adapter\sq_manifest.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <!--
+      選ぶ画面をコアが名乗る層。
+      `menu_choices` / `prompt` / `numeric` を埋める。
+    -->
+    <ClCompile Include="..\..\silq\adapter\sq_menu.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <!-- サブパネルの C++ 側（種類の申告・希望の当て・文字の積み。同 §2）。 -->
+    <ClCompile Include="..\..\silq\adapter\sq_sub_panels.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\silq\adapter\sq_pad_commands.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\silq\adapter\sq_main.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <!-- 日本語層の C++ 側。 -->
+    <ClCompile Include="..\..\silq\adapter\sq_lang.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\silq\adapter\sq_text.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <!--
+    変愚と**同一ファイル**の共用 TU（設計 §1 制約 3）。ここは 1 バイトも改変しない。
+    `frame_codec` はプロトコル v1 の frame を、`protocol_messages` は制御メッセージを、
+    `protocol_transport` は長さ枠を、`input_event_adapter` は抽象入力（v1 §8.3）を
+    キーバイト列へ展開する。どれも `frame/` のヘッダと nlohmann しか見ないので、
+    コアに依らない。**UTF-8 だが BOM が無い**ので `/source-charset:utf-8` が要る。
+  -->
+  <ItemGroup>
+    <!--
+      Windows API の代役をまとめた層（`platform/portable/legacy_os.cpp`）。
+      **Windows でもここを通す**——中身は各アダプタに在ったものの写しで、
+      平台の分岐をあの 1 ファイルへ閉じ込めるためだけに切り出した
+      。BOM 無しの UTF-8 なので上と同じ扱い。
+      `cp932.cpp` は**足さない**: あれは Windows 以外の変換の実体で、
+      こちらは `MultiByteToWideChar` を使うため 1 行も要らない。
+    -->
+    <ClCompile Include="..\..\platform\portable\legacy_os.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClInclude Include="..\..\platform\portable\legacy_os.h" />
+    <ClInclude Include="..\..\platform\portable\legacy_os_c.h" />
+    <ClCompile Include="..\..\presentation\frame\frame_codec.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\input_event_adapter.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\silq\src\angband.h" />
+    <ClInclude Include="..\..\silq\src\config.h" />
+    <ClInclude Include="..\..\silq\src\defines.h" />
+    <ClInclude Include="..\..\silq\src\externs.h" />
+    <ClInclude Include="..\..\silq\src\h-basic.h" />
+    <ClInclude Include="..\..\silq\src\h-config.h" />
+    <ClInclude Include="..\..\silq\src\h-define.h" />
+    <ClInclude Include="..\..\silq\src\h-system.h" />
+    <ClInclude Include="..\..\silq\src\h-type.h" />
+    <ClInclude Include="..\..\silq\src\init.h" />
+    <ClInclude Include="..\..\silq\src\main.h" />
+    <ClInclude Include="..\..\silq\src\types.h" />
+    <ClInclude Include="..\..\silq\src\z-form.h" />
+    <ClInclude Include="..\..\silq\src\z-rand.h" />
+    <ClInclude Include="..\..\silq\src\z-term.h" />
+    <ClInclude Include="..\..\silq\src\z-util.h" />
+    <ClInclude Include="..\..\silq\src\z-virt.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_shim.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_frame.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_manifest.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_menu.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_sub_panels.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_pad_commands.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_lang.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_lang_c.h" />
+    <ClInclude Include="..\..\silq\adapter\sq_text.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

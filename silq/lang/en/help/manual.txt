@@ -1,0 +1,1478 @@
+{{{
+                      Sil-Q  M a n u a l   (English)
+
+        "A game of adventure set in the first age of Middle-earth,
+          when the world still rang with elven song and gleamed with
+          dwarven mail.  Walk the dark halls of Angband.  Slay
+          creatures black and fell.  Wrest a shining Silmaril from
+          Morgoth's iron crown."
+
+     Reading this ----------------------------------------------------
+       ESC        close             Space      next page   -   previous
+       2 8 / arrows  one line       7          to the top  1   to the end
+       /          find a word       &          highlight a word
+       #          jump to a line (type the number at the right of the
+                  table of contents)
+}}}
+
+# Table of contents
+
+{{TOC}}
+
+# 0 About this manual
+
+This manual describes the rules of Sil-Q. Picking skills, avoiding traps, singing, smithing -- everything you need in order to play is in here.
+
+**The numbers here are the ones the game you are playing actually uses.** A few of them differ from what older manuals say; section 17 lists those.
+
+Read it from the top if you like, but if you are in a hurry, read section 2 and go down the stairs. You can always come back -- press `?` and then `m` at any time. **Left and right turn the page**, `ESC` closes it.
+
+# 1 What kind of game this is
+
+## 1.1 What you are trying to do
+
+You are an elf, a dwarf or a human, and you are breaking into Morgoth's fortress of Angband. You must descend a thousand feet, find Morgoth in his throne room, prise a Silmaril out of his iron crown, and get out alive.
+
+This is not a game about killing Morgoth. You do not have to, and trying is a poor plan. Take the jewel and run. That is the win.
+
+How you got in is never said (a disguise? a trick? were you carried in?). Only that the price was high: you have no weapon. You stand at the shallowest part of the pits with a little food and a light, and your first job is to find something to fight with.
+
+## 1.2 Roguelike habits
+
+Sil-Q belongs to the family of games called roguelikes. Three things follow from that.
+
+- Every level is built fresh. You will never see the same map twice. What is worth learning is not the terrain but the monsters and the items.
+- Death is permanent. Nothing brings you back. If it looks dangerous, withdraw. Withdrawing is not losing.
+- Items start unidentified. Potions, rings and horns are all unknown until you drink, wear or blow them. Once known, they stay known.
+
+The game is drawn with letters not because pictures were impossible but because letters carry more. `#` is a wall, `.` is a floor, `@` is you, and each letter -- upper and lower case -- is one kind of monster. The full list of symbols is on the second page of `?`.
+
+## 1.3 If you come from Angband
+
+The screen looks familiar, but almost nothing underneath is the same. Watch for these in particular.
+
+- There are no classes and no experience levels. There are eight skills, and you buy them directly with experience.
+- There is no town, no shopping and no gold. There is no word of recall either. Once you are down, you are down.
+- There is almost no explicit magic. No fireballs, no teleportation. What there is instead is song -- of fear, of sleep, of binding.
+- Hit points do not grow with experience. They come from Constitution alone. You die at 0, not at -1.
+- Speed has only three steps: 1, 2 and 3. Normal is 2, so +1 speed means half again as fast.
+- The only pseudo-identification is `{special}`, which covers both ego items and artefacts.
+- Only shovels and mattocks can dig. Bare hands and swords will not open a wall.
+
+# 2 Your first half hour
+
+If this is your first game, take a Noldor of the House of Fingolfin. It is the easiest start. Race really is the difficulty setting (section 4.1).
+
+For the 13 points of stats, Str 1 / Dex 3 / Con 2 / Gra 0 is a fine place to start. Put your skill points into Melee and Evasion and you will survive a while.
+
+Once you are down there, do these things in order.
+
+- Find a weapon. Bare hands are hopeless. Pick up anything drawn `|`, `/` or `\`.
+- Look at what you pick up with `x`. Section 7.2 explains the numbers.
+- Fight one at a time. Being surrounded drops your Evasion sharply (section 7.3). Back into a corridor and let them come one by one.
+- Learn to wait with `5` or `z`. Waiting alone makes you quieter (section 10) and lets your wounds close.
+- Keep descending. You do not get stronger by camping on a shallow level -- you get cut off from it (section 3.2). Go down before the door shuts.
+
+`Tab` opens the skills and abilities screen. Spend experience there. Until you know what to buy, put it straight into skills: they are cheaper than abilities and harder to waste.
+
+# 3 The pits of Angband
+
+## 3.1 Stairs and depth
+
+Deep below Thangorodrim go the pits of Angband. They are so vast and so disordered that once you have left an area behind you will almost certainly never find your way back to it.
+
+Staircases link levels 50 ft apart. Now and then you will find a shaft that drops you 100 ft at once. The deeper you go, the greater the servants of Morgoth you meet.
+
+Your depth is shown at the bottom right as `550 ft`. Below it, `min 550 ft` is the line you can no longer climb above (next section).
+
+## 3.2 There is no way back
+
+The dark power of Morgoth calls everything in Angband towards him, and you can only resist that call for so long. As time passes you will be unable to find your way to the shallower levels. Your character sheet and the `min ... ft` field show where that line has reached.
+
+Only with a Silmaril in your hand will you return to the surface.
+
+This rule is what stops you from slowly accruing power in the shallows. If you want the strength to stand in the throne room before your time runs out, you have to go down quickly, to where both the risk and the reward are greater.
+
+Note also that if you use many staircases in a short period, you are liable to lose your bearings, take a wrong turn, or step overbold into a trap.
+
+# 4 Race and House
+
+## 4.1 Race
+
+The races of Sil-Q are deliberately not balanced against one another. That is the point: race works as a difficulty level.
+
+{{{
+  Race        Str  Dex  Con  Gra  Affinities / proficiency    Difficulty
+  ---------------------------------------------------------------------
+  Noldor        0   +1   +2   +2  bow proficiency, song       easy
+  Sindar       -1   +1   +2   +1  bow proficiency, song       a little harder
+  Naugrim       0   -1   +3   +1  axe proficiency, smithing   a little harder
+                                  archery penalty
+  Edain         0    0    0    0  (none)                      hard
+}}}
+
+Take a Noldor for your first game. Naugrim and Sindar have their quirks but are interesting. Edain is a challenge mode.
+
+## 4.2 House
+
+Within a race, the Houses are roughly equal in power. Which Houses you may pick is decided by your race.
+
+{{{
+  House                   Str  Dex  Con  Gra   Affinity
+  ------------------------------------------------------------
+  Noldor
+    House of Feanor         0   +1    0    0   Smithing
+    House of Fingolfin      0    0   +1    0   Will
+    House of Finarfin       0    0    0   +1   Perception
+  Sindar
+    Of Doriath              0    0    0   +1   Song (doubles the race)
+    The Falathrim           0   +1    0    0   Archery (cancels the penalty)
+  Naugrim
+    House of Nogrod         0   +1    0    0   Smithing (doubles the race)
+    House of Belegost      +1    0    0    0   Will
+  Edain
+    House of Beor           0    0    0   +1   Evasion
+    House of Haleth         0   +1    0    0   Stealth
+    House of Hador         +1    0    0    0   Melee
+}}}
+
+When the race affinity and the house affinity fall on the same skill you get a mastery instead (below). That happens for Song with Of Doriath and for Smithing with the House of Nogrod.
+
+## 4.3 Affinity, penalty, proficiency
+
+{{{
+  affinity      skill +1, and abilities on that skill cost 500 less
+                = the first ability on it is free
+  mastery       affinity twice over. skill +2, abilities cost 1000 less
+                (the first one is still free)
+  penalty       skill -1, and abilities on it cost 500 more
+  proficiency   melee +1 while wielding one kind of weapon.
+                elves get bows, dwarves get axes
+}}}
+
+# 5 Stats
+
+There are four stats and 13 points to spread across them at character creation. Each further point costs a triangular number -- 1, 3, 6, 10, 15, 21 -- so two middling stats are cheaper than one tall one.
+
+There are no stat potions. Only your race and house, a handful of abilities (at the end of each skill tree) and smithed items will ever move them. The first allocation matters a great deal.
+
+{{{
+  Strength (Str)
+    - adds sides to your melee damage dice (capped by weapon weight, 7.4)
+    - lengthens bow range (range is derived from damage)
+    - carries 20% more weight per point (100 lb at Str 0)
+    - throws things 20% further per point
+    - lets you swing heavy weapons without penalty
+    - makes your weapon harder to knock away, and webs easier to tear
+    - makes barred doors easier to break down
+
+  Dexterity (Dex)
+    - is added to the first four skills: Melee, Archery, Evasion, Stealth
+    - helps you avoid the poison needles in chests
+
+  Constitution (Con)
+    - gives 20% more hit points per point
+
+  Grace (Gra)
+    - is added to the last four skills: Perception, Will, Smithing, Song
+    - gives 20% more voice per point (voice is what songs are paid with)
+}}}
+
+When a stat is drained, that line of the character sheet turns yellow. It does not come back with time. You have to find something that restores it.
+
+# 6 Skills and skill checks
+
+## 6.1 The shape of a check
+
+Almost everything in Sil-Q is settled by a skill check, and the check always has the same shape.
+
+{{{
+      1d10 + your skill      >      1d10 + the difficulty
+}}}
+
+If the left side beats the right, you succeed. A tie is a failure. Sometimes the margin matters too (critical hits, how strongly a song bites, how far alertness rises).
+
+The difficulty is usually the monster's own skill. To hit it, you go against its Evasion; to sneak past it, against its Perception. Where no monster is involved -- spotting a trap, resisting an effect -- the difficulty is a fixed number, often derived from the depth.
+
+The three fighting skills -- Melee, Archery and Evasion -- roll 1d20 instead of 1d10. The wider die means upsets happen more often at the same skill gap.
+
+While you are cursed, your side of every check is rolled twice and the worse result is taken. Everything slowly goes wrong.
+
+## 6.2 The eight skills
+
+{{{
+  Melee        hitting things. difficulty = the target's Evasion
+               beat it far enough and you land a critical hit (7.5)
+               also used for thrown weapons
+               also used to prise a Silmaril from Morgoth's crown
+               (difficulty 0 -- but it takes an enormous amount of damage)
+
+  Archery      shooting. difficulty = half the target's Evasion
+               criticals happen here too
+
+  Evasion      not being hit. difficulty = the attacker's Melee/Archery
+               climbing out of a pit (difficulty 15, spiked 20)
+               dodging falling rock (difficulty 20)
+               dodging a dart trap (difficulty 15)
+
+  Stealth      not being noticed. difficulty = their Perception plus
+               modifiers. with Assassination it is added to melee
+               against unwary and sleeping monsters
+               -1 per 10 lb of armour
+               +5 in stealth mode (`S`), at the price of -1 speed
+
+  Perception   finding traps and secret doors, disarming, picking locks
+               noticing monsters you cannot see
+               also scales several of the Perception abilities themselves
+
+  Will         shrugging things off -- confusion, stunning, fear,
+               blindness, entrancement, slowness, hallucination, hunger,
+               stat drain, forgetting
+               difficulty = their Will, or 10 when nothing is opposing you
+               also governs staffs and horns
+
+  Smithing     making things at a forge. the one skill that rolls no dice
+               at all: if the item's difficulty is at or below your
+               Smithing, you can make it
+
+  Song         how strongly your songs bite. each song scales
+               differently (14.8)
+}}}
+
+Your skill is the base value plus the stat, plus affinities and penalties, plus your gear and your current condition. The number in the left-hand column of the screen is that total.
+
+# 7 Combat
+
+## 7.1 Two stages
+
+Every attack is resolved in two stages, always.
+
+{{{
+  stage 1  did it land?      your attack roll   vs  their evasion roll
+  stage 2  how much got in?  your damage roll   vs  their protection roll
+}}}
+
+Miss at stage 1 and that is the end of it. Land the blow and the protection roll may still eat all of it, in which case you do 0. "It hit but did nothing" is an ordinary event in this game, not a bug.
+
+## 7.2 The numbers on weapons and armour
+
+The numbers beside an item's name say which of those two stages it touches. The reading is simple.
+
+{{{
+  - offensive numbers are in ( ) round brackets. they come first.
+  - defensive numbers are in [ ] square brackets. they come second.
+}}}
+
+For example --
+
+{{{
+  a Battle Axe (-3,3d4)
+      -3   3 harder to hit with (heavy and unwieldy)
+      3d4  does 3d4 damage when it lands
+
+  Leather Armour [-1,1d4]
+      -1   1 easier to hit you (bulky)
+      1d4  absorbs 1d4 from every blow
+
+  a Great Sword (-2,3d5) [+1]
+      +1   1 to your evasion. you can parry with it
+
+  a Mail Corslet (-1) [-3,2d4]
+      -1   heavy enough to cost you accuracy as well
+      -3   and evasion
+      2d4  but it absorbs 2d4
+}}}
+
+## 7.3 Landing the blow
+
+{{{
+  attack roll = the attacker's Melee + 1d20
+  evasion roll = the defender's Evasion + 1d20
+}}}
+
+If the attack roll beats the evasion roll, the blow lands. Beyond weapons and armour, these apply.
+
+- Stunning lowers every skill: -2 while stunned, -4 while heavily stunned.
+- Being surrounded lowers Evasion only. How far depends on where the other monsters stand relative to the one attacking you -- those in the three squares furthest from the attacker cost you 2 each, any other adjacent monster costs you 1. Enough weak monsters will kill you. You are only one creature, so monsters never suffer this.
+- Attacking something you cannot see halves your Melee. Being attacked by something you cannot see halves your Evasion. An unwary monster counts as unable to see you, so it is halved too.
+- Fighting from inside a pit or a web halves both your Melee and your Evasion again.
+- Anything that cannot move at all -- a sleeping monster, an entranced you -- has its Evasion fixed at -5, whatever else applies.
+
+## 7.4 How much gets through
+
+{{{
+  damage roll     = the weapon's dice (+ Str, two-handed, slays, crits)
+  protection roll = the sum of the protection dice of everything worn
+
+  damage taken    = damage roll - protection roll   (0 or less: nothing)
+}}}
+
+Strength adds sides to the dice. At Str 3, a 3d4 battle axe rolls 3d7.
+
+There is a limit. Strength may add at most one side per pound of weapon. A 4 lb battle axe caps at +4 sides however strong you are. So strong characters want heavy weapons (a higher cap) and many-dice weapons (each extra side counts several times over). Negative Strength removes sides under the same cap.
+
+A hand-and-a-half weapon counts as two-handed when you carry no shield, which adds 2 more sides. That battle axe in both hands rolls 3d9.
+
+The number of dice goes up in two ways.
+
+- Slays. An axe of Orc-slaying rolls one extra die against orcs. Branded weapons (fire, cold) work the same: +1 die against anything that does not resist, +2 against anything especially vulnerable.
+- Critical hits (next section).
+
+Monsters are resolved by exactly the same rules. When a werewolf bites for 2d9 of poison and you have no poison resistance, you take 3d9. The real bite is one step worse than the number in its lore entry -- that is what a brand is.
+
+## 7.5 Critical hits
+
+When the attack roll beats the evasion roll by a wide margin, extra dice are added. How wide depends on the weapon's weight: light weapons crit more easily, because they are easier to control.
+
+{{{
+  margin needed per extra die = 7 + the weapon's weight in lb
+
+  a 3 lb long sword:  10 for one, 20 for two, 30 for three...
+  a 0.8 lb dagger:     8 for one, 15 for two, 23 for three...
+  a 7 lb great sword: 14 for one, 28 for two...
+}}}
+
+Those margins look impossible, but a character who has invested in accuracy -- especially against a sleeping or unwary monster -- lands enormous criticals. And if your Evasion is thin, you will take them too.
+
+You do not need to memorise the formula. What is worth remembering is: high accuracy plus a light weapon means the occasional blow that lands for many times the usual.
+
+Several abilities move the margin (section 14.1). Power adds 1 (crits get harder), Finesse takes off 2, Subtlety takes off 2. Some monsters cannot be critically hit at all, and some resist criticals (their margin is doubled).
+
+## 7.6 Archery
+
+Archery works much like melee, with four differences.
+
+- The attack roll uses Archery, plus the arrow's to-hit bonus, minus 1 for every 5 squares of distance.
+- The defender's Evasion is halved against arrows, and that halving stacks with the others. In short, Evasion is not much of a defence against archery.
+- Damage is resolved exactly as in melee (Strength, slays, criticals). The Strength cap is one side per pound of bow.
+- A bow's range is dice x sides x 1.5 squares, capped at 20. A longbow rolling 1d10 reaches 15 squares.
+
+Firing with a monster next to you is dangerous. While you draw, every adjacent monster gets a free attack, and your Evasion is halved for those attacks. Point Blank Archery at least stops the monster you are aiming at from taking its free swing.
+
+## 7.7 Throwing
+
+Throwing is close to melee, with its own differences.
+
+- Anything not made to be thrown takes -5 to hit. The things made to be thrown are daggers, throwing axes, spears and tridents.
+- Distance costs 1 for every 5 squares, as with archery.
+- Damage is resolved as in melee, but items not made for throwing roll half as many sides. Even if you land a thrown long sword it does far less than the same sword in your hand.
+- Range comes from the item's weight and how much you can carry.
+
+{{{
+  range = carrying capacity / ( 5 x ( item weight + 2 lb ) )
+          capped at 20, floored at 1
+
+  a character who carries 100 lb throwing a 4 lb spear:
+      100 / ( 5 x ( 4 + 2 ) ) = 3.33 -> 3 squares
+}}}
+
+That is awkward to work out in your head, so look at any throwable item with `x` and it will tell you its range.
+
+# 8 Elements and resistances
+
+Besides plain physical damage there are four elemental attacks.
+
+{{{
+  Fire     the commonest and the most dangerous. this is the fire of
+           Angband. it burns arrows, bows, axes, polearms, blunt
+           weapons, boots, gauntlets, cloaks, leather armour, chests,
+           torches and staffs.
+
+  Cold     like fire but rarer and less deadly.
+           it shatters potions and flasks of oil.
+
+  Poison   the speciality of spiders and werewolves.
+           it does no damage at the time; it goes onto a counter, and
+           you will take all of it eventually. each turn you take 20%
+           of the counter (rounded up) and the counter drops by that.
+
+  Dark     Morgoth is the lord of darkness and his servants wield the
+           dark itself. dark alone works differently: there is no item
+           that resists it, and your only defence is a strong light
+           (below).
+}}}
+
+## 8.1 How resistance works
+
+Resistances stack. One level halves the damage, two levels leave a third, three a quarter, and so on down. Vulnerability works the other way: one level doubles it, two treble it.
+
+Your level of dark resistance is simply the light level of the square you are standing on. Light 1 is no protection, light 2 halves, light 3 leaves a third. Keeping a strong light is what keeps the dark off you.
+
+## 8.2 Pure and mixed elements
+
+There are two kinds of elemental attack.
+
+- Mixed ones (a Balrog's burning sword, say). These follow section 7.4: one extra die if you do not resist, two if you are vulnerable. Stacking resistances buys you nothing here; you either resist or you do not.
+- Pure ones (dragon breath, a cloud of poison). These use the division in section 8.1.
+
+Breath spreads in a cone and loses 2 dice for every square of distance. Ordinary armour does nothing at all against breath. Only special protection from abilities, magical rings and amulets, and -- for fire and cold -- your shield are counted. Whatever gets past that thin protection is then divided by section 8.1.
+
+# 9 Morale
+
+Monsters in Sil-Q run away. Apart from the mindless ones (which always come at you), most of them weigh up their chances and withdraw when the odds are bad. That reckoning is morale.
+
+## 9.1 What moves morale
+
+{{{
+  base morale                                                  6
+  deeper than its usual haunts                    +1 per 50 ft
+  shallower than its usual haunts                 -1 per 50 ft
+  you are escaping with a Silmaril     (instead of the depth term) +2
+
+  you are blind / hallucinating / lightly stunned           +2 each
+  you are confused / slowed / afraid / heavily stunned      +4 each
+  you are entranced / knocked out                           +8 each
+  your health at or below 75% / 50% / 25%              +2 / +4 / +8
+
+  the monster is hasted                                       +4
+  the monster is stunned                                      -2
+  its health at or below 75% / 50% / 25%               -2 / -4 / -8
+  already fleeing and still at or below 75%                   -2
+
+  each visible ally that is not fleeing                       +1
+                                                (a leader counts +4)
+  each visible ally that is fleeing                           -1
+                                                (a leader counts -4)
+
+  a light-hating monster, your square brighter than 4   -1 per level
+  a non-unique carrying items                          -2 per item
+  you have Majesty                    ( your Will - its Will ) / 2
+  you have Bane                                 the Bane bonus
+  the monster has an elf-bane                       the same, added
+}}}
+
+On top of that there are temporary swings, which fade by a tenth each turn.
+
+{{{
+  cornered, nowhere to flee                                   +6
+  has just stopped fleeing                                    +6
+  has just started fleeing                                    -6
+  it or an ally was struck by a slay                          -2
+  it or an ally was struck by a brand it is vulnerable to     -2
+  it or an ally took a Cruel Blow                             -2
+  an ally was killed in sight                  -4 (-16 for a leader)
+  Song of Elbereth                              -1 per point of margin
+  Horn of Terror, Staff of Majesty              -2 per point of margin
+}}}
+
+## 9.2 The three stances
+
+Morale decides the stance. You can read a monster's stance by looking at it with `l`.
+
+{{{
+  Aggressive   morale > 20
+               it simply comes at you.
+               mindless monsters are always aggressive.
+               trolls are aggressive where others would be confident.
+               a monster you have angered, or one that has seen you
+               carrying an item of wrath, is aggressive.
+
+  Confident    0 < morale <= 20
+               it uses tactics: waiting in a room, shooting from a
+               distance, and so on.
+
+  Fleeing      morale <= 0
+               it tries only to get away.
+               a monster immune to (non-magical) fear stays confident
+               instead of fleeing.
+}}}
+
+A monster that has not noticed you yet -- asleep or unwary -- behaves as confident whatever its morale.
+
+Reading morale is a tactic in itself. Wound a monster and its morale falls. Kill one of a group in sight of the rest and the whole group's morale falls at once. And it works the other way: your own wounds are visible to them, so pressing an attack while badly hurt is the same as making them braver. Formidable cuts that link.
+
+# 10 Stealth
+
+In the story behind Sil, Beren and Luthien did get into Angband, did take a Silmaril, and did get out -- not by force but by stealth. You can do the same in Sil-Q. You can win without a single blow.
+
+## 10.1 The three states
+
+Every monster is always in one of three states.
+
+{{{
+  asleep    cannot act. its Evasion is fixed at -5.
+  unwary    awake and going about its business, but has not noticed
+            you. its Evasion is halved.
+  alert     it has noticed you. from here it is a question of morale
+            (section 9).
+}}}
+
+Underneath, this is held as a number called alertness.
+
+{{{
+  alertness -11 and below   asleep      (floor -20)
+  alertness -10 to -1       unwary
+  alertness 0 and above     alert       (ceiling 20)
+}}}
+
+Monsters always start asleep or unwary -- though not everything that lives in Angband sleeps.
+
+## 10.2 How you get noticed
+
+Every turn you make a stealth check (Stealth + 1d10) and every monster makes a perception check (Perception + 1d10). If a monster beats you, its alertness rises by the margin: from asleep to unwary, from unwary to alert.
+
+These apply to its side of the check.
+
+{{{
+  distance          -1 for every square along the path sound travels
+                    (stone and rubble do not carry sound, so the path
+                    goes around them)
+  closed doors      -5 for each door on that path
+  you attacked      +2
+  you were attacked +2
+  already alert     minus its current alertness (this damps the climb)
+  you are escaping  +5
+}}}
+
+And these, for a monster that is awake and can see you.
+
+{{{
+  passable squares around you       +1 each, up to +8
+  plus the attack terms above       another +2 / +2
+  with Disguise, the sum of those two is halved
+}}}
+
+The short version: the more open the ground you stand on, the more easily you are seen. Keep a wall at your back, hug the corners, and close doors behind you.
+
+These apply to your side.
+
+{{{
+  stealth mode (`S`)     +5, at the price of -1 speed
+                         (waiting costs you nothing, so this is free
+                         while you stand still)
+  you waited last turn   +7  (`5` / `z`. does not stack with the above)
+  armour                 -1 per 10 lb
+  singing                minus the song's noise (the table in 14.8)
+  Song of Silence        your noise drops by half your Song
+}}}
+
+Some noises happen once, outside the check entirely.
+
+{{{
+  what you do      earthquake 30 / horn 10-40 / smithing 10 /
+                   breaking a door 5-10 / digging 5-10 /
+                   springing a trap -10 to 20 / landing a leap -5
+  what they do     earthquake 30 / arrow 5 / boulder 10 / shriek 10 /
+                   breath 10 / an unearthly scream 20
+}}}
+
+Stealth is a fairly abstract number. A high roll might mean you made no sound, or that you stayed in shadow, or that the sound you made was lost in the ordinary noise of the pits.
+
+Note that attacking a monster, or a monster trying to walk into the square you are standing in, wakes it instantly with no check at all.
+
+## 10.3 Making them forget
+
+A monster that has noticed you can be pushed back to unwary. The conditions are hard: you must be out of its line of sight, and you must win a perception check by a margin of more than 25. Its alertness then drops by 1 for each point over.
+
+That is not easy. In practice it means getting a long way off and closing doors behind you. Vanish lowers the 25 to 15.
+
+There are other ways back.
+
+- Put it to sleep with a Staff of Slumber or the Song of Lorien.
+- A territorial monster such as a dragon will go back to its lair, and once it can no longer see you it becomes unwary and eventually sleeps.
+
+# 11 Smithing
+
+Angband holds not only treasure but the great forges that arm the hosts marching under Morgoth's banner. Find one and you can make arms and armour of your own -- sometimes things of extraordinary power.
+
+## 11.1 What it takes
+
+{{{
+  - to be standing on a forge that still has uses left
+  - to have the ability for that kind of item
+      Weaponsmith   all weapons (bows, arrows and digging tools too)
+      Armoursmith   all armour (cloaks and shields too)
+      Jeweller      rings, amulets, horns, lights
+      Enchantment   {special} items
+      Artifice      items with your own name on them (= artefacts)
+  - to be carrying enough mithril, if the item needs it
+  - Smithing at or above the item's difficulty
+  - for some items, a piece of yourself
+      experience   spent forever (usually for items granting a
+                   skill or an ability)
+      stats        drained temporarily (until you find a restorative)
+}}}
+
+In Sil-Q, plain Weaponsmith and Armoursmith are enough to raise an item's to-hit, evasion, damage and protection numbers. The old Artistry ability that used to be required is gone. What took its place is Expertise, which halves the time and cancels the experience and stat costs entirely.
+
+## 11.2 The work
+
+{{{
+  turns required = difficulty x 10   (minimum 10. with Expertise, x 5)
+}}}
+
+Smithing is noisy (-10 to your stealth check, section 10.2), so you may be interrupted. If you are, you can pick the work up again where you left it.
+
+The cost varies by kind. Weapons (including bows), shields, body armour, helms and amulets are cheap; robes, sceptres and crowns cheaper still.
+
+You do not have to be at a forge to press `0`. The smithing screen will let you plan what you would make if you found one.
+
+## 11.3 Kinds of forge
+
+{{{
+  an ordinary forge     no bonus
+  a good forge          Smithing +3
+  an unrivalled forge   Smithing +7
+}}}
+
+Most forges in Angband exist only to hand swords and mail to the orc hosts. But some were built to forge the axes of the Valaraukar, or armour for the troll guard of Gothmog. Find one of those and you can make better things than usual.
+
+Every forge has a number of uses left. When they are gone, they are gone.
+
+There is always a forge at 100 ft, 300 ft and 500 ft. If you mean to make a living as a smith, do not miss those three.
+
+## 11.4 Forging artefacts
+
+A truly great smith makes things of beauty, or of terror. With Artifice you can make artefacts of your own. They reach past what ordinary items can do, you name them yourself, and they are all but indestructible.
+
+It is a large undertaking. One artefact consumes three uses of a forge, and all three must be at the same forge -- you cannot begin at one and finish at another.
+
+## 11.5 Forging beyond your strength
+
+Masterpiece lets you make items whose difficulty is above your Smithing. Each point over costs you a point of Smithing permanently. It does not come back on its own, but you can buy it again with experience.
+
+# 12 Temporary states
+
+Various conditions appear, coloured, in the strip below the map. Most of them pass with time, and for most of them there is something somewhere that clears them at once.
+
+## 12.1 Hunger
+
+{{{
+  Full     food 5,000 and up
+           past 8,000 you are told you can hold no more.
+           in that state food is digested 50 times as fast.
+  (nothing shown) 2,000 to 4,999
+  Hungry   1,000 to 1,999
+  Weak     1 to 999
+  Starving 0
+           1 damage per turn, and your wounds stop closing
+}}}
+
+Indomitable slows hunger to a third. Wearing something that gives regeneration triples it.
+
+## 12.2 Bad states
+
+{{{
+  Blind        you see nothing.
+               melee, archery and evasion against what you cannot see
+               are halved (section 7.3).
+  Halluc       monsters and items look like other things. you see
+               things that are not there.
+  Slow         your speed is halved.
+               carrying too much does this too, and then the only cure
+               is to drop something.
+  Confused     you cannot choose your direction reliably; it drifts to
+               a neighbouring one.
+  Afraid       too frightened to attack: melee, archery and throwing.
+  Entranced    frozen in place, able to do nothing, Evasion -5.
+               one blow from a monster breaks it (so does time).
+  Stun         stun counter 1 to 50. every skill -2.
+  Heavy stun   counter 51 to 100. every skill -4.
+  Knocked out  counter 101 to 105. cannot act, Evasion -5.
+  Poisoned X   you are going to take X damage.
+               each turn you take 20% of X (rounded up) and X falls.
+  Bleeding X   handled exactly like poison.
+}}}
+
+While you are poisoned or bleeding your wounds do not close at all. When you fall back badly hurt, stop the poison and the bleeding first. Until you do, no amount of resting will give you a single point back.
+
+When a stat is drained, that line of the character sheet turns yellow. It does not return with time.
+
+## 12.3 Resistances and good states
+
+- Elemental resistances work as in section 8.
+- Resistance to a status effect gives a large +10 to the check that avoids it.
+- Free Action prevents slowness and entrancement, and helps you tear out of webs.
+- See Invisible gives +10 to the check that notices unseen monsters.
+
+Gear and food can also grant resistances, stats, light radius and speed. The one to watch is regeneration.
+
+{{{
+  Regeneration   wounds close three times as fast and voice returns
+                 three times as fast.
+                 in exchange, while you are healing you get hungry
+                 three times as fast.
+}}}
+
+# 13 Experience
+
+Sil-Q has no classes and no experience levels. That does not mean everyone of a race ends up the same. Experience accumulates as you adventure, and you spend it on yourself from the `@` screen (or `Tab`). How you spend it is the backbone of the game.
+
+## 13.1 Where experience comes from
+
+You start with 5,000 points. After that there are four sources: meeting monsters, killing them, descending, and identifying items.
+
+{{{
+  meeting      the first time you see a kind of monster (or kill one
+               without seeing it): depth / 5 points, depth in feet.
+               the second of that kind gives 1/2, the third 1/3,
+               the fourth 1/4, and so on.
+
+  killing      the first kill of a kind: depth / 5 points.
+               it falls off exactly as meeting does.
+               uniques do not fall off (there is only ever one).
+               killing something that will not fight gives 0.
+
+  descending   the first time you reach a depth: as many points as the
+               depth in feet. a 100 ft shaft pays for the level you
+               skipped as well.
+
+  identifying  100 points the first time you identify a kind of potion,
+               herb, ring, amulet, horn, staff, {special} item or
+               artefact.
+}}}
+
+Meeting a monster pays as much as killing it, and that is the backbone of this game. There are many ways to avoid a fight: sneak past, frighten it away, run. Avoiding fights costs you some experience, but it also keeps you alive. Fighting is dangerous. You can win the game without attacking once.
+
+## 13.2 Spending it
+
+{{{
+  +1 to a skill       the nth point costs 100 x n
+                      (100 for the first, 200 for the second, ...)
+
+  learning an ability the nth ability on that skill costs 500 x n
+                      (500 for the first, 1000 for the second, ...)
+                      an affinity takes 500 off (so the first is free)
+                      a mastery takes 1000 off
+                      a penalty adds 500
+}}}
+
+Most abilities have prerequisites. If you want to skip one, take Quick Study (Perception).
+
+## 13.3 The minimum depth
+
+As time passes, the line below which you cannot climb keeps falling. As a rule of thumb it drops 50 ft every 1,200 turns or so, and it falls faster the further you are below it already (about a tenth faster per level of depth). The longer you play, the harder that line pushes you.
+
+Using stairs many times in a short period raises the chance of losing your way -- coming out somewhere unexpected, or stepping into a trap. Each staircase adds to the risk and the risk fades with time. Ten in a row and something will go wrong.
+
+# 14 Abilities
+
+The abilities of each skill are arranged in a tree. Each usually requires the one before it, and requires the skill itself to have reached a certain value. The number to the right of each heading below is the skill requirement. (Quick Study lets you skip the prerequisite ability, but never the skill value.)
+
+The descriptions on the `Tab` screen are very short. What follows is the arithmetic behind them and how to use them.
+
+## 14.1 Melee
+
+### Power  --  Melee 1
+
+- +1 side on your melee damage dice.
+- In exchange, the critical margin goes up by 1 (7 + weight becomes 8 + weight).
+- It suits a heavy weapon grinding damage through. It fights against a light-weapon critical build.
+
+### Finesse  --  Melee 2
+
+- The critical margin goes down by 2 (7 + weight becomes 5 + weight).
+- In Sil this was only 1. Sil-Q raised it so that it is roughly the equal of Power.
+
+### Knock Back  --  Melee 3
+
+- When you land a blow, you may knock the monster back a square. The check is twice your effective Strength against twice its Constitution.
+- "Effective Strength" here includes bonuses from Charge, Rapid Attack and the like, is capped by weapon weight, and gets +2 for a two-handed grip.
+- It fails if there is no empty square behind the monster.
+- A monster that is actually knocked back loses its next turn.
+- It does not fire on Opportunist free attacks.
+
+### Polearm Mastery  --  Melee 4
+
+- Melee +2 while wielding a polearm.
+- You can set a polearm. If you waited last turn (`5` / `z`) and a monster that was not adjacent steps next to you, you get a free attack.
+- No free attack if you cannot see it or you are confused.
+
+### Charge  --  Melee 5
+
+- If you attack immediately after moving towards that monster (within 45 degrees of the direction you moved), you count as having 3 more Strength and 3 more Dexterity.
+- The damage bonus only applies to a normal blow, a Flanking blow or a Controlled Retreat blow.
+
+### Follow-Through  --  Melee 6
+
+- Kill a monster and you get a free attack on another adjacent monster.
+- Not if you cannot see it, or you are confused.
+- Triggered by a normal blow, Impale, Flanking, Controlled Retreat, Whirlwind Attack, or another Follow-Through blow (so it can chain).
+
+### Impale  --  Melee 7
+
+- With a polearm or a great sword you can run through up to two monsters standing in a line. Both are struck by an impaling blow.
+- Triggered by a normal blow, Flanking or Controlled Retreat.
+- Rapid Attack and Smite apply to impaling blows too.
+
+### Subtlety  --  Melee 8
+
+- With a one-handed weapon and nothing at all in your other hand, the critical margin goes down by 2.
+- Hand-and-a-half weapons (bastard swords and the like) do not count as one-handed.
+- It stacks with Finesse. Take both and 7 + weight becomes 3 + weight.
+
+### Whirlwind Attack  --  Melee 9
+
+- When you attack a monster, every other adjacent monster takes a free attack too.
+- Triggered by a normal blow, Flanking or Controlled Retreat.
+- Follow-Through, Smite, Rapid Attack and Two Weapon Fighting all apply to each of the extra blows.
+- When both Impale and Whirlwind Attack could apply, Whirlwind Attack wins.
+- In Sil this only worked with no walls or rubble around you. Sil-Q dropped that restriction.
+
+### Zone of Control  --  Melee 10
+
+- When a monster moves between two squares that are both adjacent to you, you get a free attack.
+- Not if you cannot see it, or you are confused.
+
+### Smite  --  Melee 11
+
+- With a two-handed weapon, your first main blow of the turn does maximum damage on every die against everything it hits -- but the follow-through of the swing costs you a turn.
+- Whirlwind Attack and Impale count as main blows that hit several things.
+- The damage is huge and you are completely open for a full turn. This is not a move for when you are surrounded.
+
+### Two Weapon Fighting  --  Melee 12
+
+- You may carry a second weapon instead of a shield.
+- Only a one-handed weapon can go in the off hand (not hand-and-a-half).
+- Blows with it count as having 3 less Strength and 3 less Dexterity.
+- The extra blow applies to a normal blow, Flanking, Whirlwind Attack and Controlled Retreat.
+- When both Impale and Two Weapon Fighting could apply, Impale wins.
+
+### Rapid Attack  --  Melee 13
+
+- You attack twice instead of once, but both blows count as having 3 less Strength and 3 less Dexterity.
+- The extra blow applies to a normal blow, Flanking, Whirlwind Attack and Controlled Retreat.
+- Anything else stays a single blow and takes no penalty.
+
+### Strength  --  Melee 20
+
+- +1 Strength.
+
+## 14.2 Archery
+
+### Rout  --  Archery 2
+
+- +5 to hit when shooting a fleeing monster.
+- Shooting into a fleeing crowd, you will hit something.
+- It goes well with Majesty and the Song of Elbereth.
+
+### Fletchery  --  Archery 3
+
+- The `-` command turns ordinary arrows into +3 arrows.
+- One turn per arrow. A whole quiver takes as many turns as it has arrows.
+- If you are interrupted you keep what you have finished.
+- It is a large boost early and matters less as you go deeper.
+
+### Point Blank Archery  --  Archery 4
+
+- When firing next to a monster draws free attacks, the monster you are aiming at does not take one.
+- Any other adjacent monster still does, and your Evasion is still halved (section 7.6).
+
+### Puncture  --  Archery 5
+
+- When the target's protection would completely stop your arrow, 5 damage gets through instead.
+- It is how you grind down heavily armoured monsters.
+
+### Ambush  --  Archery 6
+
+- +1 critical die when shooting an unwary or sleeping monster.
+
+### Versatility  --  Archery 7
+
+- If your Archery is higher than your Melee, half the difference (rounded down) is added to your Melee.
+
+### Crippling Shot  --  Archery 8
+
+- When an arrow scores a critical hit and gets at least 1 point through, the monster must make a Will check.
+- The difficulty is:
+
+{{{
+      20 - ( 40 / ( critical level + 2 ) )
+
+      1 critical ->  6.7    2 -> 10     3 -> 12
+      4 criticals -> 13.3   5 -> 14.3   (it never reaches 20)
+}}}
+
+- On a failure it is slowed for as many turns as the critical level.
+- In Sil this was "critical level x 4", which did nothing early and far too much to late uniques. It was changed.
+
+### Deadly Hail  --  Archery 9
+
+- Shoot a monster immediately after killing one with an arrow and the damage dice are doubled.
+- Everything doubles: slay dice, critical dice, weapon dice, whatever the source.
+- It is better than firing two arrows, because two arrows let the target roll protection twice and this lets it roll once.
+
+### Dexterity  --  Archery 10
+
+- +1 Dexterity.
+
+## 14.3 Evasion
+
+### Dodging  --  Evasion 2
+
+- Evasion +3 if you moved last turn.
+- It does not show in the left-hand column, but it is working.
+
+### Blocking  --  Evasion 3
+
+- Your shield's protection dice are doubled: against ranged attacks, and against melee on a turn you waited (`5` / `z`).
+
+### Parry  --  Evasion 4
+
+- The evasion bonus your weapon gives is doubled.
+- It does not apply to a weapon in your off hand.
+
+### Crowd Fighting  --  Evasion 5
+
+- The bonus monsters get for surrounding you is halved (section 7.3).
+- It is what keeps you from drowning in a mob.
+
+### Leaping  --  Evasion 6
+
+- You can jump over one square of chasm or trap (not over a perch or a web).
+- You must have moved in that direction last turn.
+- Landing still takes the usual two turns; for one of them you are in the air, unable to act but not safe from attack. The landing makes noise (-5 stealth).
+
+### Sprinting  --  Evasion 7
+
+- Move four or more squares in roughly the same direction and you get +1 speed.
+- Each of the four steps may vary up to 45 degrees from the one before it.
+- It ends the moment you break the pattern.
+- Speed can never exceed 3.
+
+### Flanking  --  Evasion 8
+
+- Move between two squares that are both adjacent to a monster and you get a free attack on it.
+- You cannot get both Flanking and Controlled Retreat in the same turn. Both simply widen the set of monsters you may free-attack.
+- One monster at a time. A monster you are targeting takes priority.
+- Not if you cannot see it, or you are confused.
+
+### Heavy Armour Use  --  Evasion 9
+
+- Protection increases by [1dX], where X is your total armour weight divided by 15 lb.
+- It works against physical attacks only, not against pure elemental damage.
+
+### Riposte  --  Evasion 10
+
+- When a monster misses you in melee by 10 + your weapon's weight or more, you get a free attack.
+- Once per round.
+- Not if you cannot see it, or you are confused.
+
+### Controlled Retreat  --  Evasion 11
+
+- Move from a square adjacent to a monster to one that is not, and you get a free attack on it -- but only if you did not move in the previous round.
+- You cannot get both this and Flanking in the same turn.
+- One monster at a time; a targeted monster takes priority.
+- Not if you cannot see it, or you are confused.
+- It is not "hit and step back every turn". It is "wait, step back", alternating.
+
+### Dexterity  --  Evasion 20
+
+- +1 Dexterity.
+
+## 14.4 Stealth
+
+### Disguise  --  Stealth 3
+
+- The bonus an awake but unwary monster gets from looking at you is halved (the sum of the "passable squares around you" and "attacked" terms in section 10.2).
+
+### Assassination  --  Stealth 4
+
+- When you attack an unwary or sleeping monster, your Stealth is added to your Melee.
+- Not if you cannot see it, or you are confused.
+- It applies to a normal blow, Flanking and Controlled Retreat only.
+- It does not apply to a Charge blow.
+- For a character with high Stealth this is the largest source of damage in the game, because the bonus turns directly into critical levels (section 7.5).
+
+### Cruel Blow  --  Stealth 5
+
+- When a melee blow scores a critical and gets at least 1 point through, the monster must make a Will check. The difficulty is the same formula as Crippling Shot.
+- On a failure it is confused by the pain for as many turns as the critical level.
+- A confused monster misjudges its direction and flees badly.
+
+### Exchange Places  --  Stealth 6
+
+- The `X` command swaps you with an adjacent monster.
+- An alert monster gets a free attack unless it is confused (mindless monsters do not attack either).
+- You cannot use it on a monster you cannot see, or while you are in a web or a pit.
+- It is how you get out of a line that is closing around you.
+
+### Opportunist  --  Stealth 7
+
+- When a monster moves from a square adjacent to you to one that is not, you get a free attack.
+- Not if you cannot see it, or you are confused.
+- It is good for finishing off monsters that have started to run. Knock Back does not apply to it.
+
+### Vanish  --  Stealth 8
+
+- It is easier to make monsters unwary again.
+- Where you needed to win a perception check out of sight by more than 25, you now need more than 15 (section 10.3).
+
+### Dexterity  --  Stealth 11
+
+- +1 Dexterity.
+
+## 14.5 Perception
+
+### Quick Study  --  Perception 1
+
+- You can take an ability without owning its prerequisite ability.
+- The skill requirement itself does not go away. This is for skipping past the middle of a tree.
+
+### Focused attack  --  Perception 2
+
+- If you waited last turn (`5` / `z`), half your Perception is added to your attack roll.
+- It applies to the first blow of that round only.
+- It is how you place one large critical with certainty. It goes well with Assassination and Smite.
+
+### Keen Senses  --  Perception 3
+
+- You can see monsters just outside your circle of light.
+- +5 to the check that notices unseen monsters.
+
+### Concentration  --  Perception 4
+
+- While you keep attacking the same monster, +1 to hit each round, up to half your Perception.
+- Waiting or blocking turns (`5` / `z`) do not break it.
+- It pays off when you have to stay on something tough for a long time.
+
+### Alchemy  --  Perception 5
+
+- Herbs and potions you meet, and staffs and horns, are identified at once.
+- The experience for identifying is still only paid when you actually meet an item of that kind.
+
+### Bane  --  Perception 6
+
+- You gain a bonus to every skill check against a chosen class of monster.
+- The classes are orcs, wolves, spiders, trolls, wraiths, raukar, serpents and dragons.
+- You cannot choose a class until you have killed 4 of them.
+- Every time your kill count reaches a power of two, the bonus rises by one.
+- The bonus also lowers those monsters' morale (section 9.1).
+
+### Outwit  --  Perception 7
+
+- When you take a critical hit, your Perception is checked against the attacker's. If you win, all of the critical dice are removed.
+- It is not a build that avoids being hit; it is one that survives being hit.
+
+### Listen  --  Perception 8
+
+- Every turn you get a chance to notice monsters you cannot see, including ones around a corner or behind a door.
+- It takes the form of a perception check.
+
+{{{
+  difficulty = the monster's Stealth
+               awake but unwary                     -3
+               it moved                             -5
+               it shrieked or broke down a door    -10
+               it tunnelled through rock           -15
+               you are singing the Song of Silence  + (Song / 2)
+               +1 per square along the path of sound
+               +5 for each closed door on that path
+}}}
+
+- On a success (a margin of 1 to 10) the monster is shown as a grey `*`.
+- A margin of more than 10 makes the monster simply visible -- drawn with its own symbol rather than a `*`. The margin is 1d10 + Perception against 1d10 + the difficulty, and two dice can differ by at most 9, so your Perception has to beat the difficulty by at least 2 for that to be reachable at all.
+- The Song of Silence dulls your own listening as well. The two do not go together.
+
+### Master Hunter  --  Perception 9
+
+- +1 to hit a kind of monster for each one of that kind you have killed, up to half your Perception.
+- Kill 3 orc soldiers and you are at +3 against orc soldiers thereafter.
+
+### Grace  --  Perception 10
+
+- +1 Grace.
+
+## 14.6 Will
+
+### Curse Breaking  --  Will 1
+
+- When you try to take off cursed gear, you can break the curse and remove it.
+
+### Channeling  --  Will 2
+
+- All staffs and horns are identified automatically.
+- Horns cost half as much voice.
+- Staffs hold twice as many charges.
+- The Will bonus this had in Sil is gone, but doubling the charges on the staffs that matter makes it stronger in practice.
+
+### Strength in Adversity  --  Will 3
+
+- While badly hurt, your Strength, Dexterity and Grace rise.
+- +1 at 50% health or below, +3 at 25% or below.
+
+### Formidable  --  Will 4
+
+- Kill a monster in melee and every monster that saw it must check against fear (against your Will).
+- Your own wounds no longer raise monster morale (the health terms in section 9.1 disappear).
+- Your wounds also drop out of the calculation monsters use to pick a weakened target.
+- It is the keystone of a build that presses on while hurt.
+
+### Inner Light  --  Will 5
+
+- The light level inside your circle of light rises by 2 (the radius does not change).
+- Since dark resistance is simply light level (section 8.1), this is effectively dark resistance.
+
+### Indomitable  --  Will 5
+
+- Resistance to fear, confusion, stunning and hallucination.
+- Hunger advances at a third of the usual rate.
+
+### Oath  --  Will 6
+
+- You swear a great oath and are rewarded while you keep it. See section 15.
+
+### Poison Resistance  --  Will 7
+
+- One level of poison resistance.
+
+### Vengeance  --  Will 8
+
+- When you take damage in melee, your next blow that lands rolls one extra die.
+- It does not stack. One extra die per blow.
+
+### Majesty  --  Will 9
+
+- Monster morale drops by half the difference between your Will and theirs.
+- With Will piled high, a great many monsters will not come near you. It is the pillar of a build that never draws blood.
+
+### Constitution  --  Will 12
+
+- +1 Constitution.
+
+## 14.7 Smithing
+
+### Weaponsmith  --  Smithing 2
+
+- You can make weapons at a forge (bows and arrows included).
+- In Sil-Q this ability alone lets you raise a weapon's to-hit, evasion and damage.
+
+### Armoursmith  --  Smithing 3
+
+- You can make armour at a forge (cloaks and shields included).
+- It too can raise to-hit, evasion and protection.
+
+### Jeweller  --  Smithing 4
+
+- You can make rings, amulets, horns and lights at a forge.
+- You also identify them on sight.
+
+### Enchantment  --  Smithing 5
+
+- You can make {special} items at a forge.
+- You also see what enchantment an item you meet carries.
+
+### Expertise  --  Smithing 6
+
+- Smithing takes half as long.
+- All experience and stat costs of the items you make are cancelled.
+
+### Artifice  --  Smithing 7
+
+- You can make artefacts of your own, with a wide range of properties.
+- Each one uses three uses of a forge (section 11.4).
+
+### Masterpiece  --  Smithing 8
+
+- You can make items whose difficulty is above your Smithing.
+- Each point over costs a point of Smithing permanently. It does not return on its own, but you can buy it back with experience.
+
+### Grace  --  Smithing 10
+
+- +1 Grace.
+
+## 14.8 Song
+
+You start a song with `s` and stop it with the same command. While you sing you pay voice every turn, and the song breaks off when your voice runs out.
+
+Every song makes noise, and the noise value is the penalty to your stealth (section 10.2). Only the Song of Silence is 0; the Song of Challenge, at 12, is the loudest.
+
+### Song of Elbereth  --  Song 1
+
+- It frightens monsters that can think. The check is your Song against:
+
+{{{
+  difficulty = the monster's Will + the distance along the sound path
+               mindless monsters are effectively immune
+               Morgoth is immune
+}}}
+
+- Each point of margin temporarily drops that monster's morale by 1.
+- 1 voice per turn, noise 8.
+
+### Song of Challenge  --  Song 1
+
+- It raises monster morale and pushes monsters into an aggressive stance.
+- A monster whose morale passes 5 becomes aggressive.
+- It draws archers and monsters that keep their distance into melee with you.
+- The check is your Song against:
+
+{{{
+  difficulty = ( the monster's Will x its Will ) / 10
+               + the distance along the sound path
+}}}
+
+- The weaker the monster's Will, the better it works.
+- 1/3 voice per turn, noise 12.
+- It is useless in the throne room, but outside it changes how you handle a pack entirely.
+
+### Song of Delvings  --  Song 2
+
+- The terrain is revealed outwards from what you already know, forges, stairs, traps and secret doors included.
+- A square adjacent to a known square is revealed if:
+
+{{{
+  your Song - the distance from you  >  1d6    (range: Song + 10 squares)
+}}}
+
+- Stairs and forges are revealed even when they do not touch a wall.
+- 1/3 voice per turn, noise 4.
+
+### Song of Freedom  --  Song 2
+
+- It opens up the pits.
+- It grants free action (against entrancement and slowness) and shortens any you already have.
+- It may disarm nearby traps (even undiscovered ones), clear rubble, find secret doors, and open barred or locked doors and chests. The check is your Song against:
+
+{{{
+  difficulty = the depth of the level / 2 + 5
+               + the distance along the sound path
+               + 5 for each closed door on the way
+}}}
+
+- 1/3 voice per turn, noise 4.
+
+### Song of Silence  --  Song 3
+
+- It quiets the pits and makes you harder to notice.
+- The noise you make drops by half your Song, which is the same as a penalty of that size to every monster's perception check.
+- The same penalty applies when monsters call to one another for help.
+- But it applies to your own Listen check as well.
+- 1/3 voice per turn, noise 0.
+
+### Song of Staunching  --  Song 3
+
+- All bleeding stops and your wounds close faster.
+- You recover 1/12 of a hit point per turn per point of Song.
+- 1 voice per turn, noise 4.
+- Wounds do not close at all while you bleed (section 12.2). This is the song that cuts that off.
+
+### Song of Thresholds  --  Song 4
+
+- A door you close while singing this song is warded. Warded doors are drawn in green, blue and violet.
+
+{{{
+  a green door    takes a check against Will 20 to pass
+  a blue door     Will 25
+  a violet door   Will 30
+
+  which colour you get is a Song check against difficulty 15
+      failure                  -> green
+      success                  -> blue
+      success by 10 or more    -> violet
+}}}
+
+- Violet needs Song 16 or more. The check is 1d10 + Song against 1d10 + 15, and violet wants a margin of 10 or more. Two dice can differ by at most 9, so unless your Song is above 15, violet cannot come up at all. At Song 20 the split is 15% green, 70% blue, 15% violet; at Song 22 it is 6%, 66%, 28%.
+- 1/3 voice per turn, noise 4.
+- It is not a song for cutting off your own retreat; it is a song for cutting off theirs.
+
+### Song of the Trees  --  Song 5
+
+- Your light radius rises by 1 for every 5 points of Song.
+- 1/3 voice per turn, noise 4.
+
+### Song of Slaying  --  Song 6
+
+- When you score a critical hit in melee and the monster's health is at or below twice your Song, it dies on the spot with no damage rolled.
+- The better armoured the monster, the more this is worth: it ends things you could never grind through.
+- 1 voice per turn, noise 8.
+
+### Song of Staying  --  Song 7
+
+- Protection increases by [2d2]. Like a ring of protection, it works against every kind of damage.
+- Your Will rises by half your Song.
+- 1 voice per turn, noise 8.
+- Because the Will goes up, it also helps against stunning, confusion and fear. It is useful from the first level to the last.
+
+### Song of Lorien  --  Song 8
+
+- It lowers the alertness of nearby monsters, making them unwary and eventually putting them to sleep. The check is your Song against:
+
+{{{
+  difficulty = the monster's Will + 5 + the distance along the sound path
+               monsters that never sleep are immune
+}}}
+
+- Alertness falls by the margin.
+- 1 voice per turn, noise 4.
+
+### Song of Mastery  --  Song 10
+
+- It tries to leave nearby monsters helpless before you.
+- A monster you beat loses its whole turn: it does not move, does not attack, and takes no free attacks.
+- The check has a different shape from the other songs.
+
+{{{
+  your side  = 2d8 + your Song
+  their side = 2d10 + the monster's Will + the sound-path distance
+}}}
+
+- 2 voice per turn, noise 8. It is the most expensive song there is.
+- It comes from the song of power between Finrod and Sauron.
+
+### Woven Themes  --  Song 11
+
+- You can layer a minor theme: start a second song and have it take effect alongside the main one.
+- The minor theme is weaker; it acts as though your Song were halved.
+- The noise you make is the average of the two songs; the voice you pay is the sum.
+- Starting the main theme again stops the minor theme alone. Starting a different song swaps the main and minor themes.
+
+### Grace  --  Song 12
+
+- +1 Grace.
+
+# 15 Oaths
+
+Taking Oath (a Will ability) lets you swear one of three great oaths. While you keep it, you are rewarded.
+
+{{{
+  the Oath of Mercy
+      "to leave Angband without spilling the blood of Man or Elf"
+      broken by   attacking a Man or an Elf
+      reward      Grace +1
+
+  the Oath of Silence
+      "to leave Angband as you entered it, grim and silent"
+      broken by   singing
+      reward      Strength +1
+
+  the Iron Oath
+      "to flinch before nothing and go straight for Morgoth"
+      broken by   climbing a staircase without a Silmaril
+      reward      Constitution +2
+}}}
+
+You are always asked to confirm before you break one. Breaking it removes the reward at once, is recorded, and changes the words said over you when you die. An oath once broken can never be sworn again.
+
+Killing a monster you cannot see does not break the Oath of Mercy. If you have already done the thing an oath forbids, that oath cannot be chosen.
+
+The Iron Oath's reward (Constitution +2) is the largest, but it seals the up staircases, which means it seals your retreat.
+
+# 16 From Sil to Sil-Q
+
+Sil-Q is a fork of Sil. The frame is the same, but the following was changed. This section is for people who know Sil; skip it if you are new.
+
+## 16.1 What the changes were for
+
+- To give every skill a use. In Sil, much of the Song and Smithing trees was only useful in the throne room. Abilities that mattered nowhere else (the old Song of Slaying, the Song of Sharpness) were removed and replaced with things that matter while you are diving.
+- Morgoth is not something you kill. Sil declared that killing Morgoth was a bug while winning games that did it were passed around freely. Sil-Q's Morgoth has fewer hit points and recovers more slowly, but is far more dangerous when angered.
+- To make Smithing useful to the end. Smithing in Sil filled the early gaps and was then abandoned for a broken late-game weapon.
+- To make the early game less lethal. Once stealth was reworked, the shallow levels became much kinder. The poor armour that drops from orc skeletons was added for the same reason.
+
+## 16.2 The main changes
+
+{{{
+  race        elves went from "sword proficiency, archery affinity"
+              to "bow proficiency, song affinity".
+
+  perception  the difficulty of finding traps and secret doors is now
+              +2 per square of distance instead of +5.
+              the light calculation was fixed too (brighter is easier).
+
+  stealth     shallow monsters have lower perception, deep monsters
+              have higher perception and Will. the deeper you go, the
+              more watchful Morgoth's servants become.
+
+  archery     the free attacks you draw by firing at point blank now
+              halve your evasion. it is more dangerous than it was.
+
+  smithing    there is always a forge at 100 ft, 300 ft and 500 ft.
+              Artistry is gone; plain Weaponsmith and Armoursmith raise
+              the numbers. Expertise took its place.
+              the costs were reworked throughout: protection is cheap,
+              evasion and accuracy are dear.
+
+  hunger      the "gorged" state is gone. you can still eat and drink
+              past full, but everything then digests enormously fast.
+
+  regeneration  the extra hunger only applies while you are actually
+              healing. voice recovery is affected by regeneration too
+              (which the Sil manual does not mention).
+
+  experience  a fixed-experience mode was added. you start with 50,000
+              points instead of 5,000 and gain nothing thereafter.
+
+  morale      the mechanism is unchanged. but the Sil manual's
+              description of Majesty is wrong: it lowers morale by half
+              the difference in Will.
+}}}
+
+# 17 Where older manuals give different numbers
+
+Sil-Q has been through several versions, and **some of the numbers printed in older manuals no longer match.** They are listed here in case you ever read one. **The numbers in this manual are the ones that match the game you are playing.**
+
+{{{
+  guaranteed forges   older manuals 100/500/900 ft  ->  now 100/300/500 ft
+
+  experience for
+  identifying an
+  artefact            older manuals 200 points  ->  now 100 points
+                      ({special} items also give 100 for the first of
+                      each kind)
+
+  dark resistance     older manuals "resistance for each point of light above 2"
+                      ->  now "the light level is the resistance level"
+                          (light 2 already halves)
+
+  breath falloff      older manuals "2d4 less per square"
+                      ->  now "2 dice less per square"
+
+  searching for traps older manuals "Perception vs difficulty"
+                      ->  now "Perception + the square's light vs
+                          difficulty". the search command gives you +5
+                          rather than the difficulty -5, and it reaches
+                          4 squares
+
+  protection against  older manuals "subtract protection, then divide"
+  pure elements       ->  now "divide, then subtract protection"
+
+  Rout                older manuals "as though Dexterity were 3 higher"
+                      ->  now "+5 to hit"
+
+  Puncture            older manuals "3 fixed damage"  ->  now "5"
+
+  Strength in         older manuals "+1 at 50%, +2 at 25%"
+  Adversity           ->  now "+1 / +3" (Str, Dex and Gra)
+
+  Song of Elbereth    older manuals 1/3 voice per turn  ->  now 1 voice
+
+  Song of Mastery     manual 1 voice per turn, difficulty = Will + 7
+                      ->  now 2 voice per turn
+                          and a different check entirely
+                          (2d8 + Song vs 2d10 + Will + distance)
+
+  Song of Staying     older manuals "Will + Song"
+                      ->  now "Will + Song/2"
+                      the [2d2] protection is as the manual says
+
+  abilities removed   Throwing Mastery / Momentum / Careful Shot /
+                      Precision / Eye for Detail / Lore-Keeper /
+                      Lore-Master / Forewarned / Clarity /
+                      Mind Over Body / Hardiness /
+                      Critical Resistance / Song of Sharpness /
+                      Song of Este / Song of Sharpening
+
+  abilities added     Outwit / Formidable / Oath /
+                      Song of Slaying (not the Sil ability of that name)
+
+  an error in the     Majesty is not "-1 per 4 points of Will" but
+  Sil manual          "half the difference in Will". the Sil-Q manual
+                      corrects this
+
+  found in the code   - while cursed, only your side of a check is
+  and absent from       rolled twice, taking the worse
+  the manuals         - wounds do not close at all while poisoned or
+                        bleeding
+                      - past the food cap (8,000) digestion is 50 times
+                        faster
+                      - using stairs repeatedly makes you stumble. the
+                        risk builds with each use and fades with time
+                      - the minimum depth falls 50 ft in about 1,200
+                        turns, and faster the deeper you already are
+                      - the Bane bonus also affects monster perception
+                        and morale
+                      - monsters can have elf-bane, which dulls your
+                        checks and raises their morale
+}}}
+
+A Japanese translation of this same manual is included. Switch the language to Japanese and open it the same way.

@@ -1,0 +1,8 @@
+# 幻想蛮怒 → 英語: rumors_j.txt の**鮮度差分だけ**（E4）。
+# 上流の英語 rumors.txt は `N:*:Default` しか持たない――`N:0` の噂はその `N:*` が
+# そのまま受ける（`get_rnd_line()` は `N:*` を常に当てる）ので訳を足す要は無い。
+# 足すのは `N:1`（実体の名を差し込む鋳型）だけである。
+
+N:1:Excellent
+R:ARTIFACT:*:They say there is a treasure called {Name} down below.
+R:MONSTER:*:They say there is a monster called {Name}.

@@ -1,0 +1,82 @@
+<style:title>我が家、いとしの我が家</style>
+
+<color:keyword>早見表</color>は <link:context_home.txt#QuickRef> にある。
+
+我が家は、地上のふつうの町（辺境の地・モリバント・アナンバール・サロス・テルモラ・アングウィル）すべてにある特別な建物である。ここには宝を置いておける。置けるアイテム数に上限は無いが、散らかりすぎると目当てのアイテムを探すのが一苦労になる。どういうわけか、どの町の我が家も中身は同じである。
+
+<topic:Tutorial><style:heading>我が家の使い方</style>
+
+初めて我が家に入ると、何も置かれていない。アイテムを預けるには <color:keypress>d</color> で置き、置きたいアイテムを選ぶだけでよい。取り出すときは <color:keypress>g</color> を押し、取り出したいアイテムの記号を打つ。しばらく遊ぶと、我が家はこんな具合になる:
+<style:screenshot>
+                                 <color:G>我が家</color>
+
+    アイテムの説明                                                   重さ   評点
+ a) <color:U>{</color> <color:U>殺戮の矢×23 (3d4) (+7,+7) {/pLv}</color>                           0.2 lbs    137
+ b) <color:U>{</color> <color:U>殺戮の矢×16 (3d4) (+6,+8) {/pZA}</color>                           0.2 lbs    102
+ c) <color:o>{</color> <color:U>束矢×9 (4d4) (+4,+2)</color>                                       0.4 lbs     28
+ d) <color:o>{</color> <color:U>束矢×30 (4d4) (+5,+4)</color>                                      0.4 lbs     45
+ e) <color:o>{</color> <color:U>元素の束矢×26 (4d4) (+6,+6) {|P}</color>                           0.4 lbs     77
+ f) <color:o>{</color> <color:U>帰還の束矢×31 (4d4) (+8,+7)</color>                                0.4 lbs    231
+ g) <color:o>{</color> <color:U>耐久の束矢×23 (4d4) (+8,+10)</color>                               0.4 lbs    317
+ h) <color:o>{</color> <color:U>爆発の束矢×25 (4d4) (+9,+9)</color>                                0.4 lbs    157
+ i) <color:o>{</color> <color:U>耐久の束矢×6 (4d4) (+10,+9)</color>                                0.4 lbs    310
+ j) <color:B>{</color> <color:U>殺戮のミスリルの矢×18 (5d4) (+6,+8) {/L}</color>                   0.4 lbs    139
+ k) <color:B>{</color> <color:U>殺戮のミスリルの矢×23 (5d4) (+6,+10) {/*A}</color>                 0.4 lbs    369
+ l) <color:B>{</color> <color:U>耐久のミスリルの矢×21 (5d4) (+9,+7)</color>                        0.4 lbs    299
+ m) <color:B>{</color> <color:U>元素のミスリルの矢×35 (5d4) (+9,+9) {|ECoP}</color>                0.4 lbs    225
+ n) <color:G>{</color> <color:U>帰還の追尾の矢×19 (6d4) (+4,+9)</color>                            0.2 lbs    284
+ o) <color:G>{</color> <color:U>殺戮の追尾の矢×15 (6d4) (+9,+8) {/ULv}</color>                     0.2 lbs    399
+ p) <color:G>{</color> <color:U>帰還の追尾の矢×22 (6d4) (+11,+9)</color>                           0.2 lbs    308
+ q) <color:U>{</color> <color:U>射手バルド王の黒い矢 (8d4) (+30,+19) {/XD}</color>                  0.2 lbs   1660
+ r) <color:s>{</color> <color:U>丸い小石×30 (2d3) (+0,+0)</color>                                  0.4 lbs      1
+ s) <color:s>{</color> <color:U>丸い小石×24 (2d3) (+5,+4)</color>                                  0.4 lbs     32
+ t) <color:s>{</color> <color:U>元素の丸い小石×26 (2d3) (+7,+6) {|F}</color>                       0.4 lbs     54
+ <color:B>(33 / 35 頁)</color>
+ <color:o>g</color> でアイテムを取り出す。<color:o>d</color> でアイテムを置く。<color:o>x</color> でアイテムを調べ始める。
+ <color:o>r</color> でアイテムを捨て始める（永久に消える）。
+ <color:o>Esc</color> で出る。<color:o>?</color> でヘルプ。
+</style>
+1 画面に収まらないほどアイテムが増えると、品書きは頁に分かれる。<color:keypress>Page Up</color> と <color:keypress>Page Down</color> で送る。
+
+散らかりすぎたと思ったら、少し片づけるとよい。手っ取り早いのは、アイテムを <color:keypress>g</color> で持ち物へ移し、外へ出て町の広場に捨てることである。ただしこれはポイ捨てであるうえ、手間も掛かる。もう一つ、<color:keypress>r</color> というやり方もある。ただし気をつけること――これは選んだアイテムを<color:v>永久に消す</color>うえ、個数を指定できず、<color:keypress>ESC</color> を押すまでアイテムを捨てる状態のままである。
+
+なお、我が家の中身は我が家でなくても見られる。人物調書（<color:keypress>C</color>）からも開ける。この見方ではアイテムを選ぶことも調べることもできないが、何頁ものがらくたに埋もれた有用なアイテムを探すには、たいていこれがいちばん速くて楽である――とくに装備を組み替えているときはそうで、そのぶん片づけの必要も減る。
+
+<topic:Museum><style:heading>博物館</style>
+
+博物館は我が家とよく似ているが、一つだけ違う――博物館からはアイテムを取り出せない。寄贈したアイテムはもう戻らない。博物館は記念のアイテムを納める場所である。やたらとたくさん納める人もいるようだが。
+
+もう一つの違いは、博物館へ渡したアイテムは店と同じように自動で*鑑定*されることである。ただし博物館で*鑑定*する利点は無い。店なら代金がもらえるうえ、買い戻すこともできるからである。
+
+<topic:QuickRef><style:heading>早見表</style>
+  <indent><color:G>基本のコマンド</color>
+<color:keypress>d s</color>       持ち物のアイテムを我が家へ置く
+<color:keypress>g p b</color>     我が家のアイテムを持ち物へ取り出す
+<color:keypress>x</color>         我が家のアイテムを調べる
+<color:keypress>r</color>         我が家のアイテムを永久に消す
+<color:keypress>q Esc</color>     我が家を出る
+
+<color:G>そのほかのコマンド</color>
+<color:keypress>w</color>         アイテムを身に着ける
+<color:keypress>t T</color>       身に着けたアイテムを外す
+<color:keypress>k ^D</color>      持ち物のアイテムを壊す
+<color:keypress>e</color>         装備を見る
+<color:keypress>i</color>         持ち物を見る
+<color:keypress>I</color>         持ち物のアイテムを調べる
+<color:keypress>Tab</color>       持ち物／装備のサブウィンドウを切り替える
+<color:keypress>{</color>         持ち物のアイテムに銘を刻む
+<color:keypress>}</color>         ダンジョンの覚え書きの画を開く
+<color:keypress>C</color>         人物調書を見る
+
+<style:note>註: この<color:keyword>そのほかのコマンド</color>は、我が家を出ずに使えるよう、ふだんのゲームのコマンドをそのまま持ち込んだものである。ただしここでのキーの割り当ては<color:keyword>コードに直に書かれて</color>いるので、自分で設定したキーマップは効かない。</style>
+
+<color:G>画面送り</color>
+<color:keypress>Page Up</color>   長い品書きを送る
+<color:keypress>Page Down</color>
+<color:keypress>Space</color>     Page Down と同じ
+<color:keypress>-</color>         Page Up と同じ
+
+<color:G>表示の設定</color>
+<color:keypress>^W</color>        重さの表示を切り替える (<link:option.txt#show_weights> を見よ)
+<color:keypress>^G</color>        絵の表示を切り替える (<link:option.txt#show_item_graph> を見よ)
+</indent>

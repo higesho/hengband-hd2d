@@ -1,0 +1,639 @@
+# 幻想蛮怒 → 英語: 町（w_info.txt の町名・t0000*.txt / t_lite.txt の建物）。
+# 名前の正は gensoband/lang/en/glossary.md（承認 2026-08-24）。
+#
+# 書式:
+#   I:/J:/N:  … w_info の W:J 行の町名（照合は J:。番号は覚えのため）
+#   BJ:/BE:   … 建物の B:～:N: の三つ組「名前:主人:種族」。BJ が日本語（前後の
+#               空白は落として照合する）・BE が英語。空欄は空欄のまま
+#   AJ:/AE:   … 建物の B:～:A: の項目名。同上
+
+# ============================================================ 町名（15＋基本）
+I:1
+J:人里
+N:Human Village
+
+I:2
+J:天狗の里
+N:Tengu Village
+
+I:3
+J:旧地獄街道
+N:Former Hell Road
+
+I:4
+J:紅魔館
+N:Scarlet Devil Mansion
+
+I:5
+J:博麗神社
+N:Hakurei Shrine
+
+I:6
+J:河童のバザー
+N:Kappa Bazaar
+
+I:7
+J:永遠亭
+N:Eientei
+
+I:8
+J:香霖堂
+N:Kourindou
+
+I:9
+J:命蓮寺
+N:Myouren Temple
+
+I:10
+J:霧雨魔法店
+N:Kirisame Magic Shop
+
+I:11
+J:廃洋館
+N:Abandoned Western House
+
+I:12
+J:守矢神社
+N:Moriya Shrine
+
+I:13
+J:彼岸
+N:Higan
+
+I:14
+J:偽天棚
+N:False Tentana
+
+I:15
+J:街
+N:Town
+
+I:16
+J:森
+N:Forest
+
+# ============================================================ 建物（名前:主人:種族）
+BJ:はたての部屋:姫海棠　はたて:
+BE:Hatate's Room:Hatate Himekaidou:
+
+BJ:アーチャーのギルド:トゥラリン:ハーフエルフ
+BE:Archers' Guild:Tulalin:Half-Elf
+
+BJ:エンジニアギルド:河城　にとり:河童
+BE:Engineers' Guild:Nitori Kawashiro:Kappa
+
+BJ:エンジニアギルド人里支部:河童の出張エンジニア:河童
+BE:Engineers' Guild, Village Branch:Visiting Kappa Engineer:Kappa
+
+BJ:カオスの塔:ゼノ:獣人
+BE:Tower of Chaos:Zeno:Beastman
+
+BJ:カジノ:マテリム:人間
+BE:Casino:Materim:Human
+
+BJ:カード販売所:菅牧　典:
+BE:Card Shop:Tsukasa Kudamaki:
+
+BJ:トランプ魔術の塔:ペロイ:アンバライト
+BE:Tower of Trump Magic:Pelloi:Amberite
+
+BJ:ハンター事務所:こうぺい:人間
+BE:Hunters' Office:Koupei:Human
+
+BJ:パラディンのギルド:ランゴルダスール:人間
+BE:Paladins' Guild:Rangordasur:Human
+
+BJ:モンスター仙人:ロリエン:エルフ
+BE:Monster Hermit:Lorien:Elf
+
+BJ:仙術の塔:タニスティル:エルフ
+BE:Tower of Senjutsu:Tanistil:Elf
+
+BJ:会議室:大天狗:
+BE:Meeting Room:Daitengu:
+
+BJ:古い池のほとり:わかさぎ姫:人魚
+BE:By the Old Pond:Wakasagihime:Mermaid
+
+BJ:古い池のほとり:今泉　影狼:獣人
+BE:By the Old Pond:Kagerou Imaizumi:Beastman
+
+BJ:命蓮寺:聖　白蓮:魔法使い
+BE:Myouren Temple:Byakuren Hijiri:Mage
+
+BJ:図書館:アスティヌス:人間?
+BE:Library:Astinus:Human?
+
+BJ:図書館:パチュリー:魔女
+BE:Library:Patchouli:Witch
+
+BJ:地獄の関所:庭渡 久侘歌:
+BE:Hell's Checkpoint:Kutaka Niwatari:
+
+BJ:地霊殿:古明地　さとり:妖怪
+BE:Palace of the Earth Spirits:Satori Komeiji:Youkai
+
+BJ:地霊虹洞:無人:
+BE:Earth-Spirit Rainbow Cave:(vacant):
+
+BJ:境内の隅の人集り:雀斑の河童娘:河童
+BE:Crowd in the Shrine Corner:Freckled Kappa Girl:Kappa
+
+BJ:天狗の宿屋:天狗の看板娘:天狗
+BE:Tengu Inn:Tengu Poster Girl:Tengu
+
+BJ:守矢神社分社:二ッ岩　マミゾウ:
+BE:Moriya Branch Shrine:Mamizou Futatsuiwa:
+
+BJ:宿坊:雲居一輪＆雲山:妖怪
+BE:Temple Lodgings:Ichirin Kumoi & Unzan:Youkai
+
+BJ:宿屋兼酒場:店主:人間
+BE:Inn and Tavern:Shopkeeper:Human
+
+BJ:宿屋兼酒場:店主と妹紅:人間
+BE:Inn and Tavern:Shopkeeper and Mokou:Human
+
+BJ:宿屋兼酒場:酔いどれ店主と酔客達:妖怪
+BE:Inn and Tavern:Drunken Keeper and Patrons:Youkai
+
+BJ:寂れた小堂:矢田寺　成美:地蔵
+BE:Lonely Small Shrine:Narumi Yatadera:Jizou
+
+BJ:寺子屋:上白沢　慧音:ワーハクタク
+BE:Terakoya School:Keine Kamishirasawa:Were-Hakutaku
+
+BJ:射手ギルド:　:人間
+BE:Archers' Guild::Human
+
+BJ:山童のアジト:山城　たかね:山童
+BE:Yamawaro Hideout:Takane Yamashiro:Yamawaro
+
+BJ:廃洋館:(無人):
+BE:Abandoned Western House:(vacant):
+
+BJ:戦士の集会所:バラク:人間
+BE:Warriors' Hall:Barak:Human
+
+BJ:拝殿:(無人):
+BE:Worship Hall:(vacant):
+
+BJ:拝殿:三妖精:
+BE:Worship Hall:Three Fairies:
+
+BJ:旅の宿『白馬亭』:オティック:人間
+BE:The White Horse Inn:Otick:Human
+
+BJ:月虹市場(出張所):天弓　千亦:
+BE:Lunar Rainbow Market (Branch):Chimata Tenkyuu:
+
+BJ:本殿:八坂　神奈子:
+BE:Main Shrine:Kanako Yasaka:
+
+BJ:村長:ウルドリック:人間
+BE:Village Elder:Uldrik:Human
+
+BJ:武器匠:水庵:人間
+BE:Weaponsmith:Suian:Human
+
+BJ:永遠亭:蓬莱山　輝夜:蓬莱人
+BE:Eientei:Kaguya Houraisan:Hourai
+
+BJ:温泉街:星熊　勇儀:鬼
+BE:Hot Spring Town:Yuugi Hoshiguma:Oni
+
+BJ:生命魔術の塔:クリサニア:人間
+BE:Tower of Life Magic:Crysania:Human
+
+BJ:盗賊のギルド:ラードボトム:ホビット
+BE:Thieves' Guild:Lardbottom:Hobbit
+
+BJ:神社の屋根の上:ドレミー・スイート:妖怪
+BE:On the Shrine Roof:Doremy Sweet:Youkai
+
+BJ:神社の屋根の上:無人:
+BE:On the Shrine Roof:(vacant):
+
+BJ:神社の裏:エタニティラルバ:妖精
+BE:Behind the Shrine:Eternity Larva:Fairy
+
+BJ:神社の裏:ドレミー・スイート:
+BE:Behind the Shrine:Doremy Sweet:
+
+BJ:神社の裏:橙:獣人
+BE:Behind the Shrine:Chen:Beastman
+
+BJ:神社縁側:博麗　霊夢:人間
+BE:Shrine Veranda:Reimu Hakurei:Human
+
+BJ:神霊廟出張所:豊聡耳　神子:聖人
+BE:Divine Mausoleum Branch Office:Toyosatomimi no Miko:Saint
+
+BJ:稗田邸:稗田阿求:人間
+BE:Hieda Residence:Hieda no Akyuu:Human
+
+BJ:紅魔館門前:紅美鈴:妖怪
+BE:Scarlet Devil Mansion Gate:Hong Meiling:Youkai
+
+BJ:索道乗り場:眼鏡の河童娘　:
+BE:Ropeway Station:Bespectacled Kappa Girl:
+
+BJ:索道乗り場:黒髪の河童娘:
+BE:Ropeway Station:Black-Haired Kappa Girl:
+
+BJ:自然魔術の塔:ジョッシュ:エルフ
+BE:Tower of Nature Magic:Josh:Elf
+
+BJ:薬師ギルド:　:人里の薬師
+BE:Apothecaries' Guild::Village Apothecary
+
+BJ:薬師ギルド:　:天狗の薬師
+BE:Apothecaries' Guild::Tengu Apothecary
+
+BJ:薬師ギルド:黒谷　ヤマメ:妖怪
+BE:Apothecaries' Guild:Yamame Kurodani:Youkai
+
+BJ:虹龍洞の近くの賭場:駒草　山如:妖怪
+BE:Gambling Den by the Rainbow Dragon Cave:Sannyo Komakusa:Youkai
+
+BJ:診療所:八意永琳:月人
+BE:Clinic:Eirin Yagokoro:Lunarian
+
+BJ:調剤室:八意永琳:月人
+BE:Pharmacy:Eirin Yagokoro:Lunarian
+
+BJ:路地裏:無人:
+BE:Back Alley:(vacant):
+
+BJ:道具屋裏口:埴安神 袿姫:
+BE:General Store Back Door:Keiki Haniyasushin:
+
+BJ:酒場:天狗の酔客たち:天狗
+BE:Tavern:Drunken Tengu Patrons:Tengu
+
+BJ:酒場:妖怪の酔客達:妖怪
+BE:Tavern:Drunken Youkai Patrons:Youkai
+
+BJ:酒場:河童の酔客たち:河童
+BE:Tavern:Drunken Kappa Patrons:Kappa
+
+BJ:里の外れの廃墟:姫海棠はたて:天狗
+BE:Ruins on the Village Outskirts:Hatate Himekaidou:Tengu
+
+BJ:里の外れの廃墟:射命丸文:天狗
+BE:Ruins on the Village Outskirts:Aya Shameimaru:Tengu
+
+BJ:里の外れの廃墟:無人:
+BE:Ruins on the Village Outskirts:(vacant):
+
+BJ:鍛冶宝飾ギルド:　:人間
+BE:Smiths' and Jewelers' Guild::Human
+
+BJ:鍛冶宝飾ギルド:　:天狗の鍛冶師
+BE:Smiths' and Jewelers' Guild::Tengu Smith
+
+BJ:鍛冶屋:天狗の鍛冶師:山伏天狗
+BE:Smithy:Tengu Smith:Yamabushi Tengu
+
+BJ:鍛冶屋:里の鍛冶師:人間
+BE:Smithy:Village Smith:Human
+
+BJ:鍛冶屋:鬼の鍛冶師:鬼
+BE:Smithy:Oni Smith:Oni
+
+BJ:雛人形無人販売所:　:無人
+BE:Unattended Hina Doll Stand::(vacant)
+
+BJ:霧雨魔法店:霧雨　魔理沙:人間
+BE:Kirisame Magic Shop:Marisa Kirisame:Human
+
+BJ:香霖堂:森近　霖之助:半妖
+BE:Kourindou:Rinnosuke Morichika:Half-Youkai
+
+BJ:香霖堂の工房:　:半妖
+BE:Kourindou Workshop::Half-Youkai
+
+BJ:鯢呑亭:奥野田　美宵:
+BE:Geidontei:Miyoi Okunoda:
+
+BJ:龍神像:十六夜　咲夜:人間
+BE:Dragon God Statue:Sakuya Izayoi:Human
+
+BJ:龍神像:運松翁:
+BE:Dragon God Statue:Elder Unshou:
+
+BJ:龍神像:運松翁:人間
+BE:Dragon God Statue:Elder Unshou:Human
+
+# ============================================================ 建物の項目（B:～:A:）
+AJ:お賽銭を入れる
+AE:Make an offering
+
+AJ:お賽銭を確認する
+AE:Check the offertory box
+
+AJ:わかさぎ姫と話す
+AE:Talk with Wakasagihime
+
+AJ:アイテムをポイントと交換する
+AE:Exchange items for points
+
+AJ:アイテム交換会
+AE:Item exchange meet
+
+AJ:アイテム調査
+AE:Examine an item
+
+AJ:アイテム鑑定
+AE:Identify an item
+
+AJ:アビリティカードを売却する
+AE:Sell ability cards
+
+AJ:アビリティカードを調べる
+AE:Examine ability cards
+
+AJ:アビリティカードを買う
+AE:Buy ability cards
+
+AJ:アビリティカード交換会
+AE:Ability card exchange meet
+
+AJ:イン・ビトイーン
+AE:In-Between
+
+AJ:クエスト
+AE:Quest
+
+AJ:クラップ
+AE:Craps
+
+AJ:ゲームのルール
+AE:Rules of the games
+
+AJ:スペシャル・ターゲット
+AE:Special target
+
+AJ:スペルカードを作る
+AE:Create a Spell Card
+
+AJ:ダイス・スロット
+AE:Dice slots
+
+AJ:ダンジョンへ帰還
+AE:Return to the dungeon
+
+AJ:ナズーリンから探索のアドバイスを聞く
+AE:Hear Nazrin's exploration advice
+
+AJ:ポイントを景品と交換する
+AE:Exchange points for prizes
+
+AJ:ポーカー
+AE:Poker
+
+AJ:メモを読む
+AE:Read the memo
+
+AJ:モンスター調査
+AE:Research a monster
+
+AJ:モンスター闘技場
+AE:Monster arena
+
+AJ:ユニークモンスターの居場所を探す
+AE:Locate a unique monster
+
+AJ:ルーレット
+AE:Roulette
+
+AJ:一泊する
+AE:Stay the night
+
+AJ:人探しを頼む
+AE:Request a person search
+
+AJ:他の町へ移動
+AE:Travel to another town
+
+AJ:休憩する
+AE:Rest
+
+AJ:全てのアイテムを再充填
+AE:Recharge all items
+
+AJ:再充填
+AE:Recharge
+
+AJ:冒険を交代する
+AE:Switch adventurers
+
+AJ:占い
+AE:Fortune-telling
+
+AJ:噂を聞く
+AE:Hear rumors
+
+AJ:地上の魔法の森へ行く
+AE:Go to the Forest of Magic above
+
+AJ:地底へ行く
+AE:Go underground
+
+AJ:壁に貼られた手配書を見る
+AE:Look at the wanted posters
+
+AJ:売上を回収する
+AE:Collect your earnings
+
+AJ:外の世界に送ってもらう
+AE:Be sent to the Outside World
+
+AJ:夢日記を見る
+AE:View the dream diary
+
+AJ:奥へ行く
+AE:Go further in
+
+AJ:女中に話を聞く
+AE:Hear from the maid
+
+AJ:小傘に鍛冶を頼む
+AE:Ask Kogasa for smithing
+
+AJ:工房を借りる
+AE:Rent the workshop
+
+AJ:平衡化の儀式
+AE:Ritual of balancing
+
+AJ:弓を強化する
+AE:Enchant bows
+
+AJ:影狼と話す
+AE:Talk with Kagerou
+
+AJ:怪我と生命力を治療する
+AE:Heal wounds and life force
+
+AJ:情報交換（未実装）
+AE:Information exchange (unimplemented)
+
+AJ:折れた武器を修復する
+AE:Repair broken weapons
+
+AJ:持ち物全てを鑑定
+AE:Identify everything carried
+
+AJ:持っていく魔法を選ぶ
+AE:Choose spells to carry
+
+AJ:探索の心得を思い出す
+AE:Recall exploration basics
+
+AJ:換金する
+AE:Exchange for cash
+
+AJ:新しい噂を聞く
+AE:Hear new rumors
+
+AJ:日替わり賞金首
+AE:Today's bounty
+
+AJ:杖などを全て再充填
+AE:Recharge all staffs etc.
+
+AJ:杖などを再充填
+AE:Recharge staffs etc.
+
+AJ:機械を制作する
+AE:Build a machine
+
+AJ:武器を強化する
+AE:Enchant weapons
+
+AJ:武器を比較する
+AE:Compare weapons
+
+AJ:治療の祈祷
+AE:Healing prayer
+
+AJ:治療家に会う
+AE:See the healer
+
+AJ:洋館に入る
+AE:Enter the mansion
+
+AJ:消耗品を調達する
+AE:Buy supplies
+
+AJ:温泉に入る
+AE:Bathe in the hot spring
+
+AJ:珍品を売りつける
+AE:Sell curios
+
+AJ:珍品を買う
+AE:Buy curios
+
+AJ:盆栽の世話をする
+AE:Tend the bonsai
+
+AJ:矢や石等を強化する
+AE:Enchant ammo
+
+AJ:矢を強化する
+AE:Enchant arrows
+
+AJ:突然変異を治療する
+AE:Cure mutations
+
+AJ:素材から魔力を抽出する
+AE:Extract magic from materials
+
+AJ:素材を持ち込んで矢に属性付与する
+AE:Bring materials to brand arrows
+
+AJ:素材を持ち込んで矢を強化する
+AE:Bring materials to enchant arrows
+
+AJ:索道に乗って人里へ帰る
+AE:Ride the ropeway to the Human Village
+
+AJ:索道に乗って守矢神社へ行く
+AE:Ride the ropeway to the Moriya Shrine
+
+AJ:能力低下を治療する
+AE:Restore lowered stats
+
+AJ:能力回復
+AE:Restore stats
+
+AJ:自分の評判を聞く
+AE:Hear your reputation
+
+AJ:街の概要
+AE:About this town
+
+AJ:装備品の呪いを解く
+AE:Remove curses from equipment
+
+AJ:覆面座談会
+AE:Masked round-table
+
+AJ:話しかける
+AE:Talk
+
+AJ:説明を受ける
+AE:Receive an explanation
+
+AJ:説明を聞く
+AE:Hear an explanation
+
+AJ:説明を見る
+AE:See an explanation
+
+AJ:調剤室を借りる
+AE:Rent the pharmacy
+
+AJ:調剤書を確認する
+AE:Check the pharmacy books
+
+AJ:賞金首リスト
+AE:Bounty list
+
+AJ:輝夜と話をする
+AE:Talk with Kaguya
+
+AJ:防具を強化する
+AE:Enchant armor
+
+AJ:防御について調べる
+AE:Learn about defense
+
+AJ:階を指定してテレポート
+AE:Teleport to a chosen level
+
+AJ:雛人形を買う
+AE:Buy a hina doll
+
+AJ:食事をする
+AE:Have a meal
+
+AJ:食材を持ち込む
+AE:Bring ingredients
+
+AJ:魔力の備蓄を確認する
+AE:Check the mana stockpile
+
+AJ:魔法の効果を確認する
+AE:Check spell effects
+
+AJ:魔法の実験をする
+AE:Experiment with magic
+
+AJ:魔法を作る
+AE:Create magic
+
+AJ:龍神像を見る
+AE:Look at the Dragon God Statue

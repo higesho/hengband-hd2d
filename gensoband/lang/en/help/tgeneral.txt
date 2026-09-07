@@ -1,0 +1,109 @@
+=== What is "Gensoband"? ===
+
+Keine: "Gensoband is one of the many variants of the roguelike game.
+
+You know the word "roguelike", I trust?
+In 1980, at the dawn of computer games, a dungeon-crawling RPG called "Rogue"
+was written. The dungeon-crawling RPGs descended from it are called
+roguelikes as a group. What exactly makes a roguelike is a matter of endless
+argument, but broadly it means a game where you explore a randomly built
+dungeon laid out on a grid, taking turns, killing monsters and gathering
+treasure, and where the game simply ends when you fall.
+
+A "variant" means a derived work.
+The roguelike branched again and again, and a great many variants were made.
+Gensoband stands at the end of this line:
+"Rogue" -> "Moria" -> "Angband" -> "Zangband" -> "Hengband" -> "Gensoband".
+
+Moria and Angband borrowed a great deal from Tolkien.
+Younger players may know it better as "The Lord of the Rings" than as any
+book, I suppose.
+
+Zangband then borrowed a great deal more, on an even larger scale, from the
+Cthulhu Mythos and from the Amber novels.
+
+Hengband in turn stuffed in mountains of material from Japanese animation and
+much else besides. The result is a thoroughly chaotic game -- and yet the
+system that makes it worth playing has been handed down intact.
+
+Gensoband is that same Hengband, altered here and there, with the elements of
+the Touhou Project added on top.
+
+The early roguelikes were plain games indeed.
+The graphics were letters and nothing more, there was no sound at all, and the
+world of the game was built by the player's imagination alone.
+But then, a role-playing game was always meant to be an adventure inside the
+imagination. The progress of computer games has been remarkable, but there is
+something to be said for touching the old things once in a while."
+
+
+***** <Katte>
+=== Hengband and its variants ===
+
+Keine: "Hengband's program code is published free of charge.
+Anyone can rewrite it and compile it and so make a Hengband of their own.
+Such a thing is called a "private version" or a "modified version".
+
+Gensoband itself was first published under the title "Hengband, private
+version, with assorted Touhou material added". That being rather a mouthful,
+people took to calling it "the Touhou version". Over the years that followed,
+the differences from Hengband proper piled up and began to cause confusion,
+so the title was changed -- belatedly.
+
+Perhaps some of you now feel like making a private version or a variant of
+your own. If so, I strongly recommend building on Hengband's program code
+rather than on Gensoband's.
+
+Hengband's code is at present being refactored on a large scale by a good
+many developers, and it must be far easier and far safer to work with than
+Gensoband's code -- which is nearly ten-year-old code that an amateur has
+been pulling about at will. See Hengband's own site and help files for the
+details."
+
+
+***** <First>
+=== The goal of the game ===
+
+Keine: "Now then. The story moves to Gensokyo.
+A suspicious cave has appeared west of the Human Village, and violent
+creatures are pouring out of it. Your adventure is to go down into that cave
+and resolve the incident.
+
+At the outset you are frail enough that a stray dog could bite you and leave
+you in tears. But by exploring the dungeon, gathering experience and putting
+together your equipment, you will in time be able to stand against any power
+however great."
+
+
+***** <Gameover>
+=== Game over ===
+
+Keine: "I said a moment ago that in a roguelike the game ends when you fall.
+That was neither exaggeration nor figure of speech.
+The instant your hit points go below zero, every coin you have earned, every
+point of experience, and every treasure piled up in your home is gone.
+The game starts again from the beginning.
+
+Two things remain, however.
+The monster lore you have recorded across your adventures -- and the
+experience that accumulates in you, the player.
+At first you will fall over at the least little thing. But each time you fall
+you will learn a better way to behave, and before long there will be scarcely
+anything that can kill you except by sheer bad luck.
+
+...Well, Mokou alone does not end when she falls, but she is the exception.
+Set the difficulty to EASY and others may come back as well."
+
+
+***** <Web>
+=== Where to get Gensoband ===
+
+Keine: "You could hardly be running this without knowing, but let me set it
+down all the same. Gensoband is published here.
+
+--- https://gensoband.main.jp/index.html ---
+
+If you have questions, bug reports, or remarks about odd messages or game
+balance, please write on the message board without reserve.
+Whether every one of them can be answered is another matter -- that depends
+on the author's ability and on his plans for the game."

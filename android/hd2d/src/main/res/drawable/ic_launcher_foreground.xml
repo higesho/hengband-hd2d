@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  アダプティブアイコンの前景。安全域（中央 72dp 四方）に収まる剣。
+  minSdk 33 なので mipmap-anydpi-v26 だけで足り、PNG のラスタは要らない。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 刃 -->
+    <path
+        android:fillColor="#F0DCA8"
+        android:pathData="M54,18 L60,29 L60,63 L48,63 L48,29 Z" />
+    <!-- 刃の稜線 -->
+    <path
+        android:fillColor="#B9A473"
+        android:pathData="M54,18 L60,29 L60,63 L54,63 Z" />
+    <!-- 鍔 -->
+    <path
+        android:fillColor="#D9A441"
+        android:pathData="M36,63 L72,63 L72,70 L36,70 Z" />
+    <!-- 柄 -->
+    <path
+        android:fillColor="#7A4A2B"
+        android:pathData="M50,70 L58,70 L58,84 L50,84 Z" />
+    <!-- 柄頭 -->
+    <path
+        android:fillColor="#D9A441"
+        android:pathData="M54,84 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0" />
+</vector>

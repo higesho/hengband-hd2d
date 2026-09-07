@@ -1,0 +1,388 @@
+***** <Mutation>
+=== Mutations ===
+
+Keine: "Now and then, while exploring, you may suffer a mutation.
+A mutation is a change worked upon part of your body or mind.
+Some are charming enough -- cat ears, say -- and some are useful and raise a
+stat, but a few are dangerous enough to end the game if you do not treat them
+quickly.
+
+Mutations come about mainly like this:
+- taking a chaos attack without resistance to chaos gives a random mutation
+- drinking a Potion of Mutation very likely gives several mutations
+- spells such as Self-Transformation and Body Transformation give mutations
+- an attack that brings on insanity has a small chance of giving a harmful one
+
+You recover from mutations mainly like this:
+- treatment at Eientei removes one random mutation ($3000)
+- drinking a Potion of Mutation has a small chance of removing them all
+- "Rebirth" or "Race Transformation", by certain potions and spells, removes
+  them all
+
+Bear this in mind:
+having mutations slows the natural regeneration of your HP and MP a little,
+in proportion to how many you have.
+There is a technique of taking chaos attacks on purpose to gather useful
+mutations, but do not carry it too far or your exploring will suffer.
+
+Note that a few races -- the oni's horns, the mermaid's tail -- have from the
+start what amounts to a mutation of their own.
+These bodily traits of the race never go away, and they do not affect your
+rate of recovery."
+
+
+--- Race transformation ---
+Keine: "Magic or a curse of the greatest power can change your very race.
+You will rarely see it. The main causes are these:
+
+- while under the patronage of the gods of Chaos, their whim may transform you
+- spells such as Self-Transformation have a small chance of transforming you
+- casting Reincarnation in the Transform realm, or Ghostly Ogre-God in the
+  Necromancy realm
+- wearing certain special artifacts (you are warned first)
+
+After a transformation your current level is recalculated against the new
+race's experience factor.
+As for your score, it is worked out with the lowest score multiplier among
+all the races you have ever been. Winning *the game* as a strong race and then
+turning into a weak one before you finish will not raise your score.
+
+A few races such as the youkai doll and the stray god are never transformed.
+And if you belong to a unique class you should never be transformed except by
+the Reincarnation spell and by artifacts."
+
+
+***** <Extra_mode>
+=== EXTRA mode ===
+
+Keine: "Version 1.0.99 added the difficulty "EXTRA".
+In EXTRA mode your adventure has an entirely different flavour.
+Let me set out the differences in detail.
+
+- You start on floor 1 of Angband and can only go down
+	The game begins not in the Human Village but at a random spot on floor 1
+        of Angband. There are only down staircases, and Teleport Level also take
+        s
+	you only downward.
+	You cannot leave the dungeon with recall magic or a recall item, and
+	floor-regenerating magic such as Alter Reality or Shadow Shift has no
+	effect. The shafts that carry you down two floors at once do not appear.
+	Win in exactly one hundred floors, with no second chances.
+
+- You level up quickly
+	In EXTRA mode the experience needed for the next level is halved.
+	Unless your character carries a very heavy experience penalty you will
+	never want for levels. The youkai doll needs the same amount of
+	reinforcement as in other difficulties, but good equipment turns up
+	readily, so it too will advance quickly.
+
+- Good items are common, and some consumables come in stacks
+        In EXTRA mode items of a higher level than the floor you are on are ofte
+        n
+	lying about. Fine equipment and artifacts come easily, and potions,
+	scrolls and wands are often found several at a time.
+	The chance that a particular unique monster drops a particular fixed
+	artifact is doubled.
+
+- "Item cards" exist
+	EXTRA mode has strange cards with pictures on them of such things as the
+	yin-yang orb or the hakkero.
+        Nothing happens while they sit in your pack; use the U command and you c
+        an
+	set up to eight of them in dedicated slots and invoke them from there.
+	Invoking one looses an ability such as Fantasy Seal or Master Spark.
+	It costs no MP and never fails, but each card is used up once invoked.
+	Many are useful not only for attack but for defence and support.
+	Read a card with the r command and you can learn what it does.
+
+	These cards are dropped with moderate probability by unique monsters.
+	Kill one of the famous of Gensokyo and you will very likely get a card
+	connected with her.
+        Cards are also found lying on the floor. As with the produce of a dungeo
+        n,
+	a high searching ability seems to find them more easily.
+
+	In EXTRA mode you will be short of one thing or another at every turn.
+	Use the item cards well and see yourself through.
+
+***** <AbilityCard>
+	(The cards are called ability cards in the shops and item cards in your
+	pack; they are the same thing.)
+
+- "Extra quests" occur
+	No random quests occur in the Angband of EXTRA mode.
+	Instead, nine special quests occur on floors 10, 20, 30 ... 90.
+        Descend to one of those floors and it is laid out like a particular ques
+        t
+        dungeon; kill the enemies on the floor and the quest is complete, and th
+        e
+	reward appears near the staircase.
+
+        The staircase on such a floor leads down, and going down before the ques
+        t
+        is complete counts as abandoning it. Teleport Level likewise abandons th
+        e
+	quest and drops you to the floor below.
+        As in an ordinary quest dungeon, *Destruction* and Genocide cannot be us
+        ed.
+	Enemies that summon are best killed quickly, one way or another.
+
+- Special buildings appear on the floor
+	On floors with no quest there is a small building somewhere.
+	It may be a shop such as a weaponsmith, or it may hold a special service
+	such as remove curse, identify or recharging.
+        How often these buildings appear varies a little with the floor you are
+        on
+        and with your class. Some of them are vital, so look for them and call i
+        n
+	when you can.
+        Enemies occasionally appear inside and set upon you without warning, so
+        I
+        do not recommend rummaging through suspicious places when your HP is lo
+        w.
+
+- The floors are laid out a little differently
+        Sometimes a floor resembles the Forest of Magic or Muenzuka, or takes so
+        me
+	other distinctive shape.
+	Floors that are far too cramped do not appear.
+	The rectangular monster rooms -- pits and nests -- are less common, and
+	underground towns a little more common.
+
+- Your score is four times NORMAL and twice HARD
+        Since there are fewer quests, the bonus for completing quests and the bo
+        nus
+	for depth reached are higher than in the other modes.
+	Classes that suit the EXTRA system very badly -- and, conversely, a few
+	classes that lose little to its restrictions -- receive a special
+	adjustment to the score multiplier.
+        Some birth options carry a different score multiplier here than elsewher
+        e.
+
+- Other
+	The shops on a floor carry little stock, and it is never renewed however
+	long you wait.
+
+	Some unique monsters that appear only in particular quests in the other
+	difficulties turn up in the dungeon here as a matter of course.
+	Beware the chief of the youkai tanuki in particular.
+
+        Non-unique monsters that appear on a floor anew, through summoning or wi
+        th
+	the passing of time, yield few items and little experience when killed.
+	In other words, having a summoner call up weaklings, or lingering on a
+	floor you have already cleared, is a poorer way of making a living.
+
+
+That is about all.
+To win in EXTRA mode you will need not only a good character and good strategy
+but a certain amount of luck.
+I wish you well."
+
+--- How to use a base of operations in EXTRA mode ---
+
+Keine: "In EXTRA mode you cannot return to a town to use your base of
+operations. That is the hard part of EXTRA mode.
+There are, however, several ways to use the base within the dungeon.
+It is no exaggeration to say that securing them decides whether the adventure
+succeeds. Let me set them out here.
+
+- Use an item card
+	The item cards "Twisted Parasol" and "Magic Vial" let you use your base.
+
+        The parasol is the stronger: it opens a door to the base where you stan
+        d,
+	but it cannot be used on a floor where a quest is under way.
+	Nor can it be used on the deepest floor before the boss is killed, so
+	settle your preparations before you descend to it.
+	Once a quest is complete you may use it even inside the fixed dungeon of
+	an extra quest.
+
+        The vial can be used at any time, but its effect ends the moment you lea
+        ve
+        the base. Unlike the parasol, it will not let you strew items on the flo
+        or
+	and sort through them at leisure.
+        You also cannot change the item cards in your slots while the base is op
+        en.
+	Think carefully about what goes in and what comes out before you use it.
+
+        Item cards are had by killing unique monsters or by raising your searchi
+        ng
+	ability and combing the floor.
+        These two are somewhat rare and hard to come by, but Yukari Yakumo and,
+        in
+        the middle depths and below, Marisa Kirisame have a relatively good chan
+        ce
+	of dropping them.
+        If one lies on the floor early on, the feeling of the floor changes enou
+        gh
+	that you will not miss it.
+
+- Send items to the base with magic or an item
+	Certain artifacts and spells send items to your base.
+	The Summon, Nature and Chaos realms hold such spells.
+        This is a one-way transfer to the base, however; you cannot take anythin
+        g
+        out. Some of the means have a weight limit, and some have a small chance
+        of
+	destroying the item.
+
+- Use a facility on the floor
+        EXTRA mode puts a small building on floors with no quest, and some of th
+        em
+	will exchange items with your base.
+
+        The "Divine Spirit Mausoleum branch office" will send items to your hom
+        e.
+
+	At "An Open Place", where the youkai Rin Kaenbyou is found, items can be
+	carried to your home, and one item can be fetched from it.
+
+	At "A Strange Place", where the barrier is frayed, you may with luck be
+	allowed to use your home once. Fail, however, and you are swallowed by a
+	gap and suffer a mutation. Nimble fingers seem to help.
+
+	And the room of a zashiki-warashi working remotely likewise lets you use
+	your home once. This one works for certain as long as you find the
+	building, which is reassuring -- but it is rather hard to find."
+
+
+***** <Gun>
+=== Weapons of the "gun" class ===
+
+Keine: "From version 1.1.04 the weapons of the "gun" class work very
+differently. In a word, they are like a rod you wear.
+Let me explain the new rules for guns.
+The commands are given in the original keyset.
+
+- The basics
+	Wield one in your right or left hand and shoot with the 'f' command, not
+	with 'A'. After the command you choose a target, and once the target is
+	set the roll to succeed is made.
+	On a success the shot is fired at the target.
+        Energy is spent either way, and once you have used up your rounds the gu
+        n
+	cannot be used until at least one round has been loaded again.
+
+- Rounds
+	Every gun has a number of rounds.
+	 *Evolving Gun 'Crimson' (0d0) (+20,+20) (+4 speed)(6/6)
+	 The (6/6) at the end is the rounds. Each shot takes it to (5/6), (4/6)
+	 and so on.
+
+- Two guns at once
+	You may wield a different gun in each hand.
+	Then, after you choose a target, each gun makes its own roll and its own
+        shot. The energy cost is as usual, but the chance to succeed drops a goo
+        d
+	deal. Gauntlets or gloves with a two-weapon bonus soften the penalty.
+	Note that if the guns you wield are too heavy, neither hand can shoot.
+
+- The chance to hit
+	The chance depends on the strength of the gun being fired, on the higher
+	of your shooting skill and your magic device skill, on your gun
+	proficiency, on your dexterity, on the to-hit bonuses of your armour and
+	accessories, and on the gun's own to-hit bonus.
+	Holding a single gun in both hands gives a bonus to the chance.
+	Fear, confusion and firing two guns lower it sharply.
+        If a powerful gun falls into the hands of a class with little aptitude f
+        or
+	guns or shooting, I am afraid you cannot rely on it very far.
+
+- Shortening the reload
+	After a shot a gun is reloading and cannot be used, and the reload time
+	varies with the kind of gun.
+        Certain conditions shorten it: gun proficiency at the fourth rank, a rap
+        id
+	fire property on the gun, a Ring of Extra Shots on the hand holding the
+	gun, and the trigger-happy nature.
+	With all of them together the reload completes some four or five times
+	faster than usual.
+
+- The damage of a gun
+	A gun's damage comes purely from the gun itself.
+	Except for certain fixed artifacts it is simply the dice plus the damage
+	bonus.
+        Some guns fire with an element such as fire or holy attached, and then t
+        he
+	damage rises or falls with the enemy's resistances and weaknesses.
+
+- Checking the details of your shooting
+        The hit chance and the reload time of the gun you are wielding can be se
+        en
+	on the status screen with the 'C' command.
+        And if you *identify* a gun and look at it with the I command you can se
+        e
+	the element of its shot and so on.
+
+- Fighting hand to hand while wielding a gun
+	When you wield a gun and carry no other melee weapon, you can attack
+	adjacent enemies with the gun.
+	This counts as a martial arts attack, so your martial arts proficiency,
+	your strength and your dexterity all come into it.
+        Sometimes this fires a point-blank shot from a gun that is still reloadi
+        ng;
+	please do not think about that too hard.
+        The "rifle" has a bayonet fixed to it, so this attack is stronger with o
+        ne.
+
+- Reflection
+        If, when you look at a gun with the I command, its effect is written as
+        a
+	"bolt", some enemies can reflect it.
+	If it says only "shot", it is never reflected.
+
+- Ego items and random artifacts
+	Guns now appear as ego items and as random artifacts.
+	The element or the kind of the shot can change when they do.
+        A gun whose dice have risen sharply usually shoots with an element, so m
+        ind
+	the enemy's resistances when you use it.
+
+- The "no guns appear" option
+	Turn on the "no guns appear" option during play and weapons of the gun
+	class stop appearing.
+	You can turn it on and off at any time, and there is neither penalty nor
+        bonus. If you feel the smell of gunpowder does not suit Gensokyo, turn i
+        t
+	on."
+
+
+
+***** <Score_server>
+=== The score server ===
+
+Keine: "When you retire or when the game is over you may send your game data
+to the score server. Do tell everyone the tale of your adventure.
+
+Note that Gensoband's score server, unlike Hengband's, receives the save file
+itself. The plan is to use that data for various rankings and statistics in
+future.
+
+I doubt anyone does, but if you keep a password or other confidential
+information in the game's note function, delete it before you send.
+If you do not wish to send your score, press N when asked "Send your score?",
+or turn score sending off from the play options in the option settings.
+
+
+
+***** <Mana_shield>
+=== The "barrier guard" ===
+
+Keine: "From version 1.1.27 on, a spellcasting class that uses the Ctrl-'g'
+command enters the "barrier guard" state.
+While it holds, half of the damage from an enemy's attack goes to your MP
+rather than your HP. Even a caster, whose HP tends to be low, will find the
+middle depths easier to walk.
+
+But take too much damage at once, or let your MP reach zero, and the guard
+"breaks" and leaves you stunned.
+The barrier also disappears if you are paralysed, confused, dazed, heavily
+stunned, or under an anti-magic effect.
+
+Note that from version 1.1.96 on, when you use the barrier guard, a "reduce
+spell difficulty" property makes it one and a half times as resistant to
+breaking, and a "reduce mana cost" property cuts the MP spent by 25%.
+
+"

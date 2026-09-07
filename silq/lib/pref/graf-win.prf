@@ -1,0 +1,16 @@
+# File: graf-win.prf
+
+#
+# This file defines attr/char mappings for the Win32 API graphics backend (when
+# the game was compiled via `src/main-win.c`).
+#
+# See `src/files.c` for more information.
+#
+
+###############################################################################
+# Load the preferences for tiles graphics (if enabled)
+###############################################################################
+?:[EQU $GRAF tiles]
+%:graf-tiles.prf
+
+?:1
