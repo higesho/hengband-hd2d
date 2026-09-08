@@ -19,7 +19,6 @@ Hengband.exe.lastcodeanalysissucceeded
 # 2 プロセス分割版の実行ファイル
 # 出力先は既存 exe と同じくリポジトリ直下。
 /HengbandCore.exe
-/HengbandUi.exe
 
 # ボクセル HD2D の実行ファイル。出力先は同じくリポジトリ直下。
 /HengbandHd2d.exe
@@ -502,18 +501,12 @@ assets/audio/ai/
 
 # 上流の *.log 除外により MSBuild フルログ（約 70MB）は追跡されない。
 # ただし各 Phase レビューが合否の証拠として参照する計測ログのみ追跡する。
-!docs/layout_check_*.log
-!docs/tile_check_*.log
 # HD2D の自動スモークが残す証跡（上流の *.log 除外に掛かって消えないよう明示する）
 #   hd2d_switch_smoke.log = 描画経路の実行時切替（設計書 §9.3）
 #   hd2d_scene_smoke.log  = 合成フレームの 3D 描画と各段の glGetError
-!docs/hd2d_switch_smoke.log
-!docs/hd2d_scene_smoke.log
 # パッド割り当ての自己検査が残す証跡（HENGBAND_SDL2_PADBIND_SMOKE）。
 #   padbind_smoke.log = コマンド表・キーマップ逆引き・cfg 互換・一覧の窓の判定結果。
-#   docs/build_*_summary.log を追跡しているのに、その要約が参照する検査ログ本体が
 #   追跡外だと合否を後から確かめられない。扱いを揃える。
-!docs/padbind_smoke.log
 
 # 生成スクリプトが作る一時バックアップ（git が履歴を持つため追跡しない）
 *.csv.bak
@@ -523,14 +516,11 @@ assets/audio/ai/
 
 # 目視チェック HTML のサムネイル（tilework/sfc から再生成できる派生物・37MB）
 #   python tools/gen_monster_tile_review.py で作り直せる
-docs/tile_review/thumbs/
 
 # ビルドの証跡は「判定行だけを抜いた要約」を追跡する。
 #   レビューで「対応するビルドログが 1 本も無い」と差し戻されたため証跡自体は要るが、
 #   MSBuild のフルログは 1 本 2.5MB・docs 配下だけで 66MB あり、§11.1 で「生成物として
-#   除外」と決めた対象そのもの。`!docs/*.log` で一括復活させるとその判断を黙って覆すことになる。
 #   要約（警告・エラーの件数と完了行）があれば後から確かめる材料としては足りる。
-!docs/build_*_summary.log
 
 # ------------------------------------------------------------------ Android 版
 # SDL2 群のソース（tools/fetch_android_deps.ps1 が公式リリースを展開する派生物・約 200MB）
@@ -719,6 +709,7 @@ frox/lib/data-ja/
 # 調べ物の途中の出力
 scratch_*
 scratch_old/
+/tmp/
 untr_rows.txt
 lang-probe/
 ml
@@ -731,3 +722,19 @@ frox/tilework/_sheet_*.png
 frox/tilework/_sheet_index.csv
 # スクリーンショットの置き場（web/img/ へ写して使う）
 SS/
+
+# 原作ZIPインポート用の生成済みコンパイラー・SDK
+/core-import/
+/android/core-import-kit/
+/android/core-import-jni/
+
+# Generated assets and local verification baselines (distributed separately).
+/assets/voxel/
+/assets/tiles/
+/assets/ui/
+/tilework/
+/tools/hd2d_verify/golden/
+/tools/hd2d_verify/replay/
+/tools/hd2d_verify/playthrough/
+/assets/audio/se/
+/lib/xtra/

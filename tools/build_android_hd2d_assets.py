@@ -105,6 +105,8 @@ def collect_lib_files() -> list[tuple[Path, Path]]:
             continue
         rel = src.relative_to(REPO)
         parts = rel.parts
+        if any(part.startswith(".hd2d-save-") for part in parts):
+            continue
         if src.name in LIB_SKIP_NAMES:
             continue
         if src.name.startswith(LIB_SKIP_PREFIXES):
@@ -295,6 +297,8 @@ def collect_legacy_files() -> list[Path]:
                 continue
             rel = src.relative_to(REPO)
             parts = rel.parts
+            if any(part.startswith(".hd2d-save-") for part in parts):
+                continue
             if parts in SKIP_EXACT:
                 continue
             # `<コア>/lib/<ここ>/...` を見る。木が `<コア>/lib` のときだけ効く。
@@ -430,11 +434,28 @@ def main() -> int:
     if notices.exists():
         copy_if_changed(notices, OUT / "THIRD-PARTY-NOTICES.txt")
 
+    # 同梱コンパイラーのヘッダー・パッチ・接続 SDK。実行ファイルは jniLibs へ別途配置する。
+    import_kit = REPO / "android/core-import-kit"
+    if not (import_kit / "catalog.json").is_file():
+        raise FileNotFoundError("Run tools/core_import/package_kit.py before packaging Android")
+    for source in sorted(import_kit.rglob("*")):
+        if any(part.startswith(".") for part in source.relative_to(import_kit).parts):
+            continue  # AAPT が除外する管理用ファイルを展開一覧に載せない。
+        if not source.is_file():
+            continue
+        target = OUT / "core-import" / source.relative_to(import_kit)
+        copy_if_changed(source, target)
+        extract_entries.append((target.relative_to(OUT).as_posix(), target.stat().st_size))
+
     # ---- assets.manifest（旧版と同じ形式。installer は同じコード）
     digest = hashlib.sha256()
     for name, size in extract_entries:
         digest.update(name.encode("utf-8"))
         digest.update(str(size).encode("ascii"))
+        # 同じサイズの SDK 更新も端末へ反映する。
+        with (OUT / name).open("rb") as source:
+            for block in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(block)
     version = digest.hexdigest()[:16]
 
     manifest = OUT / "assets.manifest"

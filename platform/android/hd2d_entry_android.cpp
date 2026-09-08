@@ -33,6 +33,7 @@
 #include "android/android_log_redirect.h"
 #include "android/android_paths.h"
 #include "app/hd2d_app.h"
+#include "app/core_import_ui.h"
 
 namespace {
 
@@ -44,8 +45,10 @@ constexpr const char *kTag = "hengband-hd2d";
  * 開きっぱなしで持つ（コアはプロセス寿命と同じ。dlclose の機会が無い）。
  * @return 入口。無い .so・引けない .so は nullptr（選択肢に並ばない）。
  */
-hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &so_name)
+hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &requested)
 {
+    const auto imported = hd2d::imported_core_path(requested);
+    const std::string so_name = imported.empty() ? requested : imported.string();
     static std::map<std::string, void *> handles;
     auto it = handles.find(so_name);
     if (it == handles.end()) {
@@ -87,6 +90,7 @@ hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &so_name)
  */
 bool core_so_available(const std::string &so_name)
 {
+    if (!hd2d::imported_core_path(so_name).empty()) return true;
     static const char *const kPackaged[] = {
         "libhengcore.so",
         "libtangcore.so",
@@ -100,7 +104,7 @@ bool core_so_available(const std::string &so_name)
     };
     for (const char *const name : kPackaged) {
         if (so_name == name) {
-            return true;
+            return std::filesystem::is_regular_file(hd2d::core_import_config().compiler.parent_path() / name);
         }
     }
     return false;

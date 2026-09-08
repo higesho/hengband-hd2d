@@ -93,4 +93,8 @@ int run_town_view(const AppOptions &options);
  */
 const char *motion_kind_name(MotionKind kind);
 
+//! SDL キューから入力の振り分けを検査する（コアを起動しない）。
+int run_sdl_input_check();
+int run_core_link_check();
+
 } // namespace hd2d

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   HengbandHd2d.vcxproj — ボクセル HD2D の実行体（プロトコル v1 の第 3 の ui）。
 
@@ -124,7 +124,7 @@
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\src;..\..\src\external-lib\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\third_party\cpp\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
@@ -136,7 +136,7 @@
       <TargetMachine Condition="'$(Platform)'=='Win32'">MachineX86</TargetMachine>
       <TargetMachine Condition="'$(Platform)'=='x64'">MachineX64</TargetMachine>
       <AdditionalLibraryDirectories>$(HengbandSdlLibDebug);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2d.lib;SDL2_ttfd.lib;SDL2_imaged.lib;openxr_loaderd.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2d.lib;SDL2_ttfd.lib;SDL2_imaged.lib;openxr_loaderd.lib;OpenAL32.lib;z.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
@@ -172,7 +172,7 @@ copy /Y "$(HengbandSdlBinDebug)\jsoncpp.dll" "$(OutDir)"
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\src;..\..\src\external-lib\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\third_party\cpp\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
@@ -183,7 +183,7 @@ copy /Y "$(HengbandSdlBinDebug)\jsoncpp.dll" "$(OutDir)"
       <TargetMachine Condition="'$(Platform)'=='Win32'">MachineX86</TargetMachine>
       <TargetMachine Condition="'$(Platform)'=='x64'">MachineX64</TargetMachine>
       <AdditionalLibraryDirectories>$(HengbandSdlLibRelease);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2_ttf.lib;SDL2_image.lib;openxr_loader.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2_ttf.lib;SDL2_image.lib;openxr_loader.lib;OpenAL32.lib;z.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -227,10 +227,14 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\hd2d\app\hd2d_app.cpp" />
+    <ClCompile Include="..\..\hd2d\app\core_import.cpp" />
+    <ClCompile Include="..\..\hd2d\app\core_import_ui.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\asset_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\app_support.cpp" />
     <ClCompile Include="..\..\hd2d\app\app_clock.cpp" />
     <ClCompile Include="..\..\hd2d\app\run_parts.cpp" />
+    <ClCompile Include="..\..\hd2d\app\input_controller.cpp" />
+    <ClCompile Include="..\..\hd2d\app\test_keyboard.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\check_support.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\world_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\device_checks.cpp" />

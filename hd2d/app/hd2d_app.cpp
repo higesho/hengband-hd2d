@@ -28,7 +28,11 @@
 #include "app/hd2d_app.h"
 #include "app/hd2d_checks.h" //!< 検査モード（--*-check）。中身は hd2d/app/checks/
 #include "app/app_clock.h" //!< 時計。検査のときだけ進み方を決め打ちにできる
-#include "app/run_parts.h" //!< run() から切り出した部品
+#include "app/run_parts.h"
+#include "app/input_controller.h"
+#include "app/test_keyboard.h"
+#include "app/core_import_ui.h"
+#include "app/optional_render_resources.h" //!< run() から切り出した部品
 #include "app/app_support.h" //!< 遊ぶ経路と検査の両方が使う土台（窓・GL・画面の保存）
 #include "app/checks/check_support.h" //!< 検査どうしで使い回す作り物
 
@@ -460,6 +464,7 @@ std::filesystem::path resolve_core_path(const std::string &name)
     if (given.is_absolute()) {
         return given;
     }
+    if (auto imported = imported_core_path(name); !imported.empty()) return imported;
     const std::filesystem::path base = app_exe_directory();
     std::error_code ec;
     const std::filesystem::path deep = base / "cores" / given;
@@ -669,12 +674,18 @@ constexpr int kCoreSelectUploadBudgetMs = 12;
  * `TextOverlay`・`UiPaint`・`UiImagePainter`・`GamePad`）。ここで自前の
  * `SDL_PollEvent` と swap を回す——**まだ主ループに入っていない**ため。
  */
-int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &window, TextOverlay &text,
+int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &window, TextOverlay &base_text,
     UiPaint &paint, UiImagePainter &images, GamePad &pad, const Hd2dSettings &cfg,
     const std::function<void()> &on_decided = {}, const std::function<bool()> &still_loading = {},
     const std::string &shot_path = std::string(), int shot_after = 0)
 {
-    int cursor = std::clamp(initial, 0, static_cast<int>(cores.size()) - 1);
+    struct ImportOverlay { TextOverlay value; ~ImportOverlay() { value.shutdown(); } } enlarged;
+    int initial_w = 0, initial_h = 0; SDL_GetWindowSize(window.window, &initial_w, &initial_h);
+    const int font_size = core_import_font_size(initial_w, initial_h);
+    std::string font_error;
+    const bool large = font_size > base_text.cell_h() && enlarged.value.init(font_size, font_error);
+    TextOverlay &text = large ? enlarged.value : base_text;
+    int cursor = std::clamp(initial, 0, std::max(0, static_cast<int>(cores.size()) - 1));
     int drawn = 0;
 
     /*
@@ -841,8 +852,8 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
          * 文字を消したぶんはバナーの高さになる。
          */
         plan.head_h = 32;
-        plan.foot_h = 32;
-        const int rows = static_cast<int>(cores.size());
+        plan.foot_h = std::max(32, win_h - core_import_entry_rect(win_w, win_h).y + 8);
+        const int rows = std::max(1, static_cast<int>(cores.size()));
         const int avail_h = win_h - plan.head_h - plan.foot_h;
         int banner_h = std::min(360, (avail_h - ((rows - 1) * plan.gap)) / std::max(1, rows));
         int banner_w = banner_h * 4;
@@ -879,6 +890,7 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
      * 消えていく行は必ず広がる絵の裏に入る。
      */
     const auto decide = [&](int index) {
+        if (cores.empty()) { run_core_import(window.window, text, paint, {}, &pad); return -2; }
         if (on_decided) {
             on_decided(); //!< **絵より先に**。1.5 秒を読み込みに使わせる
         }
@@ -1001,8 +1013,16 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
     };
 
     for (;;) {
+        test_keyboard().poll("core-select");
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
+            // インポートボタンを、重なり得るバーチャルパッドより先に処理する。
+            int iw = 0, ih = 0; SDL_GetWindowSize(window.window, &iw, &ih);
+            int ix = -1, iy = -1;
+            if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) { ix = event.button.x; iy = event.button.y; }
+            if (event.type == SDL_FINGERDOWN) { ix = static_cast<int>(event.tfinger.x * iw); iy = static_cast<int>(event.tfinger.y * ih); }
+            const auto import_box = core_import_entry_rect(iw, ih);
+            if (ix >= import_box.x && ix < import_box.x + import_box.w && iy >= import_box.y && iy < import_box.y + import_box.h) { run_core_import(window.window, text, paint, {}, &pad); return -2; }
             if (pad.on_event(event)) {
                 continue;
             }
@@ -1017,7 +1037,14 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
             if (event.type == SDL_QUIT) {
                 return -1;
             }
-            if (event.type == SDL_KEYDOWN) {
+            if (event.type == SDL_DROPFILE) {
+                std::string zip = event.drop.file; SDL_free(event.drop.file);
+                run_core_import(window.window, text, paint, zip, &pad); return -2;
+            }
+            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F8) {
+                run_core_import(window.window, text, paint, {}, &pad); return -2;
+            }
+            if (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE || !cores.empty())) {
                 switch (event.key.keysym.sym) {
                 case SDLK_UP:
                 case SDLK_k:
@@ -1069,6 +1096,10 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
                 int th = 0;
                 SDL_GetWindowSize(window.window, &tw, &th);
                 //! **言語の札が先。**一覧の行と重なっていないが、順は札を上に置く。
+                const auto import_box = core_import_entry_rect(tw, th);
+                if (tap_x >= import_box.x && tap_x < import_box.x + import_box.w && tap_y >= import_box.y && tap_y < import_box.y + import_box.h) {
+                    run_core_import(window.window, text, paint, {}, &pad); return -2;
+                }
                 const RectPx lr = lang_rect_at(tw, th);
                 if ((tap_x >= lr.x) && (tap_x < (lr.x + lr.w)) && (tap_y >= lr.y)
                     && (tap_y < (lr.y + lr.h))) {
@@ -1101,7 +1132,7 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
         /* パッド。方向で動かし、A で決める（`pad_input_is_fixed` の固定の意味）。 */
         int dx = 0;
         int dy = 0;
-        if (pad.poll_direction(SDL_GetTicks(), true, dx, dy) && (dy != 0)) {
+        if (!cores.empty() && pad.poll_direction(SDL_GetTicks(), true, dx, dy) && (dy != 0)) {
             cursor = (cursor + ((dy > 0) ? 1 : (static_cast<int>(cores.size()) - 1)))
                 % static_cast<int>(cores.size());
         }
@@ -1123,7 +1154,7 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
         }
 
         /* バーチャルパッド。物理パッドと同じ入力（LS で動かし、A で決める）。 */
-        if (vpad.poll_direction(SDL_GetTicks(), dx, dy) && (dy != 0)) {
+        if (!cores.empty() && vpad.poll_direction(SDL_GetTicks(), dx, dy) && (dy != 0)) {
             cursor = (cursor + ((dy > 0) ? 1 : (static_cast<int>(cores.size()) - 1)))
                 % static_cast<int>(cores.size());
         }
@@ -1244,6 +1275,17 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
          * `--core-select-check`。**swap の前に読む**（既定のフレームバッファは
          * swap で入れ替わるので、後に読むと前のフレームが写る）。
          */
+        const auto import_box = core_import_entry_rect(w, h);
+        paint.begin(w, h); paint.rect(import_box, {.12f, .18f, .28f, 1}); paint.flush();
+        text.begin(w, h);
+        text.draw(import_box.x + 12, import_box.y + (import_box.h - text.cell_h()) / 2, core_import_caption("hd2d.app.core-import.entry"), {1,1,1,1}, import_box.w - 24);
+        if (cores.empty()) {
+            std::string help = i18n::tr("hd2d.app.core-import.empty");
+            const auto count = text.fit_bytes(help, w - 72);
+            text.draw(36, h / 2, help.substr(0, count), {1,1,1,1}, w - 72);
+            if (count < help.size()) text.draw(36, h / 2 + text.cell_h() + 8, help.substr(count), {1,1,1,1}, w - 72);
+        }
+        text.flush();
         ++drawn;
         if ((shot_after > 0) && (drawn >= shot_after)) {
             if (!shot_path.empty()) {
@@ -1280,6 +1322,11 @@ CoreRelaunch take_core_relaunch()
 
 int run(const AppOptions &options)
 {
+    std::string input_error;
+    if (!test_keyboard().configure(options.test_input_file, input_error)) {
+        std::fprintf(stderr, "[test-keyboard] %s\n", input_error.c_str());
+        return 1;
+    }
     /*
      * 文言のカタログ（`i18n/lang.h`）。**モードの分岐より前に読む。**
      * 検査のモード（`--ui-check` ほか）は下の分岐でそのまま返ってしまうので、
@@ -1459,7 +1506,7 @@ int run(const AppOptions &options)
      * SDL は Android で**窓を作ったとき**に文字入力を開始し、IME が画面の下半分を
      * 覆ったまま始まる。SDL_Init 直後に
      * 呼んでも窓の生成で戻ってしまうので、**窓の後**で引っ込める（旧版の入口と同じ位置）。
-     * 名前入力の場面で自動で出す仕組みはまだ移植していない。
+     * 名前入力では、主ループが text_input_active の変化に応じて IME を表示する。
      */
     SDL_StopTextInput();
 #endif
@@ -1778,23 +1825,17 @@ int run(const AppOptions &options)
                 }
             }
             const int shot_frames = (options.shot_after_frames != 0) ? std::abs(options.shot_after_frames) : 30;
-            /*
-             * **空の一覧で `run_core_select` を呼ばない。**あちらは剰余で
-             * カーソルを回すので、0 件だと 0 除算になる（隣にコアが 1 つも
-             * 無い場所へ置いたときに起きうる。その場合は下の FAIL で言う）。
-             */
-            if (!core_list.empty()) {
-                (void)run_core_select(core_list, initial, window, text, paint, images, pad,
-                    core_cfg, {}, {}, options.shot_path, shot_frames);
-            }
-            std::fprintf(stderr, "[hd2d] RESULT: %s\n", core_list.empty() ? "FAIL" : "PASS");
+            // コア未登録でも有効な初期画面として、インポートの入口を表示する。
+            (void)run_core_select(core_list, initial, window, text, paint, images, pad,
+                core_cfg, {}, {}, options.shot_path, shot_frames);
+            std::fprintf(stderr, "[hd2d] RESULT: PASS\n");
             text.shutdown();
             SDL_GL_DeleteContext(window.context);
             SDL_DestroyWindow(window.window);
             SDL_Quit();
-            return core_list.empty() ? 1 : 0;
+            return 0;
         }
-        if (core_choice.empty() && (core_list.size() > 1)) {
+        if (core_choice.empty()) {
             int initial = 0;
             for (std::size_t i = 0; i < core_list.size(); ++i) {
                 if (core_list[i].path == core_cfg.last_core) {
@@ -1834,13 +1875,19 @@ int run(const AppOptions &options)
                 library_pump_ok = library.pump_upload(renderer, kCoreSelectUploadBudgetMs, library_pump_err);
                 return library_pump_ok && library.upload_busy();
             };
-            const int picked = run_core_select(core_list, initial, window, text, paint, images, pad, core_cfg,
-                begin_library_load, library_still_loading);
-            /*
-             * **選ぶ画を出した**印（2026-08-23）。遊び終えたときにここへ戻すかの判断に使う
-             * （`kRunRestart`）。`--core-path=` で飛ばしたときや、コアが 1 本しか無いときは
-             * 戻る先が無いので立てない——立てると、終わらせたのに同じコアが立ち上がり直す。
-             */
+            int picked;
+            do {
+                picked = run_core_select(core_list, initial, window, text, paint, images, pad, core_cfg,
+                    begin_library_load, library_still_loading);
+                if (picked == -2) {
+                    core_list = sanitize_cores(options, core_list);
+                    for (const auto &found : discover_cores(options)) {
+                        if (std::none_of(core_list.begin(), core_list.end(), [&](const CoreEntry &entry) { return same_core_path(entry.path, found.path); })) core_list.push_back(found);
+                    }
+                    initial = 0;
+                }
+            } while (picked == -2);
+            // 明示的な --core-path 指定以外は、本数に関係なく選択画面へ戻れる。
             core_select_shown = true;
             if (picked < 0) {
                 //! 閉じられた。**コアを起こさずに**畳む（起こしてから殺すと子が残りうる）。
@@ -1851,8 +1898,6 @@ int run(const AppOptions &options)
                 return 0;
             }
             core_choice = core_list[static_cast<std::size_t>(picked)].path;
-        } else if (core_choice.empty() && (core_list.size() == 1)) {
-            core_choice = core_list.front().path;
         }
     }
 
@@ -2012,29 +2057,30 @@ int run(const AppOptions &options)
      * 大きさを変えたら作り直す（`ascii_text_px` が今のマスを覚えている）。
      * 用意できなかったら **UI の文字へ落とす**——地図が出ないより字が小さいほうがまし。
      */
-    TextOverlay ascii_text;
-    int ascii_text_px = 0; //!< いま焼いてある大きさ（0 = 用意していない）
-    bool ascii_text_failed = false;
+    OptionalRenderResources optional_render;
+    auto &ascii_text = optional_render.ascii_text;
+    auto &ascii_text_px = optional_render.ascii_text_px; //!< いま焼いてある大きさ（0 = 用意していない）
+    auto &ascii_text_failed = optional_render.ascii_text_failed;
     //! このフレームで専用の字を積んだか（流すのは `paint.flush()` の直後 1 か所）。
-    bool ascii_text_pending = false;
+    auto &ascii_text_pending = optional_render.ascii_text_pending;
     /*! @} */
-    GlyphAtlas glyph_atlas;
-    BillboardRenderer glyph_boards;
-    bool glyph_ready = false;
-    bool glyph_failed = false;
+    auto &glyph_atlas = optional_render.glyph_atlas;
+    auto &glyph_boards = optional_render.glyph_boards;
+    auto &glyph_ready = optional_render.glyph_ready;
+    auto &glyph_failed = optional_render.glyph_failed;
     /*! @} */
     /*!
      * @brief 足元のリング（SQ-1。`render/ground_ring.h`）。
      * @details 警戒度と照準を輪で見せる。**要ると分かってから用意する**（字の目録と同じ）
      * ——出さないコアでは `rings` が常に空なので、シェーダも組まれない。
      */
-    GroundRingRenderer ground_rings;
+    auto &ground_rings = optional_render.ground_rings;
     /*!
      * @brief **上空から差し込む光の柱**（2026-08-22 に決めた。陽だまり）。
      * @details 立てるマスは `TerrainView::light_shafts`（対応表の `light_shaft`）。
      * 足元のリングと同じで、**要るまで作らない**（柱を持たない階では 1 バイトも使わない）。
      */
-    LightShaftRenderer light_shafts;
+    auto &light_shafts = optional_render.light_shafts;
     bool shaft_failed = false;
     bool ring_failed = false;
     EntityView entity_view;
@@ -2151,6 +2197,7 @@ int run(const AppOptions &options)
      */
     if (!core_choice.empty()) {
 #if defined(_WIN32)
+        SetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", app_exe_directory().c_str());
         link_options.core_path = resolve_core_path(core_choice);
 #else
         const std::filesystem::path picked(core_choice);
@@ -2699,7 +2746,7 @@ int run(const AppOptions &options)
     /*
      * コア選択の結果を覚える（設計 §6.1「前回の選択を記憶して初期カーソルに」）。
      * **`saved_settings` を取った後**に入れるので、初回の自動登録も選択の変更も
-     * 主ループの書き戻し（:10990）が拾う。変わっていなければ 1 バイトも書かない。
+     * 主ループの設定の書き戻しが拾う。変わっていなければ 1 バイトも書かない。
      * `--core-path=` で飛ばしたときは覚えない——**「今回だけ」の指定を記憶に混ぜない**。
      */
     settings.cores = core_list;
@@ -2765,9 +2812,10 @@ int run(const AppOptions &options)
      * バーチャルパッドも隠れない。IME 専用の場所取りは作らない。
      */
     int ime_inset_bottom = 0;
+    InputState input_state;
 #if defined(__ANDROID__)
     //! コアが自由文字入力の中に居るか（前フレームの姿）。変わり目でだけ IME を出し入れする。
-    bool ime_prompt_open = false;
+    bool &ime_prompt_open = input_state.ime_prompt_open;
     /*!
      * @brief 戻るキーで閉じられたか。**閉じられている間は出し直さない。**
      * @details ここを持たずに「入力中なら毎フレーム `SDL_StartTextInput()`」と書くと、
@@ -2776,7 +2824,7 @@ int run(const AppOptions &options)
      * SDL の `DummyEdit.onKeyPreIme` が拾って `SDL_StopTextInput()` を呼ぶので、
      * こちらへは何の出来事も届かない。
      */
-    bool ime_dismissed = false;
+    bool &ime_dismissed = input_state.ime_dismissed;
 #endif
     //! 直近で SDL へ渡した入力欄の矩形（変わったときだけ渡し直す）。**Windows でも使う。**
     SDL_Rect ime_text_rect{ 0, 0, 0, 0 };
@@ -2790,7 +2838,7 @@ int run(const AppOptions &options)
      *
      * 確定すると `SDL_TEXTINPUT` が来るので、そこで空にする。
      */
-    std::string ime_edit_text;
+    auto &ime_edit_text = input_state.ime_edit_text;
     /*!
      * @brief いま使える範囲（窓から余白を引いたもの）。
      * @details **窓の座標で持つ**（マウスと指の座標がそのまま噛み合う）。
@@ -2853,9 +2901,9 @@ int run(const AppOptions &options)
     /*! @} */
     std::string round_trip_report = "(まだ)";
     bool round_trip_ok = true;
-    int hover_gx = 0;
-    int hover_gy = 0;
-    bool hover_valid = false;
+    int &hover_gx = input_state.hover_gx;
+    int &hover_gy = input_state.hover_gy;
+    bool &hover_valid = input_state.hover_valid;
 
     GameFrame frame{};
     frame.title_screen = true; //!< 最初の frame が来るまでの数秒ぶん（コアの `init_angband`）
@@ -2955,41 +3003,10 @@ int run(const AppOptions &options)
             settings, sub_panel_kind_choices);
 
         // (a) 入力 → `input_event`（v1 §8.3）。**到着順を崩さない。**
-        presentation::InputEventsMessage input;
-        bool want_quit = false;
-        /*!
-         * UI が KEYDOWN で食った 1 文字。**続く `SDL_TEXTINPUT` をこの 1 個だけ落とす。**
-         * SDL は同じ打鍵で KEYDOWN と TEXTINPUT を順に寄越すので、走査の外に置く。
-         */
-        char swallow_char = '\0';
-        /*!
-         * 割り当てで食ったキーの印字文字を落とす札。**文字を当てずに「次の 1 個」で落とす。**
-         *
-         * `swallow_char` の当て方（KEYDOWN の `sym` と印字文字を突き合わせる）は
-         * **Shift 付きだと外れる**（`sym` は `a` のままで、届く文字は `A`）。外れると
-         * 割り当てた操作とコアの元コマンドが**両方**走る。記号の Shift はキー配列にも依るので、
-         * こちらから正しい文字を当てる道は無い。
-         *
-         * 立てるのは「印字になりうるキーを食ったとき」だけなので、直後に `SDL_TEXTINPUT` が
-         * 必ず 1 個来る。この札はフレームごとの局所変数なので、取りこぼしても次のフレームには残らない。
-         */
-        bool swallow_next_text = false;
-        /*!
-         * @brief 機能メニューの開閉は**この 1 巡で 1 回だけ**。
-         *
-         * @details 「☰ を 1 回押したのに開いて即座に閉じる」の原因は、**1 回の物理的な押しが
-         * 2 つの縁になって届く**ことである。実際に踏んだのは Quest で、Horizon OS が Touch を
-         * Android のゲームパッドとしても見せるため、☰ が XR と SDL の両方から届いていた
-         * （入口は罠 Q-12 の手当てで塞いだが、経路が増えれば同じ形はまた起きる）。
-         *
-         * 開閉は**状態で決まる操作**（閉じていれば開く・開いていれば閉じる）なので、
-         * 同じ 1 巡で 2 縁を通すと必ず元へ戻る。人の指は 1 フレーム（VR で 14ms）の中に
-         * 押し直しを入れられないので、**1 巡 1 回**は「物理的な押し直しでだけ動く」と同義である。
-         *
-         * @note キーのリピートはこれとは別に `event.key.repeat` で弾く（下の 2 か所）。
-         * あちらは巡をまたいで来るので、この札では止まらない。**両方要る。**
-         */
-        bool menu_toggled_this_pump = false;
+        InputBatch input_batch;
+        auto &input = input_batch.input;
+        bool &want_quit = input_batch.want_quit;
+        bool &menu_toggled_this_pump = input_batch.menu_toggled_this_pump;
         /*!
          * @brief 見下ろしの視点を 90° 回す（`dir` は −1 = 左回り／+1 = 右回り）。
          *
@@ -3173,7 +3190,7 @@ int run(const AppOptions &options)
             rotate_screen_delta(camera_turn, wire.dx, wire.dy);
         };
         /*
-         * SDL の出来事を全部捌く。中身は `app/run_parts.cpp`（`pump_sdl_events`）。
+         * SDL の出来事を全部捌く。中身は `app/input_controller.cpp`（`pump_sdl_events`）。
          * 触るものが多いので束にして渡す（`InputPumpContext` の注記）。
          */
         InputPumpContext pump_ctx{
@@ -3195,23 +3212,12 @@ int run(const AppOptions &options)
             .first_person = first_person,
             .sub_panel_kind_choices = sub_panel_kind_choices,
             .frame = frame,
-#if defined(__ANDROID__)
-            .ime_prompt_open = ime_prompt_open,
-            .ime_dismissed = ime_dismissed,
-#endif
-            .ime_edit_text = ime_edit_text,
-            .hover_valid = hover_valid,
-            .hover_gx = hover_gx,
-            .hover_gy = hover_gy,
+            .state = input_state,
             .perform_action = perform_action,
             .fps_drives_movement = fps_drives_movement,
             .turn_drives_movement = turn_drives_movement,
             .turn_screen_move = turn_screen_move,
-            .input = input,
-            .want_quit = want_quit,
-            .swallow_char = swallow_char,
-            .swallow_next_text = swallow_next_text,
-            .menu_toggled_this_pump = menu_toggled_this_pump,
+            .batch = input_batch,
         };
         pump_sdl_events(pump_ctx);
         /*
@@ -5990,8 +5996,8 @@ int run(const AppOptions &options)
      */
     release_shadow_placeholder();
     release_look_placeholders();
-    glyph_atlas.shutdown();
-    glyph_boards.shutdown();
+    optional_render.shutdown();
+    dust.shutdown();
     post.shutdown();
     shadow.shutdown();
     sky.shutdown();
@@ -6026,7 +6032,7 @@ int run(const AppOptions &options)
     /*
      * 窓を畳んでからコアの後始末。**順序が意味を持つ**:
      * stdin を閉じる（＝ui が消えたのと同じ合図）→ コアが緊急セーブして畳むのを待つ →
-     * こちらのハンドルを閉じる。ここで殺さないのが v1 §9.2 の要点（セーブ中に殺すのが最悪）。
+     * こちらのハンドルを閉じる。保存の猶予後も終了しなければ shutdown が強制終了する。
      */
     link.close_core_stdin();
     (void)link.wait_for_core_exit(static_cast<unsigned>(kQuitGraceMs));

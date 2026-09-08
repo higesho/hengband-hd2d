@@ -67,11 +67,13 @@ for _s in (sys.stdout, sys.stderr):
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from playthrough import (  # noqa: E402
-    ROOT, EXE, CORE, CfgGuard, SaveGuard, kill_leftovers, decode, mask, SCENARIOS)
+    ROOT, EXE, CORE, CfgGuard, SaveGuard, decode, mask, SCENARIOS)
+
+from runtime import run_process
 
 REPLAY_DIR = os.path.join(HERE, 'replay')
 
-#: 再生で絵を撮る周。記録を配り終える前に撮る必要がある。
+#: 再生で絵を撮る周。記録を配り終え、終了猶予の間に撮る。
 #: 記録は 30〜44 通。1 周 1 通なので、配り終えるのはその周。そこから
 #: `kReplayGraceLoops`（120 周）ぶん回るので、**配り終えた後**の落ち着いた絵を撮る。
 SHOT_AT = {
@@ -98,19 +100,13 @@ def record_core(sc: dict) -> None:
     env.update(sc.get('env', {}))
     try:
         with CfgGuard(), SaveGuard(sc['save']):
-            p = subprocess.Popen(
+            result = run_process(
                 [EXE, '--core-path=' + CORE, '--windowed=1280x720',
                  '--shot=' + os.path.join(tmp, 's.bmp'),
-                 '--shot-after=%d' % sc['shot_after'],
-                 '--protocol-log=' + plog],
-                cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            try:
-                p.communicate(timeout=300)
-            except subprocess.TimeoutExpired:
-                kill_leftovers()
-                p.communicate(timeout=20)
-        kill_leftovers()
+                 '--shot-after=%d' % sc['shot_after'], '--protocol-log=' + plog],
+                cwd=ROOT, env=env, timeout=300)
+            if result.returncode != 0:
+                raise RuntimeError(decode(result.stdout))
         os.makedirs(REPLAY_DIR, exist_ok=True)
         with open(plog, 'rb') as src:
             raw = src.read()
@@ -143,27 +139,17 @@ def run_replay(sc: dict, timeout: int = 180) -> str:
         env['HD2D_REPLAY_LOG'] = plain
         env['HD2D_FIXED_CLOCK'] = '1'
         env.update(sc.get('env', {}))
-        #: `lib/save/` は触らないが、念のため空にして走らせる（再生はセーブを読まない）。
-        with CfgGuard(), SaveGuard(None):
-            p = subprocess.Popen(
-                [EXE, '--core-path=' + CORE, '--windowed=1280x720',
-                 '--shot=' + shot, '--shot-after=%d' % SHOT_AT[sc['name']],
-                 '--protocol-log=' + out_log],
-                cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # 再生はコアを起動しないため、セーブを退避する必要はない。
+        with CfgGuard():
             try:
-                raw, _ = p.communicate(timeout=timeout)
-                code = p.returncode
-            except subprocess.TimeoutExpired:
-                kill_leftovers()
-                try:
-                    raw, _ = p.communicate(timeout=20)
-                except subprocess.TimeoutExpired:
-                    p.kill()
-                    raw = b''
-                code = -9
+                result = run_process(
+                    [EXE, '--core-path=' + CORE, '--windowed=1280x720',
+                     '--shot=' + shot, '--shot-after=%d' % SHOT_AT[sc['name']],
+                     '--protocol-log=' + out_log], cwd=ROOT, env=env, timeout=timeout)
+                raw, code = result.stdout, result.returncode
+            except subprocess.TimeoutExpired as exc:
+                raw, code = exc.output, -9
                 out.append('[!! 時間切れ %d 秒]' % timeout)
-        kill_leftovers()
 
         out.append('[終了コード] %d' % code)
         #: **絵は SHA-256 で見る。**再生は完全に決まるので、升の平均に落とす必要が無い。

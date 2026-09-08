@@ -291,6 +291,174 @@ void PropLatch::follow(const FloorIdentity &floor)
     this->valid = true;
 }
 
+
+namespace {
+//! `CellRole` の数（`Stairs` までの種類。添字の配列を切るのに使う）。
+constexpr std::size_t kCellRoleCount = 8;
+struct PropSet {
+    int rubble{ -1 };
+    int bones{ -1 };
+    int stalagmite{ -1 };
+    int mushroom_glow{ -1 };
+    int mushroom_brown{ -1 };
+    int pillar{ -1 };
+    int torch_stand{ -1 };
+    int torch_flame{ -1 };
+    int barrel{ -1 };
+    int crate{ -1 };
+    /*!
+     * @name 枠ごとの差し替え（P10 第 4 期。ダンジョンごとの小物）
+     * @details 上の 10 個が**素材の名前**、ここから下が**置き場所（枠）**である。
+     * 既定では枠が上の素材を指しているだけだが、`DungeonStyle` が名前を持っていれば
+     * そのダンジョンだけ差し替わる。**確率と置き方は変えない**——種類だけ替える。
+     *
+     * 枠を分けたのは、同じ素材が複数の枠から引かれているからである（`rubble` は
+     * 行き止まり・通路の壁際・町の草地の 3 か所）。素材の側を差し替えると
+     * **町の草地にゴミの山が撒かれる**。
+     * @{
+     */
+    int dead_end_pile{ -1 }; //!< ① 行き止まりに必ず置く塚
+    int wall_side[3]{ -1, -1, -1 }; //!< ② 通路の壁際（40 / 30 / 30）
+    int room_edge_pillar{ -1 }; //!< ③ 部屋の縁の柱
+    int fire_body{ -1 }; //!< ③ 火の本体（松明の柱／焚き火跡）
+    int fire_flame{ -1 }; //!< ③ 炎。**-1 なら炎を置かない**＝消えている火
+    bool fire_needs_lit{ true }; //!< ③ 火を「明るい部屋」に限るか
+    int room_floor[3]{ -1, -1, -1 }; //!< ④ 部屋の中（40 / 35 / 25）
+    /*! @} */
+    /*!
+     * @name 役割の既定の材（ダンジョンの意匠。空なら既定のまま）
+     * @details 添字は `CellRole`。**役割の既定で描くマスにだけ**効かせる
+     * ——地形の細別を持つマスは表のほうが正なので触らない（§9.4）。
+     * @{
+     */
+    std::vector<int> mat_ground[kCellRoleCount]; //!< 床（`RoomFloor` / `CorridorFloor`）
+    std::vector<int> mat_structure[kCellRoleCount]; //!< 塞ぐもの（`StructuralWall` / `Bedrock`）
+    /*! @} */
+    /*!
+     * @brief **小物を撒いてよい地形 id**（利用者の決定 D7。2026-08-21）。空なら従来どおり。
+     * @details 下の装飾層は**役割の既定で描いたマスにだけ**回している（地形の細別を持つ
+     * マスに撒くと「溶岩の上に木箱が浮く」）。だが**草地と木と水しか無いダンジョン**では
+     * それだと枠が 1 度も回らない——幻想蛮怒の無縁塚は細別が 99.4%、魔法の森深部は
+     * 100% で、意匠の小物が 1 つも置かれていなかった（全フロア 14,000 マスの実測）。
+     *
+     * **撒いてよい地形を意匠が名指す**ことで、草地と花だけ緩められる。
+     * 木にも水にも溶岩にも撒かないので、過去の失敗は踏まない。
+     */
+    std::vector<int> prop_terrains;
+};
+
+PropSet resolve_terrain_props(const FloorMeaning &meaning, const PrefabLibrary *library, bool use_lib)
+{
+    PropSet props;
+    if (use_lib) {
+        props.rubble = library->find("rubble_pile");
+        props.bones = library->find("bones");
+        props.stalagmite = library->find("stalagmite");
+        props.mushroom_glow = library->find("mushroom_glow");
+        props.mushroom_brown = library->find("mushroom_brown");
+        props.pillar = library->find("pillar_stone");
+        props.torch_stand = library->find("torch_stand");
+        props.torch_flame = library->find("torch_flame");
+        props.barrel = library->find("barrel");
+        props.crate = library->find("crate");
+
+        /*
+         * 枠の既定。**ここまでが今までの絵**（枠が素材をそのまま指している）。
+         */
+        props.dead_end_pile = props.rubble;
+        props.wall_side[0] = props.rubble;
+        props.wall_side[1] = props.bones;
+        props.wall_side[2] = props.stalagmite;
+        props.room_edge_pillar = props.pillar;
+        props.fire_body = props.torch_stand;
+        props.fire_flame = props.torch_flame;
+        props.room_floor[0] = props.barrel;
+        props.room_floor[1] = props.crate;
+        props.room_floor[2] = props.bones;
+
+        /*
+         * ダンジョンごとの意匠（P10 第 4 期。実装方針 2026-08-10
+         * 「同質なダンジョンは名前の意味で小物に差を付けよう」）。
+         *
+         * **町の `TownStyle` とまったく同じ流儀**——引く名前を替えるだけで、
+         * ライブラリに無ければ既定へ落ちる。表は `dungeon_style.cpp`。
+         *
+         * **地下だけ**に効かせる。地上（町・荒野）の枠は町の側が持っているし、
+         * 荒野の `dungeon_id` は 0（＝既定）なので実害は無いが、
+         * 「町の値を読むとき全部に `use_town` が要る」（罠 87）の裏返しで、
+         * ダンジョンの値も**ダンジョンでだけ**読む形にしておく。
+         */
+        if (meaning.identity.kind == static_cast<int>(FloorKind::Dungeon)) {
+            //! 階（`dun_level`）も渡す。**帯（`levels`）を持つ意匠**がこれで引ける
+            //! （関連する実装 D5。浅間浄穢山の 51〜55 階だけ別の材）。
+            const DungeonStyle &dstyle
+                = dungeon_style_for(meaning.identity.dungeon_id, meaning.identity.dun_level);
+            //! `nullptr` = 既定のまま / `""` = 置かない / 名前 = 引く（無ければ既定へ落ちる）。
+            const auto swap = [library](const char *name, int fallback) {
+                if (name == nullptr) {
+                    return fallback;
+                }
+                if (name[0] == '\0') {
+                    return -1;
+                }
+                const int index = library->find(name);
+                return (index >= 0) ? index : fallback;
+            };
+            props.dead_end_pile = swap(dstyle.dead_end_pile, props.dead_end_pile);
+            for (int i = 0; i < 3; ++i) {
+                props.wall_side[i] = swap(dstyle.wall_side[i], props.wall_side[i]);
+                props.room_floor[i] = swap(dstyle.room_floor[i], props.room_floor[i]);
+            }
+            props.room_edge_pillar = swap(dstyle.room_edge_pillar, props.room_edge_pillar);
+            props.fire_body = swap(dstyle.fire_body, props.fire_body);
+            props.fire_flame = swap(dstyle.fire_flame, props.fire_flame);
+            props.fire_needs_lit = dstyle.fire_needs_lit;
+            /*
+             * 役割の既定の材（床・壁・岩盤）。**1 枚も見つからなければ空のまま**で、
+             * 既定の材のまま描かれる（素材を作っていないダンジョンは今までの絵で動く）。
+             */
+            const auto gather_material = [library](const char *stem, std::vector<int> &into) {
+                if (stem == nullptr) {
+                    return;
+                }
+                for (int i = 1; i <= 10; ++i) {
+                    char tail[8]{};
+                    std::snprintf(tail, sizeof(tail), "_%02d", i);
+                    const int index = library->find(std::string(stem) + tail);
+                    if (index >= 0) {
+                        into.push_back(index);
+                    }
+                }
+            };
+            gather_material(dstyle.room_floor_stem,
+                props.mat_ground[static_cast<std::size_t>(CellRole::RoomFloor)]);
+            gather_material(dstyle.corridor_floor_stem,
+                props.mat_ground[static_cast<std::size_t>(CellRole::CorridorFloor)]);
+            gather_material(dstyle.wall_stem,
+                props.mat_structure[static_cast<std::size_t>(CellRole::StructuralWall)]);
+            gather_material(dstyle.bedrock_stem,
+                props.mat_structure[static_cast<std::size_t>(CellRole::Bedrock)]);
+            /*
+             * **撒いてよい地形**（D7）。key → id は共通の対応表に聞く（町の `TerrainProp`
+             * と同じ流儀で、コードは地形の番号を持たないままでいられる）。
+             * **表が知らない key は黙って落とす**——ライブラリの欠けでフレームを落とさない。
+             */
+            for (const char *const key : dstyle.prop_terrains) {
+                if ((key == nullptr) || (key[0] == '\0')) {
+                    continue;
+                }
+                const int id = library->terrain_id_for_key(key);
+                if (id > 0) {
+                    props.prop_terrains.push_back(id);
+                }
+            }
+        }
+    }
+
+    return props;
+}
+} // namespace
+
 void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, TerrainView &out,
     const TerrainMemory *memory, const PrefabLibrary *library, const TownPlan *town, float night, float wall_inset,
     bool black_unknown, PropLatch *latch, bool fps_wall_upper, bool fps_ceiling, bool blocks_only)
@@ -351,59 +519,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
      * （「行き止まりに瓦礫」は地形ではなく並びの意味づけなので、§9.4 の表の管轄外）。
      * 無い名前は -1 になり、その装飾は置かれないだけ（ライブラリの欠けで落とさない）。
      */
-    //! `CellRole` の数（`Stairs` までの 7 個。添字の配列を切るのに使う）。
-    constexpr std::size_t kCellRoleCount = 8;
-    struct PropSet {
-        int rubble{ -1 };
-        int bones{ -1 };
-        int stalagmite{ -1 };
-        int mushroom_glow{ -1 };
-        int mushroom_brown{ -1 };
-        int pillar{ -1 };
-        int torch_stand{ -1 };
-        int torch_flame{ -1 };
-        int barrel{ -1 };
-        int crate{ -1 };
-        /*!
-         * @name 枠ごとの差し替え（P10 第 4 期。ダンジョンごとの小物）
-         * @details 上の 10 個が**素材の名前**、ここから下が**置き場所（枠）**である。
-         * 既定では枠が上の素材を指しているだけだが、`DungeonStyle` が名前を持っていれば
-         * そのダンジョンだけ差し替わる。**確率と置き方は変えない**——種類だけ替える。
-         *
-         * 枠を分けたのは、同じ素材が複数の枠から引かれているからである（`rubble` は
-         * 行き止まり・通路の壁際・町の草地の 3 か所）。素材の側を差し替えると
-         * **町の草地にゴミの山が撒かれる**。
-         * @{
-         */
-        int dead_end_pile{ -1 }; //!< ① 行き止まりに必ず置く塚
-        int wall_side[3]{ -1, -1, -1 }; //!< ② 通路の壁際（40 / 30 / 30）
-        int room_edge_pillar{ -1 }; //!< ③ 部屋の縁の柱
-        int fire_body{ -1 }; //!< ③ 火の本体（松明の柱／焚き火跡）
-        int fire_flame{ -1 }; //!< ③ 炎。**-1 なら炎を置かない**＝消えている火
-        bool fire_needs_lit{ true }; //!< ③ 火を「明るい部屋」に限るか
-        int room_floor[3]{ -1, -1, -1 }; //!< ④ 部屋の中（40 / 35 / 25）
-        /*! @} */
-        /*!
-         * @name 役割の既定の材（ダンジョンの意匠。空なら既定のまま）
-         * @details 添字は `CellRole`。**役割の既定で描くマスにだけ**効かせる
-         * ——地形の細別を持つマスは表のほうが正なので触らない（§9.4）。
-         * @{
-         */
-        std::vector<int> mat_ground[kCellRoleCount]; //!< 床（`RoomFloor` / `CorridorFloor`）
-        std::vector<int> mat_structure[kCellRoleCount]; //!< 塞ぐもの（`StructuralWall` / `Bedrock`）
-        /*! @} */
-        /*!
-         * @brief **小物を撒いてよい地形 id**（決めたこと D7。2026-08-21）。空なら従来どおり。
-         * @details 下の装飾層は**役割の既定で描いたマスにだけ**回している（地形の細別を持つ
-         * マスに撒くと「溶岩の上に木箱が浮く」）。だが**草地と木と水しか無いダンジョン**では
-         * それだと枠が 1 度も回らない——幻想蛮怒の無縁塚は細別が 99.4%、魔法の森深部は
-         * 100% で、意匠の小物が 1 つも置かれていなかった（全フロア 14,000 マスの実測）。
-         *
-         * **撒いてよい地形を意匠が名指す**ことで、草地と花だけ緩められる。
-         * 木にも水にも溶岩にも撒かないので、過去の失敗は踏まない。
-         */
-        std::vector<int> prop_terrains;
-    } props;
+    PropSet props;
     /*
      * 町の素材（P10 第 2 期・§10）。装飾（`PropSet`）と同じ理由で**コードが名前で引く**：
      * 敷地の分解は地形の細別ではなく**並びの意味づけ**なので、§9.4 の表の管轄外である。
@@ -2270,110 +2386,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         }
     }
 
-    if (use_lib) {
-        props.rubble = library->find("rubble_pile");
-        props.bones = library->find("bones");
-        props.stalagmite = library->find("stalagmite");
-        props.mushroom_glow = library->find("mushroom_glow");
-        props.mushroom_brown = library->find("mushroom_brown");
-        props.pillar = library->find("pillar_stone");
-        props.torch_stand = library->find("torch_stand");
-        props.torch_flame = library->find("torch_flame");
-        props.barrel = library->find("barrel");
-        props.crate = library->find("crate");
-
-        /*
-         * 枠の既定。**ここまでが今までの絵**（枠が素材をそのまま指している）。
-         */
-        props.dead_end_pile = props.rubble;
-        props.wall_side[0] = props.rubble;
-        props.wall_side[1] = props.bones;
-        props.wall_side[2] = props.stalagmite;
-        props.room_edge_pillar = props.pillar;
-        props.fire_body = props.torch_stand;
-        props.fire_flame = props.torch_flame;
-        props.room_floor[0] = props.barrel;
-        props.room_floor[1] = props.crate;
-        props.room_floor[2] = props.bones;
-
-        /*
-         * ダンジョンごとの意匠（P10 第 4 期。2026-08-10 に決めた
-         * 「同質なダンジョンは名前の意味で小物に差を付けよう」）。
-         *
-         * **町の `TownStyle` とまったく同じ流儀**——引く名前を替えるだけで、
-         * ライブラリに無ければ既定へ落ちる。表は `dungeon_style.cpp`。
-         *
-         * **地下だけ**に効かせる。地上（町・荒野）の枠は町の側が持っているし、
-         * 荒野の `dungeon_id` は 0（＝既定）なので実害は無いが、
-         * 「町の値を読むとき全部に `use_town` が要る」（罠 87）の裏返しで、
-         * ダンジョンの値も**ダンジョンでだけ**読む形にしておく。
-         */
-        if (meaning.identity.kind == static_cast<int>(FloorKind::Dungeon)) {
-            //! 階（`dun_level`）も渡す。**帯（`levels`）を持つ意匠**がこれで引ける
-            //! （浅間浄穢山の 51〜55 階だけ別の材）。
-            const DungeonStyle &dstyle
-                = dungeon_style_for(meaning.identity.dungeon_id, meaning.identity.dun_level);
-            //! `nullptr` = 既定のまま / `""` = 置かない / 名前 = 引く（無ければ既定へ落ちる）。
-            const auto swap = [library](const char *name, int fallback) {
-                if (name == nullptr) {
-                    return fallback;
-                }
-                if (name[0] == '\0') {
-                    return -1;
-                }
-                const int index = library->find(name);
-                return (index >= 0) ? index : fallback;
-            };
-            props.dead_end_pile = swap(dstyle.dead_end_pile, props.dead_end_pile);
-            for (int i = 0; i < 3; ++i) {
-                props.wall_side[i] = swap(dstyle.wall_side[i], props.wall_side[i]);
-                props.room_floor[i] = swap(dstyle.room_floor[i], props.room_floor[i]);
-            }
-            props.room_edge_pillar = swap(dstyle.room_edge_pillar, props.room_edge_pillar);
-            props.fire_body = swap(dstyle.fire_body, props.fire_body);
-            props.fire_flame = swap(dstyle.fire_flame, props.fire_flame);
-            props.fire_needs_lit = dstyle.fire_needs_lit;
-            /*
-             * 役割の既定の材（床・壁・岩盤）。**1 枚も見つからなければ空のまま**で、
-             * 既定の材のまま描かれる（素材を作っていないダンジョンは今までの絵で動く）。
-             */
-            const auto gather_material = [library](const char *stem, std::vector<int> &into) {
-                if (stem == nullptr) {
-                    return;
-                }
-                for (int i = 1; i <= 10; ++i) {
-                    char tail[8]{};
-                    std::snprintf(tail, sizeof(tail), "_%02d", i);
-                    const int index = library->find(std::string(stem) + tail);
-                    if (index >= 0) {
-                        into.push_back(index);
-                    }
-                }
-            };
-            gather_material(dstyle.room_floor_stem,
-                props.mat_ground[static_cast<std::size_t>(CellRole::RoomFloor)]);
-            gather_material(dstyle.corridor_floor_stem,
-                props.mat_ground[static_cast<std::size_t>(CellRole::CorridorFloor)]);
-            gather_material(dstyle.wall_stem,
-                props.mat_structure[static_cast<std::size_t>(CellRole::StructuralWall)]);
-            gather_material(dstyle.bedrock_stem,
-                props.mat_structure[static_cast<std::size_t>(CellRole::Bedrock)]);
-            /*
-             * **撒いてよい地形**（D7）。key → id は共通の対応表に聞く（町の `TerrainProp`
-             * と同じ流儀で、コードは地形の番号を持たないままでいられる）。
-             * **表が知らない key は黙って落とす**——ライブラリの欠けでフレームを落とさない。
-             */
-            for (const char *const key : dstyle.prop_terrains) {
-                if ((key == nullptr) || (key[0] == '\0')) {
-                    continue;
-                }
-                const int id = library->terrain_id_for_key(key);
-                if (id > 0) {
-                    props.prop_terrains.push_back(id);
-                }
-            }
-        }
-    }
+    props = resolve_terrain_props(meaning, library, use_lib);
 
     /*
      * ライブラリ素材のマスごとの色むら（2026-08-09 に決めた「ダンジョンブロック全てに

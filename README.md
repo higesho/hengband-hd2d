@@ -25,7 +25,7 @@
 
 ### 遊び方
 
-zip を展開して `HengbandHd2d.exe` を起動してください。最初に、どのゲームで遊ぶかを選ぶ画面が出ます。
+zip を展開して `HengbandHd2d.exe` を起動してください。コンパイラー同梱版では、最初に「コアをインポート」から対応する原作 ZIP を選びます。ビルドが終わると、そのゲームを選んで遊べます。対応版と入手先は [原作 ZIP の取り込み](tools/core_import/README.md) を参照してください。
 
 `HengbandCore.exe` などのゲーム本体（コア）は画面側から起動される作りになっているため、単体では起動しません。
 
@@ -63,27 +63,26 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 - 元の 2D 版（`Hengband.exe`）のビルドと、それだけが使っていた libcurl を外しました
 - 元の CI 設定を外しました
 
-元の Hengband から 719 コミット（2026-07-25 〜 2026-09-07）の変更があります。
+原作ソースを外部へ分離し、対応する原作 ZIP の検証・コンパイル・登録を画面から行う機能を追加しました。
 
 ### ビルド
 
 #### Windows
 
-Visual Studio 2022 以降と [vcpkg](https://vcpkg.io/) が必要です。
+Visual Studio の C++ 開発環境と [vcpkg](https://vcpkg.io/) が必要です。プロジェクトが指定する MSVC ツールセットと Windows SDK を用意してください。
 
 ```powershell
 vcpkg install sdl2:x64-windows sdl2-image:x64-windows openxr-loader:x64-windows
 vcpkg install sdl2-ttf:x64-windows --overlay-triplets=.\tools\vcpkg\triplets
 vcpkg install openal-soft:x64-windows --overlay-triplets=.\tools\vcpkg\triplets
-vcpkg install curl:x86-windows
 ```
 
 `sdl2-ttf` と `openal-soft` は、`tools/vcpkg/triplets` にあるトリプレット（vcpkg のビルド設定）を
 指定して入れてください。標準の設定のままだと、`sdl2-ttf` は x64 で文字が欠けることがあり
 （MSVC の最適化の問題です）、`openal-soft` はビルドが通りません。
-`curl` はコア側が使うもので、コアは Win32 でビルドされるため x86 で入れます。
 
 ```powershell
+python tools/core_sources/prepare.py
 msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platform=x64 /m
 ```
 
@@ -91,6 +90,18 @@ msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platfor
 
 `/p:Platform=x64` は画面側だけの指定で、コアは Win32 でビルドされます。
 別プロセスなので混在しても問題ありません。画面側を x64 にしているのは VR 対応のためです。
+
+原作ソースはこのリポジトリに含めません。`tools/core_sources/manifest.json` に指定した原作を
+外部の `../roguelike-cores/upstream/` に用意すると、上の prepare が必要なパッチを適用し、
+`../roguelike-cores/build-sources/` に作業用ソースを構成します。接続コードとビルド手順はこのリポジトリで管理します。
+詳しくは [原作ソースの準備](tools/core_sources/README.md) を参照してください。
+UI だけなら `VisualStudio/HengbandHd2d/HengbandHd2d.vcxproj` を指定してビルドでき、原作の準備は不要です。
+
+#### UI から原作 ZIP を取り込む
+
+コンパイラー同梱版では、コア選択画面の「コアをインポート」から対応版の原作 ZIP を選び、ビルド・登録できます。
+遊ぶ側でのコンパイラー・Python・Git の導入は不要です。Windows は実操作を検証済み、Android arm64 は端末内ビルドの実機確認待ちです。
+対応版・手順・制約は [インポート仕様](tools/core_import/README.md) を参照してください。
 
 #### 素材について
 
@@ -108,7 +119,7 @@ exe と同じ場所に置いてください。
 
 幻想蛮怒のソース（と幻想蛮怒・Sil-Q のアダプタ）は Shift_JIS の文字列を前提にしているため、
 ビルド時に `tools/transcode_cp932_src.py` で文字列リテラルをバイト列に書き換えたコピー
-（`android/build-src-sjis/`）を作ってビルドします。CMake が自動で実行します。
+（外部の作業用ソース内の `android-sjis/`）を作ってビルドします。CMake が自動で実行します。
 
 ### 動作確認用のスクリプト
 
@@ -133,8 +144,8 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 | `hd2d/` | 3D 表示の画面 |
 | `presentation/` | コア側の描画データの作成とプロトコル |
 | `platform/` | Windows / Android の起動処理 |
-| `src/` | 変愚蛮怒と短愚蛮怒のコア（元の Hengband のもの） |
-| `gensoband/` `silq/` `frox/` `tangband/` | 各コア |
+| `tools/core_sources/` | 外部原作の版固定、必要なパッチ、ソースの準備 |
+| `gensoband/` `silq/` `frox/` `tangband/` | コア別アダプター・翻訳・ゲームデータ。原作の src は外部で管理 |
 | `tools/voxel/` | ボクセルモデルの生成 |
 | `tools/hd2d_verify/` | 動作確認用のスクリプト |
 
@@ -190,7 +201,7 @@ Project page: <https://higesho.github.io/>
 
 ### How to play
 
-Unzip the package and run `HengbandHd2d.exe`. You will be asked which game to play.
+Unzip the package and run `HengbandHd2d.exe`. In the compiler-bundled package, choose Import Core and select a supported upstream source ZIP. Once the build finishes, select the installed game. See [source import](tools/core_import/README.md) for the supported versions and download links.
 
 The game cores such as `HengbandCore.exe` are started by the screen side, so they do not run on their own.
 
@@ -228,26 +239,25 @@ Changed:
 - The original 2D build (`Hengband.exe`) and the libcurl it used were removed
 - The original CI configuration was removed
 
-There are 719 commits on top of the original (2026-07-25 to 2026-09-07).
+Upstream sources are now maintained outside this repository. The UI can validate, compile and register supported source ZIPs.
 
 ### Building
 
 #### Windows
 
-You need Visual Studio 2022 or later and [vcpkg](https://vcpkg.io/).
+You need Visual Studio with C++ support, the MSVC toolset and Windows SDK selected by the projects, and [vcpkg](https://vcpkg.io/).
 
 ```powershell
 vcpkg install sdl2:x64-windows sdl2-image:x64-windows openxr-loader:x64-windows
 vcpkg install sdl2-ttf:x64-windows --overlay-triplets=.\tools\vcpkg\triplets
 vcpkg install openal-soft:x64-windows --overlay-triplets=.\tools\vcpkg\triplets
-vcpkg install curl:x86-windows
 ```
 
 Install `sdl2-ttf` and `openal-soft` with the triplets in `tools/vcpkg/triplets`.
 With the default triplets, `sdl2-ttf` drops glyphs on x64 (an MSVC optimizer issue) and `openal-soft` fails to build.
-`curl` is used by the cores, which are built as Win32, so it is installed for x86.
 
 ```powershell
+python tools/core_sources/prepare.py
 msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platform=x64 /m
 ```
 
@@ -255,6 +265,18 @@ msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platfor
 
 `/p:Platform=x64` applies to the screen side only; the cores are built as Win32.
 They are separate processes, so mixing them is fine. The screen is x64 for VR support.
+
+Upstream game sources are not included in this repository. Place the pinned repositories listed in
+`tools/core_sources/manifest.json` under `../roguelike-cores/upstream/`. The preparation tool applies
+our patches and verifies every resulting file under `../roguelike-cores/build-sources/`.
+Adapters and build recipes remain here. See [source preparation](tools/core_sources/README.md).
+The standalone `VisualStudio/HengbandHd2d/HengbandHd2d.vcxproj` UI build does not require any core sources.
+
+#### Import source ZIPs from the UI
+
+The compiler-bundled package can build and register a supported original source ZIP through **Import core** on the core selection screen.
+Users do not need to install a compiler, Python or Git. Windows UI and gameplay have been tested; on-device compilation on Android arm64 still requires hardware validation.
+See [source import](tools/core_import/README.md) for supported versions and scope.
 
 #### Assets
 
@@ -271,7 +293,7 @@ The details are at the top of `android/hd2d/src/main/cpp/CMakeLists.txt`.
 
 The Gensoband source (and the Gensoband and Sil-Q adapters) expect Shift_JIS strings, so at build time
 `tools/transcode_cp932_src.py` writes a copy with the string literals rewritten as byte escapes
-(`android/build-src-sjis/`), and that copy is built. CMake runs it automatically.
+(the external prepared source directory, `android-sjis/`), and that copy is built. CMake runs it automatically.
 
 ### Verification scripts
 
@@ -296,8 +318,8 @@ See the comment at the top of each script for details.
 | `hd2d/` | The 3D screen |
 | `presentation/` | Core-side rendering data and the protocol |
 | `platform/` | Entry points for Windows and Android |
-| `src/` | The Hengband and Tangband cores (from the original Hengband) |
-| `gensoband/` `silq/` `frox/` `tangband/` | The other cores |
+| `tools/core_sources/` | Pinned external sources, patches and preparation |
+| `gensoband/` `silq/` `frox/` `tangband/` | Adapters, translations and game data; upstream src is external |
 | `tools/voxel/` | Voxel model generation |
 | `tools/hd2d_verify/` | Verification scripts |
 

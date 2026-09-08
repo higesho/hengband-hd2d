@@ -319,7 +319,7 @@ struct TeleportFx {
  * `dungeon_id` と `dun_level` だけだと、作り直された階に前の階の記憶が乗る。
  *
  * @note ここは**追加だけ**の変更なのでプロトコルの版は上げない（v1 §3.2）。
- * 既存の `HengbandUi.exe` は未知キーとして黙って捨てる（v1 §2.3）。
+ * 既存の 旧2D画面 は未知キーとして黙って捨てる（v1 §2.3）。
  * @note フロアの**寸法**は足していない。`MinimapSnapshot::width/height` が既に運んでいる。
  */
 struct FloorIdentity {
@@ -395,7 +395,7 @@ enum class FloorKind : int {
  * @note `day_minute` を分（整数）で持つのは JSON の往復で誤差を出さないため。
  * コアの `AngbandWorld::extract_date_time()` が (日, 時, 分) を返すので `時*60+分` にする。
  * @note ここは**追加だけ**の変更なのでプロトコルの版は上げない（v1 §3.2）。
- * 既存の `HengbandUi.exe` は未知キーとして黙って捨てる（v1 §2.3）。
+ * 既存の 旧2D画面 は未知キーとして黙って捨てる（v1 §2.3）。
  */
 struct LightingState {
     /*!

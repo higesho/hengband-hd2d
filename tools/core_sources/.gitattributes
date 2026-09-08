@@ -1,0 +1,3 @@
+# Patches contain original CP932 and mixed-newline source bytes.
+patches/*.patch -text -diff
+manifest.json text eol=lf

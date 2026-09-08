@@ -4,14 +4,14 @@
 
 .DESCRIPTION
     素材束を作り直してから APK を組み、`Dist` へ**固定の名前**で置く
-    （`HengbandHd2d-android.apk`。2026-09-02 に決めた）。
+    （`HengbandHd2d-android.apk`。実装方針 2026-09-02）。
 
     **素材束（`android/build-assets-hd2d/`）は追跡外**なので、`.vox` や `lib/` を直した日は
     必ず作り直すこと——古いままだと「起動はするが中身が前の日のもの」という APK ができる。
     ここが既定で作り直す側に倒してあるのはそのためである（`-SkipAssets` で飛ばせる）。
 
     **`preview` を組む。**`release` は署名しないので、そのままでは端末に入らない
-    （Google Play へ出すときに自分が正式鍵で署名する）。
+    （Google Play へ出すときに利用者が正式鍵で署名する）。
 
 .PARAMETER Version
     zip と APK の名前に付ける版（既定は今日の日付）。
@@ -26,12 +26,19 @@ Param(
     [string]$Version = (Get-Date -Format 'yyyy-MM-dd'),
     [string]$Abi = 'arm64-v8a',
     [switch]$SkipAssets,
+    [switch]$WithoutCores,
     [string]$OutDir = 'Dist'
 )
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Set-Location $root
+$coreSources = if ($env:HENGBAND_CORE_SOURCE_ROOT) { $env:HENGBAND_CORE_SOURCE_ROOT } else { Join-Path (Split-Path $root -Parent) 'roguelike-cores/build-sources' }
+if (-not $WithoutCores) {
+    & python tools/core_sources/prepare.py --output $coreSources
+    if ($LASTEXITCODE -ne 0) { throw '原作ソースの準備に失敗しました' }
+}
+
 
 if (-not $SkipAssets) {
     Write-Output '素材束を作り直しています（数分）…'
@@ -55,9 +62,9 @@ $sjisTrees = @(
     @{ From = 'gensoband/adapter'; To = 'gensoband/adapter'; Enc = 'utf8';  Ext = '.c,.cpp,.h' },
     @{ From = 'silq/adapter';      To = 'silq/adapter';      Enc = 'utf8';  Ext = '.c,.cpp,.h' }
 )
-foreach ($t in $sjisTrees) {
+foreach ($t in $(if ($WithoutCores) { @() } else { $sjisTrees })) {
     & python tools/transcode_cp932_src.py --from $t.Enc --ext $t.Ext --quiet `
-        $t.From ('android/build-src-sjis/' + $t.To)
+        $(if ($t.From -like '*/src') { Join-Path $coreSources $t.From } else { $t.From }) (Join-Path $coreSources ('android-sjis/' + $t.To))
     if ($LASTEXITCODE -ne 0) { throw ('変換ツリーを作れませんでした: ' + $t.From) }
 }
 
@@ -67,7 +74,7 @@ $env:Path = 'C:\Android\gradle-8.9\bin;C:\Android\jdk17\bin;' + $env:Path
 
 Push-Location android
 try {
-    & 'C:\Android\gradle-8.9\bin\gradle.bat' ":hd2d:assemblePreview" "-PhengbandAbi=$Abi" --console=plain
+    & 'C:\Android\gradle-8.9\bin\gradle.bat' ":hd2d:assemblePreview" "-PhengbandAbi=$Abi" "-PhengbandBuildCores=$(if ($WithoutCores) { 'false' } else { 'true' })" --console=plain
     if ($LASTEXITCODE -ne 0) { throw 'gradle が失敗しました' }
 } finally {
     Pop-Location
@@ -75,6 +82,8 @@ try {
 
 $apk = 'android/hd2d/build/outputs/apk/preview/hd2d-preview.apk'
 if (-not (Test-Path $apk)) { throw "APK ができていません: $apk" }
+& python tools/core_import/audit_apk.py $apk
+if ($LASTEXITCODE -ne 0) { throw 'APK のアセット・SDK 検査に失敗しました' }
 <#
   **BUILD SUCCESSFUL は組み直した証拠にならない**（2026-08-22 に踏んだ。古い `.so` を
   詰めた APK ができた）。ただし**見分け方を 2 度外した**ので、経緯ごと書いておく。
@@ -86,29 +95,30 @@ if (-not (Test-Path $apk)) { throw "APK ができていません: $apk" }
 
   そこで**剥がした後の `.so`**（`stripped_native_libs/`）と APK の中身を突き合わせる。
 #>
-$stripped = Get-ChildItem "android/hd2d/build/intermediates/stripped_native_libs/preview/*/out/lib/$Abi/libmain.so" -ErrorAction SilentlyContinue |
-    Sort-Object LastWriteTime -Descending | Select-Object -First 1
-if (-not $stripped) { throw "剥がした後の libmain.so が見つかりません（$Abi）" }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $apk))
 try {
-    $entry = $zip.Entries | Where-Object { $_.FullName -eq "lib/$Abi/libmain.so" }
-    if (-not $entry) { throw "APK に lib/$Abi/libmain.so がありません" }
-    $stream = $entry.Open()
-    try {
-        $inApk = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash
-    } finally {
-        $stream.Dispose()
+    $coreLibraries = @('libhengcore.so','libtangcore.so','libgensocore.so','libsilcore.so','libfroxcore.so')
+    $libraries = @('libmain.so','libhbclang.so','libhblld.so','libhblink.so')
+    if (-not $WithoutCores) { $libraries += $coreLibraries }
+    elseif ($zip.Entries | Where-Object { $_.Name -in $coreLibraries }) { throw 'UI-only APK unexpectedly contains a game core' }
+    foreach ($library in $libraries) {
+        $stripped = Get-ChildItem "android/hd2d/build/intermediates/stripped_native_libs/preview/*/out/lib/$Abi/$library" -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if (-not $stripped) { throw "剥がした後の $library が見つかりません（$Abi）" }
+        $entry = $zip.Entries | Where-Object { $_.FullName -eq "lib/$Abi/$library" }
+        if (-not $entry) { throw "APK に lib/$Abi/$library がありません" }
+        $stream = $entry.Open()
+        try { $inApk = (Get-FileHash -InputStream $stream -Algorithm SHA256).Hash } finally { $stream.Dispose() }
+        $onDisk = (Get-FileHash $stripped.FullName -Algorithm SHA256).Hash
+        if ($inApk -ne $onDisk) { throw "APK の $library が、いま組んだものと違います" }
+        Write-Output "$library のハッシュが一致（SHA-256 $($inApk.Substring(0, 12))…）"
     }
 } finally {
     $zip.Dispose()
 }
-$onDisk = (Get-FileHash $stripped.FullName -Algorithm SHA256).Hash
-if ($inApk -ne $onDisk) {
-    throw "APK の中の libmain.so が、いま組んだものと違います（古い native を詰めています）"
-}
-Write-Output "libmain.so のハッシュが一致（SHA-256 $($inApk.Substring(0, 12))…）"
-# **名前は固定**（2026-09-02 に決めた）。版と ABI は下の刷り出しに残す。
+New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
+# **名前は固定**（実装方針 2026-09-02）。版と ABI は下の刷り出しに残す。
 $dst = Join-Path $OutDir 'HengbandHd2d-android.apk'
 Copy-Item $apk $dst -Force
 $size = [math]::Round((Get-Item $dst).Length / 1MB, 1)

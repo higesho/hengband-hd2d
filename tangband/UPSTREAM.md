@@ -1,5 +1,11 @@
 # 短愚蛮怒（Tangband）の取り込み元
 
+> **2026-09-08: 原作ソースを外部管理へ分離しました。** 接続コード・翻訳・ゲームデータはここに残し、
+> 原作の `src/` は `tools/core_sources/prepare.py` が外部に構成します。
+> 版とパッチの正本は `tools/core_sources/manifest.json` と `patches/`、手順は `tools/core_sources/README.md`。
+> 以下は取り込み時の範囲と出自の記録です。旧 `src/` の場所を現在のビルド入力として使わないでください。
+
+
 Tangband shares the Hengband source (`src/`) and is built with `TANGBAND` defined.
 This directory only holds the Tangband data (`lib/`). See below for the origin and
 how to update it.

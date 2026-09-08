@@ -1,10 +1,10 @@
-﻿/*!
+/*!
  * @file feature_menu.h
  * @brief 機能メニュー（P8）— F10 で開く、ゲームの外の設定。
  *
  * ## 何を入れて、何を入れないか
  * 2026-08-08 に決めたは「**HD2D 版に要るものだけ**」。
- * `HengbandUi.exe` の機能メニューには、この実行体に**存在しない**ものが並んでいる
+ * 廃止した2D画面の機能メニューには、この実行体に**存在しない**ものが並んでいる
  * （SDL2 / HD2D の経路切替・液晶表現・Android のバーチャルパッド・タイルの倍率）。
  * 器だけ残して並べると「押しても何も起きない項目」になるので、入れない。
  *
@@ -631,6 +631,7 @@ private:
     static const char *page_label(Page page);
     static Page page_of(Item item);
     static const char *item_label(Item item);
+    static bool Hd2dSettings::*toggle_setting(Item item);
     std::string item_value(Item item, const Hd2dSettings &settings) const;
     //! 左右で値を動かす（`delta` は -1 / +1）。動かせない項目は何もしない。
     void adjust(Item item, int delta, Hd2dSettings &settings) const;

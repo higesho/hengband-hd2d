@@ -27,8 +27,8 @@
 そのため、ここでは「世界が表示されたか」「真っ暗でないか」だけを見ます。
 絵の正確さは `replay.py` が担当します。
 
-`hd2d/` には乱数を使う箇所がなく、通信の記録も時刻を伏せれば毎回一致しますが、
-実時間が入力に入っている以上、絵まで毎回同じにはなりません。
+通信は送信・受信のそれぞれで順序と件数を比較します。両方向の記録の交錯と
+OS の音声再生完了通知は実時間で揺れるため比較から除きます。
 
 ## 使い方
 
@@ -39,7 +39,8 @@
 ## セーブデータの扱い
 
 どのシナリオも `lib/save/` を空にしてから実行し、終わったら必ず元に戻します
-（失敗しても、中断されても戻します）。手元のセーブデータを壊さないためです。
+準備中の失敗や通常の例外でも復元します。検査プロセス自体の強制終了や電源断では
+自動復元できないため、lib/.hd2d-save-*/original に残った退避元を復元してください。
 
 ## 注意
 
@@ -63,6 +64,8 @@ import subprocess
 import sys
 import tempfile
 
+from runtime import CfgGuard as RuntimeCfgGuard, SaveGuard as RuntimeSaveGuard, run_process
+
 for _s in (sys.stdout, sys.stderr):
     try:
         _s.reconfigure(encoding='utf-8', errors='replace')
@@ -75,7 +78,7 @@ EXE = os.path.join(ROOT, 'HengbandHd2d.exe')
 CORE = os.path.join(ROOT, 'HengbandCore.exe')
 SAVE_DIR = os.path.join(ROOT, 'lib', 'save')
 USER_DIR = os.path.join(ROOT, 'lib', 'user')
-FIXTURES = os.path.join(ROOT, 'tools', 'diff_test', 'fixtures')
+FIXTURES = os.path.join(HERE, 'fixtures')
 GOLDEN_DIR = os.path.join(HERE, 'playthrough')
 
 #: 走らせるシナリオ。
@@ -134,7 +137,7 @@ MASKS = [
     (re.compile(r'^\[hd2d\] GL .*$', re.M), '[hd2d] GL <環境>'),
     (re.compile(r'^\[hd2d\] XR_RUNTIME .*$', re.M), '[hd2d] XR_RUNTIME <環境>'),
     (re.compile(r'\(pid \d+\)'), '(pid <番号>)'),
-    #: **バックスラッシュを含めて**採る。除くと `C:\Users\<ユーザー名>` で止まり、
+    #: **バックスラッシュを含めて**採る。除くと ユーザープロファイルのパス で止まり、
     #: 続きの `\AppData\Local\Temp\hd2d_play_<でたらめ>\shot.bmp` が残って毎回ちがう。
     (re.compile(r'[A-Za-z]:[\\/][^\s"]*'), '<パス>'),
     #: **コアが「画面が消えた」と気づいた場所**は、そのときコアが何をしていたかで
@@ -228,91 +231,14 @@ def decode(raw: bytes) -> str:
     return raw.decode('utf-8', errors='replace')
 
 
-class CfgGuard:
-    """リポジトリ直下の `*.cfg` を退避して、**必ず**戻す。
-
-    ## なぜ要るのか（2026-09-07 に踏んだ）
-
-    `--shot` で終わる経路は設定を書かない——と思っていたが、**環の中には設定が
-    変わったときに書く道がある**（`run()` の (d'')）。網を回している最中に、
-    生きている窓へ**物理的なマウスのホイールが届く**と、そこで倍率が変わって
-    cfg に書かれる。
-
-    実際に `camera_cell_px` が 71.1328 → 60.9947（ホイール下 2 刻みぶん）へ動き、
-    網が赤くなった。**コードは 1 行も変わっていないのに赤い**ので、原因を探すのに
-    時間を取られる。しかも**利用者の設定を勝手に書き換えている**ほうが害が大きい。
-
-    セーブと同じく、走らせる前に退避して、終わったら必ず戻す。
-    """
-
-    def __enter__(self):
-        self.saved = {}
-        for name in os.listdir(ROOT):
-            if not name.endswith('.cfg'):
-                continue
-            path = os.path.join(ROOT, name)
-            if os.path.isfile(path):
-                with open(path, 'rb') as f:
-                    self.saved[name] = f.read()
-        return self
-
-    def __exit__(self, *exc):
-        for name, data in self.saved.items():
-            path = os.path.join(ROOT, name)
-            try:
-                with open(path, 'rb') as f:
-                    if f.read() == data:
-                        continue  #: 変わっていない。触らない
-            except OSError:
-                pass
-            with open(path, 'wb') as f:
-                f.write(data)
-        return False
+class CfgGuard(RuntimeCfgGuard):
+    def __init__(self):
+        super().__init__(ROOT)
 
 
-class SaveGuard:
-    """`lib/save/` を退避して、**必ず**戻す。"""
-
-    def __init__(self, fixture: str | None):
-        self.fixture = fixture
-        self.stash = None
-
-    def __enter__(self):
-        self.stash = tempfile.mkdtemp(prefix='hd2d_save_')
-        if os.path.isdir(SAVE_DIR):
-            for name in os.listdir(SAVE_DIR):
-                src = os.path.join(SAVE_DIR, name)
-                if os.path.isfile(src):
-                    shutil.move(src, os.path.join(self.stash, name))
-        else:
-            os.makedirs(SAVE_DIR, exist_ok=True)
-        if self.fixture:
-            src = os.path.join(FIXTURES, self.fixture)
-            if not os.path.exists(src):
-                raise SystemExit('固定セーブが無い: %s' % src)
-            shutil.copy2(src, os.path.join(SAVE_DIR, self.fixture))
-            panels = src + '.sdl2panels'
-            if os.path.exists(panels):
-                shutil.copy2(panels, os.path.join(SAVE_DIR, self.fixture + '.sdl2panels'))
-        return self
-
-    def __exit__(self, *exc):
-        # 走らせたぶんを捨てて、退避したものを戻す
-        if os.path.isdir(SAVE_DIR):
-            for name in os.listdir(SAVE_DIR):
-                p = os.path.join(SAVE_DIR, name)
-                if os.path.isfile(p):
-                    os.remove(p)
-        for name in os.listdir(self.stash):
-            shutil.move(os.path.join(self.stash, name), os.path.join(SAVE_DIR, name))
-        os.rmdir(self.stash)
-        return False
-
-
-def kill_leftovers() -> None:
-    for name in ('HengbandHd2d.exe', 'HengbandCore.exe'):
-        subprocess.run(['taskkill', '/F', '/IM', name],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+class SaveGuard(RuntimeSaveGuard):
+    def __init__(self, fixture):
+        super().__init__(SAVE_DIR, FIXTURES, fixture)
 
 
 def run_one(sc: dict, timeout: int = 300) -> str:
@@ -322,7 +248,7 @@ def run_one(sc: dict, timeout: int = 300) -> str:
     plog = os.path.join(tmp, 'protocol.jsonl')
     env = dict(os.environ)
     #: 前の回の残りが効かないよう、こちらが使う環境変数は必ず消してから入れ直す。
-    for k in ('HENGBAND_SDL2_INJECT_KEYS', 'HD2D_PAD_PRESS',
+    for k in ('HD2D_REPLAY_LOG', 'HD2D_FIXED_CLOCK', 'HENGBAND_SDL2_INJECT_KEYS', 'HD2D_PAD_PRESS',
               'HD2D_PAD_PRESS_AT', 'HD2D_PAD_PRESS_STEP', 'HD2D_PAD_MODS'):
         env.pop(k, None)
     if sc['keys']:
@@ -338,23 +264,13 @@ def run_one(sc: dict, timeout: int = 300) -> str:
         with CfgGuard(), SaveGuard(sc['save']):
             #: **時間切れでも知らせは捨てない。**捨てると「なぜ止まったか」が
             #: 一切分からなくなる（実際に 2 回それで調べ直した）。
-            proc = subprocess.Popen(argv, cwd=ROOT, env=env,
-                                    stdin=subprocess.DEVNULL,
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             try:
-                raw, _ = proc.communicate(timeout=timeout)
-                code = proc.returncode
-            except subprocess.TimeoutExpired:
-                kill_leftovers()
-                try:
-                    raw, _ = proc.communicate(timeout=20)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-                    raw = b''
-                code = -9
+                proc = run_process(argv, cwd=ROOT, env=env, timeout=timeout)
+                raw, code = proc.stdout, proc.returncode
+            except subprocess.TimeoutExpired as exc:
+                raw, code = exc.output, -9
                 out.append('[!! 時間切れ %d 秒]' % timeout)
             stderr_text = decode(raw or b'')
-        kill_leftovers()
 
         out.append('[終了コード] %d' % code)
         # (1) 絵
@@ -417,6 +333,32 @@ def run_one(sc: dict, timeout: int = 300) -> str:
     return chr(10).join(out) + chr(10)
 
 
+def comparable_observation(text: str) -> str:
+    """実時間の送受信の交錯を除く。各方向の順番・件数・内容は保持する。
+
+    UI とコアは独立に進むため、同じ ui_state が何番目の frame の前に
+    記録されるかは不定。描画の厳密な比較は replay が担当する。
+    """
+    incoming, outgoing, other = [], [], []
+    for line in text.splitlines():
+        if re.fullmatch(r'  \[core\] MM_MCINOTIFY dispatched \(#\d+\)', line):
+            continue  # OS の音声再生完了通知。ゲーム状態でも UI の出力でもない。
+        if '<パス>' in line and re.search(r'"t"\s*:\s*"hello_ack"\s*}', line):
+            # hello_ack includes an absolute asset path. Its original byte count
+            # changes with the installation directory even after masking the path.
+            # Preserve the masked payload and all other protocol observations.
+            line = re.sub(r'"len"\s*:\s*\d+\s*,\s*', '', line, count=1)
+        if line.startswith('  {'):
+            # パスを伏せた既存の基準行は JSON として再解析できないことがある。
+            match = re.search(r'"dir"\s*:\s*"(in|out)"', line)
+            direction = match.group(1) if match else None
+            if direction in ('in', 'out'):
+                (incoming if direction == 'in' else outgoing).append(line)
+                continue
+        other.append(line)
+    return '\n'.join(other + ['[受信順]'] + incoming + ['[送信順]'] + outgoing) + '\n'
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--record', action='store_true', help='いまの振る舞いを基準として保存する')
@@ -428,7 +370,7 @@ def main() -> int:
     for path, what in ((EXE, '画面'), (CORE, 'コア')):
         if not os.path.exists(path):
             print('!! %sの実行体が無い: %s' % (what, path))
-            print('   先に組むこと（docs/BUILD_ENV.md §1）。')
+            print('   先に組むこと（README.md のビルド手順）。')
             return 2
 
     os.makedirs(GOLDEN_DIR, exist_ok=True)
@@ -455,6 +397,8 @@ def main() -> int:
             continue
         with open(path, 'rb') as f:
             want_text = f.read().decode('utf-8')
+        want_text = comparable_observation(want_text)
+        text = comparable_observation(text)
         if want_text == text:
             print('  一致 %-10s %4d 行' % (sc['name'], text.count(chr(10))))
         else:

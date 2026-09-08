@@ -1,0 +1,16 @@
+{
+  "windows": {
+    "version": "20260826",
+    "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20260826/llvm-mingw-20260826-ucrt-x86_64.zip",
+    "sha256": "ae601f4e0f72bbdf441ad2df8bb16f037e2e9251559ea6b37b4057aef39c06c3",
+    "directory": "llvm-mingw-20260826-ucrt-x86_64",
+    "source": "https://github.com/mstorsjo/llvm-mingw/tree/20260826"
+  },
+  "android": {
+    "version": "r29-aarch64",
+    "url": "https://github.com/lzhiyong/termux-ndk/releases/download/android-ndk/android-ndk-r29-aarch64.tar.xz",
+    "sha256": "02e10e4ddfe8deaeb0bd0cf29d04c981ed5bc8a5d6b560ebb9e7661f472d684b",
+    "directory": "android-ndk-r29",
+    "source": "https://github.com/lzhiyong/termux-ndk"
+  }
+}

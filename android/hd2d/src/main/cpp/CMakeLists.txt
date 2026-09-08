@@ -39,6 +39,18 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 get_filename_component(HB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE)
 set(HB_TP "${HB_ROOT}/third_party/android")
 
+# UI 単体では原作ソースを要求しない。通常の APK は既存どおり 5 コアを同梱する。
+option(HENGBAND_BUILD_CORES "Build the five external game cores" ON)
+get_filename_component(HB_DEFAULT_CORE_SOURCES "${HB_ROOT}/../roguelike-cores/build-sources" ABSOLUTE)
+if(DEFINED ENV{HENGBAND_CORE_SOURCE_ROOT})
+    set(HB_DEFAULT_CORE_SOURCES "$ENV{HENGBAND_CORE_SOURCE_ROOT}")
+endif()
+set(HB_CORE_SOURCE_ROOT "${HB_DEFAULT_CORE_SOURCES}" CACHE PATH "Prepared external core sources")
+if(HENGBAND_BUILD_CORES AND NOT EXISTS "${HB_CORE_SOURCE_ROOT}/.prepared.json")
+    message(FATAL_ERROR "Run tools/core_sources/prepare.py first, or set HB_CORE_SOURCE_ROOT. UI-only builds may set HENGBAND_BUILD_CORES=OFF.")
+endif()
+
+
 message(STATUS "[hengband-hd2d] root = ${HB_ROOT}")
 
 # -----------------------------------------------------------------------------
@@ -109,7 +121,7 @@ add_subdirectory("${HB_TP}/SDL2_mixer" SDL2_mixer EXCLUDE_FROM_ALL)
 # EUC のセーブ・中継サーバのワイヤは iconv の道（locale/character-encoding.cpp。
 # bionic は EUC-JP 非対応なので hb_iconv に差し替え）で読む。
 # -----------------------------------------------------------------------------
-file(GLOB_RECURSE HB_CORE_SRC CONFIGURE_DEPENDS "${HB_ROOT}/src/*.cpp")
+file(GLOB_RECURSE HB_CORE_SRC CONFIGURE_DEPENDS "${HB_CORE_SOURCE_ROOT}/src/*.cpp")
 set(HB_CORE_EXCLUDE
     "/src/main\\.cpp$"
     "/src/main-win\\.cpp$"
@@ -130,7 +142,7 @@ endforeach()
 list(LENGTH HB_CORE_SRC HB_CORE_COUNT)
 message(STATUS "[hengband-hd2d] core sources = ${HB_CORE_COUNT}")
 
-list(APPEND HB_CORE_SRC "${HB_ROOT}/src/external-lib/fmt/format.cc")
+list(APPEND HB_CORE_SRC "${HB_CORE_SOURCE_ROOT}/src/external-lib/fmt/format.cc")
 
 # -----------------------------------------------------------------------------
 # presentation（プロトコルとコア側の橋）— ui/ は組まない（hd2d が代わり）
@@ -201,12 +213,14 @@ file(WRITE "${HB_SDL_COMPAT_DIR}/SDL2/SDL_mixer.h"  "#pragma once\n#include <SDL
 function(hengband_common_config target)
     target_include_directories(${target} PRIVATE
         "${HB_SDL_COMPAT_DIR}"
-        "${HB_ROOT}/src"
-        "${HB_ROOT}/src/external-lib/include"
+        "${HB_ROOT}/third_party/cpp/include"
         "${HB_ROOT}/presentation"
         "${HB_ROOT}/hd2d"
         "${HB_ROOT}/platform"
     )
+    if(NOT "${target}" STREQUAL "main")
+        target_include_directories(${target} PRIVATE "${HB_CORE_SOURCE_ROOT}/src" "${HB_CORE_SOURCE_ROOT}/src/external-lib/include")
+    endif()
     target_compile_definitions(${target} PRIVATE
         JP
         UTF8    # 内部 UTF-8（HengbandCore.exe と同じ。実行時多言語化がそのまま載る）
@@ -232,14 +246,14 @@ add_library(main SHARED
     ${HB_HD2D_SRC}
     ${HB_FRAME_SRC}
     ${HB_UI_PLATFORM_SRC}
-    "${HB_ROOT}/src/external-lib/fmt/format.cc"
+    "${HB_ROOT}/third_party/cpp/fmt/format.cc"
 )
 hengband_common_config(main)
 target_compile_definitions(main PRIVATE
     HENGBAND_GLES=1         # hd2d の GL を GLES 3.2 へ（gl_program / gl_core / hd2d_app が見る）
 )
 
-target_link_libraries(main PRIVATE
+target_link_libraries(main PRIVATE z
     SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
@@ -253,6 +267,7 @@ target_link_libraries(main PRIVATE
 # コアも SDL2 / SDL2_mixer にリンクする——Android では**音はコア側が鳴らす**
 # （presentation/audio/sdl_mixer_audio.cpp。v1 の「音はコアが自分で鳴らす」建付け）。
 # libSDL2.so は共有なので、UI と同じ実体を使う＝単一ライブラリ時代と同じ意味論。
+if(HENGBAND_BUILD_CORES)
 add_library(hengcore SHARED ${HB_CORE_SRC} ${HB_PRESENTATION_SRC} ${HB_CORE_PLATFORM_SRC})
 hengband_common_config(hengcore)
 target_link_libraries(hengcore PRIVATE SDL2::SDL2 SDL2_mixer::SDL2_mixer log)
@@ -291,7 +306,7 @@ if(NOT Python3_Interpreter_FOUND)
 endif()
 
 set(HB_SJIS_TOOL "${HB_ROOT}/tools/transcode_cp932_src.py")
-set(HB_SJIS_DIR "${HB_ROOT}/android/build-src-sjis")
+set(HB_SJIS_DIR "${HB_CORE_SOURCE_ROOT}/android-sjis")
 
 #! 写す木の一覧。`(写し元, 行き先, 元の文字コード, 拡張子)` の 4 つ組を `|` で綴じる。
 set(HB_SJIS_TREES
@@ -307,10 +322,15 @@ foreach(spec ${HB_SJIS_TREES})
     list(GET parts 1 to_dir)
     list(GET parts 2 from_enc)
     list(GET parts 3 exts)
+    if(from_dir MATCHES "/src$")
+        set(from_path "${HB_CORE_SOURCE_ROOT}/${from_dir}")
+    else()
+        set(from_path "${HB_ROOT}/${from_dir}")
+    endif()
     execute_process(
         COMMAND "${Python3_EXECUTABLE}" "${HB_SJIS_TOOL}"
                 "--from" "${from_enc}" "--ext" "${exts}" "--quiet"
-                "${HB_ROOT}/${from_dir}" "${HB_SJIS_DIR}/${to_dir}"
+                "${from_path}" "${HB_SJIS_DIR}/${to_dir}"
         RESULT_VARIABLE rc)
     if(NOT rc EQUAL 0)
         message(FATAL_ERROR "変換ツリーを作れませんでした: ${from_dir}（rc=${rc}）")
@@ -330,10 +350,15 @@ foreach(spec ${HB_SJIS_TREES})
     list(GET parts 1 to_dir)
     list(GET parts 2 from_enc)
     list(GET parts 3 exts)
+    if(from_dir MATCHES "/src$")
+        set(from_path "${HB_CORE_SOURCE_ROOT}/${from_dir}")
+    else()
+        set(from_path "${HB_ROOT}/${from_dir}")
+    endif()
     list(APPEND HB_SJIS_COMMANDS
         COMMAND "${Python3_EXECUTABLE}" "${HB_SJIS_TOOL}"
                 "--from" "${from_enc}" "--ext" "${exts}" "--quiet"
-                "${HB_ROOT}/${from_dir}" "${HB_SJIS_DIR}/${to_dir}")
+                "${from_path}" "${HB_SJIS_DIR}/${to_dir}")
 endforeach()
 add_custom_target(hb_transcode_sjis ALL
     ${HB_SJIS_COMMANDS}
@@ -367,7 +392,7 @@ function(hengband_legacy_config target src_dir adapter_dir)
         "${adapter_dir}"
         "${src_dir}"
         "${HB_ROOT}/presentation"
-        "${HB_ROOT}/src/external-lib/include"
+        "${HB_CORE_SOURCE_ROOT}/src/external-lib/include"
         "${HB_ROOT}/platform"
         # bionic に無い古いヘッダの身代わり（`<sys/timeb.h>`）。**いちばん後ろに置く**
         # ——本物が在るヘッダを横取りしないため。
@@ -412,7 +437,7 @@ target_compile_definitions(gensocore PRIVATE JP SJIS)
 #
 # `silq/src` は**影に写さない**——中身は ASCII で、非 ASCII は註釈の UTF-8 だけである
 # （2026-08-21 に全数で確かめた）。写す必要が無いものを写すと、追う先が増えるだけ。
-file(GLOB HB_SQ_SRC CONFIGURE_DEPENDS "${HB_ROOT}/silq/src/*.c")
+file(GLOB HB_SQ_SRC CONFIGURE_DEPENDS "${HB_CORE_SOURCE_ROOT}/silq/src/*.c")
 foreach(pat ${HB_LEGACY_EXCLUDE})
     list(FILTER HB_SQ_SRC EXCLUDE REGEX "${pat}")
 endforeach()
@@ -422,7 +447,7 @@ list(LENGTH HB_SQ_SRC HB_SQ_COUNT)
 message(STATUS "[hengband-hd2d] silq sources = ${HB_SQ_COUNT}")
 
 add_library(silcore SHARED ${HB_SQ_SRC} ${HB_SQ_ADAPTER_SRC} ${HB_LEGACY_SHARED_SRC})
-hengband_legacy_config(silcore "${HB_ROOT}/silq/src" "${HB_SJIS_DIR}/silq/adapter")
+hengband_legacy_config(silcore "${HB_CORE_SOURCE_ROOT}/silq/src" "${HB_SJIS_DIR}/silq/adapter")
 
 # ---- FroxComposband
 #
@@ -436,7 +461,7 @@ hengband_legacy_config(silcore "${HB_ROOT}/silq/src" "${HB_SJIS_DIR}/silq/adapte
 #   - `z-doc.c` の `/FIwindows.h` … windows.h が無いので衝突も無い
 #   - `fc_compat.c`（strncasecmp -> _strnicmp）… bionic には strncasecmp が
 #     最初から在り、逆に _strnicmp が無いのでリンクで落ちる。**外す**
-file(GLOB HB_FC_SRC CONFIGURE_DEPENDS "${HB_ROOT}/frox/src/*.c")
+file(GLOB HB_FC_SRC CONFIGURE_DEPENDS "${HB_CORE_SOURCE_ROOT}/frox/src/*.c")
 set(HB_FC_EXCLUDE
     ${HB_LEGACY_EXCLUDE}
     "/main-cap\\.c$"
@@ -459,12 +484,12 @@ message(STATUS "[hengband-hd2d] frox sources = ${HB_FC_COUNT}")
 # doc UI の旗（M0.5 FH-02。設計 §14.2(a)）: vcxproj のファイル単位 define と同じ
 # 6 TU にだけ `Term_save/Term_load` の横取りを差す。
 set_source_files_properties(
-    "${HB_ROOT}/frox/src/monspell.c"
-    "${HB_ROOT}/frox/src/obj_prompt.c"
-    "${HB_ROOT}/frox/src/skillmaster.c"
-    "${HB_ROOT}/frox/src/weaponsmith.c"
-    "${HB_ROOT}/frox/src/wild.c"
-    "${HB_ROOT}/frox/src/wiz_obj.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/monspell.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/obj_prompt.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/skillmaster.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/weaponsmith.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/wild.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/wiz_obj.c"
     PROPERTIES COMPILE_DEFINITIONS "Term_save=fc_ui_term_save;Term_load=fc_ui_term_load")
 
 # 共有 TU は FroxCore.vcxproj と同じ並び。**ただし `cp932.cpp` はここだけ足す**
@@ -480,7 +505,9 @@ add_library(froxcore SHARED ${HB_FC_SRC} ${HB_FC_ADAPTER_SRC}
     "${HB_ROOT}/platform/portable/legacy_os.cpp"
     "${HB_ROOT}/platform/portable/cp932.cpp"
 )
-hengband_legacy_config(froxcore "${HB_ROOT}/frox/src" "${HB_ROOT}/frox/adapter")
+hengband_legacy_config(froxcore "${HB_CORE_SOURCE_ROOT}/frox/src" "${HB_ROOT}/frox/adapter")
+
+endif() # HENGBAND_BUILD_CORES
 
 # -----------------------------------------------------------------------------
 # Meta Quest ネイティブ

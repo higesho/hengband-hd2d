@@ -21,7 +21,8 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_STL=c++_shared',
+                arguments "-DHENGBAND_BUILD_CORES=${project.findProperty('hengbandBuildCores') == 'false' ? 'OFF' : 'ON'}",
+                          '-DANDROID_STL=c++_shared',
                           '-DANDROID_ARM_NEON=ON'
                 cppFlags '-std=c++20'
             }
@@ -41,6 +42,7 @@ android {
     sourceSets {
         main {
             // SDLActivity 群は SDL2 の配布物をそのまま使う（改変しない）
+            jniLibs.srcDirs += ["${rootDir}/core-import-jni"]
             java.srcDirs += ["${rootDir}/../third_party/android/SDL2/android-project/app/src/main/java"]
             assets.srcDirs += [generatedAssets]
         }
@@ -71,12 +73,14 @@ android {
     // 既に圧縮済みの形式を APK 内で再圧縮しない（展開が速くなり、サイズはほぼ変わらない）。
     // .vox は MagicaVoxel 形式（RIFF 亜種・未圧縮）なので圧縮に任せる＝ここに書かない。
     androidResources {
+        // libc++ の __algorithm など、先頭が _ のヘッダーディレクトリも同梱する。
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         noCompress += ['png', 'mp3', 'otf', 'ttf', 'ttc']
     }
 
     packaging {
         jniLibs {
-            useLegacyPackaging = false
+            useLegacyPackaging = true
         }
     }
 

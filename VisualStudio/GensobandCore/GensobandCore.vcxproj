@@ -2,7 +2,7 @@
 <!--
   GensobandCore.vcxproj ── 幻想蛮怒コア側の実行ファイル。
 
-  定義の置き場: （§2 配置 / §7 手入れ許可 / §8 P1）
+  正本: 関連する実装（§2 配置 / §7 手入れ許可 / §8 P1）
 
   中身は `gensoband/src/` の C と `gensoband/adapter/` だけ。
   変愚側の `src/`・`presentation/`・`hd2d/` は **1 本も入れない**。
@@ -67,6 +67,7 @@
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="..\CoreSources.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
@@ -102,7 +103,7 @@
         `external-lib` は共用 TU（frame_codec ほか）のためだけに要るもので、
         同名の頭文字（`types.h` 等）があっても写しが勝つようにしておく。
       -->
-      <AdditionalIncludeDirectories>..\..\gensoband\src;..\..\gensoband\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HengbandCoreSourceRoot)\gensoband\src;..\..\gensoband\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -133,7 +134,7 @@
         `external-lib` は共用 TU（frame_codec ほか）のためだけに要るもので、
         同名の頭文字（`types.h` 等）があっても写しが勝つようにしておく。
       -->
-      <AdditionalIncludeDirectories>..\..\gensoband\src;..\..\gensoband\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HengbandCoreSourceRoot)\gensoband\src;..\..\gensoband\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -152,79 +153,79 @@
     入口と描画はアダプタが持つ。angband.rc / angband.res も使わない。
   -->
   <ItemGroup>
-    <ClCompile Include="..\..\gensoband\src\ability_card.c" />
-    <ClCompile Include="..\..\gensoband\src\artifact.c" />
-    <ClCompile Include="..\..\gensoband\src\autopick.c" />
-    <ClCompile Include="..\..\gensoband\src\avatar.c" />
-    <ClCompile Include="..\..\gensoband\src\birth.c" />
-    <ClCompile Include="..\..\gensoband\src\bldg.c" />
-    <ClCompile Include="..\..\gensoband\src\bldg2.c" />
-    <ClCompile Include="..\..\gensoband\src\cave.c" />
-    <ClCompile Include="..\..\gensoband\src\chuukei.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd1.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd2.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd3.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd4.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd5.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd6.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd7.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd_junko.c" />
-    <ClCompile Include="..\..\gensoband\src\cmd_yuma.c" />
-    <ClCompile Include="..\..\gensoband\src\do-spell.c" />
-    <ClCompile Include="..\..\gensoband\src\dungeon.c" />
-    <ClCompile Include="..\..\gensoband\src\effects.c" />
-    <ClCompile Include="..\..\gensoband\src\files.c" />
-    <ClCompile Include="..\..\gensoband\src\flavor.c" />
-    <ClCompile Include="..\..\gensoband\src\floors.c" />
-    <ClCompile Include="..\..\gensoband\src\generate.c" />
-    <ClCompile Include="..\..\gensoband\src\grid.c" />
-    <ClCompile Include="..\..\gensoband\src\hex.c" />
-    <ClCompile Include="..\..\gensoband\src\hissatsu.c" />
-    <ClCompile Include="..\..\gensoband\src\inet.c" />
-    <ClCompile Include="..\..\gensoband\src\init1.c" />
-    <ClCompile Include="..\..\gensoband\src\init2.c" />
-    <ClCompile Include="..\..\gensoband\src\japanese.c" />
-    <ClCompile Include="..\..\gensoband\src\load.c" />
-    <ClCompile Include="..\..\gensoband\src\mane.c" />
-    <ClCompile Include="..\..\gensoband\src\melee1.c" />
-    <ClCompile Include="..\..\gensoband\src\melee2.c" />
-    <ClCompile Include="..\..\gensoband\src\mind.c" />
-    <ClCompile Include="..\..\gensoband\src\monster1.c" />
-    <ClCompile Include="..\..\gensoband\src\monster2.c" />
-    <ClCompile Include="..\..\gensoband\src\mspells1.c" />
-    <ClCompile Include="..\..\gensoband\src\mspells2.c" />
-    <ClCompile Include="..\..\gensoband\src\mspells3.c" />
-    <ClCompile Include="..\..\gensoband\src\mutation.c" />
-    <ClCompile Include="..\..\gensoband\src\new_class_power.c" />
-    <ClCompile Include="..\..\gensoband\src\obj_kind.c" />
-    <ClCompile Include="..\..\gensoband\src\object1.c" />
-    <ClCompile Include="..\..\gensoband\src\object2.c" />
-    <ClCompile Include="..\..\gensoband\src\racial.c" />
-    <ClCompile Include="..\..\gensoband\src\random_unique_monster.c" />
-    <ClCompile Include="..\..\gensoband\src\report.c" />
-    <ClCompile Include="..\..\gensoband\src\rooms.c" />
-    <ClCompile Include="..\..\gensoband\src\save.c" />
-    <ClCompile Include="..\..\gensoband\src\scores.c" />
-    <ClCompile Include="..\..\gensoband\src\snipe.c" />
-    <ClCompile Include="..\..\gensoband\src\spells1.c" />
-    <ClCompile Include="..\..\gensoband\src\spells2.c" />
-    <ClCompile Include="..\..\gensoband\src\spells3.c" />
-    <ClCompile Include="..\..\gensoband\src\store.c" />
-    <ClCompile Include="..\..\gensoband\src\straygod.c" />
-    <ClCompile Include="..\..\gensoband\src\streams.c" />
-    <ClCompile Include="..\..\gensoband\src\tables.c" />
-    <ClCompile Include="..\..\gensoband\src\util.c" />
-    <ClCompile Include="..\..\gensoband\src\variable.c" />
-    <ClCompile Include="..\..\gensoband\src\wild.c" />
-    <ClCompile Include="..\..\gensoband\src\wizard1.c" />
-    <ClCompile Include="..\..\gensoband\src\wizard2.c" />
-    <ClCompile Include="..\..\gensoband\src\xtra1.c" />
-    <ClCompile Include="..\..\gensoband\src\xtra2.c" />
-    <ClCompile Include="..\..\gensoband\src\z-form.c" />
-    <ClCompile Include="..\..\gensoband\src\z-rand.c" />
-    <ClCompile Include="..\..\gensoband\src\z-term.c" />
-    <ClCompile Include="..\..\gensoband\src\z-util.c" />
-    <ClCompile Include="..\..\gensoband\src\z-virt.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\ability_card.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\artifact.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\autopick.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\avatar.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\birth.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\bldg.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\bldg2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cave.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\chuukei.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd4.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd5.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd6.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd7.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd_junko.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\cmd_yuma.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\do-spell.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\dungeon.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\effects.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\files.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\flavor.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\floors.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\generate.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\grid.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\hex.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\hissatsu.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\inet.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\init1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\init2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\japanese.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\load.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\mane.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\melee1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\melee2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\mind.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\monster1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\monster2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\mspells1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\mspells2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\mspells3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\mutation.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\new_class_power.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\obj_kind.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\object1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\object2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\racial.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\random_unique_monster.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\report.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\rooms.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\save.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\scores.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\snipe.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\spells1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\spells2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\spells3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\store.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\straygod.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\streams.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\tables.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\util.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\variable.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\wild.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\wizard1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\wizard2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\xtra1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\xtra2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\z-form.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\z-rand.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\z-term.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\z-util.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\gensoband\src\z-virt.c" />
   </ItemGroup>
   <!--
     アダプタ（新規コード。設計 §3）。C の皮と C++ の芯。
@@ -285,7 +286,7 @@
       Windows API の代役をまとめた層（`platform/portable/legacy_os.cpp`）。
       **Windows でもここを通す**——中身は各アダプタに在ったものの写しで、
       平台の分岐をあの 1 ファイルへ閉じ込めるためだけに切り出した
-      。BOM 無しの UTF-8 なので上と同じ扱い。
+      BOM 無しの UTF-8 なので上と同じ扱い。
       `cp932.cpp` は**足さない**: あれは Windows 以外の変換の実体で、
       こちらは `MultiByteToWideChar` を使うため 1 行も要らない。
     -->
@@ -308,29 +309,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\gensoband\src\angband.h" />
-    <ClInclude Include="..\..\gensoband\src\defines.h" />
-    <ClInclude Include="..\..\gensoband\src\externs.h" />
-    <ClInclude Include="..\..\gensoband\src\generate.h" />
-    <ClInclude Include="..\..\gensoband\src\grid.h" />
-    <ClInclude Include="..\..\gensoband\src\h-basic.h" />
-    <ClInclude Include="..\..\gensoband\src\h-config.h" />
-    <ClInclude Include="..\..\gensoband\src\h-define.h" />
-    <ClInclude Include="..\..\gensoband\src\h-system.h" />
-    <ClInclude Include="..\..\gensoband\src\h-type.h" />
-    <ClInclude Include="..\..\gensoband\src\init.h" />
-    <ClInclude Include="..\..\gensoband\src\kajitips.h" />
-    <ClInclude Include="..\..\gensoband\src\mindtips.h" />
-    <ClInclude Include="..\..\gensoband\src\readdib.h" />
-    <ClInclude Include="..\..\gensoband\src\rooms.h" />
-    <ClInclude Include="..\..\gensoband\src\streams.h" />
-    <ClInclude Include="..\..\gensoband\src\types.h" />
-    <ClInclude Include="..\..\gensoband\src\z-config.h" />
-    <ClInclude Include="..\..\gensoband\src\z-form.h" />
-    <ClInclude Include="..\..\gensoband\src\z-rand.h" />
-    <ClInclude Include="..\..\gensoband\src\z-term.h" />
-    <ClInclude Include="..\..\gensoband\src\z-util.h" />
-    <ClInclude Include="..\..\gensoband\src\z-virt.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\angband.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\defines.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\externs.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\generate.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\grid.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\h-basic.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\h-config.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\h-define.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\h-system.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\h-type.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\init.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\kajitips.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\mindtips.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\readdib.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\rooms.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\streams.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\types.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\z-config.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\z-form.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\z-rand.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\z-term.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\z-util.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\gensoband\src\z-virt.h" />
     <ClInclude Include="..\..\gensoband\adapter\gb_shim.h" />
     <ClInclude Include="..\..\gensoband\adapter\gb_text.h" />
     <ClInclude Include="..\..\gensoband\adapter\gb_lang.h" />

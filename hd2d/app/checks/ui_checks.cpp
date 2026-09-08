@@ -99,6 +99,12 @@ using namespace hd2d::gl; //!< GL の型と関数は `hd2d::gl` に居る（gl_c
  */
 int run_ui_check(const AppOptions &options)
 {
+    if (std::getenv("HD2D_CORE_LINK_CHECK") != nullptr) {
+        return run_core_link_check();
+    }
+    if (std::getenv("HD2D_SDL_INPUT_CHECK") != nullptr) {
+        return run_sdl_input_check();
+    }
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::fprintf(stderr, "[hd2d] SDL の初期化に失敗しました。\n");
         return 1;

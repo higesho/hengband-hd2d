@@ -9,7 +9,21 @@
  * 宣言は `app/hd2d_checks.h`。振る舞いが変わっていないことは
  * `python tools/hd2d_verify/golden.py --check` で見る。
  */
+#if defined(_WIN32)
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
+#include "net/core_link.h"
 #include "app/hd2d_checks.h"
+#include "app/input_controller.h"
+#include "app/test_keyboard.h"
+#include <filesystem>
+#include <fstream>
+#include <cstring>
+#include <SDL2/SDL.h>
+#include <initializer_list>
 
 #include "ui/game_pad.h"
 #include "voxel/part_motion.h"
@@ -389,6 +403,237 @@ int run_motion_check(const AppOptions &options)
 
     std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
     return (failures == 0) ? 0 : 1;
+}
+
+
+// 実際の SDL キューから pump_sdl_events を通す。コアも設定ファイルも使わない。
+int run_sdl_input_check()
+{
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+        return 1;
+    }
+    int failures = 0;
+    int cases = 0;
+    auto check = [&](bool ok, const char *name) {
+        ++cases;
+        if (!ok) {
+            ++failures;
+            std::fprintf(stderr, "[sdl-input-check] FAIL: %s\n", name);
+        }
+    };
+    int width = 1280, height = 720, turn = 0;
+    Hd2dSettings settings;
+    settings.vpad.show = false;
+    UiLayout layout{};
+    Camera camera;
+    GamePad pad;
+    VirtualPad vpad;
+    std::vector<PadCommand> commands;
+    FeatureMenu menu;
+    FloorCutin cutin;
+    HudState hud;
+    ClickPath path;
+    TextOverlay text;
+    FpsMode fps;
+    std::vector<SubPanelKindChoice> kinds;
+    GameFrame frame{};
+    InputState state;
+    InputBatch batch;
+    int actions = 0;
+    InputPumpContext ctx{
+        .screen_w = width, .screen_h = height,
+        .usable_area = [&]() { return RectPx{0, 0, width, height}; },
+        .settings = settings, .layout = layout, .camera = camera, .camera_turn = turn,
+        .pad = pad, .vpad = vpad, .pad_commands = commands,
+        .feature_menu = menu, .floor_cutin = cutin, .hud_state = hud, .click_path = path,
+        .text = text, .first_person = fps, .sub_panel_kind_choices = kinds,
+        .frame = frame, .state = state,
+        .perform_action = [&](int action) {
+            ++actions;
+            if (action == kActionFeatureMenu) { menu.open(settings); }
+        },
+        .fps_drives_movement = [] { return false; },
+        .turn_drives_movement = [] { return false; },
+        .turn_screen_move = [](presentation::InputEventWire &) {},
+        .batch = batch,
+    };
+    auto key = [](SDL_Keycode sym, Uint16 mods = 0) {
+        SDL_Event e{}; e.type = SDL_KEYDOWN; e.key.keysym.sym = sym; e.key.keysym.mod = mods;
+        return e;
+    };
+    auto chars = [](const char *value, Uint32 type = SDL_TEXTINPUT) {
+        SDL_Event e{}; e.type = type;
+        // text/edit は別の union メンバーとして書き込む。
+        char *dst = type == SDL_TEXTEDITING ? e.edit.text : e.text.text;
+        std::strncpy(dst, value, SDL_TEXTINPUTEVENT_TEXT_SIZE - 1);
+        return e;
+    };
+    auto pump = [&](std::initializer_list<SDL_Event> events) {
+        batch = InputBatch{};
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        for (auto e : events) {
+            if (SDL_PushEvent(&e) != 1) { ++failures; }
+        }
+        pump_sdl_events(ctx);
+    };
+    pump({key(SDLK_a), chars("a")});
+    check(batch.input.events.size() == 1 && batch.input.events[0].chr == "a", "ASCII is sent once");
+    pump({key(SDLK_c, KMOD_CTRL)});
+    check(batch.input.events.size() == 1 && batch.input.events[0].ctrl, "Ctrl key");
+    pump({key(SDLK_KP_8)});
+    check(batch.input.events.size() == 1 && batch.input.events[0].e == "move"
+        && batch.input.events[0].dy == -1, "NumLock off");
+    pump({key(SDLK_KP_8, KMOD_NUM), chars("8")});
+    check(batch.input.events.size() == 1 && batch.input.events[0].chr == "8", "NumLock on");
+    (void)settings.key_binds.assign(1001, SDLK_z, kModShift);
+    actions = 0;
+    pump({key(SDLK_z, KMOD_SHIFT), chars("Z"), chars("x")});
+    check(actions == 1 && batch.input.events.size() == 1 && batch.input.events[0].chr == "x",
+        "Shift binding consumes only its text");
+    (void)settings.key_binds.assign(1002, SDLK_z, kModCtrl);
+    pump({key(SDLK_z, KMOD_CTRL), chars("x")});
+    check(batch.input.events.size() == 1 && batch.input.events[0].chr == "x",
+        "Ctrl binding does not consume following text");
+    (void)settings.key_binds.assign(kActionFeatureMenu, SDLK_F10, 0);
+    pump({key(SDLK_F10), chars("a"), key(SDLK_DOWN)});
+    check(menu.is_open() && batch.input.events.empty(), "Opened menu blocks remaining input");
+    menu.close();
+    frame.text_input_active = true;
+    pump({chars("test", SDL_TEXTEDITING)});
+    check(state.ime_edit_text == "test" && batch.input.events.empty(), "IME composition is local");
+    pump({chars("日本語")});
+    check(state.ime_edit_text.empty() && batch.input.events.size() == 1
+        && batch.input.events[0].e == "text" && batch.input.events[0].text == "日本語", "IME commit");
+    frame.text_input_active = false;
+    pump({chars("日本語")});
+    check(batch.input.events.empty(), "Non-ASCII outside text prompt");
+    SDL_Event click{}; click.type = SDL_MOUSEBUTTONDOWN; click.button.button = SDL_BUTTON_LEFT;
+    click.button.x = 100; click.button.y = 100;
+    pump({click});
+    check(batch.input.events.empty() && !path.active(), "Click outside menu choices does not walk");
+    SDL_Event quit{}; quit.type = SDL_QUIT;
+    pump({quit});
+    check(batch.want_quit, "Quit request");
+
+    auto scripted = [&](const std::string &line) {
+        batch = InputBatch{};
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        std::vector<SDL_Event> events;
+        std::string error;
+        const bool ok = compile_test_key(line, events, error);
+        if (!ok) { std::fprintf(stderr, "[sdl-input-check] %s\n", error.c_str()); ++failures; }
+        for (auto event : events) { if (SDL_PushEvent(&event) != 1) { ++failures; } }
+        pump_sdl_events(ctx);
+    };
+    scripted(R"({"key":"Enter"})");
+    check(batch.input.events.size() == 1 && batch.input.events[0].e == "confirm", "Scripted Enter");
+    scripted(R"({"key":"Escape"})");
+    check(batch.input.events.size() == 1 && batch.input.events[0].e == "cancel", "Scripted Escape");
+    scripted(R"({"key":"F10"})");
+    check(menu.is_open() && batch.input.events.empty(), "Scripted F10 opens feature menu");
+    scripted(R"({"key":"Escape"})");
+    check(!menu.is_open() && batch.input.events.empty(), "Scripted Escape closes feature menu");
+    scripted(R"({"key":"x","ctrl":true})");
+    check(batch.input.events.size() == 1 && batch.input.events[0].chr == "x" && batch.input.events[0].ctrl,
+        "Scripted Ctrl+X");
+    scripted(R"({"key":"KP_8","numlock":true})");
+    check(batch.input.events.size() == 1 && batch.input.events[0].chr == "8", "Scripted NumLock on");
+    scripted(R"({"key":"KP_8"})");
+    check(batch.input.events.size() == 1 && batch.input.events[0].dy == -1, "Scripted NumLock off");
+    scripted(R"({"key":"z","shift":true})");
+    check(batch.input.events.empty(), "Scripted shifted binding consumes generated text");
+    frame.text_input_active = true;
+    scripted(R"({"text":"日本語の長い確定文字列を途中で壊さずに送信するテスト"})");
+    std::string combined;
+    for (const auto &event : batch.input.events) { combined += event.text; }
+    check(combined == "日本語の長い確定文字列を途中で壊さずに送信するテスト", "UTF-8 event splitting");
+    frame.text_input_active = false;
+    std::vector<SDL_Event> rejected;
+    std::string error;
+    check(!compile_test_key(R"({"key":"not-a-key"})", rejected, error) && rejected.empty(), "Unknown key rejected");
+    check(!compile_test_key(R"({"text":"\n"})", rejected, error), "Text control character rejected");
+    check(!compile_test_key(R"({"key":"x","ctr":true})", rejected, error), "Misspelled field rejected");
+    check(!compile_test_key(R"({"key":"1","shift":true})", rejected, error), "Ambiguous shifted punctuation rejected");
+    check(!compile_test_key(R"({"key":"x","ctrl":true,"text":"x"})", rejected, error), "Ctrl does not generate printable text");
+    // ファイル末尾への追記・未完成行・同じパスでの再設定を検査する。
+    const auto input_path = std::filesystem::temp_directory_path()
+        / ("hd2d-key-check-" + std::to_string(SDL_GetPerformanceCounter()) + ".jsonl");
+    {
+        std::ofstream(input_path, std::ios::binary).close();
+        TestKeyboard keyboard;
+        check(keyboard.configure(input_path.string(), error), "Configure input file");
+        { std::ofstream out(input_path, std::ios::binary | std::ios::app); out << R"({"id":"one","key":"Enter"})"; }
+        batch = InputBatch{};
+        keyboard.poll("test"); pump_sdl_events(ctx);
+        check(batch.input.events.empty(), "Partial command is not executed");
+        { std::ofstream out(input_path, std::ios::binary | std::ios::app); out << '\n'; }
+        keyboard.poll("test"); pump_sdl_events(ctx);
+        check(batch.input.events.size() == 1 && batch.input.events[0].e == "confirm", "Appended newline executes command");
+        batch = InputBatch{};
+        check(keyboard.configure(input_path.string(), error), "Reconfigure same file");
+        keyboard.poll("test"); pump_sdl_events(ctx);
+        check(batch.input.events.empty(), "Reconfigure does not replay input");
+        { std::ofstream out(input_path, std::ios::binary | std::ios::app); out << R"({"id":"two","key":"Escape"})" << '\n'; }
+        keyboard.poll("test"); pump_sdl_events(ctx);
+        check(batch.input.events.size() == 1 && batch.input.events[0].e == "cancel", "Second appended command");
+    }
+    std::filesystem::remove(input_path);
+    std::filesystem::remove(input_path.string() + ".ack.jsonl");
+    SDL_Quit();
+    std::fprintf(stderr, "[sdl-input-check] %d cases, %d failures\n", cases, failures);
+    return failures == 0 ? 0 : 1;
+}
+
+
+int run_core_link_check()
+{
+#if defined(_WIN32)
+    DWORD before = 0, after = 0;
+    if (!::GetProcessHandleCount(::GetCurrentProcess(), &before)) { return 1; }
+    int failures = 0;
+    for (int attempt = 0; attempt < 20; ++attempt) {
+        CoreLink link;
+        CoreLinkOptions options;
+        options.core_path = "__missing_core_for_check__.exe";
+        std::string err;
+        if (link.start(options, err)) { ++failures; }
+        link.shutdown();
+        link.shutdown();
+    }
+    if (!::GetProcessHandleCount(::GetCurrentProcess(), &after) || after > before) {
+        ++failures;
+    }
+    bool warmed_up = false;
+    for (const char *name : {"HengbandCore.exe", "TangbandCore.exe", "GensobandCore.exe", "SilCore.exe", "FroxCore.exe"}) {
+        for (int attempt = 0; attempt < 2; ++attempt) {
+            CoreLink link;
+            CoreLinkOptions options;
+            options.core_path = name;
+            std::string err;
+            if (!link.start(options, err) || !link.handshake(err)) {
+                std::fprintf(stderr, "[core-link-check] %s: %s\n", name, err.c_str());
+                ++failures;
+            } else {
+                link.begin_receiving();
+            }
+            link.shutdown();
+            if (!warmed_up) {
+                // CRT が最初の std::thread で保持する共通資源を基準へ含める。
+                if (!::GetProcessHandleCount(::GetCurrentProcess(), &before)) { ++failures; }
+                warmed_up = true;
+            }
+        }
+    }
+    if (!::GetProcessHandleCount(::GetCurrentProcess(), &after) || after > before) {
+        std::fprintf(stderr, "[core-link-check] handles before=%lu after=%lu\n", before, after);
+        ++failures;
+    }
+    std::fprintf(stderr, "[core-link-check] 20 failed starts, 5 cores x 2 sessions, %d failures\n", failures);
+    return failures == 0 ? 0 : 1;
+#else
+    std::fprintf(stderr, "[core-link-check] Windows process lifecycle check only\n");
+    return 1;
+#endif
 }
 
 } // namespace hd2d

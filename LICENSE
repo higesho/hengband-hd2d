@@ -1,12 +1,12 @@
 # ライセンス / License
 
-このソースツリーは変愚蛮怒（Hengband）3.0.2.3-Beta の派生物で、さらに別系統のゲーム 3 つ
-（幻想蛮怒、Sil-Q、FroxComposband）を同梱しています。ライセンスは系統ごとに違うので、
-以下にまとめます。
+このリポジトリは HD2D UI、既存ゲームの接続コード・変更パッチ・ゲームデータを管理します。
+原作ソースは外部の固定版からビルド時に用意し、このリポジトリには同梱しません。
+原作由来の部分には引き続き各原作の使用許諾が適用されます。以下はその案内です。
 
-This source tree is a derivative of Hengband 3.0.2.3-Beta and also bundles three games of
-separate lineage (Gensoband, Sil-Q and FroxComposband). Each has its own license terms,
-which are summarised below.
+This repository contains the HD2D UI, game adapters, patches and game data.
+Upstream game sources are prepared externally from pinned revisions and are not bundled here.
+The respective upstream license terms still apply to derived portions, as outlined below.
 
 変更の内容は `README.md` に書いてあります（変愚蛮怒の追加条項 (2) の要件です）。
 The changes are documented in `README.md`, as required by condition (2) of Hengband's
@@ -16,7 +16,7 @@ additional terms.
 
 ## 1. Moria / Angband 使用許諾（大部分のコードに適用されます）
 
-変愚蛮怒・短愚蛮怒（`src/`）、幻想蛮怒（`gensoband/`）、FroxComposband（`frox/`）は
+変愚蛮怒・短愚蛮怒、幻想蛮怒、FroxComposband の原作由来の部分（接続コード・データ・`tools/core_sources/patches/`）は
 いずれも Moria / Angband 系のゲームで、次の使用許諾に従います。
 
 ```
@@ -50,7 +50,7 @@ and Umoria:      Copyright (c) 1989 James E. Wilson
 | (2) | 変更を加えた事実と変更の内容を明記すること | `README.md` に書いています |
 | (3) | スコアサーバーにスコアを送信できないようにすること | 送信の機能をビルドから外しています（下記） |
 
-(3) について。幻想蛮怒のワールドスコア送信は、`gensoband/src/z-config.h` で `WORLD_SCORE` を
+(3) について。幻想蛮怒のワールドスコア送信は、外部の作業用ソース `gensoband/src/z-config.h` で `WORLD_SCORE` を
 定義しないことでビルドから外しています。変愚蛮怒のクラッシュ報告の送信も、`DISABLE_NET` を
 定義して無効にしています（`VisualStudio/HengbandCore`、`TangbandCore`、Android の
 `CMakeLists.txt`）。ビルドした実行ファイルに送信先のアドレスが残っていないことを確認しています。

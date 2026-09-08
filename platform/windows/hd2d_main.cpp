@@ -6,7 +6,7 @@
  *
  * ## この exe の立ち位置
  * `HengbandCore.exe` にプロトコル v1 で繋がる**フロントエンド**である。
- * 2D の `HengbandUi.exe` と並走する作りだったが、あちらは 2026-08-12 に削除した
+ * 旧2D画面は廃止し、HD2D画面を起動する
  * （設計書 §2・必守制約 5）。`src/` には触らない。
  *
  * ## 自分が解釈する起動引数
@@ -36,6 +36,7 @@
 
 namespace {
 
+constexpr std::string_view kTestInputArg = "--test-input-file=";
 constexpr std::string_view kProtocolLogArg = "--protocol-log=";
 constexpr std::string_view kCoreProtocolLogArg = "--core-protocol-log=";
 constexpr std::string_view kWindowedArg = "--windowed=";
@@ -444,6 +445,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
         } else if (opt.starts_with(kBoardTurnArg)) {
             const int turn = std::atoi(std::string(opt.substr(kBoardTurnArg.size())).c_str());
             options.vr_board_turn = ((turn % 4) + 4) % 4;
+        } else if (opt.starts_with(kTestInputArg)) {
+            options.test_input_file = std::string(opt.substr(kTestInputArg.size()));
         } else {
             options.forwarded_args.emplace_back(opt);
         }

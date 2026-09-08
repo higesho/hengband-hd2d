@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <HengbandCoreSourceRoot Condition="'$(HengbandCoreSourceRoot)' == '' And '$(HENGBAND_CORE_SOURCE_ROOT)' != ''">$(HENGBAND_CORE_SOURCE_ROOT)</HengbandCoreSourceRoot>
+    <HengbandCoreSourceRoot Condition="'$(HengbandCoreSourceRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\roguelike-cores\build-sources'))</HengbandCoreSourceRoot>
+  </PropertyGroup>
+  <Target Name="RequirePreparedCoreSources" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(HengbandCoreSourceRoot)\.prepared.json')"
+           Text="External core sources are missing. Run python tools/core_sources/prepare.py or tools/core_sources/Build-Windows.ps1 before building cores. Override HengbandCoreSourceRoot for another output directory." />
+  </Target>
+</Project>

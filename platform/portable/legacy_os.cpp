@@ -1,4 +1,5 @@
-﻿/*!
+﻿#include <cstdlib>
+/*!
  * @file legacy_os.cpp
  * @brief `legacy_os.h` の実装。**この 1 ファイルだけが平台を知っている。**
  */
@@ -279,6 +280,34 @@ std::string iso_utc_now()
     std::snprintf(buf, sizeof(buf), "%04u-%02u-%02uT%02u:%02u:%02u.%03uZ",
         year, month, day, hour, minute, second, milli);
     return std::string(buf);
+}
+
+std::string data_dir()
+{
+#if defined(_WIN32)
+    wchar_t wide[32768]{};
+    const auto count = GetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", wide, 32768);
+    if (count > 0 && count < 32768) {
+        const auto bytes = WideCharToMultiByte(CP_ACP, 0, wide, -1, nullptr, 0, nullptr, nullptr);
+        if (bytes > 0) {
+            std::string path(static_cast<std::size_t>(bytes), '\0');
+            WideCharToMultiByte(CP_ACP, 0, wide, -1, path.data(), bytes, nullptr, nullptr);
+            path.pop_back();
+            return path + kPathSep;
+        }
+    }
+#else
+    if (const auto root = std::getenv("HENGBAND_DATA_ROOT"); root && *root) return std::string(root) + kPathSep;
+#endif
+    const auto base = exe_dir();
+#if defined(_WIN32)
+    const auto folder = without_trailing_sep(base);
+    const auto cut = folder.find_last_of("\\/");
+    if (cut != std::string::npos && folder.substr(cut + 1) == "cores") {
+        return folder.substr(0, cut + 1);
+    }
+#endif
+    return base;
 }
 
 } // namespace portable

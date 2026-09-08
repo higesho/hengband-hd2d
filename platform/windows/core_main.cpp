@@ -1,3 +1,4 @@
+﻿#include <cstdlib>
 /*!
  * @file core_main.cpp
  * @brief `HengbandCore.exe` の入口（プロトコル v1 の core 側）。**Step 4b 本実装**。
@@ -722,7 +723,7 @@ std::string build_sub_panel_kinds_payload()
 }
 
 /*!
- * @brief 資産の基準ディレクトリ。Windows は exe のあるディレクトリ、他は cwd。
+ * @brief 資産の基準ディレクトリ。Windows は exe の配置から求めるデータルート、他は cwd。
  * @details Windows で cwd を使わないのは、将来 ui が別 cwd から core を起こしても
  * 壊れないようにするため。Android には「exe のディレクトリ」という概念が無く、
  * 入口（`hd2d_entry_android.cpp`）が内部ストレージへ chdir 済みなので cwd が基準になる
@@ -730,10 +731,19 @@ std::string build_sub_panel_kinds_payload()
 std::filesystem::path resolve_base_dir()
 {
 #if defined(_WIN32)
+    wchar_t data_root[32768]{};
+    const auto data_length = GetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", data_root, 32768);
+    if (data_length > 0 && data_length < 32768) return std::filesystem::path(data_root);
+#else
+    if (const auto root = std::getenv("HENGBAND_DATA_ROOT"); root && *root) return std::filesystem::u8path(root);
+#endif
+#if defined(_WIN32)
     char buf[MAX_PATH]{};
     const DWORD len = ::GetModuleFileNameA(nullptr, buf, MAX_PATH);
     const std::filesystem::path exe_path(std::string(buf, (len > 0) ? len : 0));
-    return exe_path.parent_path();
+    const auto exe_dir = exe_path.parent_path();
+    // 配布物は cores/ にコアを格納し、データはその親に置く。
+    return exe_dir.filename() == "cores" ? exe_dir.parent_path() : exe_dir;
 #else
     std::error_code ec;
     return std::filesystem::current_path(ec);

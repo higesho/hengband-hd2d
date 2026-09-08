@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
   FroxCore.vcxproj ── FroxComposband コア側の実行ファイル。
 
@@ -80,6 +80,7 @@
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="..\CoreSources.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
@@ -115,7 +116,7 @@
         `external-lib` は共用 TU のためだけに要るもので、同名の頭文字
         （`types.h` 等）があっても写しが勝つようにしておく。
       -->
-      <AdditionalIncludeDirectories>..\..\frox\src;..\..\frox\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HengbandCoreSourceRoot)\frox\src;..\..\frox\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -141,7 +142,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>..\..\frox\src;..\..\frox\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HengbandCoreSourceRoot)\frox\src;..\..\frox\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -155,80 +156,80 @@
   </ItemDefinitionGroup>
   <!-- FroxComposband 本体の C（**199 本**。上の「何本組むか」を見よ）。 -->
   <ItemGroup>
-    <ClCompile Include="..\..\frox\src\alky.c" />
-    <ClCompile Include="..\..\frox\src\angband.c" />
-    <ClCompile Include="..\..\frox\src\archer.c" />
-    <ClCompile Include="..\..\frox\src\arky.c" />
-    <ClCompile Include="..\..\frox\src\artifact.c" />
-    <ClCompile Include="..\..\frox\src\autopick.c" />
-    <ClCompile Include="..\..\frox\src\bard.c" />
-    <ClCompile Include="..\..\frox\src\beastmaster.c" />
-    <ClCompile Include="..\..\frox\src\beorning.c" />
-    <ClCompile Include="..\..\frox\src\berserker.c" />
-    <ClCompile Include="..\..\frox\src\birth.c" />
-    <ClCompile Include="..\..\frox\src\bldg.c" />
-    <ClCompile Include="..\..\frox\src\blood_knight.c" />
-    <ClCompile Include="..\..\frox\src\blood_mage.c" />
-    <ClCompile Include="..\..\frox\src\bluemage.c" />
-    <ClCompile Include="..\..\frox\src\c-string.c" />
-    <ClCompile Include="..\..\frox\src\c-vec.c" />
-    <ClCompile Include="..\..\frox\src\cavalry.c" />
-    <ClCompile Include="..\..\frox\src\cave.c" />
-    <ClCompile Include="..\..\frox\src\chaoswar.c" />
-    <ClCompile Include="..\..\frox\src\classes.c" />
-    <ClCompile Include="..\..\frox\src\cmd1.c" />
-    <ClCompile Include="..\..\frox\src\cmd2.c" />
-    <ClCompile Include="..\..\frox\src\cmd3.c" />
-    <ClCompile Include="..\..\frox\src\cmd4.c" />
-    <ClCompile Include="..\..\frox\src\cmd5.c" />
-    <ClCompile Include="..\..\frox\src\cmd6.c" />
-    <ClCompile Include="..\..\frox\src\combat.c" />
-    <ClCompile Include="..\..\frox\src\corny.c" />
-    <ClCompile Include="..\..\frox\src\demigod.c" />
-    <ClCompile Include="..\..\frox\src\devicemaster.c" />
-    <ClCompile Include="..\..\frox\src\devices.c" />
-    <ClCompile Include="..\..\frox\src\disciple.c" />
-    <ClCompile Include="..\..\frox\src\do-spell.c" />
-    <ClCompile Include="..\..\frox\src\doppelganger.c" />
-    <ClCompile Include="..\..\frox\src\duelist.c" />
-    <ClCompile Include="..\..\frox\src\dungeon.c" />
-    <ClCompile Include="..\..\frox\src\effects.c" />
-    <ClCompile Include="..\..\frox\src\ego.c" />
-    <ClCompile Include="..\..\frox\src\equip.c" />
-    <ClCompile Include="..\..\frox\src\fear.c" />
-    <ClCompile Include="..\..\frox\src\files.c" />
-    <ClCompile Include="..\..\frox\src\flavor.c" />
-    <ClCompile Include="..\..\frox\src\floors.c" />
-    <ClCompile Include="..\..\frox\src\force_trainer.c" />
-    <ClCompile Include="..\..\frox\src\generate.c" />
-    <ClCompile Include="..\..\frox\src\gf.c" />
-    <ClCompile Include="..\..\frox\src\graymage.c" />
-    <ClCompile Include="..\..\frox\src\grid.c" />
-    <ClCompile Include="..\..\frox\src\hex.c" />
-    <ClCompile Include="..\..\frox\src\hex_mage.c" />
-    <ClCompile Include="..\..\frox\src\highmage.c" />
-    <ClCompile Include="..\..\frox\src\hissatsu.c" />
-    <ClCompile Include="..\..\frox\src\home.c" />
-    <ClCompile Include="..\..\frox\src\igor.c" />
-    <ClCompile Include="..\..\frox\src\init1.c" />
-    <ClCompile Include="..\..\frox\src\init2.c" />
-    <ClCompile Include="..\..\frox\src\int-map.c" />
-    <ClCompile Include="..\..\frox\src\inv.c" />
-    <ClCompile Include="..\..\frox\src\karrot.c" />
-    <ClCompile Include="..\..\frox\src\lawyer.c" />
-    <ClCompile Include="..\..\frox\src\load.c" />
-    <ClCompile Include="..\..\frox\src\mage.c" />
-    <ClCompile Include="..\..\frox\src\magic_eater.c" />
-    <ClCompile Include="..\..\frox\src\mauler.c" />
-    <ClCompile Include="..\..\frox\src\melee1.c" />
-    <ClCompile Include="..\..\frox\src\melee2.c" />
-    <ClCompile Include="..\..\frox\src\menu.c" />
-    <ClCompile Include="..\..\frox\src\message.c" />
-    <ClCompile Include="..\..\frox\src\mindcrafter.c" />
-    <ClCompile Include="..\..\frox\src\mirror_master.c" />
-    <ClCompile Include="..\..\frox\src\mon.c" />
-    <ClCompile Include="..\..\frox\src\mon_info.c" />
-    <ClCompile Include="..\..\frox\src\monk.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\alky.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\angband.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\archer.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\arky.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\artifact.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\autopick.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\bard.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\beastmaster.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\beorning.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\berserker.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\birth.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\bldg.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\blood_knight.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\blood_mage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\bluemage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\c-string.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\c-vec.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cavalry.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cave.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\chaoswar.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\classes.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cmd1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cmd2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cmd3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cmd4.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cmd5.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\cmd6.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\combat.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\corny.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\demigod.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\devicemaster.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\devices.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\disciple.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\do-spell.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\doppelganger.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\duelist.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\dungeon.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\effects.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\ego.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\equip.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\fear.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\files.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\flavor.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\floors.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\force_trainer.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\generate.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\gf.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\graymage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\grid.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\hex.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\hex_mage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\highmage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\hissatsu.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\home.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\igor.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\init1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\init2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\int-map.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\inv.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\karrot.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\lawyer.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\load.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\magic_eater.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mauler.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\melee1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\melee2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\menu.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\message.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mindcrafter.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mirror_master.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mon.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mon_info.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\monk.c" />
     <!--
       **doc UI の旗（M0.5 FH-02。設計 §14.2(a)）。** この 6 TU（monspell / obj_prompt /
       skillmaster / weaponsmith / wild / wiz_obj）は `screen_save()` ではなく
@@ -238,143 +239,143 @@
       **frox/src には 1 バイトも触らない**（制約 1）。py_birth.c は入れない
       ——誕生は `!generated` で既にミラーが開く。
     -->
-    <ClCompile Include="..\..\frox\src\monspell.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\monspell.c">
       <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\monster.c" />
-    <ClCompile Include="..\..\frox\src\monster1.c" />
-    <ClCompile Include="..\..\frox\src\monster2.c" />
-    <ClCompile Include="..\..\frox\src\mspells1.c" />
-    <ClCompile Include="..\..\frox\src\mspells2.c" />
-    <ClCompile Include="..\..\frox\src\mut.c" />
-    <ClCompile Include="..\..\frox\src\mut_a.c" />
-    <ClCompile Include="..\..\frox\src\mystic.c" />
-    <ClCompile Include="..\..\frox\src\necromancer.c" />
-    <ClCompile Include="..\..\frox\src\ninja.c" />
-    <ClCompile Include="..\..\frox\src\ninjalaw.c" />
-    <ClCompile Include="..\..\frox\src\obj.c" />
-    <ClCompile Include="..\..\frox\src\obj_info.c" />
-    <ClCompile Include="..\..\frox\src\obj_kind.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\monster.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\monster1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\monster2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mspells1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mspells2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mut.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mut_a.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\mystic.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\necromancer.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\ninja.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\ninjalaw.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\obj.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\obj_info.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\obj_kind.c" />
     <!-- doc UI の旗（monspell.c の註）。 -->
-    <ClCompile Include="..\..\frox\src\obj_prompt.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\obj_prompt.c">
       <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\object1.c" />
-    <ClCompile Include="..\..\frox\src\object2.c" />
-    <ClCompile Include="..\..\frox\src\object3.c" />
-    <ClCompile Include="..\..\frox\src\pack.c" />
-    <ClCompile Include="..\..\frox\src\paladin.c" />
-    <ClCompile Include="..\..\frox\src\personality.c" />
-    <ClCompile Include="..\..\frox\src\polly.c" />
-    <ClCompile Include="..\..\frox\src\priest.c" />
-    <ClCompile Include="..\..\frox\src\psion.c" />
-    <ClCompile Include="..\..\frox\src\py_birth.c" />
-    <ClCompile Include="..\..\frox\src\py_info.c" />
-    <ClCompile Include="..\..\frox\src\py_throw.c" />
-    <ClCompile Include="..\..\frox\src\quest.c" />
-    <ClCompile Include="..\..\frox\src\quiver.c" />
-    <ClCompile Include="..\..\frox\src\r_angel.c" />
-    <ClCompile Include="..\..\frox\src\r_centip.c" />
-    <ClCompile Include="..\..\frox\src\r_demon.c" />
-    <ClCompile Include="..\..\frox\src\r_dragon.c" />
-    <ClCompile Include="..\..\frox\src\r_elem.c" />
-    <ClCompile Include="..\..\frox\src\r_eye.c" />
-    <ClCompile Include="..\..\frox\src\r_ghost.c" />
-    <ClCompile Include="..\..\frox\src\r_giant.c" />
-    <ClCompile Include="..\..\frox\src\r_golem.c" />
-    <ClCompile Include="..\..\frox\src\r_hound.c" />
-    <ClCompile Include="..\..\frox\src\r_hydra.c" />
-    <ClCompile Include="..\..\frox\src\r_jelly.c" />
-    <ClCompile Include="..\..\frox\src\r_leprec.c" />
-    <ClCompile Include="..\..\frox\src\r_lich.c" />
-    <ClCompile Include="..\..\frox\src\r_mimic.c" />
-    <ClCompile Include="..\..\frox\src\r_mummy.c" />
-    <ClCompile Include="..\..\frox\src\r_orc.c" />
-    <ClCompile Include="..\..\frox\src\r_poss.c" />
-    <ClCompile Include="..\..\frox\src\r_pump.c" />
-    <ClCompile Include="..\..\frox\src\r_quyl.c" />
-    <ClCompile Include="..\..\frox\src\r_rag.c" />
-    <ClCompile Include="..\..\frox\src\r_ring.c" />
-    <ClCompile Include="..\..\frox\src\r_spider.c" />
-    <ClCompile Include="..\..\frox\src\r_sword.c" />
-    <ClCompile Include="..\..\frox\src\r_troll.c" />
-    <ClCompile Include="..\..\frox\src\r_vamp.c" />
-    <ClCompile Include="..\..\frox\src\r_vortex.c" />
-    <ClCompile Include="..\..\frox\src\r_xorn.c" />
-    <ClCompile Include="..\..\frox\src\r_zombie.c" />
-    <ClCompile Include="..\..\frox\src\races.c" />
-    <ClCompile Include="..\..\frox\src\races_a.c" />
-    <ClCompile Include="..\..\frox\src\races_k.c" />
-    <ClCompile Include="..\..\frox\src\races_mf.c" />
-    <ClCompile Include="..\..\frox\src\racial.c" />
-    <ClCompile Include="..\..\frox\src\ragemage.c" />
-    <ClCompile Include="..\..\frox\src\randname.c" />
-    <ClCompile Include="..\..\frox\src\ranger.c" />
-    <ClCompile Include="..\..\frox\src\rect.c" />
-    <ClCompile Include="..\..\frox\src\red_mage.c" />
-    <ClCompile Include="..\..\frox\src\resist.c" />
-    <ClCompile Include="..\..\frox\src\rogue.c" />
-    <ClCompile Include="..\..\frox\src\rooms.c" />
-    <ClCompile Include="..\..\frox\src\rune_kt.c" />
-    <ClCompile Include="..\..\frox\src\samurai.c" />
-    <ClCompile Include="..\..\frox\src\save.c" />
-    <ClCompile Include="..\..\frox\src\savefile.c" />
-    <ClCompile Include="..\..\frox\src\scores.c" />
-    <ClCompile Include="..\..\frox\src\scout.c" />
-    <ClCompile Include="..\..\frox\src\shop.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\object1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\object2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\object3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\pack.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\paladin.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\personality.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\polly.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\priest.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\psion.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\py_birth.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\py_info.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\py_throw.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\quest.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\quiver.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_angel.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_centip.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_demon.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_dragon.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_elem.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_eye.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_ghost.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_giant.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_golem.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_hound.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_hydra.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_jelly.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_leprec.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_lich.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_mimic.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_mummy.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_orc.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_poss.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_pump.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_quyl.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_rag.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_ring.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_spider.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_sword.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_troll.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_vamp.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_vortex.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_xorn.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\r_zombie.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\races.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\races_a.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\races_k.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\races_mf.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\racial.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\ragemage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\randname.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\ranger.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\rect.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\red_mage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\resist.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\rogue.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\rooms.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\rune_kt.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\samurai.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\save.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\savefile.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\scores.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\scout.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\shop.c" />
     <!-- doc UI の旗（monspell.c の註）。 -->
-    <ClCompile Include="..\..\frox\src\skillmaster.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\skillmaster.c">
       <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\skills.c" />
-    <ClCompile Include="..\..\frox\src\sniper.c" />
-    <ClCompile Include="..\..\frox\src\sorcerer.c" />
-    <ClCompile Include="..\..\frox\src\spells.c" />
-    <ClCompile Include="..\..\frox\src\spells1.c" />
-    <ClCompile Include="..\..\frox\src\spells2.c" />
-    <ClCompile Include="..\..\frox\src\spells3.c" />
-    <ClCompile Include="..\..\frox\src\spells_a.c" />
-    <ClCompile Include="..\..\frox\src\spells_c.c" />
-    <ClCompile Include="..\..\frox\src\spells_h.c" />
-    <ClCompile Include="..\..\frox\src\spells_m.c" />
-    <ClCompile Include="..\..\frox\src\spells_s.c" />
-    <ClCompile Include="..\..\frox\src\spoilers.c" />
-    <ClCompile Include="..\..\frox\src\str-map.c" />
-    <ClCompile Include="..\..\frox\src\streams.c" />
-    <ClCompile Include="..\..\frox\src\tables.c" />
-    <ClCompile Include="..\..\frox\src\timelord.c" />
-    <ClCompile Include="..\..\frox\src\tourist.c" />
-    <ClCompile Include="..\..\frox\src\troika.c" />
-    <ClCompile Include="..\..\frox\src\util.c" />
-    <ClCompile Include="..\..\frox\src\variable.c" />
-    <ClCompile Include="..\..\frox\src\variant.c" />
-    <ClCompile Include="..\..\frox\src\virtue.c" />
-    <ClCompile Include="..\..\frox\src\warlock.c" />
-    <ClCompile Include="..\..\frox\src\warrior.c" />
-    <ClCompile Include="..\..\frox\src\warrior_mage.c" />
-    <ClCompile Include="..\..\frox\src\weaponmaster.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\skills.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\sniper.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\sorcerer.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells_a.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells_c.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells_h.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells_m.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spells_s.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\spoilers.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\str-map.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\streams.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\tables.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\timelord.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\tourist.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\troika.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\util.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\variable.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\variant.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\virtue.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\warlock.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\warrior.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\warrior_mage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\weaponmaster.c" />
     <!-- doc UI の旗（monspell.c の註）。save 1 / load 10 の代表格。 -->
-    <ClCompile Include="..\..\frox\src\weaponsmith.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\weaponsmith.c">
       <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\werewolf.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\werewolf.c" />
     <!-- doc UI の旗（monspell.c の註）。wild.c:2366 の世界地図の表示だけが対象。 -->
-    <ClCompile Include="..\..\frox\src\wild.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\wild.c">
       <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\wild_realm.c" />
-    <ClCompile Include="..\..\frox\src\wild_talent.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\wild_realm.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\wild_talent.c" />
     <!-- doc UI の旗（monspell.c の註）。 -->
-    <ClCompile Include="..\..\frox\src\wiz_obj.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\wiz_obj.c">
       <PreprocessorDefinitions>Term_save=fc_ui_term_save;Term_load=fc_ui_term_load;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\wizard1.c" />
-    <ClCompile Include="..\..\frox\src\wizard2.c" />
-    <ClCompile Include="..\..\frox\src\xtra1.c" />
-    <ClCompile Include="..\..\frox\src\xtra2.c" />
-    <ClCompile Include="..\..\frox\src\yellow_mage.c" />
-    <ClCompile Include="..\..\frox\src\yeqrezh.c" />
-    <ClCompile Include="..\..\frox\src\z-doc.c">
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\wizard1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\wizard2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\xtra1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\xtra2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\yellow_mage.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\yeqrezh.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\z-doc.c">
       <!--
         **ここだけが違う**（設計 §3.7 の 1）。Frox は z-doc.c に <windows.h> を
         足したが、frox/src/h-type.h:107 の `#define BOOL(E) !!(E)` が SDK の
@@ -384,11 +385,11 @@
       -->
       <ForcedIncludeFiles>windows.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="..\..\frox\src\z-form.c" />
-    <ClCompile Include="..\..\frox\src\z-rand.c" />
-    <ClCompile Include="..\..\frox\src\z-term.c" />
-    <ClCompile Include="..\..\frox\src\z-util.c" />
-    <ClCompile Include="..\..\frox\src\z-virt.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\z-form.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\z-rand.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\z-term.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\z-util.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\frox\src\z-virt.c" />
   </ItemGroup>
   <!--
     アダプタ（新規コード。設計 §3）。C の皮と C++ の本体。
@@ -492,58 +493,58 @@
     <ClInclude Include="..\..\platform\portable\legacy_os_c.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\frox\src\angband.h" />
-    <ClInclude Include="..\..\frox\src\c-string.h" />
-    <ClInclude Include="..\..\frox\src\c-vec.h" />
-    <ClInclude Include="..\..\frox\src\classes.h" />
-    <ClInclude Include="..\..\frox\src\defines.h" />
-    <ClInclude Include="..\..\frox\src\equip.h" />
-    <ClInclude Include="..\..\frox\src\externs.h" />
-    <ClInclude Include="..\..\frox\src\fear.h" />
-    <ClInclude Include="..\..\frox\src\generate.h" />
-    <ClInclude Include="..\..\frox\src\gf.h" />
-    <ClInclude Include="..\..\frox\src\grid.h" />
-    <ClInclude Include="..\..\frox\src\h-basic.h" />
-    <ClInclude Include="..\..\frox\src\h-config.h" />
-    <ClInclude Include="..\..\frox\src\h-define.h" />
-    <ClInclude Include="..\..\frox\src\h-system.h" />
-    <ClInclude Include="..\..\frox\src\h-type.h" />
-    <ClInclude Include="..\..\frox\src\home.h" />
-    <ClInclude Include="..\..\frox\src\init.h" />
-    <ClInclude Include="..\..\frox\src\int-map.h" />
-    <ClInclude Include="..\..\frox\src\inv.h" />
-    <ClInclude Include="..\..\frox\src\menu.h" />
-    <ClInclude Include="..\..\frox\src\message.h" />
-    <ClInclude Include="..\..\frox\src\mon.h" />
-    <ClInclude Include="..\..\frox\src\monspell.h" />
-    <ClInclude Include="..\..\frox\src\msvc_warnings.h" />
-    <ClInclude Include="..\..\frox\src\mut.h" />
-    <ClInclude Include="..\..\frox\src\obj.h" />
-    <ClInclude Include="..\..\frox\src\obj_prompt.h" />
-    <ClInclude Include="..\..\frox\src\pack.h" />
-    <ClInclude Include="..\..\frox\src\py_throw.h" />
-    <ClInclude Include="..\..\frox\src\quest.h" />
-    <ClInclude Include="..\..\frox\src\quiver.h" />
-    <ClInclude Include="..\..\frox\src\randname.h" />
-    <ClInclude Include="..\..\frox\src\readdib.h" />
-    <ClInclude Include="..\..\frox\src\rect.h" />
-    <ClInclude Include="..\..\frox\src\resist.h" />
-    <ClInclude Include="..\..\frox\src\rooms.h" />
-    <ClInclude Include="..\..\frox\src\savefile.h" />
-    <ClInclude Include="..\..\frox\src\scores.h" />
-    <ClInclude Include="..\..\frox\src\shop.h" />
-    <ClInclude Include="..\..\frox\src\spells.h" />
-    <ClInclude Include="..\..\frox\src\str-map.h" />
-    <ClInclude Include="..\..\frox\src\streams.h" />
-    <ClInclude Include="..\..\frox\src\types.h" />
-    <ClInclude Include="..\..\frox\src\variant.h" />
-    <ClInclude Include="..\..\frox\src\z-config.h" />
-    <ClInclude Include="..\..\frox\src\z-doc.h" />
-    <ClInclude Include="..\..\frox\src\z-form.h" />
-    <ClInclude Include="..\..\frox\src\z-rand.h" />
-    <ClInclude Include="..\..\frox\src\z-term.h" />
-    <ClInclude Include="..\..\frox\src\z-util.h" />
-    <ClInclude Include="..\..\frox\src\z-virt.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\angband.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\c-string.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\c-vec.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\classes.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\defines.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\equip.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\externs.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\fear.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\generate.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\gf.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\grid.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\h-basic.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\h-config.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\h-define.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\h-system.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\h-type.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\home.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\init.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\int-map.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\inv.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\menu.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\message.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\mon.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\monspell.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\msvc_warnings.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\mut.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\obj.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\obj_prompt.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\pack.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\py_throw.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\quest.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\quiver.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\randname.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\readdib.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\rect.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\resist.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\rooms.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\savefile.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\scores.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\shop.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\spells.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\str-map.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\streams.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\types.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\variant.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-config.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-doc.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-form.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-rand.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-term.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-util.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\frox\src\z-virt.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

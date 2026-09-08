@@ -764,8 +764,25 @@ std::string FeatureMenu::bind_cell_value(const BindRow &row, int col, const Hd2d
     return kUnassigned;
 }
 
+// 単純な ON/OFF 項目の設定先。表示と変更は必ず同じ定義を使う。
+bool Hd2dSettings::*FeatureMenu::toggle_setting(Item item)
+{
+    switch (item) {
+    case Item::Backdrops: return &Hd2dSettings::backdrops;
+    case Item::SoundEnabled: return &Hd2dSettings::sound_enabled;
+    case Item::RealtimeEnabled: return &Hd2dSettings::realtime_enabled;
+    case Item::DamageFlash: return &Hd2dSettings::damage_flash;
+    case Item::DamageShake: return &Hd2dSettings::damage_shake;
+    default: return nullptr;
+    }
+}
+
 std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) const
 {
+    if (const auto field = toggle_setting(item)) {
+        return on_off(settings.*field);
+    }
+
     char buf[64]{};
     const int kind_index = sub_kind_index(item);
     if (kind_index >= 0) {
@@ -903,8 +920,6 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         return settings.subs_open ? i18n::tr("hd2d.ui.feature-menu.open") : i18n::tr("hd2d.ui.feature-menu.closed");
     case Item::WindowMode:
         return settings.windowed ? i18n::tr("hd2d.ui.feature-menu.windowed") : i18n::tr("hd2d.ui.feature-menu.fullscreen");
-    case Item::Backdrops:
-        return on_off(settings.backdrops);
     case Item::MoveSmooth:
         //! 何がなめらかかを言う（「入／切」だと**何が変わるか**が読めない）。
         return (settings.move_smoothing == MoveSmoothing::All) ? i18n::tr("hd2d.ui.feature-menu.everything") : i18n::tr("hd2d.ui.feature-menu.entities-only");
@@ -1013,24 +1028,16 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         default:
             return i18n::tr("hd2d.ui.feature-menu.music");
         }
-    case Item::SoundEnabled:
-        return on_off(settings.sound_enabled);
     case Item::MusicVolume:
         //! 音量は音楽にも環境音にも同じ段で効く。「切」のときだけ効かないと言う。
         return volume_value(settings.music_volume, settings.bgm_mode != Hd2dSettings::BgmMode::Off);
     case Item::SoundVolume:
         return volume_value(settings.sound_volume, settings.sound_enabled);
-    case Item::RealtimeEnabled:
-        return on_off(settings.realtime_enabled);
     case Item::RealtimeSpeed:
         //! 通常速度のときの 1 行動あたり。加速すればこれより速く動ける。
         std::snprintf(buf, sizeof(buf), i18n::tr("hd2d.ui.feature-menu.2f-s-per-action"),
             static_cast<double>(Hd2dSettings::realtime_seconds_per_turn(settings.realtime_speed_index)));
         return buf;
-    case Item::DamageFlash:
-        return on_off(settings.damage_flash);
-    case Item::DamageShake:
-        return on_off(settings.damage_shake);
     case Item::RealtimePrompt:
         //! 「入／切」だと**何が入るのか**が読めないので、起きることを書く。
         return settings.realtime_prompt_live ? i18n::tr("hd2d.ui.feature-menu.run-you-get-hit-while-choosing") : i18n::tr("hd2d.ui.feature-menu.pause");
@@ -1213,6 +1220,11 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
 
 void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
 {
+    if (const auto field = toggle_setting(item)) {
+        settings.*field = !(settings.*field);
+        return;
+    }
+
     const auto step = static_cast<float>(delta);
     /*
      * 仕切り。**後ろの枚が潰れないところで止める**（掴んで動かすときと同じ規則。
@@ -1360,9 +1372,6 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
     case Item::WindowMode:
         settings.windowed = !settings.windowed;
         break;
-    case Item::Backdrops:
-        settings.backdrops = !settings.backdrops;
-        break;
     case Item::MoveSmooth:
         settings.move_smoothing = (settings.move_smoothing == MoveSmoothing::All) ? MoveSmoothing::Entities
                                                                                   : MoveSmoothing::All;
@@ -1426,27 +1435,15 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
         settings.bgm_mode = static_cast<Hd2dSettings::BgmMode>(((now + delta) % count + count) % count);
         break;
     }
-    case Item::SoundEnabled:
-        settings.sound_enabled = !settings.sound_enabled;
-        break;
     case Item::MusicVolume:
         settings.music_volume = std::clamp(settings.music_volume + delta, 0, Hd2dSettings::kVolumeMax);
         break;
     case Item::SoundVolume:
         settings.sound_volume = std::clamp(settings.sound_volume + delta, 0, Hd2dSettings::kVolumeMax);
         break;
-    case Item::RealtimeEnabled:
-        settings.realtime_enabled = !settings.realtime_enabled;
-        break;
     case Item::RealtimeSpeed:
         settings.realtime_speed_index = std::clamp(settings.realtime_speed_index + delta,
             0, Hd2dSettings::kRealtimeSpeedCount - 1);
-        break;
-    case Item::DamageFlash:
-        settings.damage_flash = !settings.damage_flash;
-        break;
-    case Item::DamageShake:
-        settings.damage_shake = !settings.damage_shake;
         break;
     case Item::RealtimePrompt:
         settings.realtime_prompt_live = !settings.realtime_prompt_live;

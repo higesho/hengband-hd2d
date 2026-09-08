@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * @file core_link.cpp
  * @brief `core_link.h` の実装。
  *
@@ -51,6 +51,22 @@ void close_handle(HANDLE &handle)
         ::CloseHandle(handle);
     }
     handle = nullptr;
+}
+
+// 子の終了後は EOF まで読み切る。書き込み端を継承した子孫が残る場合は
+// 同期 I/O をキャンセルする。次の read との競合を避けるため、停止フラグと併用する。
+void finish_reader(std::thread &reader, std::atomic<bool> &stopping)
+{
+    if (!reader.joinable()) {
+        return;
+    }
+    if (::WaitForSingleObject(reader.native_handle(), 500) != WAIT_OBJECT_0) {
+        stopping.store(true);
+        while (::WaitForSingleObject(reader.native_handle(), 10) == WAIT_TIMEOUT) {
+            (void)::CancelSynchronousIo(reader.native_handle());
+        }
+    }
+    reader.join();
 }
 
 //! コマンドラインへ 1 引数を足す（空白か `"` を含むものだけ引用符で包む）。
@@ -213,6 +229,17 @@ class CoreStderrRelay {
 public:
     static constexpr std::size_t kTailLines = 200;
 
+    ~CoreStderrRelay() { this->close_log(); }
+
+    void close_log()
+    {
+        std::lock_guard<std::mutex> lock(this->mutex_);
+        if (this->fp_ != nullptr) {
+            std::fclose(this->fp_);
+            this->fp_ = nullptr;
+        }
+    }
+
     void open_log()
     {
         char dir[MAX_PATH]{};
@@ -233,11 +260,11 @@ public:
     }
 
     //! パイプが EOF になるまで読み続ける。**専用スレッドから呼ぶこと。**
-    void run(HANDLE pipe)
+    void run(HANDLE pipe, const std::atomic<bool> &stopping)
     {
         char buf[4096];
         std::string partial;
-        for (;;) {
+        while (!stopping.load()) {
             DWORD read = 0;
             if ((::ReadFile(pipe, buf, sizeof(buf), &read, nullptr) == FALSE) || (read == 0)) {
                 break;
@@ -315,7 +342,24 @@ struct CoreLink::Impl {
     HANDLE process{ nullptr };
     HANDLE thread{ nullptr };
     CoreStderrRelay stderr_relay;
+    HANDLE stderr_pipe{ nullptr };
+    std::thread receiver;
+    std::thread stderr_reader;
+    std::atomic<bool> stop_stderr{ false };
 #endif
+
+    std::atomic<bool> stop_receiver{ false };
+
+    ~Impl()
+    {
+#if defined(_WIN32)
+        close_handle(this->from_core);
+        close_handle(this->stderr_pipe);
+#else
+        close_endpoint(this->from_core);
+#endif
+        this->log.close();
+    }
 
     std::mutex send_mutex;
     ProtocolLog log;
@@ -567,7 +611,7 @@ struct CoreLink::Impl {
 
     void receive_loop()
     {
-        for (;;) {
+        while (!this->stop_receiver.load()) {
             std::string payload;
             std::string err;
             const auto result = presentation::read_message(this->from_core, payload, err);
@@ -604,7 +648,8 @@ CoreLink::~CoreLink()
  */
 bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
 {
-    this->impl_ = new Impl();
+    this->shutdown();
+    this->impl_ = std::make_shared<Impl>();
     Impl &impl = *this->impl_;
 
     if (!options.protocol_log_path.empty()) {
@@ -654,7 +699,8 @@ bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
 
 bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
 {
-    this->impl_ = new Impl();
+    this->shutdown();
+    this->impl_ = std::make_shared<Impl>();
     Impl &impl = *this->impl_;
 
     if (!options.protocol_log_path.empty()) {
@@ -684,6 +730,8 @@ bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
     if (core_path.empty()) {
         core_path = exe_directory() / "HengbandCore.exe";
     }
+    const auto core_utf8 = core_path.u8string();
+    const std::string core_text(reinterpret_cast<const char *>(core_utf8.data()), core_utf8.size());
     std::error_code ec;
     if (!std::filesystem::is_regular_file(core_path, ec)) {
         /*
@@ -691,7 +739,7 @@ bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
          * コアは選べるようになったので、`HengbandCore.exe` と書くと
          * 幻想蛮怒を選んで失敗したときに嘘の名前が出る。実際に探した道を出す。
          */
-        err = "ゲームコアが見つかりません:\n" + core_path.string();
+        err = "ゲームコアが見つかりません:\n" + core_text;
         return false;
     }
 
@@ -720,26 +768,25 @@ bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
     ::SetHandleInformation(impl.from_core, HANDLE_FLAG_INHERIT, 0);
     ::SetHandleInformation(core_stderr_read, HANDLE_FLAG_INHERIT, 0);
 
-    STARTUPINFOA si{};
+    STARTUPINFOW si{};
     si.cb = sizeof(si);
     si.dwFlags = STARTF_USESTDHANDLES;
     si.hStdInput = child_stdin_read;
     si.hStdOutput = child_stdout_write;
     si.hStdError = child_stderr_write;
 
-    std::string command = "\"" + core_path.string() + "\" --ui-protocol=stdio";
+    std::string command = "\"" + core_text + "\" --ui-protocol=stdio";
     if (!options.core_protocol_log_path.empty()) {
         append_arg(command, "--protocol-log=" + options.core_protocol_log_path);
     }
     for (const auto &arg : options.forwarded_args) {
         append_arg(command, arg);
     }
-    std::vector<char> mutable_command(command.begin(), command.end());
-    mutable_command.push_back('\0');
+    auto mutable_command = std::filesystem::u8path(command).wstring();
 
     PROCESS_INFORMATION pi{};
-    const BOOL started = ::CreateProcessA(
-        core_path.string().c_str(),
+    const BOOL started = ::CreateProcessW(
+        core_path.c_str(),
         mutable_command.data(),
         nullptr, nullptr,
         TRUE, //!< ハンドル継承（パイプを渡すため）
@@ -752,19 +799,19 @@ bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
     close_handle(child_stdout_write);
     close_handle(child_stderr_write);
     if (started == FALSE) {
-        err = "ゲームコアを起動できませんでした:\n" + core_path.string();
+        err = "ゲームコアを起動できませんでした:\n" + core_text;
         close_handle(core_stderr_read);
         return false;
     }
     impl.process = pi.hProcess;
     impl.thread = pi.hThread;
     std::fprintf(stderr, "[hd2d] started %s (pid %lu)\n",
-        core_path.string().c_str(), static_cast<unsigned long>(pi.dwProcessId));
+        core_text.c_str(), static_cast<unsigned long>(pi.dwProcessId));
 
-    // stderr の中継。detach する: 終わりは子の消滅＝パイプの EOF で、こちらから止める
-    // 手段も理由も無い（読み残しを作らないほうが大事）。
-    CoreStderrRelay *const relay = &impl.stderr_relay;
-    std::thread([relay, core_stderr_read]() { relay->run(core_stderr_read); }).detach();
+    impl.stderr_pipe = core_stderr_read;
+    impl.stderr_reader = std::thread([&impl]() {
+        impl.stderr_relay.run(impl.stderr_pipe, impl.stop_stderr);
+    });
     return true;
 }
 
@@ -881,14 +928,21 @@ bool CoreLink::handshake(std::string &err)
 
 void CoreLink::begin_receiving()
 {
-    Impl *const impl = this->impl_;
+    const auto impl = this->impl_;
     //! 再生モードには受信の環が要らない（配るのは `replay_step()` が主スレッドで行う）。
     //! **別スレッドを立てないことが肝**——立てると配られる順が OS の都合で揺れる。
     if (impl->replay) {
         return;
     }
-    // detach する: 終了経路はパイプを閉じて抜けるだけなので join する場所が無い。
+#if defined(_WIN32)
+    // 所有者は shutdown で join する。スレッドから所有者を保持する循環は作らない。
+    if (!impl->receiver.joinable()) {
+        impl->receiver = std::thread([raw = impl.get()]() { raw->receive_loop(); });
+    }
+#else
+    // Android はコアが同一プロセスで動く。読取終了まで状態を保持し、その後解放する。
     std::thread([impl]() { impl->receive_loop(); }).detach();
+#endif
 }
 
 void CoreLink::replay_step()
@@ -1123,20 +1177,15 @@ void CoreLink::shutdown()
         }
 #endif
     }
-    /*
-     * 読み取り端（`from_core`）は**閉じない**。受信スレッドは detach してあり、
-     * まだ読みの最中かもしれない。閉じるとその最中のハンドル／fd を引き抜くことになり、
-     * 値が再利用されれば別のものを読みに行く。
-     * **相手はもう死んでいる**ので、書き手の消えたパイプは読み切って終わる。
-     */
 #if defined(_WIN32)
+    finish_reader(impl.receiver, impl.stop_receiver);
+    finish_reader(impl.stderr_reader, impl.stop_stderr);
     close_handle(impl.thread);
     close_handle(impl.process);
 #endif
     impl.log.close();
-    // Impl そのものも delete しない（受信スレッドがまだ触りうる）。
-    // 起こし直しのたびに 1 個ずつ漏れるが、遊び 1 回につき 1 個である。
-    this->impl_ = nullptr;
+    // Android の受信スレッドが動いていれば、最後の参照をそちらが持つ。
+    this->impl_.reset();
 }
 
 } // namespace hd2d

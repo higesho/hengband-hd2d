@@ -591,8 +591,8 @@ int host_shutdown_requested()
  */
 std::string exe_dir()
 {
-    // Windows は `GetModuleFileNameA` の親、Android は cwd（`legacy_os.h` の註）。
-    return portable::exe_dir();
+    // 配布物の cores/ 配置でもゲームデータのルートを返す。
+    return portable::data_dir();
 }
 
 //! `<exe_dir>` から下へ 1 段ずつ降りる。区切りは平台のものを使う。

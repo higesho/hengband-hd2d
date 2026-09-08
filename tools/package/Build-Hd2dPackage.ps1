@@ -7,7 +7,7 @@
     案内は日本語（はじめに.txt）と英語（README.txt）の 2 つを入れる。
 
     **上流の `Build-Windows-Release-Package.ps1` とは別物である。**あちらは 2D の
-    `Hengband.exe` を配る道具で、こちらはボクセル HD2Dを配る。
+    `Hengband.exe` を配る道具で、こちらはボクセル HD2D（関連する実装）を配る。
 
     DLL の一覧は当てずっぽうではなく、`dumpbin /dependents` の推移閉包で確かめたものである
     （コアは第三者の DLL を 1 つも要らない。要るのは画面だけ）。
@@ -19,7 +19,7 @@
     組み直してから詰める。既定は「いま在る exe をそのまま詰める」。
 
 .PARAMETER OutDir
-    出力先（既定 `Dist`）。**zip の名前は版によらず固定**（2026-09-02 に決めた
+    出力先（既定 `Dist`）。**zip の名前は版によらず固定**（実装方針 2026-09-02
     「今回から配布用ファイルは Dist フォルダに以下の名前で出力するように。
     今後ファイル名は固定で」）——置き場を指す先が動かないほうが配りやすいため。
     版は zip の**中の箱の名前**に残す。
@@ -30,6 +30,7 @@
 Param(
     [string]$Version = (Get-Date -Format 'yyyy-MM-dd'),
     [switch]$Rebuild,
+    [switch]$WithoutCores,
     [string]$OutDir = 'Dist'
 )
 
@@ -38,8 +39,13 @@ $root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Set-Location $root
 
 if ($Rebuild) {
+    if (-not $WithoutCores) {
+        & python tools/core_sources/prepare.py
+        if ($LASTEXITCODE -ne 0) { throw "原作ソースの準備に失敗しました" }
+    }
     $msbuild = 'C:' + [char]92 + 'Program Files' + [char]92 + 'Microsoft Visual Studio' + [char]92 + '18' + [char]92 + 'Community' + [char]92 + 'MSBuild' + [char]92 + 'Current' + [char]92 + 'Bin' + [char]92 + 'MSBuild.exe'
-    & $msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platform=x64 /m /v:minimal
+    $project = if ($WithoutCores) { 'VisualStudio/HengbandHd2d/HengbandHd2d.vcxproj' } else { 'VisualStudio/Hengband.sln' }
+    & $msbuild $project /t:Build /p:Configuration=Release /p:Platform=x64 /m /v:minimal
     if ($LASTEXITCODE -ne 0) { throw '組み立てに失敗しました' }
 }
 
@@ -50,7 +56,7 @@ $executables = @(
     'HengbandHd2d.exe'
 )
 
-# コアは**1 階層深い `cores\` へ入れる**（2026-09-06 に決めた「間違えて各コアを
+# コアは**1 階層深い `cores\` へ入れる**（実装方針 2026-09-06「間違えて各コアを
 # 実行してしまう」）。コアは単体では遊べない——画面が子として起こし、パイプで話す。
 # 画面は `cores\` を先に見て、無ければ自分の隣を見る（`hd2d_app.cpp` の
 # `resolve_core_path`）ので、開発のツリーは横並びのままでよい。
@@ -59,7 +65,7 @@ $coreExecutables = @(
     'TangbandCore.exe',   # 短愚蛮怒
     'GensobandCore.exe',  # 幻想蛮怒
     'SilCore.exe',        # Sil-Q
-    'FroxCore.exe' # FroxComposband
+    'FroxCore.exe'        # FroxComposband（関連する実装）
 )
 
 # `dumpbin /dependents` の推移閉包（2026-08-23 実測）。**画面だけが要る。**
@@ -76,14 +82,18 @@ $libraries = @(
 # （遊んだ人物の名前が入る）がそのまま配布物へ入っていた。Android 側の同じ穴は
 # `tools/build_android_hd2d_assets.py` の `LIB_SKIP_DIRS` で塞いである。
 $dataDirs = @(
-    'assets', 'lib', 'tangband/lib', 'gensoband/lib', 'silq/lib', 'frox/lib',
+    'core-import', 'assets', 'lib', 'tangband/lib', 'gensoband/lib', 'silq/lib', 'frox/lib',
     # **訳の層は `lib` の外にある**（2026-08-25 に足した）。ここまでが 1 組で、
     # 入れ忘れると**遊べはするが全部英語（Sil-Q・Frox）／日本語（幻想）に戻る**
     # ——コアは訳が無ければ原文へ落ちる作りなので、**落ちも警告も出ない**。
     # `lib-ja` / `lib-en` は生成物なので、無ければ下の $generated が作り方を言う。
     'silq/lib-ja', 'silq/lib-en', 'silq/lang/ja',
     'frox/lib-ja', 'frox/lang/ja',
-    'gensoband/lib-en', 'gensoband/lang/en'
+    'gensoband/lib-en', 'gensoband/lang/en',
+    # 実行時に接続コードが読むタイルと対応表。原画・原作ソースは含めない。
+    'gensoband/tilework/64', 'gensoband/tilework/ascii', 'gensoband/assets/slab',
+    'silq/tilework/128', 'silq/assets/slab',
+    'frox/tilework/64', 'frox/assets/slab'
 )
 
 #: 追跡していない生成物の木と、その作り方（`tools/build_android_hd2d_assets.py` と同じ表）。
@@ -107,7 +117,7 @@ foreach ($f in ($executables + $libraries)) {
 # コアは cores\ の下へ。
 $coreStage = Join-Path $stage 'cores'
 New-Item -ItemType Directory -Force $coreStage | Out-Null
-foreach ($f in $coreExecutables) {
+foreach ($f in $(if ($WithoutCores) { @() } else { $coreExecutables })) {
     if (-not (Test-Path $f)) { throw "見つかりません: $f（先に組んでください）" }
     Copy-Item $f $coreStage
 }
@@ -121,6 +131,26 @@ foreach ($d in $dataDirs) {
     $dst = Join-Path $stage $d
     New-Item -ItemType Directory -Force (Split-Path -Parent $dst) | Out-Null
     Copy-Item -Recurse $d $dst
+}
+
+# 変愚のタイルは実行時の PNG のみ。編集時の .bak / .orig は配布しない。
+$tileDestination = Join-Path $stage 'tilework/sfc'
+New-Item -ItemType Directory -Force $tileDestination | Out-Null
+Copy-Item -Path 'tilework/sfc/*.png' -Destination $tileDestination
+
+foreach ($file in @('gensoband/tilework/mapping.csv', 'silq/tilework/terrain_map.csv',
+                     'frox/tilework/terrain_map.csv', 'frox/tilework/mapping.csv')) {
+    $destination = Join-Path $stage $file
+    New-Item -ItemType Directory -Force (Split-Path -Parent $destination) | Out-Null
+    Copy-Item -LiteralPath $file -Destination $destination
+}
+
+# 検査が退避したセーブも配らない。削除対象は今回の配布ステージ内だけに限定する。
+$stageRoot = [IO.Path]::GetFullPath($stage).TrimEnd('\') + '\'
+foreach ($backup in @(Get-ChildItem -LiteralPath $stage -Directory -Recurse -Force | Where-Object { $_.Name -like '.hd2d-save-*' })) {
+    $target = [IO.Path]::GetFullPath($backup.FullName)
+    if (-not $target.StartsWith($stageRoot, [StringComparison]::OrdinalIgnoreCase)) { throw 'Unexpected package cleanup path' }
+    Remove-Item -LiteralPath $target -Recurse -Force
 }
 
 # 遊んだ跡は配らない。**印の 1 枚は残す**——`delete.me`（変愚・短愚・幻想）と
@@ -177,10 +207,15 @@ Hengband HD2D（$Version・Windows x64）
 English
   See README.txt.
 "@
+if ($WithoutCores) {
+    $notes = $notes.Replace('画面 1 つと、5 つのゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband）。', '画面とインポート用コンパイラーを同梱しています。ゲームコアの実行ファイルは含みません。')
+    $notes = $notes.Replace('ゲーム本体（コア）の exe は cores\ の中にあります。画面側から起動されるので、', '取り込んだコアはアプリ専用の保存先に登録されます。画面側から起動されるので、')
+    $notes += "`r`n初回は「コアをインポート」から対応版の原作ソース ZIP を選択して、ビルド・登録してください。`r`n"
+}
 $notesPath = Join-Path $stage 'はじめに.txt'
 [System.IO.File]::WriteAllText($notesPath, $notes, (New-Object System.Text.UTF8Encoding $true))
 
-# 英語の案内（2026-09-06 に決めた）。**上の日本語と同じ 5 つの見出し**にしてある。
+# 英語の案内（実装方針 2026-09-06）。**上の日本語と同じ 5 つの見出し**にしてある。
 # 片方だけ直すと食い違うので、書き換えるときは必ず両方を直すこと。
 $notesEn = @"
 Hengband HD2D ($Version, Windows x64)
@@ -206,11 +241,16 @@ Settings
 Japanese
   See はじめに.txt.
 "@
+if ($WithoutCores) {
+    $notesEn = $notesEn.Replace('One screen and five games (Hengband, Tangband, Gensoband, Sil-Q, FroxComposband).', 'The UI and import compiler are included. Game core executables are not included.')
+    $notesEn = $notesEn.Replace('The game core executables are in cores\. They are started by the screen side,', 'Imported cores are stored in application data. They are started by the UI,')
+    $notesEn += "`r`nChoose Import core, select an original source ZIP for a supported version, then build and register it.`r`n"
+}
 $notesEnPath = Join-Path $stage 'README.txt'
 [System.IO.File]::WriteAllText($notesEnPath, $notesEn, (New-Object System.Text.UTF8Encoding $true))
 
 # --- zip ----------------------------------------------------------------------
-# **名前は固定**（2026-09-02 に決めた）。版は $name（zip の中の箱）に残る。
+# **名前は固定**（実装方針 2026-09-02）。版は $name（zip の中の箱）に残る。
 $zip = Join-Path $OutDir 'HengbandHd2d-win.zip'
 if (Test-Path $zip) { Remove-Item -Force $zip }
 Compress-Archive -Path $stage -DestinationPath $zip

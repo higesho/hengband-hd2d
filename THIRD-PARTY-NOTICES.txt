@@ -301,3 +301,22 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---------------------------------------------------------
+
+
+Core source importer (2026-09-08)
+-------------------------------
+PicoSHA2: Copyright (C) 2017 okdshin, MIT License.
+The full license is in third_party/cpp/include/picosha2/picosha2.h.
+Source: https://github.com/okdshin/PicoSHA2/tree/27fcf6979298949e8a462e16d09a0351c18fcaf2
+
+Windows import compiler: LLVM-MinGW 20260826 (Clang/LLD and MinGW-w64).
+The compiler archive is unmodified; the package selects the required files.
+Full notices: core-import/toolchain/LICENSE.TXT and
+core-import/toolchain/i686-w64-mingw32/share/mingw32/.
+Source and archive checksums: core-import/toolchains.json.
+
+Android import compiler: Android NDK r29 aarch64-hosted build by lzhiyong.
+Compiler binaries are installed under their APK library filenames without
+changing their executable contents. Linker dispatch uses our android_linker.c.
+Full notices: core-import/licenses/NOTICE and NOTICE.toolchain in APK assets.
+Source and archive checksums: core-import/toolchains.json.

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
   SilCore.vcxproj ── Sil-Q コア側の実行ファイル。
 
@@ -72,6 +72,7 @@
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="..\CoreSources.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
@@ -107,7 +108,7 @@
         `external-lib` は P2 で足す共用 TU のためだけに要るもので、同名の頭文字
         （`types.h` 等）があっても写しが勝つようにしておく。
       -->
-      <AdditionalIncludeDirectories>..\..\silq\src;..\..\silq\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HengbandCoreSourceRoot)\silq\src;..\..\silq\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -133,7 +134,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>..\..\silq\src;..\..\silq\adapter;..\..\presentation;..\..\platform;..\..\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(HengbandCoreSourceRoot)\silq\src;..\..\silq\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -151,46 +152,46 @@
     入口と描画はアダプタが持つ。
   -->
   <ItemGroup>
-    <ClCompile Include="..\..\silq\src\birth.c" />
-    <ClCompile Include="..\..\silq\src\cave.c" />
-    <ClCompile Include="..\..\silq\src\cmd1.c" />
-    <ClCompile Include="..\..\silq\src\cmd2.c" />
-    <ClCompile Include="..\..\silq\src\cmd3.c" />
-    <ClCompile Include="..\..\silq\src\cmd4.c" />
-    <ClCompile Include="..\..\silq\src\cmd5.c" />
-    <ClCompile Include="..\..\silq\src\cmd6.c" />
-    <ClCompile Include="..\..\silq\src\dump_items.c" />
-    <ClCompile Include="..\..\silq\src\dungeon.c" />
-    <ClCompile Include="..\..\silq\src\files.c" />
-    <ClCompile Include="..\..\silq\src\generate.c" />
-    <ClCompile Include="..\..\silq\src\init1.c" />
-    <ClCompile Include="..\..\silq\src\init2.c" />
-    <ClCompile Include="..\..\silq\src\load.c" />
-    <ClCompile Include="..\..\silq\src\melee1.c" />
-    <ClCompile Include="..\..\silq\src\melee2.c" />
-    <ClCompile Include="..\..\silq\src\monster1.c" />
-    <ClCompile Include="..\..\silq\src\monster2.c" />
-    <ClCompile Include="..\..\silq\src\obj-info.c" />
-    <ClCompile Include="..\..\silq\src\object1.c" />
-    <ClCompile Include="..\..\silq\src\object2.c" />
-    <ClCompile Include="..\..\silq\src\randart.c" />
-    <ClCompile Include="..\..\silq\src\save.c" />
-    <ClCompile Include="..\..\silq\src\spells1.c" />
-    <ClCompile Include="..\..\silq\src\spells2.c" />
-    <ClCompile Include="..\..\silq\src\squelch.c" />
-    <ClCompile Include="..\..\silq\src\tables.c" />
-    <ClCompile Include="..\..\silq\src\use-obj.c" />
-    <ClCompile Include="..\..\silq\src\util.c" />
-    <ClCompile Include="..\..\silq\src\variable.c" />
-    <ClCompile Include="..\..\silq\src\wizard1.c" />
-    <ClCompile Include="..\..\silq\src\wizard2.c" />
-    <ClCompile Include="..\..\silq\src\xtra1.c" />
-    <ClCompile Include="..\..\silq\src\xtra2.c" />
-    <ClCompile Include="..\..\silq\src\z-form.c" />
-    <ClCompile Include="..\..\silq\src\z-rand.c" />
-    <ClCompile Include="..\..\silq\src\z-term.c" />
-    <ClCompile Include="..\..\silq\src\z-util.c" />
-    <ClCompile Include="..\..\silq\src\z-virt.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\birth.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cave.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cmd1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cmd2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cmd3.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cmd4.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cmd5.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\cmd6.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\dump_items.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\dungeon.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\files.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\generate.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\init1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\init2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\load.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\melee1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\melee2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\monster1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\monster2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\obj-info.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\object1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\object2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\randart.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\save.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\spells1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\spells2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\squelch.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\tables.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\use-obj.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\util.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\variable.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\wizard1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\wizard2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\xtra1.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\xtra2.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\z-form.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\z-rand.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\z-term.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\z-util.c" />
+    <ClCompile Include="$(HengbandCoreSourceRoot)\silq\src\z-virt.c" />
   </ItemGroup>
   <!--
     アダプタ（新規コード。設計 §3）。C の皮と C++ の芯。
@@ -285,23 +286,23 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\silq\src\angband.h" />
-    <ClInclude Include="..\..\silq\src\config.h" />
-    <ClInclude Include="..\..\silq\src\defines.h" />
-    <ClInclude Include="..\..\silq\src\externs.h" />
-    <ClInclude Include="..\..\silq\src\h-basic.h" />
-    <ClInclude Include="..\..\silq\src\h-config.h" />
-    <ClInclude Include="..\..\silq\src\h-define.h" />
-    <ClInclude Include="..\..\silq\src\h-system.h" />
-    <ClInclude Include="..\..\silq\src\h-type.h" />
-    <ClInclude Include="..\..\silq\src\init.h" />
-    <ClInclude Include="..\..\silq\src\main.h" />
-    <ClInclude Include="..\..\silq\src\types.h" />
-    <ClInclude Include="..\..\silq\src\z-form.h" />
-    <ClInclude Include="..\..\silq\src\z-rand.h" />
-    <ClInclude Include="..\..\silq\src\z-term.h" />
-    <ClInclude Include="..\..\silq\src\z-util.h" />
-    <ClInclude Include="..\..\silq\src\z-virt.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\angband.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\config.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\defines.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\externs.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\h-basic.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\h-config.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\h-define.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\h-system.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\h-type.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\init.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\main.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\types.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\z-form.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\z-rand.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\z-term.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\z-util.h" />
+    <ClInclude Include="$(HengbandCoreSourceRoot)\silq\src\z-virt.h" />
     <ClInclude Include="..\..\silq\adapter\sq_shim.h" />
     <ClInclude Include="..\..\silq\adapter\sq_frame.h" />
     <ClInclude Include="..\..\silq\adapter\sq_manifest.h" />

@@ -1,5 +1,11 @@
 # FroxComposband の取り込み元
 
+> **2026-09-08: 原作ソースを外部管理へ分離しました。** 接続コード・翻訳・ゲームデータはここに残し、
+> 原作の `src/` は `tools/core_sources/prepare.py` が外部に構成します。
+> 版とパッチの正本は `tools/core_sources/manifest.json` と `patches/`、手順は `tools/core_sources/README.md`。
+> 以下は取り込み時の範囲と出自の記録です。旧 `src/` の場所を現在のビルド入力として使わないでください。
+
+
 This directory is a copy of the FroxComposband source and data. `frox/src/` is unmodified.
 See the table below for the origin, and the last section for how to update it.
 

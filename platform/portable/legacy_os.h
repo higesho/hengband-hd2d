@@ -72,6 +72,9 @@ uint64_t tick_ms();
  */
 std::string exe_dir();
 
+//! ゲームデータの基準。Windows の cores/ 配置では親、それ以外は exe_dir()。
+std::string data_dir();
+
 /*!
  * @brief いまの UTC を ISO 8601（`2026-08-21T04:05:06.789Z`）で返す。
  * @details プロトコルの記録（JSON Lines）の時刻欄に使う。Windows は

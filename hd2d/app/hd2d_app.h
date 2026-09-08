@@ -71,6 +71,8 @@ CoreRelaunch take_core_relaunch();
 
 //! 起動時に決まるもの。
 struct AppOptions {
+    //! 明示的な検査用入力ファイル。空ならファイルを開かず通常入力だけを使う。
+    std::string test_input_file;
     int window_w{ 1600 };
     int window_h{ 900 };
     //! `--protocol-log=` / `--core-protocol-log=`（v1 §11.2）。
