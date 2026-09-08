@@ -16,6 +16,8 @@ from send_test_key import send_request
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('zip',type=Path,help='対応する Sil-Q の原作ソース ZIP')
+    parser.add_argument('--extra-zip',action='append',type=Path,default=[],help='追加の原作ZIP。選択順に依存しないことも検査できる')
+    parser.add_argument('--check-clear',action='store_true',help='不正ファイルの選択を解除してから正常なZIPを選ぶ')
     parser.add_argument('--app-dir',type=Path,default=Path(__file__).resolve().parents[2])
     args=parser.parse_args();app=args.app_dir.resolve();repo=Path(__file__).resolve().parents[2]
     work=repo/'scratch_old'/('core-import-ui-'+uuid.uuid4().hex);work.mkdir(parents=True)
@@ -37,7 +39,12 @@ def main():
         worker=threading.Thread(target=game);worker.start()
         try:
             assert send_request(inbox,{'key':'F8'},90)['phase']=='core-select'
+            if args.check_clear:
+                invalid=work/'not-a-source.zip';invalid.write_bytes(b'invalid archive')
+                assert send_request(inbox,{'drop_file':str(invalid)},30)['phase']=='core-import'
+                send_request(inbox,{'key':'c'},30)
             assert send_request(inbox,{'drop_file':str(args.zip.resolve())},30)['phase']=='core-import'
+            for extra in args.extra_zip:send_request(inbox,{'drop_file':str(extra.resolve())},30)
             catalog=json.loads((app/'core-import/catalog.json').read_text(encoding='utf-8'))
             for _ in range(sorted(catalog['targets']).index('silq')):send_request(inbox,{'key':'Down'},30)
             send_request(inbox,{'key':'Enter'},30)

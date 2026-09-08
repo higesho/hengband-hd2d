@@ -1,169 +1,97 @@
-"""固定した外部原作と接続用パッチから、UI の外にコアの作業用ソースを構成する。"""
+"""Prepare external core sources using immutable ranges and project additions."""
 from __future__ import annotations
-
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
-import tarfile
-from contextlib import contextmanager
 import uuid
+from reconstruction_recipe import materialize
+from generate_recipes import original_files
 
-HERE = Path(__file__).resolve().parent
-UI_ROOT = HERE.parent.parent
-DEFAULT_UPSTREAM = UI_ROOT.parent / 'roguelike-cores' / 'upstream'
-DEFAULT_OUTPUT = UI_ROOT.parent / 'roguelike-cores' / 'build-sources'
+HERE=Path(__file__).resolve().parent
+UI_ROOT=HERE.parent.parent
+DEFAULT_UPSTREAM=UI_ROOT.parent/'roguelike-cores/upstream'
+DEFAULT_OUTPUT=UI_ROOT.parent/'roguelike-cores/build-sources'
 
+def digest(data):return hashlib.sha256(data).hexdigest()
 
-def digest(data):
-    return hashlib.sha256(data).hexdigest()
+def git(repo,*args,**kwargs):
+    return subprocess.run(['git','-C',str(repo),'-c','safe.directory='+Path(repo).as_posix(),'-c','core.autocrlf=false',*args],check=True,**kwargs)
 
-
-def git(repo, *args, **kwargs):
-    return subprocess.run(['git', '-C', str(repo), '-c', 'safe.directory=' + repo.as_posix(),
-                           '-c', 'core.autocrlf=false', *args], check=True, **kwargs)
-
-
-def transform(data: bytes, spec: dict) -> bytes:
-    if spec['newline'] != 'keep':
-        data = data.replace(b'\r\n', b'\n')
-        if spec['newline'] == 'crlf':
-            data = data.replace(b'\n', b'\r\n')
-    if spec['bom']:
-        if not data.startswith(b'\xef\xbb\xbf'):
-            data = b'\xef\xbb\xbf' + data
-    elif data.startswith(b'\xef\xbb\xbf'):
-        data = data[3:]
+def transform(data,spec):
+    if spec['newline']!='keep':
+        data=data.replace(b'\r\n',b'\n')
+        if spec['newline']=='crlf':data=data.replace(b'\n',b'\r\n')
+    if spec['bom'] and not data.startswith(b'\xef\xbb\xbf'):data=b'\xef\xbb\xbf'+data
+    elif not spec['bom'] and data.startswith(b'\xef\xbb\xbf'):data=data[3:]
     return data
 
+def recipe_path(source):
+    path=(HERE/source['recipe']).resolve()
+    if not path.is_relative_to(HERE.resolve()) or path.suffix!='.json':raise ValueError('Unsafe source recipe path')
+    return path
 
-def export_base(repo: Path, source: dict, dest: Path):
-    """作業ツリーではなく固定コミットの blob を使う。原作のローカル編集を混ぜない。"""
-    expected = source['files']
-    proc = subprocess.Popen(['git', '-C', str(repo), '-c', 'safe.directory=' + repo.as_posix(),
-                             'archive', '--format=tar', source['commit'], 'src'], stdout=subprocess.PIPE)
-    found = set()
-    try:
-        with tarfile.open(fileobj=proc.stdout, mode='r|') as archive:
-            for member in archive:
-                if not member.isfile() or not member.name.startswith('src/'):
-                    continue
-                name = member.name[4:]
-                spec = expected.get(name)
-                if spec is None or not spec['upstream']:
-                    continue
-                target = dest / 'src' / name
-                if not target.resolve().is_relative_to(dest.resolve()):
-                    raise ValueError('Invalid upstream path: ' + name)
-                raw = archive.extractfile(member).read()
-                if digest(raw) != spec['upstream_sha256']:
-                    raise ValueError('Unexpected upstream content: ' + name)
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(transform(raw, spec))
-                found.add(name)
-        if proc.wait() != 0:
-            raise RuntimeError('Cannot export ' + source['name'])
-    finally:
-        if proc.poll() is None:
-            proc.kill()
-            proc.wait()
-    missing = {name for name, spec in expected.items() if spec['upstream']} - found
-    if missing:
-        raise ValueError('Missing upstream files: ' + ', '.join(sorted(missing)[:5]))
-
-
-def verify_core(folder: Path, source: dict):
-    expected = source['files']
-    actual = {p.relative_to(folder).as_posix(): p for p in folder.rglob('*') if p.is_file()}
-    if actual.keys() != expected.keys():
-        raise ValueError('File list mismatch: ' + source['name'])
-    bad = [name for name, path in actual.items() if digest(path.read_bytes()) != expected[name]['sha256']]
-    if bad:
-        raise ValueError('Source hash mismatch: ' + ', '.join(bad[:5]))
-
-
-def manifest_fingerprint(manifest: dict):
-    data = json.dumps(manifest, sort_keys=True).encode()
+def manifest_fingerprint(manifest):
+    if manifest.get('schema')!=2:raise ValueError('Source manifest must use range recipe schema 2')
+    data=json.dumps(manifest,sort_keys=True).encode()
     for source in manifest['sources']:
-        patch = HERE / source['patch']
-        raw = patch.read_bytes()
-        if digest(raw) != source['patch_sha256']:
-            raise ValueError('Patch hash mismatch: ' + str(patch))
-        data += raw
+        raw=recipe_path(source).read_bytes()
+        if digest(raw)!=source['recipe_sha256']:raise ValueError('Source recipe hash mismatch: '+source['name'])
+        recipe=json.loads(raw)
+        if recipe.get('schema')!=2:raise ValueError('Unsupported source recipe schema')
+        data+=raw
     return digest(data)
 
+def verify_core(folder,source):
+    expected=source['files'];actual={p.relative_to(folder).as_posix():p for p in folder.rglob('*') if p.is_file()}
+    if actual.keys()!=expected.keys():raise ValueError('File list mismatch: '+source['name'])
+    bad=[name for name,path in actual.items() if digest(path.read_bytes())!=expected[name]['sha256']]
+    if bad:raise ValueError('Source hash mismatch: '+', '.join(bad[:5]))
 
 @contextmanager
-def staging_directory(parent: Path):
-    # tempfile.mkdtemp の Windows の非継承 ACL を完成品へ持ち込まない。
-    # 最終配置先と同じ親の通常の継承権限で作成する。
-    stage = parent / ('.core-prepare-' + uuid.uuid4().hex)
-    stage.mkdir()
-    try:
-        yield stage
+def staging_directory(parent):
+    stage=parent/('.core-prepare-'+uuid.uuid4().hex);stage.mkdir()
+    try:yield stage
     finally:
         if stage.exists():
-            if stage.parent.resolve() != parent.resolve() or not stage.name.startswith('.core-prepare-'):
-                raise ValueError('Unexpected staging cleanup path')
+            if stage.resolve().parent!=parent.resolve() or not stage.name.startswith('.core-prepare-'):raise ValueError('Unexpected staging cleanup path')
             shutil.rmtree(stage)
 
-
-def prepare(upstream: Path, output: Path, verify_only=False):
-    upstream, output = upstream.resolve(), output.resolve()
-    if output == upstream or output.is_relative_to(upstream) or output.is_relative_to(UI_ROOT):
-        raise ValueError('Prepared sources must be outside the UI and upstream source directories')
-    manifest = json.loads((HERE / 'manifest.json').read_text(encoding='utf-8'))
-    fingerprint = manifest_fingerprint(manifest)
-    marker = output / '.prepared.json'
-    if marker.is_file():
-        previous = json.loads(marker.read_text(encoding='utf-8'))
-        if previous.get('fingerprint') == fingerprint:
-            for source in manifest['sources']:
-                verify_core(output / source['output'], source)
-            print('Prepared sources verified:', output)
-            return
-    if verify_only:
-        raise ValueError('No matching prepared sources: ' + str(output))
-    if output.exists():
-        # 未知のディレクトリや利用者の編集を消さない。更新は新しい出力先へ作る。
-        raise ValueError('Output already exists; choose a new empty output path: ' + str(output))
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with staging_directory(output.parent) as temp:
-        temp = Path(temp)
-        result = temp / 'result'
-        result.mkdir()
+def prepare(upstream,output,verify_only=False):
+    upstream,output=Path(upstream).resolve(),Path(output).resolve()
+    if output==upstream or output.is_relative_to(upstream) or output.is_relative_to(UI_ROOT.resolve()):raise ValueError('Prepared sources must be outside the UI and upstream source directories')
+    manifest=json.loads((HERE/'manifest.json').read_text(encoding='utf8'));fingerprint=manifest_fingerprint(manifest);marker=output/'.prepared.json'
+    if marker.is_file() and json.loads(marker.read_text(encoding='utf8')).get('fingerprint')==fingerprint:
+        for source in manifest['sources']:verify_core(output/source['output'],source)
+        print('Prepared sources verified:',output);return
+    if verify_only:raise ValueError('No matching prepared sources: '+str(output))
+    if output.exists():raise ValueError('Output already exists; choose a new empty output path: '+str(output))
+    output.parent.mkdir(parents=True,exist_ok=True)
+    with staging_directory(output.parent) as stage:
+        result=stage/'result';result.mkdir()
         for source in manifest['sources']:
-            repo = upstream / source['upstream_repo']
-            work = temp / source['name']
-            work.mkdir()
-            export_base(repo, source, work)
-            git(work, 'init', '--quiet', '--initial-branch=prepared')
-            patch = HERE / source['patch']
-            if patch.stat().st_size:
-                git(work, 'apply', '--check', '--binary', '--whitespace=nowarn', str(patch))
-                git(work, 'apply', '--binary', '--whitespace=nowarn', str(patch))
-            verify_core(work / 'src', source)
-            target = result / source['output']
-            target.parent.mkdir(parents=True, exist_ok=True)
-            (work / 'src').rename(target)
-            print(source['name'] + ': ' + str(len(source['files'])) + ' files match the baseline')
-        (result / '.prepared.json').write_text(json.dumps({'fingerprint': fingerprint,
-            'baseline': manifest['baseline']}, indent=2) + '\n', encoding='utf-8')
+            originals=original_files(upstream,source)
+            recipe=json.loads(recipe_path(source).read_text(encoding='utf8'))
+            files=materialize(recipe,lambda archive,path:originals[path] if archive=='source' else (_ for _ in ()).throw(ValueError('Unexpected source archive')))
+            if files.keys()!=source['files'].keys():raise ValueError('Reconstruction file list mismatch')
+            target=(result/source['output']).resolve()
+            if not target.is_relative_to(result.resolve()):raise ValueError('Unsafe source output root')
+            target.mkdir(parents=True)
+            for name,data in files.items():
+                path=(target/name).resolve()
+                if not path.is_relative_to(target.resolve()):raise ValueError('Unsafe source output path')
+                path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
+            verify_core(target,source)
+            print(source['name']+': '+str(len(files))+' files match the baseline',flush=True)
+        (result/'.prepared.json').write_text(json.dumps({'schema':2,'fingerprint':fingerprint,'baseline':manifest['baseline']},indent=2)+'\n',encoding='utf8',newline='\n')
         result.rename(output)
-    print('Prepared sources:', output)
-
+    print('Prepared sources:',output)
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--upstream', type=Path, default=Path(os.environ.get('HENGBAND_UPSTREAM_ROOT', DEFAULT_UPSTREAM)))
-    parser.add_argument('--output', type=Path, default=Path(os.environ.get('HENGBAND_CORE_SOURCE_ROOT', DEFAULT_OUTPUT)))
-    parser.add_argument('--verify', action='store_true')
-    args = parser.parse_args()
-    prepare(args.upstream, args.output, args.verify)
-
-
-if __name__ == '__main__':
-    main()
+    parser=argparse.ArgumentParser();parser.add_argument('--upstream',type=Path,default=Path(os.environ.get('HENGBAND_UPSTREAM_ROOT',DEFAULT_UPSTREAM)));parser.add_argument('--output',type=Path,default=Path(os.environ.get('HENGBAND_CORE_SOURCE_ROOT',DEFAULT_OUTPUT)));parser.add_argument('--verify',action='store_true')
+    args=parser.parse_args();prepare(args.upstream,args.output,args.verify)
+if __name__=='__main__':main()

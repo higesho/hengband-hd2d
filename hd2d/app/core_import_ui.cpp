@@ -167,6 +167,20 @@ bool run_core_import(SDL_Window *window, TextOverlay &base_text, UiPaint &paint,
     std::unique_ptr<CoreImport> importer;
     std::vector<ImportTarget> targets;
     std::string error, zip = source_zip, label = source_zip.empty() ? "" : utf8(fs::u8path(source_zip).filename());
+    std::vector<fs::path> selected_zips;
+    std::map<std::string,std::string> selected_labels;
+    if(!source_zip.empty())selected_zips.push_back(fs::u8path(source_zip));
+    const auto accept_zip=[&](const std::string &path,const std::string &display = std::string()) {
+        auto value=fs::u8path(path);
+        if(std::find(selected_zips.begin(),selected_zips.end(),value)==selected_zips.end()) {
+            if(selected_zips.size()>=5){error=i18n::tr("hd2d.app.core-import.too-many");return;}
+            selected_zips.push_back(value);
+        }
+        selected_labels[path]=display.empty()?utf8(value.filename()):display;
+        zip=utf8(selected_zips.front());label=std::to_string(selected_zips.size())+" ZIP: ";
+        for(const auto &item:selected_zips){if(label.back()!=' ')label+=" / ";auto found=selected_labels.find(utf8(item));label+=found==selected_labels.end()?utf8(item.filename()):found->second;}
+        error.clear();
+    };
     try { importer = std::make_unique<CoreImport>(core_import_config()); targets = importer->targets(); }
     catch (const std::exception &e) { error = e.what(); std::fprintf(stderr, "[core-import] %s\n", e.what()); }
     int selected = 0;
@@ -176,7 +190,7 @@ bool run_core_import(SDL_Window *window, TextOverlay &base_text, UiPaint &paint,
         auto status = importer ? importer->status() : CoreImportStatus{};
         changed = changed || status.succeeded;
         if (closing && !status.running) { if (quit) { SDL_Event event{}; event.type = SDL_QUIT; SDL_PushEvent(&event); } return changed; }
-        { std::lock_guard<std::mutex> lock(picker_mutex); if (!picked_zip.empty()) { if (picked_zip.front() == '!') error = picked_zip.substr(1); else { zip = picked_zip; label = picked_label.empty() ? utf8(fs::u8path(zip).filename()) : picked_label; error.clear(); } picked_zip.clear(); picked_label.clear(); } }
+        { std::lock_guard<std::mutex> lock(picker_mutex); if (!picked_zip.empty()) { if (picked_zip.front() == '!') error = picked_zip.substr(1); else { if(!status.running)accept_zip(picked_zip,picked_label); } picked_zip.clear(); picked_label.clear(); } }
         int w = 0, h = 0; SDL_GetWindowSize(window, &w, &h);
         const float scale = core_import_font_size(w, h) / 16.f;
         const int margin = std::max(24, static_cast<int>(16 * scale));
@@ -185,26 +199,28 @@ bool run_core_import(SDL_Window *window, TextOverlay &base_text, UiPaint &paint,
         const int room = (h - list_y - button_h - text.cell_h() * 5 - margin * 3) / std::max(1, static_cast<int>(targets.size()));
         const int row_h = std::max(text.cell_h() + static_cast<int>(8 * scale), std::min(button_h, room));
         const int buttons_y = list_y + row_h * static_cast<int>(targets.size()) + margin;
-        const int button_width = (w - margin * 4) / 3;
+        const int button_width = (w - margin * 5) / 4;
         const RectPx browse{margin, buttons_y, button_width, button_h};
-        const RectPx build{margin * 2 + button_width, buttons_y, button_width, button_h};
-        const RectPx cancel{margin * 3 + button_width * 2, buttons_y, button_width, button_h};
+        const RectPx clear{margin * 2 + button_width, buttons_y, button_width, button_h};
+        const RectPx build{margin * 3 + button_width * 2, buttons_y, button_width, button_h};
+        const RectPx cancel{margin * 4 + button_width * 3, buttons_y, button_width, button_h};
         auto hit = [](const RectPx &r, int x, int y) { return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h; };
         auto begin = [&] {
             if (!closing && !status.running && !zip.empty() && importer && !targets.empty()) {
                 error.clear();
-                try { importer->start(fs::u8path(zip), targets[selected].id); }
+                try { importer->start(selected_zips.front(), targets[selected].id, std::vector<fs::path>(selected_zips.begin()+1,selected_zips.end())); }
                 catch (const std::exception &e) { error = e.what(); }
                 status = importer->status();
             }
         };
+        const auto clear_selection=[&]{selected_zips.clear();selected_labels.clear();zip.clear();label.clear();error.clear();};
         auto close = [&] { if (status.running) { importer->cancel(); closing = true; } else closing = true; };
         test_keyboard().poll("core-import");
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (pad && pad->on_event(e)) continue;
             if (e.type == SDL_QUIT) { quit = true; close(); }
-            if (e.type == SDL_DROPFILE) { if (!status.running) { zip = e.drop.file; label = utf8(fs::u8path(zip).filename()); } SDL_free(e.drop.file); }
+            if (e.type == SDL_DROPFILE) { if (!status.running) { accept_zip(e.drop.file); } SDL_free(e.drop.file); }
             if (e.type == SDL_KEYDOWN) {
                 const auto key = e.key.keysym.sym;
                 if (key == SDLK_ESCAPE) close();
@@ -212,6 +228,7 @@ bool run_core_import(SDL_Window *window, TextOverlay &base_text, UiPaint &paint,
                     if (key == SDLK_UP) selected = (selected + static_cast<int>(targets.size()) - 1) % static_cast<int>(targets.size());
                     if (key == SDLK_DOWN) selected = (selected + 1) % static_cast<int>(targets.size());
                     if (key == SDLK_o) choose_zip(window);
+                    if (key == SDLK_c) clear_selection();
                     if (key == SDLK_RETURN) { if (zip.empty()) choose_zip(window); else begin(); }
                 }
             }
@@ -222,6 +239,7 @@ bool run_core_import(SDL_Window *window, TextOverlay &base_text, UiPaint &paint,
                 if (hit(cancel, x, y)) close();
                 if (!status.running) {
                     if (hit(browse, x, y)) choose_zip(window);
+                    else if (hit(clear,x,y)) clear_selection();
                     else if (hit(build, x, y)) begin();
                     else if (y >= list_y && y < list_y + row_h * static_cast<int>(targets.size())) selected = (y - list_y) / row_h;
                 }
@@ -240,14 +258,15 @@ bool run_core_import(SDL_Window *window, TextOverlay &base_text, UiPaint &paint,
         glClearColor(.025f, .03f, .055f, 1); glClear(GL_COLOR_BUFFER_BIT);
         paint.begin(w, h);
         if (!targets.empty()) paint.rect({margin, list_y + row_h * selected, w - margin * 2, row_h}, {.15f, .24f, .38f, 1});
-        for (auto r : {browse, build, cancel}) paint.rect(r, {.15f, .2f, .3f, 1});
+        for (auto r : {browse, clear, build, cancel}) paint.rect(r, {.15f, .2f, .3f, 1});
         if (status.total > 0) paint.rect({24, buttons_y + button_h + 12, (w - 48) * status.completed / status.total, 8}, {.3f, .7f, .9f, 1});
         paint.flush(); text.begin(w, h);
         const TextColor white{1, 1, 1, 1};
         text.draw(margin, margin, i18n::tr("hd2d.app.core-import.title"), white, w - 48);
-        for (std::size_t i = 0; i < targets.size(); ++i) text.draw(margin + 12, list_y + static_cast<int>(i) * row_h + (row_h - text.cell_h()) / 2, targets[i].name + "  " + targets[i].version, white, w - 72);
-        text.draw(browse.x + 10, browse.y + (button_h - text.cell_h()) / 2, core_import_caption("hd2d.app.core-import.choose"), white, browse.w - 20);
-        text.draw(build.x + 10, build.y + (button_h - text.cell_h()) / 2, core_import_caption("hd2d.app.core-import.build"), white, build.w - 20);
+        for (std::size_t i = 0; i < targets.size(); ++i) text.draw(margin + 12, list_y + static_cast<int>(i) * row_h + (row_h - text.cell_h()) / 2, targets[i].name + "  " + targets[i].version + (targets[i].sources.size()>1?" + "+targets[i].sources[1]:""), white, w - 72);
+        text.draw(browse.x + 10, browse.y + (button_h - text.cell_h()) / 2, core_import_caption("hd2d.app.core-import.add"), white, browse.w - 20);
+        text.draw(clear.x + 10, clear.y + (button_h - text.cell_h()) / 2, core_import_caption("hd2d.app.core-import.clear"), white, clear.w - 20);
+        text.draw(build.x + 10, build.y + (button_h - text.cell_h()) / 2, core_import_caption("hd2d.app.core-import.start"), white, build.w - 20);
         text.draw(cancel.x + 10, cancel.y + (button_h - text.cell_h()) / 2, status.running ? (core_import_caption("hd2d.app.core-import.cancel")) : (core_import_caption("hd2d.app.core-import.back")), white, cancel.w - 20);
         int y = buttons_y + button_h + margin;
         text.draw(24, y, zip.empty() ? (i18n::tr("hd2d.app.core-import.source")) : label, white, w - 48);

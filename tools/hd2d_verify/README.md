@@ -66,3 +66,12 @@ python tools/hd2d_verify/test_core_import.py D:/sources/silq-source.zip --app-di
 Sil-Q の対応版 ZIP を指定する。コアがない配布物でも、ZIP 選択・ビルド・登録・起動を確認する。
 保存先には日本語・空白・絵文字を含め、セーブと設定は復元する。検査結果は scratch_old/core-import-ui-* に保存する。
 テスト入力には `--drop-file` も使用できる。
+
+
+複数ZIPと選択解除を確認する例（2番目のZIPからSil-Qを生成する）:
+
+```powershell
+python tools/hd2d_verify/test_core_import.py D:/sources/hengband-source.zip --extra-zip D:/sources/silq-source.zip --check-clear
+```
+
+範囲再構成の共通検査は `tools/core_sources/test_reconstruction.py`。旧レシピの拒否、範囲外、原作・追加・出力のハッシュ、CP932、改行・BOMの不変条件を確認する。

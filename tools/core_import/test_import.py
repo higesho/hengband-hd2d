@@ -41,7 +41,7 @@ def main():
         path=root/'truncated.zip';path.write_bytes(a.source.read_bytes()[:-20]);run(path,'truncated')
         catalog=json.loads((a.kit/'catalog.json').read_text(encoding='utf-8'))
         recipe=json.loads((a.kit/catalog['targets']['silq']['recipe']).read_text(encoding='utf-8'))
-        first=next(spec['input'] for _,spec in sorted(recipe['files'].items()) if spec['input'])
+        first=next(spec['path'] for _,spec in sorted(recipe['inputs'].items()) if spec['archive']=='source')
         path=root/'bad-crc.zip'
         with zipfile.ZipFile(a.source) as source,zipfile.ZipFile(path,'w',compression=zipfile.ZIP_STORED) as dest:
             for entry in source.infolist():dest.writestr(entry.filename,source.read(entry))

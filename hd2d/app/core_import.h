@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <atomic>
 #include <filesystem>
@@ -10,6 +10,7 @@ namespace hd2d {
 
 struct ImportTarget {
     std::string id, name, version;
+    std::vector<std::string> sources;
 };
 
 struct CoreImportStatus {
@@ -31,7 +32,8 @@ public:
     CoreImport(const CoreImport &) = delete;
     CoreImport &operator=(const CoreImport &) = delete;
     std::vector<ImportTarget> targets() const;
-    void start(const std::filesystem::path &zip, const std::string &target);
+    void start(const std::filesystem::path &zip, const std::string &target,
+        const std::vector<std::filesystem::path> &extra_zips = {});
     void cancel();
     CoreImportStatus status() const;
 private:

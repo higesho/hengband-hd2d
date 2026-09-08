@@ -124,7 +124,7 @@
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\third_party\cpp\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\platform;..\..\third_party\cpp\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
@@ -172,7 +172,7 @@ copy /Y "$(HengbandSdlBinDebug)\jsoncpp.dll" "$(OutDir)"
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\third_party\cpp\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\hd2d;..\..\presentation;..\..\platform;..\..\third_party\cpp\include;$(HengbandSdlInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
@@ -228,6 +228,8 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
   <ItemGroup>
     <ClCompile Include="..\..\hd2d\app\hd2d_app.cpp" />
     <ClCompile Include="..\..\hd2d\app\core_import.cpp" />
+    <ClCompile Include="..\..\hd2d\app\source_reconstruction.cpp" />
+    <ClCompile Include="..\..\platform\portable\cp932.cpp" />
     <ClCompile Include="..\..\hd2d\app\core_import_ui.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\asset_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\app_support.cpp" />

@@ -25,7 +25,7 @@
 
 ### 遊び方
 
-zip を展開して `HengbandHd2d.exe` を起動してください。コンパイラー同梱版では、最初に「コアをインポート」から対応する原作 ZIP を選びます。ビルドが終わると、そのゲームを選んで遊べます。対応版と入手先は [原作 ZIP の取り込み](tools/core_import/README.md) を参照してください。
+zip を展開して `HengbandHd2d.exe` を起動してください。コンパイラー同梱版では、最初に「コアをインポート」から対応する原作 ZIP を選びます。ビルドが終わると、そのゲームを選んで遊べます。短愚では短愚と変愚の2つのZIPを追加します。対応版と入手先は [原作 ZIP の取り込み](tools/core_import/README.md) を参照してください。
 
 `HengbandCore.exe` などのゲーム本体（コア）は画面側から起動される作りになっているため、単体では起動しません。
 
@@ -352,3 +352,9 @@ Different parts are under different licenses. See [LICENSE](LICENSE).
 
 Thanks to the authors and contributors of Hengband and its ancestors ZAngband, Angband, Umoria and Moria,
 and of Gensoband, Sil-Q and FroxComposband.
+
+### Source reconstruction / ソース再構成
+
+原作本文入りのパッチを、ハッシュ確認済みの入力への範囲参照・文字変換・追加内容を持つschema 2へ変更しました。開発用とUIのインポートで同じ復元形式を使います。旧キットは再生成が必要です。
+
+Source reconstruction now uses schema 2: verified input ranges, encoding transformations and explicit additions. Regenerate legacy import kits for the updated UI. Tangband requires both the pinned Tangband and Hengband source ZIPs. Existing registered cores and saves are retained. See [import instructions](tools/core_import/README.md).

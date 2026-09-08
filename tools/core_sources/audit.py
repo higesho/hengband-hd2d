@@ -2,12 +2,14 @@
 import subprocess
 import xml.etree.ElementTree as ET
 from paths import prepared_root
-from prepare import UI_ROOT, DEFAULT_UPSTREAM, prepare
+from prepare import UI_ROOT, DEFAULT_UPSTREAM, prepare, HERE
 
 ORIGINAL_TREES = ('src', 'gensoband/src', 'silq/src', 'frox/src', 'hengband-3.0.2.4-Beta')
 
 
 def main():
+    if list((HERE / "patches").glob("*.patch")):
+        raise RuntimeError("Old source-body patches remain in the active source tools")
     for path in ORIGINAL_TREES:
         if (UI_ROOT / path).exists() or (UI_ROOT / path).is_symlink():
             raise RuntimeError('Original source still exists inside UI: ' + path)

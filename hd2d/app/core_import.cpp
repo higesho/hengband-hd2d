@@ -1,4 +1,5 @@
 ﻿#include "app/core_import.h"
+#include "app/source_reconstruction.h"
 
 #include <algorithm>
 #include <chrono>
@@ -201,27 +202,6 @@ public:
     }
 };
 
-std::string unhex(const std::string &s)
-{
-    if (s.size() % 2) throw std::runtime_error("Invalid patch encoding");
-    std::string out;
-    const auto digit = [](char c) { if (c >= '0' && c <= '9') return c - '0'; if (c >= 'a' && c <= 'f') return c - 'a' + 10; throw std::runtime_error("Invalid patch digit"); };
-    for (std::size_t i = 0; i < s.size(); i += 2) out += char(digit(s[i]) * 16 + digit(s[i + 1]));
-    return out;
-}
-
-std::string patch(const std::string &original, const Json &edits)
-{
-    std::string out; std::size_t cursor = 0;
-    for (const auto &edit : edits) {
-        auto start = edit[0].get<std::size_t>(), count = edit[1].get<std::size_t>();
-        if (start < cursor || start > original.size() || count > original.size() - start) throw std::runtime_error("Invalid patch offset");
-        out.append(original, cursor, start - cursor); out += unhex(edit[2]); cursor = start + count;
-    }
-    out.append(original, cursor, original.size() - cursor);
-    return out;
-}
-
 std::string substitute(std::string value, const std::map<std::string, std::string> &values)
 {
     for (const auto &p : values) {
@@ -306,7 +286,7 @@ struct CoreImport::Impl {
         current.phase = std::move(phase); current.message = std::move(message); current.completed = completed; current.total = total;
     }
     void check_cancel() const { if (cancelled) throw std::runtime_error("Cancelled"); }
-    void execute(const fs::path &zip_path, const std::string &id) {
+    void execute(const fs::path &zip_path, const std::string &id, const std::vector<fs::path> &extra_zips) {
         fs::path work;
         try {
             ImportLock lock(config.storage / "import.lock");
@@ -336,29 +316,49 @@ struct CoreImport::Impl {
                 }
             }
             report("verify", "Checking source ZIP");
-            SourceZip zip(zip_path);
-            const auto prefix = zip.prefix(recipe.at("probe"));
+            if(recipe.at("schema")!=2) throw std::runtime_error("Source recipe version changed. Rebuild the import kit.");
+            if(extra_zips.size()>4) throw std::runtime_error("Too many source ZIP files");
+            std::uintmax_t total_zip_bytes=fs::file_size(zip_path);
+            constexpr std::uintmax_t max_zip_bytes=512u*1024u*1024u;
+            if(total_zip_bytes>max_zip_bytes)throw std::runtime_error("Source ZIP total size limit exceeded");
+            for(const auto &path:extra_zips) {
+                const auto size=fs::file_size(path);
+                if(size>max_zip_bytes-total_zip_bytes)throw std::runtime_error("Source ZIP total size limit exceeded");
+                total_zip_bytes+=size;
+            }
+            std::vector<std::unique_ptr<SourceZip>> source_zips;
+            source_zips.push_back(std::make_unique<SourceZip>(zip_path));
+            for(const auto &path:extra_zips) source_zips.push_back(std::make_unique<SourceZip>(path));
+            if(!recipe.at("archives").is_object() || recipe.at("archives").empty() || recipe.at("archives").size()>5) throw std::runtime_error("Invalid source archive requirements");
+            std::map<std::string,std::pair<SourceZip *,std::string>> archives;
+            for(auto it=recipe.at("archives").begin();it!=recipe.at("archives").end();++it) {
+                check_cancel();const auto &desc=it.value();const auto probe=desc.at("probe").get<std::string>();
+                if(!safe_name(probe)) throw std::runtime_error("Unsafe source probe path");
+                std::string rejection;
+                for(auto &candidate:source_zips) {
+                    bool found_probe=false;
+                    try {
+                        auto prefix=candidate->prefix(probe);found_probe=true;
+                        if(sha(canonical(candidate->get(prefix+probe)))==desc.at("sha256").get<std::string>()) {
+                            archives.emplace(it.key(),std::make_pair(candidate.get(),prefix));break;
+                        }
+                        if(rejection.empty())rejection="Unsupported or modified source version: "+probe;
+                    } catch(const std::exception &e) { if(found_probe && rejection.empty())rejection=e.what(); }
+                }
+                if(!archives.count(it.key())) throw std::runtime_error("Source ZIP required: "+desc.at("name").get<std::string>()+" "+desc.at("version").get<std::string>()+(rejection.empty()?"":"; "+rejection));
+            }
             auto session = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
             work = config.storage / "work" / (id + "-" + session);
             fs::create_directories(work.parent_path());
             if (!fs::create_directory(work)) throw std::runtime_error("Cannot create import workspace");
             const auto sources = work / "source";
-            int completed = 0;
-            for (auto it = recipe["files"].begin(); it != recipe["files"].end(); ++it) {
-                check_cancel();
-                if (!safe_name(it.key())) throw std::runtime_error("Unsafe recipe path");
-                const auto &spec = it.value();
-                std::string original;
-                if (!spec["input"].is_null()) {
-                    const auto input = spec["input"].get<std::string>();
-                    if (!safe_name(input)) throw std::runtime_error("Unsafe source path");
-                    original = canonical(zip.get(prefix + input));
-                    if (sha(original) != spec["input_sha256"].get<std::string>()) throw std::runtime_error("Unsupported or modified source version: " + input);
-                }
-                auto result = patch(original, spec["edits"]);
-                if (sha(result) != spec["sha256"].get<std::string>()) throw std::runtime_error("Patched source checksum mismatch: " + it.key());
-                write_file(sources / fs::u8path(it.key()), result);
-                report("verify", it.key(), ++completed, static_cast<int>(recipe["files"].size()));
+            auto rebuilt=reconstruct_sources(recipe,[&](const std::string &archive,const std::string &path) {
+                check_cancel();if(!safe_name(path))throw std::runtime_error("Unsafe source path");
+                const auto &selected=archives.at(archive);return selected.first->get(selected.second+path);
+            },[&]{check_cancel();},[&](const std::string &path,int completed,int total){report("verify",path,completed,total);});
+            for(const auto &[path,data]:rebuilt) {
+                check_cancel();if(!safe_name(path))throw std::runtime_error("Unsafe recipe path");
+                write_file(sources/fs::u8path(path),data);
             }
             const auto output_name = recipe.at("output").get<std::string>();
             if (!safe_name(output_name) || fs::u8path(output_name).has_parent_path()) throw std::runtime_error("Invalid core output name");
@@ -453,14 +453,14 @@ CoreImportStatus CoreImport::status() const { std::lock_guard<std::mutex> lock(i
 std::vector<ImportTarget> CoreImport::targets() const {
     std::vector<ImportTarget> result;
     auto catalog = Json::parse(read_file(impl_->config.kit / "catalog.json"));
-    for (auto it = catalog.at("targets").begin(); it != catalog.at("targets").end(); ++it) result.push_back({it.key(), it.value().at("name"), it.value().at("version")});
+    for (auto it = catalog.at("targets").begin(); it != catalog.at("targets").end(); ++it) result.push_back({it.key(), it.value().at("name"), it.value().at("version"), it.value().value("sources",std::vector<std::string>{})});
     return result;
 }
-void CoreImport::start(const fs::path &zip, const std::string &target) {
+void CoreImport::start(const fs::path &zip, const std::string &target, const std::vector<fs::path> &extra_zips) {
     if (status().running) throw std::runtime_error("An import is already running");
     if (impl_->worker.joinable()) impl_->worker.join();
     impl_->cancelled = false;
     { std::lock_guard<std::mutex> lock(impl_->mutex); impl_->current = {}; impl_->current.running = true; }
-    impl_->worker = std::thread([this, zip, target] { impl_->execute(zip, target); });
+    impl_->worker = std::thread([this, zip, target, extra_zips] { impl_->execute(zip, target, extra_zips); });
 }
 } // namespace hd2d

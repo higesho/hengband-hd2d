@@ -247,6 +247,7 @@ add_library(main SHARED
     ${HB_FRAME_SRC}
     ${HB_UI_PLATFORM_SRC}
     "${HB_ROOT}/third_party/cpp/fmt/format.cc"
+    "${HB_ROOT}/platform/portable/cp932.cpp"
 )
 hengband_common_config(main)
 target_compile_definitions(main PRIVATE
