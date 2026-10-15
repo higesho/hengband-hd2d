@@ -1019,6 +1019,26 @@ bool VirtualPad::take_pressed(PadPress &out)
     return true;
 }
 
+bool VirtualPad::input_down(PadInput input) const
+{
+    if (this->editor_open_) {
+        return false; //!< 編集画面の掴みは配置を動かす指であって、ボタンを押しているのではない
+    }
+    for (const Grab &g : this->grabs_) {
+        if (!g.active || (g.control < 0)) {
+            continue;
+        }
+        const auto c = static_cast<VpadControl>(g.control);
+        if ((c == VpadControl::LS) || (c == VpadControl::RS)) {
+            continue;
+        }
+        if (vpad_control_input(c) == input) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool VirtualPad::poll_direction(std::uint32_t now_ms, int &dx, int &dy)
 {
     if ((this->tap_dx_ != 0) || (this->tap_dy_ != 0)) {

@@ -16,7 +16,7 @@ const std::vector<int> &ui_action_ids()
 {
     static const std::vector<int> ids{ kActionFeatureMenu, kActionLayoutCycle, kActionSubsToggle, kActionFpsToggle,
         kActionFpsLevelView, kActionVrRecenter, kActionTurnLeft, kActionTurnRight,
-        kActionMainPanelToggle, kActionCommandMenu };
+        kActionMainPanelToggle, kActionCommandMenu, kActionDiagonalOnly };
     return ids;
 }
 
@@ -43,6 +43,8 @@ const char *ui_action_label(int action)
         return i18n::tr("hd2d.ui.key-binds.switch-the-main-panel-3d-ascii");
     case kActionCommandMenu:
         return i18n::tr("hd2d.ui.key-binds.open-the-command-menu");
+    case kActionDiagonalOnly:
+        return i18n::tr("hd2d.ui.key-binds.diagonal-only");
     default:
         return "";
     }
@@ -73,6 +75,28 @@ bool key_is_reserved(int keycode)
     }
 }
 
+bool key_is_modifier(int keycode)
+{
+    switch (keycode) {
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+    case SDLK_LCTRL:
+    case SDLK_RCTRL:
+    case SDLK_LALT:
+    case SDLK_RALT:
+    case SDLK_LGUI:
+    case SDLK_RGUI:
+        return true;
+    default:
+        return false;
+    }
+}
+
+int binding_mods(int keycode, int mods)
+{
+    return key_is_modifier(keycode) ? 0 : mods;
+}
+
 bool key_is_escape(int keycode)
 {
     return keycode == SDLK_ESCAPE;
@@ -94,7 +118,7 @@ int KeyBinds::action_for(int keycode, int mods) const
         return kActionNone;
     }
     for (const auto &entry : this->entries) {
-        if ((entry.keycode == keycode) && (entry.mods == mods)) {
+        if ((entry.keycode == keycode) && (entry.mods == binding_mods(keycode, mods))) {
             return entry.action;
         }
     }
@@ -106,6 +130,7 @@ bool KeyBinds::assign(int action, int keycode, int mods)
     if ((action == kActionNone) || (keycode == 0) || key_is_reserved(keycode)) {
         return false;
     }
+    mods = binding_mods(keycode, mods); //!< 修飾キーを単独で割り当てるときは修飾を持たない
     //! **先客から外す。**同じキーが 2 つの操作を出す表を作らない。
     for (auto it = this->entries.begin(); it != this->entries.end();) {
         if ((it->keycode == keycode) && (it->mods == mods) && (it->action != action)) {
@@ -190,6 +215,10 @@ KeyBinds default_key_binds()
      * 変更できる（`ui_action_ids()` に元から入っている）。
      */
     (void)binds.assign(kActionCommandMenu, SDLK_F1, 0);
+    /*
+     * **斜め移動限定（`kActionDiagonalOnly`）は既定では割り当てない**（決めたこと 2026-10-15
+     * 「パッドもキーボードも未割り当てにしてユーザーに任せよう」）。割り当ての画面から付ける。
+     */
     return binds;
 }
 

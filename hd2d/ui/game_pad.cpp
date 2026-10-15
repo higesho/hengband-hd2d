@@ -6,6 +6,7 @@
 
 #include "i18n/lang.h"
 
+#include "ui/diagonal_only.h"
 #include "ui/key_binds.h"
 
 #include <SDL2/SDL.h>
@@ -364,6 +365,8 @@ void GamePad::forget_direction_hold()
     this->rearm_pending_ = true;
     this->stick_x_ = 0;
     this->stick_y_ = 0;
+    this->stick_raw_x_ = 0;
+    this->stick_raw_y_ = 0;
     for (bool &down : this->dpad_) {
         down = false;
     }
@@ -376,6 +379,9 @@ void GamePad::forget_hold()
     this->forget_direction_hold();
     for (bool &down : this->trigger_down_) {
         down = false;
+    }
+    for (bool &down : this->button_down_) {
+        down = false; //!< 焦点を失ったら「押している」も忘れる（斜め移動限定が押しっぱなしにならない）
     }
     this->pressed_.clear();
     //! 修飾を握ったままにしない（焦点が戻った瞬間に同時押しが成立すると気味が悪い）。
@@ -450,6 +456,7 @@ bool GamePad::on_event(const SDL_Event &event)
         if (input == PadInput::Count) {
             return true;
         }
+        this->button_down_[static_cast<int>(input)] = down; //!< `input_down()` が見る（押している間だけ効く操作用）
         /*
          * **同時押しは離しも見る**（`PadChord`）。修飾（LB/RB）は押した瞬間には出さず、
          * 単独だったと確定する離しで初めて出す。ほかのボタンは今までどおり押した瞬間。
@@ -471,9 +478,11 @@ bool GamePad::on_event(const SDL_Event &event)
         switch (event.caxis.axis) {
         case SDL_CONTROLLER_AXIS_LEFTX:
             this->stick_x_ = latch(this->stick_x_, event.caxis.value);
+            this->stick_raw_x_ = event.caxis.value;
             return true;
         case SDL_CONTROLLER_AXIS_LEFTY:
             this->stick_y_ = latch(this->stick_y_, event.caxis.value);
+            this->stick_raw_y_ = event.caxis.value;
             return true;
         case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
         case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: {
@@ -568,8 +577,10 @@ void GamePad::feed_external(const ExternalPadState &state)
     const auto to_raw = [](float v) {
         return static_cast<int>(std::clamp(v, -1.f, 1.f) * 32767.f);
     };
-    this->stick_x_ = latch(this->stick_x_, to_raw(state.left_x));
-    this->stick_y_ = latch(this->stick_y_, to_raw(state.left_y));
+    this->stick_raw_x_ = to_raw(state.left_x);
+    this->stick_raw_y_ = to_raw(state.left_y);
+    this->stick_x_ = latch(this->stick_x_, this->stick_raw_x_);
+    this->stick_y_ = latch(this->stick_y_, this->stick_raw_y_);
     this->external_right_x_ = std::clamp(state.right_x, -1.f, 1.f);
     this->external_right_y_ = std::clamp(state.right_y, -1.f, 1.f);
 }
@@ -590,11 +601,47 @@ void GamePad::current_direction(int &dx, int &dy) const
     if (this->dpad_[3]) {
         dx += 1;
     }
+    if (this->diagonal_only_) {
+        /*
+         * 斜め移動限定（`ui/diagonal_only.h`）。十字が入っていれば十字だけを見る：2 方向の同時押し（斜め）は出し、
+         * 1 方向だけは出さない（スティックへ落とすと、十字の 1 方向が止まっているのにスティックで動いてしまう）。
+         * 十字が中立なら、スティックの生の値を角度で斜めへ寄せる（軸の前後は動かない）。
+         */
+        if ((dx != 0) || (dy != 0)) {
+            if (is_orthogonal_step(dx, dy)) {
+                dx = 0;
+                dy = 0;
+            }
+            return;
+        }
+        const bool was_diagonal = (this->held_dx_ != 0) && (this->held_dy_ != 0);
+        stick_to_diagonal(this->stick_raw_x_, this->stick_raw_y_, was_diagonal, kStickEnter, kStickLeave, dx, dy);
+        return;
+    }
     //! 十字が中立ならスティックを見る（両方入っているときは十字を優先）。
     if ((dx == 0) && (dy == 0)) {
         dx = this->stick_x_;
         dy = this->stick_y_;
     }
+}
+
+bool GamePad::input_down(PadInput input) const
+{
+    const int index = static_cast<int>(input);
+    if ((index < 0) || (index >= kPadInputCount)) {
+        return false;
+    }
+    if (this->button_down_[index] || this->external_prev_[index]) {
+        return true;
+    }
+    //! トリガは軸なので別に持っている（半分より深く押している間）。
+    if (input == PadInput::LeftTrigger) {
+        return this->trigger_down_[0];
+    }
+    if (input == PadInput::RightTrigger) {
+        return this->trigger_down_[1];
+    }
+    return false;
 }
 
 bool GamePad::poll_direction(std::uint32_t now_ms, bool focused, int &dx, int &dy, int walk_repeat_ms)

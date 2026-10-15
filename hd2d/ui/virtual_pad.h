@@ -204,6 +204,8 @@ public:
 
     //! 押し 1 回ぶんを取り出す。無ければ false（`GamePad::take_pressed` と同じ口）。
     bool take_pressed(PadPress &out);
+    //! そのボタンを指で押さえている間か（`GamePad::input_down` と同じ口。スティックは含まない）。
+    bool input_down(PadInput input) const;
     //! いま押されている修飾（L1 / R1 を指で押さえている間）。
     int chord_mask() const { return this->chord_.mask(); }
 

@@ -37,8 +37,10 @@
 #include <array>
 #include <initializer_list>
 
+#include "ui/diagonal_only.h"
 #include "ui/game_pad.h"
 #include "ui/hd2d_settings.h"
+#include <iterator>
 #include "voxel/part_motion.h"
 #include "voxel/prefab.h"
 #include "world/prefab_library.h"
@@ -787,6 +789,374 @@ int run_pad_check(const AppOptions &options)
     }
 #endif
 
+
+    /*
+     * --- 7. 斜め移動限定（`kActionDiagonalOnly`。決めたこと 2026-10-15） ---
+     * 押している間だけ、地図の上の移動を斜めに限る。窓も実機も要らない：`GamePad` に SDL のコントローラーの
+     * 出来事を直に渡し、`feed_external` で「繋がった」ことにして `poll_direction` を呼ぶ。
+     * キーボードの振り分け（矢印の同時押し・テンキー・字・メニューの間）は `--ui-check` の SDL 入力の検査（`HD2D_SDL_INPUT_CHECK`）。
+     */
+    {
+        //! (a) 既定・名前・一覧：キーボードにもパッドにも置かない（遊ぶ人が割り当てる）。
+        const KeyBindEntry def = default_key_binds().find(kActionDiagonalOnly);
+        if (def.keycode != 0) {
+            fail("斜め移動限定に既定のキーが割り当てられている（既定は未割り当ての約束）");
+        }
+        for (const int key : { static_cast<int>(SDLK_INSERT), static_cast<int>(SDLK_RALT), static_cast<int>(SDLK_RCTRL) }) {
+            if (default_key_binds().action_for(key, 0) == kActionDiagonalOnly) {
+                fail("既定の割り当てを引くと斜め移動限定になるキーがある");
+            }
+        }
+        bool listed = false;
+        for (const int id : ui_action_ids()) {
+            listed = listed || (id == kActionDiagonalOnly);
+        }
+        if (!listed) {
+            fail("斜め移動限定が割り当ての画面の一覧（ui_action_ids）に無い");
+        }
+        const char *const label = ui_action_label(kActionDiagonalOnly);
+        if ((label == nullptr) || (label[0] == '\0')) {
+            fail("斜め移動限定に名前（ui_action_label）が無い");
+        }
+        const std::vector<PadCommand> none_commands;
+        for (const char *const core : { "hengband", "tangband", "gensoband", "frox", "silq", "angband", "Umoria", "Rogue 3.6", "Rogue 5.4",
+                 "RogueClone2" }) {
+            PadBinds fresh;
+            (void)apply_default_pad_binds(fresh, none_commands, core);
+            if (fresh.input_for(kActionDiagonalOnly).input != PadInput::Count) {
+                fail("パッドの既定に斜め移動限定が入っている（既定は未割り当ての約束）");
+                break;
+            }
+        }
+        //! キーボードの割り当て：単独の修飾キー（Shift・Ctrl・Alt の左右）も割り当てられる。修飾は持たず、
+        //! 先に別の修飾を押していても（Shift を押してから右 Alt など）、AltGr の左 Ctrl つきでも引ける。
+        {
+            struct Lone {
+                SDL_Keycode key;
+                int own_mod;
+            };
+            for (const Lone lone : { Lone{ SDLK_LSHIFT, kModShift }, Lone{ SDLK_RSHIFT, kModShift }, Lone{ SDLK_LCTRL, kModCtrl },
+                     Lone{ SDLK_RCTRL, kModCtrl }, Lone{ SDLK_LALT, kModAlt }, Lone{ SDLK_RALT, kModAlt } }) {
+                KeyBinds binds = default_key_binds();
+                if (!binds.assign(kActionDiagonalOnly, lone.key, lone.own_mod)) {
+                    fail("斜め移動限定に単独の修飾キーを割り当てられない");
+                    continue;
+                }
+                const KeyBindEntry got = binds.find(kActionDiagonalOnly);
+                if ((got.keycode != lone.key) || (got.mods != 0)) {
+                    fail("単独の修飾キーの割り当てが「そのキーだけ」（修飾なし）で記録されない");
+                }
+                for (const int mods : { 0, lone.own_mod, kModShift | kModAlt | kModCtrl }) {
+                    if (binds.action_for(lone.key, mods) != kActionDiagonalOnly) {
+                        fail("単独の修飾キーの割り当てが、ほかの修飾を押していると引けない");
+                    }
+                }
+                if (key_display_name(got.keycode, got.mods).find('+') != std::string::npos) {
+                    fail("単独の修飾キーの表示に「Alt+」のような修飾が付く");
+                }
+                //! cfg の綴りで往復する（古い綴り「修飾つき」で書かれていても同じ割り当てになる）。
+                KeyBinds round;
+                round.parse(binds.to_line());
+                if (round.action_for(lone.key, lone.own_mod) != kActionDiagonalOnly) {
+                    fail("単独の修飾キーの割り当てが cfg の綴りで往復できない");
+                }
+                KeyBinds old_form;
+                old_form.parse("-11:" + std::to_string(static_cast<int>(lone.key)) + ":" + std::to_string(lone.own_mod));
+                if (old_form.action_for(lone.key, 0) != kActionDiagonalOnly) {
+                    fail("修飾つきの古い綴りの割り当てが単独の修飾キーとして読めない");
+                }
+            }
+            //! ほかの操作の割り当ては今までどおり（修飾＋キーは修飾を持つ）。
+            KeyBinds other = default_key_binds();
+            (void)other.assign(kActionFeatureMenu, SDLK_F10, kModCtrl);
+            if ((other.find(kActionFeatureMenu).mods != kModCtrl) || (other.action_for(SDLK_F10, 0) == kActionFeatureMenu)
+                || (other.action_for(SDLK_F10, kModCtrl) != kActionFeatureMenu)) {
+                fail("修飾＋キーの割り当てが今までどおりに修飾を持たない");
+            }
+            //! 同じキーを 2 つの操作に持たせない（修飾キーでも先客から外れる）。
+            KeyBinds twice = default_key_binds();
+            (void)twice.assign(kActionSubsToggle, SDLK_RALT, kModAlt);
+            (void)twice.assign(kActionDiagonalOnly, SDLK_RALT, kModAlt);
+            if ((twice.find(kActionSubsToggle).keycode != 0) || (twice.action_for(SDLK_RALT, kModAlt) != kActionDiagonalOnly)) {
+                fail("同じ修飾キーが 2 つの操作に割り当たった");
+            }
+            //! ESC で消すと未割り当てに戻る（既定と同じ）。
+            twice.clear(kActionDiagonalOnly);
+            if (twice.find(kActionDiagonalOnly).keycode != 0) {
+                fail("斜め移動限定の割り当てが消せない");
+            }
+        }
+        //! パッドの割り当て：ボタンへ割り当てて、cfg の綴りで往復できる（負の番号 −11 も通る）。
+        {
+            PadBinds binds;
+            if (!binds.assign(kActionDiagonalOnly, PadInput::X)) {
+                fail("斜め移動限定をパッドのボタンに割り当てられない");
+            }
+            PadBinds round;
+            round.parse(binds.to_line());
+            if (round.input_for(kActionDiagonalOnly).input != binds.input_for(kActionDiagonalOnly).input) {
+                fail("斜め移動限定のパッドの割り当てが cfg の綴りで往復できない");
+            }
+        }
+        //! (b) cfg：既定は未割り当てなので、前の版の設定にも何も足さない。割り当てたものは書いて読んで同じ。
+        {
+            const std::filesystem::path cfg = std::filesystem::temp_directory_path() / "hd2d_pad_check_diag.cfg";
+            const auto write_cfg = [&](const std::string &text) {
+                std::ofstream out(cfg, std::ios::binary | std::ios::trunc);
+                out << text;
+            };
+            const auto num = [](int v) { return std::to_string(v); };
+            const std::string f10 = num(static_cast<int>(SDLK_F10));
+            const std::string f1 = num(static_cast<int>(SDLK_F1));
+            //! 前の版（epoch 1）の cfg：斜め移動限定は未割り当てのまま。遊ぶ人の元の割り当ても変わらない。
+            write_cfg("key_bind=-1:" + f10 + ":0,-10:" + f1 + ":0\nkey_bind_epoch=1\n");
+            Hd2dSettings a;
+            if (!load_settings(cfg.string(), a)) {
+                fail("検査の足場：cfg が読めない");
+            }
+            if (a.key_binds.find(kActionDiagonalOnly).keycode != 0) {
+                fail("前の版の cfg に、斜め移動限定の割り当てが勝手に足された");
+            }
+            if ((a.key_binds.find(kActionFeatureMenu).keycode != SDLK_F10) || (a.key_binds.find(kActionCommandMenu).keycode != SDLK_F1)) {
+                fail("読み込みで、遊ぶ人の元の割り当てが変わった");
+            }
+            //! 一番古い cfg（epoch の行が無い）：F1（epoch 1 で足した既定）は届くが、斜め移動限定は未割り当て。
+            write_cfg("key_bind=-1:" + f10 + ":0\n");
+            Hd2dSettings e;
+            (void)load_settings(cfg.string(), e);
+            if ((e.key_binds.find(kActionCommandMenu).keycode != SDLK_F1) || (e.key_binds.find(kActionDiagonalOnly).keycode != 0)) {
+                fail("epoch の無い古い cfg：F1 の既定は届き、斜め移動限定は未割り当てのままのはず");
+            }
+            //! key_bind の行が無い cfg は、初期値（既定）のまま未割り当て。
+            write_cfg("lang=ja\n");
+            Hd2dSettings f;
+            (void)load_settings(cfg.string(), f);
+            if (f.key_binds.find(kActionDiagonalOnly).keycode != 0) {
+                fail("key_bind の行が無い cfg で、斜め移動限定に割り当てがある");
+            }
+            //! 書いて読んでも同じ。右 Alt を単独で割り当てると cfg には修飾なしで書かれ、epoch は 1 のまま。
+            Hd2dSettings saved;
+            (void)saved.key_binds.assign(kActionDiagonalOnly, SDLK_RALT, kModAlt);
+            Hd2dSettings back;
+            if (!save_settings(cfg.string(), saved) || !load_settings(cfg.string(), back)
+                || (back.key_binds.find(kActionDiagonalOnly).keycode != SDLK_RALT)
+                || (back.key_binds.find(kActionDiagonalOnly).mods != 0)) {
+                fail("斜め移動限定に割り当てた右 Alt が、cfg に書いて読んで同じにならない");
+            }
+            {
+                std::ifstream in(cfg, std::ios::binary);
+                const std::string text((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+                if (text.find("key_bind_epoch=1") == std::string::npos) {
+                    fail("cfg に key_bind_epoch=1 が書かれていない（epoch は上げない約束）");
+                }
+            }
+            //! 割り当てを消した設定は、読み直しても未割り当て（勝手に戻らない）。
+            Hd2dSettings cleared;
+            cleared.key_binds.clear(kActionDiagonalOnly);
+            Hd2dSettings back2;
+            if (!save_settings(cfg.string(), cleared) || !load_settings(cfg.string(), back2)
+                || (back2.key_binds.find(kActionDiagonalOnly).keycode != 0)) {
+                fail("消した斜め移動限定の割り当てが、読み直すと戻る");
+            }
+            std::error_code ec;
+            std::filesystem::remove(cfg, ec);
+        }
+        //! (c) スティックと十字：斜めへ寄せる・軸の前後は動かない・押している間だけ。
+        {
+            GamePad pad;
+            std::uint32_t now = 0;
+            const auto feed = [&](float x, float y) {
+                ExternalPadState s{};
+                s.left_x = x;
+                s.left_y = y;
+                pad.feed_external(s);
+            };
+            //! 真上を 0 度として時計回りの角度で倒す。
+            const auto tilt = [&](double deg, float mag) {
+                const double rad = deg * 3.14159265358979323846 / 180.0;
+                feed(static_cast<float>(std::sin(rad) * mag), static_cast<float>(-std::cos(rad) * mag));
+            };
+            const auto poll = [&](int &dx, int &dy) {
+                now += 1000;
+                dx = 0;
+                dy = 0;
+                return pad.poll_direction(now, true, dx, dy);
+            };
+            const auto neutral = [&]() {
+                feed(0.f, 0.f);
+                int dx = 0;
+                int dy = 0;
+                (void)poll(dx, dy); //!< 中立を見せる（挿した直後の「一度中立を見るまで受け付けない」を解く）
+            };
+            const auto dpad = [&](Uint8 button, bool down) {
+                SDL_Event e{};
+                e.type = down ? SDL_CONTROLLERBUTTONDOWN : SDL_CONTROLLERBUTTONUP;
+                e.cbutton.button = button;
+                (void)pad.on_event(e);
+            };
+            neutral();
+            int dx = 0;
+            int dy = 0;
+            //! 対照：斜め移動限定でなければ、今までどおり真上は北へ 1 歩。
+            tilt(0.0, 1.f);
+            if (!poll(dx, dy) || (dx != 0) || (dy != -1)) {
+                fail("対照：斜め移動限定でない真上のスティックが北へ歩かない（今までの動きが変わった）");
+            }
+            neutral();
+            pad.set_diagonal_only(true);
+            //! 軸の上・軸の前後（20 度の内側）は動かない。
+            for (const double deg : { 0.0, 90.0, 180.0, 270.0, 10.0, 19.0, 81.0, 100.0, 350.0, 265.0 }) {
+                neutral();
+                tilt(deg, 1.f);
+                if (poll(dx, dy)) {
+                    std::fprintf(stderr, "       角度 %.0f 度で (%d,%d) が出た\n", deg, dx, dy);
+                    fail("斜め移動限定：軸の前後のスティックが動いた（真上・真横は動かない約束）");
+                }
+            }
+            //! 斜めの側（軸から 21 度以上）は、倒した向きにいちばん近い斜め 4 方向へ。
+            struct DiagCase {
+                double deg;
+                int dx;
+                int dy;
+            };
+            for (const DiagCase &c : { DiagCase{ 21.0, 1, -1 }, DiagCase{ 45.0, 1, -1 }, DiagCase{ 69.0, 1, -1 }, DiagCase{ 111.0, 1, 1 },
+                     DiagCase{ 135.0, 1, 1 }, DiagCase{ 159.0, 1, 1 }, DiagCase{ 201.0, -1, 1 }, DiagCase{ 225.0, -1, 1 },
+                     DiagCase{ 249.0, -1, 1 }, DiagCase{ 291.0, -1, -1 }, DiagCase{ 315.0, -1, -1 }, DiagCase{ 339.0, -1, -1 } }) {
+                neutral();
+                tilt(c.deg, 1.f);
+                if (!poll(dx, dy) || (dx != c.dx) || (dy != c.dy)) {
+                    std::fprintf(stderr, "       角度 %.0f 度：期待 (%d,%d)・実際 (%d,%d)\n", c.deg, c.dx, c.dy, dx, dy);
+                    fail("斜め移動限定：スティックを斜め側へ倒したのに、近い斜め 4 方向のどれかにならない");
+                }
+            }
+            //! 倒す量：入るのは 18000（約 0.55）以上。弱い傾きは斜めでも動かない。
+            neutral();
+            tilt(45.0, 0.5f);
+            if (poll(dx, dy)) {
+                fail("斜め移動限定：倒し足りないスティックが動いた");
+            }
+            tilt(45.0, 0.6f);
+            if (!poll(dx, dy) || (dx != 1) || (dy != -1)) {
+                fail("斜め移動限定：十分倒したスティックが斜めにならない");
+            }
+            //! ヒステリシス：斜めの間は、角度が 18 度（入る 20 度より内側）でも斜めのまま。16 度を割ると止まる。
+            neutral();
+            tilt(45.0, 1.f);
+            if (!poll(dx, dy)) {
+                fail("検査の足場：斜めに入れない");
+            }
+            tilt(18.0, 1.f);
+            if (!poll(dx, dy) || (dx != 1) || (dy != -1)) {
+                fail("斜め移動限定：斜めの間に角度が少し軸へ寄ったら止まった（境目でがたつく）");
+            }
+            tilt(14.0, 1.f);
+            if (poll(dx, dy)) {
+                fail("斜め移動限定：軸の 16 度の内側へ入っても斜めのまま動き続ける");
+            }
+            neutral();
+            tilt(18.0, 1.f); //!< 中立から直に 18 度へ倒しても入らない（入るのは 20 度から）
+            if (poll(dx, dy)) {
+                fail("斜め移動限定：中立から 18 度へ倒しただけで動いた（入る角度は 20 度）");
+            }
+            //! 倒す量のヒステリシス：入ったあとは 11000（約 0.34）を割るまで斜めのまま。
+            neutral();
+            tilt(45.0, 1.f);
+            (void)poll(dx, dy);
+            tilt(45.0, 0.4f);
+            if (!poll(dx, dy) || (dx != 1) || (dy != -1)) {
+                fail("斜め移動限定：斜めの間に倒す量が少し減ったら止まった（境目でがたつく）");
+            }
+            tilt(45.0, 0.3f);
+            if (poll(dx, dy)) {
+                fail("斜め移動限定：戻したスティックが動き続ける");
+            }
+            //! 十字キー：1 方向は出さない。2 方向の同時押しは斜め。十字が入っている間はスティックへ落とさない。
+            neutral();
+            dpad(SDL_CONTROLLER_BUTTON_DPAD_UP, true);
+            if (poll(dx, dy)) {
+                fail("斜め移動限定：十字の上だけで動いた");
+            }
+            dpad(SDL_CONTROLLER_BUTTON_DPAD_LEFT, true);
+            if (!poll(dx, dy) || (dx != -1) || (dy != -1)) {
+                fail("斜め移動限定：十字の上＋左が北西にならない");
+            }
+            dpad(SDL_CONTROLLER_BUTTON_DPAD_LEFT, false);
+            tilt(45.0, 1.f);
+            if (poll(dx, dy)) {
+                fail("斜め移動限定：十字の上を押している間にスティックの斜めが出た（十字を優先する約束）");
+            }
+            dpad(SDL_CONTROLLER_BUTTON_DPAD_UP, false);
+            neutral();
+            //! 離せば元どおり：十字の上を押し続けたまま斜め移動限定を外すと、その場で北へ 1 歩。
+            dpad(SDL_CONTROLLER_BUTTON_DPAD_UP, true);
+            if (poll(dx, dy)) {
+                fail("検査の足場：斜め移動限定のまま十字の上だけで動いた");
+            }
+            pad.set_diagonal_only(false);
+            if (!poll(dx, dy) || (dx != 0) || (dy != -1)) {
+                fail("斜め移動限定を外しても、押し続けている十字の上が北へ歩かない（離せば元どおり）");
+            }
+            dpad(SDL_CONTROLLER_BUTTON_DPAD_UP, false);
+        }
+        //! (d) ボタンを押している間か（`input_down`）：実機のボタン・トリガ・修飾・VR の Touch。焦点を失うと偽。
+        {
+            GamePad pad;
+            const auto button = [&](Uint8 b, bool down) {
+                SDL_Event e{};
+                e.type = down ? SDL_CONTROLLERBUTTONDOWN : SDL_CONTROLLERBUTTONUP;
+                e.cbutton.button = b;
+                (void)pad.on_event(e);
+            };
+            const auto trigger = [&](Uint8 axis, Sint16 value) {
+                SDL_Event e{};
+                e.type = SDL_CONTROLLERAXISMOTION;
+                e.caxis.axis = axis;
+                e.caxis.value = value;
+                (void)pad.on_event(e);
+            };
+            if (pad.input_down(PadInput::X)) {
+                fail("input_down：何も押していないのに X が押されている");
+            }
+            button(SDL_CONTROLLER_BUTTON_X, true);
+            if (!pad.input_down(PadInput::X) || pad.input_down(PadInput::Y)) {
+                fail("input_down：X を押している間が X だけで真にならない");
+            }
+            button(SDL_CONTROLLER_BUTTON_X, false);
+            if (pad.input_down(PadInput::X)) {
+                fail("input_down：X を離したのに偽にならない");
+            }
+            button(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, true); //!< 修飾（LB）も押している間は真
+            if (!pad.input_down(PadInput::LeftShoulder)) {
+                fail("input_down：LB を押している間が真にならない");
+            }
+            button(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, false);
+            trigger(SDL_CONTROLLER_AXIS_TRIGGERRIGHT, 30000);
+            if (!pad.input_down(PadInput::RightTrigger) || pad.input_down(PadInput::LeftTrigger)) {
+                fail("input_down：RT を深く押している間が RT だけで真にならない");
+            }
+            trigger(SDL_CONTROLLER_AXIS_TRIGGERRIGHT, 1000);
+            if (pad.input_down(PadInput::RightTrigger)) {
+                fail("input_down：RT を戻したのに偽にならない");
+            }
+            button(SDL_CONTROLLER_BUTTON_Y, true);
+            pad.forget_hold();
+            if (pad.input_down(PadInput::Y)) {
+                fail("input_down：焦点を失った（forget_hold）のに押していることが残る");
+            }
+            ExternalPadState touch{};
+            touch.button[static_cast<int>(PadInput::X)] = true;
+            pad.feed_external(touch);
+            if (!pad.input_down(PadInput::X)) {
+                fail("input_down：VR の Touch の押しが見えない");
+            }
+            touch.button[static_cast<int>(PadInput::X)] = false;
+            pad.feed_external(touch);
+            if (pad.input_down(PadInput::X)) {
+                fail("input_down：VR の Touch を離したのに偽にならない");
+            }
+        }
+    }
+
     if (failures == 0) {
         std::fprintf(stderr, "  PASS すべて通りました\n");
     }
@@ -1218,6 +1588,357 @@ int run_sdl_input_check()
         core_name = "hengband";
         keymap = "original";
         state.pending_run = InputState::PendingRun{};
+    }
+
+    /*
+     * 斜め移動限定（`kActionDiagonalOnly`。決めたこと 2026-10-15）。割り当てたキー（既定は未割り当て。ここでは Insert に割り当てて確かめる）を押している間、
+     * 地図の上の移動を斜めに限る。縦横の 1 方向だけは捨て、矢印の同時押し・テンキーの 7 9 1 3・ローグライク配置の
+     * y u b n は通す。メニュー・窓・狙い・方向を聞く問い・文字入力の間は何も変えない。視点を回したときは
+     * 回した後の向きで見る。スティック・十字は `--pad-check` の 7 番。
+     */
+    {
+        const auto keyup = [](SDL_Keycode sym, Uint16 mods = 0) {
+            SDL_Event e{};
+            e.type = SDL_KEYUP;
+            e.key.keysym.sym = sym;
+            e.key.keysym.mod = mods;
+            return e;
+        };
+        const auto only_move = [&](int dx, int dy) {
+            return batch.input.events.size() == 1 && batch.input.events[0].e == "move" && batch.input.events[0].dx == dx
+                && batch.input.events[0].dy == dy;
+        };
+        const auto only_key = [&](const char *chr) {
+            return batch.input.events.size() == 1 && batch.input.events[0].e == "key" && batch.input.events[0].chr == chr;
+        };
+        const auto none = [&]() { return batch.input.events.empty(); };
+        const auto signature = [&]() {
+            std::string s;
+            for (const auto &e : batch.input.events) {
+                s += e.e + ":" + std::to_string(e.dx) + "," + std::to_string(e.dy) + ":" + e.chr + ":" + e.action + ";";
+            }
+            return s;
+        };
+        (void)settings.key_binds.assign(kActionDiagonalOnly, SDLK_INSERT, 0);
+        commands.clear();
+        core_name = "hengband";
+        keymap = "original";
+        frame.awaiting_command = true;
+        state = InputState{};
+        // 対照：押していないあいだは、今までどおり縦横も歩く
+        pump({key(SDLK_UP)});
+        check(only_move(0, -1), "Diagonal-only off: Up walks north as before");
+        pump({keyup(SDLK_UP), chars("8")});
+        check(only_key("8"), "Diagonal-only off: the digit 8 is sent as before");
+        // 割り当てたキーを押す：何も送らず、状態だけ変わる
+        actions = 0;
+        pump({key(SDLK_INSERT)});
+        check(none() && state.diagonal_key_held && actions == 0, "Insert starts diagonal-only without sending anything");
+        // 縦横の 1 方向は捨てる
+        pump({key(SDLK_UP), keyup(SDLK_UP)});
+        check(none(), "Diagonal-only: Up alone does nothing");
+        pump({key(SDLK_DOWN), keyup(SDLK_DOWN), key(SDLK_LEFT), keyup(SDLK_LEFT), key(SDLK_RIGHT), keyup(SDLK_RIGHT)});
+        check(none(), "Diagonal-only: Down / Left / Right alone do nothing");
+        // 矢印の同時押しは斜め
+        pump({key(SDLK_UP), key(SDLK_LEFT)});
+        check(only_move(-1, -1), "Diagonal-only: Up + Left walks north-west");
+        SDL_Event repeat_left = key(SDLK_LEFT);
+        repeat_left.key.repeat = 1;
+        pump({repeat_left});
+        check(only_move(-1, -1), "Diagonal-only: the repeat of the held pair keeps walking north-west");
+        pump({keyup(SDLK_UP), keyup(SDLK_LEFT)});
+        pump({key(SDLK_RIGHT), key(SDLK_UP)});
+        check(only_move(1, -1), "Diagonal-only: Right + Up walks north-east");
+        pump({keyup(SDLK_UP), keyup(SDLK_RIGHT)});
+        pump({key(SDLK_DOWN), key(SDLK_LEFT)});
+        check(only_move(-1, 1), "Diagonal-only: Down + Left walks south-west");
+        pump({keyup(SDLK_DOWN), keyup(SDLK_LEFT)});
+        pump({key(SDLK_DOWN), key(SDLK_RIGHT)});
+        check(only_move(1, 1), "Diagonal-only: Down + Right walks south-east");
+        pump({keyup(SDLK_DOWN), keyup(SDLK_RIGHT)});
+        pump({key(SDLK_UP), key(SDLK_DOWN)});
+        check(none(), "Diagonal-only: Up + Down cancel out and do nothing");
+        pump({keyup(SDLK_UP), keyup(SDLK_DOWN)});
+        // 片方を離したら、残った 1 方向は捨てる
+        pump({key(SDLK_UP), key(SDLK_LEFT)});
+        pump({keyup(SDLK_LEFT), key(SDLK_RIGHT)});
+        check(only_move(1, -1), "Diagonal-only: after Left is released, Up + Right is north-east");
+        pump({keyup(SDLK_UP), keyup(SDLK_RIGHT)});
+        // テンキー（NumLock 切）：7 9 1 3 は通り、8 2 4 6 は捨てる。8 2 4 6 の同時押しは斜め。5 は動きではない
+        pump({key(SDLK_KP_7)});
+        check(only_move(-1, -1), "Diagonal-only: keypad 7 walks north-west");
+        pump({key(SDLK_KP_9)});
+        check(only_move(1, -1), "Diagonal-only: keypad 9 walks north-east");
+        pump({key(SDLK_KP_1)});
+        check(only_move(-1, 1), "Diagonal-only: keypad 1 walks south-west");
+        pump({key(SDLK_KP_3)});
+        check(only_move(1, 1), "Diagonal-only: keypad 3 walks south-east");
+        pump({key(SDLK_KP_8), keyup(SDLK_KP_8), key(SDLK_KP_2), keyup(SDLK_KP_2), key(SDLK_KP_4), keyup(SDLK_KP_4),
+            key(SDLK_KP_6), keyup(SDLK_KP_6)});
+        check(none(), "Diagonal-only: keypad 8 / 2 / 4 / 6 alone do nothing");
+        pump({key(SDLK_KP_8), key(SDLK_KP_6)});
+        check(only_move(1, -1), "Diagonal-only: keypad 8 + 6 walks north-east");
+        pump({keyup(SDLK_KP_8), keyup(SDLK_KP_6)});
+        pump({key(SDLK_KP_5)});
+        check(only_move(0, 0), "Diagonal-only: keypad 5 (stay) is not a step and still passes");
+        // NumLock が入っているテンキーと上段の数字は字で届く
+        pump({key(SDLK_KP_8, KMOD_NUM), chars("8"), keyup(SDLK_KP_8, KMOD_NUM)});
+        check(none(), "Diagonal-only: NumLock keypad 8 alone does nothing (no stray digit)");
+        pump({key(SDLK_KP_7, KMOD_NUM), chars("7"), keyup(SDLK_KP_7, KMOD_NUM)});
+        check(only_key("7"), "Diagonal-only: NumLock keypad 7 still sends 7");
+        pump({key(SDLK_KP_8, KMOD_NUM), chars("8"), key(SDLK_KP_4, KMOD_NUM), chars("4")});
+        check(only_move(-1, -1), "Diagonal-only: NumLock keypad 8 + 4 walks north-west (one move, no stray digits)");
+        pump({keyup(SDLK_KP_8, KMOD_NUM), keyup(SDLK_KP_4, KMOD_NUM)});
+        for (const char *const orthogonal : { "2", "4", "6", "8" }) {
+            pump({chars(orthogonal)});
+            check(none(), "Diagonal-only: the digits 2 / 4 / 6 / 8 are dropped");
+        }
+        for (const char *const diagonal : { "1", "3", "7", "9" }) {
+            pump({chars(diagonal)});
+            check(only_key(diagonal), "Diagonal-only: the digits 1 / 3 / 7 / 9 pass");
+        }
+        pump({chars("h")});
+        check(only_key("h"), "Diagonal-only: h is not a move in the original key set");
+        // ローグライクの配置：hjkl（大文字は走る）は捨て、yubn は通す。数字は回数の指定なので触らない
+        keymap = "rogue";
+        for (const char *const orthogonal : { "h", "j", "k", "l", "H", "J", "K", "L" }) {
+            pump({chars(orthogonal)});
+            check(none(), "Diagonal-only (roguelike keys): h j k l (and run H J K L) are dropped");
+        }
+        for (const char *const diagonal : { "y", "u", "b", "n", "Y", "U", "B", "N" }) {
+            pump({chars(diagonal)});
+            check(only_key(diagonal), "Diagonal-only (roguelike keys): y u b n (and run Y U B N) pass");
+        }
+        pump({chars("8")});
+        check(only_key("8"), "Diagonal-only (roguelike keys): a digit is a repeat count and passes");
+        keymap = "original";
+        // Shift＋矢印の走りも斜めに限る
+        {
+            commands.clear();
+            PadCommand run;
+            run.id = 2;
+            run.command = '.';
+            run.label_utf8 = "run";
+            run.keys = { '.' };
+            commands.push_back(run);
+            state.pending_run = InputState::PendingRun{};
+            pump({key(SDLK_UP, KMOD_SHIFT), keyup(SDLK_UP, KMOD_SHIFT)});
+            check(none() && !state.pending_run.active, "Diagonal-only: Shift + Up alone does not run");
+            pump({key(SDLK_UP, KMOD_SHIFT), key(SDLK_LEFT, KMOD_SHIFT)});
+            check(batch.input.events.size() == 1 && batch.input.events[0].chr == "." && state.pending_run.active
+                    && state.pending_run.dx == -1 && state.pending_run.dy == -1,
+                "Diagonal-only: Shift + Up + Left runs north-west");
+            pump({keyup(SDLK_UP, KMOD_SHIFT), keyup(SDLK_LEFT, KMOD_SHIFT)});
+            state.pending_run = InputState::PendingRun{};
+            commands.clear();
+        }
+        // 効かない場面：メニュー・窓・狙い・方向を聞く問い・文字入力・コマンド待ちでない間は、押していても何も変えない
+        {
+            TargetingState aim;
+            const auto same_with_and_without = [&](const char *name) {
+                state.arrows_down = 0;
+                state.diagonal_key_held = true;
+                hud.targeting.sync(TargetingState{});
+                hud.targeting.sync(aim); //!< 狙いは 1 回答えると返事待ちになるので、閉じて開き直して新しい問いにする
+                pump({key(SDLK_UP), chars("8")});
+                const std::string with = signature();
+                state.arrows_down = 0;
+                state.diagonal_key_held = false;
+                hud.targeting.sync(TargetingState{});
+                hud.targeting.sync(aim);
+                pump({key(SDLK_UP), chars("8")});
+                const std::string without = signature();
+                pump({keyup(SDLK_UP)});
+                state.arrows_down = 0;
+                state.diagonal_key_held = true;
+                check(with == without, name);
+                return without;
+            };
+            frame.awaiting_command = false;
+            check(!same_with_and_without("Diagonal-only does nothing while the core is not waiting for a command").empty(),
+                "Diagonal-only: (check scaffold) the plain input produces events");
+            frame.awaiting_command = true;
+            frame.text_input_active = true;
+            (void)same_with_and_without("Diagonal-only does nothing during text input");
+            frame.text_input_active = false;
+            frame.menu_open = true;
+            (void)same_with_and_without("Diagonal-only does nothing while a core menu is open");
+            frame.menu_open = false;
+            frame.numeric.active = true;
+            (void)same_with_and_without("Diagonal-only does nothing during a number input");
+            frame.numeric.active = false;
+            PromptChoice yes;
+            yes.label_utf8 = "yes";
+            yes.key = 'y';
+            frame.prompt.choices.push_back(yes);
+            (void)same_with_and_without("Diagonal-only does nothing while a question with choices is shown");
+            frame.prompt.choices.clear();
+            aim.active = true;
+            aim.mode = "direction8";
+            aim.scope = 1;
+            aim.request_id = 7;
+            (void)same_with_and_without("Diagonal-only does nothing while aiming");
+            aim.active = false;
+            hud.targeting.sync(aim);
+            menu.open(settings);
+            (void)same_with_and_without("Diagonal-only does nothing while the feature menu is open");
+            menu.close();
+            check(diagonal_only_applies(ctx), "Diagonal-only applies again after every screen is closed");
+        }
+        // 視点を回したとき（45 度刻み）：回した後の向きで斜めかどうかを見る
+        {
+            turn = 1;
+            ctx.turn_drives_movement = [] { return true; };
+            ctx.turn_screen_move = [&](presentation::InputEventWire &wire) {
+                if (wire.e == "move") {
+                    rotate_screen_delta(turn, wire.dx, wire.dy);
+                }
+            };
+            int up_x = 0;
+            int up_y = -1;
+            rotate_screen_delta(turn, up_x, up_y);
+            int ur_x = 1;
+            int ur_y = -1;
+            rotate_screen_delta(turn, ur_x, ur_y);
+            check(!is_orthogonal_step(up_x, up_y) && is_orthogonal_step(ur_x, ur_y),
+                "Diagonal-only: (check scaffold) at 45 degrees Up becomes diagonal and Up + Right becomes straight");
+            state.arrows_down = 0;
+            pump({key(SDLK_UP)});
+            check(only_move(up_x, up_y), "Diagonal-only: Up that turns diagonal on the world after the view is turned still walks");
+            pump({keyup(SDLK_UP)});
+            pump({key(SDLK_UP)});
+            pump({key(SDLK_RIGHT)});
+            check(none(), "Diagonal-only: Up + Right that turns straight on the world after the view is turned does nothing");
+            pump({keyup(SDLK_UP), keyup(SDLK_RIGHT)});
+            // 字（標準配置の数字）も回したあとの字で見る：8 は斜めの 7 か 9 になって通り、9 は縦横になって捨てる
+            pump({chars("8")});
+            check(batch.input.events.size() == 1 && ((batch.input.events[0].chr == "7") || (batch.input.events[0].chr == "9")),
+                "Diagonal-only: the digit 8 that turns diagonal after the view is turned is sent");
+            pump({chars("9")});
+            check(none(), "Diagonal-only: the digit 9 that turns straight after the view is turned is dropped");
+            turn = 0;
+            ctx.turn_drives_movement = [] { return false; };
+            ctx.turn_screen_move = [](presentation::InputEventWire &) {};
+        }
+        // 一人称（WASD）：前・横の 1 方向だけは捨てる。W＋D の同時押しは右前。向きが斜めなら W だけでも進む
+        {
+            fps.set_active(true);
+            fps.facing = 0.f;
+            ctx.fps_drives_movement = [] { return true; };
+            state.wasd_down = 0;
+            pump({key(SDLK_w), keyup(SDLK_w), chars("w")});
+            check(none(), "Diagonal-only (first person): W alone facing north does nothing");
+            pump({key(SDLK_w), key(SDLK_d)});
+            check(only_move(1, -1), "Diagonal-only (first person): W + D walks forward-right (north-east)");
+            pump({keyup(SDLK_w), keyup(SDLK_d)});
+            fps.facing = 0.78539816f;
+            pump({key(SDLK_w), keyup(SDLK_w)});
+            check(only_move(1, -1), "Diagonal-only (first person): W facing north-east walks diagonally");
+            fps.facing = 0.f;
+            state.diagonal_key_held = false;
+            pump({key(SDLK_w), keyup(SDLK_w)});
+            check(only_move(0, -1), "Diagonal-only off (first person): W walks forward as before");
+            state.diagonal_key_held = true;
+            fps.set_active(false);
+            ctx.fps_drives_movement = [] { return false; };
+        }
+        // 離せば元どおり
+        pump({keyup(SDLK_INSERT)});
+        check(!state.diagonal_key_held, "Releasing Insert ends diagonal-only");
+        pump({key(SDLK_UP)});
+        check(only_move(0, -1), "After release: Up walks north again");
+        pump({keyup(SDLK_UP)});
+        // 焦点を失ったら、押したままの状態を忘れる
+        pump({key(SDLK_INSERT), key(SDLK_UP)});
+        {
+            SDL_Event lost{};
+            lost.type = SDL_WINDOWEVENT;
+            lost.window.event = SDL_WINDOWEVENT_FOCUS_LOST;
+            pump({lost});
+        }
+        check(!state.diagonal_key_held && state.arrows_down == 0, "Losing the window focus forgets the held keys");
+        // 修飾キーを単独で割り当てた場合（右 Alt。押した出来事には本人の修飾が付き、離した出来事には付かない）
+        (void)settings.key_binds.assign(kActionDiagonalOnly, SDLK_RCTRL, kModCtrl);
+        pump({key(SDLK_RCTRL, KMOD_RCTRL)});
+        check(state.diagonal_key_held, "A modifier key assigned to diagonal-only starts it when pressed");
+        pump({keyup(SDLK_RCTRL, 0)});
+        check(!state.diagonal_key_held, "A modifier key assigned to diagonal-only ends it when released");
+        (void)settings.key_binds.assign(kActionDiagonalOnly, SDLK_RALT, kModAlt);
+        check(settings.key_binds.find(kActionDiagonalOnly).mods == 0, "A lone modifier key is recorded without a modifier");
+        {
+            //! 押している間、ほかのキーには Alt の修飾が付いて届く（SDL は押した修飾を以後の出来事へ付ける）
+            pump({key(SDLK_RALT, KMOD_RALT)});
+            check(none() && state.diagonal_key_held && actions == 0, "Right Alt starts diagonal-only without sending anything");
+            pump({key(SDLK_UP, KMOD_RALT), keyup(SDLK_UP, KMOD_RALT)});
+            check(none(), "Right Alt held: Up alone does nothing");
+            pump({key(SDLK_UP, KMOD_RALT), key(SDLK_RIGHT, KMOD_RALT)});
+            check(only_move(1, -1), "Right Alt held: Up + Right walks north-east (an Alt modifier does not drop the move)");
+            pump({keyup(SDLK_UP, KMOD_RALT), keyup(SDLK_RIGHT, KMOD_RALT)});
+            pump({key(SDLK_KP_9, KMOD_RALT)});
+            check(only_move(1, -1), "Right Alt held: keypad 9 walks north-east");
+            pump({keyup(SDLK_KP_9, KMOD_RALT)});
+            pump({key(SDLK_KP_8, KMOD_RALT)});
+            check(none(), "Right Alt held: keypad 8 alone does nothing");
+            pump({keyup(SDLK_KP_8, KMOD_RALT)});
+            // 離す：離した出来事に Alt は付かない。その後は普通に歩ける
+            pump({keyup(SDLK_RALT, 0)});
+            check(!state.diagonal_key_held, "Releasing Right Alt ends diagonal-only");
+            pump({key(SDLK_UP)});
+            check(only_move(0, -1), "After Right Alt is released: Up walks north again");
+            pump({keyup(SDLK_UP)});
+            // 先に Shift を押していても、AltGr（左 Ctrl つき）でも押したことになる
+            pump({key(SDLK_RALT, KMOD_LSHIFT | KMOD_RALT)});
+            check(state.diagonal_key_held, "Right Alt pressed while Shift is held starts diagonal-only");
+            pump({keyup(SDLK_RALT, KMOD_LSHIFT)});
+            pump({key(SDLK_RALT, KMOD_LCTRL | KMOD_RALT)});
+            check(state.diagonal_key_held, "Right Alt that arrives with a left Ctrl (AltGr) starts diagonal-only");
+            pump({keyup(SDLK_RALT, 0)});
+            // 他の修飾つきの判定から、割り当てた Alt だけを取り除く：一人称の W＋D
+            fps.set_active(true);
+            fps.facing = 0.f;
+            ctx.fps_drives_movement = [] { return true; };
+            state.wasd_down = 0;
+            pump({key(SDLK_RALT, KMOD_RALT)});
+            pump({key(SDLK_w, KMOD_RALT), key(SDLK_d, KMOD_RALT)});
+            check(only_move(1, -1), "Right Alt held (first person): W + D walks forward-right");
+            pump({keyup(SDLK_w, KMOD_RALT), keyup(SDLK_d, KMOD_RALT), keyup(SDLK_RALT, 0)});
+            fps.set_active(false);
+            ctx.fps_drives_movement = [] { return false; };
+            // Shift＋矢印の走り：割り当てた Alt が走りを止めない（Shift＋上＋左で北西へ走る）
+            commands.clear();
+            PadCommand run;
+            run.id = 2;
+            run.command = '.';
+            run.label_utf8 = "run";
+            run.keys = { '.' };
+            commands.push_back(run);
+            state.pending_run = InputState::PendingRun{};
+            pump({key(SDLK_RALT, KMOD_RALT)});
+            pump({key(SDLK_UP, KMOD_SHIFT | KMOD_RALT), key(SDLK_LEFT, KMOD_SHIFT | KMOD_RALT)});
+            check(batch.input.events.size() == 1 && batch.input.events[0].chr == "." && state.pending_run.active
+                    && state.pending_run.dx == -1 && state.pending_run.dy == -1,
+                "Right Alt held: Shift + Up + Left still runs north-west");
+            pump({keyup(SDLK_UP, KMOD_SHIFT | KMOD_RALT), keyup(SDLK_LEFT, KMOD_SHIFT | KMOD_RALT), keyup(SDLK_RALT, KMOD_SHIFT)});
+            state.pending_run = InputState::PendingRun{};
+            commands.clear();
+            // 他の操作に割り当てた修飾キーも「そのキーだけ」で引ける（修飾キーを押した出来事には本人の修飾が付く）
+            (void)settings.key_binds.assign(1003, SDLK_LALT, kModAlt);
+            actions = 0;
+            pump({key(SDLK_LALT, KMOD_LALT)});
+            check(actions == 1, "A lone modifier key assigned to another action still fires it");
+            pump({keyup(SDLK_LALT, 0)});
+            settings.key_binds.clear(1003);
+        }
+        // 割り当てを外したら、押しても何も起きない
+        settings.key_binds.clear(kActionDiagonalOnly);
+        pump({key(SDLK_INSERT), key(SDLK_UP)});
+        check(!state.diagonal_key_held && only_move(0, -1), "Without an assignment Insert does nothing special");
+        pump({keyup(SDLK_INSERT), keyup(SDLK_UP)});
+        pump({key(SDLK_RALT, KMOD_RALT), key(SDLK_UP, KMOD_RALT)});
+        check(!state.diagonal_key_held && only_move(0, -1), "Without an assignment Right Alt does nothing special");
+        pump({keyup(SDLK_RALT, 0), keyup(SDLK_UP)});
+        frame.awaiting_command = false;
+        state = InputState{};
     }
     frame.text_input_active = true;
     pump({chars("test", SDL_TEXTEDITING)});

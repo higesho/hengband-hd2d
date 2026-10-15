@@ -71,6 +71,7 @@
 #include "voxel/part_motion.h"
 #include "voxel/prefab.h"
 #include "ui/click_path.h"
+#include "ui/diagonal_only.h"
 #include "ui/feature_menu.h"
 #include "audio/ambience_mix.h"
 #include "audio/ambience_table.h"
@@ -3684,6 +3685,15 @@ int run(const AppOptions &options)
                 feature_menu.open_commands(settings);
                 pad.forget_hold();
                 return;
+            case kActionDiagonalOnly:
+                /*
+                 * 斜め移動限定（`ui/diagonal_only.h`）。**パッドのボタンを押した縁だけがここへ来る**
+                 * （キーボードは `input_controller.cpp` が押している間を直に見るので、ここへは来ない）。
+                 * 押している間だけ効くので、ここでは「正しい層の押しだった」印を立てるだけにして、
+                 * 離したかどうかは毎フレーム `GamePad::input_down` で見る（下の (a') の頭）。
+                 */
+                input_state.diagonal_pad_armed = true;
+                return;
             case kActionMainPanelToggle:
                 /*
                  * メインパネルの 3D ／ 2D アスキー。
@@ -4012,6 +4022,24 @@ int run(const AppOptions &options)
             while (vpad.take_pressed(pad_press)) {
                 route_pad_press(pad_press);
             }
+            /*
+             * 斜め移動限定（`kActionDiagonalOnly`。`ui/diagonal_only.h`）。**押している間だけ**効く。
+             * パッドのボタンは、押した縁（`perform_action`）で `diagonal_pad_armed` が立ち、押し続けている間だけ
+             * `diagonal_pad_held` が真になる。キーボードの割り当ての押し具合（`diagonal_key_held`）も合わせて、
+             * 「地図の上を歩く場面」（`diagonal_only_applies`）だけ方向を斜めに限る。
+             * 十字キー・スティックの向きを出す `poll_direction` にも、その場面でだけ知らせる。
+             */
+            {
+                const PadPress diagonal_bind = settings.pad.input_for(kActionDiagonalOnly);
+                const bool diagonal_pad_down = (diagonal_bind.input != PadInput::Count)
+                    && (pad.input_down(diagonal_bind.input) || vpad.input_down(diagonal_bind.input));
+                if (!diagonal_pad_down) {
+                    input_state.diagonal_pad_armed = false;
+                }
+                input_state.diagonal_pad_held = input_state.diagonal_pad_armed && diagonal_pad_down;
+            }
+            const bool diagonal_walk = diagonal_only_active(pump_ctx);
+            pad.set_diagonal_only(diagonal_walk);
 
 
             /*
@@ -4052,7 +4080,8 @@ int run(const AppOptions &options)
                      */
                     int dx = 0;
                     int dy = 0;
-                    if (first_person.direction_delta(-pad_dy, pad_dx, dx, dy)) {
+                    if (first_person.direction_delta(-pad_dy, pad_dx, dx, dy)
+                        && !(diagonal_walk && is_orthogonal_step(dx, dy))) { //!< 斜め移動限定：向いている方へ換えたあとの 1 歩が縦横 1 方向なら何もしない
                         click_path.cancel();
                         presentation::InputEventWire wire;
                         wire.e = "move";
@@ -4083,13 +4112,17 @@ int run(const AppOptions &options)
                     if (frame.text_input_active) {
                         return;
                     }
-                    click_path.cancel(); //!< 自分で歩き始めたら経路は捨てる
                     presentation::InputEventWire wire;
                     wire.e = "move";
                     wire.dx = pad_dx;
                     wire.dy = pad_dy;
                     //! 十字（物理パッドもバーチャルパッドも）は**画面基準**（設計書 罠 1）。
                     turn_screen_move(wire);
+                    //! 斜め移動限定：視点回転のあとの向きが縦横 1 方向なら何もしない（経路も捨てない）。
+                    if (diagonal_walk && is_orthogonal_step(wire.dx, wire.dy)) {
+                        return;
+                    }
+                    click_path.cancel(); //!< 自分で歩き始めたら経路は捨てる
                     input.events.push_back(wire);
                 }
             };

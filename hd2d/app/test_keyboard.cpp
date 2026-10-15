@@ -228,6 +228,14 @@ bool compile_test_key(const std::string &line, std::vector<SDL_Event> &events, s
             const bool ctrl = request.value("ctrl", false), shift = request.value("shift", false);
             const bool alt = request.value("alt", false), numlock = request.value("numlock", false);
             const bool repeat = request.value("repeat", false);
+            // 任意の `phase`（`"down"`・`"up"`）：押す出来事だけ・離す出来事だけを積む。押したまま別のキーを送れる
+            // （斜め移動限定のように「押している間だけ効く」操作の検査用）。無ければ従来どおり押して離す。
+            std::string key_phase;
+            if (request.contains("phase")) {
+                if (!request["phase"].is_string()) { throw std::runtime_error("key phase must be a string"); }
+                key_phase = request["phase"].get<std::string>();
+                if (key_phase != "down" && key_phase != "up") { throw std::runtime_error("key phase must be down or up"); }
+            }
             const Uint16 mods = (ctrl ? KMOD_LCTRL : 0) | (shift ? KMOD_LSHIFT : 0)
                 | (alt ? KMOD_LALT : 0) | (numlock ? KMOD_NUM : 0);
             SDL_Event down{};
@@ -237,7 +245,7 @@ bool compile_test_key(const std::string &line, std::vector<SDL_Event> &events, s
             down.key.keysym.sym = sym;
             down.key.keysym.scancode = SDL_GetScancodeFromKey(sym);
             down.key.keysym.mod = mods;
-            events.push_back(down);
+            if (key_phase != "up") { events.push_back(down); }
             std::string text;
             if (request.contains("text")) {
                 text = request["text"].get<std::string>();
@@ -254,12 +262,12 @@ bool compile_test_key(const std::string &line, std::vector<SDL_Event> &events, s
                 } else if (numlock && sym == SDLK_KP_0) { text = "0"; }
             }
             if ((ctrl || alt) && !text.empty()) { throw std::runtime_error("Ctrl/Alt key must not generate text"); }
-            append_text(text, events);
+            if (key_phase != "up") { append_text(text, events); }
             SDL_Event up = down;
             up.type = SDL_KEYUP;
             up.key.state = SDL_RELEASED;
             up.key.repeat = 0;
-            events.push_back(up);
+            if (key_phase != "down") { events.push_back(up); }
         }
         if (events.empty() || events.size() > 128) { throw std::runtime_error("empty or oversized event sequence"); }
         return true;

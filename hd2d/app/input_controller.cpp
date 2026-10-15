@@ -5,6 +5,7 @@
 #include "app/test_keyboard.h"
 #include "app/ui_probe.h"
 #include "app/app_clock.h"
+#include "ui/diagonal_only.h"
 #include "ui/key_binds.h"
 #include "ui/ui_cursor.h"
 #include "ui/menu_scale.h"
@@ -264,6 +265,128 @@ void turn_rogue_letter(const InputPumpContext &ctx, char &c)
         return;
     }
     c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(letter - 'a' + 'A') : letter;
+}
+
+/*!
+ * @brief 斜め移動限定（`ui/diagonal_only.h`）で見る矢印の印。矢印とテンキーの 8・2・4・6。それ以外は 0。
+ */
+unsigned arrow_bit_of(SDL_Keycode sym)
+{
+    switch (sym) {
+    case SDLK_UP:
+    case SDLK_KP_8:
+        return kArrowUp;
+    case SDLK_DOWN:
+    case SDLK_KP_2:
+        return kArrowDown;
+    case SDLK_LEFT:
+    case SDLK_KP_4:
+        return kArrowLeft;
+    case SDLK_RIGHT:
+    case SDLK_KP_6:
+        return kArrowRight;
+    default:
+        return 0U;
+    }
+}
+
+/*!
+ * @brief 斜め移動限定のための押し具合を、キーの押す・離すから更新する（`InputState::arrows_down` ほか）。
+ * @details 出来事を捌く最初に見る（あとの枝が途中で `return` しても、押す・離すを取りこぼさない）。
+ * 割り当てたキーは、押すときは修飾まで一致したときだけ、離すときはキーだけで見る
+ * （修飾キー自身を割り当てると、離した出来事の修飾は空になる）。
+ */
+void track_diagonal_keys(InputPumpContext &ctx, const SDL_Event &event)
+{
+    const SDL_Keycode sym = event.key.keysym.sym;
+    const bool down = (event.type == SDL_KEYDOWN);
+    const unsigned bit = arrow_bit_of(sym);
+    if (bit != 0U) {
+        if (down) {
+            ctx.state.arrows_down |= bit;
+        } else {
+            ctx.state.arrows_down &= ~bit;
+        }
+    }
+    //! 一人称の WASD（W＝前・S＝後・A＝左・D＝右）も同じ印で覚える（W＋D の同時押しで右前へ進むため）。
+    unsigned wasd_bit = 0U;
+    switch (sym) {
+    case SDLK_w:
+        wasd_bit = kArrowUp;
+        break;
+    case SDLK_s:
+        wasd_bit = kArrowDown;
+        break;
+    case SDLK_a:
+        wasd_bit = kArrowLeft;
+        break;
+    case SDLK_d:
+        wasd_bit = kArrowRight;
+        break;
+    default:
+        break;
+    }
+    if (wasd_bit != 0U) {
+        if (down) {
+            ctx.state.wasd_down |= wasd_bit;
+        } else {
+            ctx.state.wasd_down &= ~wasd_bit;
+        }
+    }
+    const KeyBindEntry diag = ctx.settings.key_binds.find(kActionDiagonalOnly);
+    if ((diag.keycode == 0) || (static_cast<int>(sym) != diag.keycode)) {
+        return;
+    }
+    if (!down) {
+        ctx.state.diagonal_key_held = false;
+    } else if (binding_mods(static_cast<int>(sym), mods_from_sdl(event.key.keysym.mod)) == diag.mods) {
+        ctx.state.diagonal_key_held = true;
+    }
+}
+
+/*!
+ * @brief 斜め移動限定に割り当てた修飾キー（Shift・Ctrl・Alt）を押している間、その修飾を押していないものとして返す。
+ * @details 修飾キーを割り当てると、斜めに入れるために押し続けるだけで他の修飾つきの判定（一人称の WASD・
+ * Shift＋矢印の走り）が「修飾つき」で外れてしまう。割り当てた修飾そのものだけを取り除く。
+ */
+Uint16 mod_without_diagonal_key(const InputPumpContext &ctx, Uint16 mod)
+{
+    if (!ctx.state.diagonal_key_held) {
+        return mod;
+    }
+    switch (ctx.settings.key_binds.find(kActionDiagonalOnly).keycode) {
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+        return static_cast<Uint16>(mod & ~KMOD_SHIFT);
+    case SDLK_LCTRL:
+    case SDLK_RCTRL:
+        return static_cast<Uint16>(mod & ~KMOD_CTRL);
+    case SDLK_LALT:
+    case SDLK_RALT:
+        return static_cast<Uint16>(mod & ~KMOD_ALT);
+    case SDLK_LGUI:
+    case SDLK_RGUI:
+        return static_cast<Uint16>(mod & ~KMOD_GUI);
+    default:
+        return mod;
+    }
+}
+
+/*!
+ * @brief 斜め移動限定の間、この字（視点回転のあとの字）は縦横 1 方向の移動か。真なら捨てる。
+ * @details 標準の配置は数字の 2・4・6・8、ローグライクの配置は h・j・k・l（大文字は走る）。斜めの 1・3・7・9 と
+ * y・u・b・n は通す。ローグライクの配置の数字は「回数の指定」なので見ない。
+ */
+bool diagonal_only_drops_char(const InputPumpContext &ctx, char c)
+{
+    if (!diagonal_only_active(ctx)) {
+        return false;
+    }
+    if (ctx.pad_keymap == "rogue") {
+        const char digit = rogue_letter_to_digit(c);
+        return (digit == '2') || (digit == '4') || (digit == '6') || (digit == '8');
+    }
+    return (c == '2') || (c == '4') || (c == '6') || (c == '8');
 }
 
 /*!
@@ -902,6 +1025,10 @@ void pump_text_input(InputPumpContext &ctx, const SDL_Event &event)
             }
         }
         turn_rogue_letter(ctx, chr);
+        //! 斜め移動限定の間は、縦横 1 方向の移動の字を捨てる（視点回転のあとの字で見る）。
+        if (diagonal_only_drops_char(ctx, chr)) {
+            continue;
+        }
         presentation::InputEventWire wire;
         wire.e = "key";
         wire.chr = std::string(1, chr);
@@ -1109,7 +1236,7 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
         return;
     }
     if (fps_owns_move_keys && !ctx.frame.menu_open && !ctx.hud_state.modern.active()
-        && ((event.key.keysym.mod & (KMOD_CTRL | KMOD_ALT | KMOD_GUI | KMOD_SHIFT)) == 0)) {
+        && ((mod_without_diagonal_key(ctx, event.key.keysym.mod) & (KMOD_CTRL | KMOD_ALT | KMOD_GUI | KMOD_SHIFT)) == 0)) {
         int forward = 0;
         int strafe = 0;
         bool eaten = true;
@@ -1144,7 +1271,14 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
         if (eaten) {
             int dx = 0;
             int dy = 0;
-            if (ctx.first_person.direction_delta(forward, strafe, dx, dy)) {
+            if (((forward != 0) || (strafe != 0)) && diagonal_only_active(ctx)) {
+                //! 斜め移動限定の間は、押している WASD の組（W＋D など）から前後・左右を作り直す。
+                forward = (((ctx.state.wasd_down & kArrowUp) != 0U) ? 1 : 0) - (((ctx.state.wasd_down & kArrowDown) != 0U) ? 1 : 0);
+                strafe = (((ctx.state.wasd_down & kArrowRight) != 0U) ? 1 : 0) - (((ctx.state.wasd_down & kArrowLeft) != 0U) ? 1 : 0);
+            }
+            //! 斜め移動限定の間は、向いている方へ換えたあとの 1 歩が縦横 1 方向なら何もしない（字は下で落とす）。
+            if (ctx.first_person.direction_delta(forward, strafe, dx, dy)
+                && !(diagonal_only_active(ctx) && is_orthogonal_step(dx, dy))) {
                 ctx.click_path.cancel(); //!< 自分で歩き始めたら経路は捨てる
                 presentation::InputEventWire wire;
                 wire.e = "move";
@@ -1179,7 +1313,8 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
              * 進むのが自然なもの（コアのコマンド）まで一律に止めると、
              * 「押し続けても 1 回しか効かない」という別の不具合になる。
              */
-            if ((action != kActionFeatureMenu) || (event.key.repeat == 0)) {
+            //! 斜め移動限定は押している状態を `track_diagonal_keys` が見ている。ここでは何も起こさない（字だけ落とす）。
+            if ((action != kActionDiagonalOnly) && ((action != kActionFeatureMenu) || (event.key.repeat == 0))) {
                 ctx.perform_action(action);
             }
             /*
@@ -1276,9 +1411,37 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
         return;
     }
     presentation::InputEventWire wire;
-    if (translate_key_down(event.key, wire)) {
+    bool translated = translate_key_down(event.key, wire);
+    /*
+     * 斜め移動限定（`ui/diagonal_only.h`）。矢印・テンキーの 8・2・4・6 は、押している矢印の組から向きを作り直す
+     * （上を押したまま左を押すと左上。1 方向だけなら縦横のまま下で捨てる）。NumLock が入っているテンキーは
+     * 続けて字（`SDL_TEXTINPUT`）が届くので、その字は捨てる。向かい合う 2 つだけ（上＋下）なら何もしない。
+     */
+    const bool diagonal_walk = diagonal_only_active(ctx);
+    if (diagonal_walk && (arrow_bit_of(sym) != 0U)) {
+        int step_x = 0;
+        int step_y = 0;
+        arrows_to_step(ctx.state.arrows_down, step_x, step_y);
+        const bool keypad = (sym != SDLK_UP) && (sym != SDLK_DOWN) && (sym != SDLK_LEFT) && (sym != SDLK_RIGHT);
+        if (keypad && ((event.key.keysym.mod & KMOD_NUM) != 0)) {
+            ctx.batch.swallow_next_text = true;
+        }
+        if ((step_x == 0) && (step_y == 0)) {
+            return;
+        }
+        wire = presentation::InputEventWire{};
+        wire.e = "move";
+        wire.dx = step_x;
+        wire.dy = step_y;
+        translated = true;
+    }
+    if (translated) {
         //! 矢印・テンキーは**画面基準**。視点回転ぶんを当ててから積む（設計書 罠 1）。
         ctx.turn_screen_move(wire);
+        //! 斜め移動限定の間、視点回転のあとの向きが縦横 1 方向なら何もしない（動かない・ターンを使わない・向きも変えない）。
+        if (diagonal_walk && (wire.e == "move") && is_orthogonal_step(wire.dx, wire.dy)) {
+            return;
+        }
         //! ローグライクのキー配置の Ctrl＋方向の文字（その方向へ働きかける・掘る）も同じく回す。
         if ((wire.e == "key") && wire.ctrl && (wire.chr.size() == 1)) {
             turn_rogue_letter(ctx, wire.chr[0]);
@@ -1293,8 +1456,9 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
          * `move` 1 つのまま（走る命令を差し込むと `.`＝「目標」などに化ける）。Ctrl・Alt 付きは対象外。
          * メニューのタブ移動の Shift と窓の横スクロールの Shift＋左右は、ここより前で食われるので届かない。
          */
+        const Uint16 shift_mod = mod_without_diagonal_key(ctx, event.key.keysym.mod); //!< 斜め移動限定に割り当てた修飾キーは数えない
         const bool shift_move = (wire.e == "move") && ((wire.dx != 0) || (wire.dy != 0))
-            && ((event.key.keysym.mod & KMOD_SHIFT) != 0) && ((event.key.keysym.mod & (KMOD_CTRL | KMOD_ALT)) == 0);
+            && ((shift_mod & KMOD_SHIFT) != 0) && ((shift_mod & (KMOD_CTRL | KMOD_ALT)) == 0);
         if (shift_move && (event.key.repeat != 0) && (ctx.state.pending_run.last_run_sym == static_cast<std::int32_t>(sym))) {
             return; // 押しっぱなしの連打は捨てる（走っている最中に次のキーが届くと、原作は走りを止める）
         }
@@ -1370,6 +1534,16 @@ void advance_pending_run(InputPumpContext &ctx)
 
 } // namespace
 
+bool diagonal_only_applies(const InputPumpContext &ctx)
+{
+    const GameFrame &frame = ctx.frame;
+    return frame.awaiting_command && !frame.text_input_active && !frame.menu_open && !frame.pre_game_menu
+        && !frame.numeric.active && frame.prompt.choices.empty() && frame_shows_map(frame) && !ctx.feature_menu.is_open() && !ctx.floor_cutin.blocks_input()
+        && !ctx.vpad.editor_open() && !ctx.hud_state.targeting.active() && !ctx.hud_state.modern.active()
+        && ctx.hud_state.cursors.choices().empty() && ctx.hud_state.cursors.prompt().choices.empty()
+        && !ctx.hud_state.cursors.numeric().active;
+}
+
 /*!
  * @brief SDL の出来事を全部捌く（(a) 入力）。仕様は `run_parts.h`。
  * @details 本体は `run()` に在ったときの字面のまま。外の名前に `ctx.` が付いただけで、
@@ -1399,7 +1573,16 @@ void pump_sdl_events(InputPumpContext &ctx)
             ctx.state.menu_touch_active=false;
             ctx.state.map_click.gesture.reset(); //!< 押したまま焦点が移ると、離す出来事は届かない
             ctx.state.map_click.gate.reset();
+            //! 斜め移動限定も同じ（押したまま焦点が移ると、離す出来事は届かない）。
+            ctx.state.arrows_down = 0U;
+            ctx.state.wasd_down = 0U;
+            ctx.state.diagonal_key_held = false;
+            ctx.state.diagonal_pad_armed = false;
+            ctx.state.diagonal_pad_held = false;
             continue;
+        }
+        if ((event.type == SDL_KEYDOWN) || (event.type == SDL_KEYUP)) {
+            track_diagonal_keys(ctx, event); //!< 斜め移動限定のための押し具合。あとの枝より先に見る
         }
         /*
          * バーチャルパッド。**マウスの分岐より先**に見る

@@ -288,6 +288,24 @@ public:
     int chord_mask() const { return this->chord_.mask(); }
 
     /*!
+     * @brief そのボタンをいま押しているか（押している間だけ効く操作＝斜め移動限定の「離した」を見るため）。
+     * @details 実機（SDL）・VR の Touch（`feed_external`）のどちらの押しも見る。トリガ（LT/RT）は
+     * 半分より深く押している間。方向（十字・スティック）は含まない。焦点を失う・`forget_hold()` で全部偽に戻る。
+     */
+    bool input_down(PadInput input) const;
+
+    /*!
+     * @brief 斜め移動限定（`kActionDiagonalOnly`）の間、`poll_direction` が出す向きを斜めだけにする。
+     * @details 毎フレーム、`poll_direction` の前に呼ぶ（呼ぶ側が「地図の上を歩く場面か」を決める。
+     * メニューのカーソルなどでは必ず偽にすること）。真の間は、
+     * - 十字キー：2 方向の同時押し（斜め）だけ出す。1 方向だけは出さない（スティックにも落とさない）。
+     * - 左スティック：倒した向きにいちばん近い斜め 4 方向へ寄せる。軸の前後は動かない帯
+     *   （`ui/diagonal_only.h` の `kDiagonalAxisBand*`）。
+     * 偽に戻したときは、押し続けている向きがその場で（1 歩目から数え直して）出る。
+     */
+    void set_diagonal_only(bool on) { this->diagonal_only_ = on; }
+
+    /*!
      * @name 右スティックの傾き（−1〜+1）。死区の内側は 0
      *
      * @details **視点を回すためだけ**の口。左スティックと違って「1 回ぶんの向き」ではなく
@@ -345,6 +363,13 @@ private:
     //! 左スティックのラッチ（-1 / 0 / +1）。死区の出入りにヒステリシスを持たせる（約束 3）。
     int stick_x_{ 0 };
     int stick_y_{ 0 };
+    //! 左スティックの生の値（−32768〜32767）。斜め移動限定のとき、角度で斜めへ寄せるのに使う。
+    int stick_raw_x_{ 0 };
+    int stick_raw_y_{ 0 };
+    //! 斜め移動限定の間だけ真（`set_diagonal_only`）。
+    bool diagonal_only_{ false };
+    //! ボタン（トリガ以外）の押下状態。添字は `PadInput`（`input_down`）。
+    bool button_down_[kPadInputCount]{};
     //! 十字の押下状態。
     bool dpad_[4]{ false, false, false, false };
     //! トリガの押下状態（軸なので立ち上がりでだけ発火させる。約束 5）。

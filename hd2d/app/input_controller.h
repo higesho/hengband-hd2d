@@ -43,6 +43,17 @@ struct InputState {
         std::uint32_t since_ms{ 0 };        //!< 待ち始め（`SDL_GetTicks`）
         std::int32_t last_run_sym{ 0 };     //!< 走るを出したキー。押しっぱなしの連打（repeat）で走りを止めないための記憶
     } pending_run;
+    /*!
+     * 斜め移動限定（`kActionDiagonalOnly`。`ui/diagonal_only.h`）の押し具合。押している間だけ真。
+     * キーは `SDL_KEYDOWN`/`SDL_KEYUP` を見て `pump_sdl_events()` が書く。パッドのボタンは `run()` が
+     * 毎フレーム `GamePad::input_down` から書く。窓が焦点を失ったら全部偽に戻す。
+     */
+    unsigned arrows_down{ 0 };           //!< 押している矢印（`kArrowUp` 等の論理和。上＋左を作るのに要る）
+    unsigned wasd_down{ 0 };             //!< 押している WASD（一人称。W＝`kArrowUp`・S＝`kArrowDown`・A＝`kArrowLeft`・D＝`kArrowRight`）
+    bool diagonal_key_held{ false };     //!< 割り当てたキーを押している
+    bool diagonal_pad_armed{ false };    //!< パッドの割り当てのボタンを押した縁を受けた（離すと偽。層つきの割り当てでも正しい層の押しだけ）
+    bool diagonal_pad_held{ false };     //!< パッドの割り当てのボタンを押している（`diagonal_pad_armed` かつ押下中）
+    bool diagonal_held() const { return diagonal_key_held || diagonal_pad_held; }
 };
 
 /*!
@@ -149,6 +160,20 @@ struct InputPumpContext {
  * `pump_key_down()` / `pump_text_input()` に分けてある。
  */
 void pump_sdl_events(InputPumpContext &ctx);
+
+/*!
+ * @brief 斜め移動限定が**効く場面**か（地図の上を歩く場面。メニュー・窓・狙い・方向を聞く問い・文字入力の間は偽）。
+ * @details コアが「次の命令」を待っていて（`awaiting_command`。Shift＋矢印の走りと同じ条件）、地図が見えていて、
+ * 機能メニュー・カットイン・配置の編集・新 UI の窓・狙い・選択肢・数の入力・文字入力のどれも出ていないとき。
+ * キー（`pump_key_down` / `pump_text_input`）とパッド（`run()` の方向の道筋）が**同じ 1 本**を見る。
+ */
+bool diagonal_only_applies(const InputPumpContext &ctx);
+
+//! 押している最中で、かつ効く場面か。移動を捨てるかどうかの判定はこれで見る。
+inline bool diagonal_only_active(const InputPumpContext &ctx)
+{
+    return ctx.state.diagonal_held() && diagonal_only_applies(ctx);
+}
 
 
 } // namespace hd2d
