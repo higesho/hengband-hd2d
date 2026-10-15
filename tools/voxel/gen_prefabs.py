@@ -23776,7 +23776,11 @@ _outpost.register(globals())
 # ---- モリバントの追加（別担当。`morivant_prefabs.py` があれば読む。無ければ何もしない）----
 # 町ごとの追加は 1 町 1 ファイル（`<町>_prefabs.py`。あれば読む。無ければ何もしない）。
 for _town_module in ('morivant_prefabs', 'telmora_prefabs', 'telmora_stone_prefabs', 'angwil_prefabs', 'zul_prefabs',
-                     'frox_prefabs'):
+                     'frox_prefabs', 'angband_prefabs', 'umoria_prefabs',
+                     #! Angband のダンジョン（接尾辞 `_agd_<略号>`）。
+                     'angband_dungeon_prefabs',
+                     #! Umoria のダンジョン（接尾辞 `_umd_<略号>`）。
+                     'umoria_dungeon_prefabs'):
     _town_path = os.path.join(HERE, _town_module + '.py')
     if os.path.exists(_town_path):
         _spec_town = importlib.util.spec_from_file_location(_town_module, _town_path)

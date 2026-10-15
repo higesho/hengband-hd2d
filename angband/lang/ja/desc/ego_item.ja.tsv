@@ -1,0 +1,7 @@
+# ego_item.ja.tsv — ego_item.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+of Accuracy|desc	14e951e8a2	特別な能力は無いが、命中修正がとても高いことがある。
+of Power|desc	16e30ba158	特別な能力は無いが、ダメージ修正がとても高いことがある。
+of Wounding|desc	d6139aec0f	負傷の矢玉は、命中修正とダメージ修正がとても高いことが多い。
+of Slaying|desc	62d065dfc4	命中修正とダメージ修正を高める。
+of Craftsmanship|desc	93ca3a3aeb	見事に作られた鎧で、丈夫なのに動きを妨げない。

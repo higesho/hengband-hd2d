@@ -1,4 +1,7 @@
-﻿/*!
+#if defined(HENGBAND_DESKTOP_LINUX)
+#include <unistd.h>
+#endif
+/*!
  * @file hd2d_app.cpp
  * @brief `hd2d_app.h` の実装。**P0（土台と接続）**。
  *
@@ -26,15 +29,22 @@
 #endif
 
 #include "app/hd2d_app.h"
+#include "ui/menu_frame.h"
+#include "ui/menu_scale.h"
 #include "app/hd2d_checks.h" //!< 検査モード（--*-check）。中身は hd2d/app/checks/
 #include "app/app_clock.h" //!< 時計。検査のときだけ進み方を決め打ちにできる
 #include "app/run_parts.h"
 #include "app/input_controller.h"
 #include "app/test_keyboard.h"
+#include "app/ui_probe.h"
+#include "frame/message_more.h"
 #include "app/core_import_ui.h"
+#include "app/lineage_ui.h"
+#include "app/video_recorder.h" //!< 画面内録画（HD2D_RECORD）
 #include "app/optional_render_resources.h" //!< run() から切り出した部品
 #include "app/app_support.h" //!< 遊ぶ経路と検査の両方が使う土台（窓・GL・画面の保存）
 #include "app/checks/check_support.h" //!< 検査どうしで使い回す作り物
+#include "app/checks/targeting_live_trace.h"
 
 #include "world/slab_library.h"
 #include "assets/tile_catalog.h"
@@ -85,6 +95,8 @@
 #include "xr/xr_session.h" //!< VR。既定 OFF・`--vr` で入る
 #include "world/dungeon_style.h"
 #include "world/entity_view.h"
+#include "model/model_asset.h"
+#include "app/model_view.h"
 #include "world/overlay_view.h"
 #include "world/floor_meaning.h"
 #include "world/prefab_library.h"
@@ -106,12 +118,18 @@
 #include "frame/game_frame.h"
 #include "frame/protocol_messages.h"
 #include "ui/combat_fx_view.h"
+#include "render/attack_fx_view.h"
+#include "render/fx_styles/fx_parts.h"
+#include "render/voxel_fx_renderer.h"
+#include "ui/attack_fx_overlay.h"
+#include "world/entity_fx_mod.h"
 
 #include <SDL2/SDL.h>
 
 #include <algorithm>
 #include <array> //!< `--prefab-check=` の材質の内訳
 #include <atomic> //!< ライブラリの読み込みを別スレッドで回す（コア選択の後の演出。2026-08-23）
+#include <cctype>
 #include <cmath>
 #include <cstddef>
 #include <cstdio>
@@ -222,6 +240,18 @@ void show_core_failure(CoreLink &link, const std::string &text)
         body += "\n全文: ";
         body += path;
     }
+    /*
+     * **テスト用の入口（`--test-input-file=`）が有効なときだけ**、確認の窓を出さず、理由を標準エラーへ書く。
+     * 窓が出ると、操作を待ってプロセスが止まり、検査側は答えが来ないまま上限の時間を待つことになる
+     * （Rogue 5.4 の `V` でコアが落ちた件。F-rogue54-01）。呼び出し元は窓の後で `run()` を終えるので、
+     * 終了コードは窓を出す場合と同じ（0 以外）で、検査側はプロセスの終了として落ちを知る。
+     * 遊ぶ人（テスト用の入口なし）には今までどおり窓を出す。
+     */
+    if (ui_probe().enabled()) {
+        std::fprintf(stderr, "[hd2d] core failure (test entry: no dialog): %s\n", body.c_str());
+        std::fflush(stderr);
+        return;
+    }
     show_message(body);
 }
 
@@ -331,16 +361,23 @@ Cutaway make_roof_cutaway(const Camera &camera, const GameFrame &frame, float ra
  * ダンジョンで描画呼び出しが実体の数だけ増える。実体は多くて数十なので、
  * 並べ替えずに「まだ描いていない板を 1 つ選び、同じ板を全部集める」で足りる。
  *
+ * @param layer 描く層（`EntityLayer`）。-1 なら全部の層。層の順に描く理由は `draw_scene` の実体の描画に書いた。
+ *
  * **本描画では抜きを切る**（`set_cutaway_scale(0)`）。カットアウェイが抜くのは
  * 「実体を隠している壁」のほうで、実体自身を網目にしたら本末転倒になる。
  */
 void draw_entity_slabs(VoxelRenderer &renderer, SlabLibrary &library, const EntityView &entities,
-    const Mat4 *light_view_projection)
+    const Mat4 *light_view_projection, int layer = -1)
 {
     if (entities.slabs.empty()) {
         return;
     }
     std::vector<bool> done(entities.slabs.size(), false);
+    if (layer >= 0) {
+        for (std::size_t i = 0; i < entities.slabs.size(); ++i) {
+            done[i] = static_cast<int>(entities.slabs[i].layer) != layer;
+        }
+    }
     std::vector<InstanceData> batch;
     for (std::size_t i = 0; i < entities.slabs.size(); ++i) {
         if (done[i] || (entities.slabs[i].slab < 0)) {
@@ -440,6 +477,9 @@ std::filesystem::path app_exe_directory()
         return std::filesystem::path();
     }
     return std::filesystem::path(std::string(buf, len)).parent_path();
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    std::error_code ec;
+    return std::filesystem::read_symlink("/proc/self/exe", ec).parent_path();
 #else
     std::error_code ec;
     return std::filesystem::current_path(ec);
@@ -457,7 +497,7 @@ std::filesystem::path app_exe_directory()
  * cfg の名前は**ファイル名だけ**から作るので、どちらに置いても同じ cfg を使う
  * （`settings_path_for_core` の検査がその形を押さえている）。
  */
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(HENGBAND_DESKTOP_LINUX)
 std::filesystem::path resolve_core_path(const std::string &name)
 {
     std::filesystem::path given(name);
@@ -487,7 +527,7 @@ std::filesystem::path resolve_core_path(const std::string &name)
  */
 bool core_is_available(const AppOptions &options, const std::string &path)
 {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(HENGBAND_DESKTOP_LINUX)
     (void)options;
     if (path.empty()) {
         return false;
@@ -502,7 +542,13 @@ bool core_is_available(const AppOptions &options, const std::string &path)
     try {
         std::error_code ec;
         //! 在り処の決め方は `resolve_core_path`（`cores/` を先に見る）で 1 か所に閉じる。
-        return std::filesystem::is_regular_file(resolve_core_path(path), ec);
+        const auto resolved = resolve_core_path(path);
+        if (!std::filesystem::is_regular_file(resolved, ec)) return false;
+#if defined(HENGBAND_DESKTOP_LINUX)
+        return ::access(resolved.c_str(), X_OK) == 0;
+#else
+        return true;
+#endif
     } catch (const std::exception &) {
         return false;
     }
@@ -588,7 +634,7 @@ std::vector<CoreEntry> sanitize_cores(const AppOptions &options, const std::vect
  * @details 初回起動（cfg に `cores=` が無い）ときだけ呼ぶ。
  * §6.1 の「初回は exe と同じ場所を見て在るものだけ自動登録」。
  * **無いものは並べない**——選べない項目を出しても「起動できませんでした」を
- * 出すだけで、利用者には何の情報にもならない。
+ * 出すだけで、遊ぶ人には何の情報にもならない。
  *
  * ここが画面側の持つコアの知識の全部である（同 §1 制約 1）。表示名と exe の名前だけで、
  * タイルもキーもデータの置き場も持たない。
@@ -616,12 +662,30 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
          * ——固有名詞に和名は無い（Sil-Q と同じ理由。M1 で日本語になっても変えない）。
          */
         { "FroxComposband", "FroxCore.exe" },
+        { "RogueClone2", "Rogue2Core.exe" },
+        { "Rogue 3.6", "Rogue36Core.exe" },
+        { "Rogue 5.4", "Rogue54Core.exe" },
+        { "Umoria", "UmoriaCore.exe" },
+        { "Angband", "AngbandCore.exe" },
     };
     for (const Known &known : kKnown) {
         if (core_is_available(options, known.path)) {
             found.push_back(CoreEntry{ known.name, known.path });
         }
     }
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    static const Known kKnown[] = {
+        { "変愚蛮怒", "HengbandCore" }, { "短愚蛮怒", "TangbandCore" },
+        { "幻想蛮怒", "GensobandCore" }, { "Sil-Q", "SilCore" },
+        { "FroxComposband", "FroxCore" }, { "RogueClone2", "Rogue2Core" },
+        { "Rogue 3.6", "Rogue36Core" }, { "Rogue 5.4", "Rogue54Core" },
+        { "Umoria", "UmoriaCore" },
+        { "Angband", "AngbandCore" }
+    };
+    for (const Known &known : kKnown) {
+        if (core_is_available(options, known.path)) found.push_back({known.name, known.path});
+    }
+
 #else
     /*
      * Android / Quest: コアは APK 同梱の .so（1 プロセス 2 スレッドのまま、選ばれた .so を
@@ -640,6 +704,11 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
          * M0 の対象外）——`kKnown` は「在るものだけ」を拾うので、無い間は一覧に出ない。
          */
         { "FroxComposband", "libfroxcore.so" },
+        { "RogueClone2", "librogue2core.so" },
+        { "Rogue 3.6", "librogue36core.so" },
+        { "Rogue 5.4", "librogue54core.so" },
+        { "Umoria", "libumoriacore.so" },
+        { "Angband", "libangbandcore.so" },
     };
     //! 並びも exe 版と同じにする（`kKnown` の順がそのまま画面の順になる）。
     for (const Known &known : kKnown) {
@@ -661,6 +730,28 @@ constexpr float kCoreSelectZoomMs = 1500.f;
  */
 constexpr int kCoreSelectUploadBudgetMs = 12;
 
+//! exe / so の名から系譜図・バナーの鍵（`rogue36` など）を引く。
+//! `assets/ui/lineage.json` の `core` 欄と同じ鍵を使う。分からなければ空文字。
+std::string core_key_for_path(const std::string &path)
+{
+    std::string low = path;
+    for (char &c : low) {
+        c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
+    }
+    const char *key = (low.find("rogue36") != std::string::npos) ? "rogue36"
+                      : (low.find("rogue54") != std::string::npos) ? "rogue54"
+                      : (low.find("rogue2") != std::string::npos)  ? "rogue2"
+                      : (low.find("tang") != std::string::npos)    ? "tang"
+                      : (low.find("genso") != std::string::npos)   ? "genso"
+                      : (low.find("umoria") != std::string::npos)  ? "umoria"
+                      : (low.find("angband") != std::string::npos) ? "angband"
+                      : (low.find("frox") != std::string::npos)    ? "frox"
+                      : (low.find("heng") != std::string::npos)    ? "heng"
+                      : (low.find("sil") != std::string::npos)     ? "sil"
+                                                                   : nullptr;
+    return (key != nullptr) ? key : std::string();
+}
+
 /*!
  * @brief コア選択画面を回す。**CoreLink を起こす前**に呼ぶ（設計 §6.1）。
  * @param cores 一覧（2 件以上のときだけ呼ばれる）
@@ -679,6 +770,17 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
     const std::function<void()> &on_decided = {}, const std::function<bool()> &still_loading = {},
     const std::string &shot_path = std::string(), int shot_after = 0)
 {
+    const auto import_cfg = core_import_config();
+    std::error_code import_error;
+    const bool import_enabled = cores.empty()
+        && std::filesystem::is_regular_file(import_cfg.compiler, import_error)
+        && std::filesystem::is_regular_file(import_cfg.kit / "catalog.json", import_error);
+    LineageData lineage_probe;
+    std::string lineage_probe_error;
+    const bool lineage_enabled = load_lineage(lineage_probe, lineage_probe_error);
+    if (!lineage_enabled) {
+        std::fprintf(stderr, "[hd2d] lineage: %s\n", lineage_probe_error.c_str());
+    }
     struct ImportOverlay { TextOverlay value; ~ImportOverlay() { value.shutdown(); } } enlarged;
     int initial_w = 0, initial_h = 0; SDL_GetWindowSize(window.window, &initial_w, &initial_h);
     const int font_size = core_import_font_size(initial_w, initial_h);
@@ -774,6 +876,14 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
         const RectPx &b = slots.back().box;
         return RectPx{ a.x - kLangPad, a.y, (b.x + b.w + kLangPad) - (a.x - kLangPad), a.h };
     };
+    //! 系譜の札（左上。言語の札（右上）と対にする）。
+    const auto lineage_button_rect_at = [&text](int w, int h) {
+        (void)w; (void)h;
+        const std::string label = i18n::tr("hd2d.app.lineage.open");
+        const int width = text.measure(label) + (kLangPad * 2);
+        const int height = text.cell_h() + 16;
+        return RectPx{ 24, 20, width, height };
+    };
 
     /*
      * コアごとのバナー（2026-08-19 に決めた「テキストではなくバナー表示に」）。
@@ -782,17 +892,78 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
      * 絵の中身と再生成は tools/gen_core_select_banners.py（左=場面・右へ暗転・題字と説明）。
      */
     std::vector<UiImage> banners(cores.size());
+    /*
+     * **2 列に並べる**（決めたこと 2026-09-23「コアが増えてきたのでバナーを 2 列にして
+     * 左に Rogue3.6 / Rogue5.4 / Rogue Clone2、右に 変愚 / 短愚 / 幻想 / Sil-Q / Frox」）。
+     * 並びは見つかった順ではなく、この表の順で固定する。表に無いコアは右の列の末尾。
+     * Angband は左の列の末尾（Rogue → Angband の系譜の順）。
+     */
+    struct CoreSlot {
+        int column{ 1 };
+        int row{ 0 };
+    };
+    static constexpr const char *kLeftColumn[] = { "rogue36", "rogue54", "rogue2", "umoria", "angband" };
+    static constexpr const char *kRightColumn[] = { "heng", "tang", "genso", "sil", "frox" };
+    std::vector<std::string> core_keys(cores.size());
     for (std::size_t i = 0; i < cores.size(); ++i) {
-        std::string low = cores[i].path;
-        for (char &c : low) {
-            c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
+        core_keys[i] = core_key_for_path(cores[i].path);
+    }
+    std::vector<CoreSlot> slots(cores.size());
+    int column_rows[2] = { 0, 0 };
+    {
+        std::vector<bool> placed(cores.size(), false);
+        const auto place_column = [&](int column, const char *const *keys, std::size_t count) {
+            for (std::size_t k = 0; k < count; ++k) {
+                for (std::size_t i = 0; i < cores.size(); ++i) {
+                    if (!placed[i] && core_keys[i] == keys[k]) {
+                        slots[i] = CoreSlot{ column, column_rows[column]++ };
+                        placed[i] = true;
+                    }
+                }
+            }
+        };
+        place_column(0, kLeftColumn, std::size(kLeftColumn));
+        place_column(1, kRightColumn, std::size(kRightColumn));
+        for (std::size_t i = 0; i < cores.size(); ++i) {
+            if (!placed[i]) {
+                slots[i] = CoreSlot{ 1, column_rows[1]++ };
+            }
         }
-        const char *key = (low.find("tang") != std::string::npos)  ? "tang"
-                          : (low.find("genso") != std::string::npos) ? "genso"
-                          : (low.find("frox") != std::string::npos)  ? "frox"
-                          : (low.find("heng") != std::string::npos)  ? "heng"
-                          : (low.find("sil") != std::string::npos)   ? "sil"
-                                                                     : nullptr;
+        //! 片方の列しか無いとき（Rogue だけ・変愚系だけの配布）は 1 列で中央に出す。
+        if (column_rows[0] == 0 || column_rows[1] == 0) {
+            const int only = column_rows[0] == 0 ? 1 : 0;
+            for (auto &slot : slots) {
+                slot.column = 0;
+            }
+            column_rows[0] = column_rows[only];
+            column_rows[1] = 0;
+        }
+    }
+    const int column_count = column_rows[1] > 0 ? 2 : 1;
+    //! 同じ列の中で上下に動く／列を移る。列を移るときは同じ段（無ければその列の最後）へ。
+    const auto move_cursor = [&](int current, int dx, int dy) {
+        if (cores.empty() || current < 0) {
+            return 0;
+        }
+        const CoreSlot from = slots[static_cast<std::size_t>(current)];
+        int column = from.column;
+        int row = from.row;
+        if (dx != 0 && column_count == 2) {
+            column = 1 - column;
+            row = std::min(row, column_rows[column] - 1);
+        }
+        if (dy != 0 && column_rows[column] > 0) {
+            row = (row + (dy > 0 ? 1 : column_rows[column] - 1)) % column_rows[column];
+        }
+        for (std::size_t i = 0; i < slots.size(); ++i) {
+            if (slots[i].column == column && slots[i].row == row) {
+                return static_cast<int>(i);
+            }
+        }
+        return current;
+    };
+    for (std::size_t i = 0; i < cores.size(); ++i) {
+        const char *key = core_keys[i].empty() ? nullptr : core_keys[i].c_str();
         if (key == nullptr) {
             continue; // 知らないコア。文字行で出す
         }
@@ -853,25 +1024,31 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
          */
         plan.head_h = 32;
         plan.foot_h = std::max(32, win_h - core_import_entry_rect(win_w, win_h).y + 8);
-        const int rows = std::max(1, static_cast<int>(cores.size()));
+        //! 段の数は長いほうの列で決める（右の 5 本）。短い列は上から詰める。
+        const int rows = std::max(1, std::max(column_rows[0], column_rows[1]));
         const int avail_h = win_h - plan.head_h - plan.foot_h;
         int banner_h = std::min(360, (avail_h - ((rows - 1) * plan.gap)) / std::max(1, rows));
         int banner_w = banner_h * 4;
-        if (banner_w > (win_w - 120)) {
-            banner_w = win_w - 120;
+        //! 横は 2 列ぶん（列の間も gap）が窓に収まるように抑える。
+        const int max_w = ((win_w - 120) - ((column_count - 1) * plan.gap)) / column_count;
+        if (banner_w > max_w) {
+            banner_w = max_w;
             banner_h = banner_w / 4;
         }
         banner_h = std::max(banner_h, line_h + 8); // 極端に低い窓でも行として成立させる
         plan.w = banner_w;
         plan.h = banner_h;
-        plan.x = (win_w - banner_w) / 2;
+        plan.x = (win_w - ((banner_w * column_count) + ((column_count - 1) * plan.gap))) / 2;
         const int used = (banner_h * rows) + ((rows - 1) * plan.gap);
         plan.y0 = plan.head_h + std::max(0, (avail_h - used) / 2);
         return plan;
     };
     const auto row_rect_at = [&](int win_w, int win_h, int index) {
         const RowPlan plan = plan_rows(win_w, win_h);
-        return RectPx{ plan.x, plan.y0 + (index * (plan.h + plan.gap)), plan.w, plan.h };
+        const CoreSlot slot = (index >= 0 && index < static_cast<int>(slots.size()))
+            ? slots[static_cast<std::size_t>(index)] : CoreSlot{ 0, 0 };
+        return RectPx{ plan.x + (slot.column * (plan.w + plan.gap)), plan.y0 + (slot.row * (plan.h + plan.gap)),
+            plan.w, plan.h };
     };
 
     /*
@@ -890,7 +1067,7 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
      * 消えていく行は必ず広がる絵の裏に入る。
      */
     const auto decide = [&](int index) {
-        if (cores.empty()) { run_core_import(window.window, text, paint, {}, &pad); return -2; }
+        if (cores.empty()) { if (import_enabled) { run_core_import(window.window, text, paint, {}, &pad); return -2; } return -1; }
         if (on_decided) {
             on_decided(); //!< **絵より先に**。1.5 秒を読み込みに使わせる
         }
@@ -1012,6 +1189,29 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
         return index;
     };
 
+    //! 系譜図を開ける。戻り値が -100 なら「そのまま続ける（Back）」。
+    //! それ以外は run_core_select 自体の戻り値（Quit は -1、Launch は decide() の結果）。
+    const auto open_lineage = [&]() -> int {
+        std::vector<std::string> avail;
+        for (const auto &k : core_keys) {
+            if (!k.empty()) avail.push_back(k);
+        }
+        const std::string initial = ((cursor >= 0) && (static_cast<std::size_t>(cursor) < core_keys.size()))
+            ? core_keys[static_cast<std::size_t>(cursor)] : std::string();
+        const LineageResult lr = run_lineage(window.window, text, paint, images, &pad, cfg, avail, initial);
+        if (lr.action == LineageAction::Quit) {
+            return -1;
+        }
+        if (lr.action == LineageAction::Launch) {
+            for (std::size_t i = 0; i < core_keys.size(); ++i) {
+                if (core_keys[i] == lr.core_key) {
+                    return decide(static_cast<int>(i));
+                }
+            }
+        }
+        return -100; //!< Back
+    };
+
     for (;;) {
         test_keyboard().poll("core-select");
         SDL_Event event;
@@ -1022,7 +1222,49 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
             if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) { ix = event.button.x; iy = event.button.y; }
             if (event.type == SDL_FINGERDOWN) { ix = static_cast<int>(event.tfinger.x * iw); iy = static_cast<int>(event.tfinger.y * ih); }
             const auto import_box = core_import_entry_rect(iw, ih);
-            if (ix >= import_box.x && ix < import_box.x + import_box.w && iy >= import_box.y && iy < import_box.y + import_box.h) { run_core_import(window.window, text, paint, {}, &pad); return -2; }
+            if (import_enabled && ix >= import_box.x && ix < import_box.x + import_box.w && iy >= import_box.y && iy < import_box.y + import_box.h) { run_core_import(window.window, text, paint, {}, &pad); return -2; }
+            const RectPx lineage_box = lineage_enabled ? lineage_button_rect_at(iw, ih) : RectPx{};
+            if (lineage_enabled && ix >= lineage_box.x && ix < lineage_box.x + lineage_box.w && iy >= lineage_box.y && iy < lineage_box.y + lineage_box.h) {
+                const int rc = open_lineage();
+                if (rc != -100) return rc;
+                continue;
+            }
+            /*
+             * Android の指タップは、コア行と言語札を**バーチャルパッドより先に**判定する。
+             * コアが 8 本まで増えた現在、下側の Rogue 3.6 / 5.4 行は LS/A/B の描画領域と
+             * 重なり得る。従来は vpad.on_event() が先に FINGERDOWN を消費したため、
+             * その 2 行だけタップが一覧へ届かず「起動できない」状態になっていた。
+             *
+             * ここでは画面上の明示的な一覧行を最優先する。行外のタップだけを後段の
+             * 物理/仮想パッドへ渡すので、パッド操作自体は従来どおり残る。
+             */
+            if (ix >= 0) {
+                const RectPx lr = lang_rect_at(iw, ih);
+                if ((ix >= lr.x) && (ix < (lr.x + lr.w)) && (iy >= lr.y) && (iy < (lr.y + lr.h))) {
+                    for (const auto &s : lang_slots_at(iw, ih)) {
+                        if ((ix >= s.box.x) && (ix < (s.box.x + s.box.w))) {
+                            i18n::set_language(s.code);
+                            break;
+                        }
+                    }
+                    continue;
+                }
+                bool core_row_tapped = false;
+                for (std::size_t i = 0; i < cores.size(); ++i) {
+                    const RectPx r = row_rect_at(iw, ih, static_cast<int>(i));
+                    if ((ix >= r.x) && (ix < (r.x + r.w)) && (iy >= r.y) && (iy < (r.y + r.h))) {
+                        core_row_tapped = true;
+                        if (static_cast<int>(i) == cursor) {
+                            return decide(cursor);
+                        }
+                        cursor = static_cast<int>(i);
+                        break;
+                    }
+                }
+                if (core_row_tapped) {
+                    continue;
+                }
+            }
             if (pad.on_event(event)) {
                 continue;
             }
@@ -1039,32 +1281,45 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
             }
             if (event.type == SDL_DROPFILE) {
                 std::string zip = event.drop.file; SDL_free(event.drop.file);
-                run_core_import(window.window, text, paint, zip, &pad); return -2;
+                if (import_enabled) { run_core_import(window.window, text, paint, zip, &pad); return -2; }
+                continue;
             }
-            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F8) {
+            if (import_enabled && event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F8) {
                 run_core_import(window.window, text, paint, {}, &pad); return -2;
+            }
+            if (lineage_enabled && event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_g) {
+                const int rc = open_lineage();
+                if (rc != -100) return rc;
+                continue;
             }
             if (event.type == SDL_KEYDOWN && (event.key.keysym.sym == SDLK_ESCAPE || !cores.empty())) {
                 switch (event.key.keysym.sym) {
                 case SDLK_UP:
                 case SDLK_k:
-                    cursor = (cursor + static_cast<int>(cores.size()) - 1) % static_cast<int>(cores.size());
+                    cursor = move_cursor(cursor, 0, -1);
                     break;
                 case SDLK_DOWN:
                 case SDLK_j:
-                    cursor = (cursor + 1) % static_cast<int>(cores.size());
+                    cursor = move_cursor(cursor, 0, +1);
                     break;
                 case SDLK_RETURN:
                 case SDLK_KP_ENTER:
                 case SDLK_SPACE:
                     return decide(cursor);
+                /*
+                 * **左右は列を移る**（2 列にしたため。2026-09-23）。言語の札（右上）は
+                 * Tab / Shift+Tab へ移した。札のクリックとパッドの肩ボタンはそのまま。
+                 */
                 case SDLK_LEFT:
                 case SDLK_h:
-                    cycle_lang(-1); //!< 言語の札（右上）。**上下は一覧・左右は言語**
+                    cursor = move_cursor(cursor, -1, 0);
                     break;
                 case SDLK_RIGHT:
                 case SDLK_l:
-                    cycle_lang(+1);
+                    cursor = move_cursor(cursor, +1, 0);
+                    break;
+                case SDLK_TAB:
+                    cycle_lang((event.key.keysym.mod & KMOD_SHIFT) != 0 ? -1 : +1);
                     break;
                 case SDLK_ESCAPE:
                     return -1;
@@ -1072,69 +1327,14 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
                     break;
                 }
             }
-            /*
-             * タッチ／クリック。**タッチだけの機体（Android）はこの画面の時点で
-             * バーチャルパッドがまだ無く、これが無いと操作不能で詰む**（気づいたこと
-             * 2026-08-18）。Android の指は SDL_FINGERDOWN で届く——マウス写しは
-             * 切ってある。
-             * 1 度目のタップで行にカーソルが載り、載っている行をもう 1 度で決定。
-             */
-            int tap_x = -1;
-            int tap_y = -1;
-            if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT)) {
-                tap_x = event.button.x;
-                tap_y = event.button.y;
-            } else if (event.type == SDL_FINGERDOWN) {
-                int fw = 0;
-                int fh = 0;
-                SDL_GetWindowSize(window.window, &fw, &fh);
-                tap_x = static_cast<int>(event.tfinger.x * static_cast<float>(fw));
-                tap_y = static_cast<int>(event.tfinger.y * static_cast<float>(fh));
-            }
-            if (tap_x >= 0) {
-                int tw = 0;
-                int th = 0;
-                SDL_GetWindowSize(window.window, &tw, &th);
-                //! **言語の札が先。**一覧の行と重なっていないが、順は札を上に置く。
-                const auto import_box = core_import_entry_rect(tw, th);
-                if (tap_x >= import_box.x && tap_x < import_box.x + import_box.w && tap_y >= import_box.y && tap_y < import_box.y + import_box.h) {
-                    run_core_import(window.window, text, paint, {}, &pad); return -2;
-                }
-                const RectPx lr = lang_rect_at(tw, th);
-                if ((tap_x >= lr.x) && (tap_x < (lr.x + lr.w)) && (tap_y >= lr.y)
-                    && (tap_y < (lr.y + lr.h))) {
-                    /*
-                     * **押した札の言語にする**（2026-09-01）。両方見えているので、
-                     * 「左で戻す・右で送る」より**押したものが選ばれる**ほうが素直である。
-                     * 札と札のあいだを押したときは何もしない。
-                     */
-                    for (const auto &s : lang_slots_at(tw, th)) {
-                        if ((tap_x >= s.box.x) && (tap_x < (s.box.x + s.box.w))) {
-                            i18n::set_language(s.code);
-                            break;
-                        }
-                    }
-                    continue;
-                }
-                for (std::size_t i = 0; i < cores.size(); ++i) {
-                    const RectPx r = row_rect_at(tw, th, static_cast<int>(i));
-                    if ((tap_x >= r.x) && (tap_x < (r.x + r.w)) && (tap_y >= r.y) && (tap_y < (r.y + r.h))) {
-                        if (static_cast<int>(i) == cursor) {
-                            return decide(cursor);
-                        }
-                        cursor = static_cast<int>(i);
-                        break;
-                    }
-                }
-            }
         }
 
         /* パッド。方向で動かし、A で決める（`pad_input_is_fixed` の固定の意味）。 */
         int dx = 0;
         int dy = 0;
-        if (!cores.empty() && pad.poll_direction(SDL_GetTicks(), true, dx, dy) && (dy != 0)) {
-            cursor = (cursor + ((dy > 0) ? 1 : (static_cast<int>(cores.size()) - 1)))
-                % static_cast<int>(cores.size());
+        if (!cores.empty() && pad.poll_direction(SDL_GetTicks(), true, dx, dy) && (dx != 0 || dy != 0)) {
+            //! 斜めは縦を優先する（列を移るつもりの無い指の揺れで、隣の列へ飛ばないように）。
+            cursor = (dy != 0) ? move_cursor(cursor, 0, dy) : move_cursor(cursor, dx, 0);
         }
         PadPress press{};
         while (pad.take_pressed(press)) {
@@ -1143,6 +1343,10 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
             }
             if (press.input == PadInput::B) {
                 return -1;
+            }
+            if (lineage_enabled && (press.input == PadInput::Y)) {
+                const int rc = open_lineage();
+                if (rc != -100) return rc;
             }
             //! 言語の札（右上）。**十字は一覧を動かす**ので、肩のボタンを当てる。
             if (press.input == PadInput::LeftShoulder) {
@@ -1154,9 +1358,8 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
         }
 
         /* バーチャルパッド。物理パッドと同じ入力（LS で動かし、A で決める）。 */
-        if (!cores.empty() && vpad.poll_direction(SDL_GetTicks(), dx, dy) && (dy != 0)) {
-            cursor = (cursor + ((dy > 0) ? 1 : (static_cast<int>(cores.size()) - 1)))
-                % static_cast<int>(cores.size());
+        if (!cores.empty() && vpad.poll_direction(SDL_GetTicks(), dx, dy) && (dx != 0 || dy != 0)) {
+            cursor = (dy != 0) ? move_cursor(cursor, 0, dy) : move_cursor(cursor, dx, 0);
         }
         while (vpad.take_pressed(press)) {
             if (press.input == PadInput::A) {
@@ -1176,7 +1379,37 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
         glClearColor(0.02f, 0.02f, 0.04f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //! 背景は素の闇だけ（2026-08-19 に決めた「この画面自体に背景画像をなくそう」）。
+        if (ui_probe().enabled()) {
+            //! テスト用の問い合わせ（`app/ui_probe.h`）：押せる部品（コアの行・言語の札・系譜・取り込み）を記録する。
+            //! 矩形は上のクリックの判定が使うものと同じ関数から採る。
+            ProbeWindow listing;
+            listing.kind = "core-select";
+            listing.selected = cursor;
+            for (std::size_t i = 0; i < cores.size(); ++i) {
+                const RectPx r = row_rect_at(w, h, static_cast<int>(i));
+                ui_probe().button(cores[i].name, ProbeRect{ r.x, r.y, r.w, r.h }, true, static_cast<int>(i) == cursor, "core",
+                    false, cores[i].path);
+                listing.items.push_back(ProbeItem{ cores[i].path, cores[i].name, {}, true, static_cast<int>(i) == cursor });
+            }
+            ui_probe().window(std::move(listing));
+            for (const auto &slot : lang_slots_at(w, h)) {
+                //! 札の字は印（`● `／`○ `。4 バイト）つき。名前だけを部品の名前にする。
+                ui_probe().button(slot.text.size() > 4 ? slot.text.substr(4) : slot.text,
+                    ProbeRect{ slot.box.x, slot.box.y, slot.box.w, slot.box.h }, true, slot.on, "lang", false, slot.code);
+            }
+            if (lineage_enabled) {
+                const RectPx lb = lineage_button_rect_at(w, h);
+                ui_probe().button(i18n::tr("hd2d.app.lineage.open"), ProbeRect{ lb.x, lb.y, lb.w, lb.h }, true, false, "lineage", false, "lineage");
+            }
+            if (import_enabled) {
+                const RectPx ib = core_import_entry_rect(w, h);
+                ui_probe().button(core_import_caption("hd2d.app.core-import.entry"), ProbeRect{ ib.x, ib.y, ib.w, ib.h }, true,
+                    false, "import", false, "import");
+            }
+            ui_probe().frame_info(std::string(), 0, w, h, "core-select", "menu");
+        }
+        const UiProbeLayer probe_layer("core-select");
+        //! 背景は素の闇だけ（決めたこと 2026-08-19「この画面自体に背景画像をなくそう」）。
         paint.begin(w, h);
         for (std::size_t i = 0; i < cores.size(); ++i) {
             const RectPx row = row_rect_at(w, h, static_cast<int>(i));
@@ -1263,6 +1496,20 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
             text.flush();
         }
 
+        //! 系譜の札（左上。assets/ui/lineage.json が読めたときだけ出す。
+        if (lineage_enabled) {
+            const RectPx lb = lineage_button_rect_at(w, h);
+            paint.begin(w, h);
+            paint.rect(lb, PaintColor{ 0.f, 0.f, 0.f, 0.55f });
+            paint.rect(RectPx{ lb.x, lb.y, lb.w, 2 }, PaintColor{ 0.62f, 0.78f, 1.f, 0.8f });
+            paint.rect(RectPx{ lb.x, lb.y + lb.h - 2, lb.w, 2 }, PaintColor{ 0.62f, 0.78f, 1.f, 0.8f });
+            paint.flush();
+            text.begin(w, h);
+            text.draw(lb.x + kLangPad, lb.y + ((lb.h - text.cell_h()) / 2), i18n::tr("hd2d.app.lineage.open"),
+                TextColor{ 1.f, 1.f, 1.f, 1.f }, lb.w - (kLangPad * 2));
+            text.flush();
+        }
+
         /* バーチャルパッド（下敷き → 文字の順で 1 束。盤面より上に載せる）。 */
         paint.begin(w, h);
         text.begin(w, h);
@@ -1275,6 +1522,7 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
          * `--core-select-check`。**swap の前に読む**（既定のフレームバッファは
          * swap で入れ替わるので、後に読むと前のフレームが写る）。
          */
+        if (import_enabled) {
         const auto import_box = core_import_entry_rect(w, h);
         paint.begin(w, h); paint.rect(import_box, {.12f, .18f, .28f, 1}); paint.flush();
         text.begin(w, h);
@@ -1286,6 +1534,7 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
             if (count < help.size()) text.draw(36, h / 2 + text.cell_h() + 8, help.substr(count), {1,1,1,1}, w - 72);
         }
         text.flush();
+        }
         ++drawn;
         if ((shot_after > 0) && (drawn >= shot_after)) {
             if (!shot_path.empty()) {
@@ -1322,6 +1571,38 @@ CoreRelaunch take_core_relaunch()
 
 int run(const AppOptions &options)
 {
+    if (options.lineage_check) {
+        //! 窓も GL も要らない（layout_lineage まで純粋な計算）。
+        return run_lineage_check(
+            options.lineage_data_path.empty() ? std::string("assets/ui/lineage.json") : options.lineage_data_path);
+    }
+    if (!options.model_check_path.empty()) {
+        ModelAsset asset;
+        std::string error;
+        if (!load_glb(options.model_check_path, asset, error)) {
+            std::fprintf(stderr, "[model] %s\n", error.c_str());
+            return 1;
+        }
+        std::printf("MODEL_CHECK_JSON={\"vertices\":%zu,\"bounds_min\":[%.9g,%.9g,%.9g],"
+            "\"bounds_max\":[%.9g,%.9g,%.9g]}\n", asset.vertex_count,
+            asset.bounds_min.x, asset.bounds_min.y, asset.bounds_min.z,
+            asset.bounds_max.x, asset.bounds_max.y, asset.bounds_max.z);
+        return 0;
+    }
+    if (!options.model_view_path.empty()) {
+        return run_model_view(options);
+    }
+    if (options.model_terrain_check) return run_model_terrain_check(options);
+    // 2026-09-08: gameplay GLB models deferred at the user's request.
+    // Archived implementation and materials: .
+    ModelAsset wall_model_asset, floor_model_asset, player_model_asset;
+    std::array<ModelAsset,kTerrainModelCount> terrain_part_assets;
+    std::array<bool,kTerrainModelCount> terrain_part_loaded{};
+    const bool wall_model_loaded=false, floor_model_loaded=false, player_model_loaded=false;
+    if (!options.model_terrain_pack.empty() || !options.model_wall_path.empty()
+        || !options.model_floor_path.empty() || !options.model_player_path.empty()) {
+        std::fprintf(stderr,"[model] gameplay GLB trial deferred; using existing voxel terrain and entities\n");
+    }
     std::string input_error;
     if (!test_keyboard().configure(options.test_input_file, input_error)) {
         std::fprintf(stderr, "[test-keyboard] %s\n", input_error.c_str());
@@ -1335,6 +1616,7 @@ int run(const AppOptions &options)
      * 言語の選択（cfg の `lang`）は設定を読んだ後で当てる。ここでは器だけ用意する。
      */
     i18n::load("assets/lang");
+    fx_sprite_set_dir("assets/fx"); //!< 攻撃の視覚効果の絵の板（どくろなど。`render/fx_styles/fx_parts.h`）
     /*
      * `HD2D_LANG` で言語を当てる手段（このツリーの `HD2D_*` と同じ作法）。**cfg より強い。**
      * 検査のモードは cfg を読まないので、これが無いと「日本語以外で走らせる」道が
@@ -1385,6 +1667,40 @@ int run(const AppOptions &options)
     }
     if (options.ui_check) {
         return run_ui_check(options); // P8
+    }
+    if (!options.status_hud_check_path.empty()) {
+        return run_status_hud_check(options); // HP/MP の玉とバフ・デバフのアイコン
+    }
+    {
+        /*
+         * `--light-range-check=出力の頭`（光の届く範囲の検査）。
+         * 引数は `forwarded_args` から拾う——ここで読めば、共通の引数表（`desktop_command_line.h`）を
+         * 触らずに足せる。見つかったらコアへは転送せず、そのまま検査へ入る。
+         */
+        static const std::string kLightRangeCheckArg = "--light-range-check=";
+        for (const std::string &arg : options.forwarded_args) {
+            if (arg.compare(0, kLightRangeCheckArg.size(), kLightRangeCheckArg) == 0) {
+                AppOptions check_options = options;
+                check_options.light_range_check_path = arg.substr(kLightRangeCheckArg.size());
+                return run_light_range_check(check_options);
+            }
+        }
+        if (!options.light_range_check_path.empty()) {
+            return run_light_range_check(options);
+        }
+    }
+    {
+        /*
+         * `--attack-fx-check=出力の頭`（攻撃の視覚効果の検査）。
+         * 引数は `--light-range-check=` と同じく `forwarded_args` から拾う（共通の引数表を触らない）。
+         * 値が空（`--attack-fx-check=`）なら書き出さずに検査だけ走る。
+         */
+        static const std::string kAttackFxCheckArg = "--attack-fx-check=";
+        for (const std::string &arg : options.forwarded_args) {
+            if (arg.compare(0, kAttackFxCheckArg.size(), kAttackFxCheckArg) == 0) {
+                return run_attack_fx_check(options, arg.substr(kAttackFxCheckArg.size()));
+            }
+        }
     }
     if (options.vr_math_check) {
         //! VR の座標の検査。窓も GL もコアも要らない（純関数だけ）。
@@ -1486,7 +1802,13 @@ int run(const AppOptions &options)
         return options.prefab_check_only ? run_prefab_check(options) : run_prefab_view(options);
     }
     //! **パッドも起こす**（P8）。無い機械でも `SDL_Init` は成功する。
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0) {
+    Uint32 sdl_init_flags = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER;
+#if defined(_WIN32)
+    // Preserve Windows input initialization when returning from a finished core.
+    // Repeated SDL_Init would otherwise increment the subsystem reference counts.
+    sdl_init_flags &= ~SDL_WasInit(sdl_init_flags);
+#endif
+    if (sdl_init_flags != 0 && SDL_Init(sdl_init_flags) != 0) {
 #if defined(_WIN32)
         (void)::MessageBoxA(nullptr, "SDL の初期化に失敗しました。", "Hengband HD2D", MB_OK | MB_ICONERROR);
 #else
@@ -1585,7 +1907,7 @@ int run(const AppOptions &options)
          * cfg を持たない機（＝入れたばかりの機）では既定が一度も効かなかった。
          * 既定は `Hd2dSettings` の初期化子（`kVrRenderScaleDefault`）が持っているので、
          * **読めなければそのままの値が答え**である。既定はどの機でも 1.0（§15.5）なので、
-         * この行があっても絵は動かない——効くのは利用者が自分で下げたときだけである。
+         * この行があっても絵は動かない——効くのは遊ぶ人が自分で下げたときだけである。
          */
         Hd2dSettings stored_for_xr;
         (void)load_settings(default_settings_path(), stored_for_xr);
@@ -1609,9 +1931,10 @@ int run(const AppOptions &options)
 
     TextOverlay text;
     VoxelRenderer renderer;
+    VoxelRenderer item_icon_renderer;
     UiPaint paint; //!< P8。パネルの下敷き・枠・ゲージ（文字より先に流す）
     UiImagePainter images; //!< P8。タイトル画とパネルの背面
-    if (!text.init(kTextPx, err) || !renderer.init(err) || !paint.init(err) || !images.init(err)) {
+    if (!text.init(kTextPx, err) || !renderer.init(err) || !item_icon_renderer.init(err) || !paint.init(err) || !images.init(err)) {
         show_message(err);
         SDL_GL_DeleteContext(window.context);
         SDL_DestroyWindow(window.window);
@@ -1634,9 +1957,17 @@ int run(const AppOptions &options)
      * 理由だけ出して続ける。出ないことに気づけるよう、黙って諦めない。
      */
     UiBackdrops backdrops;
+    UiBackdrops backdrops_orb_only; //!< 「背面の絵」を切ったとき用（玉の素材だけを持つ）
     UiImage title_image;
     UiImage panel_bottom_image;
     UiImage panel_right_image;
+    UiImage orb_back_image;
+    UiImage orb_glass_image;
+    UiImage orb_liquid_hp_image;
+    UiImage orb_liquid_mp_image;
+    UiImage orb_glass_top_image;
+    UiImage orb_front_image;
+    UiImage status_icons_image;
     {
         std::string image_err;
         if (!title_image.load(kTitleImagePath, image_err)) {
@@ -1652,6 +1983,35 @@ int run(const AppOptions &options)
         backdrops.title = &title_image;
         backdrops.panel_bottom = &panel_bottom_image;
         backdrops.panel_right = &panel_right_image;
+        /*
+         * HP/MP の玉の 6 層とバフ・デバフのアイコンのシート。ここで読むのは
+         * **変愚の素材**（`assets/ui/hud/` 直下。コアが決まる前の既定で、変愚と知らないコアはこのまま使う）。
+         * コアごとの意匠は、握手でコア名が届いた後に読み替える（下の「玉の配置と素材」。同 §6）。
+         * **読めなくても致命ではない**（読めない層があれば玉もアイコンも出さず、元の棒を描く）。
+         * 縮めて貼る絵なのでミップマップを作る（`load_minified`）。
+         */
+        const std::pair<UiImage *, const char *> orb_files[] = {
+            { &orb_back_image, kOrbBackPath }, { &orb_glass_image, kOrbGlassPath },
+            { &orb_liquid_hp_image, kOrbLiquidHpPath }, { &orb_liquid_mp_image, kOrbLiquidMpPath },
+            { &orb_glass_top_image, kOrbGlassTopPath }, { &orb_front_image, kOrbFrontPath },
+            { &status_icons_image, kStatusIconsPath },
+        };
+        for (const auto &file : orb_files) {
+            if (!file.first->load_minified(file.second, image_err)) {
+                std::fprintf(stderr, "[hd2d] %s（HP/MP の玉は元の棒で出します）\n", image_err.c_str());
+            }
+        }
+        backdrops.orb.painter = &images;
+        backdrops.orb.back = &orb_back_image;
+        backdrops.orb.glass = &orb_glass_image;
+        backdrops.orb.liquid_hp = &orb_liquid_hp_image;
+        backdrops.orb.liquid_mp = &orb_liquid_mp_image;
+        backdrops.orb.glass_top = &orb_glass_top_image;
+        backdrops.orb.front = &orb_front_image;
+        backdrops.orb.status_icons = &status_icons_image;
+        //! 「背面の絵」の設定を切っても玉は出す（玉は絵ではなく HP/MP の表示そのもの）。
+        backdrops_orb_only.painter = &images;
+        backdrops_orb_only.orb = backdrops.orb;
     }
     /*
      * 階が変わったときのカットイン演出（P10。2026-08-11 に決めた。`ui/floor_cutin.h`）。
@@ -1665,12 +2025,19 @@ int run(const AppOptions &options)
         }
     }
     GamePad pad; //!< P8。十字／スティックで歩き、ボタンでコマンドを出す
+    /*
+     * 修-03：すでに繋がっている機器をここで開く。言語切り替えの起こし直し（`kRunRelaunchCore`）は
+     * `SDL_Quit` をしないので、機器の追加の知らせが二度と来ない。知らせだけに頼ると十字キーが死ぬ。
+     */
+    pad.open_present_devices();
     /*!
      * バーチャルパッド（2026-08-12 に決めた）。**物理パッドと同じ出来事を出す**ので、
      * この先の経路（割り当て・メニュー操作・一人称）は 2 つのパッドを区別しない。
      */
     VirtualPad vpad;
     std::vector<PadCommand> pad_commands;
+    //! いまのキー配置の種類（`pad_commands.current_keymap`。"original" / "rogue"）。
+    std::string pad_keymap{ "original" };
     //! どのボタンにマクロが乗っているか（`macro_triggers` で届く。表示にだけ使う）。
     PadMacroFlags pad_macros;
 #if !defined(__ANDROID__)
@@ -1725,7 +2092,7 @@ int run(const AppOptions &options)
      *
      * 規則は 3 つ:
      * - `--core-path=` が有れば画面を出さない（スクリプト・検査のため）
-     * - 登録が 1 件以下なら画面を出さない（**既存利用者の起動を変えない**）
+     * - 登録が 1 件以下なら画面を出さない（**既存遊ぶ人の起動を変えない**）
      * - それ以外は一覧を出し、前回選んだものにカーソルを載せる
      */
     std::vector<CoreEntry> core_list;
@@ -1755,7 +2122,7 @@ int run(const AppOptions &options)
          * **cfg の一覧はそのまま信じない**（`sanitize_cores`。2026-08-23 に気づいた）。
          * 在らない道と重複をここで落とす。全部落ちれば下の初回扱い（自動登録）へ流れる。
          *
-         * 1 つでも落ちたら**残りも捨てて作り直す**。並び順は利用者の記憶なので普段は
+         * 1 つでも落ちたら**残りも捨てて作り直す**。並び順は遊ぶ人の記憶なので普段は
          * 触らないが、壊れた cfg の並びは記憶ではなく壊れ方の跡である——今回の
          * 化けでは、生き残った 1 件（`Sil-Q`）が先頭に居座り、直したはずの一覧が
          * 元の並びに戻らなかった。**壊れていたと分かったら並びも信じない。**
@@ -1772,7 +2139,7 @@ int run(const AppOptions &options)
              * **後から増えたコアを継ぎ足す。** cfg に `cores=` が在ると初回の
              * 自動登録は走らないので、そのままだと**新しいコアを置いても一覧に
              * 出ない**（隣に exe が在るのに選べない）。既存の並び順は変えず、
-             * 見つかったのに載っていないものだけを末尾へ足す——順序は利用者の
+             * 見つかったのに載っていないものだけを末尾へ足す——順序は遊ぶ人の
              * 記憶でもあるので、勝手に並べ替えない。
              */
             for (const CoreEntry &found : discover_cores(options)) {
@@ -1828,6 +2195,32 @@ int run(const AppOptions &options)
             // コア未登録でも有効な初期画面として、インポートの入口を表示する。
             (void)run_core_select(core_list, initial, window, text, paint, images, pad,
                 core_cfg, {}, {}, options.shot_path, shot_frames);
+            std::fprintf(stderr, "[hd2d] RESULT: PASS\n");
+            text.shutdown();
+            SDL_GL_DeleteContext(window.context);
+            SDL_DestroyWindow(window.window);
+            SDL_Quit();
+            return 0;
+        }
+        if (!options.lineage_shot_path.empty() || options.lineage_view) {
+            /*
+             * `--lineage-shot=`。系譜図の画面を直接開いて撮って終わる。**コアは起こさない。**
+             */
+            std::vector<std::string> avail;
+            for (const CoreEntry &entry : core_list) {
+                const std::string key = core_key_for_path(entry.path);
+                if (!key.empty()) avail.push_back(key);
+            }
+            std::string initial_key = options.lineage_initial_key;
+            if (initial_key.empty()) {
+                for (const CoreEntry &entry : core_list) {
+                    if (entry.path == core_cfg.last_core) { initial_key = core_key_for_path(entry.path); break; }
+                }
+            }
+            const int lineage_shot_frames = (options.shot_after_frames != 0) ? std::abs(options.shot_after_frames) : 30;
+            (void)run_lineage(window.window, text, paint, images, &pad, core_cfg, avail, initial_key,
+                options.lineage_shot_path, lineage_shot_frames,
+                options.lineage_data_path.empty() ? std::string("assets/ui/lineage.json") : options.lineage_data_path);
             std::fprintf(stderr, "[hd2d] RESULT: PASS\n");
             text.shutdown();
             SDL_GL_DeleteContext(window.context);
@@ -2058,6 +2451,10 @@ int run(const AppOptions &options)
      * 用意できなかったら **UI の文字へ落とす**——地図が出ないより字が小さいほうがまし。
      */
     OptionalRenderResources optional_render;
+    bool player_model_attempted = false;
+    bool terrain_models_attempted = false;
+    bool terrain_models_reported = false;
+    bool player_model_reported = false;
     auto &ascii_text = optional_render.ascii_text;
     auto &ascii_text_px = optional_render.ascii_text_px; //!< いま焼いてある大きさ（0 = 用意していない）
     auto &ascii_text_failed = optional_render.ascii_text_failed;
@@ -2178,6 +2575,12 @@ int run(const AppOptions &options)
      * @details 握手より前に置くのは、駆動ループがこの値を見るからである。
      */
     bool core_wants_lang_restart = false;
+    /*!
+     * @brief コアが `map_click` を申告したか（AH-58。下の features の節で決まる）。
+     * @details 真のコアだけ、地図のクリック・タップを `input_event` の `map_click` で送る。
+     * **コア名では決めない**（申告しないコアは、これまでのクリック移動のまま）。
+     */
+    bool core_map_click = false;
     CoreLink link;
     CoreLinkOptions link_options;
     link_options.forwarded_args = options.forwarded_args;
@@ -2197,14 +2600,23 @@ int run(const AppOptions &options)
      */
     if (!core_choice.empty()) {
 #if defined(_WIN32)
-        SetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", app_exe_directory().c_str());
+        /*
+         * データの場所を呼び手が既に決めていれば上書きしない。検証でデータを一時フォルダへ
+         * 逃がすため（上書きしていたので、画面側から起動した検証が開発ツリー直下の
+         * `rogue2/` などへ書いていた。2026-09-25）。ふだんの起動では未設定なので従来どおり。
+         */
+        if (GetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", nullptr, 0) == 0) {
+            SetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", app_exe_directory().c_str());
+        }
+        link_options.core_path = resolve_core_path(core_choice);
+#elif defined(HENGBAND_DESKTOP_LINUX)
         link_options.core_path = resolve_core_path(core_choice);
 #else
         const std::filesystem::path picked(core_choice);
         link_options.core_path = picked.is_absolute() ? picked : (app_exe_directory() / picked);
 #endif
     }
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(HENGBAND_DESKTOP_LINUX)
     link_options.core_thread_main = options.core_thread_main;
     if (!core_choice.empty() && (options.core_thread_resolve != nullptr)) {
         // 選ばれたコア .so の入口へ差し替える（多コア形）。**ここが本当の「起こす」である。**
@@ -2251,6 +2663,52 @@ int run(const AppOptions &options)
     const std::string title_line = build_title_line(link.hello_ack());
 
     /*
+     * ---- 玉の配置と素材（決めたこと 2026-10-11）----
+     * HP/MP の玉は**コアごとに違う意匠**。握手の `core_name` から `assets/ui/hud/<コア>/` を選び、
+     * 配置（`orb_layout.json`）を覚えて 6 層を読む。変愚と知らないコアは `assets/ui/hud/` 直下（今の素材・今の寸法）。
+     * 選んだ組が読めなければ変愚の素材へ落とす（無くても遊べる。それも読めなければ元の棒）。
+     * 変愚と知らないコアは、起動の最初に読んだ素材のまま何もしない（変愚の起動は 1 行も変わらない）。
+     * **配置を覚えるのはここで 1 度だけ**（この後に `UiLayout::compute` が玉の下端を引く）。
+     */
+    {
+        std::string orb_note;
+        OrbProfile orb = load_orb_profile(link.hello_ack().core_name, orb_note);
+        if (!orb_note.empty()) {
+            std::fprintf(stderr, "[hd2d] 玉の配置: %s（変愚の玉で出します）\n", orb_note.c_str());
+        }
+        if (!orb.asset_key.empty()) {
+            const std::pair<UiImage *, const char *> layers[] = {
+                { &orb_back_image, "orb_back" }, { &orb_glass_image, "orb_glass" },
+                { &orb_liquid_hp_image, "orb_liquid_hp" }, { &orb_liquid_mp_image, "orb_liquid_mp" },
+                { &orb_glass_top_image, "orb_glass_top" }, { &orb_front_image, "orb_front" },
+            };
+            bool all = true;
+            for (const auto &layer : layers) {
+                std::string load_err;
+                if (!layer.first->load_minified(orb_layer_path(orb.asset_key, layer.second), load_err)) {
+                    std::fprintf(stderr, "[hd2d] %s\n", load_err.c_str());
+                    all = false;
+                }
+            }
+            if (!all) {
+                //! 途中まで読み替えた層を、変愚の素材へ戻す（層の意匠が混ざらないように）。
+                std::fprintf(stderr, "[hd2d] 玉の素材 %s を読めないので、変愚の玉で出します\n", orb.asset_key.c_str());
+                orb = OrbProfile{};
+                for (const auto &layer : layers) {
+                    std::string load_err;
+                    if (!layer.first->load_minified(orb_layer_path("", layer.second), load_err)) {
+                        std::fprintf(stderr, "[hd2d] %s（HP/MP の玉は元の棒で出します）\n", load_err.c_str());
+                    }
+                }
+            }
+            std::fprintf(stderr, "[hd2d] 玉: core=%s assets=%s 中心=(%.1f,%.1f) y=%.1f 半径=%.1f 下端=%d 飾り=%s\n",
+                link.hello_ack().core_name.c_str(), orb_asset_dir(orb.asset_key).c_str(), orb.hp_cx, orb.mp_cx, orb.cy, orb.r,
+                orb.art_bottom_y, orb.emblem.present ? "あり" : "なし");
+        }
+        set_orb_profile(orb);
+    }
+
+    /*
      * 板の 2 段探索（設計 §5.4 / §6.4）。コアが `asset_roots.slab` を申告していれば
      * ［申告 → 既定］の順で探す。**変愚コアは申告しないので空のまま**＝従来どおり。
      */
@@ -2266,7 +2724,7 @@ int run(const AppOptions &options)
      * コア名はコアが送ってきたものそのまま（画面側でコア名の分岐は書かない。§1 制約 1）。
      */
     if (!link.hello_ack().core_name.empty()) {
-        const std::string window_title = std::string("Hengband HD2D (voxel) - ") + link.hello_ack().core_name
+        const std::string window_title = std::string("変愚蛮怒HD - ") + link.hello_ack().core_name
             + (link.hello_ack().core_version.empty() ? "" : (" " + link.hello_ack().core_version));
         SDL_SetWindowTitle(window.window, window_title.c_str());
     }
@@ -2345,6 +2803,11 @@ int run(const AppOptions &options)
             = std::find(features.begin(), features.end(), "lang-restart") != features.end();
         if (core_wants_lang_restart) {
             std::fprintf(stderr, "[hd2d] core declares \"lang-restart\"; a language change will restart it\n");
+        }
+        //! 地図のクリック・タップ（AH-58。Angband が申告する）。申告しないコアでは何も変わらない。
+        core_map_click = std::find(features.begin(), features.end(), "map_click") != features.end();
+        if (core_map_click) {
+            std::fprintf(stderr, "[hd2d] core declares \"map_click\"; map clicks and taps are sent to the core\n");
         }
     }
 
@@ -2467,8 +2930,11 @@ int run(const AppOptions &options)
             //! 実体の表現。cfg → 引数の順に強い（下で上書き）。
             //! メインパネルの中身（§6）。引数は `--original` だけなので、下で上書きする。
             settings.main_panel = stored.main_panel;
+            settings.modern_ui=stored.modern_ui;settings.modern_theme=stored.modern_theme;
+            settings.modern_font_level=stored.modern_font_level;
             settings.ascii_panel_px = stored.ascii_panel_px;
             settings.entity_style = stored.entity_style;
+            settings.entity_slab_screen_aligned = stored.entity_slab_screen_aligned;
             settings.entity_glyph_pct = stored.entity_glyph_pct;
             //! 状態列の位置と字の受け皿。
             //! **忘れると「覚えているのに効かない」**（tools/check_settings_carry.py が捕まえる）。
@@ -2502,6 +2968,10 @@ int run(const AppOptions &options)
             settings.exposure = stored.exposure;
             settings.dust = stored.dust; //!< 空中に浮かぶ埃
             settings.leaf_pct = stored.leaf_pct; //!< 木の葉（`render/leaf_detail.h`）
+            //! 光の届く範囲。
+            settings.light_range_pct = stored.light_range_pct;
+            settings.light_range_fade_ms = stored.light_range_fade_ms;
+            settings.torch_flicker = stored.torch_flicker;
             settings.dungeon_light = stored.dungeon_light; //!< 空間の明るさ
             settings.fps_slab_turn = stored.fps_slab_turn; //!< 一人称での板の向き
             settings.fps_vertical_look = stored.fps_vertical_look;
@@ -2531,11 +3001,21 @@ int run(const AppOptions &options)
              */
             settings.pad = stored.pad;
             /*
-             * **この写しが無いと、利用者が消したパッドの割り当てが毎回の起動で復活する**
-             * （`pad_defaults_applied` は cfg に書かれるのに、読んだ結果を捨てていた。
+             * **この写しが無いと、遊ぶ人が消したパッドの割り当てが毎回の起動で復活する**
+             * （`pad_defaults_version`（旧 `pad_defaults_applied`）は cfg に書かれるのに、読んだ結果を捨てていた。
              * バーチャルパッドの写し忘れを直すときに見つけた同型の穴。2026-08-12）。
              */
-            settings.pad_defaults_applied = stored.pad_defaults_applied;
+            settings.pad_defaults_version = stored.pad_defaults_version;
+            /*
+             * **共有の `hd2d.cfg` から引き継いだときはパッドの割り当てを持ち込まない**（2026-10-03）。
+             * 割り当てはコマンドの `id`（コアの表の並び順）で書かれているので、別のコアの番号は
+             * このコアでは別の命令を指す。Umoria を初めて開いたら X が「人物表」・LB が「武器の持ち替え」に
+             * なっていた。`pad_defaults_version` も引き継がないので、表が届いたときに字で引く既定が入る。
+             */
+            if (from_shared) {
+                settings.pad = Hd2dSettings{}.pad;
+                settings.pad_defaults_version = 0;
+            }
             settings.vpad = stored.vpad; //!< バーチャルパッド（引数の口が無く、メニューと cfg だけ）
             settings.sub_split = stored.sub_split; //!< サブパネルの枚数と仕切り（引数は無い）
             for (int i = 0; i < kUiSubPanels; ++i) {
@@ -2555,6 +3035,13 @@ int run(const AppOptions &options)
             settings.realtime_self_span_index = stored.realtime_self_span_index;
             settings.damage_flash = stored.damage_flash;
             settings.damage_shake = stored.damage_shake;
+            settings.fx_screen_shake = stored.fx_screen_shake;
+            //! HP/MP の玉の見せ方（引数は無く、cfg だけ。写し忘れると「cfg に書いたのに効かない」）。
+            settings.orb_wave = stored.orb_wave;
+            settings.orb_wave_size_pct = stored.orb_wave_size_pct;
+            settings.orb_wave_speed_pct = stored.orb_wave_speed_pct;
+            settings.orb_rise_speed_pct = stored.orb_rise_speed_pct;
+            settings.orb_fall_speed_pct = stored.orb_fall_speed_pct;
             /*
              * VR の盤・卓・板。引数は無く、
              * **cfg に書くのが唯一の口**である（実機で撮り比べるために置いてある）。
@@ -2613,6 +3100,28 @@ int run(const AppOptions &options)
             default_sub_panel_kinds(link.hello_ack().core_name, settings.sub_panel_kind);
             //! **枚数も一緒に**（2026-09-01）。中身だけ入れると、出ない枠に割り当てが残る。
             default_sub_split(link.hello_ack().core_name, settings.sub_split);
+        }
+        /*
+         * RogueClone2 はコア側のサブウインドウ種類を持たず、UI が作る
+         * メッセージ／装備／視界の敵／キャラクター／持ち物だけを表示する。
+         * r8 以前に変愚用の種類番号が cfg へ保存されていても「種類 4」等を出さない。
+         */
+        if (link.hello_ack().core_name == "RogueClone2"
+            || link.hello_ack().core_name == "Rogue 3.6"
+            || link.hello_ack().core_name == "Rogue 5.4"
+            || link.hello_ack().core_name == "angband") {
+            /*
+             * 2026-09-23 から Rogue 系も枠ごとに種類を選べる（気づいたこと「Rogue の
+             * サブパネルの割り当てが変更できない」。`bridge/rogue_sub_panels.h`）。
+             * 以前のように起動のたびに全部を既定へ戻すと、選んだ割り当てが消える。
+             * 戻すのは Rogue 系が申告していない番号（r8 以前に保存された変愚用の番号など）だけ。
+             */
+            for (int i = 0; i < kUiSubPanels; ++i) {
+                const int kind = settings.sub_panel_kind[i];
+                if ((kind < kBuiltinSubPanelKindBase) || (kind >= kBuiltinSubPanelKindBase + kBuiltinSubPanelKindCount)) {
+                    settings.sub_panel_kind[i] = -1;
+                }
+            }
         }
         std::fprintf(stderr, "[hd2d] サブパネルの割り当て: コア \"%s\" の%s（%d,%d,%d,%d / %d,%d,%d）\n",
             link.hello_ack().core_name.c_str(), had_core_settings_file ? "覚えた中身" : "既定",
@@ -2737,7 +3246,7 @@ int run(const AppOptions &options)
      */
     /*
      * **ここでは当てない。写し取るだけ。** 言語は上（コア選択の前）で
-     * `hd2d.cfg` から当ててあり、**コア選択の画で利用者が替えているかもしれない**。
+     * `hd2d.cfg` から当ててあり、**コア選択の画で遊ぶ人が替えているかもしれない**。
      * ここでもう一度 cfg の値を当てると、その場で替えたぶんが**元へ戻る**。
      */
     settings.lang = std::string(i18n::current());
@@ -2754,6 +3263,20 @@ int run(const AppOptions &options)
         settings.last_core = core_choice;
     }
     FeatureMenu feature_menu;
+    /*
+     * タブで持ち物一覧・原作の設定（Rogue）へ移るとき、**次の窓の中身が届くまで前のタブの
+     * 画を描き続ける**ための写し（気づいたこと 2026-09-26「タブを切り替える際に一度別の画面を
+     * 一瞬挟んでないか」）。閉じた機能メニューそのものは入力を受けない。写しは描くだけ。
+     * 写すのは**このフレームの入力を受ける前**の機能メニュー（`menu_before_input`）——
+     * 入力の後だと、タブの見出しだけが持ち物一覧に移った中身の無い窓になる。
+     */
+    std::unique_ptr<FeatureMenu> menu_handoff;
+    Uint32 menu_handoff_since = 0;
+    FeatureMenu menu_before_input;
+    //! Rogue の設定一覧（新 UI の窓）から次のタブへ移る間に描き続ける、閉じる前の窓の写し。
+    std::unique_ptr<ModernStoreUi> modern_handoff;
+    Uint32 modern_handoff_since = 0;
+    int menu_before_input_frame = -1;
     /*
      * 音。**P1 は環境音のベッドだけ。**
      * 装置が開けなくても続ける——音は遊びを止めてよい理由にならない。
@@ -2781,6 +3304,25 @@ int run(const AppOptions &options)
     ClickPath click_path; //!< クリックした所まで歩く（P8）
     //! 戦闘の見せ場。色も間合いもこちらが決める。
     CombatFxView combat_fx;
+    //! 攻撃の視覚効果（矢・弾・投げた物・魔法の玉・爆発）。
+    AttackFxView attack_fx;
+    //! 今のフレームの攻撃の視覚効果（毎周 `attack_fx` から作り直す。`draw_scene` が描く）。
+    FxFrame attack_fx_frame;
+    /*!
+     * 飛んでいく物（投げた物）の板を `item_id` から引く。**床のアイテムを描くのと同じ道**
+     * （`tile_catalog` の `K` の行 → `slab_library`）。引けなければ偽（小さな箱で描く）。
+     */
+    const FxSlabResolver attack_fx_slab_resolver = [&](std::uint16_t item_id, FxSlabSource &source) {
+        const int slab = slab_library.acquire_item(tile_catalog, item_id, renderer);
+        if (slab < 0) {
+            return false;
+        }
+        source.gpu = &slab_library.gpu(slab);
+        const auto bounds = slab_library.bounds(slab);
+        source.minimum = bounds.first;
+        source.maximum = bounds.second;
+        return true;
+    };
     //! サブパネルに映せるものの一覧（コアが握手のあと 1 回だけ送る。v1 §8.1）。
     std::vector<SubPanelKindChoice> sub_panel_kind_choices;
     bool window_is_windowed = true; //!< いま窓が実際にどちらになっているか（要求との差でだけ動かす）
@@ -2859,7 +3401,8 @@ int run(const AppOptions &options)
      */
     const auto screen_is_portrait = [&usable_area]() { return vpad_orient_of(usable_area()) == kVpadPortrait; };
     UiLayout layout = UiLayout::compute(settings.layout_for(screen_is_portrait()), usable_area().w, usable_area().h,
-        text.cell_w(), text.cell_h(), hud_state.subs_open,
+        int(text.cell_w()*(settings.modern_ui?menu_font_scale(settings.modern_font_level):1.f)+.5f),
+        int(text.cell_h()*(settings.modern_ui?menu_font_scale(settings.modern_font_level):1.f)+.5f), hud_state.subs_open,
         settings.sub_split, usable_area().x, usable_area().y,
         settings.vpad.show, false,
         settings.minimap_corner, settings.minimap_size_pct);
@@ -2911,6 +3454,7 @@ int run(const AppOptions &options)
     bool quit_sent = false;
     Uint64 quit_sent_at = 0;
     bool core_died_unexpectedly = false;
+    Uint64 core_disconnected_at = 0;
     /*!
      * @name 言語切り替えでコアを起こし直す（追補 A2。`kRunRelaunchCore`）
      * @details コアへ降ろした言語を控えておき、機能メニューで替えられたら気づく。
@@ -2932,6 +3476,8 @@ int run(const AppOptions &options)
      * セーブを読み込む操作にかかる時間しだいでタイトル画面が写る。
      */
     int frames_with_terrain = 0;
+    VideoRecorder recorder; //!< `HD2D_RECORD=<mp4>` のときだけ動く（デストラクタで ffmpeg を閉じる）
+    recorder.start_from_env();
     //! 観戦カメラ（設計書 §4.6）の直前の状態。切り替わりの 1 行を stderr に出すためだけ。
     bool arena_watch_before = false;
     /*!
@@ -2939,6 +3485,12 @@ int run(const AppOptions &options)
      * ——なめらかに動かすための状態なので、フレームごとに作り直しては意味が無い。
      */
     float lit_room_mix = 0.f;
+    /*!
+     * 光の届く範囲（プレイヤの光源で照らされているマス）の、マスごとの照らされ具合。
+     * **主ループをまたいで持つ**——短い時間でなめらかに寄せるための状態なので、
+     * フレームごとに作り直しては意味が無い。
+     */
+    LitRangeField lit_range_field;
 
     /* --------------------------------------------------------------- 駆動ループ */
     Uint64 last_tick = clock::ticks64();
@@ -2959,6 +3511,10 @@ int run(const AppOptions &options)
         last_tick = loop_started;
         world_seconds += frame_seconds;
         ++frame_index;
+        if (settings.modern_ui && feature_menu.is_open()) {
+            menu_before_input = feature_menu;
+            menu_before_input_frame = frame_index;
+        }
 
         /*
          * (0') VR のフレームの頭。**`--vr` のときだけ。**
@@ -2999,12 +3555,19 @@ int run(const AppOptions &options)
             vr_board_placed, vr_board_first_person, vr_board_turn, vr_panel_yaw);
 
         //! (0) コアから届いた表。中身は `app/run_parts.cpp`。
-        take_core_tables(link, tile_catalog, pad_commands, pad_macros,
+        take_core_tables(link, tile_catalog, pad_commands, pad_keymap, pad_macros,
             settings, sub_panel_kind_choices);
 
         // (a) 入力 → `input_event`（v1 §8.3）。**到着順を崩さない。**
         InputBatch input_batch;
         auto &input = input_batch.input;
+        hud_state.modern.advance(input);
+        hud_state.targeting.advance(input);
+        hud_state.targeting.set_font_level(settings.modern_font_level);
+        hud_state.modern_theme=settings.modern_theme;
+        hud_state.window_theme=settings.window_theme();
+        hud_state.modern_font_level=settings.modern_font_level;
+        hud_state.modern.set_font_level(settings.modern_font_level);
         bool &want_quit = input_batch.want_quit;
         bool &menu_toggled_this_pump = input_batch.menu_toggled_this_pump;
         /*!
@@ -3036,19 +3599,22 @@ int run(const AppOptions &options)
             camera_turn = ((camera_turn + dir) % kViewTurnCount + kViewTurnCount) % kViewTurnCount;
             camera_turn_goal += static_cast<float>(dir) * kViewTurnStep;
         };
-        /*!
-         * @brief 割り当てられた操作を 1 つ実行する（`ui/key_binds.h`）。
-         *
-         * @details **キーボードとパッドで同じ道を通す。**別々に書くと、片方だけ直された
-         * 状態に必ずなる（既存 UI の K-18 と同じ話）。番号の意味は
-         *   - 負 … この exe 自身の操作（`UiAction`）
-         *   - 正 … コアのコマンド `id`。キー列はコアが解決済みで届いている
-         */
+        //! 開いてよいかの規則は `top_menu_available()`（`app_support.cpp`）の 1 か所。-続く- の最中も開かない（修-01）。
+        const auto top_menu_available = [&]() {
+            return hd2d::top_menu_available(frame, hud_state.modern.active(), hud_state.targeting.active(),
+                core_marks_more_at_message_tail(link.hello_ack().core_name));
+        };
         const auto perform_action = [&](int action) {
             switch (action) {
             case kActionNone:
                 return;
             case kActionFeatureMenu:
+                // A child prompt/list owns input exclusively.  In particular,
+                // controller Back used to open the root menu over a one-key
+                // Rogue selector, leaving both the core and UI waiting.
+                if (!top_menu_available()) {
+                    return;
+                }
                 //! **1 巡 1 回**（`menu_toggled_this_pump`）。2 縁目は開き直しに化ける。
                 if (menu_toggled_this_pump) {
                     return;
@@ -3058,7 +3624,7 @@ int run(const AppOptions &options)
                 feature_menu.set_sub_panel_kinds(sub_panel_kind_choices);
                 feature_menu.set_pad_state(pad_commands, pad.connected() || settings.vpad.show,
                     pad.connected() ? pad.name() : std::string("バーチャルパッド"));
-                feature_menu.open(settings);
+                feature_menu.open_features(settings);
                 pad.forget_hold();
                 return;
             case kActionLayoutCycle: {
@@ -3100,6 +3666,9 @@ int run(const AppOptions &options)
                 turn_view(1); //!< 同（既定 F6）
                 return;
             case kActionCommandMenu:
+                if (!top_menu_available()) {
+                    return;
+                }
                 /*
                  * コマンドメニュー（2026-08-22 に決めた）。**1 巡 1 回**は
                  * `kActionFeatureMenu` と同じ理由（2 縁目が開き直しに化ける）。
@@ -3204,14 +3773,18 @@ int run(const AppOptions &options)
             .pad = pad,
             .vpad = vpad,
             .pad_commands = pad_commands,
+            .pad_keymap = pad_keymap,
+            .core_name = link.hello_ack().core_name,
             .feature_menu = feature_menu,
             .floor_cutin = floor_cutin,
             .hud_state = hud_state,
             .click_path = click_path,
+            .map_click_enabled = core_map_click,
             .text = text,
             .first_person = first_person,
             .sub_panel_kind_choices = sub_panel_kind_choices,
             .frame = frame,
+            .targeting_entities = entity_view.targeting_entities,
             .state = input_state,
             .perform_action = perform_action,
             .fps_drives_movement = fps_drives_movement,
@@ -3225,7 +3798,8 @@ int run(const AppOptions &options)
          * カーソル操作も機能メニューもそのまま効く（専用の経路を作らない）。
          */
         {
-            const bool focused = (SDL_GetWindowFlags(window.window) & SDL_WINDOW_INPUT_FOCUS) != 0;
+            const bool focused = (SDL_GetWindowFlags(window.window) & SDL_WINDOW_INPUT_FOCUS) != 0
+                || (!options.test_input_file.empty()&&std::getenv("HD2D_TEST_HIDE_WINDOW")!=nullptr);
             /*
              * ボタン 1 個ぶんの道筋。**物理パッドとバーチャルパッドの両方がここを通る**
              * （2026-08-12 に決めた。入口ごとに書くと片方だけ直された状態に必ずなる）。
@@ -3283,6 +3857,15 @@ int run(const AppOptions &options)
                      * モード以外では、メニューを開いている間の同時押しは**捨てる**
                      * ——ここでマクロを流すと、メニューの裏でゲームが動く。
                      */
+                    if(press.mods==0) {
+                        if(pressed==PadInput::LeftTrigger) {feature_menu.handle(MenuNav::PreviousPane,settings);return;}
+                        if(pressed==PadInput::RightTrigger) {feature_menu.handle(MenuNav::NextPane,settings);return;}
+                    }
+                    if(feature_menu.tab_navigation_active() && press.mods==0) {
+                        if(pressed==PadInput::LeftShoulder) {feature_menu.handle(MenuNav::PreviousTab,settings);return;}
+                        if(pressed==PadInput::RightShoulder) {feature_menu.handle(MenuNav::NextTab,settings);return;}
+                        if(pressed==PadInput::X) {feature_menu.handle(MenuNav::Categories,settings);return;}
+                    }
                     if (press.mods != 0) {
                         return;
                     }
@@ -3312,6 +3895,41 @@ int run(const AppOptions &options)
                  * 割り当て対象に含められる？」）。割り当てがあればそれ、無ければマクロの
                  * トリガー。層ごとに違う読み方をさせない。
                  */
+                if(hud_state.targeting.active()) {
+                    if(press.mods==0) {
+                        if(pressed==PadInput::A)hud_state.targeting.confirm(input);
+                        else if(pressed==PadInput::B||pressed==PadInput::Back)hud_state.targeting.cancel(input);
+                        else if(pressed==PadInput::LeftShoulder)hud_state.targeting.cycle(-1,input);
+                        else if(pressed==PadInput::RightShoulder)hud_state.targeting.cycle(1,input);
+                        else if(pressed==PadInput::Start)hud_state.targeting.toggle_extras(); // 追加操作の一覧（AH-54）
+                    }
+                    return;
+                }
+                if(hud_state.modern.active()) {
+                    if(press.mods==0) {
+                        if(pressed==PadInput::A)hud_state.modern.handle(CursorNav::Confirm,input);
+                        else if(pressed==PadInput::B || pressed==PadInput::Back)hud_state.modern.cancel(input);
+                        else if(pressed==PadInput::LeftTrigger)hud_state.modern.focus_details(false);
+                        else if(pressed==PadInput::RightTrigger)hud_state.modern.focus_details(true);
+                        else if(pressed==PadInput::LeftShoulder){if(hud_state.modern.item_window()||hud_state.modern.parent_tab_navigation_active())hud_state.modern.tab(-1);else hud_state.modern.page(-1,input);}
+                        else if(pressed==PadInput::RightShoulder){if(hud_state.modern.item_window()||hud_state.modern.parent_tab_navigation_active())hud_state.modern.tab(1);else hud_state.modern.page(1,input);}
+                        else if(pressed==PadInput::X)hud_state.modern.show_help(input);
+                        else if(pressed==PadInput::Start)hud_state.modern.toggle_commands();
+                    } else if(pressed==PadInput::LeftShoulder||pressed==PadInput::RightShoulder)hud_state.modern.scroll_horizontal(pressed==PadInput::LeftShoulder?-1:1);
+                    return;
+                }
+                //! 「設定」タブへ移った直後の肩ボタン（キーボードの Shift と同じ扱い。input_controller.cpp）。
+                if(press.mods==0&&(pressed==PadInput::LeftShoulder||pressed==PadInput::RightShoulder)&&hud_state.modern.awaiting_parent_child()){hud_state.modern.tab(pressed==PadInput::LeftShoulder?-1:1);return;}
+                if (press.mods == 0 && hud_state.cursors.prompt_uses_shoulders()) {
+                    if (pressed == PadInput::LeftShoulder) {
+                        hud_state.cursors.step_prompt(-1);
+                        return;
+                    }
+                    if (pressed == PadInput::RightShoulder) {
+                        hud_state.cursors.step_prompt(1);
+                        return;
+                    }
+                }
                 if (press.mods != 0) {
                     const int chord_action = settings.pad.command[press.mods][static_cast<int>(pressed)];
                     if (chord_action == kActionNone) {
@@ -3327,6 +3945,12 @@ int run(const AppOptions &options)
                      * 2 つの縁になって届くと、開いた直後に下の「メニュー中の Back ＝ 取消」で
                      * 閉じてしまう（Quest の「一瞬開いて閉じる」。§15 の 2・罠 Q-12/Q-13）。
                      */
+                    if (!top_menu_available()) {
+                        presentation::InputEventWire wire;
+                        wire.e = "cancel";
+                        input.events.push_back(wire);
+                        return;
+                    }
                     if (menu_toggled_this_pump) {
                         return;
                     }
@@ -3334,7 +3958,7 @@ int run(const AppOptions &options)
                     feature_menu.set_sub_panel_kinds(sub_panel_kind_choices);
                     feature_menu.set_pad_state(pad_commands, pad.connected() || settings.vpad.show,
                         pad.connected() ? pad.name() : std::string("バーチャルパッド"));
-                    feature_menu.open(settings);
+                    feature_menu.open_features(settings);
                     pad.forget_hold();
                     return;
                 }
@@ -3343,21 +3967,17 @@ int run(const AppOptions &options)
                         return; //!< 選択肢・はい／いいえ・数値入力はカーソル層のもの
                     }
                     /*
-                     * **命令を待っているところなら、A はコマンドメニューを開く**
-                     * （2026-08-23 に決めた「決定と同じく既定で置き、変更できないように」）。
-                     * 変愚では `\r` を受けたコアが自分の通常メニューを開く
-                     * （`src/io/input-key-requester.cpp:117`）ので、それと同じ手触りにする。
+                     * **A は決定の専任**。以前は「命令を待って
+                     * いるだけなら A はコマンドメニューを開く」だったが、コマンドメニューは
+                     * いま F1 とパッド Start だけで開く——A が二重の入口にならないよう、
+                     * ここでは開かない。
                      *
-                     * **いつ開いてよいかはコアが言う**（`frame.awaiting_command`）。
-                     * 画面が「遊んでいる最中かどうか」を自分で決めると、`-more-` の待ちでも
-                     * 開いてしまってメッセージが進まない。旗を立てないコア（変愚系）では
-                     * ここは素通りし、今までどおり `\r` が飛ぶ——**あちらの動きは 1 ビットも
-                     * 変わらない**（必守制約 3）。
-                     *
-                     * 文字を打っている最中は決定のまま（打ち終わりの Enter を奪わない）。
+                     * **命令をただ待っているだけ**（確認する相手が無い。`nothing_to_confirm()`）
+                     * なら、A は何もしない——コアへも `confirm` を送らない。変愚系のように
+                     * 旗を立てないコアでは常に偽なので、今までどおり `\r` 相当の確認が飛ぶ
+                     * ——**あちらの動きは 1 ビットも変わらない**（必守制約 3）。
                      */
-                    if (confirm_opens_command_menu(frame)) {
-                        perform_action(kActionCommandMenu);
+                    if (nothing_to_confirm(frame)) {
                         return;
                     }
                     presentation::InputEventWire wire;
@@ -3413,6 +4033,14 @@ int run(const AppOptions &options)
                         nav = MenuNav::Right;
                     }
                     feature_menu.handle(nav, settings);
+                } else if(hud_state.targeting.active()&&hud_state.targeting.extras_open()) {
+                    if(pad_dy!=0)hud_state.targeting.step_extras(pad_dy<0?-1:1); // 一覧のカーソル（AH-54）
+                } else if(hud_state.targeting.active()) {
+                    presentation::InputEventWire move;move.e="move";move.dx=pad_dx;move.dy=pad_dy;
+                    turn_screen_move(move);
+                    hud_state.targeting.move(5+move.dx-3*move.dy,input);
+                } else if(hud_state.modern.active()) {
+                    hud_state.modern.handle(pad_dy<0?CursorNav::Up:(pad_dy>0?CursorNav::Down:(pad_dx<0?CursorNav::Left:CursorNav::Right)),input);
                 } else if (fps_drives_movement()) {
                     /*
                      * 一人称（おまけ）。左スティック＝**前後左右**（画面の上が前）。
@@ -3449,6 +4077,10 @@ int run(const AppOptions &options)
                     }
                     //! 十字も**キーと同じ道**（`handle_text_edit_arrows`）。エディタで数字が増えるのは十字でも同じ。
                     if (handle_text_edit_arrows(frame, nav, input)) {
+                        return;
+                    }
+                    //! 文字入力の間の斜めは渡さない。move はコアで移動キー（数字・hjkl）になり、欄へ字として入る（2026-09-26）。
+                    if (frame.text_input_active) {
                         return;
                     }
                     click_path.cancel(); //!< 自分で歩き始めたら経路は捨てる
@@ -3695,8 +4327,39 @@ int run(const AppOptions &options)
          * **流してから閉じる。** 先に閉じると、閉じた拍子の描き直しに紛れて
          * 「押したのに何も起きなかった」ように見える。板の側は選ばれたことしか知らない。
          */
-        if (const int wanted = feature_menu.take_command_request(); wanted > 0) {
-            if (emit_core_command(wanted, pad_commands, input)) {
+        int menu_command_id = 0;
+        /*
+         * タブの切り替えの要求を片づける。**フレームを取り込んだ直後にもう一度呼ぶ**
+         * （下の (c)）——Rogue の設定一覧を閉じた返事が届いたフレームで次のタブを開かないと、
+         * 窓の無いマップの画が 1 フレーム挟まっていた。
+         * 次のタブが持ち物一覧なら、機能メニューをそのタブで 1 度も描かずに一覧を開く
+         * （描くと「持ち物を読み込み中…」の空の窓が挟まる）。
+         */
+        const auto service_tab_requests = [&](presentation::InputEventsMessage &out) {
+            if(settings.modern_ui&&!modern_handoff&&hud_state.modern.leaving_parent_tab()&&hud_state.modern.active()) {
+                modern_handoff=std::make_unique<ModernStoreUi>(hud_state.modern);modern_handoff_since=SDL_GetTicks();
+            }
+            const auto open_inventory_tab = [&]() {
+                hud_state.modern.open_inventory(out,feature_menu.command_tab_labels(),feature_menu.command_tab_index());
+                if(settings.modern_ui&&!modern_handoff&&feature_menu.is_open()&&(menu_before_input_frame==frame_index)){menu_handoff=std::make_unique<FeatureMenu>(menu_before_input);menu_handoff_since=SDL_GetTicks();}
+                feature_menu.close();
+            };
+            if(feature_menu.take_inventory_request())open_inventory_tab();
+            if(const int inventory_tab=hud_state.modern.take_inventory_tab_request();inventory_tab>=0)
+                feature_menu.open_command_tab(inventory_tab,settings);
+            if(const int parent_tab=hud_state.modern.take_parent_tab_request();parent_tab>=0) {
+                feature_menu.open_command_tab(parent_tab,settings);
+                if(feature_menu.take_inventory_request())open_inventory_tab();
+            }
+        };
+        service_tab_requests(input);
+        if (feature_menu.take_pending_command_request(menu_command_id)) {
+            const auto parent_tabs=feature_menu.command_tab_labels();
+            const int parent_tab=feature_menu.command_tab_index();
+            const bool rogue_settings_tab=parent_tab>=0&&parent_tab<int(parent_tabs.size())&&parent_tabs[parent_tab]=="設定";
+            if (emit_core_command(menu_command_id, pad_commands, input, true)) {
+                if(rogue_settings_tab)hud_state.modern.set_parent_command_tabs(parent_tabs,parent_tab);
+                if(rogue_settings_tab&&settings.modern_ui&&(menu_before_input_frame==frame_index)){menu_handoff=std::make_unique<FeatureMenu>(menu_before_input);menu_handoff_since=SDL_GetTicks();}
                 feature_menu.close();
             }
         }
@@ -3802,7 +4465,21 @@ int run(const AppOptions &options)
                 hud_state.ui_key_hint = std::string(i18n::tr("hd2d.app.hd2d-app.key-hint-first-person"))
                     + ui_key(kActionFpsToggle) + i18n::tr("hd2d.app.hd2d-app.key-hint-leave-first-person");
             } else {
-                hud_state.ui_key_hint = ui_key(kActionFeatureMenu) + i18n::tr("hd2d.app.hd2d-app.key-hint-feature-menu")
+                /*
+                 * **新 UI では機能メニューとコマンドメニューは同じ 1 つの窓**
+                 * （`FeatureMenu::open_features` は
+                 * `modern_ui` のとき `open_commands()` へそのまま委ねる）。F10 を
+                 * 別の入口として案内すると、遊ぶ人には別物に見えてしまう——ここは
+                 * **開く綴り（F1）だけ**を出す。旧 UI（`modern_ui` 偽）では機能の
+                 * 窓とコマンドの窓は今までどおり別物なので、この帯には元の
+                 * 「機能メニュー」だけを出す（コマンドメニューの案内はここには無い）。
+                 * どちらも新しい文言は足さず、既存の `i18n` の綴りを使い回す
+                 * （`assets/lang/*.json` は別スレッドの持ち物のため触らない）。
+                 */
+                const std::string open_menu_hint = settings.modern_ui
+                    ? (ui_key(kActionCommandMenu) + ":" + i18n::tr("hd2d.app.hd2d-app.command-menu") + "  ")
+                    : (ui_key(kActionFeatureMenu) + i18n::tr("hd2d.app.hd2d-app.key-hint-feature-menu"));
+                hud_state.ui_key_hint = open_menu_hint
                     + ui_key(kActionLayoutCycle) + i18n::tr("hd2d.app.hd2d-app.key-hint-layout")
                     + ui_key(kActionSubsToggle) + i18n::tr("hd2d.app.hd2d-app.key-hint-panels")
                     + ui_key(kActionFpsToggle) + i18n::tr("hd2d.app.hd2d-app.key-hint-first-person-toggle");
@@ -3825,7 +4502,7 @@ int run(const AppOptions &options)
          * 押している場所が違うだけで見える中身が変わってはいけないので、出どころは 1 つにする。
          */
         const int chord_mask = pad.chord_mask() | vpad.chord_mask();
-        hud_state.controller_binds = build_pad_bind_items(settings.pad, pad_commands, pad_macros, chord_mask);
+        hud_state.controller_binds = build_pad_bind_items(settings.pad, pad_commands, pad_macros, chord_mask, settings.modern_ui);
         //! 上下の視点移動の入／切は設定が持つ（`FpsMode` は毎フレーム受け取るだけ）。
         first_person.vertical_look = settings.fps_vertical_look;
         //! ミニマップの自分を向きのある三角で描くため（一人称のときだけ。決めたこと）。
@@ -3845,6 +4522,16 @@ int run(const AppOptions &options)
         hud_state.minimap_opacity_pct = settings.minimap_opacity_pct;
         hud_state.minimap_relative = settings.minimap_relative;
         hud_state.minimap_corner = settings.minimap_corner;
+        /*
+         * HP/MP の玉の動き。設定と実時計（ms）を毎フレーム写す。
+         * 時計は `combat_fx` と同じ `clock::ticks()`（フレームを取りこぼしても速さが変わらない）。
+         */
+        hud_state.orb_params.wave_enabled = settings.orb_wave;
+        hud_state.orb_params.wave_size = static_cast<float>(settings.orb_wave_size_pct) * 0.01f;
+        hud_state.orb_params.wave_speed = static_cast<float>(settings.orb_wave_speed_pct) * 0.01f;
+        hud_state.orb_params.rise_speed = static_cast<float>(settings.orb_rise_speed_pct) * 0.01f;
+        hud_state.orb_params.fall_speed = static_cast<float>(settings.orb_fall_speed_pct) * 0.01f;
+        hud_state.orb_now_ms = static_cast<std::uint32_t>(clock::ticks());
         {
             /*
              * マウスを掴む／放す。**一人称で地図が見えている間だけ**掴む。
@@ -3900,8 +4587,14 @@ int run(const AppOptions &options)
          * **必ず変わり目でだけ呼ぶ。**「入力中なら毎フレーム出す」と書くと戻るキーで
          * 閉じられなくなる（`ime_dismissed` の注記）。
          */
-        if (frame.text_input_active != ime_prompt_open) {
-            ime_prompt_open = frame.text_input_active;
+        /*
+         * **数量の欄（`frame.numeric`）では出さない**。数量は新しい UI でも従来の UI でも
+         * 十字キーの上下（従来の UI は左右で桁も）で変えられるので、キーボードは要らない。出すと画面の下半分を覆い、
+         * 使える高さが縮んで Term の高さまで変わっていた（コアの側は問いの最中に高さを変えないよう直した。141ee3efdf ほか）。
+         */
+        const bool want_ime = wants_soft_keyboard(frame); //!< `input_controller.h`
+        if (want_ime != ime_prompt_open) {
+            ime_prompt_open = want_ime;
             ime_dismissed = false;
             if (ime_prompt_open) {
                 SDL_StartTextInput();
@@ -3964,12 +4657,15 @@ int run(const AppOptions &options)
             set_term_mirror_rows(static_cast<int>(frame.menu_term_lines.size()));
         }
         layout = UiLayout::compute(settings.layout_for(screen_is_portrait()), usable_area().w, usable_area().h,
-            text.cell_w(), text.cell_h(), hud_state.subs_open,
+            int(text.cell_w()*(settings.modern_ui?menu_font_scale(settings.modern_font_level):1.f)+.5f),
+        int(text.cell_h()*(settings.modern_ui?menu_font_scale(settings.modern_font_level):1.f)+.5f), hud_state.subs_open,
             settings.sub_split, usable_area().x, usable_area().y,
             settings.vpad.show,
             //! VR ではミニマップを右下へ（2026-08-14 に決めた。板は見上げる位置にある）。
             vr_frame_ready,
             settings.minimap_corner, settings.minimap_size_pct);
+        if(frame.targeting.preview_only&&hud_state.modern.active()&&!feature_menu.is_open()&&!vr_frame_ready)
+            layout_effect_preview(layout,menu_font_scale(settings.modern_font_level));
         /*
          * ---- 入力欄の桁を SDL へ渡す（`SDL_SetTextInputRect`）--------------------
          *
@@ -3990,17 +4686,26 @@ int run(const AppOptions &options)
         }
         if (frame.text_input_active) {
             const bool term_full = frame.title_screen || frame.pre_game_menu;
-            const RectPx term_area = term_full ? layout.term_full : layout.term_overlay;
+            const float menu_scale=settings.modern_ui?menu_font_scale(settings.modern_font_level):1.f;
+            auto menu_layout=menu_logical_layout(layout,menu_scale);
+            menu_layout.cell_w=text.cell_w();menu_layout.cell_h=text.cell_h();
+            const RectPx term_area = menu_text_area(menu_layout,term_full,settings.window_theme());
             SDL_Rect want{ 0, 0, 0, 0 };
             if (!term_area.empty() && (frame.menu_term_curs_row >= 0) && (frame.menu_term_curs_col >= 0)) {
-                const RectPx body = panel_body(term_area, layout.cell_w);
-                want = SDL_Rect{ body.x + (frame.menu_term_curs_col * layout.cell_w),
-                    body.y + (frame.menu_term_curs_row * layout.cell_h), layout.cell_w, layout.cell_h };
+                const RectPx body = panel_body(term_area,menu_layout.cell_w);
+                const int first=settings.modern_ui?hud_state.native_scroll_row:0,offset=settings.modern_ui?hud_state.native_scroll_col:0;
+                const auto caret=menu_scaled_rect({body.x+(frame.menu_term_curs_col-offset)*menu_layout.cell_w,
+                    body.y+(frame.menu_term_curs_row-first)*menu_layout.cell_h,menu_layout.cell_w,menu_layout.cell_h},menu_scale);
+                want={caret.x,caret.y,caret.w,caret.h};
             } else if (!layout.prompt_bar.empty()) {
                 want = SDL_Rect{ layout.prompt_bar.x, layout.prompt_bar.y,
                     layout.prompt_bar.w, layout.prompt_bar.h };
             }
             //! **変わったときだけ**渡す（毎フレーム渡すと OS への投函が積み上がる）。
+            if(hud_state.modern.active()&&hud_state.modern.text_mode()) {
+                const auto rect=hud_state.modern.text_edit_rect(layout);
+                want={rect.x,rect.y,rect.w,int(text.cell_h()*menu_scale)};
+            }
             if ((want.w > 0)
                 && ((want.x != ime_text_rect.x) || (want.y != ime_text_rect.y)
                     || (want.w != ime_text_rect.w) || (want.h != ime_text_rect.h))) {
@@ -4115,6 +4820,13 @@ int run(const AppOptions &options)
         camera.viewport_w = layout.scene.w;
         camera.viewport_h = layout.scene.h;
         camera.distance = distance_for_cell_px(camera, settings.camera_cell_px);
+        if(!layout.preview_menu.empty()&&!first_person.active&&!frame.targeting.area.empty()) {
+            int min_x=frame.targeting.source.x,max_x=min_x,min_y=frame.targeting.source.y,max_y=min_y;
+            for(const auto &cell:frame.targeting.area){min_x=std::min(min_x,cell.point.x);max_x=std::max(max_x,cell.point.x);min_y=std::min(min_y,cell.point.y);max_y=std::max(max_y,cell.point.y);}
+            const float span=std::hypot(float(max_x-min_x+1),float(max_y-min_y+1))+2.f;
+            const float fitted=std::min(float(settings.camera_cell_px),float(std::min(layout.scene.w,layout.scene.h))*.75f/span);
+            camera.distance=distance_for_cell_px(camera,std::max(1.f,fitted));
+        }
         /*
          * **ふつうは @ を追う。コアが離れて見ているときだけ、そちらを見る**
          * （`GameFrame::camera_detached`。2026-08-26 に気づいた
@@ -4162,6 +4874,16 @@ int run(const AppOptions &options)
             combat_fx.shake_offset(shake_dx, shake_dz);
         }
         /*
+         * 攻撃の視覚効果の揺れ（轟音など）。**前のフレームの評価結果**
+         * （`attack_fx_frame` は後ろで毎フレーム作り直す）を使うので、1 フレーム遅れるが揺れは短い。
+         * 被弾の揺れと別に、`fx_screen_shake` で切れる。
+         */
+        if (settings.fx_screen_shake && (attack_fx_frame.shake > 0.f)) {
+            const Vec3 fx_shake = fx_shake_offset(attack_fx_frame.shake, clock::ticks());
+            shake_dx += fx_shake.x;
+            shake_dz += fx_shake.y;
+        }
+        /*
          * 一人称（おまけ）。**設定を当てた後・可視窓を出す前**に上書きする。
          * `apply()` は `active` が偽なら**本線の値へ戻す**（`first_person` を下ろし、
          * 方位を北へ戻す）。ここで自前に `camera.first_person = false` を書くと、
@@ -4191,7 +4913,13 @@ int run(const AppOptions &options)
          * `apply()` は `active` が偽ならここを `camera.yaw` へ入れる。
          */
         first_person.base_yaw = camera_turn_yaw;
+        if(hud_state.targeting.active())first_person.turn_dir=0;
         first_person.advance(frame_seconds);
+        if(first_person.active&&hud_state.targeting.active()) {
+            first_person.turn_dir=0;
+            hud_state.targeting.aim_camera(camera.target.x,camera.target.y,kFpsEyeHeight,frame_seconds,
+                first_person.vertical_look,first_person.yaw,first_person.facing,first_person.pitch_deg);
+        }
         first_person.apply(camera);
         /*
          * @note ここで `apply()` した `camera.yaw` は、VR の一人称では**この後で頭の向きに
@@ -4219,12 +4947,14 @@ int run(const AppOptions &options)
          * 専用のアトラスを焼く。ここで決めたマスは**可視窓の要求と描画の両方**が使う
          * ——別々に決めると「要求したマスと描いたマスが違う」ので端が欠けるか余る。
          */
-        if (ascii_panel && (settings.ascii_panel_px > 0) && !ascii_text_failed
-            && (ascii_text_px != settings.ascii_panel_px)) {
+        const int requested_ascii_px=settings.modern_ui?int(kTextPx*menu_font_scale(settings.modern_font_level)+.5f):settings.ascii_panel_px;
+        if(ascii_panel && requested_ascii_px==0 && ascii_text_px>0){ascii_text.shutdown();ascii_text_px=0;}
+        if (ascii_panel && (requested_ascii_px > 0) && !ascii_text_failed
+            && (ascii_text_px != requested_ascii_px)) {
             ascii_text.shutdown();
             std::string ascii_err;
-            if (ascii_text.init(settings.ascii_panel_px, ascii_err)) {
-                ascii_text_px = settings.ascii_panel_px;
+            if (ascii_text.init(requested_ascii_px, ascii_err)) {
+                ascii_text_px = requested_ascii_px;
                 std::fprintf(stderr, "[hd2d] 2D アスキー地図の文字: %dpx（マス %d×%d）\n", ascii_text_px,
                     ascii_text.cell_w(), ascii_text.cell_h());
             } else {
@@ -4265,6 +4995,17 @@ int run(const AppOptions &options)
 
         // (b') 可視窓の変化 → `ui_state`（変化したときだけ。v1 §7）。
         ui_state = build_ui_state(view_window, layout, settings, audio_engine.is_open());
+        /*
+         * The core-facing mode is the user's requested mode, not the previous
+         * frame's local Modern overlay state.  Folding hud_state.modern.enabled()
+         * back into this value made Modern -> Original self-latching for at
+         * least one protocol round trip (and longer while a modal stayed open),
+         * leaving native targeting enabled after the visible mode had changed.
+         * The local overlay may finish its current frame, but the core must see
+         * the requested capability transition immediately.
+         */
+        ui_state.modern_ui=settings.modern_ui;
+        ui_state.targeting_ui=settings.modern_ui;
         std::string encoded_ui_state = presentation::encode_ui_state(ui_state);
         if (encoded_ui_state != last_ui_state) {
             last_ui_state = std::move(encoded_ui_state);
@@ -4286,8 +5027,38 @@ int run(const AppOptions &options)
         }
 
         //! (c) 最新フレームを取り込む。中身は `app/run_parts.cpp`。
-        take_new_frame(link, frame, frame_bytes, hud_state, combat_fx, settings,
+        //! 新しい窓の操作の返事（`pending`）が届いた回は、描画をもう 1 回待たずにすぐ次の操作を送る（調-08。原作のカーソルを十数手動かす窓が、
+        //! 1 手あたり描画 2 回ぶんかかっていた）。
+        const bool modern_was_pending = hud_state.modern.pending();
+        take_new_frame(link, frame, frame_bytes, hud_state, combat_fx, attack_fx, settings,
             sub_kinds_synced, sub_panel_kind_choices, sent_sub_kinds, perf_freq, ms_decode);
+        /*
+         * 地図の右クリック・長押しが開く文脈メニューは、押した点の近くへ小さな窓で出す（AH-58）。窓にする
+         * かどうかはコアが決める（`frame.menu_over_map`。`ModernStoreUi::context_popup_active()`）。
+         * アンカーは右クリックのたびに書き換わるだけなので、毎フレーム渡せばよい（地図のクリックを申告しない
+         * コアはアンカーが偽のまま＝窓は今までどおり）。
+         */
+        hud_state.modern.set_context_anchor(input_state.map_click.anchor_valid,
+            input_state.map_click.anchor_x, input_state.map_click.anchor_y);
+        {
+            presentation::InputEventsMessage late_input;
+            if (modern_was_pending && !hud_state.modern.pending() && !floor_cutin.blocks_input()) {
+                hud_state.modern.advance(late_input);
+            }
+            service_tab_requests(late_input);
+            if (!late_input.events.empty() && !floor_cutin.blocks_input()) {
+                (void)link.send_input_events(late_input);
+            }
+        }
+        if(hud_state.modern.take_scope_changed()) {
+            // A held stick/touch direction belongs to the screen on which it
+            // began.  Carrying its repeat into the next birth page made the
+            // race cursor continue moving without a new operation.
+            // Forget only the direction hold: a shoulder button (LB/RB) held across the
+            // change must still fire on release (F-rogue36-08).
+            pad.forget_direction_hold();
+            vpad.forget_direction_hold();
+        }
 
         // (d) 描く。**present は 1 フレーム 1 回**（設計書 §14-5）。
         if (!post.resize(layout.scene.w, layout.scene.h, err)) {
@@ -4301,7 +5072,35 @@ int run(const AppOptions &options)
          */
         const int scene_gl_x = layout.scene.x;
         const int scene_gl_y = screen_h - layout.scene.y - layout.scene.h;
-        const bool showing_term = !frame_shows_map(frame);
+        /*
+         * **新 UI の窓の後ろにはマップを描き続ける**（決めたこと 2026-09-26
+         * 「すべてのメニューで背景にマップを残して」）。新 UI の窓（`ModernStoreUi`）は
+         * 自分のパネルの地を敷いて描くので、原作の Term の写し（`menu_term_lines`）が
+         * 積んであっても字がマップと重なることはない。持ち物一覧だけがマップを残して
+         * いたのは、一覧をコアの側で組み Term の写しを 1 行も積まないからだった。
+         * タイトル・キャラクター作成（マップが無い）とオリジナル UI は従来どおり。
+         */
+        const bool modern_over_map = settings.modern_ui && hud_state.modern.active()
+            && modern_window_keeps_hud(frame);
+        /*
+         * 前のタブの写しは、次の窓が描ける（中身が届いた）・機能メニューが開き直された・
+         * 1.5 秒経った、のどれかで捨てる（届かないときに前の画が居座らない）。
+         */
+        if (menu_handoff && (feature_menu.is_open() || !settings.modern_ui
+                || (SDL_GetTicks() - menu_handoff_since > 1500u)
+                || !(hud_state.modern.opening_placeholder() || hud_state.modern.awaiting_parent_child()))) {
+            menu_handoff.reset();
+        }
+        if (modern_handoff && (feature_menu.is_open() || !settings.modern_ui
+                || (SDL_GetTicks() - modern_handoff_since > 1500u)
+                || (hud_state.modern.active() && !hud_state.modern.opening_placeholder() && !hud_state.modern.leaving_parent_tab()))) {
+            modern_handoff.reset();
+        }
+        const bool modern_window_drawn = hud_state.modern.active() && !hud_state.modern.opening_placeholder();
+        const bool modern_handoff_drawn = modern_handoff && !feature_menu.is_open() && !modern_window_drawn;
+        const bool menu_drawn = feature_menu.is_open() || static_cast<bool>(menu_handoff) || modern_handoff_drawn;
+        const bool map_visible = frame_shows_map(frame) || modern_over_map;
+        const bool showing_term = !map_visible;
         /*
          * ---- 空中の板を組む（§20・§22。2026-08-14 に決めた）----
          *
@@ -4364,6 +5163,7 @@ int run(const AppOptions &options)
                 ++meaning_rebuilds;
                 if (floor_changed) {
                     entities.reset(); // 別の階。覚えている位置は意味を持たない
+                    attack_fx.clear(); // 前の階の座標で飛んでいる効果は捨てる
                 }
                 /*
                  * 町の読み直し（§10）。**意味づけが変わったときだけ**でよい
@@ -4411,6 +5211,17 @@ int run(const AppOptions &options)
              */
             slab_facing.fixed_yaw = vr_frame_ready ? xr::board_turn_slab_yaw(vr_board_turn) : camera_turn_yaw;
             /*
+             * 新しい「画面に正対」モード。**各板からカメラ位置へ向けるのではない。**
+             * 全板へカメラ自身の yaw/pitch を同じように与えることで、画面のどこに居ても
+             * 板面が投影面と平行になる。VR は左右の目で投影面が別なので従来向きを維持する。
+             */
+            if (settings.entity_slab_screen_aligned && !vr_frame_ready) {
+                slab_facing.screen_aligned = true;
+                slab_facing.active = false;
+                slab_facing.fixed_yaw = camera.yaw;
+                slab_facing.screen_pitch = camera.pitch;
+            }
+            /*
              * **アスキー実体**。要ると分かってから用意する。
              * 一度失敗したら二度と試さない（毎フレーム TTF を叩かない）。
              */
@@ -4452,12 +5263,45 @@ int run(const AppOptions &options)
                 }
             }
             const bool ascii_entities = want_ascii && glyph_ready;
+            if (player_model_loaded && !player_model_attempted) {
+                player_model_attempted = true;
+                std::string model_error;
+                if (!optional_render.player_model.init(player_model_asset, model_error)) {
+                    std::fprintf(stderr, "[model] keeping existing player display: %s\n", model_error.c_str());
+                }
+            }
+            // First milestone: the ordinary overhead view. Existing ASCII/FPS/VR modes remain usable.
+            const bool model_player = optional_render.player_model.ready()
+                && !first_person.active && !vr_frame_ready && !want_ascii;
             entities.build(frame, tile_catalog, slab_library, renderer, frame_seconds, entity_view,
                 first_person.active,
                 first_person.active ? (1.f / step_seconds) : 0.f, slab_facing,
                 ascii_entities ? &glyph_atlas : nullptr,
                 static_cast<float>(settings.entity_glyph_pct) / 100.f,
-                (settings.entity_glyph_fallback && glyph_ready) ? &glyph_atlas : nullptr);
+                (settings.entity_glyph_fallback && glyph_ready) ? &glyph_atlas : nullptr,
+                model_player);
+            for(auto &body:entity_view.targeting_entities)if(body.glyph) {
+                body.normal=vr_frame_ready
+                    ? normalize(Vec3{entity_view.player_x-body.x,entity_view.player_y-body.y,0.f})
+                    : Vec3{-std::sin(camera.yaw),std::cos(camera.yaw),0.f};
+            }
+            /*
+             * 攻撃の視覚効果が対象の見た目を変える（押しつぶし・震え・のけぞり・浮き上がり・灰色・二重。
+             * `world/entity_fx_mod.h`）。前のフレームの評価結果を当てる（`attack_fx_frame` は後ろで作り直す）。
+             * 空なら何もしないので、効果が無いときの絵は従来と同じ。
+             */
+            fx_apply_entity_mods(entity_view, attack_fx_frame.entity_mods);
+            const bool draw_player_model = model_player && entity_view.player_valid;
+            const FxEntityMod *player_fx_mod = attack_fx_frame.entity_mods.empty() ? nullptr
+                : fx_find_mod(attack_fx_frame.entity_mods, static_cast<int>(std::floor(entity_view.player_x)),
+                      static_cast<int>(std::floor(entity_view.player_y)));
+            const Mat4 player_model_transform = (player_fx_mod != nullptr)
+                ? fx_mod_model_matrix(*player_fx_mod, Vec3{ entity_view.player_x, entity_view.player_y, 0.02f })
+                : translation({entity_view.player_x, entity_view.player_y, 0.02f});
+            if (draw_player_model && !player_model_reported) {
+                std::fprintf(stderr, "[model] player GLB active: %zu vertices\n", player_model_asset.vertex_count);
+                player_model_reported = true;
+            }
             /*
              * **一過性の重ね書き**（SQ-2）。実体とは別の列に積む——板で描いていても
              * 重ね書きは字だからで、`EntityView::glyphs` は板と排他である
@@ -4481,6 +5325,14 @@ int run(const AppOptions &options)
                     shaft_failed = true; //!< **一度だけ言う**（毎フレーム吠えない）
                 }
             }
+            if ((frame.targeting.active||frame.targeting.preview_only) && !optional_render.targeting.ready() && !optional_render.targeting_failed) {
+                std::string targeting_error;
+                if (!optional_render.targeting.init(targeting_error)) {
+                    optional_render.targeting_failed = true;
+                    optional_render.targeting.shutdown();
+                    std::fprintf(stderr, "[hd2d] Targeting renderer: %s\n", targeting_error.c_str());
+                }
+            }
             if (!entity_view.rings.empty() && !ground_rings.ready() && !ring_failed) {
                 std::string ring_err;
                 if (!ground_rings.init(ring_err)) {
@@ -4501,7 +5353,8 @@ int run(const AppOptions &options)
              * ときだけ」が意味を失う）。
              */
             //! 闘技場の観戦中は書き戻さない（設計書 §4.6。注視点はフロア中心のまま）。
-            if (!arena_watch && (settings.move_smoothing == MoveSmoothing::All) && entity_view.player_valid) {
+            //! コアが離れて見ているとき（`camera_detached`。位置の確認 L）も書き戻さない（修-64。そこで決めた注視点を @ の位置で打ち消さない）。
+            if (!arena_watch && !frame.camera_detached && (settings.move_smoothing == MoveSmoothing::All) && entity_view.player_valid) {
                 camera.target.x = entity_view.player_x;
                 camera.target.y = entity_view.player_y;
             }
@@ -4602,11 +5455,33 @@ int run(const AppOptions &options)
              * 標準では偽なので**従来の絵と 1 ビットも変わらない**。
              */
             const bool tron_blocks = (settings.scene_look == SceneLookKind::Tron);
+            if (!terrain_models_attempted && (wall_model_loaded || floor_model_loaded)) {
+                terrain_models_attempted=true;
+                std::string model_error;
+                for(std::size_t i=0;i<kTerrainModelCount;++i) if(terrain_part_loaded[i]) {
+                    if(!optional_render.terrain_parts[i].init(terrain_part_assets[i],model_error))
+                        std::fprintf(stderr,"[model] keeping original %s: %s\n",kTerrainModelFiles[i],model_error.c_str());
+                }
+                if (wall_model_loaded && !optional_render.wall_model.init(wall_model_asset,model_error))
+                    std::fprintf(stderr,"[model] keeping existing wall display: %s\n",model_error.c_str());
+                if (floor_model_loaded && !optional_render.floor_model.init(floor_model_asset,model_error))
+                    std::fprintf(stderr,"[model] keeping existing floor display: %s\n",model_error.c_str());
+            }
+            TerrainModels terrain_models; // Deferred: retain the existing voxel terrain.
             build_terrain_view(meaning, terrain_frustum, terrain,
                 &terrain_memory, library_ptr, town_plan.valid() ? &town_plan : nullptr,
                 lamp_night_factor(place_light),
                 first_person.active ? kFpsWallInset : 0.f, black_unknown, &prop_latch,
-                fps_dungeon && settings.fps_wall_upper, fps_dungeon && settings.fps_ceiling, tron_blocks);
+                fps_dungeon && settings.fps_wall_upper, fps_dungeon && settings.fps_ceiling, tron_blocks, terrain_models);
+            if (!terrain_models_reported && (!terrain.model_walls.empty() || !terrain.model_floors.empty()
+                || !terrain.model_blocks.empty() || !terrain.model_ground.empty())) {
+                std::fprintf(stderr,"[model] terrain GLB active: walls=%zu floors=%zu\n",
+                    terrain.model_walls.size(),terrain.model_floors.size());
+                std::fprintf(stderr,"[model] common terrain: blocks=%zu ground=%zu rubble=%zu water=%zu lava=%zu shores=%zu\n",
+                    terrain.model_blocks.size(),terrain.model_ground.size(),terrain.model_parts[0].size(),
+                    terrain.model_parts[1].size(),terrain.model_parts[2].size(),terrain.model_parts[3].size());
+                terrain_models_reported=true;
+            }
             if (terrain.drawn_cells > 0) {
                 ++frames_with_terrain;
             }
@@ -4621,7 +5496,15 @@ int run(const AppOptions &options)
             }
             lighting = make_scene_lighting(light_state, frame.floor);
             /*
-             * **明るい部屋に居るあいだは環境光を上げる**（2026-08-20 に決めた）。
+             * **町の夜の明るさ**（町の表の `night_light`。Angband の町。決めたこと 2026-09-24）。
+             * 町の中（地上）で、その町の表に 1 より大きい値があるときだけ。ほかの町と地下は
+             * `terrain.night_light` が 1.0 なので何も掛からない。
+             */
+            if ((terrain.night_light > 1.001f) && (frame.floor.kind == static_cast<int>(FloorKind::Surface))) {
+                apply_town_night_light(lighting, light_state, terrain.night_light);
+            }
+            /*
+             * **明るい部屋に居るあいだは環境光を上げる**。
              * 判定は @ のマスの `CELL_FEAT_GLOWING`（＝コアの `CAVE_GLOW`）。
              * **1 フレームで飛ばさない**——部屋と通路を行き来するたびに画面全体の
              * 明るさが跳ねると、歩いているだけで目が痛い。`lit_room_mix` を
@@ -4634,7 +5517,22 @@ int run(const AppOptions &options)
                 apply_lit_room_ambient(lighting, frame.floor, lit_room_mix);
             }
             /*
-             * **覆いの町の中の自然光**（2026-08-18 に決めた その3:「町の中の明かりは
+             * RogueClone2 は原作に松明・部屋ごとの照明という概念がなく、見えている範囲を
+             * 常に同じ明るさで表示する。HD2D でも地下用の暗い照明へ寄せず、変愚蛮怒の
+             * 地上・正午と同じ照明計算を使う。地形の扱いは Dungeon のまま変えない。
+             */
+            if (frame.floor.place_name_utf8 == "RogueClone2"
+                || frame.floor.place_name_utf8 == "Rogue 3.6"
+                || frame.floor.place_name_utf8 == "Rogue 5.4") {
+                LightingState noon = light_state;
+                noon.daytime = true;
+                noon.day_minute = 720;
+                FloorIdentity surface = frame.floor;
+                surface.kind = static_cast<int>(FloorKind::Surface);
+                lighting = make_scene_lighting(noon, surface);
+            }
+            /*
+             * **覆いの町の中の自然光**（決めたこと 2026-08-18 その3:「町の中の明かりは
              * 自然光をオレンジっぽくしてもっと明るくしよう」）。提灯と灼熱地獄の照り返しが
              * 空気を染めている、という読みで環境光（空と照り返し）を暖色に振り、
              * 底を持ち上げる——山の中は時刻で明るさが変わらない（太陽が届かないので、
@@ -4760,7 +5658,16 @@ int run(const AppOptions &options)
              */
             WearParams wear;
             wear.amount = static_cast<float>(settings.wear_pct) / 100.f;
+            wear.materials = settings.wear_materials;
             renderer.set_wear(wear);
+            WearParams model_wear=wear;
+            model_wear.seed=static_cast<float>(cell_seed(0,0,meaning.identity)&0xffffu)/65536.f;
+            optional_render.wall_model.set_wear(model_wear,MaterialClass::Stone);
+            optional_render.floor_model.set_wear(model_wear,MaterialClass::Stone);
+            for(std::size_t i=0;i<kTerrainModelCount;++i) {
+                const bool clean=i==static_cast<std::size_t>(TerrainModelKind::Water) || i==static_cast<std::size_t>(TerrainModelKind::Lava);
+                optional_render.terrain_parts[i].set_wear(model_wear,clean?MaterialClass::Clean:MaterialClass::Stone);
+            }
             //! **木の葉**（`render/leaf_detail.h`）。葉の面にだけ掛かる。
             LeafParams leaf_detail;
             leaf_detail.amount = static_cast<float>(settings.leaf_pct) / 100.f;
@@ -4794,10 +5701,97 @@ int run(const AppOptions &options)
              * `MoveSmoothing::Entities` ではマスへ吸着したままだからである。
              */
             const Vec3 torch_pos{ entity_view.player_x, entity_view.player_y, 0.f };
+            /*
+             * **光の届く範囲**。松明の色と揺らぎは光源の種類
+             * （`light_kind`）で変わる。揺らぎは松明だけで、`torch_flicker=0` なら止まる。
+             * `player_lit` が空（送らないコア）なら場は無効で、絵は今までと同じ。
+             */
+            const int light_kind = static_cast<int>(light_state.light_kind);
+            LightRangeParams range_params;
+            range_params.strength = static_cast<float>(settings.light_range_pct) / 100.f;
+            range_params.fade_seconds = static_cast<float>(settings.light_range_fade_ms) / 1000.f;
+            range_params.flicker = settings.torch_flicker;
+            const float light_gain = range_params.flicker ? light_flicker_gain(light_kind, world_seconds) : 1.f;
+            /*
+             * **攻撃の視覚効果**（矢・弾・投げた物・魔法の玉・爆発）。
+             * 実時計（`clock::ticks()`。被弾の演出と同じ）で今の絵を作る。点光源は下の
+             * `collect_point_lights()` へ足し（枠を先に確保する）、ボクセルと板は `draw_scene` が描く。
+             * 起きていなければ何も作らず、絵は従来と 1 画素も変わらない。
+             */
+            attack_fx_frame = FxFrame{};
+            if (attack_fx.active()) {
+                if (!optional_render.attack_fx.ready() && !optional_render.attack_fx_failed) {
+                    std::string fx_err;
+                    if (!optional_render.attack_fx.init(fx_err)) {
+                        optional_render.attack_fx_failed = true; //!< 一度だけ言う（毎フレーム吠えない）
+                        std::fprintf(stderr, "[hd2d] 攻撃の視覚効果を用意できません: %s\n", fx_err.c_str());
+                    }
+                }
+                FxViewParams fx_view;
+                fx_view.has_slab = [&](std::uint16_t item_id) {
+                    FxSlabSource source;
+                    return attack_fx_slab_resolver(item_id, source);
+                };
+                fx_view.face_yaw = slab_facing.fixed_yaw;
+                fx_view.face_pitch = slab_facing.screen_aligned ? slab_facing.screen_pitch : 0.f;
+                fx_view.face_toward = slab_facing.active;
+                fx_view.toward_x = slab_facing.at_x;
+                fx_view.toward_y = slab_facing.at_y;
+                {
+                    //! 画面の右と上（絵・輪・タイルの写しを画面へ正対させる）。
+                    const Vec3 fx_forward = camera.forward();
+                    const Vec3 fx_right = normalize(cross(Vec3{ 0.f, 0.f, 1.f }, fx_forward));
+                    fx_view.cam_right = fx_right;
+                    fx_view.cam_up = normalize(cross(fx_forward, fx_right));
+                }
+                //! 対象のマスにいる実体のタイルの画素（分解の「タイルの写し」。読んだ絵は索引ごとに覚える）。
+                fx_view.tile_at = [&](int gx, int gy, FxTileImage &out) {
+                    static std::unordered_map<std::uint16_t, FxTileImage> tile_images;
+                    for (const MapCellView &cell : frame.cells) {
+                        if ((cell.gx != gx) || (cell.gy != gy) || (cell.tile_index == 0)
+                            || ((cell.monster_id == 0) && ((cell.feature_flags & CELL_FEAT_PLAYER) == 0u))) {
+                            continue;
+                        }
+                        auto found = tile_images.find(cell.tile_index);
+                        if (found == tile_images.end()) {
+                            FxTileImage image;
+                            const TileEntry *entry = tile_catalog.find(cell.tile_index);
+                            /*
+                             * **配布版には PNG のタイルが入っていない**（板だけを配る）ので、実際に描いている板（`.vox`）の正面から
+                             * 画素を起こす。板が読めないときだけ PNG（開発版）を試す。板は足元の空白を詰めてあるので、
+                             * 高さは画素の比率に合わせる（幅は従来どおり 0.8 マス）。
+                             */
+                            bool read_ok = false;
+                            if (entry != nullptr) {
+                                read_ok = slab_library.front_pixels(entry->path, image.width, image.height, image.rgba);
+                                if (read_ok) {
+                                    image.height_cells = image.width_cells * (static_cast<float>(image.height) / static_cast<float>(std::max(image.width, 1)));
+                                } else {
+                                    read_ok = fx_load_png(entry->path, image);
+                                }
+                            }
+                            if (!read_ok) {
+                                image = FxTileImage{};
+                            }
+                            found = tile_images.emplace(cell.tile_index, std::move(image)).first;
+                        }
+                        if (found->second.width <= 0) {
+                            return false;
+                        }
+                        out = found->second;
+                        return true;
+                    }
+                    return false;
+                };
+                attack_fx.evaluate(clock::ticks(), VoxelFxParams{}, fx_view, attack_fx_frame);
+            }
             dropped_lights = collect_point_lights(frame, camera.target, lighting,
                 (frame.floor.kind != static_cast<int>(FloorKind::Surface)) ? 1.f
                                                                           : lamp_night_factor(place_light),
-                entity_view.player_valid ? &torch_pos : nullptr);
+                entity_view.player_valid ? &torch_pos : nullptr, light_gain,
+                attack_fx_frame.lights.empty() ? nullptr : &attack_fx_frame.lights);
+            lit_range_field.update(frame, frame_seconds, range_params);
+            lit_range_field.bind(lighting, range_params, light_kind, light_gain);
             /*
              * **祠のライトアップ**（2026-08-18 に決めた「龍神像を夜は下から
              * ライトアップ」）。terrain_view が積んだ光のリクエストへ夜の度合いを掛けて足す。
@@ -4907,6 +5901,20 @@ int run(const AppOptions &options)
                  * アスキーのときは空なので、この行はそのまま何もしない。
                  */
                 draw_entity_slabs(renderer, slab_library, entity_view, &fit.view_projection);
+                if (draw_player_model) {
+                    optional_render.player_model.draw_depth(fit.view_projection, player_model_transform);
+                }
+                optional_render.wall_model.draw_depth(fit.view_projection,Mat4::identity(),
+                    nullptr,terrain.model_walls.size(),terrain.model_walls.data());
+                optional_render.floor_model.draw_depth(fit.view_projection,Mat4::identity(),
+                    nullptr,terrain.model_floors.size(),terrain.model_floors.data());
+                optional_render.wall_model.draw_depth(fit.view_projection,Mat4::identity(),nullptr,
+                    terrain.model_blocks.size(),terrain.model_blocks.data());
+                optional_render.floor_model.draw_depth(fit.view_projection,Mat4::identity(),nullptr,
+                    terrain.model_ground.size(),terrain.model_ground.data());
+                for(std::size_t i=0;i<kTerrainModelCount;++i)
+                    optional_render.terrain_parts[i].draw_depth(fit.view_projection,Mat4::identity(),nullptr,
+                        terrain.model_parts[i].size(),terrain.model_parts[i].data());
                 shadow.end(screen_w, screen_h);
             }
             if (gpu_sync) {
@@ -5104,6 +6112,10 @@ int run(const AppOptions &options)
                 //! 床の板には掛けない（掛けると手前の地面に穴が開く）。
                 renderer.set_cutaway_scale(0.f);
                 renderer.draw_instanced(floor_gpu, terrain.slabs.data(), terrain.slabs.size());
+                optional_render.floor_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                    fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_floors.size(),nullptr,0,terrain.model_floors.data());
+                optional_render.floor_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                    fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_ground.size(),nullptr,0,terrain.model_ground.data());
                 gl::probe_gl_errors("地面の板");
                 /*
                  * 壁の下の地面（P7）。抜いた所から背景が見えないように敷いてある。
@@ -5112,6 +6124,8 @@ int run(const AppOptions &options)
                  */
                 renderer.set_shadow_scale(0.f);
                 renderer.draw_instanced(floor_gpu, terrain.under_slabs.data(), terrain.under_slabs.size());
+                optional_render.floor_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                    fit.view_projection,0,shadow.side(),nullptr,terrain.model_under_floors.size(),nullptr,0,terrain.model_under_floors.data());
                 renderer.set_shadow_scale(1.f);
                 if (library_ptr != nullptr) {
                     //! P10。ライブラリのバケット（地面はカットアウェイ 0・立つものは 1。中で切り替える）。
@@ -5119,6 +6133,18 @@ int run(const AppOptions &options)
                 }
                 renderer.set_cutaway_scale(1.f);
                 renderer.draw_instanced(wall_gpu, terrain.boxes.data(), terrain.boxes.size());
+                optional_render.wall_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                    fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_walls.size(),
+                    cutaways.data(),cutaways.size(),terrain.model_walls.data());
+                optional_render.wall_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                    fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_blocks.size(),
+                    cutaways.data(),cutaways.size(),terrain.model_blocks.data());
+                for(std::size_t i=0;i<kTerrainModelCount;++i) {
+                    const bool solid=i==static_cast<std::size_t>(TerrainModelKind::Rubble);
+                    optional_render.terrain_parts[i].draw(view_projection,Mat4::identity(),lighting,view.eye,
+                        fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_parts[i].size(),
+                        solid?cutaways.data():nullptr,solid?cutaways.size():0,terrain.model_parts[i].data());
+                }
                 gl::probe_gl_errors("壁の箱");
                 /*
                  * 光る床（P7。積み残し #6）。**床の板の後に、同じ板で上書きする。**
@@ -5145,6 +6171,10 @@ int run(const AppOptions &options)
                 if (!entity_view.rings.empty() && ground_rings.ready()) {
                     ground_rings.draw(view_projection, entity_view.rings.data(), entity_view.rings.size());
                 }
+                const auto targeting_visual = build_targeting_visual(frame.targeting, view.eye,
+                    entity_view.targeting_entities, world_seconds);
+                optional_render.targeting.draw(view_projection, targeting_visual.area, true);
+                optional_render.targeting.draw(view_projection, targeting_visual.dots, true);
                 /*
                  * **光の柱**（2026-08-22 に決めた）。地形と輪の後・実体より前に描く。
                  *
@@ -5156,31 +6186,99 @@ int run(const AppOptions &options)
                     light_shafts.draw(view_projection, view.azimuth, terrain.light_shafts.data(),
                         terrain.light_shafts.size());
                 }
-                draw_entity_slabs(renderer, slab_library, entity_view, nullptr);
                 /*
-                 * **アスキー実体**。板の代わりに文字を立てる。
-                 * `entity_view.glyphs` と `slabs` は排他なので、どちらか一方だけが描かれる。
+                 * **実体は層の順に描く**（決めたこと 2026-09-23「タイルの向きに関わらず
+                 * タイル描画の順番を 下 地面 オブジェクト アイテム モンスター キャラクター 上」）。
                  *
-                 * 軸拘束ビルボードは**常にカメラの方位へ正対する**ので、見下ろし・一人称・
-                 * 視点回転・VR のどれでも追加の向き管理が要らない（板の `fixed_yaw` は不要）。
-                 * VR だけは**キャラのマスへ正対**させる（頭に正対させると首を振るたびに
-                 * 世界じゅうの字が回る。2026-08-14 に踏んだ話）。
+                 * 深度の順に任せると、板を画面へ正対させたときなどに、同じマスや隣のマスの
+                 * 実体どうしがカメラからの近さで前後する（アイテムが敵の足に被さる・敵が
+                 * キャラの頭を隠す）。そこで地形まで描いた深度を写しに取り、層を 1 つ描くたびに
+                 * その写しへ戻す。後の層は地形にだけ隠れ、前の層の実体には隠れない——
+                 * **後に描いた層が必ず上に出る**。層の中では従来どおり深度で前後する。
                  *
-                 * フルブライトで、影は落とさず受けない（§5.3）。抜き（カットアウェイ）も
-                 * 掛けない——字は細く、後ろを隠さないので薄める理由が無い。
+                 * 最後に深度を写しへ戻してから、全部の実体を**深度だけ**描き直す。空・霧・
+                 * 被写界深度が実体の深度を読むので、ここを抜くと実体の上に空が塗られる。
+                 * 層が 1 つしか無いときは写しを取らない（従来と同じ描き方になる）。
                  */
-                if (!entity_view.glyphs.empty() && glyph_ready) {
-                    const Vec3 face{ entity_view.player_x, entity_view.player_y, 1.f };
-                    glyph_boards.draw(view_projection, lighting, view.azimuth, view.eye,
-                        fit.view_projection, 0, shadow.side(), glyph_atlas.texture(), glyph_atlas.side(),
-                        entity_view.glyphs.data(), entity_view.glyphs.size(),
-                        vr_frame_ready ? &face : nullptr, /*fullbright=*/true);
+                std::array<std::vector<BillboardInstance>, kEntityLayerCount> layer_glyphs;
+                std::array<bool, kEntityLayerCount> layer_used{};
+                for (const SlabInstance &slab : entity_view.slabs) {
+                    if (slab.slab >= 0) {
+                        layer_used[static_cast<std::size_t>(slab.layer)] = true;
+                    }
+                }
+                const bool draw_glyph_entities = !entity_view.glyphs.empty() && glyph_ready;
+                if (draw_glyph_entities) {
+                    for (std::size_t i = 0; i < entity_view.glyphs.size(); ++i) {
+                        const auto layer = static_cast<std::size_t>((i < entity_view.glyph_layers.size())
+                                ? entity_view.glyph_layers[i] : EntityLayer::Item);
+                        layer_glyphs[layer].push_back(entity_view.glyphs[i]);
+                        layer_used[layer] = true;
+                    }
+                }
+                if (draw_player_model) {
+                    layer_used[static_cast<std::size_t>(EntityLayer::Player)] = true;
+                }
+                const bool layered = std::count(layer_used.begin(), layer_used.end(), true) > 1;
+                if (layered) {
+                    post.save_scene_depth();
+                }
+                const Vec3 glyph_face{ entity_view.player_x, entity_view.player_y, 1.f };
+                bool drew_layer = false;
+                for (int layer = 0; layer < kEntityLayerCount; ++layer) {
+                    if (!layer_used[static_cast<std::size_t>(layer)]) {
+                        continue;
+                    }
+                    if (layered && drew_layer) {
+                        post.restore_scene_depth();
+                    }
+                    drew_layer = true;
+                    draw_entity_slabs(renderer, slab_library, entity_view, nullptr, layer);
+                    if (draw_player_model && (layer == static_cast<int>(EntityLayer::Player))) {
+                        optional_render.player_model.draw(view_projection, player_model_transform,
+                            lighting, view.eye, fit.view_projection, shadow_tex, shadow.side());
+                    }
+                    /*
+                     * **アスキー実体**。板の代わりに文字を立てる。
+                     * `entity_view.glyphs` と `slabs` は排他なので、どちらか一方だけが描かれる。
+                     *
+                     * 軸拘束ビルボードは**常にカメラの方位へ正対する**ので、見下ろし・一人称・
+                     * 視点回転・VR のどれでも追加の向き管理が要らない（板の `fixed_yaw` は不要）。
+                     * VR だけは**キャラのマスへ正対**させる（頭に正対させると首を振るたびに
+                     * 世界じゅうの字が回る。2026-08-14 に踏んだ話）。
+                     *
+                     * フルブライトで、影は落とさず受けない（§5.3）。抜き（カットアウェイ）も
+                     * 掛けない——字は細く、後ろを隠さないので薄める理由が無い。
+                     */
+                    const auto &glyphs_here = layer_glyphs[static_cast<std::size_t>(layer)];
+                    if (!glyphs_here.empty()) {
+                        glyph_boards.draw(view_projection, lighting, view.azimuth, view.eye,
+                            fit.view_projection, 0, shadow.side(), glyph_atlas.texture(), glyph_atlas.side(),
+                            glyphs_here.data(), glyphs_here.size(),
+                            vr_frame_ready ? &glyph_face : nullptr, /*fullbright=*/true);
+                    }
+                }
+                if (layered) {
+                    post.restore_scene_depth();
+                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                    draw_entity_slabs(renderer, slab_library, entity_view, nullptr);
+                    if (draw_player_model) {
+                        optional_render.player_model.draw_depth(view_projection, player_model_transform);
+                    }
+                    if (draw_glyph_entities) {
+                        glyph_boards.draw(view_projection, lighting, view.azimuth, view.eye,
+                            fit.view_projection, 0, shadow.side(), glyph_atlas.texture(), glyph_atlas.side(),
+                            entity_view.glyphs.data(), entity_view.glyphs.size(),
+                            vr_frame_ready ? &glyph_face : nullptr, /*fullbright=*/true);
+                    }
+                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
                 }
                 /*
                  * **一過性の重ね書き**（SQ-2。ダメージの数字・飛跡・爆風・聞き耳の `*`・
                  * 照準）。実体の字と**同じ道具で別の列**を描く——実体が板でも出るように。
                  * 実体より高い所（`kOverlayLift`）に置いてあるので、敵の板に埋まらない。
                  */
+                optional_render.targeting.draw(view_projection, targeting_visual.reticles, false);
                 if (!overlay_glyphs.empty() && glyph_ready) {
                     const Vec3 face{ entity_view.player_x, entity_view.player_y, 1.f };
                     glyph_boards.draw(view_projection, lighting, view.azimuth, view.eye,
@@ -5232,7 +6330,22 @@ int run(const AppOptions &options)
                     clouds.draw_steam(view_projection, terrain.steam_jets, sky_state, world_seconds);
                 } //!< 画調の門（`look_draws_sky`）
                 /*
-                 * **空中に浮かぶ埃**（2026-08-23 に決めた）。半透明なので不透明の後、
+                 * **攻撃の視覚効果**（矢・弾・投げた物・魔法の玉・爆発）。
+                 * 不透明を全部描いた後・`end_scene()` の前。深度は読む（壁の向こうの爆発は壁に隠れる）。
+                 * 煙は半透明で、奥から手前の順に混ぜる。自己発光の強い粒をブルームが掴む（線形の HDR）。
+                 * 投げた物の板は床のアイテムと同じ `VoxelRenderer` で描く（同じ光・同じ板）。
+                 * 起きていなければ何も描かない。
+                 */
+                if (!attack_fx_frame.voxels.empty() && optional_render.attack_fx.ready()) {
+                    (void)optional_render.attack_fx.draw(view_projection, view.eye, lighting, fit.view_projection,
+                        shadow_tex, shadow.side(), attack_fx_frame.voxels.data(), attack_fx_frame.voxels.size());
+                }
+                if (!attack_fx_frame.slabs.empty()) {
+                    (void)draw_fx_slabs(renderer, attack_fx_frame.slabs, attack_fx_slab_resolver);
+                }
+                gl::probe_gl_errors("攻撃の視覚効果");
+                /*
+                 * **空中に浮かぶ埃**。半透明なので不透明の後、
                  * `end_scene()` の前——**線形の HDR へ加算する**ので、ブルームと
                  * 被写界深度が後から掛かる（浮遊物が光の中で滲む）。
                  *
@@ -5284,7 +6397,7 @@ int run(const AppOptions &options)
                  * **画面全体の色処理**（2026-08-23 に決めた）。機能メニュー ＞ 効果が持つ。
                  * ビネットの強さ・HDR 風・露出はここで送る（セピアは LUT なので下で焼く）。
                  * **画調（TRON）より前に置く**——TRON はビネットを自分の値へ寄せるので、
-                 * 後ろに置くと利用者の値がそれを塗り潰す。
+                 * 後ろに置くと遊ぶ人の値がそれを塗り潰す。
                  */
                 post_params.vignette_strength = settings.vignette_strength;
                 post_params.hdr = settings.hdr;
@@ -5505,7 +6618,7 @@ int run(const AppOptions &options)
              * あそこには地図が無いので、古いマスが残って見えると嘘になる。
              */
             if ((settings.main_panel == Hd2dSettings::MainPanel::Ascii) && !vr_frame_ready
-                && frame_shows_map(frame)) {
+                && map_visible) {
                 /*
                  * マスは**可視窓を決めたときと同じもの**を使う（上の `ascii_glyphs`）。
                  * 専用のアトラスは自分で `begin`／`flush` する必要がある——UI の文字とは
@@ -5515,8 +6628,18 @@ int run(const AppOptions &options)
                 if (ascii_text_px > 0) {
                     glyphs_for_map.begin(screen_w, screen_h);
                 }
-                (void)draw_ascii_map_panel(paint, glyphs_for_map, vr_layout.scene, frame);
-                if (ascii_text_px > 0) {
+                (void)draw_ascii_map_panel(paint, glyphs_for_map, vr_layout.scene, frame, &hud_state.targeting, world_seconds);
+                /*
+                 * `--shot-after`（正の値）は「世界が描かれたフレーム」を数える（下の `shot_gate`）。
+                 * 3D では地形の組み立てで数えるが、2D アスキーのメインパネルは 3D を 1 枚も
+                 * 描かない（`skip_scene`）ので、ここで数えないと撮影が永遠に来なかった
+                 * （2026-09-25。ASCII で --shot-after=600 を待つ検証が時間切れになり、その
+                 * `timeout` がコアごと止めて「ゲームコアが予期せず停止しました」に見えていた）。
+                 */
+                ++frames_with_terrain;
+                if(hud_state.targeting.visible()||hud_state.modern.active()||(settings.modern_ui&&menu_drawn)) {
+                    paint.flush();glyphs_for_map.flush();
+                } else if (ascii_text_px > 0) {
                     /*
                      * **下敷き（`paint`）より後に流す。**`paint` はこの後まとめて流されるので、
                      * ここで字を流すと下敷きが字の上に来る……ように見えるが、
@@ -5527,8 +6650,24 @@ int run(const AppOptions &options)
                     ascii_text_pending = true;
                 }
             }
-            draw_game_ui(paint, text, vr_layout, frame, hud_state,
-                (settings.backdrops && !vr_frame_ready) ? &backdrops : nullptr);
+            /*
+             * **新 UI ではメニューを開いている間もサブパネルを描く**（決めたこと 2026-09-26
+             * 「メニュー表示中サブパネルが消える。出したままに」）。機能メニュー（コマンドメニュー・
+             * 設定）は `fixed_menu_rect()` のまま上に重ね、隠れる所は隠れてよい。機能メニューが
+             * 前にあるときは新 UI の窓（後ろに残っている持ち物一覧など）だけは描かない（従来どおり）。
+             * パネルの字が機能メニューの上に出ないよう、ここで一度流す。オリジナル UI は従来どおり。
+             */
+            const bool menu_in_front = feature_menu.tab_navigation_active() || (hud_state.modern.active() && feature_menu.is_open());
+            const bool hud_under_menu = settings.modern_ui && modern_window_keeps_hud(frame);
+            if (!menu_in_front || hud_under_menu) {
+                draw_game_ui(paint, text, vr_layout, frame, hud_state,
+                    vr_frame_ready ? nullptr : (settings.backdrops ? &backdrops : &backdrops_orb_only),
+                    !feature_menu.is_open());
+                if (settings.modern_ui && menu_drawn) {
+                    paint.flush();
+                    text.flush();
+                }
+            }
         }
         /*
          * IME の未確定文字列（変換中の文字）。**素の IME は候補一覧しか描かない**ので、
@@ -5557,6 +6696,8 @@ int run(const AppOptions &options)
          */
         if (frame_shows_map(frame)) {
             draw_combat_fx(paint, combat_fx, camera, layout.scene, settings.damage_flash);
+            //! 攻撃の視覚効果の光の波（視界内の全員にかかる魔法）。被弾のフラッシュと同じ段。
+            draw_attack_fx_waves(paint, attack_fx_frame.screen_waves, layout.scene);
         }
         /*
          * バーチャルパッド（2026-08-12 に決めた）。ゲームの UI の上・メニューの下
@@ -5581,8 +6722,12 @@ int run(const AppOptions &options)
          * **バーチャルパッドより先に敷く。**後に敷くとボタンまで隠れ、触りだけの機体で
          * 一覧を動かす手が無くなる（幕の上にボタンが残るのが正しい）。
          * **設定の節では敷かない**——あちらは世界を見ながら値をいじる画である。
+         *
+         * **新 UI では敷かない**（決めたこと 2026-09-26「すべてのメニューで背景にマップを
+         * 残して」）。新 UI の一覧はパネルの地の上に名札を並べるので、後ろに地図があっても
+         * 名札の境目は読める。オリジナル UI は名札を地図に直に並べるので従来どおり敷く。
          */
-        if (feature_menu.showing_commands()) {
+        if (feature_menu.showing_commands() && !settings.modern_ui) {
             paint.rect(RectPx{ 0, 0, screen_w, screen_h }, PaintColor{ 0.03f, 0.03f, 0.05f, 1.f });
         }
         if (!floor_cutin.active()) {
@@ -5590,6 +6735,11 @@ int run(const AppOptions &options)
         }
         //! 機能メニューは**いちばん上**（開いている間はこれが操作の対象なので）。
         feature_menu.draw(paint, text, layout, settings);
+        if (menu_handoff && !feature_menu.is_open()) {
+            menu_handoff->draw(paint, text, layout, settings);
+        } else if (modern_handoff_drawn) {
+            modern_handoff->draw(paint, text, layout, frame, hud_state.modern_theme);
+        }
 
         /*
          * ここから下は**調べるための重ね書き**（`--text`）。P0〜P7 で見ていた数字である。
@@ -5698,6 +6848,8 @@ int run(const AppOptions &options)
                 dropped_lights, kMaxPointLights);
         }
         paint.flush(); //!< **文字より先**（下敷きなので）
+        if(!feature_menu.is_open()&&!menu_handoff)hud_state.modern.draw_voxels(item_icon_renderer,slab_library,tile_catalog,layout,&text);
+        trace_targeting_ui(hud_state.targeting,camera,layout,settings.main_panel==Hd2dSettings::MainPanel::Ascii,first_person.active);
         /*
          * 2D アスキー地図の字（専用のマスのとき）。**`paint` の後・UI の文字の前**に流す。
          * 前に流すと下敷きの黒で塗り潰され、後に流すと状態列やミニマップの上に乗る。
@@ -5713,7 +6865,7 @@ int run(const AppOptions &options)
          * `floor_cutin` と同じ理由。`flush()` は流したら空になるので二重には出ない）。
          */
         if (vpad.editor_open()) {
-            vpad.draw_editor(paint, text, settings.vpad, usable_area());
+            vpad.draw_editor(paint, text, settings.vpad, usable_area(),settings.window_theme(),settings.modern_font_level);
             paint.flush();
             text.flush();
         }
@@ -5757,6 +6909,396 @@ int run(const AppOptions &options)
          * 通し番号**で数える。タイトル画には地形が 1 フレームも無いので、
          * そこを撮るにはこちらが要る。
          */
+        /*
+         * **テスト入力の起動でだけ**、途中の画を撮る（`--test-input-file=` の隣の `.shot` に
+         * 保存先のパスを 1 行書くと、次のフレームを BMP で保存してそのファイルを消す）。
+         * `--shot` は撮ると終了するので、メニューを開いた画を続けて撮れない（2026-09-26）。
+         */
+        if (!options.test_input_file.empty()) {
+            //! 入力ファイルのパスは UTF-8（Windows は起動の入口で UTF-8 へ直す。`TestKeyboard::configure` と同じ読み方）。
+            const std::filesystem::path trigger(std::filesystem::u8path(options.test_input_file + ".shot"));
+            std::error_code shot_ec;
+            if (std::filesystem::exists(trigger, shot_ec)) {
+                std::string shot_to;
+                {
+                    std::ifstream in(trigger);
+                    std::getline(in, shot_to);
+                }
+                std::filesystem::remove(trigger, shot_ec);
+                if (!shot_to.empty()) {
+                    (void)save_framebuffer_bmp(shot_to, screen_w, screen_h);
+                }
+            }
+        }
+        /*
+         * **画面側が描いた窓の種類を記録する**（検査用。`HD2D_WINDOW_LOG=<パス>`）。
+         * 変わったフレームだけ 1 行ずつ書く。タブの切り替えの途中に別の窓（マップだけ・空の窓・
+         * 前のタブ）が 1 フレームでも挟まったかを数える。
+         */
+        if (const char *window_log = std::getenv("HD2D_WINDOW_LOG"); (window_log != nullptr) && (*window_log != '\0')) {
+            static std::string window_log_last;
+            static std::ofstream window_log_out(window_log, std::ios::binary | std::ios::trunc);
+            std::string drawn;
+            const FeatureMenu *shown_menu = feature_menu.is_open() ? &feature_menu : menu_handoff.get();
+            if (shown_menu != nullptr) {
+                drawn = std::string(shown_menu == &feature_menu ? "feature:" : "handoff:")
+                    + (shown_menu->showing_commands() ? "commands" : "page")
+                    + " tab=" + std::to_string(shown_menu->command_tab_index());
+                const auto labels = shown_menu->command_tab_labels();
+                const int at = shown_menu->command_tab_index();
+                if ((at >= 0) && (at < static_cast<int>(labels.size()))) drawn += "(" + labels[static_cast<std::size_t>(at)] + ")";
+            } else if (modern_handoff_drawn) {
+                drawn = "handoff-modern:" + modern_handoff->status();
+            } else if (hud_state.modern.opening_placeholder()) {
+                drawn = "map(placeholder)";
+            } else if (hud_state.modern.active()) {
+                drawn = "modern:" + hud_state.modern.status() + " cells=" + std::to_string(hud_state.modern.painted_content().size());
+            } else if (!frame.menu_term_lines.empty() && !frame.menu_over_map) {
+                drawn = "term";
+            } else {
+                drawn = "map";
+            }
+            const std::string line = drawn + " core_menu=" + (frame.menu_open ? "1" : "0")
+                + " modern_kind=" + frame.modern.kind + ":" + frame.modern.stage;
+            if (line != window_log_last) {
+                window_log_last = line;
+                window_log_out << frame_index << ' ' << SDL_GetTicks() << ' ' << line << '\n';
+                window_log_out.flush();
+                //! 変わった画を撮る（`HD2D_WINDOW_SHOT_DIR=<フォルダ>`。途中の 1 フレームを目で見るため）。
+                if (const char *shot_dir = std::getenv("HD2D_WINDOW_SHOT_DIR"); (shot_dir != nullptr) && (*shot_dir != 0)) {
+                    (void)save_framebuffer_bmp((std::filesystem::path(shot_dir) / (std::to_string(frame_index) + ".bmp")).string(),
+                        screen_w, screen_h);
+                }
+            }
+        }
+        if (ui_probe().enabled()) {
+            /*
+             * 検査用の問い合わせ（`{"query":"ui"}`。`app/ui_probe.h`）：このフレームの全体の情報を確定させる。
+             * 文字・押せる部品・窓・玉・メッセージは、描いた関数の出口が記録済み。ここでは画面全体の状態を足す。
+             */
+            const char *probe_phase = ui_probe_phase(frame); //!< 規則は `app_support.cpp`（`game_over`・タイトル・誕生の見分け。自己検査が見る）
+            const char *probe_wait = "";
+            if (floor_cutin.blocks_input()) {
+                probe_wait = "cutin";
+            } else if (presentation::message_more_pending(frame)) {
+                probe_wait = "more";
+            } else if (frame.text_input_active) {
+                probe_wait = "text";
+            } else if (frame.numeric.active) {
+                probe_wait = "number";
+            } else if (!frame.prompt.text_utf8.empty() || !frame.prompt.choices.empty()) {
+                const bool yes_no = std::any_of(frame.prompt.choices.begin(), frame.prompt.choices.end(),
+                    [](const PromptChoice &c) { return (c.key == 'y') || (c.key == 'Y'); });
+                probe_wait = yes_no ? "yesno" : "prompt";
+            } else if (feature_menu.is_open() || hud_state.modern.active() || frame.menu_open || !frame.menu_term_lines.empty()) {
+                probe_wait = "menu";
+            } else if (frame.targeting.active) {
+                probe_wait = "targeting";
+            } else if (frame.awaiting_command) {
+                probe_wait = "command";
+            }
+            if (!frame.pre_game_menu && (frame.hud.hp_max > 0) && (frame.hud.hp < 0)) {
+                probe_wait = "death";
+            } else if (frame.game_over && (probe_wait[0] == 0)) {
+                //! ゲーム終了の画面で、ほかに待ちの種類が無いとき（コアが処理中の「none」と区別する）。
+                probe_wait = "death";
+            }
+            ui_probe().frame_info(link.hello_ack().core_name, frame.frame_id, screen_w, screen_h, probe_phase, probe_wait);
+            if (!frame.pre_game_menu && !frame.title_screen && !frame.cells.empty()) {
+                ui_probe().map(frame.player_gx, frame.player_gy, entity_view.players, entity_view.monsters, entity_view.objects,
+                    map_visible, first_person.active ? "fps" : ((settings.main_panel == Hd2dSettings::MainPanel::Ascii) ? "2d" : "3d"));
+            }
+            if (!frame.pre_game_menu && !frame.title_screen && !frame.cells.empty()) {
+                //! 画面が描いた地形・実体（ビューポートの既知のマス）と、フロア全域の格子（ミニマップ）。入口の番号は階ごとに覚える。
+                std::vector<ProbeCell> probe_cells;
+                probe_cells.reserve(frame.cells.size());
+                //! 光の届く範囲（画面の光の計算の結果。`map.lit_cells`）・描いている実体・使った絵の名前も、同じ走査で集める。
+                ProbeLight probe_light;
+                probe_light.kind = static_cast<int>(frame.lighting.light_kind);
+                probe_light.radius = frame.lighting.light_radius;
+                probe_light.declared = !frame.lighting.player_lit.empty();
+                probe_light.memory_dim = (frame.lighting.memory_dim != 0);
+                std::vector<ProbeEntity> probe_entities;
+                std::map<int, std::string> probe_tile_names;
+                const auto probe_alert_of = [&](int gx, int gy) -> const char * {
+                    for (const MonsterAlertCell &alert : frame.monster_alerts) {
+                        if ((alert.gx == gx) && (alert.gy == gy)) {
+                            switch (static_cast<MonsterAlert>(alert.level)) {
+                            case MonsterAlert::Asleep: return "sleep";
+                            case MonsterAlert::Unwary: return "unaware";
+                            case MonsterAlert::Alert: return "alert";
+                            default: return "";
+                            }
+                        }
+                    }
+                    return "";
+                };
+                const auto probe_ring_at = [&](int gx, int gy) {
+                    for (const GroundRingInstance &ring : entity_view.rings) {
+                        if ((std::fabs(ring.x - (static_cast<float>(gx) + 0.5f)) < 0.6f)
+                            && (std::fabs(ring.y - (static_cast<float>(gy) + 0.5f)) < 0.6f)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+                const bool probe_town = town_plan.valid() && (frame.floor.kind == static_cast<int>(FloorKind::Surface));
+                const std::vector<std::uint8_t> &probe_lit_bits = frame.lighting.player_lit;
+                for (std::size_t cell_index = 0; cell_index < frame.cells.size(); ++cell_index) {
+                    const MapCellView &cell = frame.cells[cell_index];
+                    const std::uint16_t ff = cell.feature_flags;
+                    const bool probe_lit = ((cell_index >> 3) < probe_lit_bits.size())
+                        && (((probe_lit_bits[cell_index >> 3] >> (cell_index & 7u)) & 1u) != 0u);
+                    if (probe_lit) {
+                        ++probe_light.lit_cells;
+                        const int dx = cell.gx - frame.player_gx;
+                        const int dy = cell.gy - frame.player_gy;
+                        probe_light.max_distance = std::max(probe_light.max_distance,
+                            static_cast<int>(std::ceil(std::sqrt(static_cast<double>((dx * dx) + (dy * dy))))));
+                        if (lit_range_field.active() && (lit_range_field.value_at(cell.gx, cell.gy) >= 0.5f)) {
+                            ++probe_light.shown_cells;
+                        }
+                    } else if (probe_light.memory_dim && (cell.light_level == 1)) {
+                        ++probe_light.memory_cells;
+                    }
+                    if ((ff & CELL_FEAT_KNOWN) == 0u) {
+                        continue;
+                    }
+                    if ((ff & CELL_FEAT_PLAYER) != 0u) {
+                        probe_entities.push_back(ProbeEntity{ cell.gx, cell.gy, "player", 0, 0, cell.tile_index, "", false });
+                    } else if (cell.monster_id > 0) {
+                        probe_entities.push_back(ProbeEntity{ cell.gx, cell.gy, "monster", cell.monster_id, cell.monster_slot,
+                            cell.tile_index, probe_alert_of(cell.gx, cell.gy), probe_ring_at(cell.gx, cell.gy) });
+                    }
+                    if ((cell.object_id > 0) && ((ff & CELL_FEAT_PLAYER) == 0u)) {
+                        probe_entities.push_back(ProbeEntity{ cell.gx, cell.gy, "object", cell.object_id, 0,
+                            (cell.monster_id > 0) ? 0 : cell.tile_index, "", false });
+                    }
+                    if ((cell.tile_index != 0) && (probe_tile_names.find(cell.tile_index) == probe_tile_names.end())) {
+                        std::string name;
+                        if (const TileEntry *entry = tile_catalog.find(cell.tile_index); entry != nullptr) {
+                            //! 絵のパスは UTF-8（日本語のフォルダを含みうる）。`std::filesystem::path` へ狭い文字列で渡すと ANSI として読まれて投げるので、文字列のまま切る。
+                            const std::string &file = entry->path;
+                            const std::size_t slash = file.find_last_of("/\\");
+                            const std::size_t begin = (slash == std::string::npos) ? 0 : (slash + 1);
+                            const std::size_t dot = file.find_last_of('.');
+                            const std::size_t end = ((dot == std::string::npos) || (dot < begin)) ? file.size() : dot;
+                            name = std::string(1, entry->kind) + ":" + std::to_string(entry->id) + ":" + file.substr(begin, end - begin);
+                        }
+                        probe_tile_names.emplace(static_cast<int>(cell.tile_index), std::move(name));
+                    }
+                    ProbeCell pc;
+                    pc.gx = cell.gx;
+                    pc.gy = cell.gy;
+                    pc.terrain_id = cell.terrain_id;
+                    pc.tile_index = cell.tile_index;
+                    pc.fg_color = cell.fg_color;
+                    {
+                        const RgbColor rgb = term_color_to_rgb(cell.fg_color);
+                        pc.fg_rgb[0] = rgb.r;
+                        pc.fg_rgb[1] = rgb.g;
+                        pc.fg_rgb[2] = rgb.b;
+                    }
+                    pc.light_level = cell.light_level;
+                    pc.lit = probe_lit;
+                    if (probe_town) {
+                        static const char *const kRoleNames[] = { "", "border", "rampart", "tower", "gate", "yard", "house",
+                            "fountain", "crag", "path", "turf", "manor" };
+                        const auto role = static_cast<std::size_t>(town_plan.role_at(cell.gx, cell.gy));
+                        pc.role = (role < (sizeof(kRoleNames) / sizeof(kRoleNames[0]))) ? kRoleNames[role] : "other";
+                        pc.site = town_plan.site_at(cell.gx, cell.gy);
+                    }
+                    if ((ff & CELL_FEAT_WALL) != 0u) {
+                        pc.kind = ((ff & CELL_FEAT_PERMANENT) != 0u) ? "permanent-wall" : "wall";
+                    } else if ((ff & CELL_FEAT_DOOR) != 0u) {
+                        pc.kind = ((ff & CELL_FEAT_DOOR_OPEN) != 0u) ? "door-open" : "door";
+                    } else if ((ff & CELL_FEAT_STAIRS) != 0u) {
+                        pc.kind = "stairs";
+                    } else if ((ff & CELL_FEAT_TREE) != 0u) {
+                        pc.kind = "tree";
+                    } else if ((ff & CELL_FEAT_WATER) != 0u) {
+                        pc.kind = "water";
+                    } else if ((ff & CELL_FEAT_LAVA) != 0u) {
+                        pc.kind = "lava";
+                    } else if ((ff & CELL_FEAT_RUBBLE) != 0u) {
+                        pc.kind = "rubble";
+                    } else if ((ff & CELL_FEAT_PASSABLE) != 0u) {
+                        pc.kind = "floor";
+                    }
+                    pc.glyph = (cell.ascii_fallback != '\0') ? cell.ascii_fallback : ' ';
+                    if (((ff & CELL_FEAT_DOOR) != 0u) && (std::isalnum(static_cast<unsigned char>(cell.ascii_fallback)) != 0)) {
+                        pc.entrance = cell.ascii_fallback;
+                    }
+                    if ((ff & CELL_FEAT_PLAYER) == 0u) {
+                        pc.monster = cell.monster_id;
+                        pc.object = cell.object_id;
+                    }
+                    probe_cells.push_back(pc);
+                }
+                std::vector<std::string> floor_rows;
+                if (frame.minimap.valid()) {
+                    static const char kKindChars[] = " .#+>!m@^~T\"Ls";
+                    floor_rows.reserve(static_cast<std::size_t>(frame.minimap.height));
+                    for (int y = 0; y < frame.minimap.height; ++y) {
+                        std::string row(static_cast<std::size_t>(frame.minimap.width), ' ');
+                        for (int x = 0; x < frame.minimap.width; ++x) {
+                            const auto kind = static_cast<std::size_t>(frame.minimap.at(x, y));
+                            row[static_cast<std::size_t>(x)] = (kind < sizeof(kKindChars) - 1) ? kKindChars[kind] : '?';
+                        }
+                        floor_rows.push_back(std::move(row));
+                    }
+                }
+                ui_probe().map_cells(std::move(probe_cells),
+                    std::to_string(frame.floor.dungeon_id) + ":" + std::to_string(frame.floor.dun_level) + ":"
+                        + std::to_string(frame.floor.generated_turn) + ":" + std::to_string(frame.floor.town_id) + ":"
+                        + (frame.floor.wild_mode ? "w" : "-"),
+                    std::move(floor_rows));
+                ui_probe().light(probe_light);
+                ui_probe().entities(std::move(probe_entities), static_cast<int>(entity_view.rings.size()));
+                ui_probe().map_tile_names(std::move(probe_tile_names));
+                /*
+                 * マス → 窓の画素。**クリックの拾い方の逆**（`write_click_snapshot` と同じ式）。カメラ・矩形・字の格子の**コピー**を持たせる
+                 * （次の問い合わせまで、そのフレームの写し方を保つ）。
+                 */
+                ui_probe().set_cell_projector([cam = camera, scene = layout.scene,
+                    ascii = (settings.main_panel == Hd2dSettings::MainPanel::Ascii),
+                    grid = hud_state.targeting.map_projection](int gx, int gy, int &sx, int &sy, bool &inside) {
+                    if (ascii) {
+                        if ((grid.cell_w <= 0) || (grid.cell_h <= 0)) {
+                            return false;
+                        }
+                        const int col = gx - grid.cam_x + (grid.cols / 2);
+                        const int row = gy - grid.cam_y + (grid.rows / 2);
+                        sx = grid.x + (col * grid.cell_w) + (grid.cell_w / 2);
+                        sy = grid.y + (row * grid.cell_h) + (grid.cell_h / 2);
+                        inside = (col >= 0) && (row >= 0) && (col < grid.cols) && (row < grid.rows);
+                        return true;
+                    }
+                    float px = 0.f;
+                    float py = 0.f;
+                    if (!cam.project(Vec3{ static_cast<float>(gx) + 0.5f, static_cast<float>(gy) + 0.5f, 0.f }, px, py)) {
+                        return false;
+                    }
+                    sx = static_cast<int>(std::lround(px - 0.5f)) + scene.x;
+                    sy = static_cast<int>(std::lround(py - 0.5f)) + scene.y;
+                    inside = scene.contains(sx, sy);
+                    return true;
+                });
+            }
+            std::vector<std::string> probe_fx;
+            for (std::size_t i = 0; i < attack_fx.size(); ++i) {
+                const std::string &attr = attack_fx.spec_at(i).attr;
+                probe_fx.push_back(attr.empty() ? std::string("missile") : attr);
+            }
+            ui_probe().fx_active(std::move(probe_fx));
+            {
+                /*
+                 * 狙い・見る：`look` ／ `target`（点・生き物・固定）／ `direction`（8 方向）。
+                 * 見る `l` は Angband だけが窓（`TargetingUi`）になっている。ほかのコア（変愚・短愚・幻想蛮怒・Frox・Sil-Q）の見るは、
+                 * コアの問いを画面が帯（`PromptBar`）にしたもので、窓は立たない。帯の頭は「見る: 」（英語は「Look: 」）。
+                 * 帯が出ている間も `active` を真にし、`mode` を `look` にする（帯か窓かは `via` で分ける）。
+                 */
+                const TargetingState &aim = hud_state.targeting.state();
+                const bool aim_ui = hud_state.targeting.active();
+                const std::string &aim_mode = frame.targeting.mode;
+                bool look_band = false;
+                if (!aim_ui && !frame.prompt.choices.empty()) {
+                    const std::string &head = frame.prompt.text_utf8;
+                    look_band = (head.rfind("見る: ", 0) == 0) || (head.rfind("Look: ", 0) == 0);
+                }
+                ProbeTargetingDetail detail;
+                detail.band = look_band;
+                if (look_band) {
+                    detail.band_text = frame.prompt.text_utf8;
+                }
+                detail.ui_active = aim_ui;
+                if (aim_ui) {
+                    detail.ui_mode = aim.mode;
+                    detail.ui_kind = aim.kind;
+                    detail.can_confirm = aim.can_confirm;
+                    detail.extras_open = hud_state.targeting.extras_open();
+                    detail.candidates = static_cast<int>(aim.candidates.size());
+                    detail.markers = static_cast<int>(aim.markers.size());
+                    detail.distance = aim.distance;
+                    detail.source_x = aim.source.x;
+                    detail.source_y = aim.source.y;
+                    if (aim.mode != "direction8") {
+                        detail.has_selected = true;
+                        detail.selected_x = aim.selected.x;
+                        detail.selected_y = aim.selected.y;
+                        detail.selected_id = aim.selected_id;
+                        //! いま指しているもの：窓の候補にあればその種類、無ければ id（正＝敵・−1＝自分）、どれでもなければ自由な位置。
+                        std::string kind;
+                        for (const TargetingCandidate &candidate : aim.candidates) {
+                            if (candidate.point == aim.selected) {
+                                if (!candidate.kind.empty()) {
+                                    kind = candidate.kind;
+                                } else if (candidate.id > 0) {
+                                    kind = "monster";
+                                } else if (candidate.id == -1) {
+                                    kind = "player";
+                                }
+                                break;
+                            }
+                        }
+                        if (kind.empty()) {
+                            if (aim.selected_id > 0) {
+                                kind = "monster";
+                            } else if ((aim.selected_id == -1) || (aim.selected == aim.source)) {
+                                kind = "player";
+                            } else {
+                                kind = "free";
+                            }
+                        }
+                        detail.selected_kind = std::move(kind);
+                    }
+                    for (const TargetingAreaCell &cell : aim.area) {
+                        detail.area.push_back({ cell.point.x, cell.point.y, cell.possible });
+                    }
+                    for (const TargetingPath &path : aim.paths) {
+                        for (const TargetingPoint &point : path.points) {
+                            detail.path.push_back({ point.x, point.y, path.possible });
+                        }
+                    }
+                }
+                ui_probe().targeting(aim_ui || look_band,
+                    look_band ? "look"
+                              : ((aim_mode == "look") ? "look" : ((aim_mode == "direction8") ? "direction" : "target")),
+                    frame.targeting.target_name.empty() ? frame.targeting.label : frame.targeting.target_name);
+                ui_probe().targeting_detail(std::move(detail));
+            }
+            {
+                //! 一時的な重ね書きの字（コアが送ったものと、画面が描いた数）。
+                std::vector<ProbeOverlay> probe_overlays;
+                probe_overlays.reserve(frame.map_overlay.size());
+                for (const MapOverlayCell &overlay : frame.map_overlay) {
+                    probe_overlays.push_back({ overlay.gx, overlay.gy, std::string(1, overlay.ascii), overlay.color });
+                }
+                ui_probe().overlays(std::move(probe_overlays), static_cast<int>(overlay_glyphs.size()));
+            }
+            {
+                //! 窓の焦点・大きさと、昼夜（画面が光の計算に使った時刻）。
+                const Uint32 window_flags = SDL_GetWindowFlags(window.window);
+                ProbeWindowState state;
+                state.input_focus = (window_flags & SDL_WINDOW_INPUT_FOCUS) != 0;
+                state.mouse_focus = (window_flags & SDL_WINDOW_MOUSE_FOCUS) != 0;
+                state.shown = (window_flags & SDL_WINDOW_SHOWN) != 0;
+                state.minimized = (window_flags & SDL_WINDOW_MINIMIZED) != 0;
+                state.test_hidden = !options.test_input_file.empty() && (std::getenv("HD2D_TEST_HIDE_WINDOW") != nullptr);
+                state.pad_focus = state.input_focus || state.test_hidden;
+                state.w = screen_w;
+                state.h = screen_h;
+                ui_probe().window_state(state);
+                ProbeTimeState time;
+                time.day_minute = light_state.day_minute;
+                time.daytime = light_state.daytime;
+                time.night_factor = lamp_night_factor(light_state);
+                ui_probe().time_state(time);
+            }
+            //! コアの生死と、コアのフレームが最後に変わってからの時間（`frame_age_ms`。フレームの番号が変わった時刻を持つ）。
+            ui_probe().liveness(!link.core_gone() && !link.child_exited(), link.exit_received() ? link.exit_code() : -1);
+        }
+        recorder.capture(screen_w, screen_h); //!< swap の直前（`--shot=` と同じ位置）
         const int shot_gate = (options.shot_after_frames >= 0) ? frames_with_terrain : frame_index;
         const int shot_want = std::abs(options.shot_after_frames);
         if (!options.shot_path.empty() && (shot_gate == shot_want)) {
@@ -5908,27 +7450,24 @@ int run(const AppOptions &options)
                 result = kRunRelaunchCore;
                 break;
             }
-            /*
-             * **コアが自分から終わった＝利用者が遊びを終えた**（2026-08-23 に決めた
-             * 「ゲーム終了後、コアの起動画面に遷移させて」）。窓を畳んで終わりにせず、
-             * **コア選択へ戻す**。
-             *
-             * 戻さないのは 3 つ:
-             *   - 窓の × で終わらせた（`want_quit`）。これは「やめたい」であって
-             *     「別のコアで遊びたい」ではない
-             *   - `--core-path=` などで**選ぶ画を出していない**（戻る先が無い。
-             *     同じコアが立ち上がり直すだけになる）
-             *   - コアが 0 以外で終わった（何か起きている。黙って回さない）
-             */
-            if (!want_quit && core_select_shown && (result == 0)) {
-                result = kRunRestart;
-            }
+            // A finished core ends the application (user decision, 2026-09-10).
+            // Language changes are handled above by kRunRelaunchCore.
             break;
         }
         if (link.core_gone() || link.child_exited()) {
-            core_died_unexpectedly = true;
-            result = 1;
-            break;
+            // Process exit and a failed write can precede the final pipe read.
+            // Read completion first: every exit/fatal message is published before it.
+            const bool drained = link.receiver_finished();
+            if (link.exit_received() || link.fatal_received()) {
+                continue; // Handle the terminal message at the top of this check.
+            }
+            const Uint64 now = clock::ticks64();
+            if (core_disconnected_at == 0) core_disconnected_at = now + 1;
+            if (drained || (now + 1 - core_disconnected_at >= 2000)) {
+                core_died_unexpectedly = true;
+                result = 1;
+                break;
+            }
         }
 
         // (g) `quit_request` 後の待ち（v1 §9.2）。勝手に kill しない。
@@ -5996,6 +7535,9 @@ int run(const AppOptions &options)
      */
     release_shadow_placeholder();
     release_look_placeholders();
+    //! 光の届く範囲の場（テクスチャ）と身代わり。これも文脈を消す前に（同じ理由）。
+    lit_range_field.release();
+    release_lit_placeholder();
     optional_render.shutdown();
     dust.shutdown();
     post.shutdown();
@@ -6019,10 +7561,19 @@ int run(const AppOptions &options)
     renderer.release(wall_gpu);
     renderer.release(floor_gpu);
     renderer.shutdown();
+    item_icon_renderer.shutdown();
     title_image.unload();
     panel_bottom_image.unload();
     panel_right_image.unload();
+    orb_back_image.unload();
+    orb_glass_image.unload();
+    orb_liquid_hp_image.unload();
+    orb_liquid_mp_image.unload();
+    orb_glass_top_image.unload();
+    orb_front_image.unload();
+    status_icons_image.unload();
     floor_cutin.shutdown();
+    hud_state.modern.shutdown();
     images.shutdown();
     paint.shutdown();
     text.shutdown();
@@ -6037,7 +7588,19 @@ int run(const AppOptions &options)
     link.close_core_stdin();
     (void)link.wait_for_core_exit(static_cast<unsigned>(kQuitGraceMs));
     link.shutdown();
+#if defined(_WIN32)
+    if (result == kRunRelaunchCore) {
+        // Keep the Windows input subsystem alive across UI runs. Destroying and
+        // reinitializing it here can leave the new window without hardware input.
+        // Events from the destroyed window must not activate the next selector.
+        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        std::fprintf(stderr, "[hd2d] keeping SDL input initialized for UI restart\n");
+    } else {
+        SDL_Quit();
+    }
+#else
     SDL_Quit();
+#endif
     return result;
 }
 

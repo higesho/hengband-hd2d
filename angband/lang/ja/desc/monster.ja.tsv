@@ -1,0 +1,674 @@
+# monster.ja.tsv — monster.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+filthy street urchin|desc	4985720d34	みすぼらしく、心底むかつくような姿をしている。
+scrawny cat|desc	95a404dae1	鋭い爪と威嚇するような目つきの、痩せた小さな毛玉だ。
+scruffy little dog|desc	8c73ade956	ノミだらけの痩せた雑種犬で、近づくとうなり声を上げる。
+Farmer Maggot|desc	c75a345da8	犬はいなくなり、キノコは盗まれた。まったく機嫌の悪いホビットだ！
+blubbering idiot|desc	22b1afeae8	しょっちゅう泣きわめいている。
+boil-covered wretch|desc	2c6934a9be	醜いなどという言葉ではとても言い尽くせない。
+village idiot|desc	3753e553bd	よだれを垂らしていて滑稽だが、まあ、そんなものだろう。
+pitiful-looking beggar|desc	08328f3556	どうしても哀れに思わずにはいられない。
+mangy-looking leper|desc	223414516a	触れるのは危なそうな気がする。
+squint-eyed rogue|desc	70ce2a7006	たやすい獲物を見ればすぐにそれと分かる、したたかで世慣れたならず者だ。
+singing, happy drunk|desc	e7725dfd6a	彼を見ていると、しらふでいてよかったと思える。
+aimless-looking merchant|desc	8f39140fce	町によくいる気取った男で、財布をじゃらじゃら鳴らしながら、買い足す装飾のアミュレットを探している。
+mean-looking mercenary|desc	47bdbd3478	どんなに卑しい仕事でも引き受ける。
+battle-scarred veteran|desc	5e7460da21	よそ者を快く思っていない。
+red-hatted elf|desc	615eb01a70	今はユールの季節で、このエルフは少々飲み過ぎている。
+Father Christmas|desc	e53749371d	聖ニコラスだ。町の子どもたちにプレゼントを配って回っている。
+grey mold|desc	fb55151c52	小さく奇妙な灰色の生えものだ。
+grey mushroom patch|desc	173c1f875b	うまそうだ！とてもおいしそうに見える。
+giant yellow centipede|desc	06c414ce49	体長1.2メートルほどの肉食のムカデだ。
+giant white centipede|desc	06c414ce49	体長1.2メートルほどの肉食のムカデだ。
+white icky thing|desc	2e6d0fc465	小さめの、ぬるぬるした気味の悪い生き物だ。
+clear icky thing|desc	1b2e656726	小さめの、ぬるぬるした気味の悪い、ぶよぶよの生き物だ。
+giant white mouse|desc	340a83347a	体長90センチほどで、大きな歯を持っている。
+large white snake|desc	a2f519dccb	体長2.4メートルほどある。
+small kobold|desc	e008cb1ae9	犬のような顔をした、ずんぐりして醜い人型の生き物だ。
+white worm mass|desc	28da9e62cd	ぬるぬるした虫が大きな塊になったものだ。
+floating eye|desc	24a868f4d7	胴体の無い目玉で、地面から1メートルほど上に浮かんでいる。
+rock lizard|desc	bde4ee56fc	硬い皮を持つ小さなトカゲだ。
+wild dog|desc	344a5ebd16	きゃんきゃん吠え、うなる犬で、群れになると危険だ。
+soldier ant|desc	79ddaa5411	強い大あごを持つ大きなアリだ。
+fruit bat|desc	736a4d9236	すばしこく動き回る厄介者だ。
+kobold|desc	3c0b918522	犬の頭を持つ小さな人型の生き物だ。
+shrieker mushroom patch|desc	5b540c7222	うまそうだ！とてもおいしそうに見える。ただ、あまり感じのいい音は立てないようだが……。
+blubbering icky thing|desc	97faebe244	小さめの、ぬるぬるした気味の悪い、腹を空かせた生き物だ。
+metallic green centipede|desc	06c414ce49	体長1.2メートルほどの肉食のムカデだ。
+soldier|desc	d79ec9eca2	経験は浅いが、たくましい戦士だ。
+cutpurse|desc	9f9c681da2	どうにも油断のならない人物だ。
+acolyte|desc	6ef84bc7b0	僧服の裾につまずいてばかりいる。
+apprentice|desc	d421521e5c	呪文の触媒を落としては、その跡を点々と残している。
+yellow mushroom patch|desc	173c1f875b	うまそうだ！とてもおいしそうに見える。
+white jelly|desc	4f73858055	白い肉が大きな山になったものだ。
+giant green frog|desc	72fda6d951	オオカミほどの大きさがある。
+giant black ant|desc	27de619b0d	体長90センチほどある。
+salamander|desc	cd044af18b	黒と橙の小さなトカゲだ。
+white harpy|desc	ea2df4c54a	女の顔を持ち、金切り声を上げて飛ぶ鳥だ。
+blue yeek|desc	cc5fd8454a	小さな人型の生き物だ。
+Grip, Farmer Maggot's Dog|desc	bb7617f8f7	農夫マゴットの飼っている、かなり獰猛な犬だ。あなたがキノコを盗んでいると思い込んでいる。
+Fang, Farmer Maggot's Dog|desc	bb7617f8f7	農夫マゴットの飼っている、かなり獰猛な犬だ。あなたがキノコを盗んでいると思い込んでいる。
+green worm mass|desc	28da9e62cd	ぬるぬるした虫が大きな塊になったものだ。
+cave spider|desc	a688f025fe	止まっては進み、止まっては進みしながら動く黒いクモだ。
+wild cat|desc	b97ed826bd	普通より大きなネコで、大きな声でシャーッと威嚇している。ビロードのような足の中に、針をひとつかみ隠している。
+crow|desc	968b8b6e78	ハシボソガラスの仲間で、黒い翼と頭のほかは灰色をしている。
+Sméagol|desc	ce8d8dcf97	ふつうはゴクリの名で知られている。こそこそと忍び歩き、「いとしいしと」を欲しがっている。
+green ooze|desc	6ca226bce0	緑色で、じくじくと滲み出している。
+poltergeist|desc	b812a18755	ぞっとするような幽霊の姿をしている。
+metallic blue centipede|desc	06c414ce49	体長1.2メートルほどの肉食のムカデだ。
+giant white louse|desc	6173cbfb5d	体長15センチある。
+black naga|desc	44939a3138	大きな黒いヘビの胴体に、女の上半身がついている。
+spotted mushroom patch|desc	173c1f875b	うまそうだ！とてもおいしそうに見える。
+silver jelly|message-invis:DRAIN_MANA	196bed28bb	何かがすするような音を立てた。
+silver jelly|desc	6d54b9afd7	銀色の肉が大きな山になったもので、まわりの光をすべて吸い込んでしまう。
+yellow jelly|message-invis:DRAIN_MANA	196bed28bb	何かがすするような音を立てた。
+yellow jelly|desc	0c7b906e32	黄色い肉が大きな山になったものだ。
+scruffy looking hobbit|desc	c5047509ef	みすぼらしい服を着た、背の低い小男だ。よい酒場を探しているらしい。
+giant white ant|desc	3bf7ea0d95	体長60センチほどで、鋭いはさみを持っている。
+yellow mold|desc	d4764b7df3	ダンジョンの床に生えた、奇妙な黄色い生えものだ。
+metallic red centipede|desc	06c414ce49	体長1.2メートルほどの肉食のムカデだ。
+yellow worm mass|desc	28da9e62cd	ぬるぬるした虫が大きな塊になったものだ。
+clear worm mass|desc	a2aa845a02	毒を持つ虫がうごめく、胸の悪くなるような塊だ。
+radiation eye|desc	fdafe658a4	胴体の無い目玉で、力がぱちぱちとはじけている。
+kobold shaman|desc	81b4ea6281	獣の皮をまとい、激しく身振りをしているコボルドだ。
+cave lizard|desc	2e7a08336a	鎧のような皮を持ち、噛む力の強いトカゲだ。
+scout|desc	dfdcd25cd4	身軽な狩人で、落ち着いて身構えている。
+gallant|desc	a91680aa10	信心深く、しかも戦いの腕も立つ冒険者だ。
+tamer|desc	f28813a14b	自然を愛する者だ。
+blue jelly|desc	306e5d0a60	脈打つ青い肉が大きな山になったものだ。
+creeping copper coins|desc	5f1665220d	銅貨の山のように見える。
+giant white rat|desc	525e61c92e	ひどく凶暴な齧歯類だ。
+blue worm mass|desc	28da9e62cd	ぬるぬるした虫が大きな塊になったものだ。
+large grey snake|desc	cb3f37ce9e	体長3メートルほどある。
+kobold archer|desc	b6ee2ffeeb	弓を手にした、犬の頭を持つ醜い人型の生き物だ。
+silver mouse|desc	1dba286ec0	体長90センチほどで、大きな歯を持っている。ランプの光が当たると、力を増していくように見える。
+Bullroarer the Hobbit|desc	d37851c2da	並外れた力と活力で名を知られた、頑丈なホビットだ。手ごわい相手になりうる。
+green naga|desc	68b0c12839	女の上半身を持つ大きな緑のヘビだ。緑の肌は酸でぬらぬらと光っている。
+blue ooze|desc	6e5ba8be82	青色で、じくじくと滲み出している。
+green glutton ghost|desc	0881af1435	食い意地の張った、ひどく醜い緑の幽霊だ。
+green jelly|desc	3bde66e667	脈打つ緑の肉が大きな山になったものだ。
+large kobold|desc	7f7e7b6a77	人間ほどの背丈の姿で、顔はいやというほど見慣れたコボルドのものだ。
+skeleton kobold|desc	88bd0e492c	動き出した小さなコボルドの骸骨だ。
+grey icky thing|desc	c48a36db0f	小さめの、ぬるぬるした気味の悪い、たちの悪い生き物だ。
+disenchanter eye|desc	995e08d24a	胴体の無い目玉で、魔力がぱちぱちとはじけている。
+red worm mass|desc	28da9e62cd	ぬるぬるした虫が大きな塊になったものだ。
+copperhead snake|desc	4ccfd294b6	銅色の頭と、毒を持つ鋭い牙がある。
+giant white dragon fly|desc	7c982dc7f3	霜をしたたらせる大きなトンボだ。
+giant green dragon fly|desc	f23553f554	ひどい悪臭を放つ、巨大なトンボだ。
+rot jelly|desc	2ef43f7d69	腐った肉が大きな山になったもので、触れられると食料が傷んでしまう。放つひどい臭いも、なかなか消えない……。
+purple mushroom patch|desc	173c1f875b	うまそうだ！とてもおいしそうに見える。
+brown mold|desc	40d2c9b905	ダンジョンの床に生えた、奇妙な茶色の生えものだ。
+giant brown bat|desc	73d0c7afb3	キーキーと鳴きながら襲いかかってくる。
+creeping silver coins|desc	d7490456ea	銀貨の山のように見える。
+snaga|desc	a6bb33c673	数多い弱い「奴隷」のオークの1匹で、よくゴブリンと取り違えられる。
+rattlesnake|desc	c60a1dd53f	硬いうろこに覆われた尾の先で見分けがつく。獲物をおどすために、よくそれを鳴らす。
+giant black dragon fly|desc	3e4580536a	大きな鳥ほどの大きさがあり、腐食性の酸をしたたらせている。
+giant gold dragon fly|desc	1db215aec2	大きく羽ばたく翼がこのまばゆい虫の体を支えている。大きな羽音があたりに満ちている。
+crow of Durthang|message-vis:WOUND	bbafb2927c	{name}は3度鳴いた。
+crow of Durthang|message-invis:WOUND	411c006c70	何かが3度カアと鳴いた。
+crow of Durthang|desc	5ae1cb7057	曲がったくちばしを持ち、黒い羽の乱れた鳥だ。あなたをあざけっている——そしてその嘲りが人を殺しうることに、あなたは気づく。
+cave orc|desc	581efebdd5	深い洞窟の中に、よく大群でいる。
+wood spider|desc	df3624dc42	こちらへせかせかと寄ってくる。
+bloodshot eye|desc	1f8e48e4c2	胴体の無い目玉で、血走っていて気味が悪い。
+red naga|desc	9753c3cff9	女の上半身を持つ大きな赤いヘビだ。
+red jelly|desc	c44dcd6cbd	脈打つ赤い肉が大きな塚になったものだ。
+giant red frog|desc	e089b8b43a	毒を持っていそうだ。
+green icky thing|desc	911b5b84a6	小さめの、ぬるぬるした気味の悪い、酸を帯びた生き物だ。
+zombified kobold|desc	33d22e6a26	動き出したコボルドの死体だ。よろよろと進むたびに、肉が大きな塊になって剥がれ落ちる。
+lost soul|desc	a7f263ff65	ほとんど実体が無い。
+eastern dwarf|desc	cd8ab0a856	モルゴスの支配に屈した、東方の一族のドワーフだ。
+night lizard|desc	675277b45f	重なり合ったうろこと強いあごを持つ黒いトカゲだ。
+Mughash the Kobold Lord|desc	97d85f79b0	コボルドにしては、強くて力がある。
+Wormtongue, Agent of Saruman|desc	8b40ffa211	サルマンのために探りを入れてきた男だ。道義心のかけらも無く、胸の悪くなるような癖を持つ、めそめそした卑劣漢だ。
+Lagduf, the Snaga|desc	9c96df8665	弱いオークの部隊の隊長で、度を越した暴力を見せつけて手下を従わせている。
+terrified yeek|desc	7aa0d9cf36	いつもひどく怯えている、奇妙な小さい人型の生き物だ。
+giant salamander|desc	e4243aa616	黒と黄色の大きなトカゲだ。逃げたほうがいい！
+green mold|desc	e5105707d7	ダンジョンの床に生えた、奇妙な生えものだ。
+skeleton orc|desc	8157d95bc0	動き出したオークの骸骨だ。
+lemure|desc	2db4cb8b72	下級だが攻撃的な悪魔だ。
+orc tracker|desc	cd8f04ccef	小鼻の広い、鼻をくんくん鳴らす小柄なオークだ。
+ruffian|desc	50fc395223	棍棒と投石紐と鞭を持った、粗野な乱暴者だ。
+giant black louse|desc	29bd22ae14	見ているだけで体がかゆくなる。
+yeti|desc	7bb48b62c4	もじゃもじゃの毛に覆われた、大きな白い姿だ。
+bloodshot icky thing|message-invis:DRAIN_MANA	196bed28bb	何かがすするような音を立てた。
+bloodshot icky thing|desc	15bbf06edd	奇妙な、ぬるぬるした気味の悪い生き物だ。
+giant grey rat|desc	1a0dd8b28f	並外れた大きさの齧歯類だ。
+black harpy|desc	7311d59e67	凶暴な黒い鳥の体に、女の顔がついている。
+orc shaman|desc	6799807300	獣の皮をまとい、激しく身振りをするオークだ。
+baby blue dragon|desc	fff11e5208	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこは淡い青色だ。
+baby white dragon|desc	96599034bb	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこは淡い白色だ。
+baby green dragon|desc	f76a2a128c	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこは病んだような緑色だ。
+baby black dragon|desc	190ac1545a	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこはくすんだ黒色だ。
+baby red dragon|desc	4ffca9bd73	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこは淡い赤色だ。
+giant red ant|desc	c86d0e8f2b	大きく、毒のある大あごを持っている。
+Brodda, the Easterling|desc	58fce6dead	たちの悪い男で、無力な女や子どもをいじめる。
+king cobra|desc	276b29c7cb	頭の周りにフードのような首を広げた、大きなヘビだ。
+baby gold dragon|desc	97ab7011d5	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこは淡い金色だ。
+cave bear|desc	88ac58c98a	大きなクマがこの洞窟をねぐらにしたらしい。腹を空かせており、あなたはその縄張りに踏み込んでいる。
+giant spider|desc	c4255bdd91	巨大な黒いクモで、ふくれた胴体は毒でぱんぱんになっている。
+blacklock mage|desc	592a3f66f8	黒い鎖かたびらを着た、東方から来た堕落したドワーフで、あなたに呪文を投げつけてくる。
+Orfax, Son of Boldor|desc	d22e76f9f9	親父そっくりだ！強力な呪文を知っているが、ありがたいことにイークだ。
+stonefoot warrior|desc	a7d1a56a51	鉄の輪の鎧を着て斧を振るう、東方のドワーフだ。
+clear mushroom patch|desc	173c1f875b	うまそうだ！とてもおいしそうに見える。
+Grishnákh, the Hill Orc|desc	629baf4f29	ずる賢く腹黒い、気まぐれなオークだ。
+giant white tick|desc	89ec7d464b	こちらへゆっくりと近づいてくる。
+hairy mold|desc	51c7f44495	ダンジョンの床に生えた、奇妙な毛むくじゃらの生えものだ。
+disenchanter mold|desc	73f72d1c77	ダンジョンの床に生えた、奇妙な光る生えものだ。
+pseudo-dragon|desc	c619ee49ad	暗い洞窟に棲む、ドラゴンの小さな親戚だ。
+tengu|desc	2ba02a7c8b	素早く動き、ふっと消えてはまた現れる悪魔だ。瞬間移動の巧みさでこれにかなう悪魔はいない。
+creeping gold coins|desc	3d19b20b9e	金貨の山のように見える——小さな足でこちらへ這い寄ってくるまでは。
+wolf|desc	fc58f78701	遠吠えを上げ、あなたに噛みつこうとする。
+giant fruit fly|desc	40e4c5b845	すぐに殖える、うっとうしい害虫だ。
+panther|desc	7750ec77d2	あなたを狙って忍び寄ってくる大きな黒いネコだ。あなたを次の食事だと思っている。
+witch|desc	76179a5753	黒い服をまとい、腐ったような臭いがする。
+baby multi-hued dragon|desc	f06bdc7a57	孵ったばかりのドラゴンで、体はまだ柔らかく、目は光に慣れておらず、うろこはさまざまな色にちらちらと輝いている。
+hippogriff|desc	2a51c860cc	ワシとウマの奇妙な合いの子だ。妙な姿をしている。
+zombified orc|desc	d7fea5ea7d	よろよろと歩くオークの死体で、通った跡に肉を落としていく。
+drúadan mage|desc	bf7a031e8d	背が低く、ずんぐりした脚と薄いあごひげの魔術師だ。
+old forest tree|desc	9d54bc0931	あなたを見張っているかのような古木だ。
+black mamba|desc	c1b6909145	つややかな黒い肌となめらかな体、猛毒の牙を持つ。
+white wolf|desc	f5cb35e01c	北の荒れ地から来た、大きくたくましいオオカミだ。吐く息は凍るように冷たく、毛皮は霜で覆われている。
+grape jelly|message-invis:DRAIN_MANA	196bed28bb	何かがすするような音を立てた。
+grape jelly|desc	27eddc8007	うまそうだ！とてもおいしそうに見える。光る肉が脈打つ塚になったものだ。
+nether worm mass|desc	3b53e06ec7	暗い色の虫がうごめく、胸の悪くなるような塊で、互いを、床を、空気を、そしてあなたを食らう……。
+Golfimbul, the Hill Orc Chief|desc	8a4c47ef86	略奪を働くオークの一団の頭で、ホビットにちょっかいを出す。
+master yeek|desc	050e311451	何かしらの力を放っている、小さな人型の生き物だ。
+priest|desc	8afb4ff03c	法衣をまとい、自分の神に身を捧げた男だ。
+ironfist priest|desc	3167af1be3	黒ずくめの東方のドワーフで、闇の妖術の言葉を唱えている。
+air spirit|desc	76b6e2462f	意志を持った空気のつむじ風だ。
+skeleton human|desc	885d51daef	動き出した人間の骸骨だ。
+zombified human|desc	29fd72b1f1	よろよろと歩く人間の死体で、後ろに肉の塊を落としていく。
+tiger|desc	0359742064	同類の中でも最大級の1頭だ。つややかな橙と黒の姿が、いつでも飛びかかれるよう身構えてこちらへ忍び寄ってくる。
+moaning spirit|desc	aac63ff2cb	恐ろしい悲鳴を上げる幽霊だ。
+warrior|desc	74d5203684	かなりの腕前を持つ戦士だ。
+stegocentipede|desc	70c758f033	巨大な大あごととげのある尾を持つ、鎧をまとったような巨大なムカデだ。
+spotted jelly|desc	ec771a276c	変色したしみに覆われた、奇妙なゼリー状の生き物だ。
+killer brown beetle|desc	9530620aa2	硬い甲殻を持つ凶暴な虫だ。
+ochre jelly|desc	c1087ce834	すばやく動く強い酸のゼリー状の生き物で、居座った床を溶かしている。
+Boldor, King of the Yeeks|desc	b64ed472d5	魔法と妖術に長けた偉大なイークだが、それでもイークはイークだ。
+ogre|desc	1d013e7b61	小柄で醜い巨人で、オークの近くや一緒にいることが多い。
+creeping mithril coins|desc	e72797502d	意志を持ったミスリル貨の山のようで、拾われるのを嫌う。
+illusionist|desc	e0ee829a9b	人をあざむく呪文の使い手だ。
+druid|desc	721519827e	自然に身を捧げた僧侶だ。
+orc archer|desc	368a2bbdd1	角の弓と、黒い羽根の矢でいっぱいの矢筒を持っている。
+giant flea|desc	29bd22ae14	見ているだけで体がかゆくなる。
+Ufthak of Cirith Ungol|desc	c9775bb7ce	キリス・ウンゴルの峠を守る屈強なオークだ。クモを死ぬほど怖がっている。
+blue icky thing|message-invis:BLIND	196bed28bb	何かがすするような音を立てた。
+blue icky thing|desc	e2270c23c8	奇妙な、ぬるぬるした気味の悪い生き物で、知能は低いが悪知恵は働く。食べ物に飢えており、あなたはおいしそうに見えている。
+flesh golem|desc	12202c1078	長い傷跡のある、よろよろと歩く人型の怪物だ。
+warg|desc	b271919ecf	狡猾さに満ちた目をした大きなオオカミだ。
+lurker|desc	e69376ee03	ダンジョンの床にとけ込む奇妙な生き物で、完璧に姿を隠したまま獲物を包み込んで捕らえる。
+wererat|desc	31711fa32d	赤く光る目をした大きなネズミだ。汚物と病を好む、胸の悪くなるような生き物だ。
+black ogre|desc	556b517ba7	黒い肌とたくましい腕を持つ、オークに似た大きな姿だ。
+magic mushroom patch|message-invis:BLINK	51ece9d578	何かが小さくうなるような音を立てた。
+magic mushroom patch|message-invis:DARKNESS	51ece9d578	何かが小さくうなるような音を立てた。
+magic mushroom patch|message-invis:SLOW	51ece9d578	何かが小さくうなるような音を立てた。
+magic mushroom patch|desc	0da67f74e3	うまそうだ！とてもおいしそうに見える。見慣れない光でぼうっと光っているようだ。
+guardian naga|desc	1044ecd943	女の上半身を持つ、巨大なヘビのような姿だ。
+light hound|desc	cd5a606b4c	まばゆい犬の姿で、この距離からでもその光が目に痛い。
+dark hound|desc	a5742aeb98	巨大な猟犬の形をした、空中の穴だ。その体にはどんな光も当たらない。
+half-orc|desc	cf778cf13e	人間とオークの醜くゆがんだ合いの子で、人間の力と狡猾さにオークの邪悪さを兼ね備えている。この忌まわしい者を生み出したのは、裏切り者の魔法使いサルマンだと一般に信じられている。
+giant tarantula|desc	7454115638	黒と赤の毛深い脚を持つ、すばやく動く巨大なクモだ。
+giant clear centipede|desc	06c414ce49	体長1.2メートルほどの肉食のムカデだ。
+griffon|desc	63732863a6	半分がライオン、半分がワシの生き物だ。威嚇するようにこちらへ飛んでくる。
+homunculus|desc	10ebf53fa9	悪意に満ちた、小さな悪魔の霊だ。
+clear hound|desc	1034194375	完全に透き通った猟犬だ。
+clay golem|desc	12defaa879	固めた粘土で作られた、動く巨大な像だ。
+giant tan bat|desc	5d592e958e	巨大なコウモリで、羽ばたく音が妙に人を不安にさせる。
+umber hulk|desc	04b3c336c9	ぎらぎらした目と、岩をも切り裂く大きな大あごを持つ奇怪な生き物だ。
+gelatinous cube|desc	1bbec334eb	巡回する通路の四方の壁にぴったりと沿うため立方体の形をとる、奇妙で巨大なゼラチン状の生き物だ。透き通ったゼリーの体の中に、飲み込んだ財宝と、いくつかの死体も見える。
+rogue|desc	7825483f4d	あなたの背負い袋をじろじろ見ている。
+Ulfast, Son of Ulfang|desc	cf2681b14d	背が低く浅黒い東夷だ。
+quasit|desc	bfadd8cca5	噛みつきが厄介な、小柄な悪魔だ。
+uruk|desc	9d92079f88	人間ほどの背丈があり、人間より強い、力ある狡猾なオークだ。ほとんど何も恐れない。
+grizzly bear|desc	fb7ca4035e	同類の大半よりも獰猛な、けだもののような巨大なクマだ。
+craban|desc	59058a5e24	悪の軍勢が密偵として特に育てたカラスの一種だ。邪悪な意志に導かれた浅い知恵であなたを探し当て、ほかの邪悪な生き物にあなたの居場所を知らせようとしている。
+imp|desc	a9331cb2a7	毒を持つ小さないたずら者だ。
+forest troll|desc	be076a3076	緑の肌をした、醜く愚かなトロルだ。
+Nár, the Dwarf|desc	21d5f83e86	ドワーフの王スロールの友であり連れであったが、スロールがオークのアゾグの手にかかって死んだあと、悲しみのあまり正気を失った。あごひげは引きちぎれ、服はぼろぼろで、怒りをぶつける手ごろな相手としてあなたに目をつけたようだ。
+2-headed hydra|desc	8acc6c4b1b	頭を2つ持つ奇妙な爬虫類の合いの子で、自分の宝を守っている。
+water spirit|desc	accb184bd0	意志を持った液体の渦だ。
+giant red scorpion|desc	6946f1faa3	すばやく、毒を持っている。
+earth spirit|desc	666aa77a04	渦を巻く、意志を持った岩の姿だ。
+hummerhorn|desc	ee024cd1a3	ぶんぶんと羽音を立てる巨大なハチで、針から毒をしたたらせている。
+orc captain|desc	b36b339fb8	威厳を漂わせた、鎧をまとうオークだ。
+blackguard|desc	8c838207f8	漆黒の板金鎧に身を包んだ大きな姿で、威嚇するようにあなたを見ている。
+fire spirit|desc	085b69e7ce	意志を持った炎のつむじ風だ。
+fire hound|desc	37d4973c40	足もとを炎がなめ、舌は炎の刃だ。この生き物から炉のような熱が伝わってくる。
+cold hound|desc	56d506139a	人間ほどの背丈の猟犬で、角張った氷の面でできているように見える。冷気を放ち、吐いた息が空中で凍りつく。
+energy hound|desc	a74523a9d2	セント・エルモの火がこの猟犬のまわりに幽霊のような光の輪を作り、あたりの空気に力がたまるにつれて火花が指先をちくちく刺す。
+potion mimic|desc	92f4e4ae48	捨てられた薬の瓶に化けて、油断した冒険者を毒の爪の届く所へおびき寄せる奇妙な生き物だ。
+blink dog|message-invis:BLINK	4b2995d840	何かがキャンと鳴いた。
+blink dog|desc	3db78a6299	犬族の中の奇妙な魔法の生き物で、目の前でその姿がちらちら揺れては薄れていく。
+shambling mound|desc	23e531ee5a	朽ちた草木の山で、胸の悪くなる悪臭を放ちながらこちらへ滑るように寄ってきて、近くの者をみな起こしてしまう。
+evil eye|desc	330fa0929a	胴体の無い巨大な目玉だ。その瞳の黒い虚無をのぞき込むと、意志と活力が吸い取られていくのを感じ、恐ろしさに魅入られたまま近づくほかに何もできなくなる。
+Shagrat, the Orc Captain|desc	3d090a3ec8	キリス・ウンゴルの守備隊を率いる、力と大いなる狡猾さを持つオークだ。
+Gorbag, the Orc Captain|desc	1f87537677	ミナス・モルグルの守備隊を率いる、力と大いなる狡猾さを持つオークだ。
+stone golem|desc	3d5d6078ee	動く巨大な石像だ。
+red mold|desc	2102d4cebc	ダンジョンの床に生えた奇妙な赤い生えもので、炎を上げて燃えているように見える。
+Old Man Willow|desc	3ad15f9c91	古森を治める、灰色の古い柳の木だ。自分の縄張りに踏み込む者をひどく嫌う。「……年を経て白茶けた、巨大な柳の木。見上げるほど大きく、広がった枝は長い指の手をいくつも付けた腕のように伸び上がり、節くれだってねじれた幹には大きな裂け目が口を開け、枝が動くたびにかすかにきしんでいた。」
+blood falcon|desc	7d979ce24c	恐怖と羽毛が目もくらむ渦となったものだ。剃刀のように鋭いくちばしと爪で敵を恐怖させ、とめどない凶暴さで骨から肉を引き裂こうとする。
+Mirkwood spider|desc	97be8f7fb5	闇の森から来た、強く力のあるクモだ。狡猾で邪悪で、あなたのみずみずしい内臓を味わおうとしている。
+Bolg, Son of Azog|desc	a6e711cc71	大きく力のあるオークで、父親にそっくりだ。背が高く足も速いが、ありがたいことに頭はオークなみだ。
+3-headed hydra|desc	e7b365b8c8	頭が1つ多い双頭ヒドラで、口から毒をしたたらせている。
+earth hound|desc	144faf0084	美しい水晶のような姿をしているが、この猟犬が危険なことは明らかだ。近づいてくると肌がぴりぴりする。
+air hound|desc	5288784de9	渦巻く蒸気に包まれ、宙を歩くかのように漂い寄ってくる獣だ。有毒な気体が喉を刺す。
+sabre-tooth tiger|desc	71ac3bac28	獰猛で危険なネコで、巨大な牙と鋭い爪はどれほど強い鎧でも引き裂く。
+water hound|desc	2f73b24776	この猟犬がダンジョンを歩き回った後には、濡れた足跡が続く。毛皮からは鼻をつく酸の臭いが立ちのぼる。
+chimaera|desc	1126265260	ヤギとライオンとドラゴンを奇妙に混ぜ合わせた生き物で、3つの獣の頭をすべて持っている。
+quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+quylthulg|desc	e8472788dc	奇妙に脈打つ肉の塚だ。
+sasquatch|desc	b1cd66545f	背が高く、毛むくじゃらの人型の生き物で、イエティを兄弟と呼んでもよさそうだ。
+werewolf|desc	968f90b7dc	人間の知恵を宿して光る目を持つ、巨大なオオカミだ。
+dark dwarven lord|desc	1a2cac57a1	モルゴスが東方のドワーフから集めた者たちを率いる頭で、黒い鎖かたびらをまとい、邪悪な力を放っている。
+ranger|desc	a92965cc45	自然と一体になった戦士だ。弓と剣の両方に通じ、多少の呪文も扱い、動物たちがその命に従う。
+paladin|desc	b61069afaf	聖なる大義のために戦う戦士だ。あいにく、彼の神はあなたの神ではなく、善の神々のあいだにさえ張り合いがあるので、彼はあなたの敵だ。
+Lugdush, the Uruk|desc	2a58062881	サルマンのオークの部隊の1つを率いる、大きく力のあるオークだ。
+blue dragon bat|desc	5412c560e7	鋭い尾を持つ、青く光るコウモリだ。
+scroll mimic|desc	3e9d9ad631	捨てられた巻物に化けて、油断した冒険者を毒の爪の届く所へおびき寄せる奇妙な生き物だ。
+fire vortex|desc	e0512095ce	炎が渦巻く大渦だ。
+water vortex|desc	02d0f15c0f	物を腐食する、回転する水の渦だ。
+cold vortex|desc	c8b9b816b0	ねじれながら回る霜の渦だ。
+mummified orc|desc	aecf5eeee4	布を巻かれたオークの姿だ。
+neekerbreeker|desc	d00b58ee98	コオロギの邪悪な親戚だと考えられている生き物で、その名は「ニーク・ブリーク、ニーク・ブリーク」としか言いようのない絶え間ない鳴き声から来ている。その音は人をいらだたせるうえ、かなり遠くまで聞こえるので、ほかの怪物にあなたの居場所を知らせてしまう。
+Uglúk, the Uruk|desc	1f4b0d4ed0	サルマンのオークの大軍を指揮する、強く狡猾なオークの戦士だ。
+killer stag beetle|desc	4f60372e0f	凶暴なはさみを持つ巨大な甲虫だ。
+iron golem|message-invis:SLOW	344843544c	何かがごろごろと音を立てた。
+iron golem|desc	58cc660ba1	着実にこちらへ向かってくる、巨大な金属の像だ。
+giant yellow scorpion|desc	6d270d0825	鋭い毒針を持つ巨大なサソリだ。
+wyvern|desc	296411faa7	すばやく動く、命取りになるドラゴンのような獣だ。毒のある針に気をつけろ！
+phase spider|message-invis:BLINK	e24909fec3	何かがカチカチと鳴いた。
+phase spider|message-invis:TELE_SELF_TO	e24909fec3	何かがカチカチと鳴いた。
+phase spider|desc	611c542ca2	決してそこにいるようには見えないクモだ。どこを見ても、目の端にちらりと半分だけ見える。
+black ooze|message-invis:DRAIN_MANA	196bed28bb	何かがすするような音を立てた。
+black ooze|desc	ac7a82433b	奇妙に動く水たまりだ。
+Easterling champion|desc	e0345f0722	斧を振るい、自信に満ちて動く、傷だらけの戦士だ。
+Azog, Enemy of the Dwarves|desc	1c18c3b3cc	鉄で覆われた巨大な頭を持つ偉大なオークで、身軽で力も強い。ドゥリンの世継ぎスロールを殺してドワーフとオークの戦争を引き起こしたことで悪名高い。
+brigand|desc	6a460bf660	大きな力と油断ならない素早さを持つ盗賊だ。
+red dragon bat|desc	c850fa1406	炎に包まれた、鋭い尾のコウモリだ。
+giant silver ant|desc	f312c5c0d9	物を腐食する噛みつきと硬いうろこを持つ、巨大な銀色のアリだ。
+forest wight|desc	bdc65d0704	人の形をした幽霊だ。
+Ibun, Son of Mîm|desc	b8198ab9fa	小ドワーフの最後の生き残りの1人だ。油断のならない、いたずら好きの小さな妖術使いだ。
+Khîm, Son of Mîm|desc	a186e5a571	小ドワーフの最後の生き残りの1人だ。油断のならない、いたずら好きの小さな妖術使いだ。
+4-headed hydra|desc	a817260b1a	くすぶる頭がもう1つ増えた３頭ヒドラだ。
+mummified human|desc	2b012efd88	かびた布に包まれた人間の姿だ。
+vampire bat|desc	93b4017e26	血を吸うコウモリで、飢えたようにあなたの首へ飛びかかってくる。
+Sangahyando of Umbar|desc	e8fc0bfcd6	心のさらに黒い、黒きヌメノール人だ。
+Angamaitë of Umbar|desc	cadda4b8c0	西方の人間を憎む、黒きヌメノール人だ。
+banshee|desc	7ee7ba8042	悲しげに泣き叫ぶ、女の幽霊の姿だ。
+werebear|desc	7abbdb6c75	このクマの目には、ごくかすかに知性の光が宿っている。そしてその姿が変わり始める……。獣の狡猾さと人の知恵、そしてクマの大きな体力が合わさった、危険な敵だ。
+nruling|desc	eabfcfdaf1	あなたのまわりを踊る小さな炎の火花で、鞭を振るい、ひどい呪いの言葉を吐く。
+necromancer|desc	d64d9c089b	黒い法衣をまとった、やせこけた姿だ。
+hill giant|desc	4391953eb9	たくましい筋肉を持つ、背丈3メートルの人型の生き物だ。
+pukelman|message-invis:SLOW	344843544c	何かがごろごろと音を立てた。
+pukelman|message-invis:BO_ACID	344843544c	何かがごろごろと音を立てた。
+pukelman|desc	51d64fe592	石から彫り出されたずんぐりした姿で、目をぎらつかせたこの番人は、殺意を持ってこちらへ大股で歩いてくる。
+stone troll|desc	317093039a	かさぶただらけの黒い肌を持つ、大きくぶざまなトロルだ。
+carrion crawler|desc	14a7cc8eb3	粘液に覆われ、頭のまわりに光る触手を持つ、おぞましいムカデだ。
+killer red beetle|desc	ac0703b5ae	毒のある大あごを持つ巨大な甲虫だ。
+abyss worm mass|desc	f535af032a	腕ほどの大きさの、身もだえする虫のような黒いゆらめきだ。空気も壁も同じようにくぐり抜け、通った跡に虚無を残す。
+giant firefly|desc	5124361713	この怪物の群れがダンジョンを照らす——あまりに明るくて、向こう側がほとんど見えないほどだ。
+giant grey ant|desc	c082d3ee40	何も通さない外骨格に包まれたアリだ。
+Ulwarth, Son of Ulfang|desc	cf2681b14d	背が低く浅黒い東夷だ。
+displacer beast|desc	343af7e002	肩から先の太い触手を生やした、巨大な黒ヒョウだ。
+giant fire tick|desc	9f0766e8c4	煙を上げ、ひどい熱で燃えている。
+cave ogre|desc	9e8f2ff64a	恐ろしいほどの筋肉を持つ、オークに似た巨大な姿だ。
+disenchanter bat|desc	4862294c33	むき出しの魔力を食らう巨大なコウモリだ。
+wolf chieftain|message-invis:DARKNESS	519b311469	何かが遠吠えを上げた。
+wolf chieftain|desc	5bf13d1bd7	冥王に仕える群れを率いる、巨大なオオカミの長だ。その遠吠えは、どれほど勇敢な心にも恐怖を打ち込む。
+ghoul|desc	8526aebbbd	朽ちていくこの忌まわしい者からは、肉が塊になって剥がれ落ちている。
+Mîm, Betrayer of Turin|desc	0ef3a01fef	一族の最後の生き残りで、小ドワーフだ。小ドワーフは東方から来た奇妙な者たちで、妖術に長けている。ハイエルフに狩られて、ほとんど滅び去ってしまった。
+killer fire beetle|desc	4234803cdb	炎に包まれた巨大な甲虫だ。
+creeping adamantite coins|desc	ed1b81d254	貴重なアダマントの硬貨の山のように見え、たくさんの小さな足でこちらへ這い寄ってくる。
+troll scavenger|desc	fe47786dd7	人を食らう強大なトロルで、爪は直前の獲物の跡で汚れている。
+vibration hound|desc	e32cab2655	目で追える限りの速さで動いているような、ぼやけた犬の姿だ。足もとで大地が共鳴しているのを感じる。
+nexus hound|desc	bacb2ee4b3	せめぎ合う点の集まりが寄り合って、巨大な猟犬のおぼろげな形をなしている。それとも、ただの気のせいだろうか？
+vampire|desc	05b4d6c270	力のオーラをまとう人型の者だ。鋭い前歯がそろっているのに気づく。
+gorgimaera|desc	856b5f318c	邪悪な実験の産物で、生きていてはならない自然への冒涜だ。ヤギ、ドラゴン、ゴルゴンの3つの頭が、すべてライオンの胴体についている。
+ogre shaman|desc	e45ac4921c	毛皮にくるまり、グロテスクな模様を体に塗りたくったオーガだ。
+shimmering mold|desc	c743b05e03	ダンジョンの床に生えた奇妙な生えもので、光りながら火花をぱちぱちと散らしている。
+frost giant|desc	2e69176a47	毛皮に覆われた、背丈3.7メートルの巨人だ。
+spirit naga|desc	322f2eb7e4	美しい女の上半身を持つ、亡霊のようなヘビの姿だ。
+5-headed hydra|desc	a66b3d7218	頭がもう1つ増えた四首ヒドラで、酸の蒸気を立ちのぼらせている。
+black knight|desc	8c838207f8	漆黒の板金鎧に身を包んだ大きな姿で、威嚇するようにあなたを見ている。
+Uldor the Accursed|desc	96844c15c8	東方から来た邪悪で狡猾な男だ。かつてフェアノールの息子たちに忠誠を誓ったが、ウルドルの裏切りこそが涙尽きざる合戦の流れをモルゴスの側へ傾けた。
+mage|desc	4f17d64365	それなりの力を持つ魔術師だ——帽子の大きさを見れば分かる。
+mind flayer|desc	35e9c7bc5d	ぞっとする頭、触手の生えた口、突き刺すような目を持つ人型の姿だ。爪がこちらへ伸び、何者かが心に入り込んでくるのを感じる。
+Draebor, the Imp|desc	1d513ccc1a	とことん癇に障る、いやな奴の怪物だ。
+basilisk|desc	b77fae10ba	油断した旅人を襲う、おぞましい爬虫類だ。その目にじっと見つめられると、魂がしおれ始める！
+snow troll|desc	36654dbb91	もじゃもじゃの毛と、強い爪のある手を持つ白いトロルだ。
+bat of Gorgoroth|desc	2a447d7856	おぞましい肉を与えられて途方もない大きさに育った、よだれを垂らす生き物で、もっと活きのいい獲物を探している。
+spectator|desc	90f3e9c154	ビホルダーの格下の親戚だ。球形の体に歯の並んだ大きな口、中央に大きな目が1つあり、体の上から柄の先についた小さな目が4つ突き出している。
+Beorn, the Shape-Changer|desc	fb3c4b0ff3	このごろビヨルンが人の姿で見られることはめったになく、巨大な黒いクマの姿で現れるのを好む。人間よりも獣と一緒にいるほうが好きなのだ。人の姿のときでさえ、よそ者を快く迎えたことは一度も無い。
+Beorn, the Mountain Bear|desc	aa54268882	山の巨大な黒いクマの姿をとったビヨルンで、怒りのあまり巨人ほどの大きさになっている。そのうなり声は太鼓のようにとどろき、どんな武器も歯が立たないように見える。
+green elf archer|desc	0b185a9e4f	七つの川の国のエルフだ。その森の技は、よそ者が国を端から端まで通り抜けても、1人の姿も見かけないほどだった。
+giant black scorpion|desc	0296fa9cc8	ライオンほどの大きさの、つややかな黒いサソリで、脈打つ毒針と命取りになる大きなはさみを2つ持つ。
+purple worm|desc	7d5c6a87c0	何メートルもの長さがある巨大な虫の姿だ。巨大な口から酸と毒がしたたっている。
+catoblepas|desc	42d34ab4b1	巨大な頭に細く弱々しい首を持つ、ウシに似た奇妙な姿で、どこかの狂った錬金術師がこしらえたもののように見える。
+ring mimic|desc	5b12a78b99	捨てられた指輪に化けて、油断した冒険者を毒の爪の届く所へおびき寄せる奇妙な生き物だ。
+young blue dragon|desc	e55a3557d8	伝説に語られるような姿をしている。まだ柔らかいうろこは深い青色だ。体に沿って火花がぱちぱちとはじけている。
+young white dragon|desc	2cf5acd4c7	伝説に語られるような姿をしている。まだ柔らかいうろこは霜のような白色だ。息をするたびに凍てつく冷気が吹き出す。
+young green dragon|desc	bc00ec9534	伝説に語られるような姿をしている。まだ柔らかいうろこは深い緑色だ。うろこの間から悪臭のする気体がしみ出している。
+energy vortex|desc	6c1342d6be	ちらちら光る空気の竜巻で、その体に沿って火花がぱちぱちとはじけている。
+fire giant|desc	a3d7de5f1a	光を放つ、背丈4.3メートルの巨人だ。赤い肌から炎がしたたっている。
+mithril golem|desc	9986269ec5	純粋なミスリルでできた巨大な像だ。高く売れそうだ！
+skeleton troll|desc	ab5c7b5e6f	闇の魔術で動かされたトロルの骸骨だ。
+manticore|desc	d3bbd5a9d2	翼のあるライオンの胴体に人の上半身がつき、凶悪なとげに覆われた尾を持つ。
+giant blue ant|desc	0088abc744	力がぱちぱちとはじけている巨大なアリだ。
+giant army ant|desc	ffcf07bb72	目的を持って動く、鎧をまとったような姿だ。1匹でも強いが、大群で行進してきたら逃げろ。
+grave wight|desc	7ef705a4b5	あなたにつきまとう目をした幽霊の姿だ。
+killer slicer beetle|desc	31f0a56a64	恐ろしく鋭い切り裂く大あごと、岩のように硬い甲殻を持つ甲虫だ。
+ogre chieftain|desc	a7d2b945a9	一族の長のオーガだ。巨大な棍棒を振るい、手下を乱暴に押しのけながら、あざ笑うようにこちらへ進んでくる。
+ghast|desc	30b8cbc4ca	グールの親戚である忌まわしい者で、よくグールの群れを率いている。ひどい悪臭を放ち、その噛みつきは腐れの病をもたらす。
+Bert the Stone Troll|desc	86786555c9	大きく、筋骨たくましく、力が強く、ホビットの味が好きだ。ビルとトムという仲間がいる。
+Bill the Stone Troll|desc	f01d772562	大きく、筋骨たくましく、力が強く、ホビットの味が好きだ。バートとトムという仲間がいる。
+Tom the Stone Troll|desc	b770c43481	大きく、筋骨たくましく、力が強く、ホビットの味が好きだ。バートとビルという仲間がいる。
+ghost|desc	44bf176b1a	あなたはそれを信じていない。だが、それはあなたを信じている……。
+death watch beetle|desc	54888f8ab4	ぞっとする音を立てる巨大な甲虫だ。
+young black dragon|desc	9bae060f04	伝説に語られるような姿をしている。まだ柔らかいうろこはこの上なく黒い色だ。体から酸がしたたっている。
+young gold dragon|desc	e29fd382ac	伝説に語られるような姿をしている。まだ柔らかいうろこはくすんだ金色で、その体が光を照り返している。
+young red dragon|desc	2c0eb44794	伝説に語られるような姿をしている。まだ柔らかいうろこはこの上なく深い赤色だ。体から熱を放っている。
+huorn|desc	b7b90cbce1	エントのようになった木か、あるいは木のようになったエントだ。
+serpent of the brownlands|message-invis:HOLD	4960bcece3	何かがシューッと音を立てた。
+serpent of the brownlands|message-invis:BLIND	4960bcece3	何かがシューッと音を立てた。
+serpent of the brownlands|desc	a2d5c5ed10	鋼のようなとぐろと、目にも止まらぬ速さの突き、酸の毒をしたたらせる牙を持つ大蛇だ。その目は人を魅了する。
+ogre mage|desc	019b9615c1	黒い妖術師の法衣に身を包んだ、醜いオーガだ。
+nexus quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+nexus quylthulg|desc	701f7319c9	ひどく不安定な、奇妙に脈打つ肉の塚だ。
+southron assassin|desc	f557f42eb2	黒い服を着たハラドの男で、目にも止まらぬ速さで動く。
+memory moss|desc	1a7a1fa91b	緑の草木の塊だ。こんな物を見た覚えは無い。
+young multi-hued dragon|desc	68802604c9	伝説に語られるような姿をしている。ちらちらと光る魔法の色の美しいうろこに覆われている。
+doombat|desc	9f193d62ac	すばやく動く混沌の生き物で、揺らめく真っ赤な炎に囲まれた巨大な黒いコウモリだ。
+drúadan druid|desc	87b7c15c1f	自然と不思議なつながりを持つ、背が低くがっしりした男だ。
+stone giant|desc	58ecab0b3d	背丈5.5メートルで、こちらを見ている。
+shadow drake|desc	45f416faa1	影に包まれたドラゴンのような姿だ。闇の中で赤く光る目が輝き、体ではなく魂を凍えさせる、この世のものでない冷気のオーラに包まれている。
+cave troll|desc	3a19b69fe9	その獰猛さで恐れられる、凶暴な怪物だ。
+mystic|desc	3b815f117e	素手の戦いの達人で、相手を気絶させるほどの力で打つ。自然から助けを呼ぶことができ、力を集中してどんな痛みも和らげられる。
+barrow wight|desc	a50e4a9994	悪夢のような幽霊だ。
+skeleton etten|desc	b393ddf05f	双頭の巨大なトロルが動き出した姿だ。
+chaos drake|desc	b1c9db57bc	混沌の力にねじ曲げられたドラゴンだ。目の前でその姿が揺らめき変わるにつれ、醜く見えたかと思えば美しく見える。
+law drake|desc	fde330da4f	賢く狡猾なドラゴンだ。あなたがちょっかいを出そうとするちっぽけな努力をあざ笑う。
+balance drake|desc	bcb8784aad	宇宙の均衡を保とうとする強大なドラゴンで、悪を滅ぼそうとするあなたのひ弱な努力をさげすんでいる。
+ethereal drake|desc	a4350a6756	光と闇を操る、大きな力を持つドラゴンだ。その目は影の中から白い憎しみでにらみつけている。
+fire elemental|desc	5b37f37fe7	そびえ立つ炎の業火だ。
+water elemental|desc	5b379fc123	そびえ立つ水の嵐だ。
+crystal drake|desc	c1d04456ce	奇妙な水晶の姿をしたドラゴンだ。光がその体を通り抜け、色の帯で目をくらませる。
+troll priest|desc	480aa98709	字が読めるほど頭のいいトロルだ。
+Maia|desc	ea860964f7	エルの最初の子らの1人で、今は人のような姿をとり、その体は栄光の光に輝いている。この者がモルゴスに忠誠を誓ったのか、それとも別の理由であなたと戦うのかは分からない。分かっているのは、目を燃え上がらせて次の呪文の一斉射撃の支度をしながら、目の前に立っていることだけだ。
+troll blackguard|desc	599423d652	多少の魔法を使い、暴力を好む、半端に賢く凶暴なトロルだ。
+shade|desc	556a0ee615	影のような姿が闇の中からあなたをつかもうとする。命取りの手を持つ強大なアンデッドだ。
+master thief|desc	0764286a44	冷静で自信に満ち、素早くしなやかだ。持ち物を急いで守れ！
+Ulfang the Black|desc	cdcc3d1ed5	黒い服を着た、背が低く浅黒い東夷だ。彼と3人の息子はかつてハイエルフへの忠誠を公に誓ったが、陰ではモルゴスに雇われていた。
+lich|desc	a2b40a36f3	法衣をまとった骸骨の姿だ。途方もなく邪悪な力を放っている。
+earth elemental|desc	4c2fe7ea11	岩でできたそびえ立つ姿で、恐ろしい力の拳を持つ。
+air elemental|desc	5fca040e34	そびえ立つ風の竜巻だ。
+Eog golem|desc	3e4919a8f6	濃い茶色の巨大な像で、いやというほど見覚えのある目的を持ってこちらへ大股で歩いてくる。意外にも、あなたの魔法がずいぶん弱まったように感じる。
+wereworm|desc	dfba3d6e99	酸をしたたらせる巨大な虫のような姿で、邪悪な妖術によってねじ曲げられ、死を糧に殖えるおぞましい怪物になった。
+Lokkak, the Ogre Chieftain|desc	4bdac29b12	度を越した残虐さで名を知られたオーガで、たちまち乱暴なオーガの大きな一団の頭になった。
+hill troll|desc	88e5dd22a8	角のようなうろこでできたぴったりした網目の鎧だけをまとい（それが肌でなければの話だが）、節くれだった手に重い槌を握って、獣のようにほえながら大股でこちらへ向かってくる。
+invisible stalker|desc	e71592e220	その姿を言い表すことはできないが、その凶暴さは伝説になっている。
+gravity hound|desc	4fb189039c	ふつうの重力の縛りを受けないこの不自然な生き物は、壁や天井さえ歩いている！この怪物たちのまわりで重力がゆがむのを見ると、突然大地がずいぶん頼りなく感じられる。
+inertia hound|desc	b4bef38f23	奇妙なことに、この猟犬はほとんど動いていないように見えるのに、命取りの脅威をもってこちらへ近づいてくる。見ているだけで疲れてくる。
+impact hound|desc	7b45bc493c	濃い茶色の姿が目の前に見え、その犬の姿がほとんど体に響くような力でこちらを打つ。忍び寄ってくるにつれ、強く殴られたかのようにダンジョンの床がたわむ。
+mûmak|desc	c8789bf9f8	狂気にゆがんだ目を持つ、巨大なゾウのような姿だ。
+giant fire ant|desc	3e9faf7ce2	もじゃもじゃの毛に覆われた巨大なアリだ。強いあごが熱で赤く光っている。
+chest mimic|desc	a6cc8b1799	箱に化けて、油断した冒険者を毒の爪の届く所へおびき寄せる奇妙な生き物だ。たいていの冒険者がこのだましに気づくのは、誘うように開いていた箱のふたに突然歯が生え、冒険者の手の上でばたんと閉じたときだ……。
+silent watcher|message-vis:SHRIEK	fc352179ca	{name}の邪悪な気配が、あなたの敵を奮い立たせた。
+silent watcher|message-invis:DRAIN_MANA	f4a3538a25	何かがあなたの魔力を吸い取っていった。
+silent watcher|message-invis:HOLD	ff5b91b5af	これといった訳も無く、筋肉がこわばった。
+silent watcher|message-invis:SHRIEK	f8aa47907e	何かがあなたの敵を奮い立たせた。
+silent watcher|desc	98f25d65d9	石から彫り出された姿で、ハゲワシの顔が3つあり、その目は悪意の光で輝いている。
+olog|desc	d37e1dd1c5	針のように鋭い牙を持つ、賢く巨大なトロルだ。
+colbran|message-invis:BO_ELEC	db74f398d3	絶え間ないぱちぱちという音が一瞬やみ、また始まった。
+colbran|message-invis:TELE_SELF_TO	db74f398d3	絶え間ないぱちぱちという音が一瞬やみ、また始まった。
+colbran|desc	eb9182b1b5	生きた稲妻でできた人の形だ。狂ったように跳ね回るこの姿の全身で火花と電撃がはじけ、あなたのまわりを跳んだり回ったりしている。
+cloud giant|desc	b93fe0fe20	雲をまとった、背丈6メートルの巨人だ。
+master vampire|desc	4a2e9606ee	法衣をまとった人型の姿だ。ぞっとするその体から力があふれ出ている。
+ooze elemental|desc	23e68ebb76	そびえ立つ汚物の塊で、目障りな泥の山だ。
+smoke elemental|desc	8c089bd619	熱でぱちぱち音を立てる、そびえ立つ黒ずんだ姿だ。
+xorn|desc	e1d3ae2583	地の元素の巨大な生き物だ。自分の元素にとけ込むことができ、途方もなく大きな胴体から4本の巨大な腕が突き出している。
+colossus|desc	345d12b51a	石で作られた巨人に似た、途方もなく大きな造り物だ。大地を砕くほどの力でのろのろと拳を振り回しながら、狙いを定めてこちらへ大股で歩いてくる。
+trapper|desc	ad5f1ac026	潜むものの大きな親類で、油断した獲物を捕らえて麻痺させ、あとでゆっくりと消化する。
+bodak|desc	1dbf324d55	炎と憎しみでできた人型の姿だ。
+dúnadan of Angmar|desc	56987181fa	北方王国が衰えたころ、邪悪なアングマールの国に引き込まれた死霊術師だ。
+Lorgan, Chief of the Easterlings|desc	11c92f03dc	東方から来た強大な戦士で、自分の思いどおりにならない物すべてを憎んでいる。
+demonologist|desc	cb5ae6efe0	この上なく深い真紅の法衣をまとって立つ、悪にゆがめられた姿だ。
+gauth|desc	385f041d47	ビホルダーの格下の親戚のもう1つで、6つの目を持ち、魔法を食らう。
+ice elemental|desc	237c07c2b4	そびえ立つ氷河の氷だ。
+mummified troll|desc	667e097de1	布に包まれた巨大な姿だ。その巨大な拳には用心したほうがいい。
+spectre|desc	ed8bf6f2e9	悲鳴を上げる幻の霊だ。その泣き声が、純粋な悪の激しい冷たさを体の奥深くまで打ち込んでくる。
+magma elemental|desc	cb714d192d	溶けた憎しみでできた、光を放つそびえ立つ姿だ。
+killer iridescent beetle|desc	be20d24f63	甲殻が脈打つ力でちらちらと輝く巨大な甲虫だ。
+nexus vortex|desc	08b13192f7	強い魔力の大渦だ。
+plasma vortex|desc	ab0dcd730d	激しい炎の渦で、足もとの石を焦がしている。
+mountain troll|desc	70b6bcdacd	大勢の人間を合わせたよりも大きく強い、巨大なトロルだ。巨大な手足のほかに武器は要らない。
+shardstorm|desc	32fa86ce5b	危うい魔法でばらばらにならずに保たれた、剃刀のように鋭い山の破片がうなりを上げて吹き荒れるものだ。
+emperor wight|desc	62de464daf	この強大なこの世ならぬ者が近づいてくると、命の力が体から引きはがされる。
+mummified chieftain|desc	16cf6522b1	死に際してマンドスの呼び出しを拒み、防腐処理された自分の体に再び宿ることを選んだ強大な支配者だ。この世のものならぬ叫び声で、かつての臣下の軍勢を指揮している。
+will o' the wisp|message-vis:WOUND	622132a0b0	{name}は小さくぱちぱちと音を立てた。
+will o' the wisp|message-invis:BLINK	8758c99217	何かが小さくぱちぱちと音を立てた。
+will o' the wisp|message-invis:WOUND	8758c99217	何かが小さくぱちぱちと音を立てた。
+will o' the wisp|desc	a18fc7e97c	光を放つ奇妙な光の玉だ。消えてはまた現れ、あなたを引き寄せているように見える。なぜか立ち止まって、その奇妙な踊るような動きを見ずにはいられない。
+death knight|desc	8106729989	古い型の鎧をまとった人型の姿だ。兜の下で目が不吉な赤に光り、炎の槍のようにあなたを突き刺すかに見える。
+Castamir the Usurper|desc	e1447972e6	ゴンドールの王座を奪った黒きヌメノール人で、裏切り者で邪悪だ。
+time vortex|desc	8d04a8d88e	あなたはまだそれを見ていない。
+shimmering vortex|desc	e9ead42320	目に痛い、光り輝く奇妙な光の柱だ。空を切ってこちらへ向かってくる間も、その形は絶えず変わる。のろしのように、眠っている怪物たちを目覚めさせてしまう。
+white wraith|desc	40923bb221	白い霧でできた、触れられるが幽霊のような姿だ。
+etten|desc	316450442e	とてつもない力を持つ双頭の巨大なトロルで、愚かだが凶暴だ。頭が2つあっても1つより賢くはならないという生きた証でもある……。
+abyss spider|message-invis:SLOW	e24909fec3	何かがカチカチと鳴いた。
+abyss spider|message-invis:BLIND	e24909fec3	何かがカチカチと鳴いた。
+abyss spider|desc	ae8b7a8f7f	とげのある大きな脚の間に、ふくれた袋のような胴体を持ち上げている巨大なクモだ。
+southron archer|desc	fa52266d41	黒と赤の服を着て長弓を持つハラドの男だ。矢筒は赤い羽根の矢でいっぱいで、黒い蛇の紋章がついている。
+mature white dragon|desc	695ec2be73	うろこが明るい白にきらめく、大きなドラゴンだ。
+mature blue dragon|desc	75dd2a3c91	うろこが深い青に色づいた、大きなドラゴンだ。
+mature green dragon|desc	6d28dc9b5c	うろこが深い緑に色づいた、大きなドラゴンだ。
+6-headed hydra|desc	e235bc03a6	五首ヒドラだが、ちゃんと見えさえすれば、頭がもう1つあるようだ。
+night mare|desc	47f360925a	光る目を持つ、恐ろしい骸骨の馬だ。その目は、生きとし生けるものへの憎しみだけを込めてあなたを見ている。
+beholder|desc	38b7f0e36a	中央に巨大な目が1つ、柄の先に小さな目が12あり、鋭い歯でいっぱいの巨大な口を持つおぞましい生き物だ。
+disenchanter worm mass|desc	83180b4481	うごめく虫の奇妙な塊だ。胸の悪くなるその姿のまわりで、魔力がぱちぱちとはじけている。
+spirit troll|desc	31a5b34dc8	トロルに似た、奇妙な幽霊のような者だ。
+phantom|desc	6a7323a4be	闇の不浄な生き物で、この邪悪な者の放つオーラが魂そのものをむしばむ。
+7-headed hydra|desc	6d68c5be27	６頭ヒドラに頭がもう1つ増えたもので、その頭が人を魅了するようにこちらへ揺れている。
+enchantress|desc	cbaaccc1a8	とらえどころの無い女の呪文の使い手で、ドラゴンと特に縁が深く、ドラゴン抜きで戦うことはめったに無い。
+sorcerer|desc	d86913233f	法衣をまとった人の姿で、魔法で速めた動きをし、呪文を唱える手はかすんで見える。
+xaren|desc	c0b6506156	ゾーンのさらにしぶとい親戚だ。皮は金属の鉱石できらめいている。
+giant roc|desc	090e44ae9d	伝説の巨大な鳥で、鉄の鉤爪はどんなに固い面でもかきむしり、その鳴き声は曲がりくねったダンジョンの通路のすみずみまで響き渡る。
+minotaur|desc	e2b38440bf	人とウシの合いの子だ。
+vrock|desc	f4615a3ab3	長い首とかきむしる爪を持つ悪魔だ。
+death quasit|desc	429cae54a6	小柄な悪魔だが、鎧のような体は稲妻の速さで動き、その力は死と破壊の竜巻と化す。
+patriarch|desc	8231e0de7a	大きな力を持つ僧侶で、自分の信仰の正しさを確信している。その行く手に立つのは命がけだ。
+troll chieftain|desc	0140caafb7	大きな力と体格で一族の長の座を勝ち取ったトロルだ。何も恐れない。
+mature red dragon|desc	76305ce213	うろこが深い赤に色づいた、大きなドラゴンだ。
+mature gold dragon|desc	4100746dff	きらめく金のうろこを持つ、大きなドラゴンだ。
+mature black dragon|desc	30d635c4e4	この上なく黒いうろこを持つ、大きなドラゴンだ。
+stiffbeard sorcerer|desc	c066f12b17	編んだあごひげと塗った顔をした、黒ずくめのドワーフだ。がっしりした体から力がぱちぱちとはじけているように見える。
+master lich|desc	2a92e29dbc	法衣に包まれた骸骨の姿だ。骨ばった指に沿って強い魔力がぱちぱちとはじけている。
+Gorlim, Betrayer of Barahir|desc	bb6c149acb	この哀れな者は、かつては強大な戦士だったが、自分と妻の身の安全と引き換えになると思い込んで、かつての友をモルゴスの軍勢に売った。そうしてモルゴスの力に屈し、「取引」の相手方の約束は守られなかったにもかかわらず、心を失った悪のしもべ同然となった。
+ranger chieftain|desc	095475fd1c	レンジャーの中の長だ。自然への理解から、射手と戦士の技に加えて、強力な元素の呪文をあなたに向けて使う。そのうえ身を隠す名人なので、見つけるには魔法で高めた視力が要る。
+Kavlax the Many-Headed|desc	b91aedc537	いくつもの頭を持つ大きなドラゴンで、どの頭も獲物を探してわめき、言い争っているが、それぞれが命取りのブレスを持っている。
+hellhound|desc	266862caa5	熱で赤く光る巨大なオオカミだ。鼻の穴から炎が噴き出している。
+black-hearted huorn|desc	39d8495deb	心の悪いフオルンだ。
+The Queen Ant|desc	486b493ef8	あなたが子どもたちを傷つけたので、怒っている。
+Rogrog the Black Troll|desc	47af4824d4	大きな力を持つ巨大で残忍なトロルで、たくましい体をよだれが焼けつくように伝い落ちている。図体は大きいが、目にも止まらぬ速さで打ちかかってくる。
+Maia of Nienna|desc	ed64368276	モルゴスが世界に与えた傷を嘆く、ニエンナのしもべだ。
+Maia of Mandos|desc	778bc6fb1d	殺された者の霊を呼び出す、マンドスのしもべだ。
+mature multi-hued dragon|desc	49772b40f9	うろこがさまざまな色にちらちらと光る、大きなドラゴンだ。
+Vargo, Tyrant of Fire|desc	a8cd0355cd	そびえ立つ炎のエレメンタルで、あらゆる物を元の形が分からなくなるまで焼き尽くす。
+Waldern, King of Water|desc	830d8fe7ba	そびえ立つ水のエレメンタルで、あらゆる液体の主だ。次から次へと押し寄せる波が、あなたのか弱い体を溺れさせる。
+glabrezu|desc	c4f4916093	腕とはさみを持つ悪魔で、その姿はまさに生命へのあざけりだ。
+Quaker, Master of Earth|desc	1af6686a50	そびえ立つ石のエレメンタルが目の前に立っている。これが進むと、壁も天井も瓦礫になる。
+Ariel, Queen of Air|desc	10cf50ee3d	そびえ立つ風のエレメンタルで、女魔術師のアリエルは、並外れた速さであなたの攻撃をかわす。
+multi-hued hound|desc	59742f536b	虹色にちらちらと輝く、美しく、そして命取りの猟犬だ。
+8-headed hydra|desc	0f8fa5b4af	七首ヒドラに死の臭いを放つ頭がもう1つ増えたものだ。
+dread|desc	2cafb01012	目に向かって自分の存在を叫びたてるような姿だ。死の化身であり、宇宙そのものがそれを追い払おうともがくにつれ、そのおぞましい黒い体は現実にあらがってもがいているように見える。
+killer white beetle|desc	170f4a045d	つややかな白い甲殻を持つ巨大な甲虫だ。せかせかと寄ってくると、その大あごのまわりで空気が結露する。
+rotting quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+rotting quylthulg|desc	100093415f	死と腐敗の臭いを放つ、脈打つ肉の塚だ。
+nalfeshnee|desc	09abc5fd32	巨大なイノシシの頭を持つ大きな悪魔だ。炎が体じゅうを駆け上り、駆け下りている。
+undead beholder|desc	525b0ab79c	死を出し抜いたビホルダーだ。中央の巨大な目の血走った瞳のまわりで黒い地獄の嵐が荒れ狂い、まわりの空気そのものから力を吸い取るにつれて光が曲がって見える。邪悪な呪文のためにあなたの活力が吸い取られ、魂が凍える。
+demonic quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+demonic quylthulg|desc	2f9a68e7a6	硫黄の臭いを放つ、脈打つ肉の山だ。世界そのものがこれに抗議の叫びを上げているかのようだ。
+draconic quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+draconic quylthulg|desc	2c891a4299	かつてはドラゴンの死体だったらしいが、今は魔法の細菌にひどく冒されて、おぞましく堕落したさまで脈打っている。
+greater basilisk|desc	92516f87e1	大きなバシリスクで、姿はエンシェント・ドラゴンに似ている。
+berserker|desc	39cd54884f	ふつうの人間の戦士の中で最も強い者でさえ、狂戦士を恐れる——自分を恐ろしい戦いの狂乱へと駆り立て、死ぬはずの打撃を受けても生き延び、しかも痛みを感じていないらしい者を。本当の敵のもとへ急ぐあまり弱い生き物を踏みつぶし、その雄たけびは敵を震え上がらせる。
+cyclops|desc	ab2e9b37a0	目が1つしかなく、ひどく分厚い皮をした、巨大で醜い人型の生き物だ。
+grey wraith|desc	909e7a6502	灰色の霧でできた、触れられるが幽霊のような姿だ。まわりの空気は死のように冷たく感じる。
+lord of Carn Dûm|desc	b1e7fc7a53	黒ずくめの邪悪な僧侶だ。とげのついた黒い鎚矛があなたのみじめな体に次々と打ち下ろされる間にも、恐ろしい速さで命取りの呪文が飛んでくる。
+vampire lord|desc	dc972f3710	このおぞましい姿が近づいてくると、邪悪な風が骨まで凍えさせる。
+marilith|desc	b034f36706	女の姿をした悪魔で、何本もの腕のそれぞれに命取りの武器を持っている。
+death mold|desc	c0f9a4f658	あらゆる悪の典型が、カビの形をとったものだ。命の無いその体は、近づく者の魂を吸って力を得ており、純粋な悪の光輪に囲まれている。ありがたいことに、動くことはできない。
+ancient spider|desc	f0890df443	アングバンドの穴よりもさらに古い、クモの姿のおぞましい生き物だ。
+winged horror|desc	bfc4e6378e	恐ろしい光景だ。これまで見たどんな鳥よりも大きな翼のある生き物で、そのおぞましい黒い革のような翼には羽が1枚も無い。おそらくはもっと古い世界の生き物の末裔で、サウロンが指輪の幽鬼の空飛ぶ乗り物として育てたのだろう。
+gorgon|desc	b7e5e08ac3	この伝説の生き物は、胴体がヘビであるだけでなく、髪までもがヘビだ。目を燃え上がらせ、ぞっとする口から毒をしたたらせながら、うろこを鳴らしてこちらへ這い寄ってくる。
+storm giant|desc	2e2ed090e7	稲妻をまとった、背丈7.6メートルの巨人だ。
+lesser Balrog|desc	d586575982	炎に包まれた、人型の巨大な悪魔だ。
+black wraith|desc	1fa19458b6	虚無でできているような姿で、奇妙に人間じみたその形は影に覆われている。あなたに手を伸ばしてくる。
+Eöl, the Dark Elf|desc	5c34883e61	テレリの君主で、隕鉄から武器を鍛えた唯一の者である、強大な鍛冶だ。エルダールの宿敵で、ゴンドリンの王女アレゼルを殺めたのち、彼らの怒りから逃れている。
+ancient blue dragon|desc	212a620b1b	巨大なドラゴンの姿だ。体に沿って稲妻がぱちぱちとはじけている。
+ancient white dragon|desc	9c41502abc	巨大なドラゴンの姿だ。頭から尾まで霜に覆われている。
+ancient green dragon|desc	cf84be51f2	有毒な蒸気の雲に包まれた、巨大なドラゴンの姿だ。
+death drake|desc	4cdb3e810c	闇に包まれたドラゴンのような姿だ。本当の姿は見分けられないが、その邪悪さは感じ取れる。
+great crystal drake|desc	653b2f3b8e	巨大な水晶のドラゴンだ。爪はあなたをずたずたに切り裂き、歯は剃刀のように鋭い。光の中で動くと、奇妙な色がその体を波打つように流れる。
+ethereal dragon|desc	ac8decfa90	光と闇を自在に操る恐ろしいドラゴンだ。この世のものでない影に身を包むと、その姿は見えなくなる。
+master mystic|desc	831a4f0db2	神秘の道に通じた、自然のすべての主だ。武術の達人で自然と一体になっており、必要とあれば荒野から助けを呼べる。
+shadow|desc	bbbae432dd	ぼんやりと人の形をした、闇の強大な霊だ。滑るようにこちらへ寄ってきながら、剃刀の刃のような爪を伸ばしてあなたの命を終わらせ、魂の力を吸って自分の力にしようとする。
+The Balrog of Moria|desc	9485eac2c9	荒れ狂う炎の柱に囲まれた巨大なバルログで、まさに恐ろしい敵だ。大きな炎の鞭と燃える剣を振るい、その怒りは肌を焼きただれさせ、肉を溶かす！
+ancient black dragon|desc	be8f030084	巨大なドラゴンの姿だ。まわりの床が酸のたまりで溶けている。
+ancient red dragon|desc	e26b5f9315	巨大なドラゴンの姿だ。鼻の穴から煙が細く立ちのぼり、まわりの猛烈な熱に息が詰まる。
+ancient gold dragon|desc	32f2ebb009	光の輪に包まれた、巨大なドラゴンの姿だ。そのほえ声は耳をつんざき、頭をくらくらさせる。
+nether hound|desc	6477d324c8	この獣を目にすると、魂を引き裂くような寒気を感じる。大きな犬の形をした、闇の幽霊のような姿だ。
+time hound|desc	e946614327	恐ろしい既視感に襲われる——それとも予感だろうか？一度に、小さな子犬と歯の抜けた老犬が見える。もうあきらめて寝たほうがいいのかもしれない。
+plasma hound|desc	bb67bd70bd	巨大な猟犬の形をした純粋な元素の力が忍び寄ってくると、空気そのものがゆがむ。厄介事を感じて、髪が逆立ち、手のひらがむずむずする。
+Harowen the Black Hand|desc	6e9863d5ef	変装の名人、忍びの達人、罠の天才で、目にも止まらぬ速さで動く。ポケットを確かめろ！
+Maia of Oromë|desc	6ba7520417	怪物や恐ろしい獣を狩るオロメのしもべだ。
+hasty ent|desc	499b013918	エントはすっかり誰かの味方というわけではない。すっかりエントの味方という者もいないからだ。このエントはかなりいきり立っていて、あなたの味方ではないようだ。
+Itangast the Fire Drake|desc	bc70aa5f6a	強大なエンシェント・ドラゴンで、その姿があなたの肉を焦がす。さげすむようにあなたを見つめ、鼻の穴から煙を細く立ちのぼらせている。
+hezrou|desc	7d67cd280c	強力な飛び道具を放つ、トカゲの姿をした鈍重な悪魔だ。ひどく大きすぎるあごから短く振り回す尾まで、焼けつく酸のたまりが泡立ち、じゅうじゅうと音を立てている。
+ancient multi-hued dragon|desc	5d658cfa24	巨大なドラゴンの姿だ。その巨体をさまざまな色が波打って流れ落ちる。これを見て生き延び、もう一度見る者はまれだ。
+chaos vortex|desc	60e184b6d1	空虚、虚無が、破壊をまき散らしながら回っている。
+Scatha the Worm|desc	b86892852d	古く賢いドラゴンだ。長い年月のうちにずる賢くなった。うろこは霜に覆われ、その息は氷のつぶてを宙にまき散らす。
+The Phoenix|desc	c6335d958f	炎を浴びて光り輝く巨大なワシだ。焼けつく熱が肌を焦がし、鎧を溶かす。
+drolem|message-invis:BLIND	344843544c	何かがごろごろと音を立てた。
+drolem|message-invis:SLOW	344843544c	何かがごろごろと音を立てた。
+drolem|desc	5f43f15327	造られたドラゴンで、途方もない力を持つ。造られるときに織り込まれた強力な呪文のせいで、恐ろしい敵になっている。目に知性はほとんど見えないが、出会うものすべてを壊すよう命じられている。
+demilich|desc	cb0d21af92	一部が実体を失ったリッチで、霊体という新しい姿へと移りつつある。
+dreadmaster|desc	9544adc13c	ほとんど並ぶ者の無い力を持つ、命ならざる者だ。存在そのものへの冒涜であり、触れるだけで命の流れを踏みにじり乱す。この上なく黒い、この世のものでない手足は、岩も肉もたやすく砕く。
+nether wraith|desc	a19c116dfd	目に痛い姿で、まわりの空気には死がしみ渡っている。近づいてくると、冷たさが魂をむしばむ。
+Shelob, Spider of Darkness|desc	a270d8a611	途方もなく大きくふくれたクモで、光なき闇ウンゴリアントの最後の娘だ。その毒は伝説に語られ、うぬぼれも同じくらい名高い。ふだんはキリス・ウンゴルを抜ける峠を守っているが、ときどき貪欲な食欲を満たすため餌をあさりに出かける。
+dracolich|desc	635e86949f	かつては偉大だったドラゴンの骸骨の姿で、この上なく危うい魔法で魔力を吹き込まれている。動き出したその体はすばやく打ちかかり、飢えを満たすため獲物から命を吸い取る。
+dracolisk|desc	c314e31aea	ドラゴンとバシリスクの混ざりもので、深く突き刺すような目であなたを見つめ、その邪悪な息は立っている地面を焼く。
+Ar-Pharazôn the Golden|desc	4dda71eb17	いにしえのヌメノールの最後にして最も傲慢な王だ。権力と強欲に堕落してサウロンの手管の犠牲となり、ヴァラールその人たちと戦おうとして、ヌメノールを忘却へと追いやった。
+barbazu|desc	11e80f0d8b	長い尾、爪のある手足、そしてぞっとするような針金のようにうねるあごひげを持つ、おぞましい人型の生き物だ。地獄の精鋭の突撃兵で、恐ろしい狂戦士の怒りを見せる。
+lesser titan|desc	dee9721506	背丈9メートルの人型の姿で、力と憎しみのオーラを放っている。
+grand master mystic|desc	c6122d83c6	この技の数少ない真の達人の1人で、あらゆる素手の戦いにきわめて巧みであり、世界の自然の生き物をさげすむようにたやすく操る。
+hand druj|desc	29421b541e	宙に浮かぶ骸骨の手で、指を曲げ伸ばしするほかは動かない。
+9-headed hydra|desc	2247cdae87	伝説に語られる巨大なヒドラで、８頭ヒドラに似ているが、巨大な頭がもう1つあり、その大きなあごをこちらへ開けている。煮えたぎる体から蒸気の雲が立ちのぼる中、いくつもの目があなたを見つめている。しかも、切り落とすそばから新しい頭が生えてくる。
+Baphomet the Minotaur Lord|desc	fc4dd32f5e	恐ろしいウシの頭の怪物で、逆らう者すべてを呪いながら強大な斧を振るう。
+elder vampire|desc	a9703f60e2	法衣をまとった恐ろしいアンデッドで、他の者の命を盗んで何百年も命ならざる生を保ってきた。犠牲者の霊そのものを墓の向こうから呼び出し、しもべとして助けに来させることができる。
+Fundin Bluecloak|desc	46c7c49d84	地上を歩いたドワーフの僧侶の中でも最も偉大な1人だ。教会の高い地位を得ており、武器と呪文の両方の腕前がその地位にふさわしいことをさらに証している。ドワーフの力と僧侶の知恵を兼ね備え、どんな冒険者とも互角に渡り合う。
+Gilim, the Giant of Eruman|desc	a46f21a6ee	冬と北の果ての巨人として知られ、巨人の中でさえ背が高く、その名は多くの国で呪われている。
+Maia of Yavanna|desc	8d656f346b	大地の女王、実りを与える者、育つものすべてを愛するヤヴァンナ・ケメンターリのしもべだ。
+Maia of Aulë|desc	ecc2210eef	アルダのあらゆる物質の主でありノルドールの友である、鍛冶のアウレのしもべだ。
+great earth elemental|desc	bf208a92e9	石の巨人のように見えるこの強大なエレメンタルは、ダンジョンを形作るものそのものから力を引き出しているようだ。
+aether vortex|desc	6a0d500fa7	純粋な魔法の恐るべき渦で、その体から力があふれ出ている。
+Saruman of Many Colours|desc	411531a6f7	もとは白のサルマンとして知られていたが、サウロンの手管の餌食となった。サウロンをまねようとして、自分のために戦うオークやトロルを育てている。世界の強大な妖術王となるため、一つの指輪をいつまでも探し求めている。
+nightwing|desc	0b1e78c2b0	あたり一面の色が薄れ、空気が冷えていくように感じる。その冷たさの中心に強大な姿が立っている。ナイトウィングが手を伸ばしてあなたを忘却へ引き込もうとすると、その翼が死の冷たさであなたを包む。この強大な者に畏れを抱いて立ちすくむうち、筋肉はたるみ、心は戦う意志をすっかり失う。
+bile demon|desc	0053c5479e	でかい。太っている。赤い。醜い。猛毒のおならをひどく患っている。そして腹の中は物を腐食する。それらがすべて合わさって、あなたがこれまでに見た——そして嗅いだ——中で、飛び抜けて胸の悪くなる光景になっている。
+dreadlord|desc	5553b1cd7d	動き出した死の巨大な姿で、その色は黒よりも深い。光を飲み込み、その邪悪さの重みでまわりの空間がねじれ裂けている。命ならざるものであり、魂を盗むことと死の悪臭のほかには何も知らない。その飢えから逃げろ！
+Smaug the Golden|desc	6328aafe7b	今も生き残るウルローキの1頭で、途方もない狡猾さと知恵を持つ火竜だ。空を飛ぶ速さでかなうドラゴンは少なく、その竜の火は伝説に語られるほどだ。第三紀まで生き残った中で最も偉大なドラゴンだと信じられている。
+werewolf of Sauron|desc	9f6248cce2	強大な影のように見える巨大なオオカミだ。邪悪な主の砦を守りながら、赤く光る目が悪意を込めてにらみつけている。
+spider of Gorgoroth|desc	95cf8a1b83	エレド・ゴルゴロスの山々のふもと、ナン・ドゥンゴルセブの果てしない影の中で生まれた、ウンゴリアントのおぞましい子らの1匹だ。
+chaos hound|desc	ead7bb57c4	絶えず姿を変える犬の姿で、行く手に大混乱と混沌を待ち望んでいるかのようにこちらへ突進してくる。戦いを捨て身で楽しんでいるようにさえ見える。見かけどおりとは限らないのではないかと疑いたくなる。
+archlich|desc	05e51b9791	進化の究極の段階——完全に実体の無い状態——に達したリッチだ。
+Maia of Ulmo|desc	c07cfe4451	中つ国に住む者に、水の音楽としてしか聞こえない声で語りかける、水の王ウルモのしもべだ。
+great water elemental|desc	f4f86d8273	陸へと押し寄せる高波のように恐ろしい、強大な水の柱だ。
+The Mouth of Sauron|desc	4bf826c9bb	強大な呪文の使い手だ。あまりに年を経て自分の名さえ思い出せないが、その力と邪悪さは疑いようがない。自分は決して負けないと固く信じており、恐るべき呪文を織りながら笑う。
+osyluth|desc	f528a0ec56	ほとんど骨だけでできた悪魔だ。人型だが、巨大なサソリのような大きな尾を持ち、腐れと朽ちのおぞましい臭いを放つ。地獄の中でさえさげすまれている。
+Fëanorian raider|desc	c86fe84edc	シルマリルを追ってフェアノールとその息子たちが繰り広げた戦いを生き抜いた古強者で、素早さと力と残忍さで襲いかかってくる。
+eye druj|desc	fc78b4b9bc	宙に浮かぶ血走った目玉だ。害が無いと思い込んでも無理はない。
+greater titan|desc	a52be16ff7	歩くと大地が揺れる、背丈12メートルの人型の姿だ。その体から放たれる力に勇気が揺らぎ、あなたが逆らうことでその憎しみはかき立てられる。
+Tevildo, Prince of Cats|desc	1eefa1307f	ネコ族すべての主で、主人モルゴスによく仕えている。ちょっとした責め苦とずる賢い策略を楽しみ、あなたをもてあそびながら愉快そうに笑う。
+Thuringwethil, the Vampire Messenger|desc	73b00fb9cc	サウロンとモルゴスの間を行き来する使者の長で、吸血鬼の一族の中でもまちがいなく最も恐ろしい。最初は会って魅力的だが、翼と目が本当の姿を明かしてしまう。
+beholder hive-mother|desc	8547c6dfb2	ビホルダー族の巣母で、望めばいつでも子らを呼び寄せて助けにこさせる。
+jabberwock|desc	7f1ca058a6	「息子よ、ジャバーウォックに用心せよ！噛みつくあご、つかむ爪に！」走れ、急いで走れ。死の化身が後ろから追ってくる！
+Tselakus, the Dreadlord|desc	f7de0c6f0f	この途方もない存在への冒涜は、空間を形作るものをねじり、引き裂く。強大な魔法の達人で、あなたの柔らかな肉に飢えている。触れられると闇そのものがたじろぎ、通った跡には死と破壊が残る。さげすみの笑みを浮かべる者で、逆らおうとするあなたのみじめな努力を笑う。あなたの魂へ向かう道にあるものすべてを消し去るとき、その強大な爪は現実を引き裂く！
+bone golem|message-invis:WOUND	32ed446c26	何かがカタカタと鳴った。
+bone golem|message-invis:DRAIN_MANA	32ed446c26	何かがカタカタと鳴った。
+bone golem|message-invis:BA_NETH	32ed446c26	何かがカタカタと鳴った。
+bone golem|desc	e7c1e45b4c	これまでの犠牲者の骨で組み立てられた、夜のように黒い骸骨の姿だ。
+hound of Tindalos|desc	3aa87865d4	死の体、あらゆる汚れを受ける器であるこの猟犬たちは、時の角から煙のように現れる。飢え、うなり、決して満たされることがない。
+Nan, the Giant|desc	c8fb666e30	夏と南の巨人として知られ、大きなニレの木のようにあなたの上にそびえ立っている。右手には、これまで見た中で最も長い剣を握っている。
+nightcrawler|desc	74656a9e5b	途方もなく大きな黒い虫の姿をした、ひどく邪悪な生き物だ。大きく開いた口は闇の虚無で、鋼のような皮から酸がしたたる。これまで見たどんなものとも違い、向き合うと恐ろしい寒気が背筋を走る。
+gelugon|desc	1cab6acc34	氷の地から来たこの悪魔は、まさに恐ろしい見ものだ。背丈たっぷり3.7メートルもある、とてつもなく大きな虫のような体で、手には大きな爪、口にははさみがあり、頭は大きな複眼でふくれ上がっている。尾は剃刀のように鋭いとげに覆われている。
+great storm wyrm|desc	4caef2b1d5	力ある巨大なドラゴンだ。その途方もない体のまわりで嵐と稲妻がとどろく。深い青のうろこが閃光を照り返し、この生き物のたくましい筋肉を浮かび上がらせる。さげすむようにあなたを見ている。
+great ice wyrm|desc	be3224a974	恐るべき破壊をもたらす、途方もないドラゴンだ。これほどの寒さを感じたことも、これほど凍てつくまなざしを見たことも無い。早く立ち去れ、さもなくばその怒りを味わうことになる！
+great swamp wyrm|desc	e3c6eee7b8	大きな力を持つ、まさに途方もないドラゴンだ。この獣から出るおぞましい気体に吐きそうになる。戦う間あなたは息を止めていようとするかもしれないが、相手にはそうする理由が何も無い。
+Maia of Manwë|desc	065593d218	あらゆる王の第一の者、アルダの国の主にしてそこに住むすべての者の支配者、マンウェ・スーリモのしもべだ。
+Maia of Varda|desc	157f3f962c	エルフがエルベレスと呼び、ヴァラールの誰よりも愛する星々の女王、ヴァルダのしもべだ。
+greater demonic quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+greater demonic quylthulg|desc	cd0f893fd8	硫黄の臭いを強く放つ、脈打つ巨大な肉の塚だ。
+greater draconic quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+greater draconic quylthulg|desc	c1499afa29	色とりどりのうろこに覆われた、どくどくと脈打つ巨大な肉の塚だ。
+greater rotting quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+greater rotting quylthulg|desc	c632b9aa97	腐った肉の巨大な山だ。どくどくと脈打ち、身もだえするたびに、胸の悪くなる悪臭があたりに満ちる。
+horned reaper|desc	c2b83899e8	巨大で重く鋭い大鎌を振るう、人型の巨大な悪魔だ。狂戦士の怒りにかられると敵にも味方にも恐れられ、あなたとの間にあるものは何でも——呼び出したばかりの手下でさえ——切り倒していく。
+Ossë, Herald of Ulmo|desc	1b542a65c1	フジツボにびっしり覆われ、ぬるぬるとしずくをしたたらせた、荒ぶる海のマイアが、あなたを水の墓へ送るためにアングバンドまで身を引きずって下りてきた。ウルモのしもべの中で最も強く無慈悲な者で、海の荒ぶる力を体現している。ぐちゃりと音を立てて一歩近づくたびに、胸の中で恐怖がふくらむ。
+great hell wyrm|desc	c8675eb9bf	途方もない力を持つ巨大なドラゴンだ。その巨体から炎が絶え間なく躍り上がる。まわりの空気はあなたをやけどさせる。ちらりと見られただけで焼かれ、自分がいかにちっぽけかを思い知る。
+great bile wyrm|desc	fa9d71a6ee	巨大で、ひどく強いドラゴンだ。湯気の立つ酸の大きなたまりが、その体から地面へとしたたり落ちる。酸がダンジョンの石そのものを溶かしていくのを見て身震いする——あなたにはどうなることか。
+great wyrm of thunder|desc	7f2cdb7399	途方もない大きさのドラゴンで、それに見合う破壊の力を持つ。そのほえ声のあまりの大きさにくらくらし、身を守れるほどまともに考えられなくなる。
+nightwalker|desc	513ae95a35	黒をまとった巨大な巨人で、あなたの背から鎧を打ち砕き、その邪悪な怒りの前に無防備にする。あなたの恐怖を嗅ぎつけ、あなたのほうはこのおぞましい姿が威嚇するように大股で近づいてくるにつれて、死のひどい悪臭を嗅ぐ。
+Omarax, the Eye Tyrant|desc	4999938dd8	宙に浮かぶ、大きく年を経たビホルダーだ。そのまなざしは魂をずたずたにし、呪文は意志を打ち砕くように感じられる。途方もなく古く、その歴史は忘れられた悪にまみれ、残虐な行いは数知れず、胸が悪くなるほどだ。
+skull druj|desc	332c1861fa	妖術の力に取りつかれた、光を放つ頭蓋骨だ。動く必要すら無く、力ある言葉を唱えて強大な魔法をあなたに浴びせるだけだ。
+black reaver|desc	7fd3c1ca4e	夜のように黒い人型の姿で、着実に止めようもなく進んでくる。ダンジョンの岩そのものでさえ、それがあなたのもとへ来るのを防げない。
+aether hound|desc	0efa2b7c62	揺れ動き、渦を巻く姿だ。あらゆる色、あらゆる大きさ、あらゆる形であるように見えるが、主な形は巨大な犬のそれだ。突然、何もかもがひどく不確かに感じられる。
+great wyrm of chaos|desc	6eea5744e1	姿の変わる巨大なドラゴンだ。見ているうちに、美しく見えたかと思えば醜く見える。この世にとどまろうともがくうち、その体は混沌の力でねじ曲げられる。その存在そのものが、まわりの宇宙をゆがめている。
+great wyrm of law|desc	38995ee9f4	強大な知性を持つ巨大なドラゴンだ。宇宙を支配しようとし、ほかのすべての命をさげすむ。自分に従わない者はみな、踏みつぶすべき虫けらにすぎないと見ている。
+Ungoliant, the Unlight|desc	118710f515	この途方もなく大きくおぞましい虚無の霊は、とてつもない大きさのクモの姿をしている。光なき闇の雲に囲まれ、生きた光をすべてふくれた体に吸い込み、この上なく黒い闇を吐き出す。いつも飢えに飢えており、飢え死にを避けるためなら自分自身さえ食べるだろう。
+bronze golem|message-invis:BA_ELEC	344843544c	何かがごろごろと音を立てた。
+bronze golem|message-invis:BA_FIRE	344843544c	何かがごろごろと音を立てた。
+bronze golem|message-invis:BO_PLAS	344843544c	何かがごろごろと音を立てた。
+bronze golem|desc	42a073ee26	悪魔の形をした、腕が4本ある動く巨大な青銅の像で、ひどい熱で赤く光っている。
+Glaurung, Father of the Dragons|desc	1f325042ad	すべてのドラゴンの父で、長い間最も強大な竜だった。今はもうそうではないが、なおも一族を完全に従えており、望めばいつでも呼び寄せることができる。竜の火とはこれのことだ。
+master quylthulg|message-invis:BLINK	196bed28bb	何かがすするような音を立てた。
+master quylthulg|desc	3d7177ab8e	煮えたぎる巨大な肉の塊で、次から次へと怪物を送り込んであなたを圧倒する。
+Makar, the Warrior|desc	72fd863bc7	アイヌアの中の戦いに飢えた霊で、アルダの初めの頃、果てしない戦いの舞台にするための陰気な館を建てた。館にいないときは、妹のメアッセと共に狩りをし、モルゴスが引き起こした騒乱を探し回る。
+Feagwath, the Undead Sorcerer|desc	80433a6c21	腐敗と朽ちの悪臭がこの魔術師を取り巻いている。おぞましい陰謀と企みを続けるため、死からよみがえったのは明らかだ。
+pit fiend|desc	09bd26b9d3	爪と翼を持つ巨大な人型の姿で、うろこに覆われた赤い体と、おぞましい緑の液体をしたたらせる巨大な牙を持つ。地獄の最も深い底から来た恐ろしい敵で、悪魔の大軍の指揮官であることも多い。
+Uvatha the Horseman|desc	c467394c97	黒いマントをまとった背の高い指輪の幽鬼で、馬術の名人だ。あなたの血を味わいたがっている。
+serpent of chaos|message-invis:BLINK	4960bcece3	何かがシューッと音を立てた。
+serpent of chaos|desc	db4c3ac46a	とぐろにとぐろを重ねて身もだえする、混沌の強大な落とし子で、目のくらんだあなたの前で絶えず崩れては形を取り戻す。あなたを跡形も無く消し去ろうとしている。気をつけろ！
+Adunaphel the Quiet|desc	f349d85214	生前は女魔術師だったが、たちまちサウロンの支配と指輪の力に屈した。
+Qlzqqlzuup, the Emperor Quylthulg|desc	3455f4796e	煮えたぎる巨大な肉の塊で、目の前で色を変える。ある色、また次の色と脈打ちながら、身を守るために助けを呼ばなければならないことだけを知っている。
+Akhorahil the Blind|desc	d0bcc098cd	強大な妖術王で、生前は目が見えなかった。強力な魔法で宝石の目を作り出し、並の人間には決してできないほどよく見えるようになった。
+fury|desc	d2353121fa	怒りの化身の女で、あなたの心と体を引き裂こうとしている。
+great wyrm of annihilation|desc	aa3f96ccd2	おぞましい姿の巨大なドラゴンだ。その影のようなオーラからは冥界の悪臭が漂う。この世にとどまろうともがくうち、その体は混沌の力でねじ曲げられる。その存在そのものが、まわりの宇宙をゆがめている。
+sky dragon|desc	149ec79eb3	伝説でさえ語られない種の怒れるドラゴンで、雷のようにこちらへ突進してくる。異国の大気の竜に立ち向かう者はほとんどおらず、その話を語れるほど生き延びる者はさらに少ない。
+Wiruin, the Maelstrom|desc	e4a8f2ae20	モルゴスが番人と慰みものとしてヘルカラクセの凍てつく荒れ地から連れてきた、激しい氷の大渦だ。その縁には小さな渦が生まれ、耳をつんざくとどろきから決して逃れられないような気がする。
+Ren the Unclean|desc	340bed497e	自分を火山の神の息子だと信じていた、狂った東方の王だ。若い頃、家族を滅ぼした疫病で正気を失い、二度と戻らなかった。
+Maeglin, the Traitor of Gondolin|desc	4d54a9b206	ダークエルフのエオルの息子で、父親に劣らず、いやそれ以上に邪悪だ。黄金への欲から、隠れた王国ゴンドリンをモルゴスの軍勢に売り渡した。自身も強大な戦士であり、モルゴスの最も偉大なしもべたちの何人かがその呼びかけに応える。
+Ji Indur Dawndeath|desc	d853e07f38	この指輪の幽鬼は、心の弱い妖術王で、たやすくサウロンの力に屈した。
+great wyrm of balance|desc	5816a38d3a	竜族の中でも最も強大な1頭である巨大なドラゴンだ。何千年も生きていて、宇宙の均衡を保とうとしている。あなたのことを、自分の行いを律する知恵も無い成り上がりの厄介者と見ている。あなたを滅ぼすだろう。
+great wyrm of many colours|desc	3cd16d5c4b	うろこが無数の色にちらちらと輝く、途方もなく大きなドラゴンだ。
+Pazuzu, Lord of Air|desc	770c8f81c1	翼のある人型の悪魔で、あなたの運命を決めながら、人間離れした笑みを浮かべている。
+Dwar, Dog Lord of Waw|desc	3556e5143e	生前から犬と特に縁が深く、今でも思いのままに犬を従えられる。狂ったように遠吠えしながら、あなたを滅ぼそうと手を伸ばしてくる。
+Hoarmurath of Dir|desc	9d66f83019	おぞましい妖術に長けた指輪の幽鬼で、果てしない責め苦の命ならざる生と引き換えに失った命を恋しがっている。
+Draugluin, Sire of All Werewolves|desc	bc9a8a421e	サウロンの恐ろしい護衛を務めている。人の霊が宿った途方もなく大きなオオカミで、同族すべての長だ。
+Khamûl, the Black Easterling|desc	6f7ac65e2b	東方の戦士の王だ。強大な敵で、戦いの腕は恐るべきもの、その姿は邪悪な狡猾さでねじ曲がっている。
+Cantoras, the Skeletal Lord|desc	ccc5e832cd	かつて強大だった魔術師の骸骨を動かしている、邪悪なアンデッドのドルジの軍勢だ。その力は破滅的で、その速さは冥界に並ぶものが無い。その怒りから逃げろ！
+greater Balrog|desc	f4ccfa5954	もとは半ば神であるマイアールの1人だったが、時の初めにモルゴスへの忠誠を誓い、今では最も恐ろしい悪魔のしもべの1人になっている。炎の鞭と剣であなたを滅ぼそうとする。
+The Witch-King of Angmar|desc	febbe9924a	サウロンの将の中で最も恐るべき者——アングマールの王、妖術師、指輪の幽鬼、ナズグルの首領、サウロンの手にある恐怖の槍、絶望の影だ。その呪文は命取りで、戦いの打撃は叩きつぶすほど重い。すばやく動き、悪の軍勢を思いのままに従える。死すべき人間の男の手にかかって死ぬことは決して無い定めだと言われている。
+Ancalagon the Black|desc	04521f7b42	「突進するあご」がその名で、死がその遊びだ。竜族の中で最も偉大で最も恐ろしく、その力はしばらくの間ヴァラールさえひるませた。
+The Tarrasque|desc	cecc62c66e	伝説の巨大な爬虫類で、殺すことができず魔法も効かないとうわさされている。その怒りを恐れよ。その破壊に並ぶものは無い！
+Meássë, the Bloody|desc	054ca3879f	戦士マカルの妹で、両腕がひじまで赤く染まるまで、館の戦士たちに励ましの声をかけ、傷を癒やして戦い続けさせた。あらゆる暴力を喜び、同じ力を持つ者を誰でも自分の配下に引き入れる。
+Lungorthin, the Balrog of White Fire|desc	bed70d442e	炎をまとった巨大な姿だ。赤くくすぶる目で不吉にあなたをにらみつけている。立っているダンジョンの床は、その体の熱で焦げている。
+Huan, Wolfhound of the Valar|desc	7c832685e0	ヴァラールの猟犬で、フェアノールの息子ケレゴルムからバラヒアの息子ベレンまで、多くの主に仕えてきた。だが今は野に放たれ、自分自身のほかに主を認めず、宿敵——アングバンドの恐ろしい狼カルハロス——をただ独り狩っている。
+Carcharoth, the Jaws of Thirst|desc	af9e5f324f	アングバンドの第一の番人で、「赤い顎」とも呼ばれ、地上を歩いた中で最も偉大なオオカミだ。ひどく賢く、戦えば命取りの敵だ。
+Vecna, the Emperor Lich|desc	fa37b9e3d0	アンデッドの魔術師すべての中で最も偉大な者で、かつては神々でさえ恐れた。このいにしえの死の影は、通り過ぎるすべての生き物をしおれさせる。
+storm of Unmagic|desc	30d95b4fb2	崩れていくダンジョンをうなりを上げて吹き抜ける反魔法の渦で、触れたものすべてから魔法を引きはがす。
+Gothmog, the High Captain of Balrogs|desc	2b5b256e88	モルゴスの親衛隊にいるバルログの長だ。ノルドールの上級王フェアノールとフィンゴンの2人を殺したことで名高く、戦いで負けたことは一度も無い。炎の鞭と恐るべき炎の息で、ウンゴリアントの怒りから主を救った。
+Sauron, the Sorcerer|desc	80e387b39f	モルゴスのしもべの中で最も偉大で最も恐ろしい者で、一つの指輪を作った者だ。影と幻の主である恐るべき力の妖術師、知恵においておぞましく、力において残忍で、治めるものをゆがめる、人狼の主だ。その支配は責め苦そのものだ。多くのしもべを持ち、しもべ抜きで戦うことはめったに無い。
+Wolf-Sauron|desc	79e630d7da	世界を歩いた中で最も強大なオオカミの姿をとったサウロンだ。
+Serpent-Sauron|desc	35d6575b44	ヘビの姿をとったサウロンだ。毒を持ち、噛みつき、唾を吐き、強大なとぐろであなたを押しつぶそうとする。
+Vampire-Sauron|desc	4843810231	吸血鬼の姿をとったサウロンで、月をよぎる黒雲のように大きい。
+Morgoth, Lord of Darkness|desc	f5b41da3f7	アングバンドの地の底の主だ。その姿は稲妻を冠にいただく黒い山のようだ。尽きることのない怒りに荒れ狂い、その体にはフィンゴルフィンが負わせた8つの深手の傷跡がある。痛みから休まることは決して無く、世界の光と善のすべてを支配しようといつまでも求め続けている。人間が闇を恐れるのはこの者が起こりであり、邪悪な力で数多くのおぞましい生き物を作り出した。オーク、ドラゴン、トロルはこの者の最もおぞましいゆがめられた作品で、この者を喜ばせるために世界に多くの苦痛と苦しみをもたらしている。悪にゆがんだそのおぞましい顔には鉄の冠がかぶせられ、残る2つのシルマリルがいつまでもこの者を焼いている。冥界の強大な鎚グロンドが、あなたを粉々に打ち砕こうと大股で近づいてくるこの者の手で、挑むように雄たけびを上げる！

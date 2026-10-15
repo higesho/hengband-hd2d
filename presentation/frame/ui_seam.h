@@ -34,6 +34,8 @@ struct UiSeam {
     std::function<void(const GameFrame &)> present;
     //! SDL イベントを pump し、翻訳済みキーを out に追加する（待機はしない）。
     std::function<void(KeyQueue &out)> pump_input;
+    //! Discard old input and acknowledge discarded structured requests.
+    std::function<void()> discard_input;
     //! 指定ミリ秒待機（SDL_Delay 相当）。
     std::function<void(int ms)> delay_ms;
     //! ウィンドウクローズ等で終了要求が出ているか。

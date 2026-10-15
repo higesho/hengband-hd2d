@@ -32,7 +32,7 @@ Copy-Item $apkSrc (Join-Path $distDir $apkName) -Force
 
 # 3. 現地手順（Windows 版 dist の README と同じ思想: 空のフォルダを渡さない）
 $readme = @"
-変愚蛮怒 ボクセル HD2D — Meta Quest ネイティブ版（野良 APK）
+変愚蛮怒HD — Meta Quest ネイティブ版（野良 APK）
 ============================================================
 
 対象: Quest 2 / Quest Pro / Quest 3 / Quest 3S

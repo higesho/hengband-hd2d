@@ -5,7 +5,7 @@
  * コアは「サブウインドウ」を `angband_terms[1..7]` に対して描く仕組みを持っている
  * （`window_stuff()` → `fix_*` → `display_sub_windows()`。`src/core/window-redrawer.cpp:246`）。
  * SDL2 UI は窓を 1 つしか持たないので、**画素を出さない Term を 5 枚**
- * `angband_terms[1..5]` に置き、`g_window_flags[1+i]` に利用者が選んだ種類を入れる。
+ * `angband_terms[1..5]` に置き、`g_window_flags[1+i]` に遊ぶ人が選んだ種類を入れる。
  * あとはコアが勝手にその Term へ描くので、Bridge がその文字グリッドを読んで
  * `GameFrame::sub_panels` に積む（コア非改変・Term 非描画）。
  *

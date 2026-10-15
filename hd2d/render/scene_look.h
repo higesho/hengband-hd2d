@@ -114,7 +114,7 @@ struct LookParams {
     float level{ 3.0f };
     /*!
      * @brief 自発光（溶岩・松明の炎）の倍率。
-     * @details **1.35 では溶岩が白い穴になった**（実機の 1 枚目。`docs/screenshots/tron/`）。
+     * @details **1.35 では溶岩が白い穴になった**（実機の 1 枚目）。
      * 自発光は標準でも HDR 3.15 まで出ている（`post_process.h` の実測表）ので、
      * 面を真っ黒にした TRON では**むしろ抑える**ほうが「光源だけが色を持つ」に近づく。
      */
@@ -221,7 +221,7 @@ void upload_look(const LookUniforms &loc, const LookParams &look, const LookGlyp
  * 「掛けなければ従来と同一」を構造的に保証するためで、
  * 呼ぶ側が `if` で囲む必要をなくしてある（囲み忘れが必ず起きる形にしない）。
  *
- * `keep_sky` は利用者が回せる旗（`Hd2dSettings::tron_sky`）である。
+ * `keep_sky` は遊ぶ人が回せる旗（`Hd2dSettings::tron_sky`）である。
  * 偽（既定）＝**空も雲も出さず真っ黒**、真＝時刻に応じた空を暗く出す。
  * @{
  */

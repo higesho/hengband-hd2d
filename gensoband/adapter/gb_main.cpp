@@ -1,9 +1,23 @@
-﻿/*!
+#if defined(HENGBAND_DESKTOP_LINUX)
+#include <csignal>
+#endif
+#include "bridge/native_store_menu.h"
+#include "bridge/native_item_display_impl.h"
+#include "bridge/native_inventory_menu.h"
+extern "C" void gb_native_describe_item(const void *,native_store_item *);
+extern "C" int gb_native_owned_item(int,native_store_item *);
+static presentation::NativeInventoryMenu g_inventory_menu;
+extern "C" int gb_native_store_info(native_store_info *);
+extern "C" int gb_native_store_item(int,native_store_item *);
+#include "bridge/native_modern.h"
+#include "bridge/native_save_picker.h"
+#include <variant>
+/*!
  * @file gb_main.cpp
  * @brief `GensobandCore.exe` の入口（プロトコル v1 の core 側）。**P2 本実装**。
  *
- * 基準は幻想蛮怒コアの設計（§3 / §8 P2 の受け入れ）と、
- * プロトコル v1 の仕様
+ * / §8（P2 の受け入れ）と、
+ * プロトコルの プロトコル v1 の仕様
  * （§3 握手 / §4 カタログ / §5 UiSeam 対応 / §6.4 合体規則 / §8 pad_commands）。
  *
  * ## この TU の立ち位置
@@ -39,16 +53,19 @@
 #include "gb_lang.h"
 #include "gb_lang_c.h"
 #include "gb_manifest.h"
+#include "gb_menu.h"
 #include "gb_pad_commands.h"
 #include "gb_sub_panels.h"
 #include "gb_text.h"
 
 #include "bridge/input_event_adapter.h"
 #include "frame/frame_codec.h"
+#include "bridge/native_targeting_runtime.h"
 #include "frame/protocol_messages.h"
 #include "frame/protocol_transport.h"
 
 #include "portable/legacy_os.h"
+#include "bridge/slab_presence.h" //!< 目録の記録は PNG ではなく板（.vox）の有無を数える
 
 #include <algorithm>
 #include <atomic>
@@ -64,9 +81,10 @@
 
 namespace {
 
-/*! 主 Term の大きさ。設計 §3.2 で M0 は 80x27 固定。 */
+/*! 主 Term の大きさ。作成画面の作品一覧の末尾（行27）を含める。 */
 constexpr int kTermCols = 80;
-constexpr int kTermRows = 27;
+// birth.c draws entry p at zero-based row 27; keep that choice visible.
+constexpr int kTermRows = 28;
 
 //! v1 §1.1 の起動引数。これが無い core は「単体で動く従来版」を名乗る立場に無い。
 constexpr std::string_view kUiProtocolArg = "--ui-protocol=stdio";
@@ -76,7 +94,7 @@ constexpr std::string_view kProtocolLogArg = "--protocol-log=";
 constexpr std::string_view kSavefileArg = "--savefile=";
 //! 既定のセーブ枠（設計 §3.2）。
 constexpr const char *kDefaultSlot = "player";
-//! 前回遊んだ枠の地形の記憶。**アダプタの持ち物**（コアのセーブ形式には触らない）。
+//! 前回遊んだ枠の覚え書き。**アダプタの持ち物**（コアのセーブ形式には触らない）。
 constexpr const char *kLastSlotFile = "last_slot.txt";
 //! 言語の指定。無ければ最初の `ui_state.lang` を待つ。
 constexpr std::string_view kLangArg = "--lang=";
@@ -84,7 +102,7 @@ constexpr std::string_view kLangArg = "--lang=";
 constexpr std::string_view kReportUntranslatedArg = "--report-untranslated=";
 //! 言語切り替えの立て直し（Sil-Q A2 の写し）。画面側が**起こし直しの回だけ**付ける。
 constexpr std::string_view kResumeArg = "--resume";
-//! 立て直しで開き直す枠の地形の記憶。**`.` で始まる**ので枠一覧（`list_save_slots`）には出ない。
+//! 立て直しで開き直す枠の覚え書き。**`.` で始まる**ので枠一覧（`list_save_slots`）には出ない。
 constexpr const char *kResumeFile = ".resume";
 
 /* ============================================================ 会話ログ（v1 §11.2） */
@@ -197,7 +215,12 @@ std::atomic<bool> g_exit_sent{ false };
 
 //! 受信キュー。**中身はコア内部コード（SJIS）に直したあとのバイト**である。
 std::mutex g_inbox_mutex;
-std::deque<int> g_key_queue;
+presentation::NativeModernMenu g_native_menu;
+presentation::NativeStoreMenu g_store_menu;
+extern "C" int gb_native_test_open(int);
+extern "C" int gb_name_en_selftest(void);
+bool g_native_test_started=false;
+std::deque<std::variant<int,presentation::InputEventWire>> g_key_queue;
 gb::GbKeyDecoder g_key_decoder;
 
 //! 直近の `ui_state`。視界の大きさとカメラの追従に効く（v1 §7）。
@@ -205,6 +228,8 @@ presentation::UiStateMessage g_ui_state;
 bool g_ui_state_present = false;
 //! まだゲームスレッドへ渡していない `ui_state` がある。
 bool g_ui_state_dirty = false;
+//! 画面が望む Term の高さ（行数）。0 は未指定。`apply_wanted_term_rows()` が安全な間にだけ反映する。
+int g_wanted_term_rows = 0;
 
 /*!
  * @name 最初の `ui_state`（言語の確定。設計 §4.1）
@@ -313,9 +338,16 @@ void receive_loop()
                 std::fprintf(stderr, "[gensoband] bad \"input_event\": %s\n", err.c_str());
                 continue;
             }
-            std::vector<int> keys;
-            presentation::append_input_event_keys(message, keys);
-            enqueue_keys(keys);
+            for (const auto &event : message.events) {
+                if (event.e == "ui_action") {
+                    std::lock_guard<std::mutex> lock(g_inbox_mutex);
+                    g_key_queue.push_back(event);
+                } else {
+                    presentation::InputEventsMessage one; one.events.push_back(event);
+                    std::vector<int> keys; presentation::append_input_event_keys(one, keys);
+                    enqueue_keys(keys);
+                }
+            }
             continue;
         }
         if (type == "ui_state") {
@@ -389,6 +421,21 @@ int g_last_pad_stamp = -1;
 //! タイル目録（設計 §5.1）。起動時に 1 回読んで、以後 `gb_frame` が索引に使う。
 gb::TileManifest g_manifest;
 
+/*!
+ * @brief 一覧のアイコン用 tile_index。`kind_id` が有ればその種類の板、無ければ
+ * `unaware_category`（正体の分からないアイテム）の代表の板。
+ */
+uint16_t gb_tile_for_row(int kind_id, int unaware_category)
+{
+    if (kind_id) {
+        return g_manifest.lookup('K', kind_id);
+    }
+    if (unaware_category) {
+        return g_manifest.lookup_unaware_representative(static_cast<presentation::UnawareItemCategory>(unaware_category));
+    }
+    return 0;
+}
+
 void send_pad_commands()
 {
     (void)send_message("pad_commands", presentation::encode_pad_commands(gb::build_pad_commands()));
@@ -412,7 +459,9 @@ void send_startup_tables()
     (void)send_message(
         "sub_panel_kinds", presentation::encode_sub_panel_kinds(gb::build_sub_panel_kinds()));
     if (!g_manifest.message().assets.empty()) {
-        (void)send_message("asset_manifest", presentation::encode_asset_manifest(g_manifest.message()));
+        auto manifest = g_manifest.message();
+        manifest.root = portable::path_to_utf8(manifest.root); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
+        (void)send_message("asset_manifest", presentation::encode_asset_manifest(manifest));
     }
 }
 
@@ -421,7 +470,21 @@ void send_startup_tables()
 //! 直近の安い digest（`gb_change_digest`）。capture を丸ごと省くための門。
 unsigned long long g_last_digest = 0;
 bool g_has_last_digest = false;
-//! 地形の記憶を書いたか（`last_slot.txt`）。@ が出来た最初の 1 回だけ書く。
+
+int pop_native_key_locked() {
+    while (!g_key_queue.empty()) {
+        auto queued = std::move(g_key_queue.front()); g_key_queue.pop_front();
+        if (auto key = std::get_if<int>(&queued)) return *key;
+        std::vector<int> translated;
+        const auto &event=std::get<presentation::InputEventWire>(queued);
+        if(!presentation::native_targeting().input(event,translated)&&!g_inventory_menu.input(event,translated)&&!g_store_menu.input(event,translated))g_native_menu.input(event, translated);
+        g_has_last_digest = false;
+        for (auto it = translated.rbegin(); it != translated.rend(); ++it) g_key_queue.push_front(*it);
+    }
+    return 0;
+}
+
+//! 覚え書きを書いたか（`last_slot.txt`）。@ が出来た最初の 1 回だけ書く。
 bool g_slot_remembered = false;
 
 //! セーブの置き場に「前回遊んだ枠」を残す。次の起動が続きから始められるように。
@@ -453,6 +516,42 @@ void remember_slot_once()
     std::fprintf(stderr, "[gensoband] remembered save slot \"%s\"\n", base.c_str());
 }
 
+/*!
+ * @brief Term の高さを変えてよい時か（`gb_screen_flags()` の値と `gb_awaiting_command()` の値で決める）。
+ * @details Term の高さを変えると、原作の `Term_resize()` が `resize_hook`（`dungeon.c` が入れる `resize_map()`。`xtra2.c`）を呼ぶ。
+ * `resize_map()` は `PR_WIPE`（`msg_print(NULL)` と `Term_clear()`。`xtra1.c` の `redraw_stuff()`）を含む再描画を立てて
+ * `handle_stuff()` するので、地図の上で問い（個数・はい/いいえ・文字入力）が出ている最中に高さが変わると、
+ * Term の行 0 の問いが消える（`character_icky` が立つ店・建物・一覧では `redraw_stuff()` が何もしない）。
+ * Android では、問いで `text_input_active` が立つとソフトキーボードが出て窓の使える高さが縮み、
+ * 画面が送る `main_term_rows` が変わる（Frox で再現して直した件と同じ。気づいたこと 2026-10-11）。
+ *
+ * `inkey_flag`（`gb_awaiting_command()`）が真なのは `request_command()` が最上位のコマンドを待つ間。
+ * ただし店のコマンド待ちも `request_command()` を使うので真になる。店・建物の中は `character_icky` が立つので外す。
+ * ダンジョンがまだ無い間（`resize_map()` が何もしない）は、すぐ反映する。
+ * 反映できなかった分は覚えておき、次の呼び出しで再び試す（`gb_term_resize_rows()` は同じ高さなら何もしない）。
+ */
+bool term_resize_allowed(int screen_flags, int awaiting_command)
+{
+    return ((screen_flags & GB_SCREEN_DUNGEON) == 0) || ((awaiting_command != 0) && ((screen_flags & GB_SCREEN_ICKY) == 0));
+}
+
+/*! @return Term の高さを実際に変えたか（変えたら画面へ送る絵が変わるので、呼び手は送り直しの判定に使う）。 */
+bool apply_wanted_term_rows()
+{
+    if (g_wanted_term_rows <= 0) {
+        return false;
+    }
+    if (!term_resize_allowed(gb_screen_flags(), gb_awaiting_command())) {
+        return false;
+    }
+    int cols = 0;
+    int rows = 0;
+    if ((gb_term_size(&cols, &rows) != GB_OK) || (rows == g_wanted_term_rows)) {
+        return false;
+    }
+    return gb_term_resize_rows(g_wanted_term_rows) == GB_OK;
+}
+
 //! 溜まっている `ui_state` をゲームスレッド側へ渡す（`host_present` の頭で 1 回）。
 bool apply_ui_state()
 {
@@ -465,12 +564,20 @@ bool apply_ui_state()
         g_ui_state_dirty = false;
         state = g_ui_state;
     }
+    g_native_menu.set_enabled(state.modern_ui);
+    g_native_menu.set_language(state.lang);
+    g_native_menu.set_document_profile("legacy");
+    g_inventory_menu.configure(state.modern_ui,state.lang,"legacy");
+    presentation::configure_native_targeting(state.modern_ui&&state.targeting_ui,state.lang,[](const char *s){return gb::sjis_to_utf8(std::string(s));});
+    g_store_menu.set_enabled(state.modern_ui,state.lang!="en","genso");
     gb::set_view_size(state.view_w, state.view_h);
+    if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
     gb::set_camera_follow_player(state.camera_follow_player);
     gb::set_cursor_mode(state.cursor_mode);
     /*
      * 音の入切と音量（その3 / a）。**持ち主は画面側**（`hd2d.cfg` → `ui_state.audio`。
      * 機能メニュー ＞ 音）。**効果音にも BGM にも効く**が、当て方は別である
+     * （`gb_audio_set_volume` の注記。`GENSOBAND_SYSTEM_ACCEPT.md` §3.6）。
      */
     gb_audio_set_enabled(state.sound_on ? 1 : 0, state.music_on ? 1 : 0);
     gb_audio_set_volume(state.sound_volume_index, state.music_volume_index);
@@ -508,7 +615,10 @@ void host_present()
      * 下の払い出し済みペイロード比較（v1 §6.4）は**そのまま残す**——digest は
      * 衝突しうるが、こちらは厳密だから。
      */
-    const bool view_changed = apply_ui_state();
+    bool view_changed = apply_ui_state();
+    if (apply_wanted_term_rows()) {
+        view_changed = true;     // Term の高さが替わると、フレームの Term の写しの行数が替わる
+    }
     /*
      * **曲の終わりを取りに行く**（その3 / a）。MCI はメッセージで知らせてくるが、
      * コアは窓を持たない作りなので誰も回していない。ここで回さないと
@@ -524,7 +634,8 @@ void host_present()
      */
     gb::apply_cursor_mode();
     const unsigned long long digest = gb_change_digest();
-    if (g_has_last_digest && !view_changed && (digest == g_last_digest)) {
+    // 魔法・矢弾の効果の記録が溜まっているときは、画が同じでも組む（汲まれるまで残るので、組まないと届かない）。
+    if (g_has_last_digest && !view_changed && (digest == g_last_digest) && !gb::attack_fx_ready()) {
         return;
     }
     g_last_digest = digest;
@@ -532,7 +643,74 @@ void host_present()
 
     remember_slot_once();
 
-    const GameFrame frame = gb::capture_frame(++g_frame_id);
+    GameFrame frame = gb::capture_frame(++g_frame_id);
+    native_store_info store_info{};
+    int (*read_store_item)(int,native_store_item *)=nullptr;
+    if(gb_native_store_info(&store_info))read_store_item=gb_native_store_item;
+    std::vector<ModernRow> store_rows;
+    if(read_store_item)for(int i=0;;++i){
+        native_store_item raw{};if(!read_store_item(i,&raw))break;if(!raw.count)continue;
+        ModernRow row;row.tab=raw.tab;row.slot=raw.slot;row.selection=raw.selection;row.key=raw.key;
+        row.hotkey=raw.tab?raw.key:('a'+raw.slot%std::max(1,store_info.page_size));
+        row.count=raw.count;row.price=raw.price;row.price_known=raw.price_known!=0;row.available=raw.available!=0;row.equipped=raw.location==1;
+        row.label=gb::sjis_to_utf8(std::string(raw.name));row.weight=raw.weight;
+        row.description=gb::sjis_to_utf8(std::string(raw.description));row.reason=gb::sjis_to_utf8(std::string(raw.reason));
+        if(!row.available&&row.reason.empty())row.reason="This store does not accept this item.";
+        row.tile=gb_tile_for_row(raw.kind_id,raw.unaware_category);
+        row.glyph=gb::sjis_to_utf8(std::string(raw.glyph));row.glyph_color=raw.glyph_color;
+        row.id=presentation::native_store_id(store_info.kind,raw,row.label);
+        const bool ja=g_first_ui_state_lang!="en";
+        const char *action=raw.tab?(store_info.kind==1?"sell":(store_info.kind==2?"deposit":"donate")):(store_info.kind==1?"buy":(store_info.kind==2?"take":"remove"));
+        const char *label=raw.tab?(store_info.kind==1?(ja?"売る":"Sell"):(store_info.kind==2?(ja?"置く":"Deposit"):(ja?"寄贈する":"Donate"))):(store_info.kind==1?(ja?"買う":"Buy"):(store_info.kind==2?(ja?"取る":"Take"):(ja?"展示を取り除く":"Remove exhibit")));
+        row.actions.push_back({action,gb::sjis_to_utf8(std::string(label)),row.reason,row.available,raw.tab?store_info.put_key:store_info.get_key});
+        if(raw.tab==0&&store_info.kind==2&&store_info.remove_key)row.actions.push_back({"remove",gb::sjis_to_utf8(std::string(ja?"破棄する":"Destroy")),"",true,store_info.remove_key});
+        store_rows.push_back(std::move(row));
+    }
+    g_store_menu.set_title(gb::sjis_to_utf8(std::string(store_info.title)));
+    g_store_menu.set_heading(gb::sjis_to_utf8(std::string(store_info.heading)));
+    g_store_menu.capture(frame,store_info,std::move(store_rows));
+    presentation::prepare_native_targeting_menu_frame(frame);
+    const auto items=g_native_menu.enabled()?presentation::read_native_item_rows(gb_native_describe_item,
+        [](const char *s){return gb::sjis_to_utf8(s);},gb_tile_for_row):std::vector<presentation::NativeItemRow>{};
+    g_native_menu.capture(frame,{},items);
+    bool birth_race_choices=frame.pre_game_menu&&frame.modern.content_type=="choice_grid"
+        &&(frame.modern.title=="Choose a race"||frame.modern.title==gb::sjis_to_utf8(std::string("種族の選択")));
+    if(frame.pre_game_menu&&frame.modern.content_type=="choice_grid"&&!birth_race_choices) {
+        // The legacy Japanese title can arrive through a mixed CP932 source
+        // path.  Identify this page by the actual birth-race table instead of
+        // depending on the encoding of one heading literal.
+        int compared=0,matched=0;
+        for(const auto &row:frame.modern.rows) {
+            const auto raw=gb::utf8_to_sjis(row.label);
+            ++compared;if(gb_birth_race_score_mult_named(raw.c_str())>=0)++matched;
+        }
+        birth_race_choices=compared>=1&&matched==compared;
+    }
+    if(birth_race_choices) {
+        const bool ja=frame.modern.language=="ja";
+        frame.modern.title=ja?gb::sjis_to_utf8(std::string("種族の選択")):"Choose a race";
+        const std::string warning=ja
+            ?gb::sjis_to_utf8(std::string("注意\n括弧内の割合はスコア倍率です。100%が基準で、最終スコアにこの倍率が掛かります。"))
+            :"Note\nThe percentage in parentheses is the score multiplier. 100% is the baseline and this multiplier is applied to the final score.";
+        for(auto &row:frame.modern.rows) {
+            const auto raw=gb::utf8_to_sjis(row.label);
+            int score=gb_birth_race_score_mult_named(raw.c_str());
+            if(score<0) {
+                int index=-1;
+                if(row.key>='a'&&row.key<='z')index=row.key-'a';
+                else if(row.key>='A'&&row.key<='Z')index=26+row.key-'A';
+                score=gb_birth_race_score_mult(index);
+            }
+            if(score<0)continue;
+            row.label+=" ("+std::to_string(score)+"%)";
+            if(!row.description.empty())row.description+="\n\n";
+            row.description+=warning;
+            for(auto &action:row.actions)if(action.id=="choice")action.label=row.label;
+        }
+    }
+    presentation::apply_native_targeting_menu_frame(frame);
+    g_inventory_menu.capture(frame,[]{return presentation::read_native_owned_items(gb_native_owned_item,
+        [](const char *s){return gb::sjis_to_utf8(s);},gb_tile_for_row);},[]{return gb::build_pad_commands();});
     const std::string wire = presentation::encode_game_frame(frame);
     std::string key = frame_compare_key(wire);
     if (g_has_last_frame && (key == g_last_frame_key)) {
@@ -551,13 +729,21 @@ void host_present()
 
 int host_next_key()
 {
+    if(presentation::native_targeting().take_disabled_wake())return 27;
+    if(!g_native_test_started && gb_awaiting_command()) {
+        const char *test=std::getenv("HD2D_TEST_STORE");
+        if(test) {
+            g_native_test_started=true;
+            std::fprintf(stderr,"[native-menu-test] entering store %s\n",test);
+            gb_native_test_open(std::atoi(test));
+            g_has_last_digest=false;
+        }
+    }
     std::lock_guard<std::mutex> lock(g_inbox_mutex);
     if (g_key_queue.empty()) {
         return 0;
     }
-    const int key = g_key_queue.front();
-    g_key_queue.pop_front();
-    return key;
+    return pop_native_key_locked();
 }
 
 void host_drop_keys()
@@ -566,6 +752,11 @@ void host_drop_keys()
     if (!g_key_queue.empty()) {
         std::fprintf(stderr, "[gensoband] FLUSH drops %u key(s)\n",
             static_cast<unsigned>(g_key_queue.size()));
+        for(const auto &queued:g_key_queue)if(const auto *event=std::get_if<presentation::InputEventWire>(&queued)) {
+            g_native_menu.adopt_request(event->request_id,"rejected");
+            g_store_menu.reject_queued_request(event->request_id);
+            g_has_last_digest=false;
+        }
         g_key_queue.clear();
     }
     g_key_decoder.reset();
@@ -622,7 +813,7 @@ std::string gensoband_lib_dir()
 }
 
 /*!
- * @brief 作った ASCII 板の置き場。`hello_ack.asset_roots.slab` に載せる（設計 §5.4）。
+ * @brief 焼いた ASCII 板の置き場。`hello_ack.asset_roots.slab` に載せる（設計 §5.4）。
  * @details 画面側の `SlabLibrary` は［ここ → 既定の置き場］の 2 段で板を探す。
  * 名寄せで転用する変愚由来の板（`R0955` 等）は既定側で見つかり、
  * 幻想蛮怒固有の板（`GA121_14` 等）はここで見つかる。
@@ -850,9 +1041,7 @@ int wait_key_for_menu()
         {
             std::lock_guard<std::mutex> lock(g_inbox_mutex);
             if (!g_key_queue.empty()) {
-                const int key = g_key_queue.front();
-                g_key_queue.pop_front();
-                return key;
+                return pop_native_key_locked();
             }
         }
         if (g_ui_gone.load() || g_quit_requested.load()) {
@@ -875,7 +1064,7 @@ int wait_key_for_menu()
  * @brief タイトル（`lib/file/news_j.txt`）とセーブ選択を出し、枠を決める。
  * @return 0 = 選んだ枠をロード（`savefile` 据え済み）/ 1 = 新規 / -1 = 終了要求
  *
- * @details 2026-08-19 に決めた（P5）:「セーブデータ選択を実装」
+ * @details 決めたこと（2026-08-19 P5）:「セーブデータ選択を実装」
  * 「幻想もタイトルがあるなら表示させて」。先方にタイトルメニューは無い
  * （「開く」は Win32 ファイルダイアログ直結）ので、news の画面へ letter 式の
  * 一覧を重ねる形を**アダプタが持つ**。コアには 1 行も足していない。
@@ -885,8 +1074,40 @@ int wait_key_for_menu()
  * letter は a〜i の 9 件まで。それを超えたぶんは見出しに件数だけ正直に書く
  * （隠れた枠は `--savefile=` で開ける）。
  */
+int modern_title_and_pick_savefile()
+{
+    const bool ja=g_first_ui_state_lang!="en";
+    presentation::NativeSavePicker picker("Gensoband",ja,list_save_slots,
+        [](const std::string &name){return presentation::remove_native_save(gb_save_dir(),name);},
+        [](const std::string &name){return gb::sjis_to_utf8(name);});
+    for(;;) {
+        const auto page=picker.page();gb_term_clear();
+        gb_term_putstr(2,1,1,gb::utf8_to_sjis(page.title).c_str());
+        std::vector<MenuChoice> choices;
+        for(size_t i=0;i<page.rows.size();++i) {
+            const auto &row=page.rows[i];const int at=4+int(i);
+            const auto line=std::string(1,char(row.key))+") "+row.label;
+            gb_term_putstr(2,at,row.selected?14:1,gb::utf8_to_sjis(line).c_str());
+            MenuChoice choice;choice.line_index=at;choice.span_begin=2;choice.span_len=int(line.size());choice.key_begin=2;choice.key_len=1;
+            choice.key=row.key;choice.selected=row.selected;choice.label_utf8=row.label;choice.description_utf8=page.description;choices.push_back(std::move(choice));
+        }
+        if(page.rows.size()<4) {
+            std::string description=page.description;size_t pos=0;int at=10;
+            while(pos<description.size()&&at<kTermRows) {auto end=description.find('\n',pos);auto line=description.substr(pos,end==std::string::npos?end:end-pos);gb_term_putstr(2,at++,1,gb::utf8_to_sjis(line).c_str());if(end==std::string::npos)break;pos=end+1;}
+        }
+        gb::set_pregame_choices(choices);gb_term_present();
+        const int result=picker.key(wait_key_for_menu());
+        if(result==-2)continue;
+        gb::set_pregame_choices({});
+        if(result<0)return -1;
+        if(result==1){gb_clear_savefile();return 1;}
+        return choose_savefile(picker.selected())?1:0;
+    }
+}
+
 int title_and_pick_savefile()
 {
+    if(g_native_menu.enabled())return modern_title_and_pick_savefile();
     const std::vector<std::string> slots = list_save_slots();
     const std::string last = read_remembered_slot();
     constexpr int kMaxListed = 9;
@@ -1113,13 +1334,78 @@ int run_selftest()
     std::fprintf(stderr, "[gensoband] term %dx%d, row23(%d) = \"%s\"\n",
         cols, rows, cells, (cells > 0) ? line : "");
 
+    const int name_failures = gb_name_en_selftest();
+    std::fprintf(stderr, "[gensoband] name rebuild: %s\n", name_failures == 0 ? "ok" : "FAIL");
+    const int menu_failures = gb::menu_semantics_selftest();
+    std::fprintf(stderr, "[gensoband] menu semantics: %s\n", menu_failures == 0 ? "ok" : "FAIL");
+    const int mirror_failures = gb::term_mirror_baseline_selftest();
+    std::fprintf(stderr, "[gensoband] term mirror baseline: %s\n", mirror_failures == 0 ? "ok" : "FAIL");
+
+    int command_failures = 0;
+    const auto pad_commands = gb::build_pad_commands();
+    const auto usable_command = [&](int command) {
+        const auto it = std::find_if(pad_commands.entries.begin(), pad_commands.entries.end(),
+            [command](const auto &entry) { return entry.command == command; });
+        return it != pad_commands.entries.end() && !it->seq_original.empty() && !it->seq_rogue.empty();
+    };
+    if (!usable_command('m')) {
+        ++command_failures;
+        std::fprintf(stderr, "[gensoband] command regression FAIL: m (use spell)\n");
+    }
+    if (!usable_command('b')) {
+        ++command_failures;
+        std::fprintf(stderr, "[gensoband] command regression FAIL: b (browse spells/powers)\n");
+    }
+    std::fprintf(stderr, "[gensoband] m/b command regression: %s\n", command_failures == 0 ? "ok" : "FAIL");
+
+    /* Term の高さを変えてよい時（問いの最中に変えると、原作の resize_map() が問いの行を消す） */
+    int term_resize_failures = 0;
+    {
+        const auto expect = [&](bool ok, const char *what) {
+            if (!ok) {
+                ++term_resize_failures;
+                std::fprintf(stderr, "[gensoband] selftest: term resize gate: FAIL - %s\n", what);
+            }
+        };
+        expect(term_resize_allowed(0, 0), "no dungeon yet: resize now");
+        expect(term_resize_allowed(GB_SCREEN_GENERATED | GB_SCREEN_DUNGEON, 1), "dungeon, waiting for a command: resize now");
+        expect(!term_resize_allowed(GB_SCREEN_GENERATED | GB_SCREEN_DUNGEON, 0), "dungeon, inside a prompt: defer");
+        expect(!term_resize_allowed(GB_SCREEN_GENERATED | GB_SCREEN_DUNGEON | GB_SCREEN_ICKY, 0), "dungeon, inside a menu: defer");
+        expect(!term_resize_allowed(GB_SCREEN_GENERATED | GB_SCREEN_DUNGEON | GB_SCREEN_ICKY, 1), "dungeon, store command wait (inkey_flag is true but icky): defer");
+        std::fprintf(stderr, "[gensoband] selftest: term resize gate: %s\n", (term_resize_failures == 0) ? "ok" : "FAIL");
+    }
+
+    /* 光源の種類の判定（光の届く範囲）。キャラクターは要らない。 */
+    char light_err[160];
+    const int light_failures = gb_light_selftest(light_err, static_cast<int>(sizeof(light_err)));
+    if (light_failures != 0) {
+        std::fprintf(stderr, "[gensoband] selftest: light kind: FAIL - %d case(s), first: %s\n", light_failures, light_err);
+    } else {
+        std::fprintf(stderr, "[gensoband] selftest: light kind: ok\n");
+    }
+
     gb_term_remove();
+
+    /*
+     * 状態のアイコンの表の自己検査。キャラクターは要らない。
+     * 環境変数 HENGBAND_STATUS_ICON_TABLE に `hd2d/ui/status_icon_table.inc` の絶対パスがあれば、
+     * 送る鍵が全部その表にあることまで見る（無ければ表の中の整合だけ。関門はパスを渡す）。
+     */
+    char status_err[160];
+    int status_checked = 0;
+    const int status_failures = gb_status_selftest(status_err, static_cast<int>(sizeof(status_err)), &status_checked);
+    if (status_failures != 0) {
+        std::fprintf(stderr, "[gensoband] selftest: status icons: FAIL - %d case(s), first: %s\n", status_failures, status_err);
+    } else {
+        std::fprintf(stderr, "[gensoband] selftest: status icons: ok (%d keys checked against the icon table, %d bar entries, %d permanent rows)\n",
+            status_checked, gb_status_bar_table_count(), gb_status_perm_row_count());
+    }
 
     /* 受け入れの合図（設計 §8 P1 / §9-1）。**この 1 行だけは必ず ASCII**。 */
     std::fprintf(stderr, "%s %s\n", gb_core_name(), gb_core_version());
     std::fflush(stderr);
 
-    return 0;
+    return (menu_failures == 0 && mirror_failures == 0 && name_failures == 0 && command_failures == 0 && term_resize_failures == 0 && light_failures == 0 && status_failures == 0) ? 0 : 1;
 }
 
 /* ==================================================================== 本体（P2） */
@@ -1194,8 +1480,17 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
         /* 致命ではない——絵が出ないだけで遊べる。**捏造せずに数えて言う**（§5.1）。 */
         std::fprintf(stderr, "[gensoband] tile manifest unavailable: %s\n", g_manifest.error().c_str());
     } else {
-        std::fprintf(stderr, "[gensoband] tile manifest: %u entries from %s (%d png missing)\n",
-            static_cast<unsigned>(g_manifest.message().assets.size()), csv.c_str(), g_manifest.missing_files());
+        /*
+         * 正体の分からないアイテムの代表タイルを追加登録する。
+         * 新しい絵は作らない——変愚の既存の板（tilework/sfc/K<id>.png）を指す行を
+         * 目録の末尾へ足すだけ（gb_manifest.cpp の add_unaware_representative_tiles() 参照）。
+         */
+        g_manifest.add_unaware_representative_tiles();
+        // 目録の記録は、画面が実際に引く板（.vox）の有無を数える。PNG は HD2D が使わない開発の頃の 2D の絵で、
+        // 配布物には無いので「全部無い」と出て、異常のダイアログで原因に見えていた（2026-10-06。slab_presence.h）。
+        const auto slabs = presentation::count_slab_presence(g_manifest.message(), { gensoband_slab_dir(), presentation::default_slab_dir() });
+        std::fprintf(stderr, "[gensoband] tile manifest: %u entries from %s (entity slabs: %d of %d missing)\n",
+            static_cast<unsigned>(g_manifest.message().assets.size()), csv.c_str(), slabs.missing, slabs.entity_rows);
         gb::set_tile_manifest(&g_manifest);
     }
 
@@ -1207,7 +1502,7 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * `features`（v1 §3.1）。リアルタイム進行は変愚だけの機能なので、ここで名乗らない
      * ＝画面側のリアルタイム設定が自然に隠れる（設計 §6.3）。
      * **`audio` は名乗る**——`gb_audio.c` が効果音（PlaySound）と BGM（MCI）を鳴らすので、
-     * 機能メニューの「音」の節が出る（2026-08-21 に決めた）。
+     * 機能メニューの「音」の節が出る。
      * ただし**鳴らせるのは Windows だけ**である（winmm の PlaySound / MCI）。Android では
      * `gb_audio.c` が空実装になるので、名乗らない＝出せない節を出さない。
      * `asset_roots.graf` は**出さない**——8/16px の面を持たないので、
@@ -1217,14 +1512,14 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
     ack.features.emplace_back("audio");
 #endif
     /*
-     * `lang-restart`:
+     * `lang-restart`（Sil-Q A2 の写し）:
      * 言語が替わったら画面がこのコアを**起こし直す**（`hd2d/app/hd2d_app.cpp` の
      * 一般形。コア名の分岐は無い）。起こし直しの回には `--resume` が付き、
      * `.resume` に覚えた枠を開き直す。申告しないと `ui_state.lang` が次のフレームから
      * 効く扱いになるが、edit と raw は読み直せないので言語は変わらない。
      */
     ack.features.emplace_back("lang-restart");
-    ack.asset_root_slab = gensoband_slab_dir();
+    ack.asset_root_slab = portable::path_to_utf8(gensoband_slab_dir()); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
     if (!send_message("hello_ack", presentation::encode_hello_ack(ack))) {
         return 5;
     }
@@ -1345,30 +1640,40 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * ゲームを回す。**戻ってくるのは終わったとき**。
      * 枠の決め方（P5・2026-08-19）: `--savefile=` があれば従来どおり黙って決める
      * （固定スロット方式のまま——検証・自動運転のオプション）。無ければ**タイトルと
-     * セーブ選択**を出して利用者が選ぶ（「セーブデータ選択を実装」と決めた
+     * セーブ選択**を出して遊ぶ人が選ぶ（決めたこと「セーブデータ選択を実装」
      * 「幻想もタイトルがあるなら表示させて」）。
      */
     int pick;
     const std::string resumed = take_resume_slot(); //!< **必ず読んで消す**（持ち越さない）
-    if (args.resume && !resumed.empty()) {
-        /* 言語切り替えの立て直し（Sil-Q A2）。一覧を出さずに直前の枠を開き直す。 */
-        std::fprintf(stderr, "[gensoband] resuming the save slot \"%s\" (relaunch)\n", resumed.c_str());
-        pick = choose_savefile(resumed) ? 1 : 0;
-    } else if (!args.savefile_slot.empty()) {
-        pick = choose_savefile(args.savefile_slot) ? 1 : 0;
-    } else {
-        pick = title_and_pick_savefile();
+    /*
+     * 誕生の最初の画面で取消されたら（`GB_BIRTH_CANCEL`）、タイトルとセーブ選択を出し直す（修-61。コアのプロセスは終わらない）。
+     * 2 周目以降は `--savefile=`・`--resume` の指定を使わず、いつもの選択画面から始める。
+     */
+    for (bool first_round = true;; first_round = false) {
+        if (first_round && args.resume && !resumed.empty()) {
+            /* 言語切り替えの立て直し（Sil-Q A2）。一覧を出さずに直前の枠を開き直す。 */
+            std::fprintf(stderr, "[gensoband] resuming the save slot \"%s\" (relaunch)\n", resumed.c_str());
+            pick = choose_savefile(resumed) ? 1 : 0;
+        } else if (first_round && !args.savefile_slot.empty()) {
+            pick = choose_savefile(args.savefile_slot) ? 1 : 0;
+        } else {
+            pick = title_and_pick_savefile();
+        }
+        if (pick < 0) {
+            std::fprintf(stderr, "[gensoband] shut down at the save picker (the ui went away)\n");
+            send_exit_once(g_ui_gone.load() ? 1 : 0);
+            gb_set_host_hooks(nullptr);
+            gb_term_remove();
+            g_log.close();
+            return 0;
+        }
+        rc = gb_run_game((pick == 1) ? 1 : 0);
+        std::fprintf(stderr, "[gensoband] game finished (%d)\n", rc);
+        if (rc != GB_BIRTH_CANCEL) {
+            break;
+        }
+        gb_clear_savefile();
     }
-    if (pick < 0) {
-        std::fprintf(stderr, "[gensoband] shut down at the save picker (the ui went away)\n");
-        send_exit_once(g_ui_gone.load() ? 1 : 0);
-        gb_set_host_hooks(nullptr);
-        gb_term_remove();
-        g_log.close();
-        return 0;
-    }
-    rc = gb_run_game((pick == 1) ? 1 : 0);
-    std::fprintf(stderr, "[gensoband] game finished (%d)\n", rc);
 
     /*
      * `quit_request` で畳んだ（＝画面が起こし直すかもしれない）ときだけ、
@@ -1408,7 +1713,7 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
 #if !defined(_WIN32)
 
 /*!
- * @brief dlsym 用の C 入口。
+ * @brief dlsym 用の C 入口（Android の多コア形）。
  *
  * @details 画面（`libmain.so`）はコア選択で選ばれた `.so` からこの名前を引く
  * （`platform/android/hd2d_entry_android.cpp` の resolver）。名前は 4 コアで共通である
@@ -1445,6 +1750,9 @@ extern "C" __attribute__((visibility("default"))) int hengband_core_entry(presen
 
 int main(int argc, char **argv)
 {
+#if defined(HENGBAND_DESKTOP_LINUX)
+    std::signal(SIGPIPE, SIG_IGN);
+#endif
     bool selftest = false;
     bool has_protocol_arg = false;
     RunArgs args;

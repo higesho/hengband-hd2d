@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file gb_pad_commands.cpp
  * @brief `gb_pad_commands.h` の実装。**根拠はコードと先方の change.txt**。
  *
@@ -133,6 +133,8 @@ struct PadExtra {
 const PadExtra kExtras[] = {
     { 7, "行動", "結界を張る(^g)" },
     { '.', "行動", "走る(.)" },
+    { 'n', "行動", "直前のコマンド繰り返し(n/[)" }, //!< 原作の `repeat_check()`（`util.c`）。パッドとタッチの唯一の手段
+    { '0', "行動", "繰り返し回数を指定(0)" }, //!< 原作の `request_command()` の `回数: `（`util.c`）。回数は数量の欄と同じ枠で入れる
 };
 
 /*!
@@ -141,6 +143,21 @@ const PadExtra kExtras[] = {
  * 先方が増やしても落ちないように少し余裕を持たせる。**溢れたぶんは黙って捨てない**
  * ——`gb_read_pad_commands()` は cap で打ち切った件数を返すので、下の警告で分かる。
  */
+/*!
+ * @brief 1 つの配列のキー列を積む。逆引きで出せない（`key == 0`）ときは `\` ＋コマンド文字（2026-10-07）。
+ * @details `\` の後の 1 字は原作がキー配置を通さずにコマンドとして読む。**割り当ては番号で持つ**ので、
+ * どちらの配列でも同じコマンドが出れば、配列を切り替えても割り当ては働き続ける。
+ */
+void append_command_keys(std::vector<int> &seq, unsigned char key, int command)
+{
+    if (key != 0) {
+        seq.push_back(key);
+    } else if (command > 0) {
+        seq.push_back('\\');
+        seq.push_back(command);
+    }
+}
+
 std::vector<presentation::PadCommandWireEntry> entries_from_core()
 {
     constexpr int kMax = 128;
@@ -165,17 +182,13 @@ std::vector<presentation::PadCommandWireEntry> entries_from_core()
         wire.group_utf8 = sjis_to_utf8(src.group, std::char_traits<char>::length(src.group));
         wire.label_utf8 = sjis_to_utf8(src.label, std::char_traits<char>::length(src.label));
         /*
-         * **キーが 0 の配列には何も積まない。**「そのコマンドはこの配列では出せない」
-         * の意味で、変愚の `resolve_pad_command_keys()` が空列を返すのと同じ
-         * （黙って誤ったキーを積むより無反応が安全）。項目そのものは残す——
-         * 一覧から消すと「押せないこと」まで見えなくなる。
+         * **キーが 0 の配列**（その配列のキー配置の表を逆に引いても出せないコマンド）は、原作の
+         * 「キー配置を飛ばす」`\`（`util.c` の `request_command()`）を前に付けてコマンド文字をそのまま
+         * 出す（2026-10-07）。以前は何も積まず、ローグライクのキー配置に切り替えると
+         * そのコマンドの割り当てが死んでいた（「職業特殊能力を使用」）。
          */
-        if (src.key_original != 0) {
-            wire.seq_original.push_back(src.key_original);
-        }
-        if (src.key_rogue != 0) {
-            wire.seq_rogue.push_back(src.key_rogue);
-        }
+        append_command_keys(wire.seq_original, src.key_original, src.command);
+        append_command_keys(wire.seq_rogue, src.key_rogue, src.command);
         out.push_back(std::move(wire));
     }
     return out;
@@ -223,14 +236,8 @@ void append_extras(std::vector<presentation::PadCommandWireEntry> &out)
         wire.group_utf8 = sjis_to_utf8(group, std::strlen(group));
         wire.label_utf8 = sjis_to_utf8(label, std::strlen(label));
 
-        const unsigned char key_original = gb_pad_key_for_command(0, extra.command);
-        const unsigned char key_rogue = gb_pad_key_for_command(1, extra.command);
-        if (key_original != 0) {
-            wire.seq_original.push_back(key_original);
-        }
-        if (key_rogue != 0) {
-            wire.seq_rogue.push_back(key_rogue);
-        }
+        append_command_keys(wire.seq_original, gb_pad_key_for_command(0, extra.command), extra.command);
+        append_command_keys(wire.seq_rogue, gb_pad_key_for_command(1, extra.command), extra.command);
         out.push_back(std::move(wire));
     }
 }

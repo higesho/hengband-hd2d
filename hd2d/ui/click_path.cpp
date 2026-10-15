@@ -38,7 +38,7 @@ bool minimap_walkable(const MinimapSnapshot &map, int gx, int gy)
     case MinimapKind::Monster:
         /*
          * **敵の上は通らない。**通れることにすると、道の途中に敵が居るだけで
-         * クリック移動が攻撃コマンドに化ける。攻撃は利用者が明示的にやること。
+         * クリック移動が攻撃コマンドに化ける。攻撃は遊ぶ人が明示的にやること。
          */
         return false;
     case MinimapKind::Unknown:

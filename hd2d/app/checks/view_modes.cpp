@@ -98,7 +98,7 @@ int run_prefab_view(const AppOptions &options)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 #if defined(_WIN32)
-        (void)::MessageBoxA(nullptr, "SDL の初期化に失敗しました。", "Hengband HD2D", MB_OK | MB_ICONERROR);
+        (void)::MessageBoxA(nullptr, "SDL の初期化に失敗しました。", "Hengband HD", MB_OK | MB_ICONERROR);
 #else
         std::fprintf(stderr, "[hd2d] SDL の初期化に失敗しました: %s\n", SDL_GetError());
 #endif
@@ -601,14 +601,14 @@ int run_prefab_view(const AppOptions &options)
  * 違いは**描くこと**だけである。検査ではないので RESULT は出さない。
  *
  * ```
- * .\HengbandHd2d.exe --town-view --town-data=lib\edit\towns\03_Morivant.txt \
+ * .\HengbandHd2d.exe --town-view --town-data=lib\edit\towns\03_Morivant.jsonc \
  *     --town-at=120,40 --windowed=1600x900 --shot=shots\p10c\mor.bmp
  * ```
  */
 int run_town_view(const AppOptions &options)
 {
     const std::string path = options.town_data_path.empty()
-        ? std::string("lib/edit/towns/01_Outpost_Full.txt")
+        ? std::string("lib/edit/towns/01_Outpost_Full.jsonc")
         : options.town_data_path;
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::fprintf(stderr, "[hd2d] SDL_Init failed: %s\n", SDL_GetError());
@@ -674,6 +674,21 @@ int run_town_view(const AppOptions &options)
         SDL_Quit();
         return 1;
     }
+    /*
+     * **町を窓の中でずらして描く**（`HD2D_TOWN_ORIGIN=66,22`。Frox の荒野の窓のずれを再現する）。
+     * 町の座標が動かない前提で作った意匠の表・乱数の種・街灯の格子が、原点を引いた座標で使われているかを
+     * 絵で見る手段——原点なしの絵と**同じ絵**になるのが正しい（置き場所は同じ。影の格子の位置が窓の中で変わるので、
+     * 縁の数画素だけは違う。置き場所の一致そのものは `--town-check` の `HD2D_TOWN_ORIGIN_CHECK` が数える）。
+     * `--town-at=` の指定は町の座標で書く。
+     */
+    int town_origin_x = 0;
+    int town_origin_y = 0;
+    if (read_origin_env("HD2D_TOWN_ORIGIN", town_origin_x, town_origin_y)) {
+        embed_town_frame(frame, town_origin_x, town_origin_y);
+    } else {
+        town_origin_x = 0;
+        town_origin_y = 0;
+    }
     //! 夜の町（街灯と窓）を見るための手段。`HD2D_FORCE_TIME=20:30` で日没後にできる。
     {
         const int forced = forced_day_minute();
@@ -703,6 +718,10 @@ int run_town_view(const AppOptions &options)
      */
     int look_x = options.town_at_x;
     int look_y = options.town_at_y;
+    if ((look_x >= 0) && (look_y >= 0)) {
+        look_x += town_origin_x;
+        look_y += town_origin_y;
+    }
     if ((look_x < 0) || (look_y < 0)) {
         int best = -1;
         for (const TownSite &site : town.sites) {
@@ -764,6 +783,10 @@ int run_town_view(const AppOptions &options)
     build_terrain_view(meaning, Frustum::from(camera.view_projection()), terrain, &memory, &library, &town, night);
 
     SceneLighting lighting = make_scene_lighting(frame.lighting, frame.floor);
+    //! 町の夜の明るさ（本編と同じ。表に `night_light` のある町だけ）。
+    if ((terrain.night_light > 1.001f) && (frame.floor.kind == static_cast<int>(FloorKind::Surface))) {
+        apply_town_night_light(lighting, frame.lighting, terrain.night_light);
+    }
     //! 覆いの町の中の自然光（本編と同じ。オレンジに振って底を持ち上げる）。
     if (terrain.covered) {
         lighting.sky_color = Vec3{ 0.88f, 0.62f, 0.40f };

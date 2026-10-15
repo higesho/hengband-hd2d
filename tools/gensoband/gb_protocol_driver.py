@@ -367,9 +367,14 @@ def cmd_handshake(work: Path):
                f"count={s.counts.get('sub_panel_kinds', 0)}")
         ck.add(s.counts.get("asset_manifest", 0) == 1, "asset_manifest arrived exactly once",
                f"count={s.counts.get('asset_manifest', 0)}")
-        want = mapping_row_count()
+        # mapping.csv の全行＋正体の分からないアイテムの代表 8 件（予約 id 9001〜9008。
+        # gb_manifest.cpp の add_unaware_representative_tiles）。
+        want = mapping_row_count() + 8
         got = len(s.manifest.get("assets", [])) if s.manifest else 0
-        ck.add(got == want, f"asset_manifest carries every mapping.csv row ({want})", f"got {got}")
+        ck.add(got == want, f"asset_manifest carries every mapping.csv row + 8 representatives ({want})", f"got {got}")
+        if s.manifest:
+            reps = sorted(a.get("id") for a in s.manifest.get("assets", []) if 9001 <= int(a.get("id", 0)) <= 9008)
+            ck.add(reps == list(range(9001, 9009)), "asset_manifest carries the 8 representatives (9001-9008)", str(reps))
         if s.manifest:
             # ワイヤの鍵は縮めてある（`protocol_messages.cpp` の encode_asset_manifest）:
             # i=index / k=kind / id=id / p=path。
@@ -1202,6 +1207,8 @@ def cmd_combat(work: Path):
             s.key(k if isinstance(k, int) else ord(k))
             s.settle(quiet_rounds=2, slice_s=0.6, cap_s=15)
             fx, msgs = [], []
+            #! 魔法・投射物の効果（projections）。弾道は旧来の combat_fx の Bolt ではなく、こちらが受け持つ（2026-10-11）。
+            s.last_projections = [p for fr in s.frames[n:] for p in (fr.get("projections") or [])]
             for fr in s.frames[n:]:
                 fx.extend(fr.get("combat_fx", []))
                 msgs.extend(m.get("text_utf8", "") for m in fr.get("messages", []))
@@ -1250,17 +1257,18 @@ def cmd_combat(work: Path):
 
         # 方角を押す＝そちらへ撃つ（狙いを付けない）。
         fx = fire(aim=False)
-        bolts = [e for e in fx if e.get("kind") == 2]
-        ck.add(bool(bolts), "R4 a bolt reaches the wire",
+        bolts = [p for p in getattr(s, "last_projections", []) if p.get("s", 0) == 0]
+        ck.add(bool(bolts), "R4 a bolt reaches the wire as a projection",
                json.dumps(bolts[:1], ensure_ascii=False))
+        ck.add(not [e for e in fx if e.get("kind") == 2], "R4 no legacy Bolt combat_fx (the projection carries the missile)")
         if bolts:
             b = bolts[0]
-            ck.add((b.get("sy"), b.get("sx")) != (b.get("y"), b.get("x")),
+            ck.add((b.get("sy"), b.get("sx")) != (b.get("iy"), b.get("ix")),
                    "R4 the bolt carries both ends (fired from / landed at)",
-                   f"({b.get('sy')},{b.get('sx')}) -> ({b.get('y')},{b.get('x')})")
-            #! 無属性（弾幕と同じ `GF_MISSILE`）は束 0 ＝ 物理。**既定なので線に載らない。**
-            ck.add(b.get("elem", 0) == 0,
-                   "R4 a plain missile lands in the physical bucket", str(b.get("elem", 0)))
+                   f"({b.get('sy')},{b.get('sx')}) -> ({b.get('iy')},{b.get('ix')})")
+            #! 無属性（弾幕と同じ `GF_MISSILE`）は見た目の名前 `missile`。
+            ck.add(b.get("at", "") == "missile",
+                   "R4 a plain missile carries the look name 'missile'", str(b.get("at", "")))
 
         # 狙いを付けて撃つ（`*` で敵を選び `t` で決定）。当たれば命中も積まれる。
         #! **見えている敵が居るときだけ見る**（GU-15）。人里は無人のことがあり、
@@ -1275,7 +1283,7 @@ def cmd_combat(work: Path):
             print(f"    （見えている敵 {len(seen)} 体。狙い撃ちを見る）")
             fx = fire(aim=True)
             hits = [e for e in fx if e.get("kind") == 1]
-            bolts = [e for e in fx if e.get("kind") == 2]
+            bolts = [p for p in getattr(s, "last_projections", []) if p.get("s", 0) == 0]
             ck.add(bool(bolts), "R4 the aimed shot is a bolt too",
                    json.dumps(bolts[:1], ensure_ascii=False))
             ck.add(bool(hits), "R4 hitting a monster is on the wire",

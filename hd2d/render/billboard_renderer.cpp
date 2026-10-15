@@ -46,6 +46,7 @@ out vec2 v_uv;
 out vec3 v_tint;
 out vec3 v_world;
 out vec3 v_facing;   // 板の法線（水平・カメラを向く）
+flat out vec3 v_foot; // 足元の世界座標（光の届く範囲を「立っているマス」で引く）
 void main()
 {
     // 軸拘束: 横は「向ける先への垂直」、縦は**常に世界の上**。板は寝ない。
@@ -73,6 +74,7 @@ void main()
      * ここで寄せた位置を使うと、カメラを動かしただけで影の落ち方が変わる。
      */
     v_world = a_foot + (right * (a_corner.x * a_size.x)) + (up * (a_corner.y * a_size.y));
+    v_foot = a_foot;
     /*
      * 板の法線。**足元から視点へ向かう水平方向**である。`u_right` から外積で作ってもよいが、
      * それだと符号（どちら側が表か）をこちらで決めることになる。視点との差から作れば、
@@ -113,6 +115,7 @@ in vec2 v_uv;
 in vec3 v_tint;
 in vec3 v_world;
 in vec3 v_facing;
+flat in vec3 v_foot;
 uniform sampler2D u_atlas;
 /*!
  * **場の光を掛けないか**（1 で掛けない＝フルブライト）。アスキー実体のために足した
@@ -142,7 +145,13 @@ void main()
     vec3 indirect = hd2d_ambient(n) + hd2d_point_lights(v_world, n, 0.55);
 
     // **線形の HDR をそのまま書く。**トーンマップは合成の 1 か所（P7。`lighting.cpp` の注記）。
-    vec3 lit = (u_fullbright != 0) ? vec3(1.0) : (direct + indirect);
+    /*
+     * **光の届く範囲**。板の絵は横に広がるので、**立っているマス**
+     * （足元）で引く——マス単位に完全に切る（`soft` = 0）。場が無ければ素通り＝従来と同じ。
+     * フルブライト（アスキー実体）は常に最大の明るさのままで、ここを通さない。
+     */
+    vec3 lit = (u_fullbright != 0) ? vec3(1.0)
+                                   : hd2d_lit_range_apply(direct + indirect, hd2d_lit_amount(v_foot.xy, 0.0), 1.0);
 
     /*
      * **画調**。標準では素通りする。

@@ -1,6 +1,6 @@
-﻿/*!
+/*!
  * @file gb_menu.h
- * @brief コアのカーソルとプロンプト。
+ * @brief コアのカーソルとプロンプト（S2 後半・S4）。
  *
  * どちらも**文字列の照合だけ**でできている。判定の理屈は変愚の
  * `presentation/bridge/presentation_bridge.cpp` から写したが、
@@ -13,7 +13,7 @@
 namespace gb {
 
 /*!
- * @brief コアが自前で描いているカーソル `》` を Term ミラーから探す。
+ * @brief コアのカーソル `》` と、作成画面の選択中の黄色い項目を Term ミラーから探す。
  * @return 見つかったら true（`frame.menu_core_cursor` / `menu_core_cursors` を埋める）
  * @details 見つかることには 2 つの意味がある。
  * 1. **描画**: 画面側が同じ枠を重ねられる（コアの画面もカーソル選択式に見える）。
@@ -41,5 +41,8 @@ void fill_row0_prompt(GameFrame &frame);
  * 画面側のカーソルが二重になる。
  */
 bool fill_store_menu_choices(GameFrame &frame);
+
+//! Rare command-screen grammars used by the HD2D command/UI regression suite.
+int menu_semantics_selftest();
 
 } // namespace gb

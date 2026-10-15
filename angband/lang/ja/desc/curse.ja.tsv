@@ -1,0 +1,36 @@
+# curse.ja.tsv — curse.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+vulnerability|desc	c296fb7da7	敵を引き寄せ、守りを弱める
+teleportation|msg	627018faee	まわりの空間がゆがんだ。
+teleportation|desc	37b75ff539	ときどきランダムにテレポートさせる
+dullness|desc	ac8c2431dd	頭の働きを鈍くする
+sickliness|desc	96c0855505	体を弱くする
+enveloping|desc	97c4d05a89	身を守ってくれるが、そのぶん動きの自由を奪う
+irritation|desc	2113ca040a	モンスターを苛立たせ、攻撃を当てにくくする
+weakness|desc	633586e9b0	握る力を弱める
+clumsiness|desc	8322625c4d	手を不器用にする
+slowness|desc	936cfa41be	足を引きずらせる
+annoyance|desc	2d09ce75d0	近くのモンスターを起こして苛立たせ、逃げるのを遅らせる
+poison|desc	14f2b5383b	ときどき毒を与える
+siren|msg	77e3fa8bdc	角笛が鳴り響いた！
+siren|desc	f81286122f	ときどき大きな音を立てる
+hallucination|desc	e3d83ad356	ときどき幻覚を見せる
+paralysis|msg	22304012d5	装備があなたをつかんだ！
+paralysis|desc	4898efd5ca	ときどき麻痺させる
+dragon summon|msg	81e1942800	鎧が叫び声を上げた……。
+dragon summon|desc	df91c0647b	ときどきドラゴンを呼び出す
+demon summon|msg	0f260ffc4c	武器が悪魔のような金切り声を上げた！
+demon summon|desc	f75b525741	ときどき悪魔を呼び出す
+undead summon|msg	e7fafd1aa3	武器が墓の向こうへ呼びかけた！
+undead summon|desc	12cea4ec8c	ときどきアンデッドを呼び出す
+impair mana recovery|desc	cae7e7870a	マナの回復を遅くする
+impair hitpoint recovery|desc	b9eeaa18b8	ヒットポイントの回復を遅くする
+cowardice|desc	f315afa27d	怖くて戦えなくする
+stone|desc	44adda902a	ときどき肌を石に変える
+anti-teleportation|desc	3ceeaa1445	テレポートできなくする
+treacherous weapon|msg	0370e3e110	武器があなたに牙をむいた！
+treacherous weapon|desc	dbc8222011	武器が持ち主を攻撃する
+burning up|desc	6b1630f6b0	火炎の攻撃に弱くするが、冷気には強くする
+chilled to the bone|desc	e0e73ce2df	冷気の攻撃に弱くするが、火炎には強くする
+steelskin|desc	a6a0e63661	肌を傷つきにくくするが、電気を通しやすくする
+air swing|desc	18928ca984	何にも攻撃を当てにくくする

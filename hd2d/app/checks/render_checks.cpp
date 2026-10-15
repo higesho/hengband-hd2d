@@ -23,6 +23,8 @@
 #include "render/text_overlay.h"
 #include "render/voxel_renderer.h"
 #include "render/billboard_renderer.h"
+#include "render/model_renderer.h"
+#include "model/model_asset.h"
 #include "render/ground_ring.h"
 #include "render/light_shaft.h"
 #include "render/cloud_layer.h"
@@ -153,6 +155,18 @@ int run_terrain_check(const AppOptions &options)
      */
     if (options.synthetic_dun_level >= 0) {
         frame.floor.dun_level = options.synthetic_dun_level;
+    }
+    /*
+     * **区域**（`HD2D_CHECK_ZONE=<意匠の id>`。2026-10-03）。Umoria の部屋の種類（`FloorZone`）を
+     * 合成フレームで検分するため、自機の周り（横 ±12・縦 ±8）に 1 つ置く。実機では灯りの外が
+     * 真っ黒で、部屋の種類の壁を撮れなかった。未設定なら何も置かない（従来どおり）。
+     */
+    if (const char *const zone_env = std::getenv("HD2D_CHECK_ZONE"); (zone_env != nullptr) && (zone_env[0] != '\0')) {
+        const int style = std::atoi(zone_env);
+        if (style > 0) {
+            frame.floor.zones.push_back(FloorZone{ style, frame.player_gx - 12, frame.player_gy - 8,
+                frame.player_gx + 12, frame.player_gy + 8 });
+        }
     }
     /*
      * **別コアのダンジョンを合成フレームで見るオプション**（同 §2.5・V4）。ここはコアを起こさないので
@@ -439,10 +453,24 @@ int run_terrain_check(const AppOptions &options)
         std::string turn_orientation;
         const bool rt_ok = camera_round_trip_check(turned, turned_window, turn_round_trip);
         const bool or_ok = camera_orientation_check(turned, turn_orientation);
-        turn_checks_ok = turn_checks_ok && rt_ok && or_ok;
-        std::fprintf(stderr, "  視点回転 turn=%d: 窓 %d×%d / 往復 %s（%s）/ 向き %s（%s）\n", turn,
+        const Vec3 slab_n = screen_aligned_slab_normal(turned.yaw, turned.pitch);
+        const Vec3 screen_n = turned.forward() * -1.f;
+        const Vec3 slab_diff = slab_n - screen_n;
+        const bool slab_ok = std::sqrt(dot(slab_diff, slab_diff)) < 1e-5f;
+        turn_checks_ok = turn_checks_ok && rt_ok && or_ok && slab_ok;
+        std::fprintf(stderr, "  視点回転 turn=%d: 窓 %d×%d / 往復 %s（%s）/ 向き %s（%s）/ 板正対 %s\n", turn,
             turned_window.cols, turned_window.rows, rt_ok ? "OK" : "**NG**", turn_round_trip.c_str(),
-            or_ok ? "OK" : "**NG**", turn_orientation.c_str());
+            or_ok ? "OK" : "**NG**", turn_orientation.c_str(), slab_ok ? "OK" : "**NG**");
+    }
+    for (const float pitch : { 0.f, 0.25f, 0.8f, 1.25f }) {
+        Camera tilted = camera;
+        tilted.pitch = pitch;
+        const Vec3 slab_n = screen_aligned_slab_normal(tilted.yaw, tilted.pitch);
+        const Vec3 screen_n = tilted.forward() * -1.f;
+        const Vec3 slab_diff = slab_n - screen_n;
+        const bool slab_ok = std::sqrt(dot(slab_diff, slab_diff)) < 1e-5f;
+        turn_checks_ok = turn_checks_ok && slab_ok;
+        std::fprintf(stderr, "  板正対 pitch=%.2f: %s\n", static_cast<double>(pitch), slab_ok ? "OK" : "**NG**");
     }
     /*
      * **移動の回転の規約**（`rotate_screen_delta`）も同じ所で見る。表は `camera.h` の
@@ -1175,6 +1203,69 @@ int run_terrain_check(const AppOptions &options)
                 }
                 SDL_GL_SwapWindow(window.window);
                 boards.shutdown();
+            }
+            /*
+             * (7-c) **照準の輪が床の上に見えること**（`target_gx/gy`）。
+             *
+             * 輪の列（`EntityView::rings`）は CPU の話で、「列はできているのに床の下に潜って 1 画素も
+             * 出ない」を素通りさせる（高さ `kRingLift` が床の上面より下だと深度で負ける）。
+             * だから**ライブラリの床を描いた上へ**輪を描き、輪の有る無しで画素が変わることを見る。
+             * 本描画と同じ順（地面 → 壁 → ライブラリの床 → 輪）で、輪は深度を読んで書かない。
+             */
+            {
+                GameFrame aimed = probe;
+                aimed.target_gx = 102;
+                aimed.target_gy = 44;
+                EntityView ring_view;
+                tracker.build(aimed, no_catalog, no_slabs, renderer, 0.f, ring_view, false, 0.f, SlabFacing{}, &glyphs);
+                std::fprintf(stderr, "  (7-c) 照準の輪: 照準なし %zu 個 / 照準あり %zu 個\n",
+                    ascii_view.rings.size(), ring_view.rings.size());
+                if (!ascii_view.rings.empty()) {
+                    glyph_fail("照準を立てていないのに輪が作られています");
+                }
+                const bool ring_listed = (ring_view.rings.size() == 1)
+                    && (std::fabs(ring_view.rings[0].x - 102.5f) < 0.01f)
+                    && (std::fabs(ring_view.rings[0].y - 44.5f) < 0.01f);
+                if (!ring_listed) {
+                    glyph_fail("照準のマスの中心に輪が 1 個作られていません");
+                } else {
+                    GroundRingRenderer ring_renderer;
+                    std::string ring_err;
+                    if (!ring_renderer.init(ring_err)) {
+                        glyph_fail("足元のリングを用意できません: " + ring_err);
+                    } else {
+                        const auto shoot_ring = [&](const EntityView &view) {
+                            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                            glViewport(0, 0, screen_w, screen_h);
+                            glClearColor(static_cast<float>(scene_clear[0]) / 255.f,
+                                static_cast<float>(scene_clear[1]) / 255.f,
+                                static_cast<float>(scene_clear[2]) / 255.f, 1.f);
+                            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                            renderer.begin(camera.view_projection(), lighting, fit.view_projection, shadow.texture(),
+                                shadow.side());
+                            renderer.begin_cutaway(Cutaway{});
+                            renderer.draw_instanced(floor_gpu, terrain.slabs.data(), terrain.slabs.size());
+                            renderer.set_shadow_scale(0.f);
+                            renderer.draw_instanced(floor_gpu, terrain.under_slabs.data(), terrain.under_slabs.size());
+                            renderer.set_shadow_scale(1.f);
+                            renderer.draw_instanced(wall_gpu, terrain.boxes.data(), terrain.boxes.size());
+                            draw_library_color(renderer, library, terrain);
+                            if (!view.rings.empty()) {
+                                ring_renderer.draw(camera.view_projection(), view.rings.data(), view.rings.size());
+                            }
+                            return read_framebuffer(screen_w, screen_h);
+                        };
+                        const std::vector<unsigned char> floor_only = shoot_ring(ascii_view);
+                        const std::vector<unsigned char> floor_ring = shoot_ring(ring_view);
+                        const std::size_t ring_px = count_changed_pixels(floor_only, floor_ring, 0);
+                        std::fprintf(stderr, "  (7-c) 照準の輪の画素（床の上）: %zu\n", ring_px);
+                        if (ring_px < 100) {
+                            glyph_fail("照準の輪が床の上に出ていません（変わった画素 " + std::to_string(ring_px)
+                                + "。輪の高さが床の上面より下ではありませんか）");
+                        }
+                        ring_renderer.shutdown();
+                    }
+                }
             }
             glyphs.shutdown();
         }
@@ -2094,6 +2185,1091 @@ int run_cutaway_check(const AppOptions &options)
     SDL_GL_DeleteContext(window.context);
     SDL_DestroyWindow(window.window);
     SDL_Quit();
+    std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
+    return (failures == 0) ? 0 : 1;
+}
+
+/*
+ * ============================================================================
+ * `--light-range-check=出力の頭`: 光の届く範囲
+ * ============================================================================
+ */
+namespace {
+
+//! 検査用の地図の長方形（壁だけの地図へ彫る床）。
+struct LrRect {
+    int x0;
+    int y0;
+    int x1;
+    int y1;
+    bool bright; //!< 明るい部屋（`CAVE_ROOM` + `CAVE_GLOW` 相当）か
+};
+
+/*!
+ * @brief 合成フレームを「壁だけ」にして、長方形を彫る。
+ * @details `make_synthetic_frame()` の部屋・通路・溶岩の池は、この検査の絵に余計な光と明るさを持ち込む。
+ * 暗い通路と明るい部屋を**思ったとおりの形で**置くため、いったん全部を壁にして彫り直す。
+ */
+void lr_carve(GameFrame &frame, const std::vector<LrRect> &rects)
+{
+    const auto carved = [&rects](int gx, int gy) -> const LrRect * {
+        for (const LrRect &r : rects) {
+            if ((gx >= r.x0) && (gx <= r.x1) && (gy >= r.y0) && (gy <= r.y1)) {
+                return &r;
+            }
+        }
+        return nullptr;
+    };
+    for (MapCellView &cell : frame.cells) {
+        const LrRect *const rect = carved(cell.gx, cell.gy);
+        if (rect == nullptr) {
+            cell.feature_flags = CELL_FEAT_KNOWN | CELL_FEAT_WALL;
+            cell.terrain_id = 56; // GRANITE
+        } else {
+            cell.feature_flags = CELL_FEAT_KNOWN | (rect->bright ? (CELL_FEAT_ROOM | CELL_FEAT_GLOWING) : 0u);
+            cell.terrain_id = 1; // FLOOR
+        }
+    }
+    const int w = frame.minimap.width;
+    for (int gy = 0; gy < frame.minimap.height; ++gy) {
+        for (int gx = 0; gx < w; ++gx) {
+            const bool floor = (carved(gx, gy) != nullptr);
+            frame.minimap.kinds[(static_cast<std::size_t>(gy) * static_cast<std::size_t>(w)) + static_cast<std::size_t>(gx)]
+                = static_cast<std::uint8_t>(floor ? MinimapKind::Floor : MinimapKind::Wall);
+        }
+    }
+    frame.minimap.kinds[(static_cast<std::size_t>(frame.player_gy) * static_cast<std::size_t>(w))
+        + static_cast<std::size_t>(frame.player_gx)]
+        = static_cast<std::uint8_t>(MinimapKind::Player);
+}
+
+//! 述語が真のマスを「プレイヤの光源で照らされている」ことにする（`player_lit` を作る）。
+template <typename Pred>
+void lr_set_lit(GameFrame &frame, Pred &&lit)
+{
+    frame.lighting.player_lit.assign((frame.cells.size() + 7u) / 8u, 0u);
+    for (std::size_t i = 0; i < frame.cells.size(); ++i) {
+        if (lit(static_cast<int>(frame.cells[i].gx), static_cast<int>(frame.cells[i].gy))) {
+            frame.lighting.player_lit[i >> 3] = static_cast<std::uint8_t>(frame.lighting.player_lit[i >> 3] | (1u << (i & 7u)));
+        }
+    }
+}
+
+//! 真四角の柱（3D モデルの代役。幅 0.44・高さ 0.8）。巻き方は外向きが「右手系の反時計回り」。
+ModelAsset lr_make_pillar()
+{
+    ModelAsset asset;
+    ModelPrimitive prim;
+    const float hx = 0.22f;
+    const float hy = 0.22f;
+    const float h = 0.8f;
+    const auto quad = [&prim](const Vec3 &a, const Vec3 &b, const Vec3 &c, const Vec3 &d, const Vec3 &n) {
+        const Vec3 corners[6] = { a, b, c, a, c, d };
+        for (const Vec3 &p : corners) {
+            ModelVertex v;
+            v.position = p;
+            v.normal = n;
+            prim.vertices.push_back(v);
+        }
+    };
+    quad(Vec3{ hx, -hy, 0.f }, Vec3{ hx, hy, 0.f }, Vec3{ hx, hy, h }, Vec3{ hx, -hy, h }, Vec3{ 1.f, 0.f, 0.f });
+    quad(Vec3{ -hx, hy, 0.f }, Vec3{ -hx, -hy, 0.f }, Vec3{ -hx, -hy, h }, Vec3{ -hx, hy, h }, Vec3{ -1.f, 0.f, 0.f });
+    quad(Vec3{ hx, hy, 0.f }, Vec3{ -hx, hy, 0.f }, Vec3{ -hx, hy, h }, Vec3{ hx, hy, h }, Vec3{ 0.f, 1.f, 0.f });
+    quad(Vec3{ -hx, -hy, 0.f }, Vec3{ hx, -hy, 0.f }, Vec3{ hx, -hy, h }, Vec3{ -hx, -hy, h }, Vec3{ 0.f, -1.f, 0.f });
+    quad(Vec3{ -hx, -hy, h }, Vec3{ hx, -hy, h }, Vec3{ hx, hy, h }, Vec3{ -hx, hy, h }, Vec3{ 0.f, 0.f, 1.f });
+    prim.material.metallic = 0.f;
+    prim.material.roughness = 1.f;
+    prim.material.double_sided = true;
+    asset.vertex_count = prim.vertices.size();
+    asset.bounds_min = Vec3{ -hx, -hy, 0.f };
+    asset.bounds_max = Vec3{ hx, hy, h };
+    asset.primitives.push_back(std::move(prim));
+    return asset;
+}
+
+//! 範囲の中の 3 x 3 画素の平均（RGB。0〜255）。`x, y` は左上原点の画素座標。
+std::array<double, 3> lr_mean_rgb(const std::vector<unsigned char> &image, int w, int h, float x, float y, int half)
+{
+    std::array<double, 3> sum{ 0.0, 0.0, 0.0 };
+    int n = 0;
+    for (int dy = -half; dy <= half; ++dy) {
+        for (int dx = -half; dx <= half; ++dx) {
+            int rgb[3]{};
+            pixel_at(image, w, h, static_cast<int>(std::lround(x)) + dx, static_cast<int>(std::lround(y)) + dy, rgb);
+            for (int c = 0; c < 3; ++c) {
+                sum[static_cast<std::size_t>(c)] += rgb[c];
+            }
+            ++n;
+        }
+    }
+    for (double &v : sum) {
+        v /= static_cast<double>(n);
+    }
+    return sum;
+}
+
+double lr_luma(const std::array<double, 3> &c)
+{
+    return (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+}
+
+//! 画素の差の最大値（RGB の各成分）。
+int lr_max_diff(const std::vector<unsigned char> &a, const std::vector<unsigned char> &b)
+{
+    if (a.size() != b.size()) {
+        return 255;
+    }
+    int worst = 0;
+    for (std::size_t i = 0; i < a.size(); ++i) {
+        if ((i & 3u) == 3u) {
+            continue;
+        }
+        worst = std::max(worst, std::abs(static_cast<int>(a[i]) - static_cast<int>(b[i])));
+    }
+    return worst;
+}
+
+} // namespace
+
+int run_light_range_check(const AppOptions &options)
+{
+    int failures = 0;
+    int passes = 0;
+    const auto check = [&](bool ok, const std::string &what) {
+        if (ok) {
+            ++passes;
+            std::fprintf(stderr, "  PASS %s\n", what.c_str());
+        } else {
+            ++failures;
+            std::fprintf(stderr, "  **FAIL** %s\n", what.c_str());
+        }
+    };
+    const auto near = [](double a, double b, double tol) { return std::fabs(a - b) <= tol; };
+
+    /* ======================================================== (1) CPU だけで見るもの */
+    {
+        std::fprintf(stderr, "[hd2d] light-range-check (1) 場・揺らぎ・光源の種類（CPU）\n");
+        //! 5x5 の小さな窓。(12, 22) が真ん中。
+        const auto make = [](int ox, int oy, std::uint64_t turn) {
+            GameFrame f;
+            f.floor.kind = static_cast<int>(FloorKind::Dungeon);
+            f.floor.generated_turn = turn;
+            for (int y = 0; y < 5; ++y) {
+                for (int x = 0; x < 5; ++x) {
+                    MapCellView c{};
+                    c.gx = static_cast<std::int16_t>(ox + x);
+                    c.gy = static_cast<std::int16_t>(oy + y);
+                    f.cells.push_back(c);
+                }
+            }
+            f.lighting.player_lit.assign((f.cells.size() + 7u) / 8u, 0u);
+            return f;
+        };
+        const auto set_bit = [](GameFrame &f, int gx, int gy, bool on) {
+            for (std::size_t i = 0; i < f.cells.size(); ++i) {
+                if ((f.cells[i].gx == gx) && (f.cells[i].gy == gy)) {
+                    if (on) {
+                        f.lighting.player_lit[i >> 3] = static_cast<std::uint8_t>(f.lighting.player_lit[i >> 3] | (1u << (i & 7u)));
+                    } else {
+                        f.lighting.player_lit[i >> 3] = static_cast<std::uint8_t>(f.lighting.player_lit[i >> 3] & ~(1u << (i & 7u)));
+                    }
+                }
+            }
+        };
+        LightRangeParams params;
+        params.fade_seconds = 0.25f;
+
+        LitRangeField field;
+        GameFrame f0 = make(10, 20, 100);
+        field.update(f0, 0.016f, params);
+        check(field.active() && (field.value_at(12, 22) == 0.f), "場: player_lit が来たら有効で、最初は全部 0");
+        GameFrame f1 = f0;
+        set_bit(f1, 12, 22, true);
+        field.update(f1, 0.1f, params);
+        check(near(field.value_at(12, 22), 0.4, 1e-4) && (field.value_at(13, 22) == 0.f),
+            "場: 0.1 秒で 0.4（線形・既定 0.25 秒）。隣のマスは動かない");
+        field.update(f1, 0.1f, params);
+        field.update(f1, 0.1f, params);
+        check(near(field.value_at(12, 22), 1.0, 1e-4), "場: 0.3 秒で 1.0 に届いて止まる");
+        GameFrame f2 = f1;
+        set_bit(f2, 12, 22, false);
+        field.update(f2, 0.125f, params);
+        check(near(field.value_at(12, 22), 0.5, 1e-4) && (field.target_at(12, 22) == 0.f), "場: 範囲を出ると 0.125 秒で 0.5 まで下がる");
+        // 新しく窓に入ったマスは、その場で目標に合わせる。
+        GameFrame f3 = make(11, 20, 100); // 1 マス東へずらした窓
+        set_bit(f3, 12, 22, true);
+        set_bit(f3, 15, 22, true); // 新しく窓に入る端のマス
+        field.update(f3, 0.05f, params);
+        check(near(field.value_at(15, 22), 1.0, 1e-4), "場: 新しく窓に入ったマスは目標にそのまま合う（端がふわっと光らない）");
+        check(near(field.value_at(12, 22), 0.5 + 0.2, 1e-3), "場: 窓がずれても前から居るマスは続きから寄る（0.5 → 0.7）");
+        // 階が変わったら全マス即座。
+        GameFrame f4 = make(11, 20, 999);
+        set_bit(f4, 12, 22, false);
+        field.update(f4, 0.01f, params);
+        check(field.value_at(12, 22) == 0.f, "場: 階が変わったら持っていた値を捨てて目標へ即座に合わせる");
+        // 即座に合わせる設定。
+        LightRangeParams instant = params;
+        instant.fade_seconds = 0.f;
+        GameFrame f5 = f4;
+        set_bit(f5, 13, 23, true);
+        field.update(f5, 0.001f, instant);
+        check(field.value_at(13, 23) == 1.f, "場: fade 0 なら 1 回の更新で目標に合う");
+        // 送らない（空）なら無効。
+        GameFrame f6 = f5;
+        f6.lighting.player_lit.clear();
+        field.update(f6, 0.1f, params);
+        check(!field.active() && (field.value_at(13, 23) == 0.f), "場: player_lit が空なら無効（従来の絵のまま）");
+        // 戻った直後は即座に合う（前の値を引きずらない）。
+        field.update(f5, 0.001f, params);
+        check(near(field.value_at(13, 23), 1.0, 1e-4), "場: 送り直されたら全マスを即座に合わせる");
+    }
+    {
+        // 記憶のマスの暗さ（`memory_dim` を申告したコアだけ。Rogue 系）。
+        const auto make = [](int ox, int oy, std::uint64_t turn) {
+            GameFrame f;
+            f.floor.kind = static_cast<int>(FloorKind::Dungeon);
+            f.floor.generated_turn = turn;
+            for (int y = 0; y < 5; ++y) {
+                for (int x = 0; x < 5; ++x) {
+                    MapCellView c{};
+                    c.gx = static_cast<std::int16_t>(ox + x);
+                    c.gy = static_cast<std::int16_t>(oy + y);
+                    c.light_level = 2; // 見えている
+                    f.cells.push_back(c);
+                }
+            }
+            f.lighting.player_lit.assign((f.cells.size() + 7u) / 8u, 0u);
+            return f;
+        };
+        const auto set_level = [](GameFrame &f, int gx, int gy, int level) {
+            for (MapCellView &c : f.cells) {
+                if ((c.gx == gx) && (c.gy == gy)) {
+                    c.light_level = static_cast<std::uint8_t>(level);
+                }
+            }
+        };
+        LightRangeParams params;
+        params.fade_seconds = 0.25f;
+
+        // 申告なし: light_level 1 を並べても記憶の値は 0 のまま（変愚の 1 は「視界内の暗がり」で記憶ではない）。
+        {
+            GameFrame f = make(10, 20, 100);
+            set_level(f, 12, 22, 1);
+            LitRangeField field;
+            field.update(f, 0.016f, params);
+            check(field.active() && !field.memory_declared() && (field.memory_at(12, 22) == 0.f)
+                    && (field.memory_target_at(12, 22) == 0.f),
+                "記憶のマス: 申告（memory_dim）が無ければ、light_level 1 のマスでも記憶の暗さは 0（変愚などは変わらない）");
+        }
+        // 申告あり: light_level 1 のマスだけ目標 1。最初のフレームは目標にそのまま合う。
+        GameFrame f0 = make(10, 20, 100);
+        f0.lighting.memory_dim = 1;
+        set_level(f0, 12, 22, 1);
+        set_level(f0, 11, 22, 1);
+        set_level(f0, 13, 22, 0); // 0 は「知らないマス」。暗くしない
+        LitRangeField field;
+        field.update(f0, 0.016f, params);
+        check(field.active() && field.memory_declared() && (field.memory_at(12, 22) == 1.f) && (field.memory_at(11, 22) == 1.f),
+            "記憶のマス: 申告があれば、light_level 1 のマスが記憶（目標 1）。最初のフレームは目標にそのまま合う");
+        check((field.memory_at(13, 22) == 0.f) && (field.memory_at(14, 22) == 0.f) && (field.value_at(12, 22) == 0.f),
+            "記憶のマス: light_level 0（知らない）と 2（見えている）は暗くしない。光の範囲の値には混ざらない");
+        // 見えるようになったら、短い時間でなめらかに戻る（線形・0.25 秒）。
+        GameFrame f1 = f0;
+        set_level(f1, 12, 22, 2);
+        field.update(f1, 0.1f, params);
+        check(near(field.memory_at(12, 22), 0.6, 1e-4) && (field.memory_target_at(12, 22) == 0.f) && (field.memory_at(11, 22) == 1.f),
+            "記憶のマス: 見えるようになると 0.1 秒で 1 → 0.6（線形）。隣の記憶のマスは動かない");
+        field.update(f1, 0.2f, params);
+        check(field.memory_at(12, 22) == 0.f, "記憶のマス: 0.3 秒で 0 に届いて止まる");
+        // また見えなくなったら暗くなっていく。
+        field.update(f0, 0.125f, params);
+        check(near(field.memory_at(12, 22), 0.5, 1e-4), "記憶のマス: 見えなくなると 0.125 秒で 0 → 0.5");
+        // プレイヤの光に照らされているマスは見えているので、light_level が 1 でも暗くしない。
+        GameFrame f2 = f0;
+        f2.lighting.player_lit[(12 - 10 + (22 - 20) * 5) >> 3] = static_cast<std::uint8_t>(1u << ((12 - 10 + (22 - 20) * 5) & 7));
+        LitRangeField lit_wins;
+        lit_wins.update(f2, 0.016f, params);
+        check((lit_wins.value_at(12, 22) == 1.f) && (lit_wins.memory_at(12, 22) == 0.f) && (lit_wins.memory_at(11, 22) == 1.f),
+            "記憶のマス: 光の範囲に入っているマスは、light_level が 1 でも記憶として暗くしない");
+        // 階が変わったら即座に合う。
+        GameFrame f3 = make(10, 20, 777);
+        f3.lighting.memory_dim = 1;
+        set_level(f3, 12, 22, 1);
+        field.update(f3, 0.001f, params);
+        check(field.memory_at(12, 22) == 1.f, "記憶のマス: 階が変わったら持っていた値を捨てて目標へ即座に合わせる");
+        // player_lit が空でも、申告があれば有効（記憶の暗さだけ働く）。空で申告もなければ無効。
+        GameFrame f4 = f0;
+        f4.lighting.player_lit.clear();
+        LitRangeField only_memory;
+        only_memory.update(f4, 0.016f, params);
+        check(only_memory.active() && (only_memory.memory_at(12, 22) == 1.f) && (only_memory.value_at(12, 22) == 0.f),
+            "記憶のマス: player_lit が空でも申告があれば有効で、光の範囲の値は 0");
+        f4.lighting.memory_dim = 0;
+        only_memory.update(f4, 0.016f, params);
+        check(!only_memory.active() && (only_memory.memory_at(12, 22) == 0.f),
+            "記憶のマス: player_lit が空で申告もなければ無効（従来の絵のまま）");
+        // 申告が途中で現れたマスは、その場で目標に合わせる（前の値を引きずらない）。
+        LitRangeField late;
+        GameFrame f5 = f0;
+        f5.lighting.memory_dim = 0;
+        late.update(f5, 0.016f, params);
+        late.update(f0, 0.016f, params);
+        check(late.memory_at(12, 22) == 1.f, "記憶のマス: 申告が後から付いたときは、その場で目標に合わせる");
+    }
+    {
+        float lo = 10.f;
+        float hi = -10.f;
+        float max_step = 0.f;
+        float prev = light_flicker_gain(1, 0.f);
+        for (int i = 1; i <= 3600; ++i) {
+            const float g = light_flicker_gain(1, static_cast<float>(i) / 60.f);
+            lo = std::min(lo, g);
+            hi = std::max(hi, g);
+            max_step = std::max(max_step, std::fabs(g - prev));
+            prev = g;
+        }
+        std::fprintf(stderr, "  松明の揺らぎ 60 秒: %.4f 〜 %.4f（1 フレームの最大の変化 %.4f）\n", static_cast<double>(lo),
+            static_cast<double>(hi), static_cast<double>(max_step));
+        check((lo >= 0.9399f) && (hi <= 1.0601f) && ((hi - lo) > 0.06f), "揺らぎ: 松明は 1 ± 6% の範囲で動く（幅が 0.06 以上ある）");
+        check(max_step < 0.01f, "揺らぎ: 1 フレーム（1/60 秒）の変化は 1% 未満＝ちらつかずゆっくり");
+        bool others_steady = true;
+        for (const int kind : { 0, 2, 3, 4, 99 }) {
+            for (int i = 0; i < 100; ++i) {
+                others_steady = others_steady && (light_flicker_gain(kind, static_cast<float>(i) * 0.37f) == 1.f);
+            }
+        }
+        check(others_steady, "揺らぎ: 松明・暗黒側以外（0・2・3・4・知らない値）は揺らがない");
+    }
+    {
+        // 暗黒側（5）は、範囲の濃さがゆっくり息をするように揺れる（縁に揺らぐ影）。松明より遅く、幅は ±12% 以内。
+        float lo = 10.f;
+        float hi = -10.f;
+        float max_step = 0.f;
+        float prev = light_flicker_gain(5, 0.f);
+        for (int i = 1; i <= 3600; ++i) {
+            const float g = light_flicker_gain(5, static_cast<float>(i) / 60.f);
+            lo = std::min(lo, g);
+            hi = std::max(hi, g);
+            max_step = std::max(max_step, std::fabs(g - prev));
+            prev = g;
+        }
+        std::fprintf(stderr, "  暗黒側の揺らぎ 60 秒: %.4f 〜 %.4f（1 フレームの最大の変化 %.4f）\n", static_cast<double>(lo),
+            static_cast<double>(hi), static_cast<double>(max_step));
+        check((lo >= 0.879f) && (hi <= 1.121f) && ((hi - lo) > 0.08f), "揺らぎ: 暗黒側(5)は 1 ± 12% の範囲で動く（幅が 0.08 以上ある）");
+        check(max_step < 0.01f, "揺らぎ: 暗黒側(5)も 1 フレーム（1/60 秒）の変化は 1% 未満＝ゆっくり");
+    }
+    {
+        const LightKindLook k0 = light_kind_look(0);
+        const LightKindLook k1 = light_kind_look(1);
+        const LightKindLook k2 = light_kind_look(2);
+        const LightKindLook k3 = light_kind_look(3);
+        const LightKindLook k4 = light_kind_look(4);
+        const LightKindLook k9 = light_kind_look(99);
+        check((k0.torch_r == 1.00f) && (k0.torch_g == 0.78f) && (k0.torch_b == 0.48f), "光源の種類: 0 は従来の暖色（1.00, 0.78, 0.48）");
+        check((k9.torch_r == k0.torch_r) && (k9.torch_g == k0.torch_g) && (k9.torch_b == k0.torch_b), "光源の種類: 知らない値は 0 と同じ");
+        check((k1.torch_r > k1.torch_g) && (k1.torch_g > k1.torch_b) && ((k1.torch_g / k1.torch_r) < (k0.torch_g / k0.torch_r)),
+            "光源の種類: 松明は従来の暖色より橙");
+        check((k2.torch_g / k2.torch_r) > (k0.torch_g / k0.torch_r) && (k2.torch_r > k2.torch_b), "光源の種類: ランタンは従来の暖色より黄");
+        check((k3.torch_b >= k3.torch_r) && (k3.torch_b > k3.torch_g), "光源の種類: アーティファクトは青みのある白");
+        check((std::fabs(k4.torch_r - k4.torch_b) < 0.08f) && (k4.torch_r > 0.9f), "光源の種類: それ以外は淡い白");
+        check((k1.flicker > 0.f) && (k0.flicker == 0.f) && (k2.flicker == 0.f) && (k3.flicker == 0.f) && (k4.flicker == 0.f),
+            "光源の種類: 光の側で揺らぐのは松明だけ");
+        const LightKindLook k5 = light_kind_look(5);
+        check((k5.tint_b > k5.tint_r) && (k5.tint_r < 0.8f) && (k5.torch_b > k5.torch_r),
+            "光源の種類: 暗黒側(5)は冷たい色（青が赤より強い）。暖色の既定ではない");
+        check(k5.flicker > 0.f, "光源の種類: 暗黒側(5)は範囲の濃さが揺れる");
+    }
+    {
+        GameFrame f = make_synthetic_frame(23, 19, 100, 44);
+        SceneLighting a = make_scene_lighting(f.lighting, f.floor);
+        (void)collect_point_lights(f, Vec3{ 100.5f, 44.5f, 0.f }, a);
+        check(!a.points.empty() && (a.points[0].r == 1.00f) && (a.points[0].g == 0.78f) && (a.points[0].b == 0.48f)
+                && (a.points[0].intensity == 1.25f),
+            "点光源: light_kind 0 の松明は従来どおり（色と強さが 1 ビットも変わらない）");
+        f.lighting.light_kind = 1;
+        SceneLighting b = make_scene_lighting(f.lighting, f.floor);
+        (void)collect_point_lights(f, Vec3{ 100.5f, 44.5f, 0.f }, b, 1.f, nullptr, 0.95f);
+        const LightKindLook k1 = light_kind_look(1);
+        check(!b.points.empty() && (b.points[0].r == k1.torch_r) && (b.points[0].g == k1.torch_g)
+                && (near(b.points[0].intensity, 1.25 * 0.95, 1e-5)),
+            "点光源: light_kind 1 は橙で、揺らぎの倍率が強さに掛かる");
+        // 暗黒側(5)は光ではないので、プレイヤの位置に暖かい点光源を置かない（半径 = 光源半径 + 1.5 の光が無い）。
+        f.lighting.light_radius = 3;
+        f.lighting.light_kind = 1;
+        SceneLighting torch = make_scene_lighting(f.lighting, f.floor);
+        (void)collect_point_lights(f, Vec3{ 100.5f, 44.5f, 0.f }, torch);
+        f.lighting.light_kind = 5;
+        SceneLighting dark = make_scene_lighting(f.lighting, f.floor);
+        (void)collect_point_lights(f, Vec3{ 100.5f, 44.5f, 0.f }, dark);
+        const auto has_player_light = [](const SceneLighting &s) {
+            for (const PointLight &p : s.points) {
+                if (std::fabs(p.radius - 4.5f) < 1e-4f) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        check(has_player_light(torch) && !has_player_light(dark),
+            "点光源: 暗黒側(5)ではプレイヤの位置に点光源を置かない（松明(1)では置く）");
+    }
+
+    /* ======================================================== (2) 描く検査 */
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::fprintf(stderr, "[hd2d] SDL_Init failed: %s\n", SDL_GetError());
+        return 1;
+    }
+    Window window;
+    std::string err;
+    if (!create_window(options, window, err)) {
+        std::fprintf(stderr, "[hd2d] %s\n", err.c_str());
+        SDL_Quit();
+        return 1;
+    }
+    VoxelRenderer renderer;
+    BillboardRenderer sprites;
+    ModelRenderer pillar_model;
+    ShadowMap shadow;
+    PostChain post;
+    int screen_w = options.window_w;
+    int screen_h = options.window_h;
+    SDL_GetWindowSize(window.window, &screen_w, &screen_h);
+    const ModelAsset pillar_asset = lr_make_pillar();
+    if (!renderer.init(err) || !sprites.init(err) || !shadow.init(kShadowMapSide, err)
+        || !init_post_chain(post, options, err) || !post.resize(screen_w, screen_h, err)
+        || !pillar_model.init(pillar_asset, err)) {
+        std::fprintf(stderr, "[hd2d] %s\n", err.c_str());
+        SDL_Quit();
+        return 1;
+    }
+    std::fprintf(stderr, "[hd2d] light-range-check (2) 描画 %dx%d\n", screen_w, screen_h);
+
+    Prefab wall_prefab = make_box_prefab("wall", 32, 32, 32, 0, 32);
+    Prefab floor_prefab = make_box_prefab("floor", 32, 32, 2, -2, 32);
+    //! 実体の板（ボクセルのスラブ）の代役。幅 0.75・厚み 1/16・高さ 0.75 の立つ板。
+    Prefab board_prefab = make_box_prefab("board", 24, 2, 24, 0, 32);
+    GpuPrefab wall_gpu;
+    GpuPrefab floor_gpu;
+    GpuPrefab board_gpu;
+    if (!renderer.upload(wall_prefab, wall_gpu, err) || !renderer.upload(floor_prefab, floor_gpu, err)
+        || !renderer.upload(board_prefab, board_gpu, err)) {
+        std::fprintf(stderr, "[hd2d] %s\n", err.c_str());
+        SDL_Quit();
+        return 1;
+    }
+    PrefabLibrary library;
+    if (!library.load(options.voxel_dir, err) || !library.upload_gpu(renderer, err)) {
+        std::fprintf(stderr, "[hd2d] light-range-check: プレハブライブラリを用意できませんでした:\n%s\n", err.c_str());
+        SDL_Quit();
+        return 1;
+    }
+    library.update_motions(0.58f); //!< 時刻は固定（罠 14）
+    //! かきわりの絵（4x4 の淡い灰色）。
+    GLuint sprite_atlas = 0;
+    {
+        std::vector<unsigned char> texels(4u * 4u * 4u, 255u);
+        for (std::size_t i = 0; i < 16u; ++i) {
+            texels[(i * 4u) + 0u] = 210;
+            texels[(i * 4u) + 1u] = 205;
+            texels[(i * 4u) + 2u] = 195;
+        }
+        glGenTextures(1, &sprite_atlas);
+        glBindTexture(GL_TEXTURE_2D, sprite_atlas);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(GL_RGBA8), 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, texels.data());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(GL_NEAREST));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(GL_NEAREST));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(GL_CLAMP_TO_EDGE));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(GL_CLAMP_TO_EDGE));
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    Camera camera;
+    camera.pitch = options.camera_pitch_deg * 0.0174533f;
+    camera.fov_x = options.camera_fov_deg * 0.0174533f;
+    camera.viewport_w = screen_w;
+    camera.viewport_h = screen_h;
+    camera.distance = distance_for_cell_px(camera, options.camera_cell_px);
+    camera.yaw = view_turn_yaw(options.camera_turn);
+    const ViewWindow view_full = derive_view_window(camera, kMaxPropHeight, 60.f);
+    float z_near = 0.f;
+    float z_far = 0.f;
+    camera.depth_range(z_near, z_far);
+
+    struct Scene {
+        const char *name = "";
+        bool bright = false;
+        int px = 0;
+        int py = 0;
+        GameFrame frame;
+        FloorMeaning meaning;
+        TerrainMemory memory;
+        TerrainView terrain;
+        ShadowFit fit;
+        std::vector<InstanceData> boards;
+        std::vector<BillboardInstance> sprites;
+        std::vector<Vec3> models;
+        //! 調べるマス（床の測定点・実体のマス）。{ gx, gy }。
+        std::pair<int, int> floor_lit{}, floor_dark{};
+        std::pair<int, int> board_lit{}, board_dark{};
+        std::pair<int, int> sprite_lit{}, sprite_dark{};
+        std::pair<int, int> model_lit{}, model_dark{};
+        //! 左右対称の測定点（光の半平面の検査。同じ距離で、片方だけ照らされる）。
+        std::pair<int, int> mirror_lit{}, mirror_dark{};
+    };
+    std::vector<Scene> scenes(2);
+    {
+        Scene &a = scenes[0];
+        a.name = "corridor"; // 暗い通路（東西に延びる幅 3 の通路）
+        a.px = 101;
+        a.py = 51;
+        a.frame = make_synthetic_frame(view_full.cols, view_full.rows, a.px, a.py);
+        lr_carve(a.frame, { LrRect{ 70, 50, 132, 52, false } });
+        //! 床は北の列（y=50）で測る。南の壁が手前を隠すので、真ん中や南の列は壁の上面を測ってしまう。
+        a.floor_lit = { 100, 50 };
+        a.floor_dark = { 108, 50 };
+        a.board_lit = { 103, 51 };
+        a.board_dark = { 107, 51 };
+        a.sprite_lit = { 99, 50 };
+        a.sprite_dark = { 95, 52 };
+        a.model_lit = { 104, 52 };
+        a.model_dark = { 110, 50 };
+        a.mirror_lit = { 105, 50 };
+        a.mirror_dark = { 97, 50 };
+
+        Scene &b = scenes[1];
+        b.name = "room"; // 明るい部屋（広い部屋の真ん中。壁は松明の外）
+        b.bright = true;
+        b.px = 101;
+        b.py = 50;
+        b.frame = make_synthetic_frame(view_full.cols, view_full.rows, b.px, b.py);
+        lr_carve(b.frame, { LrRect{ 86, 42, 116, 58, true } });
+        b.floor_lit = { 102, 52 };
+        b.floor_dark = { 108, 54 };
+        b.board_lit = { 103, 50 };
+        b.board_dark = { 108, 50 };
+        b.sprite_lit = { 99, 49 };
+        b.sprite_dark = { 94, 51 };
+        b.model_lit = { 101, 52 };
+        b.model_dark = { 101, 56 };
+        b.mirror_lit = { 105, 50 };
+        b.mirror_dark = { 97, 50 };
+    }
+    for (Scene &s : scenes) {
+        s.frame.lighting.light_radius = 3;
+        camera.target = Vec3{ static_cast<float>(s.px) + 0.5f, static_cast<float>(s.py) + 0.5f, 0.f };
+        (void)rebuild_floor_meaning(s.frame, s.meaning);
+        s.memory.update(s.frame);
+        build_terrain_view(s.meaning, Frustum::from(camera.view_projection()), s.terrain, &s.memory, &library);
+        SceneLighting base = make_scene_lighting(s.frame.lighting, s.frame.floor);
+        s.fit = fit_shadow(camera, base.sun_dir, kMaxPropHeight, shadow.side(), 0.f);
+        const auto cell_centre = [](const std::pair<int, int> &c, float z) {
+            return Vec3{ static_cast<float>(c.first) + 0.5f, static_cast<float>(c.second) + 0.5f, z };
+        };
+        InstanceData board_lit;
+        board_lit.x = static_cast<float>(s.board_lit.first) + 0.125f;
+        board_lit.y = static_cast<float>(s.board_lit.second) + 0.5f - (1.f / 32.f);
+        InstanceData board_dark = board_lit;
+        board_dark.x = static_cast<float>(s.board_dark.first) + 0.125f;
+        board_dark.y = static_cast<float>(s.board_dark.second) + 0.5f - (1.f / 32.f);
+        s.boards = { board_lit, board_dark };
+        for (const auto &c : { s.sprite_lit, s.sprite_dark }) {
+            BillboardInstance one;
+            one.x = static_cast<float>(c.first) + 0.5f;
+            one.y = static_cast<float>(c.second) + 0.5f;
+            one.z = 0.05f;
+            one.width = 0.7f;
+            one.height = 0.8f;
+            one.u0 = 0.f;
+            one.v0 = 0.f;
+            one.u1 = 4.f;
+            one.v1 = 4.f;
+            s.sprites.push_back(one);
+        }
+        s.models = { cell_centre(s.model_lit, 0.f), cell_centre(s.model_dark, 0.f) };
+    }
+
+    const PostFlags all_off{ false, false, false, false, false };
+    PostParams params;
+    const std::array<double, 3> kNoColour{ 0.0, 0.0, 0.0 };
+
+    // 描く 1 回ぶんの指定。
+    struct Shot {
+        int kind = 0;
+        //! 0 = 場を結ばない（従来）/ 1 = 場を完全に寄せて結ぶ / 2 = 切り替えの途中（値 0.5）/ 3 = 光の半平面（左右対称の検査）
+        int mode = 0;
+        bool entities = true;
+        bool pictures = false; //!< 後処理を全部入れる（絵）。偽なら全部切る（数える）
+        float strength = 1.f;
+        //! 記憶のマス: 0 = 何も付けない / 1 = 照らされない遠いマスを light_level 1（記憶）にして申告する /
+        //! 2 = 同じ light_level を付けるが申告しない（変愚などの 1 と同じ形）
+        int memory = 0;
+        //! 記憶のマスの明るさの倍率（`LightRangeParams::memory_brightness`）。
+        float memory_brightness = 0.78f;
+    };
+    Vec3 to_target{};
+    const auto shoot = [&](Scene &s, const Shot &shot) {
+        camera.target = Vec3{ static_cast<float>(s.px) + 0.5f, static_cast<float>(s.py) + 0.5f, 0.f };
+        s.frame.lighting.light_kind = static_cast<std::uint8_t>(shot.kind);
+        const int px = s.px;
+        const int py = s.py;
+        const auto circle = [px, py](int gx, int gy) {
+            const double dx = static_cast<double>(gx - px);
+            const double dy = static_cast<double>(gy - py);
+            return ((dx * dx) + (dy * dy)) <= (3.4 * 3.4);
+        };
+        const auto half_plane = [px](int gx, int) { return gx >= px; };
+
+        SceneLighting lighting = make_scene_lighting(s.frame.lighting, s.frame.floor);
+        apply_lit_room_ambient(lighting, s.frame.floor, s.bright ? 1.f : 0.f);
+        (void)collect_point_lights(s.frame, camera.target, lighting);
+
+        LightRangeParams range;
+        range.strength = shot.strength;
+        range.fade_seconds = 0.25f;
+        range.memory_brightness = shot.memory_brightness;
+        LitRangeField field;
+        if (shot.mode != 0) {
+            GameFrame lit_frame = s.frame;
+            if (shot.memory != 0) {
+                //! 光の円の外は「いま見えていない」（light_level 1）、円の中は見えている（2）。
+                for (MapCellView &cell : lit_frame.cells) {
+                    cell.light_level = circle(cell.gx, cell.gy) ? 2 : 1;
+                }
+                lit_frame.lighting.memory_dim = (shot.memory == 1) ? 1 : 0;
+            }
+            lr_set_lit(lit_frame, [](int, int) { return false; });
+            field.update(lit_frame, 0.016f, range); // 全部 0 から始める
+            if (shot.mode == 3) {
+                lr_set_lit(lit_frame, half_plane);
+            } else {
+                lr_set_lit(lit_frame, circle);
+            }
+            field.update(lit_frame, (shot.mode == 2) ? 0.125f : 1.0f, range);
+            field.bind(lighting, range, shot.kind, 1.f);
+        }
+
+        const Scene &c = s;
+        shadow.begin();
+        renderer.draw_instanced_depth(floor_gpu, c.fit.view_projection, c.terrain.slabs.data(), c.terrain.slabs.size());
+        renderer.draw_instanced_depth(wall_gpu, c.fit.view_projection, c.terrain.boxes.data(), c.terrain.boxes.size());
+        draw_library_depth(renderer, library, c.terrain, c.fit.view_projection);
+        shadow.end(screen_w, screen_h);
+        post.begin_scene(0.04f, 0.05f, 0.07f);
+        renderer.begin(camera.view_projection(), lighting, c.fit.view_projection, shadow.texture(), shadow.side());
+        renderer.begin_cutaway(Cutaway{});
+        renderer.set_cutaway_scale(0.f);
+        renderer.draw_instanced(floor_gpu, c.terrain.slabs.data(), c.terrain.slabs.size());
+        renderer.set_shadow_scale(0.f);
+        renderer.draw_instanced(floor_gpu, c.terrain.under_slabs.data(), c.terrain.under_slabs.size());
+        renderer.set_shadow_scale(1.f);
+        renderer.draw_instanced(wall_gpu, c.terrain.boxes.data(), c.terrain.boxes.size());
+        draw_library_color(renderer, library, c.terrain);
+        if (shot.entities) {
+            renderer.draw_instanced(board_gpu, c.boards.data(), c.boards.size());
+            sprites.draw(camera.view_projection(), lighting, camera.azimuth(), camera.eye(), c.fit.view_projection,
+                shadow.texture(), shadow.side(), sprite_atlas, 4, c.sprites.data(), c.sprites.size());
+            pillar_model.draw(camera.view_projection(), Mat4::identity(), lighting, camera.eye(), c.fit.view_projection,
+                shadow.texture(), shadow.side(), c.models.data(), c.models.size());
+        }
+        post.end_scene(screen_w, screen_h);
+        to_target = camera.target - camera.eye();
+        const float focus = std::sqrt(dot(to_target, to_target));
+        post.resolve(shot.pictures ? PostFlags{} : all_off, params, z_near, z_far, focus, screen_w, screen_h, 0, 0,
+            camera.view_projection(), camera.target.x, camera.target.y, to_target.x, to_target.y);
+        field.release(); // この回のテクスチャは使い終わった
+        return read_framebuffer(screen_w, screen_h);
+    };
+
+    // マスの上の測定点（画素）。
+    const auto mean_at = [&](const std::vector<unsigned char> &image, const std::pair<int, int> &cell, float dx, float dy,
+                             float z, int half) {
+        float sx = 0.f;
+        float sy = 0.f;
+        if (!camera.project(Vec3{ static_cast<float>(cell.first) + dx, static_cast<float>(cell.second) + dy, z }, sx, sy)) {
+            return kNoColour;
+        }
+        return lr_mean_rgb(image, screen_w, screen_h, sx, sy, half);
+    };
+    const auto fmt = [](const std::array<double, 3> &c) {
+        char buf[64]{};
+        std::snprintf(buf, sizeof(buf), "(%.1f, %.1f, %.1f)", c[0], c[1], c[2]);
+        return std::string(buf);
+    };
+
+    // 4 回回してから読む（1 枚目はドライバの都合で空のことがある）。
+    for (int i = 0; i < 3; ++i) {
+        (void)shoot(scenes[0], Shot{});
+    }
+
+    for (Scene &s : scenes) {
+        std::fprintf(stderr, "[hd2d] light-range-check シーン \"%s\"\n", s.name);
+        camera.target = Vec3{ static_cast<float>(s.px) + 0.5f, static_cast<float>(s.py) + 0.5f, 0.f };
+        for (const int kind : { 0, 1, 2, 3, 4, 5 }) {
+            Shot off;
+            off.kind = kind;
+            off.mode = 0;
+            Shot on = off;
+            on.mode = 1;
+            const std::vector<unsigned char> img_off = shoot(s, off);
+            const std::vector<unsigned char> img_on = shoot(s, on);
+            const std::string tag = std::string(s.name) + " kind=" + std::to_string(kind) + ": ";
+            //! 5 は暗黒側。照らされたマスは**暗くなる**（ほかの種類は明るくなる）。
+            const bool dark_side = (kind == 5);
+
+            // 床
+            const auto f_lit_off = mean_at(img_off, s.floor_lit, 0.5f, 0.5f, 0.f, 3);
+            const auto f_lit_on = mean_at(img_on, s.floor_lit, 0.5f, 0.5f, 0.f, 3);
+            const auto f_dark_off = mean_at(img_off, s.floor_dark, 0.5f, 0.5f, 0.f, 3);
+            const auto f_dark_on = mean_at(img_on, s.floor_dark, 0.5f, 0.5f, 0.f, 3);
+            std::fprintf(stderr, "    %s床 照らされたマス %s → %s / そうでないマス %s → %s\n", tag.c_str(),
+                fmt(f_lit_off).c_str(), fmt(f_lit_on).c_str(), fmt(f_dark_off).c_str(), fmt(f_dark_on).c_str());
+            if (dark_side) {
+                check(lr_luma(f_lit_off) > 3.0, tag + "暗黒側: 測定点の床が写っている（暗すぎて測れないではない）");
+                check(lr_luma(f_lit_on) < (lr_luma(f_lit_off) * 0.92), tag + "暗黒側: 範囲に入ったマスの床が、場を結ぶと暗くなる");
+            } else {
+                check(lr_luma(f_lit_on) > (lr_luma(f_lit_off) * 1.06), tag + "照らされたマスの床が、場を結ぶと明るくなる");
+            }
+            check(std::fabs(lr_luma(f_dark_on) - lr_luma(f_dark_off)) < 0.01,
+                tag + "照らされていないマスの床は場を結んでも変わらない");
+
+            // 実体 3 種（板・かきわり・3D モデル）
+            struct Probe {
+                const char *label;
+                const std::pair<int, int> *lit;
+                const std::pair<int, int> *dark;
+                float dx;
+                float dy;
+                float z;
+            };
+            const Probe probes[] = {
+                { "板", &s.board_lit, &s.board_dark, 0.5f, 0.55f, 0.35f },
+                { "かきわり", &s.sprite_lit, &s.sprite_dark, 0.5f, 0.5f, 0.4f },
+                { "3Dモデル", &s.model_lit, &s.model_dark, 0.5f, 0.5f, 0.78f },
+            };
+            for (const Probe &p : probes) {
+                const auto lit_off = mean_at(img_off, *p.lit, p.dx, p.dy, p.z, 2);
+                const auto lit_on = mean_at(img_on, *p.lit, p.dx, p.dy, p.z, 2);
+                const auto dark_off = mean_at(img_off, *p.dark, p.dx, p.dy, p.z, 2);
+                const auto dark_on = mean_at(img_on, *p.dark, p.dx, p.dy, p.z, 2);
+                std::fprintf(stderr, "    %s%s 照らされたマス %s → %s / そうでないマス %s → %s\n", tag.c_str(), p.label,
+                    fmt(lit_off).c_str(), fmt(lit_on).c_str(), fmt(dark_off).c_str(), fmt(dark_on).c_str());
+                check(lr_luma(lit_off) > 8.0, tag + p.label + ": 測定点に実体が写っている（暗くて測れない・写っていないではない）");
+                if (dark_side) {
+                    check(lr_luma(lit_on) < (lr_luma(lit_off) * 0.95), tag + p.label + ": 暗黒側: 範囲に入ったマスに立つものが、場を結ぶと暗くなる");
+                } else {
+                    check(lr_luma(lit_on) > (lr_luma(lit_off) * 1.04), tag + p.label + ": 照らされたマスに立つものが、場を結ぶと明るくなる");
+                }
+                check(std::fabs(lr_luma(dark_on) - lr_luma(dark_off)) < 0.01,
+                    tag + p.label + ": 照らされていないマスに立つものは場を結んでも変わらない");
+            }
+        }
+    }
+
+    /* --- 色味（kind ごとの、場を結んだときの足し分） --- */
+    for (Scene &s : scenes) {
+        std::array<std::array<double, 3>, 6> delta{};
+        for (const int kind : { 0, 1, 2, 3, 4, 5 }) {
+            Shot off;
+            off.kind = kind;
+            Shot on = off;
+            on.mode = 1;
+            const auto a = mean_at(shoot(s, off), s.floor_lit, 0.5f, 0.5f, 0.f, 3);
+            const auto b = mean_at(shoot(s, on), s.floor_lit, 0.5f, 0.5f, 0.f, 3);
+            for (std::size_t c = 0; c < 3; ++c) {
+                delta[static_cast<std::size_t>(kind)][c] = b[c] - a[c];
+            }
+            std::fprintf(stderr, "    %s kind=%d 足し分 R%+.1f G%+.1f B%+.1f\n", s.name, kind,
+                delta[static_cast<std::size_t>(kind)][0], delta[static_cast<std::size_t>(kind)][1],
+                delta[static_cast<std::size_t>(kind)][2]);
+        }
+        const std::string tag = std::string(s.name) + " 色味: ";
+        const auto ratio = [](const std::array<double, 3> &d, std::size_t num, std::size_t den) {
+            return (std::fabs(d[den]) > 1e-9) ? (d[num] / d[den]) : 99.0;
+        };
+        // G/R: ランタン（黄）> 従来 > 松明（橙）。B/R: アーティファクト（青白）> それ以外（淡い白）> 従来 > 松明。
+        check((delta[1][0] > delta[1][1]) && (delta[1][1] > delta[1][2]) && (ratio(delta[1], 1, 0) < ratio(delta[0], 1, 0)),
+            tag + "松明（1）は橙（従来の 0 より緑が弱く、赤>緑>青）");
+        check((ratio(delta[2], 1, 0) > ratio(delta[0], 1, 0)) && (delta[2][0] >= delta[2][1]) && (delta[2][1] > delta[2][2]),
+            tag + "ランタン（2）は黄（従来の 0 より緑が強く、青が最も弱い）");
+        check((ratio(delta[3], 2, 0) > ratio(delta[4], 2, 0)) && (ratio(delta[4], 2, 0) > ratio(delta[0], 2, 0))
+                && (ratio(delta[0], 2, 0) > ratio(delta[1], 2, 0)),
+            tag + "青の割合: アーティファクト（3）> それ以外（4）> 従来（0）> 松明（1）");
+        check((delta[4][0] > 0.0) && (ratio(delta[4], 2, 0) > 0.7) && (ratio(delta[4], 1, 0) > 0.8),
+            tag + "それ以外（4）は淡い白（赤・緑・青の足し分がほぼそろう）");
+        // 暗黒側(5): 赤・緑・青のすべてが減り、青の減りがいちばん小さい（冷たい色に寄る）。
+        check((delta[5][0] < 0.0) && (delta[5][1] < 0.0) && (delta[5][2] <= 0.0) && (delta[5][2] > delta[5][0])
+                && (delta[5][2] >= delta[5][1]),
+            tag + "暗黒側（5）は暗くなり、青の減りがいちばん小さい（冷たい色）");
+    }
+
+    /* --- 切り替えの途中（時刻固定）・左右対称・場なし・強さ 0 --- */
+    for (Scene &s : scenes) {
+        const std::string tag = std::string(s.name) + ": ";
+        Shot base;
+        base.kind = 1;
+        Shot full = base;
+        full.mode = 1;
+        Shot mid = base;
+        mid.mode = 2;
+        const auto img_off = shoot(s, base);
+        const auto img_full = shoot(s, full);
+        const auto img_mid = shoot(s, mid);
+        const double l_off = lr_luma(mean_at(img_off, s.floor_lit, 0.5f, 0.5f, 0.f, 3));
+        const double l_full = lr_luma(mean_at(img_full, s.floor_lit, 0.5f, 0.5f, 0.f, 3));
+        const double l_mid = lr_luma(mean_at(img_mid, s.floor_lit, 0.5f, 0.5f, 0.f, 3));
+        std::fprintf(stderr, "    %s切り替えの途中 輝度 なし %.1f / 途中（0.125 秒）%.1f / 完了 %.1f\n", tag.c_str(), l_off, l_mid, l_full);
+        check((l_mid > (l_off + 0.5)) && (l_mid < (l_full - 0.5)), tag + "切り替えの途中は、なしと完了の間の明るさ");
+
+        // 左右対称（同じ距離で、片方だけ照らされる）
+        Shot half = base;
+        half.mode = 3;
+        half.entities = false;
+        const auto img_half = shoot(s, half);
+        const double l_lit = lr_luma(mean_at(img_half, s.mirror_lit, 0.5f, 0.5f, 0.f, 3));
+        const double l_dark = lr_luma(mean_at(img_half, s.mirror_dark, 0.5f, 0.5f, 0.f, 3));
+        std::fprintf(stderr, "    %s左右対称（距離 4）輝度 照らされたマス %.1f / そうでないマス %.1f\n", tag.c_str(), l_lit, l_dark);
+        check(l_lit > (l_dark * 1.06), tag + "同じ距離なら、照らされたマスの床がそうでないマスより明るい");
+
+        // 場なし（player_lit 空）・強さ 0 は、結ばない絵と画素まで同じ
+        Shot zero = base;
+        zero.mode = 1;
+        zero.strength = 0.f;
+        const auto img_zero = shoot(s, zero);
+        check(lr_max_diff(img_zero, img_off) == 0, tag + "強さ 0 なら、場を結ばない絵と 1 画素も違わない");
+        // 暗黒側(5)も同じ約束: 左右対称で、範囲に入った側が暗い。強さ 0 なら結ばない絵と同じ。
+        {
+            Shot dark_half = half;
+            dark_half.kind = 5;
+            Shot dark_off = base;
+            dark_off.kind = 5;
+            Shot dark_zero = dark_off;
+            dark_zero.mode = 1;
+            dark_zero.strength = 0.f;
+            const auto img_dark_half = shoot(s, dark_half);
+            const double d_lit = lr_luma(mean_at(img_dark_half, s.mirror_lit, 0.5f, 0.5f, 0.f, 3));
+            const double d_dark = lr_luma(mean_at(img_dark_half, s.mirror_dark, 0.5f, 0.5f, 0.f, 3));
+            std::fprintf(stderr, "    %s暗黒側 左右対称（距離 4）輝度 範囲のマス %.1f / 範囲の外 %.1f\n", tag.c_str(), d_lit, d_dark);
+            check(d_lit < (d_dark * 0.94), tag + "暗黒側: 同じ距離なら、範囲に入った側の床が外より暗い");
+            check(lr_max_diff(shoot(s, dark_zero), shoot(s, dark_off)) == 0, tag + "暗黒側: 強さ 0 なら、場を結ばない絵と 1 画素も違わない");
+        }
+        // 記憶のマス（Rogue 系が `memory_dim` を申告したときだけ、light_level 1 のマスを少し暗くする）。
+        {
+            Shot ref = base;
+            ref.mode = 1; // 光の範囲あり・記憶の印なし
+            Shot declared = ref;
+            declared.memory = 1;
+            Shot undeclared = ref;
+            undeclared.memory = 2;
+            Shot full = ref;
+            full.memory = 1;
+            full.memory_brightness = 1.f;
+            Shot declared_zero = declared;
+            declared_zero.strength = 0.f;
+            Shot ref_zero = ref;
+            ref_zero.strength = 0.f;
+            const auto img_ref = shoot(s, ref);
+            const auto img_declared = shoot(s, declared);
+            const std::string mtag = tag + "記憶のマス: ";
+            check(lr_max_diff(shoot(s, undeclared), img_ref) == 0,
+                mtag + "申告が無ければ、light_level 1 のマスを並べても 1 画素も変わらない（変愚などの見た目は変わらない）");
+            check(lr_max_diff(shoot(s, full), img_ref) == 0, mtag + "明るさの倍率が 1 なら、申告があっても 1 画素も変わらない");
+
+            struct MemProbe {
+                const char *label;
+                const std::pair<int, int> *cell;
+                float dx;
+                float dy;
+                float z;
+                int half;
+                bool visible; //!< 見えているマス（暗くしない側）か
+            };
+            const MemProbe mem_probes[] = {
+                { "床（遠い）", &s.floor_dark, 0.5f, 0.5f, 0.f, 3, false },
+                { "床（左右対称の遠い側）", &s.mirror_dark, 0.5f, 0.5f, 0.f, 3, false },
+                { "板（遠い）", &s.board_dark, 0.5f, 0.55f, 0.35f, 2, false },
+                { "かきわり（遠い）", &s.sprite_dark, 0.5f, 0.5f, 0.4f, 2, false },
+                { "3Dモデル（遠い）", &s.model_dark, 0.5f, 0.5f, 0.78f, 2, false },
+                { "床（見えている）", &s.floor_lit, 0.5f, 0.5f, 0.f, 3, true },
+                { "板（見えている）", &s.board_lit, 0.5f, 0.55f, 0.35f, 2, true },
+                { "かきわり（見えている）", &s.sprite_lit, 0.5f, 0.5f, 0.4f, 2, true },
+                { "3Dモデル（見えている）", &s.model_lit, 0.5f, 0.5f, 0.78f, 2, true },
+            };
+            for (const MemProbe &p : mem_probes) {
+                const double before = lr_luma(mean_at(img_ref, *p.cell, p.dx, p.dy, p.z, p.half));
+                const double after = lr_luma(mean_at(img_declared, *p.cell, p.dx, p.dy, p.z, p.half));
+                std::fprintf(stderr, "    %s%s 輝度 %.2f → %.2f（%.3f 倍）\n", mtag.c_str(), p.label, before, after,
+                    (before > 0.0) ? (after / before) : 0.0);
+                check(before > 4.0, mtag + p.label + ": 測定点が写っている（暗くて測れない・写っていないではない）");
+                if (p.visible) {
+                    check(std::fabs(after - before) < 0.01, mtag + p.label + ": 見えているマスは申告があっても変わらない");
+                } else {
+                    check((after < (before * 0.92)) && (after > (before * 0.55)),
+                        mtag + p.label + ": 見えていない記憶のマスは、はっきり分かるが見えなくならない程度（0.55〜0.92 倍）に暗い");
+                }
+            }
+            // 光の範囲の強さが 0 でも、記憶のマスの暗さは働く。見えているマスは結ばない絵と同じ。
+            const auto img_declared_zero = shoot(s, declared_zero);
+            const auto img_ref_zero = shoot(s, ref_zero);
+            const double z_before = lr_luma(mean_at(img_ref_zero, s.floor_dark, 0.5f, 0.5f, 0.f, 3));
+            const double z_after = lr_luma(mean_at(img_declared_zero, s.floor_dark, 0.5f, 0.5f, 0.f, 3));
+            check(z_after < (z_before * 0.92), mtag + "光の範囲の強さが 0 でも、記憶のマスは暗くなる");
+            check(std::fabs(lr_luma(mean_at(img_declared_zero, s.floor_lit, 0.5f, 0.5f, 0.f, 3))
+                      - lr_luma(mean_at(img_ref_zero, s.floor_lit, 0.5f, 0.5f, 0.f, 3)))
+                    < 0.01,
+                mtag + "光の範囲の強さが 0 のとき、見えているマスは変わらない");
+        }
+        // 空の player_lit（送らないコア）: 更新しても場は有効にならず、結ばない絵と同じ
+        {
+            LitRangeField empty_field;
+            GameFrame empty_frame = s.frame;
+            empty_frame.lighting.player_lit.clear();
+            empty_field.update(empty_frame, 0.1f, LightRangeParams{});
+            SceneLighting probe;
+            empty_field.bind(probe, LightRangeParams{}, 1, 1.f);
+            check(!empty_field.active() && !probe.lit_range.enabled, tag + "player_lit が空なら、場も有効にならず bind も何も結ばない");
+        }
+    }
+
+    // 暗黒側の旗は bind が運ぶ（5 だけ真。0〜4・知らない値は偽）。
+    {
+        Scene &s = scenes[0];
+        GameFrame lit_frame = s.frame;
+        lr_set_lit(lit_frame, [](int, int) { return true; });
+        LitRangeField dark_field;
+        dark_field.update(lit_frame, 0.016f, LightRangeParams{});
+        bool flags_ok = true;
+        for (const int kind : { 0, 1, 2, 3, 4, 5, 99 }) {
+            SceneLighting probe;
+            dark_field.bind(probe, LightRangeParams{}, kind, 1.f);
+            flags_ok = flags_ok && probe.lit_range.enabled && (probe.lit_range.dark == (kind == 5));
+        }
+        dark_field.release();
+        check(flags_ok, "bind: 暗黒側の旗（lit_range.dark）は光源の種類 5 のときだけ真");
+    }
+
+    // bind が運ぶ記憶のマスの倍率: 申告があれば LightRangeParams の値、無ければ 1。強さ 0 でも申告があれば場は有効。
+    {
+        Scene &s = scenes[0];
+        GameFrame mem_frame = s.frame;
+        for (MapCellView &cell : mem_frame.cells) {
+            cell.light_level = 1;
+        }
+        lr_set_lit(mem_frame, [](int, int) { return false; });
+        bool declared_ok = true;
+        bool undeclared_ok = true;
+        bool zero_ok = true;
+        bool no_texture_ok = true;
+        for (const float strength : { 1.f, 0.f }) {
+            LightRangeParams params;
+            params.strength = strength;
+            params.memory_brightness = 0.7f;
+            LitRangeField declared_field;
+            mem_frame.lighting.memory_dim = 1;
+            declared_field.update(mem_frame, 0.016f, params);
+            SceneLighting with;
+            declared_field.bind(with, params, 1, 1.f);
+            declared_ok = declared_ok && with.lit_range.enabled && (with.lit_range.texture != 0)
+                && (std::fabs(with.lit_range.memory_brightness - 0.7f) < 1e-6f)
+                && (std::fabs(with.lit_range.strength - strength) < 1e-6f);
+            declared_field.release();
+
+            LitRangeField plain_field;
+            mem_frame.lighting.memory_dim = 0;
+            plain_field.update(mem_frame, 0.016f, params);
+            SceneLighting without;
+            plain_field.bind(without, params, 1, 1.f);
+            undeclared_ok = undeclared_ok && (without.lit_range.memory_brightness == 1.f);
+            zero_ok = zero_ok && ((strength > 0.f) ? without.lit_range.enabled : !without.lit_range.enabled);
+            plain_field.release();
+        }
+        {
+            // 倍率が 1 なら、申告があっても何も結ばない（強さ 0 のとき）。
+            LightRangeParams params;
+            params.strength = 0.f;
+            params.memory_brightness = 1.f;
+            LitRangeField field;
+            mem_frame.lighting.memory_dim = 1;
+            field.update(mem_frame, 0.016f, params);
+            SceneLighting probe;
+            field.bind(probe, params, 1, 1.f);
+            no_texture_ok = !probe.lit_range.enabled;
+            field.release();
+        }
+        check(declared_ok, "bind: 申告があれば、記憶のマスの倍率が運ばれ、光の範囲の強さが 0 でも場が有効");
+        check(undeclared_ok && zero_ok, "bind: 申告が無ければ倍率は 1 で、強さ 0 なら何も結ばない（従来どおり）");
+        check(no_texture_ok, "bind: 倍率が 1 で光の範囲の強さも 0 なら、申告があっても何も結ばない");
+    }
+
+    // GL のエラーが出ていない（GLES の「同じ単位に型違いのサンプラ」は、ここで GL_INVALID_OPERATION になる）。
+    {
+        const std::string gl_err = drain_gl_errors();
+        check(gl_err.empty(), "描く間に GL エラーが出ていない" + (gl_err.empty() ? std::string() : (": " + gl_err)));
+    }
+
+    /* --- 絵を書き出す（2 つのシーン × 光源の種類 5 つ + 場なし + 切り替えの途中） --- */
+    if (!options.light_range_check_path.empty()) {
+        std::string stem = options.light_range_check_path;
+        for (Scene &s : scenes) {
+            const auto save = [&](const std::string &suffix, const Shot &shot) {
+                Shot pic = shot;
+                pic.pictures = true;
+                (void)shoot(s, pic);
+                const std::string path = stem + "_" + s.name + suffix + ".png";
+                std::vector<unsigned char> pixels(static_cast<std::size_t>(screen_w) * static_cast<std::size_t>(screen_h) * 4u);
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                glReadPixels(0, 0, screen_w, screen_h, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+                for (std::size_t i = 3; i < pixels.size(); i += 4) {
+                    pixels[i] = 255;
+                }
+                const bool ok = save_rgba_png(path, pixels.data(), screen_w, screen_h);
+                check(ok, "絵を書き出せた: " + path);
+            };
+            Shot none;
+            none.kind = 1;
+            none.mode = 0;
+            save("_off", none); // 場なし（従来の絵）
+            for (const int kind : { 0, 1, 2, 3, 4, 5 }) {
+                Shot on;
+                on.kind = kind;
+                on.mode = 1;
+                save("_kind" + std::to_string(kind), on);
+            }
+            Shot dark_none;
+            dark_none.kind = 5;
+            dark_none.mode = 0;
+            save("_kind5_off", dark_none); // 暗黒側の、場なし（範囲の外の暗さの基準）
+            Shot mid;
+            mid.kind = 1;
+            mid.mode = 2;
+            save("_fade_mid", mid);
+            Shot mem;
+            mem.kind = 1;
+            mem.mode = 1;
+            mem.memory = 1;
+            save("_memory", mem); // 記憶のマス（申告あり）。遠いマスが少し暗い
+            Shot mem_undeclared = mem;
+            mem_undeclared.memory = 2;
+            save("_memory_undeclared", mem_undeclared); // 申告なし（光の範囲だけの絵と同じ）
+        }
+    }
+
+    post.shutdown();
+    shadow.shutdown();
+    library.release_gpu(renderer);
+    pillar_model.shutdown();
+    sprites.shutdown();
+    if (sprite_atlas != 0) {
+        glDeleteTextures(1, &sprite_atlas);
+    }
+    release_lit_placeholder();
+    renderer.release(wall_gpu);
+    renderer.release(floor_gpu);
+    renderer.release(board_gpu);
+    renderer.shutdown();
+    SDL_GL_DeleteContext(window.context);
+    SDL_DestroyWindow(window.window);
+    SDL_Quit();
+    std::fprintf(stderr, "[hd2d] light-range-check: PASS %d / FAIL %d\n", passes, failures);
     std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
     return (failures == 0) ? 0 : 1;
 }

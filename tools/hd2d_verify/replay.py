@@ -87,6 +87,22 @@ def conversation_path(name: str) -> str:
     return os.path.join(REPLAY_DIR, name + '.jsonl.gz')
 
 
+#: 記録の中でリポジトリ直下を指す印。
+ROOT_TOKEN = b'@ROOT@'
+
+
+def portable_root(raw: bytes) -> bytes:
+    """記録の中の絶対パス（リポジトリ直下）を `@ROOT@` に置き換える。
+
+    コアは `C:/dir/...`（スラッシュ区切り）で書くが、念のためバックスラッシュ区切り（JSON の中では 2 重・4 重）も置き換える。
+    """
+    import re
+    fwd = ROOT.replace(chr(92), '/')
+    for form in (fwd, ROOT, ROOT.replace(chr(92), chr(92) * 2), ROOT.replace(chr(92), chr(92) * 4)):
+        raw = re.sub(re.escape(form.encode('utf-8')), ROOT_TOKEN, raw, flags=re.I)
+    return raw
+
+
 def record_core(sc: dict) -> None:
     """本物のコアを起こして会話を採る。"""
     tmp = tempfile.mkdtemp(prefix='hd2d_rec_')
@@ -98,6 +114,7 @@ def record_core(sc: dict) -> None:
     if sc['keys']:
         env['HENGBAND_SDL2_INJECT_KEYS'] = sc['keys']
     env.update(sc.get('env', {}))
+    env['HENGBAND_MUTE'] = '1'   # 音を鳴らさない（playthrough.py の run_one と同じ理由）
     try:
         with CfgGuard(), SaveGuard(sc['save']):
             result = run_process(
@@ -110,6 +127,10 @@ def record_core(sc: dict) -> None:
         os.makedirs(REPLAY_DIR, exist_ok=True)
         with open(plog, 'rb') as src:
             raw = src.read()
+        #: **この PC の絶対パスを記録に残さない**（`hello_ack.asset_roots.graf` に入る）。置き場の名前を
+        #: `@ROOT@` にしておき、再生のとき（`run_replay`）に本物の置き場へ戻す。残すと、別の場所・別の
+        #: 遊ぶ人・関門のサンドボックス（流すたびに名前が変わり、終われば消える）では再生できない。
+        raw = portable_root(raw)
         with gzip.open(conversation_path(sc['name']), 'wb', compresslevel=9) as dst:
             dst.write(raw)
         print('  採った %-8s %5d 行 / 生 %.1f MB → %.0f KB'
@@ -131,7 +152,8 @@ def run_replay(sc: dict, timeout: int = 180) -> str:
     out = []
     try:
         with gzip.open(conv, 'rb') as src, open(plain, 'wb') as dst:
-            shutil.copyfileobj(src, dst)
+            #: 記録の `@ROOT@` を、いまの置き場（スラッシュ区切り）へ戻す。印の無い古い記録はそのまま。
+            dst.write(src.read().replace(ROOT_TOKEN, ROOT.replace(chr(92), '/').encode('utf-8')))
         env = dict(os.environ)
         for k in ('HENGBAND_SDL2_INJECT_KEYS', 'HD2D_PAD_PRESS',
                   'HD2D_PAD_PRESS_AT', 'HD2D_PAD_PRESS_STEP'):
@@ -139,6 +161,7 @@ def run_replay(sc: dict, timeout: int = 180) -> str:
         env['HD2D_REPLAY_LOG'] = plain
         env['HD2D_FIXED_CLOCK'] = '1'
         env.update(sc.get('env', {}))
+        env['HENGBAND_MUTE'] = '1'   # 音を鳴らさない（playthrough.py の run_one と同じ理由）
         # 再生はコアを起動しないため、セーブを退避する必要はない。
         with CfgGuard():
             try:

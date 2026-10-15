@@ -42,6 +42,8 @@
 
 namespace hd2d {
 
+class TileCatalog; //!< `assets/tile_catalog.h`
+
 class SlabLibrary {
 public:
     /*!
@@ -68,8 +70,11 @@ public:
      * 探す順は［**申告 → 既定**］。申告側を先にするのは、同じ名前の板を別コアが
      * 上書きしたいときにそれが効くようにするため。
      * @note **変愚コアは申告しない**ので、ここは空のまま＝従来と 1 バイトも変わらない。
+     * @note 申告は**プロトコルの決まりで UTF-8** で届く。Windows の画面は `.vox` を狭い文字列
+     * （ANSI＝CP932）のパスで開くので、ここで ANSI へ直して持つ（日本語の名前のフォルダで
+     * 板が読めなかった。2026-10-06。実装は slab_library.cpp）。他の平台はそのまま持つ。
      */
-    void set_declared_dir(const std::string &dir) { this->declared_dir_ = dir; }
+    void set_declared_dir(const std::string &dir);
     const std::string &declared_dir() const { return this->declared_dir_; }
 
     /*!
@@ -79,8 +84,31 @@ public:
      */
     int acquire(std::uint16_t tile_index, const std::string &tile_path, VoxelRenderer &renderer);
 
+    /*!
+     * @brief アイテムの番号（`MapCellView::object_id`／`MissileFx::item_id`）から、床のアイテムと**同じ板**を引く。
+     * @details 目録（`catalog`）の `K` の行から索引と PNG のパスを引き、あとは `acquire()` に任せる。
+     * 飛んでいく物（投げた物。攻撃の視覚効果）が床のアイテムと同じ板を使うための道で、床のアイテムを描く道と
+     * 板の読み方が分かれないようにしてある。
+     * @return 板の番号。目録に無い・板を読めなければ -1。
+     */
+    int acquire_item(const TileCatalog &catalog, std::uint16_t item_id, VoxelRenderer &renderer);
+
+    /*!
+     * @brief 板を正面から見た画素（左上原点・RGBA 各 8 ビット）を作る。攻撃の視覚効果の「タイルの写し」（分解）に使う。
+     * @details **配布版には PNG のタイルが入っていない**（板だけを配る）ので、PNG からは引けない。板（`.vox`）は実際に描いているものと
+     * 同じなので、そこから起こす。申告された置き場 → 既定の置き場の順に探し、板を読み直して（GPU には載せない）
+     * 各列の最も手前（+y 側）のボクセルの色を取る。`tile_path` は名前（`R955.png` → `R955`）だけを使う。
+     * 板は接地のために絵の底の空白を詰めてあるので、画素は足元（z = 0）から板の頭までで、`height` は 1 辺より小さいことがある。
+     * @param[out] width 画素の幅（板の 1 辺）。
+     * @param[out] height 画素の高さ（足元から板の頭まで）。
+     * @param[out] rgba 画素。
+     * @return 板を読めて、不透明な画素があったか。
+     */
+    bool front_pixels(const std::string &tile_path, int &width, int &height, std::vector<std::uint8_t> &rgba) const;
+
     GpuPrefab &gpu(int id) { return this->entries_[static_cast<std::size_t>(id)].gpu; }
     const GpuPrefab &gpu(int id) const { return this->entries_[static_cast<std::size_t>(id)].gpu; }
+    std::pair<Vec3,Vec3> bounds(int id) const {const auto &e=this->entries_[static_cast<std::size_t>(id)];return {e.minimum,e.maximum};}
 
     std::size_t loaded() const { return this->entries_.size(); }
     //! 読めなかった索引の数（**捏造せずに数える**）。
@@ -92,6 +120,7 @@ private:
     struct Entry {
         Prefab prefab;
         GpuPrefab gpu;
+        Vec3 minimum{},maximum{};
     };
 
     std::string dir_{ "assets/voxel/slab" };

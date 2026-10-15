@@ -17,6 +17,7 @@
  * 取り違えても長い流し撮りにはならない。
  */
 #pragma once
+#include "render/targeting_visual.h"
 
 #include "assets/tile_catalog.h"
 #include "render/billboard_renderer.h"
@@ -41,12 +42,27 @@ namespace hd2d {
  * 「その実体はどこに居るか」を読む必要があるためで、`inst` は**マスの角**を指している
  * （プレハブの原点がそこなので）。中心を毎回引き算し直すと、片方だけ直った状態に必ずなる。
  */
+/*!
+ * @brief 実体を描く層（2026-09-23 決めたこと「タイルの向きに関わらずタイル描画の順番を
+ * 下から 地面・オブジェクト・アイテム・モンスター・キャラクター に」）。
+ * @details 実体どうしが重なったときは、深度（カメラからの近さ）ではなくこの順で上に描く。
+ * 地形（地面・壁）には、これまでどおり深度で隠れる（`hd2d_app.cpp` の実体の描画）。
+ */
+enum class EntityLayer : std::uint8_t {
+    Object = 0, //!< 罠など、床に置かれた物（アイテムではないもの）
+    Item = 1,
+    Monster = 2,
+    Player = 3,
+};
+constexpr int kEntityLayerCount = 4;
+
 struct SlabInstance {
     int slab{ -1 }; //!< `SlabLibrary` の番号。-1 は描かない
     InstanceData inst{};
     float cx{ 0.f }; //!< 実体の中心（マス単位）
     float cy{ 0.f };
     float height{ 1.f }; //!< 板の高さ（マス単位）
+    EntityLayer layer{ EntityLayer::Item };
 };
 
 /*!
@@ -60,6 +76,15 @@ struct SlabInstance {
  * 首を振るたびに世界じゅうの板が一斉に回る（VR で 2026-08-14 に踏んだのと同じ話）。
  */
 struct SlabFacing {
+    /*!
+     * @brief ボクセル板を**画面平面へ固定**する。
+     *
+     * @details 真なら `active` / `snap8` より優先し、全実体へ同じ `fixed_yaw` と
+     * `screen_pitch` を使う。個々の板からカメラ位置へのベクトルは使わないため、画面の端でも
+     * 中央でも板面は同じ平面に載り、透視による「少し横を向く」が起きない。
+     */
+    bool screen_aligned{ false };
+    float screen_pitch{ 0.f }; //!< カメラの見下ろし角。0 = 従来どおり垂直
     bool active{ false }; //!< 一人称のときだけ真。偽なら向きは `fixed_yaw` で固定
     float at_x{ 0.f }; //!< 向く先（＝キャラの位置。マス単位）
     float at_y{ 0.f };
@@ -77,6 +102,12 @@ struct SlabFacing {
     float fixed_yaw{ 0.f };
 };
 
+/*!
+ * @brief screen-aligned ボクセル板の表向き法線。
+ * @details GLSL の pitch→yaw と同じ規約。正しく設定されていれば `-Camera::forward()` と一致する。
+ */
+Vec3 screen_aligned_slab_normal(float yaw, float pitch);
+
 struct EntityView {
     std::vector<SlabInstance> slabs;
     /*!
@@ -88,6 +119,8 @@ struct EntityView {
      * 正対するので、見せ方ごとの向き管理が要らない。`SlabFacing::fixed_yaw` も要らない）。
      */
     std::vector<BillboardInstance> glyphs;
+    //! `glyphs` と同じ並びの層（`BillboardInstance` は GPU へそのまま送るので欄を足さない）。
+    std::vector<EntityLayer> glyph_layers;
     /*!
      * @brief 足元のリング（SQ-1。`render/ground_ring.h`）。
      *
@@ -100,6 +133,7 @@ struct EntityView {
      * `slabs` とも `glyphs` とも**排他ではない**——実体をどちらで描いていても輪は出る。
      */
     std::vector<GroundRingInstance> rings;
+    std::vector<TargetingEntity> targeting_entities;
     int monsters{ 0 };
     int objects{ 0 };
     int players{ 0 };
@@ -144,7 +178,8 @@ public:
     void build(const GameFrame &frame, const TileCatalog &catalog, SlabLibrary &slabs, VoxelRenderer &renderer,
         float dt, EntityView &out, bool hide_player = false, float player_min_speed = 0.f,
         const SlabFacing &facing = SlabFacing{}, GlyphAtlas *glyphs = nullptr,
-        float glyph_height_cells = 0.8f, GlyphAtlas *fallback_glyphs = nullptr);
+        float glyph_height_cells = 0.8f, GlyphAtlas *fallback_glyphs = nullptr,
+        bool model_player = false);
 
     //! フロアが変わったときに呼ぶ（覚えている位置を捨てる）。
     void reset();

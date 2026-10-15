@@ -3,6 +3,9 @@
  * @brief `virtual_pad.h` の実装。
  */
 #include "ui/virtual_pad.h"
+#include "app/ui_probe.h"
+#include "ui/modern_skin.h"
+#include "ui/menu_scale.h"
 
 #include "i18n/lang.h"
 
@@ -325,14 +328,14 @@ const TextColor kEditorHint{ 0.75f, 0.78f, 0.85f, 1.f };
 /*! @} */
 
 //! 編集画面の中央ボタン（0 = デフォルトに戻す / 1 = 戻る）。描画と当たり判定が共有する。
-RectPx editor_button_rect(int which, const RectPx &area)
+RectPx editor_button_rect(int which, const RectPx &area,float font_scale=1.f)
 {
     const float u = size_basis(area);
-    const int w = static_cast<int>(u * 0.32f);
-    const int h = static_cast<int>(u * 0.075f);
+    const int w = std::min(area.w-16,static_cast<int>(std::max(u * 0.32f,200.f*font_scale)));
+    const int h = static_cast<int>(std::max(u * 0.075f,40.f*font_scale));
     const int x = area.x + ((area.w - w) / 2);
     const int y = area.y
-        + static_cast<int>((static_cast<float>(area.h) * 0.44f) + (static_cast<float>(which) * u * 0.10f));
+        + static_cast<int>((static_cast<float>(area.h) * 0.44f) + (static_cast<float>(which) * std::max(u * 0.10f,48.f*font_scale)));
     return RectPx{ x, y, w, h };
 }
 
@@ -621,6 +624,35 @@ int VirtualPad::control_at(float x, float y, const VirtualPadSettings &settings,
     return best;
 }
 
+bool VirtualPad::near_control(float x, float y, const VirtualPadSettings &settings, const RectPx &area) const
+{
+    if (!settings.show) {
+        return false;
+    }
+    const float u = size_basis(area);
+    const float margin = u * 0.05f; //!< 指の太さぶん。押し損ねた指を地図のタップにしない
+    for (int i = 0; i < kVpadControlCount; ++i) {
+        if (!settings.visible[i]) {
+            continue;
+        }
+        const ControlGeom g = control_geom(i, settings, area);
+        const float dx = x - g.cx;
+        const float dy = y - g.cy;
+        bool near = false;
+        if (g.shape == 1) {
+            near = (std::fabs(dx) <= (g.half_w + margin)) && (std::fabs(dy) <= (g.half_h + margin));
+        } else {
+            //! `control_at()` と同じ当たり（スティックは外周、丸いボタンは 1.25 倍）に、余白を足す。
+            const float r = ((g.shape == 2) ? g.radius : (g.radius * 1.25f)) + margin;
+            near = ((dx * dx) + (dy * dy)) <= (r * r);
+        }
+        if (near) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void VirtualPad::update_stick(int control, float x, float y, const VirtualPadSettings &settings,
     const RectPx &area)
 {
@@ -676,6 +708,28 @@ void VirtualPad::release_stick(int control)
     }
 }
 
+void VirtualPad::forget_direction_hold()
+{
+    if (!this->editor_open_) {
+        //! スティックを掴んでいる指だけ手放す（ボタンを押さえている指は残す）。編集画面の掴みは別の用途なので触らない。
+        for (Grab &g : this->grabs_) {
+            const auto c = static_cast<VpadControl>(g.control);
+            if (g.active && ((c == VpadControl::LS) || (c == VpadControl::RS))) {
+                g = Grab{};
+            }
+        }
+    }
+    this->ls_dx_ = 0;
+    this->ls_dy_ = 0;
+    this->held_dx_ = 0;
+    this->held_dy_ = 0;
+    this->tap_dx_ = 0;
+    this->tap_dy_ = 0;
+    this->next_repeat_ms_ = 0;
+    this->rs_out_x_ = 0.f;
+    this->rs_out_y_ = 0.f;
+}
+
 void VirtualPad::forget_hold()
 {
     for (Grab &g : this->grabs_) {
@@ -718,12 +772,12 @@ bool VirtualPad::pointer_down(std::int64_t finger, float x, float y, VirtualPadS
 {
     if (this->editor_open_) {
         //! 中央のボタンが最優先（ボタンの上へコントロールを重ねられても押せるように）。
-        if (editor_button_rect(0, area).contains(static_cast<int>(x), static_cast<int>(y))) {
+        if (editor_button_rect(0, area,editor_menu_scale_).contains(static_cast<int>(x), static_cast<int>(y))) {
             //! **いま向いている側だけ**戻す（縦を直しに来て横まで消えると取り返しがつかない）。
             settings.reset_layout(vpad_orient_of(area));
             return true;
         }
-        if (editor_button_rect(1, area).contains(static_cast<int>(x), static_cast<int>(y))) {
+        if (editor_button_rect(1, area,editor_menu_scale_).contains(static_cast<int>(x), static_cast<int>(y))) {
             this->close_editor();
             return true;
         }
@@ -1150,6 +1204,7 @@ void VirtualPad::draw(UiPaint &paint, TextOverlay &text, const VirtualPadSetting
     if (!settings.show || this->editor_open_) {
         return; // 編集中は `draw_editor` が描く（同じものを 2 度描くと編集の下に薄い分身が出る）
     }
+    const UiProbeLayer probe_layer("vpad");
     const float u = size_basis(area);
     const float t = std::max(2.f, u * 0.004f); //!< 線の太さ
     //! 表示濃度（2026-08-12 に決めた）。**α にだけ**掛ける（色味は変えない）。
@@ -1189,6 +1244,14 @@ void VirtualPad::draw(UiPaint &paint, TextOverlay &text, const VirtualPadSetting
         const TextColor label = dimmed_text(pressed ? kLabelPressed : kLabel);
         //! **綴りではなく操作の名前**（2026-08-12 に決めた）。スティックには出ない。
         const std::string caption = vpad_button_label(static_cast<VpadControl>(i), binds, commands, macros, chord_mask);
+        if (ui_probe().enabled()) {
+            //! 検査用の問い合わせ：ボタンの当たり（円は半径・角丸長方形は半幅半高）。指でしか押せない。
+            const float hw = (g.shape == 1) ? g.half_w : g.radius;
+            const float hh = (g.shape == 1) ? g.half_h : g.radius;
+            ui_probe().button(caption.empty() ? ("pad-control-" + std::to_string(i)) : caption,
+                ProbeRect{ static_cast<int>(g.cx - hw), static_cast<int>(g.cy - hh), static_cast<int>(hw * 2.f), static_cast<int>(hh * 2.f) },
+                true, pressed, "vpad", true, "vpad:" + std::to_string(i));
+        }
         if (g.shape == 1) {
             const float rad = g.half_h * 0.45f;
             fill_round_rect(paint, g.cx, g.cy, g.half_w, g.half_h, rad, fill);
@@ -1209,33 +1272,39 @@ void VirtualPad::draw(UiPaint &paint, TextOverlay &text, const VirtualPadSetting
     }
 }
 
-void VirtualPad::draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPadSettings &settings,
-    const RectPx &area) const
+void VirtualPad::draw_editor(UiPaint &paint,TextOverlay &text,const VirtualPadSettings &settings,const RectPx &area,int theme,int font_level) const {
+    MenuScaleScope scope(paint,text,theme>=0?menu_font_scale(font_level):1.f);editor_menu_scale_=scope.scale;
+    draw_editor_logical(paint,text,settings,menu_scaled_rect(area,1.f/scope.scale),theme);
+}
+void VirtualPad::draw_editor_logical(UiPaint &paint, TextOverlay &text, const VirtualPadSettings &settings,
+    const RectPx &area,int theme) const
 {
     if (!this->editor_open_) {
         return;
     }
+    const auto skin=modern_skin(theme);
+    const auto selected_ink=theme>=0?skin.trim:kSelected;
     const float u = size_basis(area);
     const float t = std::max(2.f, u * 0.004f);
-    //! 黒背景（2026-08-12 に決めた「黒背景にバーチャルパッドを表示」）。
-    paint.rect(area, PaintColor{ 0.02f, 0.02f, 0.04f, 1.f });
+    //! 黒背景（決めたこと 2026-08-12「黒背景にバーチャルパッドを表示」）。
+    if(theme>=0)paint_modern_window(paint,area,theme);else paint.rect(area, PaintColor{ 0.02f, 0.02f, 0.04f, 1.f });
 
     for (int i = 0; i < kVpadControlCount; ++i) {
         const ControlGeom g = control_geom(i, settings, area);
         //! 非表示のボタンも**薄く**出す（消してあっても場所は変えられる。見えないと選べない）。
         const float dim = settings.visible[i] ? 1.f : 0.35f;
-        const PaintColor fill{ 0.10f, 0.12f, 0.18f, 0.85f * dim };
-        const PaintColor line{ 0.90f, 0.93f, 1.f, 0.9f * dim };
-        const TextColor label{ 0.95f, 0.96f, 1.f, dim };
+        const PaintColor fill=theme>=0?PaintColor{skin.selection.r,skin.selection.g,skin.selection.b,dim}:PaintColor{ 0.10f, 0.12f, 0.18f, 0.85f * dim };
+        const PaintColor line=theme>=0?PaintColor{skin.border.r,skin.border.g,skin.border.b,dim}:PaintColor{ 0.90f, 0.93f, 1.f, 0.9f * dim };
+        const TextColor label=theme>=0?TextColor{skin.text.r,skin.text.g,skin.text.b,dim}:TextColor{ 0.95f, 0.96f, 1.f, dim };
         if (g.shape == 1) {
             const float rad = g.half_h * 0.45f;
             fill_round_rect(paint, g.cx, g.cy, g.half_w, g.half_h, rad, fill);
             frame_round_rect(paint, g.cx, g.cy, g.half_w, g.half_h, rad, t, line);
             draw_label_centred(text, g.cx, g.cy, vpad_control_name(static_cast<VpadControl>(i)), label);
         } else if (g.shape == 2) {
-            fill_circle(paint, g.cx, g.cy, g.radius, PaintColor{ 0.10f, 0.12f, 0.18f, 0.5f * dim }, 48);
+            fill_circle(paint, g.cx, g.cy, g.radius, fill, 48);
             ring(paint, g.cx, g.cy, g.radius - t, g.radius, line, 56);
-            fill_circle(paint, g.cx, g.cy, g.knob, PaintColor{ 0.75f, 0.78f, 0.88f, 0.5f * dim });
+            fill_circle(paint, g.cx, g.cy, g.knob, theme>=0?skin.trim:PaintColor{ 0.75f, 0.78f, 0.88f, 0.5f * dim });
             ring(paint, g.cx, g.cy, g.knob - t, g.knob, line);
             draw_label_centred(text, g.cx, g.cy - g.radius - static_cast<float>(text.cell_h()), // 外周の上
                 vpad_control_name(static_cast<VpadControl>(i)), label);
@@ -1248,9 +1317,9 @@ void VirtualPad::draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPad
             //! 選択の印。形に沿った黄色い枠（どれを触っているかが一目で分かるように）。
             if (g.shape == 1) {
                 frame_round_rect(paint, g.cx, g.cy, g.half_w + (t * 2.f), g.half_h + (t * 2.f), g.half_h * 0.45f,
-                    t, kSelected);
+                    t, selected_ink);
             } else {
-                ring(paint, g.cx, g.cy, g.radius + t, g.radius + (t * 2.f), kSelected, 56);
+                ring(paint, g.cx, g.cy, g.radius + t, g.radius + (t * 2.f), selected_ink, 56);
             }
         }
     }
@@ -1261,11 +1330,11 @@ void VirtualPad::draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPad
         const float cx = static_cast<float>(r.x) + (static_cast<float>(r.w) / 2.f);
         const float cy = static_cast<float>(r.y) + (static_cast<float>(r.h) / 2.f);
         fill_round_rect(paint, cx, cy, static_cast<float>(r.w) / 2.f, static_cast<float>(r.h) / 2.f,
-            static_cast<float>(r.h) * 0.25f, PaintColor{ 0.16f, 0.18f, 0.26f, 0.95f });
+            static_cast<float>(r.h) * 0.25f, theme>=0?skin.selection:PaintColor{ 0.16f, 0.18f, 0.26f, 0.95f });
         frame_round_rect(paint, cx, cy, static_cast<float>(r.w) / 2.f, static_cast<float>(r.h) / 2.f,
-            static_cast<float>(r.h) * 0.25f, t, PaintColor{ 0.65f, 0.72f, 0.85f, 1.f });
+            static_cast<float>(r.h) * 0.25f, t, theme>=0?skin.border:PaintColor{ 0.65f, 0.72f, 0.85f, 1.f });
         draw_label_centred(text, cx, cy, (which == 0) ? i18n::tr("hd2d.ui.feature-menu.restore-the-defaults") : i18n::tr("hd2d.ui.virtual-pad.back"),
-            TextColor{ 0.95f, 0.96f, 1.f, 1.f });
+            theme>=0?skin.text:TextColor{ 0.95f, 0.96f, 1.f, 1.f });
     }
 
     /*
@@ -1279,7 +1348,7 @@ void VirtualPad::draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPad
     std::snprintf(hint, sizeof(hint),
         i18n::tr("hd2d.ui.virtual-pad.button-layout-s-touch-to-select-drag"),
         portrait ? i18n::tr("hd2d.ui.virtual-pad.portrait") : i18n::tr("hd2d.ui.virtual-pad.landscape"));
-    text.draw(area.x + ch, area.y + ch, hint, kEditorHint);
+    text.draw(area.x + ch, area.y + ch, hint, theme>=0?skin.muted:kEditorHint);
     if (this->selected_ >= 0) {
         const VpadSlot &slot = settings.slot[vpad_orient_of(area)][this->selected_];
         const float xf = slot.overridden() ? slot.xf : default_spec(this->selected_, area).xf;
@@ -1289,7 +1358,7 @@ void VirtualPad::draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPad
             vpad_control_name(static_cast<VpadControl>(this->selected_)),
             static_cast<int>(std::lround(static_cast<double>(std::clamp(slot.scale, kScaleMin, kScaleMax)) * 100.0)),
             static_cast<double>(xf), static_cast<double>(yf));
-        text.draw(area.x + ch, area.y + (ch * 2) + (ch / 2), line, TextColor{ 1.f, 0.95f, 0.55f, 1.f });
+        text.draw(area.x + ch, area.y + (ch * 2) + (ch / 2), line, theme>=0?skin.strong:TextColor{ 1.f, 0.95f, 0.55f, 1.f });
     }
 }
 

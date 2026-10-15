@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse,copy,json
 from pathlib import Path
 from prepare import HERE,DEFAULT_UPSTREAM,DEFAULT_OUTPUT,digest
-from generate_recipes import original_files
+from generate_recipes import original_files, upstream_prefix
 from reconstruction_recipe import build,materialize
 
 
@@ -15,7 +15,8 @@ def main():
         folder=(args.source_root/source['output']).resolve()
         targets={p.relative_to(folder).as_posix():p.read_bytes() for p in folder.rglob('*') if p.is_file()}
         originals=original_files(args.upstream,source)
-        recipe,report=build({'source':originals},targets,{name:('source','src/'+name) for name in targets})
+        prefix=upstream_prefix(source)
+        recipe,report=build({'source':originals},targets,{name:('source',prefix+name) for name in targets})
         assert materialize(recipe,lambda archive,path:originals[path])==targets
         raw=(json.dumps(recipe,ensure_ascii=False,indent=2)+'\n').encode('utf8')
         same=digest(raw)==source['recipe_sha256']
@@ -25,7 +26,7 @@ def main():
         if not same and args.record:
             expected={}
             for name,data in targets.items():
-                entry=copy.deepcopy(before.get(name,{}));original=originals.get('src/'+name)
+                entry=copy.deepcopy(before.get(name,{}));original=originals.get(prefix+name)
                 entry.update(sha256=digest(data),upstream=original is not None,bom=data.startswith(b'\xef\xbb\xbf'),newline='crlf' if b'\r\n' in data else 'lf')
                 if original is not None:entry['upstream_sha256']=digest(original)
                 else:entry.pop('upstream_sha256',None)

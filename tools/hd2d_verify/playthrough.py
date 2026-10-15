@@ -156,6 +156,17 @@ DROPS = [
     re.compile(r'^\[hd2d\]\[gl\] .*$'),
 ]
 
+#: 『知らせ』から落とす行。**最初の描画の知らせは、絵を撮る周に着くのが前か後かで出たり出なかったりする**
+#: （コアは別プロセスで実時間に動くので、最初の世界のフレームが何周目に届くかが揺れる。実測 2026-10-09:
+#: タイトル画面の同じ記録で、3 回のうち 2 回は出て 1 回は出なかった）。字体の用意の知らせと、まだ何も描いていない
+#: 『描く量: マス 0』は中身が無いので外す。世界を描いたあとの『描く量: マス N』（N>0）は残す。
+#: `replay.py` は時計と配りを固定していて揺れないので、ここだけで外す（`mask()` には入れない）。
+TIMING_DROPS = [
+    re.compile(r'^\[hd2d\] glyph font: .*$'),
+    re.compile(r'^\[hd2d\] アスキー実体を用意しました.*$'),
+    re.compile(r'^\[hd2d\] 描く量: マス 0（.*$'),
+]
+
 
 def mask(text: str) -> str:
     lines = [l for l in text.split(chr(10)) if not any(p.match(l) for p in DROPS)]
@@ -163,6 +174,16 @@ def mask(text: str) -> str:
     for pat, rep in MASKS:
         text = pat.sub(rep, text)
     return text
+
+
+#: メニューの版番号（`ui_action` の `revision`）。**コアが実時間で進めるメニューの版が、十字キーを押した時点で
+#: いくつかは走らせるたびに 1 つずれる**（実測 2026-10-09: pad で 1000020 と 1000021）。番号は伏せ、
+#: 『`ui_action navigate` が何回、どの向きで出たか』は残す。`replay.py` は配りを固定していて揺れないので、そちらは伏せない。
+_REVISION = re.compile(r'(\\"revision\\":)\d+')
+
+
+def mask_revision(text: str) -> str:
+    return _REVISION.sub(lambda m: m.group(1) + '<版>', text)
 
 
 def image_health(bmp: bytes) -> list:
@@ -255,6 +276,9 @@ def run_one(sc: dict, timeout: int = 300) -> str:
         env['HENGBAND_SDL2_INJECT_KEYS'] = sc['keys']
     for k, v in sc.get('env', {}).items():
         env[k] = v
+    #: **基準を取るときも比べるときも音を鳴らさない**（2026-10-09）。鳴らす設定だと `[hd2d][audio] 音の装置:` に
+    #: 機械ごとの装置名（ヘッドホンの型番）が入り、機械が変わると差分になる。`golden.py` と同じ扱い。
+    env['HENGBAND_MUTE'] = '1'
     argv = [EXE, '--core-path=' + CORE, '--windowed=1280x720',
             '--shot=' + shot, '--shot-after=%d' % sc['shot_after'],
             '--protocol-log=' + plog]
@@ -320,12 +344,21 @@ def run_one(sc: dict, timeout: int = 300) -> str:
                         d['payload'] = ('<%d バイト sha256=%s>'
                                         % (len(payload),
                                            hashlib.sha256(payload.encode('utf-8')).hexdigest()[:32]))
-                    out.append('  ' + mask(json.dumps(d, ensure_ascii=False, sort_keys=True)))
+                    out.append('  ' + mask_revision(mask(json.dumps(d, ensure_ascii=False, sort_keys=True))))
         else:
             out.append('  （残っていない）')
         # (3) 画面が出した知らせ
         out.append('[知らせ]')
+        seen_draw_amount = set()
         for line in mask(stderr_text.replace(chr(13) + chr(10), chr(10))).splitlines():
+            if any(p.match(line) for p in TIMING_DROPS):
+                continue
+            #: 『描く量』は『変わったとき＋3 秒ごと』に出る。同じ字の繰り返しは 3 秒の刻みに何回かかるかで
+            #: 回数が変わる（実測: 1 回・2 回）ので、同じ字は最初の 1 回だけ残す。
+            if line.startswith('[hd2d] 描く量:'):
+                if line in seen_draw_amount:
+                    continue
+                seen_draw_amount.add(line)
             if line.startswith('[hd2d]') or line.startswith('[core]') or line.startswith('[sdl'):
                 out.append('  ' + line)
     finally:

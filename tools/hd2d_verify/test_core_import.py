@@ -31,7 +31,7 @@ def main():
     with ExitStack() as guards:
         guards.enter_context(CfgGuard(app))
         for name in ['save','user','apex']:guards.enter_context(SaveGuard(app/'silq/lib'/name,None,None))
-        # 検査の並びを既知のコア順にする。利用者の設定は終了時に復元する。
+        # 検査の並びを既知のコア順にする。遊ぶ人の設定は終了時に復元する。
         cfg=app/'hd2d.cfg'
         if cfg.exists():
             lines=[line for line in cfg.read_text(encoding='utf-8').splitlines() if not line.startswith('cores=')]

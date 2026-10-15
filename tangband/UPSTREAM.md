@@ -4,6 +4,11 @@
 > 原作の `src/` は `tools/core_sources/prepare.py` が外部に構成します。
 > 版とパッチの正本は `tools/core_sources/manifest.json` と `patches/`、手順は `tools/core_sources/README.md`。
 > 以下は取り込み時の範囲と出自の記録です。旧 `src/` の場所を現在のビルド入力として使わないでください。
+>
+> **2026-10-05: 短愚のソースを変愚から分けました。** 変愚の版上げ（3.0.2.5-Beta）で短愚を変えないため、
+> 短愚は変愚 3.0.2.4 の写し（manifest の項目 `tangband`、再構成先の `tangband/src`。書き換えは変愚と同じ）を
+> 自分のソースとして組みます。生成ヘッダも `tangband/src` と `tangband/lib/edit/` から別に作ります。
+> 経緯と照合の結果は 〜§2.8。
 
 
 Tangband shares the Hengband source (`src/`) and is built with `TANGBAND` defined.

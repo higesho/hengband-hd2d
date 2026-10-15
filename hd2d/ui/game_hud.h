@@ -21,10 +21,16 @@
 
 #include "frame/game_frame.h"
 #include "ui/ui_cursor.h"
+#include "ui/modern_store_ui.h"
+#include "ui/orb_hud.h"
+#include "ui/targeting_ui.h"
 #include "ui/ui_image.h"
 #include "ui/ui_layout.h"
 
+#include <cstdint>
+#include <functional>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace hd2d {
@@ -42,6 +48,13 @@ struct UiBackdrops {
     const UiImage *title{ nullptr };
     const UiImage *panel_bottom{ nullptr };
     const UiImage *panel_right{ nullptr };
+    /*!
+     * @brief HP/MP の玉の 6 層とバフ・デバフのアイコンのシート。
+     * @details **背面の絵（`title` / `panel_*`）とは独立に有効・無効になる**（呼び出し側が
+     * 「背面の絵」の設定を切っても玉は出る）。読めなかった層があれば玉もアイコンも描かず、
+     * 元の棒を描く。
+     */
+    OrbHudImages orb;
 
     bool has_panels() const
     {
@@ -61,6 +74,15 @@ struct UiBackdrops {
  * ゲームの状態ではない。コアは非破壊なので、ここで持つしかない。
  */
 struct HudState {
+    ModernStoreUi modern;
+    TargetingUi targeting;
+    int modern_theme{0};
+    int modern_font_level{0};
+    mutable int native_scroll_row{0},native_scroll_col{0},native_focus{-2};
+    mutable bool native_view_valid{false};
+    mutable std::string native_signature;
+    mutable GameFrame native_view;
+    int window_theme{-1};
     //! 重なる作り（`Full` / `Hybrid`）でサブパネルを開いているか。
     bool subs_open{ false };
     //! 選択肢・はい／いいえ・数値入力のカーソル。
@@ -113,6 +135,18 @@ struct HudState {
     MinimapCorner minimap_corner{ MinimapCorner::TopRight };
     /*! @} */
     /*!
+     * @name HP/MP の玉の動き
+     * @details 設定（`Hd2dSettings` の `orb_*`）と時計は、描く側が持っていないので
+     * 毎フレームここへ入れる（`minimap_*` と同じ流儀）。動きの状態 `orb_anim` は
+     * 描画の外に持つ（描くたびに進めるので `mutable`）。
+     * @{
+     */
+    OrbHudParams orb_params;
+    //! 実時計（ms）。0 のままなら動きは止まる（検査が時刻を決めて渡す）。
+    std::uint32_t orb_now_ms{ 0 };
+    mutable OrbHudAnimation orb_anim;
+    /*! @} */
+    /*!
      * @brief 掴んでいる仕切り（`kSubGripBottom`〜／`kSubGripRight`〜。-1 = 掴んでいない）。
      * @details 印を描くのは `UiLayout::grip` の矩形そのもの。**当たり判定と同じ矩形から描く**
      * ので、掴めるように見えて掴めない所ができない（必守制約 3 の親戚）。
@@ -137,6 +171,45 @@ int grip_at(const UiLayout &layout, int x, int y);
 bool drag_grip(const UiLayout &layout, int grip, int x, int y, SubSplit &split);
 
 /*!
+ * @brief 下の帯の操作説明の行で、左のコントローラーの案内に渡せる幅（修-14）。
+ * @param body_w 帯の中身の幅。
+ * @param hint_w コントローラーの案内を 1 行に収めたときの幅（0 なら案内は無い）。
+ * @param key_w UI のキーの案内の幅（右端に寄せる。0 なら無い）。呼ぶ側で `body_w` までに丸めておく。
+ * @param gap 左右の案内の間に空ける幅。
+ * @param min_room これより狭くしか渡せないなら案内を出さない（切れた断片を出さない）。
+ * @return 左の案内を切る幅。0 なら出さない。**実際に描く幅 `min(hint_w, 戻り)` と `key_w` の合計は
+ *   いつも `body_w` 以下**で、左右の矩形は交わらない。
+ * @details 帯の高さを増やさずに重なりを避けるため、入らないときはキーの案内を右端に残して左を切る。
+ */
+int bottom_hint_room(int body_w, int hint_w, int key_w, int gap, int min_room);
+
+/*!
+ * @brief 問いの帯（`draw_prompt_bar()`）に出す 1 行。入りきらないとき、選んでいる選択肢が見える範囲だけに絞ったもの。
+ * @details 帯は 1 行で折り返さず、幅を超えた字を切る。選択肢を横に並べた帯（Frox の `Travel: `・各コアの `Look: `）は
+ * 幅を超えやすく、右の選択肢が見えないうえ、LB/RB で選んでも枠が見えない所へ行っていた（修-32 の担当の気づき）。
+ */
+struct PromptBandView {
+    std::string text; //!< 帯へ描く字（入るときは元の行そのもの）
+    int frame_x = -1; //!< 選んでいる選択肢の枠の左端（帯の左端からの画素）。-1 なら枠を出さない
+    int frame_w = 0; //!< 枠の幅
+    bool cut = false; //!< 絞ったか（入るときは偽。偽なら `text` は元の行と同じ）
+};
+
+/*!
+ * @param line 帯の 1 行（`frame.prompt.text_utf8`。改行を含まないもの）。
+ * @param ranges 選択肢の範囲（`PromptChoice` の `begin`・`len`。バイト）。**前から順に並び、重ならず、`len > 0`**
+ *   であること。満たさないときは絞らない（`cut` が偽・枠は選択肢の位置のまま）。
+ * @param selected 選んでいる選択肢の番号。
+ * @param limit 字を置ける幅（画素）。
+ * @param measure 字の幅を測る関数（画素）。
+ * @details 入るなら元の行をそのまま返す（従来と同じ）。入らないときは、見出し（最初の選択肢より前）を残し、
+ * 選んでいる選択肢が入るように前の選択肢を `... ` で省き、後ろの省いた選択肢も ` ...` で示す。
+ * 切るのは選択肢の境目だけで、字の途中では切らない。
+ */
+PromptBandView fit_prompt_band(const std::string &line, const std::vector<std::pair<int, int>> &ranges, int selected,
+    int limit, const std::function<int(const std::string &)> &measure);
+
+/*!
  * @brief 1 フレームぶんの UI を積む。
  * @param paint 下敷き・枠・ゲージ。**呼び出し側が `text` より先に流すこと。**
  * @param text 文字。
@@ -144,7 +217,13 @@ bool drag_grip(const UiLayout &layout, int grip, int x, int y, SubSplit &split);
  * パネルを描かない。**その画面には地図が無い**ので、古い中身が残って見えると嘘になる。
  */
 void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
-    const GameFrame &frame, const HudState &state, const UiBackdrops *backdrops = nullptr);
+    const GameFrame &frame, const HudState &state, const UiBackdrops *backdrops = nullptr,
+    bool modern_window = true);
+
+/*!
+ * @brief 新 UI の窓の下にマップとサブパネルを描き続ける画か（タイトル・キャラクター作成以外）。
+ */
+bool modern_window_keeps_hud(const GameFrame &frame);
 
 /*!
  * @brief 画面に地図（3D）が出ているか。
@@ -173,7 +252,7 @@ bool frame_shows_map(const GameFrame &frame);
  * @note **未踏破のマスは描かない**（`CELL_FEAT_KNOWN`）。暗いのではなく「無い」ので、
  * 下敷きの黒がそのまま出る。
  */
-RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &panel, const GameFrame &frame);
+RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &panel, const GameFrame &frame, TargetingUi *targeting=nullptr, double time=0.);
 
 /*!
  * @brief Term の写しの上で画面座標 `(x, y)` に当たる選択肢の添字（無ければ -1）。
@@ -182,7 +261,7 @@ RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &pan
  * 描画（`draw_term_mirror` の枠）と同じ計算なので、見えている枠とずれない。
  * `menu_choices` が立っている画面すべてで効く（幻想蛮怒のセーブ選択・変愚の店や建物）。
  */
-int menu_choice_at(TextOverlay &text, const UiLayout &layout, const GameFrame &frame, int x, int y);
+int menu_choice_at(TextOverlay &text, const UiLayout &layout, const GameFrame &frame, int x, int y,int theme=-1,const HudState *state=nullptr);
 
 /*!
  * @brief 直近のメッセージを**折り返して**下詰めで積む（新しいものが下）。

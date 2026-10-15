@@ -182,6 +182,20 @@ int sq_is_sjis_trail(int c);
 int sq_last_char_bytes(const char *buf, int len);
 
 /*!
+ * @brief 名前に 0x80 以上のバイト（日本語）が入っていれば、セーブの名前に使う **ASCII の別名**を作る（フック #24・#25。修-57）。
+ * @param full_name 冒険者の名前（CP932）
+ * @param out 別名の置き場
+ * @param cap `out` の大きさ（バイト）
+ * @return 1 = 別名を作った／0 = 半角だけの名前（元の道をそのまま通す）
+ *
+ * @details 別名は `P` ＋ 7 字（英数字、紛らわしい字を除いた 32 種）で、名前の UTF-8 の FNV-1a 64 ビットのハッシュから作る
+ * （`presentation/bridge/player_identity.h` の `player_identity_core_name()` と同じ式）。同じ名前は必ず同じ別名になり、
+ * 別の名前はほぼ別の別名になる。以前の別保管の仕組みで作ったキャラクターは、コアの名前がこの別名そのもの（半角）だったので、
+ * 同じ名前を日本語で作り直すと同じセーブの名前になる。実装は `sq_frame.cpp`（C++。UTF-8 への変換とハッシュを使う）。
+ */
+int sq_save_base_name(const char *full_name, char *out, int cap);
+
+/*!
  * @brief 画面／ファイルへ通してよいバイトか（フック #5）。
  * @details `isprint()` の代わり。**0x80 以上を潰さない**のが唯一の違いで、
  * 日本語層が寝ているときの答えは `isprint()` と同じである。
@@ -257,6 +271,7 @@ int sq_help_manual_hint(void);
  * `tools/silq/build_ja_help.py` が 80 桁で折り、CP932 に焼いてある。
  */
 int sq_help_manual_open(int ch);
+int sq_help_manual_active(void);
 
 #ifdef __cplusplus
 }

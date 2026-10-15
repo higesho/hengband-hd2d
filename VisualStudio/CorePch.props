@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  変愚蛮怒・短愚蛮怒のコア（HengbandCore・TangbandCore）が共有するプリコンパイル済みヘッダ。
+  platform/shared/hengband_core_pch.h（原作の stdafx.h と、ほぼ全ソースが読む原作のヘッダの一覧）。
+  Linux と Android の CMake も同じヘッダを使う。注意点は。
+  プロジェクトの末尾（Microsoft.Cpp.targets の直前）で読むこと。ItemDefinitionGroup は後に書いた物が勝つので、
+  各プロジェクトの PrecompiledHeader=Use / ForcedIncludeFiles=stdafx.h を上書きする。
+
+  /p:HengbandCorePch=false で従来どおり stdafx.h だけのプリコンパイル済みヘッダに戻す。
+  ヘッダに頼って #include を書き忘れた箇所は、この設定で組むと見つかる（リリース前に 1 度は通すこと）。
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <HengbandCorePch Condition="'$(HengbandCorePch)' == ''">true</HengbandCorePch>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(HengbandCorePch)' != 'false'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>hengband_core_pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>hengband_core_pch.h</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\platform\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup Condition="'$(HengbandCorePch)' != 'false'">
+    <!-- 原作の stdafx.cpp は stdafx.h 用の作成役だった。共有ヘッダの作成役を自前で持つ。 -->
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\platform\shared\hengband_core_pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Update="$(HengTargetingSourceRoot)\stdafx.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <!-- 共有ヘッダは原作の src/ のソース専用（Linux・Android も同じ線引き）。次の 4 つは従来 stdafx.h を使っていたが、
+         共有ヘッダの locale/text-encoding.h が namespace text を持ち、presentation 側の text() と名前が衝突するので、
+         プリコンパイル済みヘッダを使わず従来どおり stdafx.h だけを強制インクルードする。 -->
+    <ClCompile Update="$(HengTargetingSourceRoot)\external-lib\fmt\format.cc;..\..\presentation\bridge\modern_store.cpp;..\..\presentation\bridge\native_targeting_runtime.cpp;..\..\presentation\bridge\hengband_targeting.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+    </ClCompile>
+  </ItemGroup>
+</Project>

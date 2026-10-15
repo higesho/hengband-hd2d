@@ -3,6 +3,7 @@
  * @brief `game_hud.h` の実装。
  */
 #include "ui/game_hud.h"
+#include "app/ui_probe.h"
 
 #include "frame/cell_feature_bits.h" //!< `CELL_FEAT_KNOWN`（2D アスキー地図が未踏破を飛ばす）
 #include "i18n/lang.h"
@@ -10,6 +11,13 @@
 #include "render/term_colors.h"
 #include "render/text_overlay.h"
 #include "ui/ui_paint.h"
+#include "ui/modern_skin.h"
+#include "ui/menu_frame.h"
+#include "ui/menu_chrome.h"
+#include "ui/menu_scale.h"
+#include "ui/native_menu_view.h"
+#include "ui/minimap_markers.h"
+#include "ui/orb_hud.h" //!< `hp_label_of` / `sp_label_of`（玉と同じ名札）
 
 #include <algorithm>
 #include <cmath>
@@ -25,8 +33,13 @@ namespace hd2d {
 
 namespace {
 
-TextColor text_from_term_color(std::uint8_t index, float alpha = 1.f)
+TextColor text_from_term_color(std::uint8_t index, float alpha = 1.f,int theme=-1)
 {
+    if(theme==1&&!panel_transparent()) {
+        if(index==0||index==1||index==9){auto ink=modern_skin(theme).text;ink.a=alpha;return ink;}
+        const auto color=term_color_to_rgb(index);
+        return {color.r/255.f*.55f,color.g/255.f*.55f,color.b/255.f*.55f,alpha};
+    }
     const RgbColor rgb = term_color_to_rgb(index);
     return TextColor{ static_cast<float>(rgb.r) / 255.f, static_cast<float>(rgb.g) / 255.f,
         static_cast<float>(rgb.b) / 255.f, alpha };
@@ -34,22 +47,6 @@ TextColor text_from_term_color(std::uint8_t index, float alpha = 1.f)
 
 const TextColor kTitleColor{ 0.72f, 0.80f, 0.95f, 1.f };
 const TextColor kDimColor{ 0.62f, 0.66f, 0.72f, 1.f };
-
-/*!
- * @brief `sp` の名札（SH-08 / W5）。**コアが送ってこなければ `SP`。**
- * @details 画面は「魔力」も「声」も知らない。語はコアが決め、訳もコアの側で
- * 当たっている（`hud_snapshot.h` の `sp_label`）。ここは**既定を 1 か所に置く**だけ。
- */
-const char *sp_label_of(const GameFrame &frame)
-{
-    return frame.hud.sp_label.empty() ? "SP" : frame.hud.sp_label.c_str();
-}
-
-//! @copydoc sp_label_of
-const char *hp_label_of(const GameFrame &frame)
-{
-    return frame.hud.hp_label.empty() ? "HP" : frame.hud.hp_label.c_str();
-}
 
 /*!
  * @brief 割り当ての表示に使う行数の上限。
@@ -98,65 +95,82 @@ std::vector<std::string> wrap_utf8(TextOverlay &text, const std::string &utf8, i
 /*!
  * @brief 文字グリッド（コアの Term の写し）をマスで置く。
  * @param head 見出し（空なら出さない）。
- * @details **1 行 1 色**（`SubPanelLine::color`）。行の中の色分けを持っているのは
- * `TermMirrorLine::highlight_*` と `bottom_row_runs` だけで、そちらは別に扱う。
+ * @details AH-25 の直しで**`color_spans` があれば桁ごとに塗り分ける**ようになった
+ * （手本は menu_term_lines の同じ仕組み。下の menu overlay の描画）。空のときは
+ * これまでどおり `SubPanelLine::color` の 1 行 1 色に落ちるので、Angband 以外の
+ * コア（`color_spans` を埋めない）の見た目は 1 ドットも変わらない。
  */
 void draw_text_grid(TextOverlay &text, const RectPx &body, const std::string &head,
-    const std::vector<SubPanelLine> &lines, int cell_h)
+    const std::vector<SubPanelLine> &lines, int cell_h,int theme=-1)
 {
     if (body.empty()) {
         return;
     }
     int y = body.y;
     if (!head.empty()) {
-        text.draw(body.x, y, head, kTitleColor, body.w);
+        text.draw(body.x, y, head,theme>=0&&!panel_transparent()?modern_skin(theme).strong:kTitleColor, body.w);
         y += cell_h;
     }
     for (const auto &line : lines) {
         if ((y + cell_h) > (body.y + body.h)) {
             break; // 入り切らないぶんは出さない（枠の外へは描かない）
         }
-        text.draw(body.x, y, line.text_utf8, text_from_term_color(line.color), body.w);
+        if (line.color_spans.empty()) {
+            text.draw(body.x, y, line.text_utf8, text_from_term_color(line.color,1.f,theme), body.w);
+        } else {
+            for (const auto &span : line.color_spans) {
+                if ((span.begin < 0) || (span.len <= 0)
+                    || (static_cast<std::size_t>(span.begin) + static_cast<std::size_t>(span.len)
+                        > line.text_utf8.size())) {
+                    continue;
+                }
+                const std::string part = line.text_utf8.substr(
+                    static_cast<std::size_t>(span.begin), static_cast<std::size_t>(span.len));
+                const int x = body.x
+                    + text.measure(line.text_utf8.substr(0, static_cast<std::size_t>(span.begin)));
+                text.draw(x, y, part, text_from_term_color(span.color,1.f,theme), (body.x + body.w) - x);
+            }
+        }
         y += cell_h;
     }
 }
 
 //! 文字列だけの一覧（UI 既定のサブパネル）。
 void draw_plain_lines(TextOverlay &text, const RectPx &body, const std::string &head,
-    const std::vector<std::string> &lines, int cell_h)
+    const std::vector<std::string> &lines, int cell_h,int theme=-1)
 {
     std::vector<SubPanelLine> converted;
     converted.reserve(lines.size());
     for (const auto &line : lines) {
         converted.push_back(SubPanelLine{ line, 9 }); // 9 = L_WHITE
     }
-    draw_text_grid(text, body, head, converted, cell_h);
+    draw_text_grid(text, body, head, converted, cell_h,theme);
 }
 
 /*!
  * @brief UI 既定（`kind < 0`）の枚に何を出すか。
  * @details 既存 UI と同じ割り当て（Sub1 = メッセージ / Sub2 = 装備 / Sub3 = 視界の敵 /
- * Sub4 = キャラクター / Sub5 = 持ち物）。**利用者がコアのサブウインドウを割り当てたら
+ * Sub4 = キャラクター / Sub5 = 持ち物）。**遊ぶ人がコアのサブウインドウを割り当てたら
  * そちらが優先**されるので、ここは「割り当てが無いときの中身」でしかない。
  */
 void draw_default_sub_panel(TextOverlay &text, const RectPx &body, int index,
-    const GameFrame &frame, int cell_h)
+    const GameFrame &frame, int cell_h,int theme=-1)
 {
     switch (index) {
     case 0: { // Sub1: 直近のメッセージ（新しいものが下・**入らない字は折り返す**）
         const int rows = std::max(1, body.h / cell_h);
         int y = body.y;
         for (const SubPanelLine &line : recent_message_lines(text, frame.messages, body.w, rows)) {
-            text.draw(body.x, y, line.text_utf8, text_from_term_color(line.color), body.w);
+            text.draw(body.x, y, line.text_utf8, text_from_term_color(line.color,1.f,theme), body.w);
             y += cell_h;
         }
         break;
     }
     case 1:
-        draw_plain_lines(text, body, i18n::tr("hd2d.ui.game-hud.equipment"), frame.sub2_lines, cell_h);
+        draw_plain_lines(text, body, i18n::tr("hd2d.ui.game-hud.equipment"), frame.sub2_lines, cell_h,theme);
         break;
     case 2:
-        draw_plain_lines(text, body, i18n::tr("hd2d.ui.game-hud.enemies-in-view"), frame.sub3_lines, cell_h);
+        draw_plain_lines(text, body, i18n::tr("hd2d.ui.game-hud.enemies-in-view"), frame.sub3_lines, cell_h,theme);
         break;
     case 3: { // Sub4: キャラクター
         char buf[160]{};
@@ -184,11 +198,11 @@ void draw_default_sub_panel(TextOverlay &text, const RectPx &body, int index,
         for (const auto &line : frame.hud.right_top_lines) {
             lines.push_back(line);
         }
-        draw_plain_lines(text, body, std::string(), lines, cell_h);
+        draw_plain_lines(text, body, std::string(), lines, cell_h,theme);
         break;
     }
     case 4:
-        draw_plain_lines(text, body, i18n::tr("hd2d.ui.game-hud.inventory"), frame.sub5_lines, cell_h);
+        draw_plain_lines(text, body, i18n::tr("hd2d.ui.game-hud.inventory"), frame.sub5_lines, cell_h,theme);
         break;
     default:
         break;
@@ -221,17 +235,47 @@ void draw_bottom_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout, 
         const double col_px = static_cast<double>(body.w) / static_cast<double>(frame.bottom_row_cols);
         for (const auto &run : frame.bottom_row_runs) {
             const int x = body.x + static_cast<int>(static_cast<double>(run.col) * col_px);
-            text.draw(x, body.y, run.text_utf8, text_from_term_color(run.color), (body.x + body.w) - x);
+            if (run.color_spans.empty()) {
+                text.draw(x, body.y, run.text_utf8, text_from_term_color(run.color), (body.x + body.w) - x);
+                continue;
+            }
+            /*
+             * AH-25。最下段は速度・学習・階層などが右端の決まった桁に別の色で出る
+             * （`TermTextRun` の設計ノート）——`color_spans` があれば桁ごとに塗り分ける。
+             * 手本は `draw_text_grid()`（状態列）と menu overlay の同じ仕組み。
+             */
+            for (const auto &span : run.color_spans) {
+                if ((span.begin < 0) || (span.len <= 0)
+                    || (static_cast<std::size_t>(span.begin) + static_cast<std::size_t>(span.len)
+                        > run.text_utf8.size())) {
+                    continue;
+                }
+                const std::string part = run.text_utf8.substr(
+                    static_cast<std::size_t>(span.begin), static_cast<std::size_t>(span.len));
+                const int span_x = x + text.measure(run.text_utf8.substr(0, static_cast<std::size_t>(span.begin)));
+                text.draw(span_x, body.y, part, text_from_term_color(span.color), (body.x + body.w) - span_x);
+            }
         }
     }
     int y = body.y + layout.cell_h;
+    /*
+     * 修-14：左のコントローラーの案内と右のキーの案内は**同じ行**に出るので、狭い窓では
+     * 字の幅の合計が帯の幅を超えて重なる。帯の高さは増やさない（増やすと地図が縮む）ので、
+     * 入らないときは**キーの案内（UI だけが持つ情報）を右端へ残し**、コントローラーの案内を
+     * 残りの幅で切る（残りが 4 桁ぶんも無ければ出さない。13 入力ぶんは下の行にも出る）。
+     * キーの案内だけで帯の幅を超えるなら、幅で切って左端から出す。
+     */
+    const int key_w = state.ui_key_hint.empty() ? 0 : std::min(text.measure(state.ui_key_hint), body.w);
     if (!frame.controller_hint.empty()) {
-        text.draw(body.x, y, frame.controller_hint, kDimColor, body.w);
+        const int room = bottom_hint_room(
+            body.w, text.measure(frame.controller_hint), key_w, layout.cell_w * 2, layout.cell_w * 4);
+        if (room > 0) {
+            text.draw(body.x, y, frame.controller_hint, kDimColor, room);
+        }
     }
     //! UI が横取りしているキーは**右端に寄せて**出す（コアの案内と混ざらないように）。
-    if (!state.ui_key_hint.empty()) {
-        const int w = text.measure(state.ui_key_hint);
-        text.draw((body.x + body.w) - w, y, state.ui_key_hint, kDimColor, w);
+    if (key_w > 0) {
+        text.draw((body.x + body.w) - key_w, y, state.ui_key_hint, kDimColor, key_w);
     }
     y += layout.cell_h;
 
@@ -275,44 +319,18 @@ void draw_bottom_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout, 
     }
 }
 
-//! `Full` のゲージ。数字だけだと減ったことに気づけないので棒でも出す。
-void draw_hud_gauges(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const GameFrame &frame)
+/*!
+ * @brief 名前の 1 行（`名前  LV n  AU n`）。
+ * @details HP/MP の棒は玉（`draw_orb_hud`）に置き換わったので、
+ * `UiLayout::hud` に残るのはこの 1 行だけである。
+ */
+void draw_hud_name(TextOverlay &text, const UiLayout &layout, const GameFrame &frame)
 {
     const RectPx &hud = layout.hud;
     if (hud.empty()) {
         return;
     }
-    const int bar_h = std::max(4, layout.cell_h / 2);
-    /*
-     * 名札の桁。**両方の名札を測って広いほうに合わせる**（SH-08 / W5）。
-     * 3 桁の決め打ちのままだと、コアが `Voice` のような長い名札を送ってきたときに
-     * 名札がゲージへ食い込む。`HP`/`SP` しか来ないコアでは `cell_w * 3` のままなので、
-     * **絵は 1 画素も変わらない**。
-     */
-    const char *const hp_name = hp_label_of(frame);
-    const char *const sp_name = sp_label_of(frame);
-    const int label_w = std::max(layout.cell_w * 3,
-        std::max(text.measure(hp_name), text.measure(sp_name)) + layout.cell_w);
     char buf[96]{};
-
-    const auto ratio = [](int now, int max) {
-        return (max > 0) ? (static_cast<float>(now) / static_cast<float>(max)) : 0.f;
-    };
-    const PaintColor back{ 0.f, 0.f, 0.f, 0.55f };
-
-    text.draw(hud.x, hud.y, hp_name, kDimColor);
-    paint.gauge(RectPx{ hud.x + label_w, hud.y + (layout.cell_h / 4), hud.w - label_w, bar_h },
-        ratio(frame.hud.hp, frame.hud.hp_max), PaintColor{ 0.85f, 0.25f, 0.25f, 0.92f }, back);
-    std::snprintf(buf, sizeof(buf), "%d/%d", frame.hud.hp, frame.hud.hp_max);
-    text.draw(hud.x + label_w + layout.cell_w, hud.y, buf, TextColor{ 1.f, 1.f, 1.f, 0.95f });
-
-    const int row2 = hud.y + layout.cell_h;
-    text.draw(hud.x, row2, sp_name, kDimColor);
-    paint.gauge(RectPx{ hud.x + label_w, row2 + (layout.cell_h / 4), hud.w - label_w, bar_h },
-        ratio(frame.hud.sp, frame.hud.sp_max), PaintColor{ 0.30f, 0.45f, 0.90f, 0.92f }, back);
-    std::snprintf(buf, sizeof(buf), "%d/%d", frame.hud.sp, frame.hud.sp_max);
-    text.draw(hud.x + label_w + layout.cell_w, row2, buf, TextColor{ 1.f, 1.f, 1.f, 0.95f });
-
     /*
      * 名前の行。**無い項目は足さない**（`hud_snapshot.h` の負の約束）。
      * べた書きの `"%s  LV %d  AU %d"` のままだと、Sil-Q で `LV 0  AU 0` が名前の隣に並ぶ。
@@ -326,7 +344,8 @@ void draw_hud_gauges(UiPaint &paint, TextOverlay &text, const UiLayout &layout, 
         std::snprintf(buf, sizeof(buf), "  AU %d", frame.hud.gold);
         who += buf;
     }
-    text.draw(hud.x, hud.y + (layout.cell_h * 2), who, kDimColor, hud.w);
+    ui_probe().hud_name(frame.hud.name, frame.hud.level, frame.hud.gold); //!< 検査用の問い合わせ：名前の行に出した値
+    text.draw(hud.x, hud.y, who, kDimColor, hud.w);
 }
 
 /*!
@@ -488,6 +507,10 @@ RectPx draw_minimap(UiPaint &paint, const UiLayout &layout, const GameFrame &fra
             int y = 0;
             world_of(rx, ry, x, y);
             const MinimapKind kind = frame.minimap.at(x, y);
+            const auto marker=frame.minimap.marker_at(x,y);
+            if(kind!=MinimapKind::Player&&marker!=MinimapMarker::None) {
+                paint.rect({ox+rx*scale,oy+ry*scale,scale,scale},minimap_marker_color(marker,fade(1.f)));continue;
+            }
             if (kind == MinimapKind::Unknown) {
                 continue; // 未踏破は描かない（暗いのではなく「無い」）
             }
@@ -618,9 +641,14 @@ RectPx span_rect(TextOverlay &text, const RectPx &body, int cell_h,
 }
 
 //! 選んでいる所へ重ねる枠。**下線は決定キーの 1 文字**（何を押せば決まるかを見せる）。
-void draw_choice_frame(UiPaint &paint, const RectPx &span, const RectPx &key_span)
+void draw_choice_frame(UiPaint &paint, const RectPx &span, const RectPx &key_span,int theme=-1)
 {
     if (span.empty()) {
+        return;
+    }
+    if(theme>=0) {
+        paint_modern_selection(paint,span,theme);
+        if(!key_span.empty())paint.rect({key_span.x,key_span.y+key_span.h-2,key_span.w,2},modern_skin(theme).trim);
         return;
     }
     paint.rect(span, PaintColor{ 0.95f, 0.85f, 0.30f, 0.22f });
@@ -637,13 +665,14 @@ void draw_choice_frame(UiPaint &paint, const RectPx &span, const RectPx &key_spa
  * 落とすと birth で「どれを選んでいるか見えない」画面になる（K-23）。
  */
 void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const GameFrame &frame,
-    const UiCursors &cursors, bool over_backdrop)
+    const UiCursors &cursors, bool over_backdrop,int theme)
 {
     const bool full = frame.title_screen || frame.pre_game_menu;
-    const RectPx area = full ? layout.term_full : layout.term_overlay;
+    const RectPx area = menu_text_area(layout,full,theme);
     if (area.empty()) {
         return;
     }
+    const UiProbeLayer probe_layer("term");
     PanelStyle style = solid_panel_style();
     if (!full) {
         style.fill.a = 0.97f;
@@ -657,16 +686,27 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         style.fill.a = 0.30f;
         style.border.a = 0.f;
     }
-    paint.panel(area, style);
+    if(theme>=0)paint_modern_window(paint,area,theme);else paint.panel(area, style);
+    const auto shown_text=theme>=0?modern_menu_text(frame):std::vector<std::string>{};
+    const auto ink=[&](uint8_t color) {
+        if(theme<0)return text_from_term_color(color);
+        if(color==0||color==1||color==9)return modern_skin(theme).text;
+        auto result=text_from_term_color(color);
+        if(theme==1){result.r*=.55f;result.g*=.55f;result.b*=.55f;}
+        return result;
+    };
 
     const RectPx body = panel_body(area, layout.cell_w);
     const int rows = std::max(1, body.h / layout.cell_h);
     const auto shown = std::min<std::size_t>(frame.menu_term_lines.size(), static_cast<std::size_t>(rows));
+    if(theme>=0 && (!frame.menu_choices.empty()||!frame.menu_core_cursors.empty()))
+        paint_modern_row_rules(paint,{body.x,body.y,body.w,static_cast<int>(shown)*layout.cell_h},layout.cell_h,theme);
     for (std::size_t i = 0; i < shown; ++i) {
         const auto &line = frame.menu_term_lines[i];
+        const auto &label=theme>=0?shown_text[i]:line.text_utf8;
         const int y = body.y + (static_cast<int>(i) * layout.cell_h);
         if (line.color_spans.empty()) {
-            text.draw(body.x, y, line.text_utf8, text_from_term_color(line.color), body.w);
+            text.draw(body.x, y, label, ink(line.color), body.w);
         } else {
             /*
              * 1 行に何色も出る行（カラーの設定の見本、オプションの色分けなど）。
@@ -676,14 +716,14 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
             for (const auto &span : line.color_spans) {
                 if ((span.begin < 0) || (span.len <= 0)
                     || (static_cast<std::size_t>(span.begin) + static_cast<std::size_t>(span.len)
-                        > line.text_utf8.size())) {
+                        > label.size())) {
                     continue;
                 }
-                const std::string part = line.text_utf8.substr(
+                const std::string part = label.substr(
                     static_cast<std::size_t>(span.begin), static_cast<std::size_t>(span.len));
                 const int x = body.x
-                    + text.measure(line.text_utf8.substr(0, static_cast<std::size_t>(span.begin)));
-                text.draw(x, y, part, text_from_term_color(span.color), (body.x + body.w) - x);
+                    + text.measure(label.substr(0, static_cast<std::size_t>(span.begin)));
+                text.draw(x, y, part, ink(span.color), (body.x + body.w) - x);
             }
         }
         /*
@@ -692,11 +732,48 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
          * 重ねて描くと同じ字が 2 度乗って太って見える。
          */
         if (line.color_spans.empty() && line.highlight_len > 0) {
-            const std::string before = line.text_utf8.substr(0, static_cast<std::size_t>(line.highlight_begin));
-            const std::string picked = line.text_utf8.substr(static_cast<std::size_t>(line.highlight_begin),
+            const std::string before = label.substr(0, static_cast<std::size_t>(line.highlight_begin));
+            const std::string picked = label.substr(static_cast<std::size_t>(line.highlight_begin),
                 static_cast<std::size_t>(line.highlight_len));
             const int x = body.x + text.measure(before);
-            text.draw(x, y, picked, text_from_term_color(11), (body.x + body.w) - x); // 11 = YELLOW
+            text.draw(x, y, picked, theme>=0?modern_skin(theme).selected:text_from_term_color(11), (body.x + body.w) - x); // 11 = YELLOW
+        }
+    }
+    if (ui_probe().enabled()) {
+        //! 検査用の問い合わせ：Term の写し（店・メニュー・タイトル）の窓と、選択肢の矩形（クリックの判定と同じ関数）。
+        ProbeWindow w;
+        w.kind = "term";
+        w.stage = full ? "full" : "overlay";
+        for (std::size_t i = 0; i < shown; ++i) {
+            ProbeItem item;
+            item.label = frame.menu_term_lines[i].text_utf8;
+            w.items.push_back(std::move(item));
+        }
+        w.has_rect = true;
+        w.rect = ProbeRect{ area.x, area.y, area.w, area.h };
+        w.prompt = frame.prompt.text_utf8;
+        if (!frame.menu_core_cursors.empty()) {
+            w.selected = frame.menu_core_cursors.back().line_index;
+        } else if (cursors.choice_index() >= 0) {
+            w.selected = cursors.choices()[static_cast<std::size_t>(cursors.choice_index())].line_index;
+        }
+        ui_probe().window(std::move(w));
+        for (std::size_t i = 0; i < frame.menu_choices.size(); ++i) {
+            const MenuChoice &choice = frame.menu_choices[i];
+            const RectPx span = span_rect(text, body, layout.cell_h, frame.menu_term_lines, choice.line_index,
+                choice.span_begin, choice.span_len);
+            if (span.empty()) {
+                continue;
+            }
+            std::string label = choice.label_utf8;
+            if (label.empty() && (choice.line_index >= 0) && (choice.line_index < static_cast<int>(frame.menu_term_lines.size()))) {
+                const std::string &line = frame.menu_term_lines[static_cast<std::size_t>(choice.line_index)].text_utf8;
+                if ((choice.span_begin >= 0) && (static_cast<std::size_t>(choice.span_begin) <= line.size())) {
+                    label = line.substr(static_cast<std::size_t>(choice.span_begin), static_cast<std::size_t>(choice.span_len));
+                }
+            }
+            ui_probe().button(label, ProbeRect{ span.x, span.y, span.w, span.h }, choice.available,
+                choice.selected || (static_cast<int>(i) == cursors.choice_index()), "term-choice");
         }
     }
     // 文字カーソル（コアが持っている。記憶 `hengband-core-owns-the-cursor`）。
@@ -704,7 +781,7 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         && (frame.menu_term_curs_col >= 0)) {
         const RectPx caret{ body.x + (frame.menu_term_curs_col * layout.cell_w),
             body.y + (frame.menu_term_curs_row * layout.cell_h) + layout.cell_h - 2, layout.cell_w, 2 };
-        paint.rect(caret, PaintColor{ 1.f, 0.9f, 0.2f, 1.f });
+        paint.rect(caret, theme>=0?modern_skin(theme).trim:PaintColor{ 1.f, 0.9f, 0.2f, 1.f });
     }
 
     /*
@@ -713,17 +790,19 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
      * コアは親の行にも `》` を残すので、先頭 1 個だけ枠にすると「枠付きと `》` の 2 種類の
      * カーソルが同時に出る」ことになる。見た目を枠へ統一する。
      */
-    for (const auto &cursor : frame.menu_core_cursors) {
+    for (size_t index=0;index<frame.menu_core_cursors.size();++index) {
+        if(theme>=0 && index+1<frame.menu_core_cursors.size())continue; // Only the active child is selected in the modern view.
+        const auto &cursor=frame.menu_core_cursors[index];
         draw_choice_frame(paint,
             span_rect(text, body, layout.cell_h, frame.menu_term_lines, cursor.line_index, cursor.span_begin, cursor.span_len),
-            RectPx{});
+            RectPx{},theme);
     }
     //! UI のカーソル（コアが持っていない画面＝店・建物）。
     if ((cursors.choice_index() >= 0) && frame.menu_core_cursors.empty()) {
         const MenuChoice &choice = cursors.choices()[static_cast<std::size_t>(cursors.choice_index())];
         draw_choice_frame(paint,
             span_rect(text, body, layout.cell_h, frame.menu_term_lines, choice.line_index, choice.span_begin, choice.span_len),
-            span_rect(text, body, layout.cell_h, frame.menu_term_lines, choice.line_index, choice.key_begin, choice.key_len));
+            span_rect(text, body, layout.cell_h, frame.menu_term_lines, choice.line_index, choice.key_begin, choice.key_len),theme);
     }
     /*
      * はい／いいえ・数値入力が**元の画面に出ている**なら、そこへ枠を重ねる
@@ -734,7 +813,7 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         const auto &choice = cursors.prompt().choices[static_cast<std::size_t>(cursors.prompt_index())];
         draw_choice_frame(paint,
             span_rect(text, body, layout.cell_h, frame.menu_term_lines, cursors.prompt().line_index, choice.begin, choice.len),
-            RectPx{});
+            RectPx{},theme);
     }
     if (cursors.numeric().active && (cursors.numeric().line_index >= 0)) {
         //! 選んでいる桁 1 文字。値は右詰めなので、末尾から数えた位置になる。
@@ -744,7 +823,7 @@ void draw_term_mirror(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
             draw_choice_frame(paint,
                 span_rect(text, body, layout.cell_h, frame.menu_term_lines, cursors.numeric().line_index,
                     cursors.numeric().value_begin + offset, 1),
-                RectPx{});
+                RectPx{},theme);
         }
     }
 }
@@ -767,6 +846,14 @@ void draw_message_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
     if (lines.empty()) {
         return; // 出す字が 1 行も無いならパネルも出さない（3D の上に空の帯を置かない）
     }
+    const UiProbeLayer probe_layer("message");
+    if (ui_probe().enabled()) {
+        std::vector<std::string> shown;
+        for (const SubPanelLine &line : lines) {
+            shown.push_back(line.text_utf8); //!< 検査用の問い合わせ：メッセージ行に出している字
+        }
+        ui_probe().messages(std::move(shown));
+    }
 
     PanelStyle style = overlay_panel_style();
     style.fill.a = 0.55f;
@@ -785,13 +872,13 @@ void draw_message_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
  *
  * @details 答えないと先へ進まないものなので、パネルの開閉で消えてはいけない。
  * ここが受け持つのは**元の画面（Term の写し）に出ていないとき**だけである
- * （`line_index < 0`）。出ているならそちらへ枠を重ねるほうが、利用者から見て
+ * （`line_index < 0`）。出ているならそちらへ枠を重ねるほうが、遊ぶ人から見て
  * 「同じものが 2 か所にある」状態にならない。
  *
  * はい／いいえと数値入力は**同時には出ない**（K-22 の注）ので、1 本の帯で足りる。
  */
 void draw_prompt_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const GameFrame &frame,
-    const UiCursors &cursors)
+    const UiCursors &cursors,int theme)
 {
     const RectPx &bar = layout.prompt_bar;
     if (bar.empty()) {
@@ -802,10 +889,58 @@ void draw_prompt_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout, 
     if (!show_numeric && !show_prompt) {
         return;
     }
+    const UiProbeLayer probe_layer("prompt");
+    if (ui_probe().enabled()) {
+        //! 検査用の問い合わせ：はい／いいえ・数量の問い（新しい UI の窓が覆っていないとき）。
+        ProbeWindow w;
+        if (show_numeric) {
+            w.kind = "number-prompt";
+            w.title = cursors.numeric().prompt_utf8;
+            w.prompt = cursors.numeric().prompt_utf8;
+            w.has_rect = true;
+            w.rect = ProbeRect{ bar.x, bar.y, bar.w, bar.h };
+            w.has_numeric = true;
+            w.numeric_value = cursors.numeric().value;
+            w.numeric_min = cursors.numeric().min;
+            w.numeric_max = cursors.numeric().max;
+        } else {
+            w.kind = "prompt";
+            w.title = frame.prompt.text_utf8;
+            w.has_rect = true;
+            w.rect = ProbeRect{ bar.x, bar.y, bar.w, bar.h };
+            for (const auto &choice : cursors.prompt().choices) {
+                ProbeItem item;
+                item.id = std::string(1, static_cast<char>(choice.key));
+                item.label = choice.label_utf8;
+                w.items.push_back(std::move(item));
+            }
+            w.prompt = frame.prompt.text_utf8;
+            w.selected = cursors.prompt().choices.empty() ? -1 : cursors.prompt_index();
+        }
+        ui_probe().window(std::move(w));
+    }
+    /*
+     * **下敷きは字のある所だけ**（決めたこと 2026-10-09「文字があるところだけ下敷きがあればいい。
+     * みぎはじまである必要がない」）。帯の幅（`layout.prompt_bar`）は字の置き場所の上限で、
+     * 下敷きは字の幅＋左右 1 マスに縮める。
+     */
+    const auto prompt_last_line = [&]() {
+        const auto at = frame.prompt.text_utf8.rfind('\n');
+        return (at == std::string::npos) ? frame.prompt.text_utf8 : frame.prompt.text_utf8.substr(at + 1);
+    };
+    int content_w = 0;
+    if (show_numeric) {
+        const std::size_t digits = static_cast<std::size_t>(std::max(1, cursors.numeric().digits));
+        const std::size_t value_len = std::max(digits, std::to_string(cursors.numeric().value).size());
+        content_w = text.measure(cursors.numeric().prompt_utf8) + text.measure(std::string(value_len, '0'));
+    } else {
+        content_w = text.measure(prompt_last_line());
+    }
+    const RectPx box{ bar.x, bar.y, std::min(bar.w, content_w + (layout.cell_w * 2)), bar.h };
     PanelStyle style = overlay_panel_style();
     style.fill = PaintColor{ 0.10f, 0.09f, 0.04f, 0.88f };
     style.border = PaintColor{ 0.85f, 0.78f, 0.30f, 0.85f };
-    paint.panel(bar, style);
+    if(theme>=0)paint_modern_window(paint,box,theme,true);else paint.panel(box, style);
 
     const int x = bar.x + layout.cell_w;
     const int limit = bar.w - (layout.cell_w * 2);
@@ -820,19 +955,44 @@ void draw_prompt_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout, 
             value.insert(value.begin(), '0');
         }
         const std::string head = cursors.numeric().prompt_utf8;
-        const int head_w = text.draw(x, bar.y, head, TextColor{ 1.f, 1.f, 0.4f, 1.f }, limit);
-        text.draw(x + head_w, bar.y, value, TextColor{ 1.f, 1.f, 1.f, 1.f }, limit - head_w);
+        const int head_w = text.draw(x, bar.y, head, theme>=0?modern_skin(theme).text:TextColor{ 1.f, 1.f, 0.4f, 1.f }, limit);
+        text.draw(x + head_w, bar.y, value, theme>=0?modern_skin(theme).strong:TextColor{ 1.f, 1.f, 1.f, 1.f }, limit - head_w);
         const int offset = digits - 1 - cursors.numeric_place();
         if ((offset >= 0) && (offset < digits)) {
             const int cx = x + head_w + text.measure(value.substr(0, static_cast<std::size_t>(offset)));
             const int cw = text.measure(value.substr(static_cast<std::size_t>(offset), 1));
-            draw_choice_frame(paint, RectPx{ cx, bar.y, cw, layout.cell_h }, RectPx{});
+            draw_choice_frame(paint, RectPx{ cx, bar.y, cw, layout.cell_h }, RectPx{},theme);
         }
         return;
     }
 
-    text.draw(x, bar.y, frame.prompt.text_utf8, TextColor{ 1.f, 1.f, 0.4f, 1.f }, limit);
-    if (!cursors.prompt().choices.empty()) {
+    /*
+     * **箱の最終行だけを帯へ出す**。FroxComposband の
+     * `-more-` は箱の全行（最大 10 行）を `\n` でつないで `prompt.text_utf8` へ渡す
+     * （`frox/adapter/fc_menu.cpp::fill_row0_prompt()`。店・知識など実在のメニューの
+     * 中で全画面ダイアログへ渡す `modern_prompt_text()` はこの複数行をそのまま使う）。
+     * この 1 行の帯は改行を折り返さないので、そのまま出すと `-more-` を含む末尾の行が
+     * 途中の行に埋もれて読めなくなる——`-more-` の合図は必ず最終行に付く
+     * （`message_more_suffix()`）ので、帯には最終行だけを出せば足りる。
+     */
+    const std::string prompt_line = prompt_last_line();
+    /*
+     * 選択肢を横に並べた帯が幅を超えるときは、選んでいる選択肢が見える範囲に絞る（`fit_prompt_band()`）。
+     * 絞るのは 1 行だけの帯で、入るときは従来どおり（行をそのまま描き、枠は選択肢の位置）。
+     */
+    PromptBandView band;
+    if (!cursors.prompt().choices.empty() && (prompt_line.size() == frame.prompt.text_utf8.size())) {
+        std::vector<std::pair<int, int>> ranges;
+        for (const auto &c : cursors.prompt().choices) {
+            ranges.emplace_back(c.begin, c.len);
+        }
+        band = fit_prompt_band(prompt_line, ranges, cursors.prompt_index(), limit,
+            [&text](const std::string &s) { return text.measure(s); });
+    }
+    text.draw(x, bar.y, band.cut ? band.text : prompt_line, theme>=0?modern_skin(theme).text:TextColor{ 1.f, 1.f, 0.4f, 1.f }, limit);
+    if (band.cut) {
+        draw_choice_frame(paint, RectPx{ x + band.frame_x, bar.y, band.frame_w, layout.cell_h }, RectPx{},theme);
+    } else if (!cursors.prompt().choices.empty()) {
         const auto &choice = cursors.prompt().choices[static_cast<std::size_t>(cursors.prompt_index())];
         const std::string &line = frame.prompt.text_utf8;
         if ((choice.begin >= 0) && (choice.len > 0)
@@ -840,15 +1000,106 @@ void draw_prompt_bar(UiPaint &paint, TextOverlay &text, const UiLayout &layout, 
             const int cx = x + text.measure(line.substr(0, static_cast<std::size_t>(choice.begin)));
             const int cw = text.measure(line.substr(static_cast<std::size_t>(choice.begin),
                 static_cast<std::size_t>(choice.len)));
-            draw_choice_frame(paint, RectPx{ cx, bar.y, cw, layout.cell_h }, RectPx{});
+            draw_choice_frame(paint, RectPx{ cx, bar.y, cw, layout.cell_h }, RectPx{},theme);
         }
     }
     if (!frame.prompt.footer_utf8.empty() && ((bar.y + (layout.cell_h * 2)) <= (bar.y + bar.h + layout.cell_h))) {
-        text.draw(x, bar.y + layout.cell_h, frame.prompt.footer_utf8, kDimColor, limit);
+        text.draw(x, bar.y + layout.cell_h, frame.prompt.footer_utf8, theme>=0?modern_skin(theme).muted:kDimColor, limit);
     }
 }
 
 } // namespace
+
+int bottom_hint_room(int body_w, int hint_w, int key_w, int gap, int min_room)
+{
+    if ((hint_w <= 0) || (body_w <= 0)) {
+        return 0;
+    }
+    if ((key_w <= 0) || ((hint_w + gap + key_w) <= body_w)) {
+        return body_w; // 入る（右端の案内が無い場合も含む）。従来どおり帯の幅いっぱいで切る
+    }
+    const int room = body_w - key_w - gap;
+    return (room >= min_room) ? room : 0;
+}
+
+PromptBandView fit_prompt_band(const std::string &line, const std::vector<std::pair<int, int>> &ranges, int selected,
+    int limit, const std::function<int(const std::string &)> &measure)
+{
+    PromptBandView view;
+    view.text = line;
+    const int n = static_cast<int>(ranges.size());
+    if ((limit <= 0) || (selected < 0) || (selected >= n) || (measure(line) <= limit)) {
+        return view;
+    }
+    //! 選択肢の範囲の検算。壊れた並びのときは絞らない（従来どおり右を切るだけ）。
+    int prev_end = 0;
+    for (const auto &r : ranges) {
+        if ((r.first < prev_end) || (r.second <= 0) || (static_cast<std::size_t>(r.first + r.second) > line.size())) {
+            return view;
+        }
+        prev_end = r.first + r.second;
+    }
+    //! `[ラベル]` の括弧ごと 1 つの区切りにする（括弧が無い帯はラベルだけ）。
+    std::vector<std::pair<int, int>> seg(static_cast<std::size_t>(n)); //!< 区切りの [始まり, 終わり)
+    for (int i = 0; i < n; ++i) {
+        int b = ranges[static_cast<std::size_t>(i)].first;
+        int e = b + ranges[static_cast<std::size_t>(i)].second;
+        if ((b > 0) && (line[static_cast<std::size_t>(b - 1)] == '[')) {
+            --b;
+        }
+        if ((static_cast<std::size_t>(e) < line.size()) && (line[static_cast<std::size_t>(e)] == ']')) {
+            ++e;
+        }
+        seg[static_cast<std::size_t>(i)] = { b, e };
+    }
+    const std::string full_head = line.substr(0, static_cast<std::size_t>(seg[0].first));
+    const auto build = [&](const std::string &head, int f, int k) {
+        std::string s = head;
+        if (f > 0) {
+            s += "... ";
+        }
+        s += line.substr(static_cast<std::size_t>(seg[static_cast<std::size_t>(f)].first),
+            static_cast<std::size_t>(seg[static_cast<std::size_t>(k)].second - seg[static_cast<std::size_t>(f)].first));
+        if (k < (n - 1)) {
+            s += " ...";
+        }
+        return s;
+    };
+    int pick_f = selected;
+    int pick_k = selected;
+    std::string pick_head = std::string();
+    bool found = false;
+    const std::string no_head;
+    for (const std::string *head : { &full_head, &no_head }) {
+        for (int f = 0; (f <= selected) && !found; ++f) {
+            for (int k = n - 1; k >= selected; --k) {
+                if (measure(build(*head, f, k)) <= limit) {
+                    pick_f = f;
+                    pick_k = k;
+                    pick_head = *head;
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (found) {
+            break;
+        }
+    }
+    if (!found) { //!< 選んでいる 1 つだけでも入らない。見出しを捨てて、その選択肢を頭から出す（右は描画側が切る）
+        pick_f = selected;
+        pick_k = selected;
+    }
+    view.text = build(pick_head, pick_f, pick_k);
+    const int sel_begin = ranges[static_cast<std::size_t>(selected)].first;
+    const int sel_start = seg[static_cast<std::size_t>(pick_f)].first;
+    view.frame_x = measure(pick_head + ((pick_f > 0) ? "... " : "")
+        + line.substr(static_cast<std::size_t>(sel_start), static_cast<std::size_t>(sel_begin - sel_start)));
+    view.frame_w = measure(line.substr(static_cast<std::size_t>(sel_begin),
+        static_cast<std::size_t>(ranges[static_cast<std::size_t>(selected)].second)));
+    view.cut = true;
+    return view;
+}
 
 /*!
  * @brief 直近のメッセージを**折り返して**下詰めで積む（新しいものが下）。
@@ -915,8 +1166,10 @@ TextColor ascii_map_text_color(std::uint8_t index)
 
 } // namespace
 
-RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &panel, const GameFrame &frame)
+RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &panel, const GameFrame &frame, TargetingUi *targeting, double time)
 {
+    if(targeting)targeting->map_projection={};
+    const UiProbeLayer probe_layer("map"); //!< 1 マス 1 字の描きは問い合わせに載せない（`map` の欄で答える）
     if (panel.empty() || frame.cells.empty()) {
         return RectPx{};
     }
@@ -984,7 +1237,7 @@ RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &pan
      * いちばん読みにくくなる。絵柄は選択中の項目と同じ（`draw_choice_frame`）——
      * 画面のどこでも「いま指しているもの」は黄の枠、で通す。
      */
-    if ((frame.target_gx >= 0) && (frame.target_gy >= 0)) {
+    if (!frame.targeting.active && !frame.targeting.preview_only && (frame.target_gx >= 0) && (frame.target_gy >= 0)) {
         const int col = (frame.target_gx - frame.cam_x) + half_cols;
         const int line = (frame.target_gy - frame.cam_y) + half_rows;
         if ((col >= 0) && (col < cols) && (line >= 0) && (line < rows)) {
@@ -1035,6 +1288,10 @@ RectPx draw_ascii_map_panel(UiPaint &paint, TextOverlay &text, const RectPx &pan
         const char one[2] = { over.ascii, '\0' };
         text.draw(off_x + (col * cw), off_y + (line * ch), one, ascii_map_text_color(over.color), cw);
     }
+    if(targeting) {
+        targeting->map_projection={off_x,off_y,cols,rows,cw,ch,frame.cam_x,frame.cam_y};
+        targeting->draw_map(paint,targeting->map_projection,time);
+    }
     return RectPx{ off_x, off_y, cols * cw, rows * ch };
 }
 
@@ -1048,14 +1305,25 @@ bool frame_shows_map(const GameFrame &frame)
     return frame.menu_term_lines.empty() || frame.menu_over_map;
 }
 
-int menu_choice_at(TextOverlay &text, const UiLayout &layout, const GameFrame &frame, int x, int y)
+bool modern_window_keeps_hud(const GameFrame &frame)
 {
+    return !frame.title_screen && !frame.pre_game_menu && !frame.cells.empty();
+}
+
+int menu_choice_at(TextOverlay &text, const UiLayout &layout, const GameFrame &frame, int x, int y,int theme,const HudState *state)
+{
+    if(theme>=0&&state&&state->native_view_valid) {
+        const float scale=menu_font_scale(state->modern_font_level),old=text.layout_scale();text.set_layout_scale(scale);
+        const auto logical=menu_logical_layout(layout,scale,&text);
+        const int result=menu_choice_at(text,logical,state->native_view,int(x/scale),int(y/scale),theme,nullptr);
+        text.set_layout_scale(old);return result;
+    }
     if (frame.menu_choices.empty() || frame.menu_term_lines.empty()) {
         return -1;
     }
     //! 面積の計算は `draw_term_mirror` と同じ（全画面かオーバーレイか、枠の内側）。
     const bool full = frame.title_screen || frame.pre_game_menu;
-    const RectPx area = full ? layout.term_full : layout.term_overlay;
+    const RectPx area = menu_text_area(layout,full,theme);
     if (area.empty()) {
         return -1;
     }
@@ -1149,9 +1417,41 @@ bool drag_grip(const UiLayout &layout, int grip, int x, int y, SubSplit &split)
         split.right_h20);
 }
 
+// Fill only the screen margin outside the scene. The map/3D viewport is never covered.
+void draw_main_panel_design(UiPaint &paint,const UiLayout &layout,int theme) {
+    if(theme<0)return;
+    const auto skin=modern_skin(theme);const auto &area=layout.content;const auto &scene=layout.scene;
+    if(!panel_transparent()) {
+        const int x0=std::max(area.x,scene.x),y0=std::max(area.y,scene.y);
+        const int x1=std::min(area.x+area.w,scene.x+scene.w),y1=std::min(area.y+area.h,scene.y+scene.h);
+        if(x1<=x0||y1<=y0)paint.surface(area,skin.background,skin.material);
+        else {
+            paint.surface({area.x,area.y,area.w,y0-area.y},skin.background,skin.material);
+            paint.surface({area.x,y1,area.w,area.y+area.h-y1},skin.background,skin.material);
+            paint.surface({area.x,y0,x0-area.x,y1-y0},skin.background,skin.material);
+            paint.surface({x1,y0,area.x+area.w-x1,y1-y0},skin.background,skin.material);
+        }
+    }
+    // Compact edge treatment: no central background or header band on the game viewport.
+    if(!scene.empty())paint_modern_window(paint,scene,theme,true,false);
+}
+
 void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
-    const GameFrame &frame, const HudState &state, const UiBackdrops *backdrops)
+    const GameFrame &frame, const HudState &state, const UiBackdrops *backdrops, bool modern_window)
 {
+    /*
+     * **新 UI の窓の下にもサブパネルを描き続ける**（決めたこと 2026-09-26「メニュー表示中
+     * サブパネルが消える。出したままに」）。マップの無い画（タイトル・キャラクター作成）だけは
+     * 従来どおり窓だけを描く。窓は `fixed_menu_rect()` の位置と大きさのまま**上に重ねる**。
+     * 文字は全部のパネルの後にまとめて流れるので、窓を描く前に一度流す（下の字が窓の上に出ない）。
+     */
+    if (state.modern.active() && !modern_window_keeps_hud(frame)) {
+        if (modern_window) {
+            state.modern.draw(paint, text, layout, frame, state.modern_theme);
+        }
+        return;
+    }
+    state.native_view_valid=false;
     if (ui_break_enabled("panels")) {
         return; // `HD2D_BREAK_UI=panels`。**検査が FAIL になるのが正しい。**
     }
@@ -1159,7 +1459,7 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
      * タイトル・birth・死亡は**画面に地図が無い**。地図まわりを描くと、
      * 前のフロアの状態列やミニマップが残ったまま重なる。
      */
-    if (!frame_shows_map(frame) && (frame.title_screen || frame.pre_game_menu)) {
+    if (state.window_theme<0 && !frame_shows_map(frame) && (frame.title_screen || frame.pre_game_menu)) {
         /*
          * タイトル画（K-47 相当）。**`title_screen` のときだけ**敷く。
          * `pre_game_menu` はキャラクター作成や死亡後も指すので、そこまで敷くと
@@ -1169,13 +1469,14 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         if (title_art) {
             backdrops->painter->draw_cover(*backdrops->title, layout.term_full, 1.f);
         }
-        draw_term_mirror(paint, text, layout, frame, state.cursors, title_art);
+        draw_term_mirror(paint, text, layout, frame, state.cursors, title_art,state.window_theme);
         return;
     }
 
     //! 上と同じ理由——**重なる作りかどうか**で決める（`Split` / `Tall` は濃く塗る）。
     const bool solid = !layout.sub_overlaid;
     PanelStyle panel_style = solid ? solid_panel_style() : overlay_panel_style();
+    draw_main_panel_design(paint,layout,state.window_theme);
 
     /*
      * --- パネルの背面（K-47 相当）---
@@ -1189,6 +1490,7 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
             if (layout.sub[i].empty()) {
                 continue; //!< `Tall` は右の 2 枚が空。**下のパネルと同じ条件で飛ばす**
             }
+            if(state.window_theme>=0)continue; // The assigned material replaces artwork for this panel.
             const int slot = panel_backdrop_slot(i);
             const UiImage *const master = (slot == 0) ? backdrops->panel_bottom : backdrops->panel_right;
             if ((master == nullptr) || !master->valid()) {
@@ -1206,11 +1508,15 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         panel_style.fill.a = solid ? 0.45f : 0.35f;
     }
 
+    const float panel_scale=state.window_theme>=0?menu_font_scale(state.modern_font_level):1.f;
     // --- キャラクター状態の列（コアの左フレーム 13 桁の写し。K-28） ---
     if (!layout.status_col.empty() && !frame.status_col_lines.empty()) {
-        paint.panel(layout.status_col, panel_style);
-        draw_text_grid(text, panel_body(layout.status_col, layout.cell_w), std::string(),
-            frame.status_col_lines, layout.cell_h);
+        if(state.window_theme>=0)paint_modern_window(paint,layout.status_col,state.window_theme,true,!panel_transparent(),solid?1.f:.88f);
+        else paint.panel(layout.status_col, panel_style);
+        MenuScaleScope scope(paint,text,panel_scale);
+        const auto logical=panel_logical_layout(layout,scope.scale,text);
+        const UiProbeLayer probe_layer("status");
+        draw_text_grid(text,panel_body(logical.status_col,logical.cell_w),std::string(),frame.status_col_lines,logical.cell_h,state.window_theme);
     }
 
     // --- サブパネル 5 枚 ---
@@ -1220,20 +1526,25 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
             if (area.empty()) {
                 continue;
             }
-            paint.panel(area, panel_style);
-            const RectPx body = panel_body(area, layout.cell_w);
+            const int theme=state.window_theme;
+            if(theme>=0)paint_modern_window(paint,area,theme,true,!panel_transparent(),solid?1.f:.88f);
+            else paint.panel(area, panel_style);
+            MenuScaleScope scope(paint,text,panel_scale);
+            const auto logical=panel_logical_layout(layout,scope.scale,text);
+            const RectPx body = panel_body(logical.sub[i],logical.cell_w);
             const SubPanelContent &content = frame.sub_panels[static_cast<std::size_t>(i)];
-            if (content.kind >= 0) {
-                draw_text_grid(text, body, content.title_utf8, content.lines, layout.cell_h);
+            const UiProbeLayer probe_layer("sub");
+            if ((content.kind >= kBuiltinSubPanelKindBase)
+                && (content.kind < kBuiltinSubPanelKindBase + kBuiltinSubPanelKindCount)) {
+                //! UI 既定の描き方を種類として選んだ枠（Rogue 系。`game_frame.h`）。
+                draw_default_sub_panel(text, body, content.kind - kBuiltinSubPanelKindBase, frame, logical.cell_h, theme);
+            } else if (content.kind >= 0) {
+                draw_text_grid(text, body, content.title_utf8, content.lines, logical.cell_h,theme);
             } else {
-                draw_default_sub_panel(text, body, i, frame, layout.cell_h);
+                draw_default_sub_panel(text, body, i, frame, logical.cell_h,theme);
             }
         }
     }
-
-    // --- メッセージとプロンプト（帯が空なら Sub1 が受け持っている） ---
-    draw_message_bar(paint, text, layout, frame);
-    draw_prompt_bar(paint, text, layout, frame, state.cursors);
 
     /*
      * --- 下段の境界の印 ---
@@ -1253,9 +1564,31 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         }
     }
 
-    draw_bottom_bar(paint, text, layout, frame, state);
-    //! HP/MP の棒は**全部の作り**で出す（2026-08-14 に決めた。置き場所は `ui_layout`）。
-    draw_hud_gauges(paint, text, layout, frame);
+    {
+        MenuScaleScope scope(paint,text,panel_scale);const auto logical=panel_logical_layout(layout,scope.scale,text);
+        const UiProbeLayer probe_layer("bottom");
+        draw_bottom_bar(paint,text,logical,frame,state);
+        draw_hud_name(text,logical,frame);
+    }
+    /*
+     * --- HP/MP の玉とバフ・デバフのアイコン（棒の置き換え） ---
+     * **字の倍率の外**で、物理の画素の配置のまま描く（玉は絵なので字の倍率に合わせない）。
+     * 画像は呼んだ瞬間に描かれ、下敷きと字は後でまとめて流れる。素材が無ければ元の棒に落ちる。
+     */
+    {
+        static const OrbHudImages no_images{};
+        draw_orb_hud(paint, text, layout, frame, (backdrops != nullptr) ? backdrops->orb : no_images,
+            state.orb_params, state.orb_anim, state.orb_now_ms);
+    }
+    /*
+     * --- メッセージとプロンプト（帯が空なら Sub1 が受け持っている） ---
+     * **玉の後に描く**（玉は地図の下縁に置き、帯が出ている間は帯を玉の上に重ねる。決めたこと 2026-10-09）。
+     */
+    {MenuScaleScope scope(paint,text,panel_scale);draw_message_bar(paint,text,panel_logical_layout(layout,scope.scale,text),frame);}
+    if(!state.modern.active()) {
+        MenuScaleScope scope(paint,text,state.window_theme>=0?menu_font_scale(state.modern_font_level):1.f);
+        draw_prompt_bar(paint,text,menu_logical_layout(layout,scope.scale,&text),frame,state.cursors,state.window_theme);
+    }
     const RectPx minimap_box = draw_minimap(paint, layout, frame, state);
 
     /*
@@ -1265,9 +1598,11 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
      * 「空いている所の右上」に置いてあるので、その真下なら必ず地図の中である。
      */
     if (!frame.depth.text_utf8.empty() && !minimap_box.empty()) {
-        const int w = text.measure(frame.depth.text_utf8);
-        text.draw(minimap_box.x + minimap_box.w - w, minimap_box.y + minimap_box.h + 2,
-            frame.depth.text_utf8, text_from_term_color(frame.depth.color));
+        MenuScaleScope scope(paint,text,panel_scale);const auto box=menu_scaled_rect(minimap_box,1.f/scope.scale);
+        const UiProbeLayer probe_layer("hud");
+        const int w=std::min(box.w,text.measure(frame.depth.text_utf8));
+        ui_probe().hud_depth(frame.depth.text_utf8); //!< 検査用の問い合わせ
+        text.draw(box.x+box.w-w,box.y+box.h+2,frame.depth.text_utf8,text_from_term_color(frame.depth.color),box.w);
     }
 
     /*
@@ -1276,8 +1611,16 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
      * 「地図が出ている」と答えるが、箱そのものはここで描く必要がある。
      * 見るのは「写しが積んであるか」だけでよい。
      */
-    if (!frame.menu_term_lines.empty()) {
-        draw_term_mirror(paint, text, layout, frame, state.cursors, false);
+    if(state.modern.active()) {
+        if(modern_window) {
+            paint.flush();
+            text.flush();
+            state.modern.draw(paint,text,layout,frame,state.modern_theme);
+        }
+    }
+    else if(state.targeting.active()) {const UiProbeLayer probe_layer("targeting");state.targeting.draw(paint,text,layout,state.modern_theme);}
+    else if (state.window_theme<0 && !frame.menu_term_lines.empty()) {
+        draw_term_mirror(paint, text, layout, frame, state.cursors, false,state.window_theme);
     }
 }
 

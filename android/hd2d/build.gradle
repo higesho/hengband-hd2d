@@ -16,8 +16,10 @@ android {
         // 旧 SDL2 UI 版（:app）と同じ線引き: Android 13 以降のみ
         minSdk 33
         targetSdk 35
-        versionCode 30203
-        versionName '3.0.2.3-hd2d-android'
+        // 2026-09-16: RogueClone2 / 新UIを含む再配布版。旧APKと同じ版番号だと
+        // 端末側で更新版と判別しにくいため、配布ごとに必ず上げる。
+        versionCode 30213
+        versionName '3.0.2.3-hd2d-android-20260917-r11'
 
         externalNativeBuild {
             cmake {

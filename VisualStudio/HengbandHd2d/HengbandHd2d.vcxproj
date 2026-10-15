@@ -59,6 +59,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="..\ModernHeaders.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="PropertySheets">
@@ -231,16 +232,20 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\app\source_reconstruction.cpp" />
     <ClCompile Include="..\..\platform\portable\cp932.cpp" />
     <ClCompile Include="..\..\hd2d\app\core_import_ui.cpp" />
+    <ClCompile Include="..\..\hd2d\app\lineage_ui.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\asset_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\app_support.cpp" />
+    <ClCompile Include="..\..\hd2d\app\video_recorder.cpp" />
     <ClCompile Include="..\..\hd2d\app\app_clock.cpp" />
     <ClCompile Include="..\..\hd2d\app\run_parts.cpp" />
     <ClCompile Include="..\..\hd2d\app\input_controller.cpp" />
     <ClCompile Include="..\..\hd2d\app\test_keyboard.cpp" />
+    <ClCompile Include="..\..\hd2d\app\ui_probe.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\check_support.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\world_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\device_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\view_modes.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\attack_fx_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\render_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\ui_checks.cpp" />
     <ClCompile Include="..\..\hd2d\app\checks\input_checks.cpp" />
@@ -250,6 +255,9 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\audio\audio_engine.cpp" />
     <ClCompile Include="..\..\hd2d\assets\sprite_atlas.cpp" />
     <ClCompile Include="..\..\hd2d\assets\tile_catalog.cpp" />
+    <ClCompile Include="..\..\hd2d\model\model_asset.cpp" />
+    <ClCompile Include="..\..\hd2d\app\model_view.cpp" />
+    <ClCompile Include="..\..\hd2d\render\model_renderer.cpp" />
     <ClCompile Include="..\..\hd2d\render\billboard_renderer.cpp" />
     <ClCompile Include="..\..\hd2d\render\glyph_atlas.cpp" />
     <ClCompile Include="..\..\hd2d\world\entity_view.cpp" />
@@ -257,6 +265,9 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\world\overlay_view.cpp" />
     <!-- 足元のリング（SQ-1。同 §4）。 -->
     <ClCompile Include="..\..\hd2d\render\ground_ring.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\targeting_ui.cpp" />
+    <ClCompile Include="..\..\hd2d\render\targeting_visual.cpp" />
+    <ClCompile Include="..\..\hd2d\render\targeting_renderer.cpp" />
     <ClCompile Include="..\..\hd2d\render\light_shaft.cpp" />
     <ClCompile Include="..\..\hd2d\net\core_link.cpp" />
     <ClCompile Include="..\..\hd2d\render\camera.cpp" />
@@ -269,6 +280,29 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\render\scene_look.cpp" />
     <ClCompile Include="..\..\hd2d\render\leaf_detail.cpp" />
     <ClCompile Include="..\..\hd2d\render\dust_motes.cpp" />
+    <ClCompile Include="..\..\hd2d\render\attack_fx_view.cpp" />
+    <ClCompile Include="..\..\hd2d\render\voxel_fx.cpp" />
+    <ClCompile Include="..\..\hd2d\render\voxel_fx_renderer.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_parts.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_style_registry.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_liquid.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_lightning.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_elemental.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_spirit.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_look_kit.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_look_motifs.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_frox.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_gensoband.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_gensoband_a.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_gensoband_b.cpp" />
+    <ClCompile Include="..\..\hd2d\render\fx_styles\fx_silq.cpp" />
+    <ClCompile Include="..\..\hd2d\world\entity_fx_mod.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\attack_fx_overlay.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\attack_fx_scenes.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\attack_fx_scenes_liquid.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\attack_fx_scenes_lightning.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\attack_fx_scenes_elemental.cpp" />
+    <ClCompile Include="..\..\hd2d\app\checks\attack_fx_scenes_spirit.cpp" />
     <ClCompile Include="..\..\hd2d\render\surface_wear.cpp" />
     <ClCompile Include="..\..\hd2d\render\shadow_map.cpp" />
     <ClCompile Include="..\..\hd2d\render\text_overlay.cpp" />
@@ -277,12 +311,15 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\voxel\part_motion.cpp" />
     <ClCompile Include="..\..\hd2d\voxel\prefab.cpp" />
     <ClCompile Include="..\..\hd2d\ui\click_path.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\map_click.cpp" />
     <ClCompile Include="..\..\hd2d\ui\combat_fx_view.cpp" />
     <ClCompile Include="..\..\hd2d\i18n\lang.cpp" />
     <ClCompile Include="..\..\hd2d\ui\feature_menu.cpp" />
     <ClCompile Include="..\..\hd2d\ui\floor_cutin.cpp" />
     <ClCompile Include="..\..\hd2d\ui\fps_mode.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\modern_store_ui.cpp" />
     <ClCompile Include="..\..\hd2d\ui\game_hud.cpp" />
+    <ClCompile Include="..\..\hd2d\ui\orb_hud.cpp" />
     <ClCompile Include="..\..\hd2d\ui\game_pad.cpp" />
     <ClCompile Include="..\..\hd2d\ui\key_binds.cpp" />
     <ClCompile Include="..\..\hd2d\ui\ui_image.cpp" />
@@ -305,6 +342,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\xr\xr_room.cpp" />
     <ClCompile Include="..\..\hd2d\xr\xr_session.cpp" />
     <ClCompile Include="..\..\presentation\frame\frame_codec.cpp" />
+    <ClCompile Include="..\..\presentation\frame\frame_codec_check.cpp" />
     <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp" />
     <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp" />
     <ClCompile Include="..\..\platform\windows\hd2d_main.cpp" />
@@ -313,6 +351,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\app\hd2d_app.h" />
     <ClInclude Include="..\..\hd2d\app\hd2d_checks.h" />
     <ClInclude Include="..\..\hd2d\app\app_support.h" />
+    <ClInclude Include="..\..\hd2d\app\video_recorder.h" />
     <ClInclude Include="..\..\hd2d\app\app_clock.h" />
     <ClInclude Include="..\..\hd2d\app\run_parts.h" />
     <ClInclude Include="..\..\hd2d\app\checks\check_support.h" />
@@ -325,6 +364,17 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\render\scene_look.h" />
     <ClInclude Include="..\..\hd2d\render\leaf_detail.h" />
     <ClInclude Include="..\..\hd2d\render\dust_motes.h" />
+    <ClInclude Include="..\..\hd2d\render\attack_fx_view.h" />
+    <ClInclude Include="..\..\hd2d\render\voxel_fx.h" />
+    <ClInclude Include="..\..\hd2d\render\voxel_fx_renderer.h" />
+    <ClInclude Include="..\..\hd2d\render\fx_styles\fx_parts.h" />
+    <ClInclude Include="..\..\hd2d\render\fx_styles\fx_style.h" />
+    <ClInclude Include="..\..\hd2d\render\fx_styles\fx_look_kit.h" />
+    <ClInclude Include="..\..\hd2d\render\fx_styles\fx_look_motifs.h" />
+    <ClInclude Include="..\..\hd2d\render\fx_styles\fx_gensoband_looks.h" />
+    <ClInclude Include="..\..\hd2d\world\entity_fx_mod.h" />
+    <ClInclude Include="..\..\hd2d\ui\attack_fx_overlay.h" />
+    <ClInclude Include="..\..\hd2d\app\checks\attack_fx_scenes.h" />
     <ClInclude Include="..\..\hd2d\render\surface_wear.h" />
     <ClInclude Include="..\..\hd2d\render\math3d.h" />
     <ClInclude Include="..\..\hd2d\render\shadow_map.h" />
@@ -344,6 +394,9 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\world\town_plan.h" />
     <ClInclude Include="..\..\hd2d\render\camera.h" />
     <ClInclude Include="..\..\hd2d\render\frustum.h" />
+    <ClInclude Include="..\..\hd2d\model\model_asset.h" />
+    <ClInclude Include="..\..\hd2d\app\model_view.h" />
+    <ClInclude Include="..\..\hd2d\render\model_renderer.h" />
     <ClInclude Include="..\..\hd2d\render\billboard_renderer.h" />
     <ClInclude Include="..\..\hd2d\render\glyph_atlas.h" />
     <ClInclude Include="..\..\hd2d\assets\sprite_atlas.h" />
@@ -353,11 +406,13 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\render\ground_ring.h" />
     <ClInclude Include="..\..\hd2d\render\light_shaft.h" />
     <ClInclude Include="..\..\hd2d\ui\click_path.h" />
+    <ClInclude Include="..\..\hd2d\ui\map_click.h" />
     <ClInclude Include="..\..\hd2d\ui\combat_fx_view.h" />
     <ClInclude Include="..\..\hd2d\i18n\lang.h" />
     <ClInclude Include="..\..\hd2d\ui\feature_menu.h" />
     <ClInclude Include="..\..\hd2d\ui\floor_cutin.h" />
     <ClInclude Include="..\..\hd2d\ui\game_hud.h" />
+    <ClInclude Include="..\..\hd2d\ui\orb_hud.h" />
     <ClInclude Include="..\..\hd2d\ui\game_pad.h" />
     <ClInclude Include="..\..\hd2d\ui\key_binds.h" />
     <ClInclude Include="..\..\hd2d\ui\ui_image.h" />

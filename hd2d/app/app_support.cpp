@@ -11,11 +11,15 @@
 #include "render/camera.h"
 #include "render/term_colors.h" //!< `term_color_to_rgb()`
 #include "render/gl_core.h"
+#include "ui/menu_frame.h"
+#include "ui/menu_scale.h"
 #include "world/prefab_library.h"
 #include "frame/cell_feature_bits.h"
 #include "frame/game_frame.h"
+#include "frame/message_more.h" //!< `message_more_pending()`（`top_menu_available()`）
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h> //!< `IMG_SavePNG`（`save_rgba_png`）
 
 #include <algorithm>
 #include <cmath>
@@ -81,7 +85,11 @@ bool create_window(const AppOptions &options, Window &out, std::string &err)
 #else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+#if defined(HENGBAND_DESKTOP_LINUX)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+#else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+#endif
 #endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -107,13 +115,13 @@ bool create_window(const AppOptions &options, Window &out, std::string &err)
      */
     flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 #endif
-    if (options.gl_probe_only) {
+    if (options.gl_probe_only || std::getenv("HD2D_TEST_HIDE_WINDOW") != nullptr) {
         flags |= SDL_WINDOW_HIDDEN;
     }
-    out.window = SDL_CreateWindow("変愚蛮怒 HD2D (voxel)",
+    out.window = SDL_CreateWindow("変愚蛮怒HD",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, options.window_w, options.window_h, flags);
     if (out.window == nullptr) {
-        err = std::string("窓を作れませんでした（OpenGL 4.6 core を要求しています）: ") + SDL_GetError();
+        err = std::string("窓を作れませんでした: ") + SDL_GetError();
         return false;
     }
 #if defined(HENGBAND_GLES)
@@ -140,9 +148,14 @@ bool create_window(const AppOptions &options, Window &out, std::string &err)
 #else
     out.context = SDL_GL_CreateContext(out.window);
     if (out.context == nullptr) {
+#if defined(HENGBAND_DESKTOP_LINUX)
+        err = std::string("OpenGL 4.5 core のコンテキストを作れませんでした: ") + SDL_GetError()
+            + "\n\nOpenGL 4.5に対応するグラフィックスドライバーを確認してください。";
+#else
         err = std::string("OpenGL 4.6 core のコンテキストを作れませんでした: ") + SDL_GetError()
             + "\n\nこの実行体は OpenGL 4.6 を必須にしています（設計書 §3）。"
-              "\nドライバを更新してください。";
+              "\nドライバを更新するか、従来の 旧2D画面 をお使いください。";
+#endif
         return false;
     }
 #endif
@@ -236,6 +249,33 @@ bool save_framebuffer_bmp(const std::string &path, int width, int height)
     const bool ok = SDL_SaveBMP(surface, path.c_str()) == 0;
     if (!ok) {
         std::fprintf(stderr, "[hd2d] SDL_SaveBMP failed: %s\n", SDL_GetError());
+    } else {
+        std::fprintf(stderr, "[hd2d] wrote %s (%dx%d)\n", path.c_str(), width, height);
+    }
+    SDL_FreeSurface(surface);
+    return ok;
+}
+
+bool save_rgba_png(const std::string &path, const unsigned char *rgba_bottom_up, int width, int height)
+{
+    if ((rgba_bottom_up == nullptr) || (width <= 0) || (height <= 0)) {
+        return false;
+    }
+    SDL_Surface *const surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_ABGR8888);
+    if (surface == nullptr) {
+        std::fprintf(stderr, "[hd2d] SDL_CreateRGBSurfaceWithFormat failed: %s\n", SDL_GetError());
+        return false;
+    }
+    for (int y = 0; y < height; ++y) {
+        const unsigned char *const src = rgba_bottom_up
+            + (static_cast<std::size_t>(height - 1 - y) * static_cast<std::size_t>(width) * 4);
+        auto *const dst = static_cast<unsigned char *>(surface->pixels)
+            + (static_cast<std::size_t>(y) * static_cast<std::size_t>(surface->pitch));
+        std::memcpy(dst, src, static_cast<std::size_t>(width) * 4);
+    }
+    const bool ok = IMG_SavePNG(surface, path.c_str()) == 0;
+    if (!ok) {
+        std::fprintf(stderr, "[hd2d] IMG_SavePNG failed: %s\n", IMG_GetError());
     } else {
         std::fprintf(stderr, "[hd2d] wrote %s (%dx%d)\n", path.c_str(), width, height);
     }
@@ -342,6 +382,20 @@ presentation::UiStateMessage build_ui_state(
     const ViewWindow &window, const UiLayout &layout, const Hd2dSettings &settings, bool screen_audio)
 {
     presentation::UiStateMessage state;
+    state.modern_ui=settings.modern_ui;
+    state.targeting_ui=settings.modern_ui;
+    if(settings.modern_ui) {
+        // Native help viewers paginate from the main Term height.  Match that
+        // height to the document body the modern UI actually paints: a
+        // subtitle/header above it, controls below it, and one text unit per
+        // visible line.  The four extra rows are the native viewer's chrome.
+        const float scale=menu_font_scale(settings.modern_font_level);
+        auto logical=menu_logical_layout(layout,scale);
+        const auto panel=fixed_menu_rect(logical);
+        const int cell_h=std::max(1,int(layout.cell_h/scale+.5f));
+        const int visible=std::max(1,(panel.h-152)/(cell_h+2));
+        state.main_term_rows=std::clamp(visible+4,24,80);
+    }
     /*
      * リアルタイム進行。**設定はこちら、時計はコア側**。
      * ここで送らないと、メニューの値だけ変わって何も起きない。
@@ -486,24 +540,64 @@ void collect_emissive_slabs(const GameFrame &frame, std::vector<InstanceData> &o
 }
 
 /*!
- * @brief **決定（A / Enter）でコマンドメニューを開いてよいか**（2026-08-23 に決めた）。
+ * @brief **決定（A / Enter）に確認する相手が無いか**（決めたこと 2026-09-25。
+ * 元は 2026-08-23 の「A に、決定と同じく既定でコマンドメニューを置きたい」）。
  *
- * @details 「A ボタンに、決定と同じく既定でコマンドメニューを置きたい。コアは改変しない。
- * 中間層で対応できないか」への答え。変愚では `\r` を受けたコアが自分の通常メニューを開く
- * （`src/io/input-key-requester.cpp:117`）が、Sil-Q にその仕組みは無いので画面側が開く。
+ * @details 2026-08-23 の指示では、これが真の（=命令をただ待っているだけの）ときに
+ * A / Enter でコマンドメニューを開いていた。2026-09-25 に方針が変わり、**決定は
+ * 確認の専任**になった——コマンドメニューは F1 とパッド Start だけが開く
+ * （`hd2d/ui/key_binds.cpp` の既定・`hd2d/ui/game_pad.cpp` の Start 行）。
+ * この関数が真のとき、A / Enter は**何もしない**（コアへも送らない。呼び出し側は
+ * `translate_key_down()`／コアへの `confirm` 送信を飛ばす）。
  *
- * **いつ開いてよいかはコアが言う**（`frame.awaiting_command`）。画面が「遊んでいる最中か」を
- * 自分で決めると `-more-` の待ちでも開いてしまい、メッセージが進まなくなる。
- * 旗を立てないコア（変愚・短愚・幻想）では常に偽——**あちらの動きは 1 ビットも変わらない**。
+ * **いつ「確認する相手が無い」かはコアが言う**（`frame.awaiting_command`）。画面が
+ * 「遊んでいる最中か」を自分で決めると `-more-` の待ちでも「無い」と誤判定して
+ * しまい、伝言が進まなくなる。旗を立てないコア（変愚・短愚・幻想）では常に偽
+ * ——**あちらの動きは 1 ビットも変わらない**（今までどおり `\r` が確認として届く）。
  *
- * 文字を打っている最中は開かない（打ち終わりの Enter を奪わない）。
+ * 文字を打っている最中は「確認する相手が無い」にしない（打ち終わりの Enter を奪わない）。
  *
  * @note **規則はここ 1 か所**。パッドの A とキーボードの Enter が別々に判断すると、
  * どちらか片方だけ直された状態になる（`--ui-check` の (4''') もここを見る）。
  */
-bool confirm_opens_command_menu(const GameFrame &frame)
+bool nothing_to_confirm(const GameFrame &frame)
 {
-    return frame.awaiting_command && !frame.text_input_active;
+    return frame.awaiting_command && !frame.text_input_active && !frame.menu_open
+        && !frame.pre_game_menu && !frame.numeric.active && frame.prompt.choices.empty();
+}
+
+const char *ui_probe_phase(const GameFrame &frame)
+{
+    if (frame.game_over) {
+        return "death";
+    }
+    if (frame.pre_game_menu || frame.title_screen) {
+        const bool title_window = frame.modern.content_type == "start";
+        const bool opening = frame.title_screen && frame.modern.stage.empty(); //!< 窓がまだ無い（窓の `stage` が空。`kind` の既定は `store` なので使えない）
+        return (title_window || opening) ? "title" : "birth";
+    }
+    return "game";
+}
+
+bool core_marks_more_at_message_tail(const std::string &core_name)
+{
+    return (core_name == "RogueClone2") || (core_name == "Rogue 3.6") || (core_name == "Rogue 5.4");
+}
+
+bool top_menu_available(const GameFrame &frame, bool modern_active, bool targeting_active, bool tail_marks_more)
+{
+    /*
+     * Rogue 系の［続く］は行 0 のミラーにも問いの文にも載らず、最新のメッセージの末尾に付くだけ
+     * （`rl_frame.cpp` の `continuation_visible()`・`r2_frame.cpp` の `inline_continue`。命令待ちの旗は降りている）。
+     * 他のコアの履歴には印が残らない・旗を立てないコアもあるので、このコアに限る
+     * （`NativeInventoryMenu` の `rogue_more` と同じ見分け方）。
+     */
+    const bool tail_more = tail_marks_more && !frame.awaiting_command && frame.prompt.text_utf8.empty()
+        && !frame.messages.empty() && presentation::message_more_suffix(frame.messages.back().text_utf8);
+    return !frame.menu_open && !frame.pre_game_menu && !frame.text_input_active
+        && !frame.numeric.active && frame.prompt.choices.empty()
+        && !presentation::message_more_pending(frame) && !tail_more //!< `-続く-` の最中は開かない（修-01・判-5）
+        && !modern_active && !targeting_active;
 }
 
 /*!
@@ -820,7 +914,7 @@ PostFlags resolve_post_flags(const AppOptions &options)
 void show_message(const std::string &text)
 {
     std::fprintf(stderr, "[hd2d] %s\n", text.c_str());
-    (void)SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "変愚蛮怒 HD2D", text.c_str(), nullptr);
+    (void)SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "変愚蛮怒HD", text.c_str(), nullptr);
 }
 
 /*!

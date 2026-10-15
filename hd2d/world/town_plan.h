@@ -41,6 +41,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace hd2d {
@@ -159,6 +160,14 @@ constexpr int kCragMassCells = 2400;
  * 覚え込むことはない（岩山にする条件そのものが山の印になった）。
  *
  * @note 町が変わったら捨てる（`town_id` が鍵）。地図の大きさが変わっても捨てる。
+ *
+ * ## 添字は**町の座標**（フレームの座標 − 原点）
+ * Frox の町は荒野の窓の中にあり、窓がずれると町の地図の左上がフレームの座標のどこかが変わる
+ * （`FloorIdentity::town_origin_x`）。フレームの座標のまま覚えると、窓の外へ出た山が
+ * **別のマスに岩山として残る**（気づいたこと 2026-10-10「町の中に岩山がたくさん出る」。
+ * モリバントの北東の山 101 マスが、窓がずれたあと町の中に出た）。町の座標で覚えれば、
+ * 窓の外へ出た山は座標が範囲外になって使われず、窓へ戻れば元の位置で使える。
+ * 町の地図の窓が動かないコアは原点が常に 0 なので、従来とまったく同じ。
  */
 struct CragMemory {
     int town_id{ 0 };
@@ -256,6 +265,12 @@ struct TownPlan {
      * **`Rampart` = `kRampartLow`（0 ふつう・1 低い）**。
      */
     std::vector<std::uint8_t> slices;
+    /*!
+     * @brief `Gate` のマスのくぐる向き（0 北 / 1 南 / 2 西 / 3 東。**`kDx`/`kDy` の添字**。-1 = 門でない）。
+     * @details `slices` は東西か南北かの**軸**しか持たない（絵を引く側はそれで足りる）。
+     * 向きそのもの（どちら側へ出るか）は**検査 (11)**（門が同じ敷地の別の門のマスを向かない）が要る。
+     */
+    std::vector<std::int8_t> gate_face;
     std::vector<std::uint8_t> fences; //!< `TownFence` のビット和
     /*!
      * @brief **門の見通し**（P10 第 3 期。2026-08-10 に決めた「アングウィル 建物の
@@ -360,6 +375,14 @@ struct TownPlan {
     std::uint8_t fence_at(int gx, int gy) const;
     //! そこは門の見通しか（背の高いものを立てないマス）。
     bool clear_at(int gx, int gy) const;
+    /*!
+     * @brief 門の**外の最初のマス**（門の向きへ進み、門のマスは飛び越す）。
+     * @details 幅や奥行きのある入口（L 字の敷地の凹み・2 マス奥の戸口）では、門の向きのすぐ隣も
+     * 門のマスになる。道の網の地点も `--town-check` の「門の前が道」も、**門の外の最初のマス**で
+     * 見る（門のマスは道にならないので、すぐ隣で見ると永久に届かない。フロックスのアナンバール）。
+     * 向きが決まっていない門（`gate_dx == 0 && gate_dy == 0`）は門のマスそのものを返す。
+     */
+    std::pair<int, int> gate_outside(const TownSite &site) const;
 };
 
 /*!
@@ -1015,6 +1038,23 @@ struct TownStyle {
      * 5 町で共通なので、看板そのものは触らない。`nullptr`（既定）なら従来どおり。
      */
     const char *sign_base{ nullptr };
+    /*!
+     * @brief **夜の明るさ**（Angband の町。決めたこと 2026-09-24「夜間は暗すぎるので、
+     * もうすこし周辺光を明るくし、視認性を上げよう」）。
+     * @details 日没後の割合（`night_t`）に応じて月明かり・空・照り返しに掛け、環境光の底を
+     * 持ち上げる（`apply_town_night_light()`）。**1.0（既定）なら従来と 1 ビットも変わらない**。
+     * 効くのはその町の中（地上）だけで、ダンジョンには掛けない。
+     */
+    float night_light{ 1.f };
+    /*!
+     * @brief **山のマスを壁の塊から切り離して読む**（Angband の町。決めたこと 2026-09-24
+     * 「ダンジョンの入り口は周囲を瓦礫と岩山で囲み、はっきりわかるように」）。
+     * @details Angband の町は花崗岩（山）が世界の枠（永久壁）に接していて、そのままだと
+     * 枠と一緒の 1 つの塊になり「山が主」にならず塀に落ちる（実測: 山 87 マスが全部塀）。
+     * 真なら連結成分を「山か否か」で分けるので、山の塊だけが岩山になる。
+     * **偽（既定）なら従来と 1 ビットも変わらない**——ズルは山と永久壁が地続きで 1 つの塊のまま。
+     */
+    bool split_mountains{ false };
 };
 
 /*!
@@ -1044,6 +1084,16 @@ struct YardStyle {
     float roof_tint[3]{ -1.f, -1.f, -1.f };
     int storeys{ 0 };
     float fill{ 0.5f }; //!< `props` を使い切った後、残りのマスへ乱択する割合
+    /*!
+     * @brief **半壊した店**（Angband の町。決めたこと 2026-09-24「機能している建物も
+     * 半壊している建物があっていい」）。建物の矩形のどちら側が崩れているか
+     * （`"east"` `"west"` `"north"` `"south"`。`nullptr` なら崩れない）と、その割合。
+     * @details 崩れた側のマスでは壁と屋根を半壊用の組（`house_wall_ruin_<slice>` /
+     * `house_roof_ruin_<slice>` に町の接尾辞）で引き、階数は 1・窓の灯りと煙突は無し。
+     * 戸口・看板・前庭はそのまま。
+     */
+    const char *collapse{ nullptr };
+    float collapse_ratio{ 0.5f };
 };
 
 /*!

@@ -25,6 +25,7 @@ std::string join(const std::string &root, const std::string &relative)
 void TileCatalog::apply(const presentation::AssetManifestMessage &message)
 {
     this->entries_.clear();
+    this->item_tiles_.clear();
     this->entries_.reserve(message.assets.size() + message.aliases.size());
 
     for (const auto &wire : message.assets) {
@@ -36,6 +37,14 @@ void TileCatalog::apply(const presentation::AssetManifestMessage &message)
         entry.id = wire.id;
         entry.path = join(message.root, wire.path);
         this->entries_[static_cast<std::uint16_t>(wire.index)] = std::move(entry);
+        if ((wire.kind == "K") && (wire.id > 0) && (wire.id <= 65535)) {
+            // 同じ番号に絵が複数あれば、いちばん小さい索引を採る（目録の並びに依らず決まる）。
+            const auto item = static_cast<std::uint16_t>(wire.id);
+            const auto found = this->item_tiles_.find(item);
+            if ((found == this->item_tiles_.end()) || (static_cast<std::uint16_t>(wire.index) < found->second)) {
+                this->item_tiles_[item] = static_cast<std::uint16_t>(wire.index);
+            }
+        }
     }
 
     /*
@@ -47,6 +56,9 @@ void TileCatalog::apply(const presentation::AssetManifestMessage &message)
     for (const auto &alias : message.aliases) {
         if (this->entries_.find(static_cast<std::uint16_t>(alias.index)) == this->entries_.end()) {
             ++dangling;
+        } else if ((alias.kind == "K") && (alias.id > 0) && (alias.id <= 65535)) {
+            // 別名のアイテムも、共有元の絵を引ける（正規の行があればそちらを優先する）。
+            this->item_tiles_.emplace(static_cast<std::uint16_t>(alias.id), static_cast<std::uint16_t>(alias.index));
         }
     }
     if (dangling > 0) {
@@ -61,6 +73,12 @@ const TileEntry *TileCatalog::find(std::uint16_t tile_index) const
 {
     const auto found = this->entries_.find(tile_index);
     return (found == this->entries_.end()) ? nullptr : &found->second;
+}
+
+std::uint16_t TileCatalog::find_item_tile(std::uint16_t item_id) const
+{
+    const auto found = this->item_tiles_.find(item_id);
+    return (found == this->item_tiles_.end()) ? 0 : found->second;
 }
 
 } // namespace hd2d

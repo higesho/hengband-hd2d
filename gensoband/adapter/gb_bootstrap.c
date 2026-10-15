@@ -220,6 +220,36 @@ static int gb_validate_lib_dirs(void)
     return 1;
 }
 
+#if defined(HENGBAND_DESKTOP_LINUX)
+// The Linux launcher supplies a separate data root for the current user.
+// Initialize the original Unix identity fields before any permission check.
+static void gb_linux_user_paths(const char *root)
+{
+    char path[1024];
+    player_uid = getuid();
+    player_euid = geteuid();
+    player_egid = getegid();
+    snprintf(path, sizeof(path), "%s%suser", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_USER);
+    ANGBAND_DIR_USER = string_make(path);
+    snprintf(path, sizeof(path), "%s%ssave", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_SAVE);
+    ANGBAND_DIR_SAVE = string_make(path);
+    snprintf(path, sizeof(path), "%s%sapex", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_APEX);
+    ANGBAND_DIR_APEX = string_make(path);
+    snprintf(path, sizeof(path), "%s%sbone", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_BONE);
+    ANGBAND_DIR_BONE = string_make(path);
+    snprintf(path, sizeof(path), "%s%sdata", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_DATA);
+    ANGBAND_DIR_DATA = string_make(path);
+    snprintf(path, sizeof(path), "%s%sscript", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_SCRIPT);
+    ANGBAND_DIR_SCRIPT = string_make(path);
+}
+#endif
+
 int gb_bootstrap(const char *lib_dir)
 {
     /*
@@ -285,6 +315,9 @@ int gb_bootstrap(const char *lib_dir)
 
     /* **buffer は書き換えられる。** init_file_paths() は tail に部分名を継ぎ足す。 */
     init_file_paths(path);
+#if defined(HENGBAND_DESKTOP_LINUX)
+    gb_linux_user_paths(lib_dir);
+#endif
 
     /*
      * 英語モード: edit と data を差し替える。
@@ -389,6 +422,16 @@ int gb_run_game(int new_game)
          */
         gb_game_armed = 0;
         gb_game_in_progress = 0;
+        if (gb_game_kind == GB_BIRTH_CANCEL) {
+            /*
+             * 誕生の最初の画面で取消された（`gb_cancel_birth_to_title`）。`play_game()` は先頭で
+             * `character_icky = TRUE` を立てて入るので、次に呼ばれたときに困らないよう、
+             * 画面の退避の計数と未表示のメッセージを戻しておく。
+             */
+            character_icky = 0;
+            character_xtra = 0;
+            msg_flag = FALSE;
+        }
         return gb_game_kind ? gb_game_kind : GB_OK;
     }
 
@@ -406,6 +449,19 @@ int gb_run_game(int new_game)
     gb_game_armed = 0;
     gb_game_in_progress = 0;
     return GB_OK;
+}
+
+int gb_cancel_birth_to_title(void)
+{
+    if (!gb_game_armed || character_generated) {
+        return 0;
+    }
+    fprintf(stderr, "[gensoband] birth cancelled at the first screen; back to the title\n");
+    fflush(stderr);
+    gb_game_armed = 0;
+    gb_game_kind = GB_BIRTH_CANCEL;
+    longjmp(gb_game_buf, 1);
+    return 0; /* 戻らない */
 }
 
 void gb_shutdown_and_quit(void)

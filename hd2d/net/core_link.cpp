@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file core_link.cpp
  * @brief `core_link.h` の実装。
  *
@@ -19,6 +19,15 @@
 #include <unistd.h>
 #endif
 
+#if defined(HENGBAND_DESKTOP_LINUX)
+#include <csignal>
+#include <cstring>
+#include <fcntl.h>
+#include <spawn.h>
+#include <sys/socket.h>
+#include <sys/wait.h>
+extern char **environ;
+#endif
 #include "net/core_link.h"
 
 #include "frame/frame_codec.h" //!< 捨てるフレームから `sounds` だけを拾う（v1 §6.4 の救済）
@@ -217,10 +226,10 @@ private:
     std::FILE *fp_{ nullptr };
 };
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(HENGBAND_DESKTOP_LINUX)
 /*!
  * @brief コアの stderr を素通ししつつ、全文をログへ、直近数百行を手元へ残す（v1 §13-4）。
- * @details 窓だけ見ている利用者に「コンソールから起動してください」と言うのは落ちた後では
+ * @details 窓だけ見ている遊ぶ人に「コンソールから起動してください」と言うのは落ちた後では
  * 手遅れなので、**理由そのものを持ってこられる**ようにしておく。
  * @note 非 Windows（1 プロセス）ではコアの stderr は自分の stderr そのもの
  * （Android は logcat へ流れる）なので、この中継は要らない。
@@ -242,6 +251,7 @@ public:
 
     void open_log()
     {
+#if defined(_WIN32)
         char dir[MAX_PATH]{};
         const DWORD len = ::GetTempPathA(MAX_PATH, dir);
         std::string path = ((len > 0) && (len < MAX_PATH)) ? std::string(dir, len) : std::string();
@@ -251,6 +261,21 @@ public:
         if (this->fp_ != nullptr) {
             this->log_path_ = std::move(path);
         }
+#else
+        std::error_code ec;
+        const auto dir = std::filesystem::current_path(ec) / "logs";
+        if (ec) return;
+        std::filesystem::create_directories(dir, ec);
+        if (ec) return;
+        std::string path = (dir / "core-stderr-XXXXXX.log").string();
+        const int fd = ::mkstemps(path.data(), 4);
+        if (fd < 0) return;
+        (void)::fcntl(fd, F_SETFD, FD_CLOEXEC);
+        std::lock_guard<std::mutex> lock(this->mutex_);
+        this->fp_ = ::fdopen(fd, "w");
+        if (this->fp_) this->log_path_ = std::move(path);
+        else (void)::close(fd);
+#endif
     }
 
     std::string log_path()
@@ -260,15 +285,31 @@ public:
     }
 
     //! パイプが EOF になるまで読み続ける。**専用スレッドから呼ぶこと。**
+#if defined(_WIN32)
     void run(HANDLE pipe, const std::atomic<bool> &stopping)
+#else
+    void run(int pipe, const std::atomic<bool> &stopping)
+#endif
     {
         char buf[4096];
         std::string partial;
         while (!stopping.load()) {
+#if defined(_WIN32)
             DWORD read = 0;
             if ((::ReadFile(pipe, buf, sizeof(buf), &read, nullptr) == FALSE) || (read == 0)) {
                 break;
             }
+#else
+            pollfd watched{pipe, POLLIN, 0};
+            const int ready = ::poll(&watched, 1, 100);
+            if (ready < 0 && errno == EINTR) continue;
+            if (ready < 0) break;
+            if (ready == 0) continue;
+            const ssize_t got = ::read(pipe, buf, sizeof(buf));
+            if (got < 0 && errno == EINTR) continue;
+            if (got <= 0) break;
+            const auto read = static_cast<std::size_t>(got);
+#endif
             (void)std::fwrite(buf, 1, read, stderr);
             (void)std::fflush(stderr);
             {
@@ -278,7 +319,7 @@ public:
                     (void)std::fflush(this->fp_);
                 }
             }
-            for (DWORD i = 0; i < read; ++i) {
+            for (std::size_t i = 0; i < static_cast<std::size_t>(read); ++i) {
                 const char c = buf[i];
                 if (c == '\n') {
                     this->push_line(std::move(partial));
@@ -346,6 +387,33 @@ struct CoreLink::Impl {
     std::thread receiver;
     std::thread stderr_reader;
     std::atomic<bool> stop_stderr{ false };
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    pid_t process{-1};
+    bool reaped{false};
+    int process_status{0};
+    mutable std::mutex process_mutex;
+    CoreStderrRelay stderr_relay;
+    int stderr_pipe{-1};
+    std::thread receiver;
+    std::thread stderr_reader;
+    std::atomic<bool> stop_stderr{false};
+    bool poll_child() {
+        std::lock_guard<std::mutex> lock(this->process_mutex);
+        if (this->process < 0 || this->reaped) return true;
+        int status = 0;
+        const auto got = ::waitpid(this->process, &status, WNOHANG);
+        if (got == this->process || (got < 0 && errno == ECHILD)) {
+            this->reaped = true;
+            this->process_status = status;
+            return true;
+        }
+        return false;
+    }
+    void terminate_child() {
+        if (this->poll_child()) return;
+        std::lock_guard<std::mutex> lock(this->process_mutex);
+        if (!this->reaped && this->process > 0) (void)::kill(this->process, SIGKILL);
+    }
 #endif
 
     std::atomic<bool> stop_receiver{ false };
@@ -357,6 +425,9 @@ struct CoreLink::Impl {
         close_handle(this->stderr_pipe);
 #else
         close_endpoint(this->from_core);
+#if defined(HENGBAND_DESKTOP_LINUX)
+        if (this->stderr_pipe >= 0) (void)::close(this->stderr_pipe);
+#endif
 #endif
         this->log.close();
     }
@@ -365,6 +436,7 @@ struct CoreLink::Impl {
     ProtocolLog log;
 
     std::atomic<bool> core_gone{ false };
+    std::atomic<bool> receiver_finished{ false };
     std::atomic<bool> exit_received{ false };
     std::atomic<int> exit_code{ 0 };
     std::atomic<bool> fatal_received{ false };
@@ -387,6 +459,13 @@ struct CoreLink::Impl {
      * 「効果音がたまにしかならなくなった」）。捨てる前にここへ移しておく。
      */
     std::vector<SoundEvent> carried_sounds;
+    /*!
+     * @brief 捨てたフレームに載っていた攻撃の視覚効果（`carried_sounds` と同じ理由）。
+     * @details 溜まりすぎないよう上限を置く（古いほうから捨てる）。
+     */
+    std::vector<ProjectionFx> carried_projections;
+    std::vector<MissileFx> carried_missiles;
+    static constexpr std::size_t kCarriedFxMax = 64;
     std::deque<std::string> table_payloads;
     std::string fatal_reason;
 
@@ -418,6 +497,42 @@ struct CoreLink::Impl {
                         std::fprintf(stderr, "[hd2d] 捨てたフレームの音を読めません: %s\n", sound_err.c_str());
                     }
                 }
+                /*
+                 * **捨てるフレームの攻撃の視覚効果を拾う。**これも一度きりの縁（コアは汲んだら空にする）なので、
+                 * 捨てると魔法や矢の効果が消える。載っているのは稀（撃った・投げた・唱えた瞬間のフレームだけ）なので、
+                 * 鍵の有無で先に篩ってから、フレーム全体を解く（効果だけを解く入口がまだ無い）。
+                 */
+                if ((this->latest_frame.find("\"projections\":") != std::string::npos)
+                    || (this->latest_frame.find("\"missiles\":") != std::string::npos)) {
+                    GameFrame dropped;
+                    std::string fx_err;
+                    if (presentation::decode_game_frame(this->latest_frame, dropped, fx_err)) {
+                        this->carried_projections.insert(this->carried_projections.end(),
+                            std::make_move_iterator(dropped.projections.begin()),
+                            std::make_move_iterator(dropped.projections.end()));
+                        this->carried_missiles.insert(this->carried_missiles.end(),
+                            std::make_move_iterator(dropped.missiles.begin()),
+                            std::make_move_iterator(dropped.missiles.end()));
+                        if (this->carried_projections.size() > kCarriedFxMax) {
+                            this->carried_projections.erase(this->carried_projections.begin(),
+                                this->carried_projections.end() - static_cast<std::ptrdiff_t>(kCarriedFxMax));
+                        }
+                        if (this->carried_missiles.size() > kCarriedFxMax) {
+                            this->carried_missiles.erase(this->carried_missiles.begin(),
+                                this->carried_missiles.end() - static_cast<std::ptrdiff_t>(kCarriedFxMax));
+                        }
+                    } else {
+                        std::fprintf(stderr, "[hd2d] 捨てたフレームの攻撃の効果を読めません: %s\n", fx_err.c_str());
+                    }
+                }
+                /*
+                 * AH-01 の直し。メッセージは持ち越さない。以前はここで `"messages":` を
+                 * 拾って `carried_messages` へ積んでいたが、直近 N 行を毎フレーム丸ごと送る
+                 * コア（変愚蛮怒・短愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband・Rogue・Angband の
+                 * 全 7 本。見直しの指摘: 以前はこの列挙から短愚蛮怒が抜けて「全 6 本」に
+                 * なっていた）では、次のフレームの本体に同じ行がすでに含まれているので、
+                 * 持ち越すと二重に表示されていた（`take_new_frame()` 側の註記を参照）。
+                 */
             }
             this->latest_frame = std::move(payload);
             this->has_new_frame = true;
@@ -621,6 +736,7 @@ struct CoreLink::Impl {
                         presentation::transport_result_name(result), err.empty() ? "" : " - ", err.c_str());
                 }
                 this->core_gone.store(true);
+                this->receiver_finished.store(true);
                 return;
             }
 
@@ -638,7 +754,66 @@ CoreLink::~CoreLink()
     this->shutdown();
 }
 
-#if !defined(_WIN32)
+#if defined(HENGBAND_DESKTOP_LINUX)
+bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
+{
+    this->shutdown();
+    this->impl_ = std::make_shared<Impl>();
+    Impl &impl = *this->impl_;
+    if (!options.protocol_log_path.empty()) impl.log.open(options.protocol_log_path);
+    if (const char *replay = std::getenv("HD2D_REPLAY_LOG"); replay && *replay) {
+        impl.replay = true;
+        return impl.load_replay(replay, err);
+    }
+    auto path = options.core_path;
+    if (path.empty()) {
+        std::error_code ec;
+        path = std::filesystem::read_symlink("/proc/self/exe", ec).parent_path() / "cores/HengbandCore";
+    }
+    const std::string executable = path.string();
+    if (::access(executable.c_str(), X_OK) != 0) {
+        err = "ゲームコアを実行できません: " + executable + "\n" + std::strerror(errno);
+        return false;
+    }
+    int pairs[3][2]{{-1,-1},{-1,-1},{-1,-1}};
+    auto close_pairs = [&]() {for (auto &pair:pairs) for (int &fd:pair) {if (fd>=0) ::close(fd); fd=-1;}};
+    for (auto &pair:pairs) {
+        if (::socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, pair) != 0) {
+            err = "コアとの通信路を作れません: " + std::string(std::strerror(errno));
+            close_pairs(); return false;
+        }
+        for (int &fd:pair) if (fd<=STDERR_FILENO) {
+            const int moved = ::fcntl(fd, F_DUPFD_CLOEXEC, 3);
+            if (moved<0) {err="通信路を確保できません";close_pairs();return false;}
+            ::close(fd);fd=moved;
+        }
+    }
+    std::vector<std::string> args{executable, "--ui-protocol=stdio"};
+    if (!options.core_protocol_log_path.empty()) args.push_back("--protocol-log="+options.core_protocol_log_path);
+    args.insert(args.end(), options.forwarded_args.begin(), options.forwarded_args.end());
+    std::vector<char *> argv;
+    for (auto &arg:args) argv.push_back(arg.data());
+    argv.push_back(nullptr);
+    posix_spawn_file_actions_t actions;
+    int code = ::posix_spawn_file_actions_init(&actions);
+    if (code) {err=std::strerror(code);close_pairs();return false;}
+    for (int i=0;i<3 && !code;++i) code=::posix_spawn_file_actions_adddup2(&actions,pairs[i][1],i);
+    for (auto &pair:pairs) for (int fd:pair) if (!code) code=::posix_spawn_file_actions_addclose(&actions,fd);
+    pid_t pid=-1;
+    if (!code) code=::posix_spawn(&pid,executable.c_str(),&actions,nullptr,argv.data(),environ);
+    ::posix_spawn_file_actions_destroy(&actions);
+    if (code) {err="ゲームコアを起動できません: "+executable+"\n"+std::strerror(code);close_pairs();return false;}
+    impl.process=pid;
+    impl.to_core=presentation::transport_from_fd(pairs[0][0]);pairs[0][0]=-1;
+    impl.from_core=presentation::transport_from_fd(pairs[1][0]);pairs[1][0]=-1;
+    impl.stderr_pipe=pairs[2][0];pairs[2][0]=-1;
+    close_pairs();
+    impl.stderr_relay.open_log();
+    impl.stderr_reader=std::thread([raw=&impl]() {raw->stderr_relay.run(raw->stderr_pipe,raw->stop_stderr);});
+    std::fprintf(stderr,"[hd2d] started %s (pid %ld)\n",executable.c_str(),static_cast<long>(pid));
+    return true;
+}
+#elif !defined(_WIN32)
 
 /*!
  * @brief 非 Windows 版の `start`。子プロセスの代わりに**コアスレッド**を起こす。
@@ -680,16 +855,24 @@ bool CoreLink::start(const CoreLinkOptions &options, std::string &err)
     const presentation::TransportHandle core_out = presentation::transport_from_fd(core_to_ui[1]);
 
     /*
-     * コアスレッド。detach する: 正常終了は `quit()` → `std::exit()`（プロセスごと畳む。
-     * ）なので、join する機会がそもそも無い。
+     * コアスレッド。Android の古いコアには `exit()` でプロセスごと畳むものもあるが、
+     * Rogue legacy のように **Core だけ正常 return するコア**も扱う。その場合は
+     * core 側の pipe 端をここで必ず閉じる。閉じないと UI の receive_loop が EOF を
+     * 永久に受け取れず、コア選択へ戻るたびに受信スレッドと fd が残り続ける。
      */
     const auto entry = options.core_thread_main;
     const std::string core_log = options.core_protocol_log_path;
     const std::vector<std::string> forwarded = options.forwarded_args;
     std::thread([entry, core_in, core_out, core_log, forwarded]() {
         const int rc = entry(core_in, core_out, core_log, forwarded);
-        // 来るとすれば握手前の異常だけ（正常系は exit で戻らない）。理由は stderr に出ている。
-        std::fprintf(stderr, "[hd2d] the core thread returned early (%d)\n", rc);
+        auto close_core_endpoint = [](presentation::TransportHandle handle) {
+            if (handle == nullptr) return;
+            const int fd = static_cast<int>(reinterpret_cast<intptr_t>(handle)) - 1;
+            (void)::close(fd);
+        };
+        close_core_endpoint(core_in);
+        close_core_endpoint(core_out);
+        std::fprintf(stderr, "[hd2d] the core thread returned (%d)\n", rc);
     }).detach();
     std::fprintf(stderr, "[hd2d] started the in-process core thread\n");
     return true;
@@ -934,7 +1117,7 @@ void CoreLink::begin_receiving()
     if (impl->replay) {
         return;
     }
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(HENGBAND_DESKTOP_LINUX)
     // 所有者は shutdown で join する。スレッドから所有者を保持する循環は作らない。
     if (!impl->receiver.joinable()) {
         impl->receiver = std::thread([raw = impl.get()]() { raw->receive_loop(); });
@@ -955,7 +1138,8 @@ bool CoreLink::replaying() const
     return this->impl_->replay;
 }
 
-bool CoreLink::take_latest_frame(std::string &wire, bool &carried_burst, std::vector<SoundEvent> &carried_sounds)
+bool CoreLink::take_latest_frame(std::string &wire, bool &carried_burst, std::vector<SoundEvent> &carried_sounds,
+    std::vector<ProjectionFx> &carried_projections, std::vector<MissileFx> &carried_missiles)
 {
     Impl &impl = *this->impl_;
     std::lock_guard<std::mutex> lock(impl.inbox_mutex);
@@ -969,6 +1153,10 @@ bool CoreLink::take_latest_frame(std::string &wire, bool &carried_burst, std::ve
     impl.dropped_burst = false;
     carried_sounds.swap(impl.carried_sounds);
     impl.carried_sounds.clear();
+    carried_projections.swap(impl.carried_projections);
+    impl.carried_projections.clear();
+    carried_missiles.swap(impl.carried_missiles);
+    impl.carried_missiles.clear();
     return true;
 }
 
@@ -1029,6 +1217,11 @@ bool CoreLink::core_gone() const
     return this->impl_->core_gone.load();
 }
 
+bool CoreLink::receiver_finished() const
+{
+    return this->impl_->receiver_finished.load();
+}
+
 bool CoreLink::child_exited() const
 {
     /*
@@ -1046,6 +1239,8 @@ bool CoreLink::child_exited() const
         return true;
     }
     return ::WaitForSingleObject(process, 0) == WAIT_OBJECT_0;
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    return this->impl_->poll_child();
 #else
     /*
      * コアはスレッドなので「プロセスの生死」は無い。コアが自分から畳む経路は
@@ -1058,7 +1253,7 @@ bool CoreLink::child_exited() const
 
 std::string CoreLink::core_stderr_tail(std::size_t lines)
 {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(HENGBAND_DESKTOP_LINUX)
     return this->impl_->stderr_relay.tail_text(lines);
 #else
     // 1 プロセスなのでコアの stderr ＝ 自分の stderr（Android は logcat）。中継は無い。
@@ -1069,7 +1264,7 @@ std::string CoreLink::core_stderr_tail(std::size_t lines)
 
 std::string CoreLink::core_stderr_log_path()
 {
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(HENGBAND_DESKTOP_LINUX)
     return this->impl_->stderr_relay.log_path();
 #else
     return std::string();
@@ -1094,6 +1289,13 @@ bool CoreLink::wait_for_core_exit(unsigned timeout_ms)
         return true;
     }
     return ::WaitForSingleObject(this->impl_->process, static_cast<DWORD>(timeout_ms)) == WAIT_OBJECT_0;
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    const auto deadline = std::chrono::steady_clock::now()+std::chrono::milliseconds(timeout_ms);
+    while (!this->impl_->poll_child()) {
+        if (std::chrono::steady_clock::now()>=deadline) return false;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    return true;
 #else
     /*
      * コアスレッドの「畳んだ」を待つ。正常系はコアが `std::exit()` するので
@@ -1124,6 +1326,9 @@ void CoreLink::force_quit()
         ::TerminateProcess(this->impl_->process, 1);
         (void)::WaitForSingleObject(this->impl_->process, 5000);
     }
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    this->impl_->terminate_child();
+    (void)this->wait_for_core_exit(5000);
 #else
     /*
      * スレッドは殺せない（殺すとロックや stdio が壊れたまま残る）。ここへ来るのは
@@ -1175,6 +1380,9 @@ void CoreLink::shutdown()
             ::TerminateProcess(impl.process, 1);
             (void)::WaitForSingleObject(impl.process, 5000);
         }
+#elif defined(HENGBAND_DESKTOP_LINUX)
+        impl.terminate_child();
+        (void)this->wait_for_core_exit(5000);
 #endif
     }
 #if defined(_WIN32)
@@ -1182,6 +1390,18 @@ void CoreLink::shutdown()
     finish_reader(impl.stderr_reader, impl.stop_stderr);
     close_handle(impl.thread);
     close_handle(impl.process);
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    // Drain final messages before stopping a reader whose endpoint stayed open in a descendant.
+    const auto deadline=std::chrono::steady_clock::now()+std::chrono::milliseconds(500);
+    while (impl.receiver.joinable() && !impl.receiver_finished.load()
+        && std::chrono::steady_clock::now()<deadline) std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    if (impl.receiver.joinable()) {
+        impl.stop_receiver.store(true);
+        if (impl.from_core) ::shutdown(static_cast<int>(reinterpret_cast<intptr_t>(impl.from_core))-1, SHUT_RD);
+        impl.receiver.join();
+    }
+    impl.stop_stderr.store(true);
+    if (impl.stderr_reader.joinable()) impl.stderr_reader.join();
 #endif
     impl.log.close();
     // Android の受信スレッドが動いていれば、最後の参照をそちらが持つ。

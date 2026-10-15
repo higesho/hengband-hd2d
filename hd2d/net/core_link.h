@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file core_link.h
  * @brief 外部ゲームコアとの通信、起動、終了処理（プロトコル v1）。
  *
@@ -8,11 +8,13 @@
  *
  * Windows は子プロセスを起動する。終了時は stdin を閉じて保存の猶予を与え、
  * 必要なら子を終了させる。受信と stderr のスレッドを join した後に資源を解放する。
- * Android は同一プロセス内のコアスレッドであり、受信終了まで共有状態を保持する。
+ * Android は同一プロセス内のコアスレッドであり、Core 関数が return した場合も
+ * core 側 pipe を閉じて受信終了まで共有状態を保持する。
  */
 #pragma once
 
 #include "frame/protocol_messages.h"
+#include "frame/attack_fx.h"   //!< `take_latest_frame` が捨てたフレームの攻撃の視覚効果を持ち越す
 #include "frame/sound_event.h" //!< `take_latest_frame` が捨てたフレームの音を持ち越す
 
 #include <cstddef>
@@ -59,7 +61,7 @@ public:
 
     /*!
      * @brief コアを起こす（パイプ 3 本 ＋ `CreateProcess`）。まだ握手はしない。
-     * @param[out] err 失敗の理由（利用者に見せてよい日本語）。
+     * @param[out] err 失敗の理由（遊ぶ人に見せてよい日本語）。
      */
     bool start(const CoreLinkOptions &options, std::string &err);
 
@@ -92,11 +94,21 @@ public:
      * @param[out] wire フレームのペイロード（JSON）。
      * @param[out] carried_burst 捨てたフレームに `teleport_fx.burst` が立っていた。
      * @param[out] carried_sounds 捨てたフレームに載っていた効果音（**古い順**。空にしてから書く）。
+     * @param[out] carried_projections 捨てたフレームに載っていた魔法などの投射（**古い順**。空にしてから書く）。
+     * @param[out] carried_missiles 捨てたフレームに載っていた射撃・投擲（**古い順**。空にしてから書く）。
      * @return 新しいフレームがあったか。false のとき出力は触らない。
-     * @details 一度きりの縁（`burst` と `sounds`）は最新値スロットで消える。
-     * **取り出しと同じロックの中で**持ち越さないと、拾った音が次の取り出しへずれる。
+     * @details 一度きりの縁（`burst`・`sounds`）は最新値スロットで消える。
+     * **取り出しと同じロックの中で**持ち越さないと、拾ったものが次の取り出しへずれる。
+     * **メッセージは持ち越さない**（AH-01。以前はここで `carried_messages` として
+     * 捨てたフレームのメッセージも持ち越していたが、直近 N 行を毎フレーム丸ごと送る
+     * コア（変愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband・Rogue・Angband の全 6 本）では、
+     * 次のフレームの本体に同じ行がすでに含まれているので、持ち越すと二重に表示されていた）。
+     *
+     * **攻撃の視覚効果（`projections`・`missiles`）も一度きりの縁**で、効果音と同じく
+     * 捨てたフレームのぶんを持ち越す（捨てたフレームが 1 回のキーの途中のものなら、魔法や矢の効果が丸ごと消える）。
      */
-    bool take_latest_frame(std::string &wire, bool &carried_burst, std::vector<SoundEvent> &carried_sounds);
+    bool take_latest_frame(std::string &wire, bool &carried_burst, std::vector<SoundEvent> &carried_sounds,
+        std::vector<ProjectionFx> &carried_projections, std::vector<MissileFx> &carried_missiles);
 
     //! コアから届いた `pad_commands` / `sub_panel_kinds` / `asset_manifest` を全部持っていく。
     std::vector<std::string> take_table_payloads();
@@ -113,10 +125,12 @@ public:
     std::string fatal_reason();
     //! stdout の EOF / 読み書き失敗を見た（＝コアが消えた。v1 §9.2）。
     bool core_gone() const;
+    // True only after the receiver has processed every message before EOF/error.
+    bool receiver_finished() const;
     //! 子プロセスが終わっているか（待たずに見るだけ）。
     bool child_exited() const;
 
-    //! コアの stderr の直近 `lines` 行。異常終了の理由を利用者へ運ぶのに使う（v1 §13-4）。
+    //! コアの stderr の直近 `lines` 行。異常終了の理由を遊ぶ人へ運ぶのに使う（v1 §13-4）。
     std::string core_stderr_tail(std::size_t lines);
     //! コアの stderr の全文ログの場所（開けていなければ空）。
     std::string core_stderr_log_path();
@@ -133,7 +147,7 @@ public:
     bool wait_for_core_exit(unsigned timeout_ms);
 
     /*!
-     * @brief 利用者が明示に「終わらせる」を選んだときの畳み方（v1 §9.2）。
+     * @brief 遊ぶ人が明示に「終わらせる」を選んだときの畳み方（v1 §9.2）。
      * @details まず stdin を閉じて緊急セーブの機会を与え、それでも死ななければ `TerminateProcess`。
      * **いきなり殺さない**のがこの手順の要点（セーブ中に殺すのが最悪）。
      */

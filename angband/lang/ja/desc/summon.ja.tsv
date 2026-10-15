@@ -1,0 +1,19 @@
+# summon.ja.tsv — summon.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+ANY|desc	c332f989e8	モンスター
+KIN|desc	1129b0dbd8	同族のモンスター
+MONSTER|desc	c332f989e8	モンスター
+MONSTERS|desc	c7937c4cd5	モンスターたち
+ANIMAL|desc	19647db2fb	動物
+SPIDER|desc	51aa874c23	クモ
+HOUND|desc	6305641f06	ハウンド
+HYDRA|desc	f483cb51f3	ヒドラ
+AINU|desc	0b5483e68f	アイヌア
+DEMON|desc	6f58e231fb	悪魔
+UNDEAD|desc	44e1d91739	アンデッド
+DRAGON|desc	8d057dabba	ドラゴン
+HI_DEMON|desc	993886ae42	上級の悪魔
+HI_UNDEAD|desc	9400b0a40a	上級のアンデッド
+HI_DRAGON|desc	4ab4bd0065	古代ドラゴン
+WRAITH|desc	f8c5159d39	指輪の幽鬼
+UNIQUE|desc	957fabf0af	ユニーク・モンスター

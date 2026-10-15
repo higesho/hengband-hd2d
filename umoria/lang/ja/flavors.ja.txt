@@ -1,0 +1,165 @@
+# 未鑑定の見た目。tools/umoria/um_build_names.py が作る。鍵は「種類:語」。
+amulet:Agate	めのうの
+amulet:Amber	琥珀の
+amulet:Bone	骨の
+amulet:Brass	真鍮の
+amulet:Bronze	青銅の
+amulet:Coral	サンゴの
+amulet:Driftwood	流木の
+amulet:Ivory	象牙の
+amulet:Obsidian	黒曜石の
+amulet:Pewter	しろめの
+amulet:Tortoise Shell	べっ甲の
+mushroom:Black	黒い
+mushroom:Black Spotted	黒斑の
+mushroom:Blue	青い
+mushroom:Brown	茶色の
+mushroom:Dark Blue	群青色の
+mushroom:Dark Green	深い緑の
+mushroom:Dark Red	深い赤色の
+mushroom:Ecru	生成り色の
+mushroom:Furry	苔むした
+mushroom:Green	緑色の
+mushroom:Grey	グレーの
+mushroom:Light Blue	薄い青色の
+mushroom:Light Green	薄い緑色の
+mushroom:Plaid	格子縞の
+mushroom:Red	赤い
+mushroom:Slimy	ねばねばした
+mushroom:Tan	黄褐色の
+mushroom:White	白い
+mushroom:White Spotted	白斑の
+mushroom:Wooden	木の
+mushroom:Wrinkled	しわしわの
+mushroom:Yellow	黄色い
+potion:Azure	紺碧の
+potion:Black	黒い
+potion:Blue	青い
+potion:Blue Speckled	青斑の
+potion:Brown	茶色の
+potion:Brown Speckled	茶斑の
+potion:Bubbling	泡だった
+potion:Chartreuse	薄黄緑色の
+potion:Clear	透明な
+potion:Cloudy	濁った
+potion:Copper Speckled	銅斑の
+potion:Crimson	紅色の
+potion:Cyan	シアン色の
+potion:Dark Blue	群青色の
+potion:Dark Green	深い緑の
+potion:Dark Red	深い赤色の
+potion:Gold Speckled	金斑の
+potion:Green	緑色の
+potion:Green Speckled	緑斑の
+potion:Grey	グレーの
+potion:Grey Speckled	灰斑の
+potion:Hazy	ぼやけた色の
+potion:Icky Green	よどんだ緑の
+potion:Indigo	藍色の
+potion:Light Blue	薄い青色の
+potion:Light Brown	薄茶色の
+potion:Light Green	薄い緑色の
+potion:Magenta	マゼンタ色の
+potion:Metallic Blue	青く輝く
+potion:Metallic Green	緑に輝く
+potion:Metallic Purple	紫に輝く
+potion:Metallic Red	赤く輝く
+potion:Misty	霧の
+potion:Orange	オレンジ色の
+potion:Orange Speckled	オレンジ斑の
+potion:Pink	ピンク色の
+potion:Pink Speckled	ピンク斑の
+potion:Puce	黒褐色の
+potion:Purple	紫色の
+potion:Purple Speckled	紫の斑点の
+potion:Red	赤い
+potion:Red Speckled	赤斑の
+potion:Silver Speckled	銀斑の
+potion:Smoky	煙った
+potion:Tangerine	橙色の
+potion:Vermilion	朱色の
+potion:Violet	スミレ色の
+potion:White	白い
+potion:Yellow	黄色い
+ring:Alexandrite	金緑石の
+ring:Amethyst	アメジストの
+ring:Aquamarine	アクアマリンの
+ring:Azurite	めのうの
+ring:Beryl	緑柱石の
+ring:Bloodstone	血玉随の
+ring:Calcite	方解石の
+ring:Carnelian	赤めのうの
+ring:Corundum	綱玉の
+ring:Diamond	ダイアモンドの
+ring:Emerald	エメラルドの
+ring:Fluorite	ホタル石の
+ring:Garnet	ガーネットの
+ring:Granite	御影石の
+ring:Jade	ひすいの
+ring:Jasper	ジャスパーの
+ring:Lapis Lazuli	青瑠璃の
+ring:Malachite	クジャク石の
+ring:Marble	大理石の
+ring:Moonstone	ムーンストーンの
+ring:Onyx	縞めのうの
+ring:Opal	オパールの
+ring:Pearl	真珠の
+ring:Quartz	水晶の
+ring:Quartzite	石英岩の
+ring:Rhodonite	ザクロ石の
+ring:Ruby	ルビーの
+ring:Sapphire	サファイアの
+ring:Tiger Eye	虎目石の
+ring:Topaz	トパーズの
+ring:Turquoise	トルコ石の
+ring:Zircon	ジルコンの
+staff:Aspen	ポプラの
+staff:Balsa	バルサの
+staff:Banyan	バンヤンの
+staff:Birch	カバの
+staff:Cedar	西洋スギの
+staff:Cottonwood	檜の
+staff:Cypress	イトスギの
+staff:Dogwood	ミズキの
+staff:Elm	ニレの
+staff:Eucalyptus	ユーカリの
+staff:Hemlock	ツガの
+staff:Hickory	ブナの
+staff:Ironwood	黒檀の
+staff:Locust	アカシアの
+staff:Mahogany	マホガニーの
+staff:Maple	カエデの
+staff:Mulberry	クワの
+staff:Oak	カシの
+staff:Pine	松の
+staff:Redwood	杉の
+staff:Rosewood	紫檀の
+staff:Spruce	エゾマツの
+staff:Sycamore	イチジクの
+staff:Teak	チークの
+staff:Walnut	クルミの
+wand:Aluminum	アルミの
+wand:Aluminum-Plated	アルミメッキの
+wand:Cast Iron	鋳鉄の
+wand:Chromium	クロムの
+wand:Copper	銅の
+wand:Copper-Plated	銅メッキの
+wand:Gold	金の
+wand:Gold-Plated	金メッキの
+wand:Iron	鉄の
+wand:Magnesium	マグネシウムの
+wand:Molybdenum	モリブデンの
+wand:Nickel	ニッケルの
+wand:Nickel-Plated	ニッケルめっき
+wand:Rusty	錆びた
+wand:Silver	銀の
+wand:Silver-Plated	銀メッキの
+wand:Steel	鋼鉄の
+wand:Steel-Plated	鋼めっき
+wand:Tin	ブリキの
+wand:Tin-Plated	スズメッキの
+wand:Titanium	チタンの
+wand:Tungsten	タングステンの
+wand:Zinc	亜鉛の
+wand:Zinc-Plated	亜鉛メッキの
+wand:Zirconium	ジルコンの

@@ -49,6 +49,14 @@ struct HudSnapshot {
     //! プレイヤレベル。**負なら「このコアにレベルが無い」**（`gold` と同じ約束）。
     //! Sil-Q は経験値を技能に振る作りでレベルを持たないので -1 を送ってくる。
     int level{};
+    /*!
+     * @brief **終末までの残り日数**（短愚蛮怒の誕生時オプション `doomsday`。2026-10-11）。
+     * @details **負なら「この遊びに終末の日数が無い」**（`doomsday` が無効、または短愚以外のコア。既定の -1）。
+     * 1〜14 は残り日数、**0 は終末**（15 日目以降）。原作が日の変わり目に出すメッセージ
+     * 「終末まで 残り N日」と同じ値で、画面は玉の中央の飾りに太陽として重ねる（`hd2d/ui/orb_hud.cpp`）。
+     * @note 追加の欄なのでプロトコルの版は上げない。-1（既定）は線に載らず、知らない画面は無視する。
+     */
+    int doomsday_days_left{ -1 };
     std::string status_line;
     std::vector<std::string> right_top_lines;
     std::vector<std::string> right_bottom_lines;

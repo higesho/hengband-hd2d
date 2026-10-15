@@ -1,0 +1,130 @@
+# Umoria の経歴の部品。tools/umoria/um_build_history.py が作る（手で直さない）。
+# Umoria の段<TAB>英語（原作の部品そのまま。後ろの空白も）<TAB>日本語（変愚の部品）<TAB>日本語の段（この順に並べてつなぐ）
+1	You are the illegitimate and unacknowledged child 	妾腹の子で認知すらされていません。	2
+1	You are the illegitimate but acknowledged child 	妾腹の子ですが認知はされています。	2
+1	You are one of several children 	幾人かの子供のうちの一人です。	2
+1	You are the first child 	長子です。	2
+2	of a Serf.  	あなたは農奴の	1
+2	of a Yeoman.  	あなたは自作農の	1
+2	of a Townsman.  	あなたは町人の	1
+2	of a Guildsman.  	あなたは職人の	1
+2	of a Landed Knight.  	あなたは土着の騎士の	1
+2	of a Titled Noble.  	あなたは爵位ある貴族の	1
+2	of a Royal Blood Line.  	あなたは王家の血を引く者の	1
+3	You are the black sheep of the family.  	あなたは一家のお荷物です。	3
+3	You are a credit to the family.  	あなたは一家の誇りです。	3
+3	You are a well liked child.  	あなたは家族に大切にされています。	3
+4	Your mother was a Green-Elf.  	あなたの母はグリーン・エルフでした。	4
+4	Your father was a Green-Elf.  	あなたの父はグリーン・エルフでした。	4
+4	Your mother was a Grey-Elf.  	あなたの母はグレイ・エルフでした。	4
+4	Your father was a Grey-Elf.  	あなたの父はグレイ・エルフでした。	4
+4	Your mother was a High-Elf.  	あなたの母はハイ・エルフでした。	4
+4	Your father was a High-Elf.  	あなたの父はハイ・エルフでした。	4
+7	You are one of several children 	幾人かの子供のうちの一人です。	9
+7	You are the only child 	一粒種です。	9
+8	of a Green-Elf 	あなたはグリーン・エルフの	7
+8	of a Grey-Elf 	あなたはグレイ・エルフの	7
+8	of a High-Elf 	あなたはハイ・エルフの	7
+9	Ranger.  	レンジャーの	8
+9	Archer.  	アーチャーの	8
+9	Warrior.  	戦士の	8
+9	Mage.  	メイジの	8
+9	Prince.  	王子の	8
+9	King.  	王の	8
+10	You are one of several children of a Halfling 	ホビットの何人かの子供のうちの一人です。	11
+10	You are the only child of a Halfling 	ホビットの一粒種です。	11
+11	Bum.  	あなたは乞食の	10
+11	Tavern Owner.  	あなたは酒場の店主の	10
+11	Miller.  	あなたは粉屋の	10
+11	Home Owner.  	あなたは家主の	10
+11	Burglar.  	あなたは忍びの者の	10
+11	Warrior.  	あなたは戦士の	10
+11	Mage.  	あなたはメイジの	10
+11	Clan Elder.  	あなたは一族の長の	10
+13	You are one of several children of a Gnome 	ノームの幾人かの子供のうちの一人です。	14
+13	You are the only child of a Gnome 	ノームの一粒種です。	14
+14	Beggar.  	あなたは物乞いの	13
+14	Braggart.  	あなたはホラ吹きの	13
+14	Prankster.  	あなたはお調子者の	13
+14	Warrior.  	あなたは戦士の	13
+14	Mage.  	あなたはメイジの	13
+16	You are one of two children of a Dwarven 	ドワーフの二人の子供のうちの一人です。	17
+16	You are the only child of a Dwarven 	ドワーフの一粒種です。	17
+17	Thief.  	あなたは泥棒の	16
+17	Prison Guard.  	あなたは牢番の	16
+17	Miner.  	あなたは坑夫の	16
+17	Warrior.  	あなたは戦士の	16
+17	Priest.  	あなたはプリーストの	16
+17	King.  	あなたは王の	16
+18	You are the black sheep of the family.  	あなたは一家のお荷物です。	18
+18	You are a credit to the family.  	あなたは一家の誇りです。	18
+18	You are a well liked child.  	あなたは家族に大切にされています。	18
+19	Your mother was an Orc, but it is unacknowledged.  	あなたの母はオークでしたが、それは秘密にされています。	19
+19	Your father was an Orc, but it is unacknowledged.  	あなたの父はオークでしたが、それは秘密にされています。	19
+20	You are the adopted child 	黒い肌をしています。	61
+22	Your mother was a Cave-Troll 	あなたの母は洞窟トロルの	22
+22	Your father was a Cave-Troll 	あなたの父は洞窟トロルの	22
+22	Your mother was a Hill-Troll 	あなたの母は丘トロルの	22
+22	Your father was a Hill-Troll 	あなたの父は丘トロルの	22
+22	Your mother was a Water-Troll 	あなたの母は水トロルの	22
+22	Your father was a Water-Troll 	あなたの父は水トロルの	22
+23	Cook.  	コックでした。	23
+23	Warrior.  	戦士でした。	23
+23	Shaman.  	呪術師でした。	23
+23	Clan Chief.  	一族の長でした。	23
+50	You have dark brown eyes, 	あなたは深いブラウンの瞳と	50
+50	You have brown eyes, 	あなたはブラウンの瞳と	50
+50	You have hazel eyes, 	あなたは淡い色の瞳と	50
+50	You have green eyes, 	あなたはグリーンの瞳と	50
+50	You have blue eyes, 	あなたは青い瞳と	50
+50	You have blue-gray eyes, 	あなたはブルーグレイの瞳と	50
+51	straight 	なめらかな	51
+51	wavy 	波打った	51
+51	curly 	カールした	51
+52	black hair, 	黒髪を持ち、	52
+52	brown hair, 	茶髪を持ち、	52
+52	auburn hair, 	とび色の髪を持ち、	52
+52	red hair, 	赤い髪を持ち、	52
+52	blond hair, 	ブロンドの髪を持ち、	52
+53	and a very dark complexion.	漆黒の肌をしています。	53
+53	and a dark complexion.	黒い肌をしています。	53
+53	and an average complexion.	普通の肌色をしています。	53
+53	and a fair complexion.	白い肌をしています。	53
+53	and a very fair complexion.	透き通るような白い肌をしています。	53
+54	You have light grey eyes, 	あなたは明るいグレーの瞳と	54
+54	You have light blue eyes, 	あなたは明るいブルーの瞳と	54
+54	You have light green eyes, 	あなたは明るいグリーンの瞳と	54
+55	straight 	なめらかな	55
+55	wavy 	波打った	55
+56	black hair, and a fair complexion.	黒髪を持ち、白い肌をしています。	56
+56	brown hair, and a fair complexion.	茶髪を持ち、白い肌をしています。	56
+56	blond hair, and a fair complexion.	ブロンドの髪を持ち、白い肌をしています。	56
+56	silver hair, and a fair complexion.	銀髪を持ち、白い肌をしています。	56
+57	You have dark brown eyes, 	あなたは深いブラウンの瞳と	57
+57	You have glowing red eyes, 	あなたは輝く赤い瞳と	57
+58	straight 	なめらかな	58
+58	wavy 	波打った	58
+59	black hair, 	黒髪、そして	59
+59	brown hair, 	茶髪、そして	59
+60	a one foot beard, 	 30cm ほどのヒゲを持ち、	60
+60	a two foot beard, 	 60cm ほどのヒゲを持ち、	60
+60	a three foot beard, 	 90cm ほどのヒゲを持ち、	60
+60	a four foot beard, 	 1m20cm ほどのヒゲを持ち、 	60
+61	and a dark complexion.	あなたは黒い瞳と	71
+62	You have slime green eyes, 	あなたはベトつくような緑の瞳と	62
+62	You have puke yellow eyes, 	あなたは汚物のような黄色い瞳と	62
+62	You have blue-bloodshot eyes, 	あなたは青く血走った瞳と	62
+62	You have glowing red eyes, 	あなたは輝く赤い瞳と	62
+63	dirty 	汚らしい	63
+63	mangy 	不潔な	63
+63	oily 	脂ぎった	63
+64	sea-weed green hair, 	ワカメの様な髪を持ち、	64
+64	bright red hair, 	明るい赤色の髪を持ち、	64
+64	dark purple hair, 	暗い紫色の髪を持ち、	64
+65	and green 	緑色の	65
+65	and blue 	青い	65
+65	and white 	白い	65
+65	and black 	黒い	65
+66	ulcerous skin.	ブツブツした肌をしています。	66
+66	scabby skin.	カサブタだらけの肌をしています。	66
+66	leprous skin.	ガサガサの肌をしています。	66

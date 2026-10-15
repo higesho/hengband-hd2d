@@ -16,6 +16,7 @@
  */
 
 #include "gb_frame.h"
+#include "bridge/native_targeting_runtime.h"
 
 #include "gb_lang_c.h"
 #include "gb_manifest.h"
@@ -25,6 +26,7 @@
 #include "gb_text.h"
 
 #include "frame/cell_feature_bits.h"
+#include "bridge/named_attack_fx_glue.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -309,32 +311,180 @@ static bool crop_mirror_to_menu_box(GameFrame &frame)
     return true;
 }
 
-void fill_term_mirror(GameFrame &frame)
+/* ============================================================ 重ねの画面の写し（基準との差） */
+
+/*!
+ * @name 地図だけだった最後の Term（基準）と、その差分で作る写し
+ * @details 原作 `close_game()`（`files.c`）のセーブの表示は、`screen_save()` も `Term_clear()` も
+ * 通さず **地図の上へ 1 行出すだけ**である。写しを Term の全面にすると、地図の行と
+ * 左の状態列がそのまま窓の本文に入る（遊びのテスト 1 周目の F-gensoband-05。修-26）。
+ * 変愚の橋渡し（`presentation_bridge.cpp` の `refresh_float_menu_baseline`・
+ * `cell_is_float_menu_content`）と同じく、**直前まで地図だけだった Term** を覚えておき、
+ * 画面を消さずに重ねたものは**変わったセルだけ**を写しに残す。
+ *
+ * 左の状態列を読む `fill_status_col()` は Term を直に読む（icky の間は直前の値）ので、
+ * この基準とは関係しない。
+ * @{
+ */
+//! Term 1 枚ぶんのセル（行優先。文字は CP932 のバイト、属性はコアの色）。
+struct TermGrid {
+    int cols{ 0 };
+    int rows{ 0 };
+    std::vector<char> cells;
+    std::vector<unsigned char> attrs;
+
+    void reset(int c, int r)
+    {
+        cols = c;
+        rows = r;
+        cells.assign(static_cast<std::size_t>(c) * static_cast<std::size_t>(r), ' ');
+        attrs.assign(static_cast<std::size_t>(c) * static_cast<std::size_t>(r), 1);
+    }
+    bool empty() const { return (cols <= 0) || (rows <= 0); }
+    std::size_t at(int x, int y) const { return (static_cast<std::size_t>(y) * static_cast<std::size_t>(cols)) + static_cast<std::size_t>(x); }
+};
+
+//! 地図だけだった最後の Term。
+TermGrid g_term_baseline;
+
+//! 基準の字のあるセルのうち、この割合（%）以上が変わっていたら、画面を消して描き直した全面の画とみなす。
+constexpr int kOwnedScreenPercent = 85;
+
+//! 主 Term を丸ごと読む。
+bool read_term_grid(TermGrid &out)
 {
     int cols = 0;
     int rows = 0;
     if (gb_term_size(&cols, &rows) != GB_OK) {
-        return;
+        return false;
     }
     cols = (std::min)(cols, kMaxCols - 1);
+    if ((cols <= 0) || (rows <= 0)) {
+        return false;
+    }
+    out.reset(cols, rows);
 
     char cells[kMaxCols];
     unsigned char attrs[kMaxCols];
-
-    frame.menu_term_lines.clear();
-    frame.menu_term_lines.reserve(static_cast<std::size_t>(rows));
-
     for (int y = 0; y < rows; ++y) {
         std::memset(cells, ' ', sizeof(cells));
         std::memset(attrs, 1, sizeof(attrs));
         const int n = gb_term_row(y, cells, attrs, kMaxCols);
         if (n < 0) {
-            continue;
+            return false;
         }
+        const int take = (std::min)(n, cols);
+        std::memcpy(&out.cells[out.at(0, y)], cells, static_cast<std::size_t>(take));
+        std::memcpy(&out.attrs[out.at(0, y)], attrs, static_cast<std::size_t>(take));
+    }
+    return true;
+}
+
+//! 基準の `(x, y)` と文字か色が違うか。
+bool grid_cell_differs(const TermGrid &base, const TermGrid &cur, int x, int y)
+{
+    const std::size_t i = base.at(x, y);
+    return (base.cells[i] != cur.cells[i]) || (base.attrs[i] != cur.attrs[i]);
+}
+
+/*!
+ * @brief 地図の上に重ねただけの画なら、基準と同じセルを空白にする。
+ * @param base 地図だけだった最後の Term
+ * @param cur いまの Term（重ねだと分かれば、変わっていないセルを空白にして返す）
+ * @return 重ねだった（変わっていないセルを空白にした）か。偽なら `cur` は触らない
+ *
+ * @details 偽を返す場合：基準が無い・大きさが違う・基準が空、または
+ * **基準の字のあるセルの大部分（`kOwnedScreenPercent`）が変わっている**とき。
+ * 後者は店・建物・一覧のように、画面を消してから全面を描き直した画である。
+ * こういう画は、背景と同じ字（`.` や `#`）が偶然同じ桁に来ても本文なので、差分で消してはいけない。
+ * 画面の消去は `Term_clear()` のほかに `clear_from(0)`（行ごとの `Term_erase`）でも起こり、
+ * アダプタからは後者を捕まえられないので、**消去の呼び出しではなく結果の割合**で見る。
+ *
+ * 2 バイト字は 2 セルまとめて扱う（半分だけ消すと化ける）。
+ */
+bool overlay_over_baseline(const TermGrid &base, TermGrid &cur)
+{
+    if (base.empty() || (base.cols != cur.cols) || (base.rows != cur.rows)) {
+        return false;
+    }
+    int drawn = 0;
+    int changed = 0;
+    for (int y = 0; y < base.rows; ++y) {
+        for (int x = 0; x < base.cols; ++x) {
+            const char c = base.cells[base.at(x, y)];
+            if ((c == ' ') || (c == '\0')) {
+                continue;
+            }
+            ++drawn;
+            if (grid_cell_differs(base, cur, x, y)) {
+                ++changed;
+            }
+        }
+    }
+    if ((drawn == 0) || ((changed * 100) >= (drawn * kOwnedScreenPercent))) {
+        return false;
+    }
+
+    for (int y = 0; y < cur.rows; ++y) {
+        int x = 0;
+        while (x < cur.cols) {
+            const bool pair = cp932_lead(static_cast<unsigned char>(cur.cells[cur.at(x, y)])) && ((x + 1) < cur.cols);
+            const int width = pair ? 2 : 1;
+            bool keep = false;
+            for (int k = 0; k < width; ++k) {
+                keep = keep || grid_cell_differs(base, cur, x + k, y);
+            }
+            if (!keep) {
+                for (int k = 0; k < width; ++k) {
+                    cur.cells[cur.at(x + k, y)] = ' ';
+                    cur.attrs[cur.at(x + k, y)] = 1;
+                }
+            }
+            x += width;
+        }
+    }
+    return true;
+}
+
+//! 地図が出ているフレームの Term を基準に覚える。
+void remember_term_baseline()
+{
+    (void)read_term_grid(g_term_baseline);
+}
+
+//! 基準を捨てる（前のキャラクターの地図を持ち越さない）。
+void forget_term_baseline()
+{
+    g_term_baseline = TermGrid();
+}
+/*! @} */
+
+void fill_term_mirror(GameFrame &frame)
+{
+    TermGrid grid;
+    if (!read_term_grid(grid)) {
+        return;
+    }
+    const int rows = grid.rows;
+
+    /*
+     * 地図が生きている間の重ね（原作 `close_game()` のセーブの表示など）は、基準との差だけを残す。
+     * 題名・誕生・死亡（`pre_game_menu`）は Term 全面が本文なので素通し。
+     */
+    if (!frame.pre_game_menu && ((gb_screen_flags() & GB_SCREEN_DUNGEON) != 0)) {
+        (void)overlay_over_baseline(g_term_baseline, grid);
+    }
+
+    frame.menu_term_lines.clear();
+    frame.menu_term_lines.reserve(static_cast<std::size_t>(rows));
+
+    for (int y = 0; y < rows; ++y) {
+        const char *cells = &grid.cells[grid.at(0, y)];
+        const unsigned char *attrs = &grid.attrs[grid.at(0, y)];
 
         TermMirrorLine line;
         line.source_row = y;
-        line.text_utf8 = row_to_utf8(cells, attrs, n, line.color_spans);
+        line.text_utf8 = row_to_utf8(cells, attrs, grid.cols, line.color_spans);
         /* `color` は `color_spans` が空のときだけ使われる（`game_frame.h:115`）。 */
         line.color = line.color_spans.empty() ? 1 : line.color_spans.front().color;
         frame.menu_term_lines.push_back(std::move(line));
@@ -643,7 +793,19 @@ void fill_hud(GameFrame &frame)
         return;
     }
 
-    frame.hud.name = sjis_to_utf8(data.name, std::strlen(data.name));
+    /*
+     * 名前の行は Term を通らず `player_name` をそのまま読む（修-25 / F-gensoband-406）。英語層が生きているときは、
+     * **カタログに載っている名前＝ユニーククラスの標準の名前**（`博麗　霊夢` → `Reimu Hakurei`）だけを英語にする。
+     * 遊ぶ人が付けた名前は載っていないので `gb_tr` が原文を返し、日本語のまま残る（設計 §2.2）。
+     */
+    const char *hud_name = data.name;
+    if (gb_lang_enabled()) {
+        const char *translated = gb_tr(data.name);
+        if (translated && translated[0]) {
+            hud_name = translated;
+        }
+    }
+    frame.hud.name = sjis_to_utf8(hud_name, std::strlen(hud_name));
     frame.hud.hp = data.hp;
     frame.hud.hp_max = data.hp_max;
     frame.hud.sp = data.sp;
@@ -764,6 +926,7 @@ uint16_t translate_feature_flags(unsigned short gb_bits)
         { GB_FEAT_RUBBLE, CELL_FEAT_RUBBLE },
         { GB_FEAT_ROOM, CELL_FEAT_ROOM },
         { GB_FEAT_GLOWING, CELL_FEAT_GLOWING },
+        { GB_FEAT_SHAFT, CELL_FEAT_SHAFT },
     };
 
     unsigned bits = 0u;
@@ -946,6 +1109,16 @@ uint16_t resolve_tile_index(const gb_map_cell &cell)
         return 0; // 未視認。真っ暗（地形を漏らさない）
     }
     if ((cell.light_level >= 2) && (cell.object_id != 0)) {
+        /*
+         * 正体の分からないアイテム。`object_unaware_category`
+         * は `gb_shim.c` の `gb_unaware_category()` が既に判定済み（0 = 対象外）。
+         */
+        if (cell.object_unaware_category != 0) {
+            const auto category = static_cast<presentation::UnawareItemCategory>(cell.object_unaware_category);
+            if (const uint16_t ut = g_manifest->lookup_unaware_representative(category)) {
+                return ut;
+            }
+        }
         if (const uint16_t ot = g_manifest->lookup('K', cell.object_id)) {
             return ot;
         }
@@ -974,8 +1147,17 @@ void fill_map(GameFrame &frame)
     frame.view_w = view_w;
     frame.view_h = view_h;
 
-    int ox = px - (view_w / 2);
-    int oy = py - (view_h / 2);
+    int center_x = px;
+    int center_y = py;
+    /*
+     * 位置の確認（`L`。原作の `do_cmd_locate()`）の最中は、見ている区画の中心へカメラを向ける
+     * （修-64。決めたこと 2026-10-12）。原作は区画（`panel_row_min`/`panel_col_min`）だけを動かし
+     * @ は動かさないので、追従のままでは十字キーを押しても 3D の絵が動かない。
+     * `GameFrame::camera_detached`（「コアが @ から離れた所を見ている」）を立てる。手本は Angband・Sil-Q・Umoria。
+     */
+    frame.camera_detached = (gb_locate_panel_center(&center_x, &center_y) != 0);
+    int ox = center_x - (view_w / 2);
+    int oy = center_y - (view_h / 2);
     /*
      * 追従しない設定のときだけ階の端で丸める（変愚の `Bridge::capture` と同じ）。
      * HD2D は 1 点透視で可視帯が奥へ深く、丸めると @ が画面内を泳ぐので追従が既定。
@@ -997,8 +1179,15 @@ void fill_map(GameFrame &frame)
     }
 
     frame.cells.reserve(static_cast<std::size_t>(n));
+    //! プレイヤの光源で照らされているマス（`cells` と同じ並び、1 マス 1 ビット、下位ビットから）。
+    //! 送るかどうかは光源の種類（`fill_floor_and_lighting` が決める）。
+    std::vector<uint8_t> player_lit((static_cast<std::size_t>(n) + 7) / 8, 0);
     for (int i = 0; i < n; ++i) {
         const gb_map_cell &src = raw[static_cast<std::size_t>(i)];
+        if (src.lit_by_player != 0) {
+            player_lit[static_cast<std::size_t>(i) / 8] = static_cast<uint8_t>(
+                player_lit[static_cast<std::size_t>(i) / 8] | (1u << (static_cast<unsigned>(i) % 8)));
+        }
         MapCellView cell{};
         cell.gx = src.gx;
         cell.gy = src.gy;
@@ -1017,6 +1206,7 @@ void fill_map(GameFrame &frame)
         /* `under_tile_index` は 0 固定・`graf_*` は -1 固定（設計 §4 の表）。 */
         frame.cells.push_back(cell);
     }
+    frame.lighting.player_lit = std::move(player_lit);
 
     /* ミニマップ（階の全域）。`cells` は視界ぶんしかないので別に運ぶ。 */
     std::vector<unsigned char> kinds(static_cast<std::size_t>(floor_w) * static_cast<std::size_t>(floor_h));
@@ -1042,6 +1232,7 @@ void fill_floor_and_lighting(GameFrame &frame)
 {
     gb_floor_info info{};
     if (gb_read_floor_info(&info) != GB_OK) {
+        frame.lighting.player_lit.clear();
         return;
     }
 
@@ -1063,9 +1254,44 @@ void fill_floor_and_lighting(GameFrame &frame)
     frame.lighting.day_minute = info.day_minute;
     frame.lighting.daytime = (info.daytime != 0);
     frame.lighting.light_radius = info.light_radius;
+    //! 光源の種類。0（光が無い）なら照らされたマスも送らない（画面側は従来の絵のまま）。
+    frame.lighting.light_kind = static_cast<uint8_t>(info.light_kind);
+    if (frame.lighting.light_kind == 0) {
+        frame.lighting.player_lit.clear();
+    }
 }
 
 } // namespace
+
+/*!
+ * @brief かかっている状態・常時の効果のアイコン（`GameFrame::status_effects`）。
+ * @details 取り方は `gb_shim.c` の `gb_read_status_effects`（原作の `prt_status()` の旗・左の状態欄の式・C 画面の表）。
+ * 名前の文字は原作が画面へ出す字（CP932 か英語）なので UTF-8 にする。
+ * 載せるのはキャラクターがいるあいだだけ。載せるものが無ければ空のまま（線にも出ない）。
+ */
+static void fill_status_effects(GameFrame &frame)
+{
+    static gb_status_effect rows[GB_STATUS_MAX];
+
+    frame.status_effects.clear();
+    const int n = gb_read_status_effects(rows, GB_STATUS_MAX);
+    if (n <= 0) {
+        return;
+    }
+    frame.status_effects.reserve(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        const gb_status_effect &src = rows[i];
+        if ((src.kind < 0) || (src.kind > static_cast<int>(kStatusEffectKindMax))) {
+            continue;
+        }
+        StatusEffectView v{};
+        v.key = src.key;
+        v.label_utf8 = sjis_to_utf8(src.label, std::strlen(src.label));
+        v.amount_utf8 = src.amount;
+        v.kind = static_cast<StatusEffectKind>(src.kind);
+        frame.status_effects.push_back(std::move(v));
+    }
+}
 
 void set_view_size(int w, int h)
 {
@@ -1124,6 +1350,10 @@ void fill_combat_fx(GameFrame &frame)
     frame.combat_fx.reserve(static_cast<std::size_t>(n));
     for (int i = 0; i < n; ++i) {
         const gb_fx_event &e = raw[i];
+        //! 飛道（kind 2）は `projections` が受け持つ（二重に出さない）。命中の火花（kind 0/1）だけ残す。
+        if (e.kind == 2) {
+            continue;
+        }
         CombatFxEvent fx{};
         fx.kind = static_cast<CombatFxKind>(e.kind);
         //! 束にするのは C 側（`GF_*` を読めるのはあちら）。番号は `CombatFxElement` と同じ。
@@ -1142,6 +1372,18 @@ void fill_combat_fx(GameFrame &frame)
         fx.intensity = v;
         frame.combat_fx.push_back(fx);
     }
+}
+
+/* ============================================ 魔法・投射物の効果（projections / missiles） */
+
+/*!
+ * @brief 溜まっている魔法・矢弾の効果を `frame.projections`・`frame.missiles` へ移す（`named_attack_fx.h`）。**汲んだら空になる**。
+ * @details 矢弾は 1 歩ごとに仮置きされ、命令待ち（`gb_awaiting_command()`＝動きの終わり）で確定する。
+ * 入力待ちの 10ms ごとのフレームで、飛行中の 1 発が途中で割れないようにするため。
+ */
+void fill_attack_fx(GameFrame &frame)
+{
+    attack_fx::glue::take_into(frame, gb_awaiting_command() != 0);
 }
 
 /* ============================================ 周囲の地形の内訳（環境音の層） */
@@ -1241,6 +1483,18 @@ GameFrame capture_frame(unsigned long long frame_id)
     frame.menu_open = !generated || dead || ((screen & (GB_SCREEN_ICKY | GB_SCREEN_XTRA)) != 0)
         || ((screen & GB_SCREEN_DUNGEON) == 0);
     frame.pre_game_menu = !generated || dead;
+    frame.game_over = dead; //!< 死亡・引退のあとの画面。題と phase を誕生と分ける（修-10）。
+    /*
+     * 地図が出ているフレームの Term を基準に覚える（`fill_term_mirror()` が、画面を消さずに
+     * 重ねただけの画の差分を取る相手）。ゲーム前・死亡では前のキャラクターの地図を捨てる。
+     */
+    if (frame.pre_game_menu) {
+        forget_term_baseline();
+    } else if (!frame.menu_open) {
+        remember_term_baseline();
+    }
+    presentation::apply_native_targeting_frame(frame);
+    frame.awaiting_command = (gb_awaiting_command() != 0);
     /*
      * `title_screen`（K-47）は「タイトル画を敷いてよい間」。幻想蛮怒には
      * オープニングの宣言口が無いので、**@ が出来るまで**をそれとみなす。
@@ -1340,15 +1594,143 @@ GameFrame capture_frame(unsigned long long frame_id)
      * 動くようにしてある（`gb_null_term.c`）ので、画が変わらなくても門を越える。
      */
     fill_combat_fx(frame);
+    fill_attack_fx(frame); //!< 
     /* 効果音。見せ場と同じく汲んだら消える。 */
     fill_sounds(frame);
     /* 周囲の地形の内訳。 */
     fill_surroundings(frame);
     fill_messages(frame);
+    fill_status_effects(frame); //!<。名前は原作が画面へ出す字
     fill_map(frame);
     fill_floor_and_lighting(frame);
 
+    /*
+     * `inkey_flag` is the core's normal-command boundary, but the frame has
+     * richer knowledge after the prompt/menu/text adapters above have run.
+     * Never advertise a top-level command wait while a child input owns the
+     * same frame; otherwise A/Enter can reopen the root command menu over it.
+     */
+    if (frame.menu_open || frame.pre_game_menu || frame.text_input_active
+        || frame.numeric.active || !frame.prompt.choices.empty()) {
+        frame.awaiting_command = false;
+    }
+
+    presentation::apply_native_targeting_frame(frame);
     return frame;
 }
 
+int term_mirror_baseline_selftest()
+{
+    int failed = 0;
+    const auto check = [&](bool ok, const char *what) {
+        if (ok) {
+            return;
+        }
+        std::fprintf(stderr, "[gensoband] term mirror baseline selftest FAIL: %s\n", what);
+        ++failed;
+    };
+    const auto put = [](TermGrid &g, int x, int y, const char *s) {
+        for (; *s != '\0'; ++s, ++x) {
+            g.cells[g.at(x, y)] = *s;
+            g.attrs[g.at(x, y)] = 2;
+        }
+    };
+    const auto row_text = [](const TermGrid &g, int y) {
+        return std::string(&g.cells[g.at(0, y)], static_cast<std::size_t>(g.cols));
+    };
+    const auto make_map = [&](TermGrid &g) {
+        g.reset(40, 8);
+        put(g, 0, 1, "HP 10");
+        for (int y = 1; y < 7; ++y) {
+            put(g, 8, y, "....#.....#.....#.....#");
+        }
+    };
+
+    {
+        //! 地図の上に 1 行だけ重ねた画（close_game のセーブの表示）。地図と状態列は消え、重ねた字は残る。
+        TermGrid base;
+        make_map(base);
+        TermGrid cur = base;
+        put(cur, 0, 0, "Saving...");
+        const bool overlay = overlay_over_baseline(base, cur);
+        check(overlay, "overlay line is recognized as an overlay");
+        check(row_text(cur, 0).compare(0, 9, "Saving...") == 0, "overlay line is kept");
+        check(row_text(cur, 1).find_first_not_of(' ') == std::string::npos, "map and status column cells are blanked");
+        check(row_text(cur, 3).find_first_not_of(' ') == std::string::npos, "map row is blanked");
+    }
+    {
+        //! 画面を消して描き直した全面の画。背景と同じ字が同じ桁に来ても本文として残る。
+        TermGrid base;
+        make_map(base);
+        TermGrid cur;
+        cur.reset(40, 8);
+        put(cur, 0, 0, "Store");
+        put(cur, 8, 3, "....#");
+        const TermGrid expect = cur;
+        const bool overlay = overlay_over_baseline(base, cur);
+        check(!overlay, "cleared full screen is not an overlay");
+        check(cur.cells == expect.cells, "cleared full screen keeps cells equal to the map");
+    }
+    {
+        //! 2 バイト字は 2 セルまとめて扱う。片方でも変わっていれば両方残し、変わっていなければ両方消す。
+        TermGrid base;
+        make_map(base);
+        const char lead = static_cast<char>(0x83);
+        base.cells[base.at(0, 2)] = lead;
+        base.cells[base.at(1, 2)] = static_cast<char>(0x41);
+        base.cells[base.at(4, 2)] = lead;
+        base.cells[base.at(5, 2)] = static_cast<char>(0x41);
+        TermGrid cur = base;
+        cur.cells[cur.at(5, 2)] = static_cast<char>(0x42);
+        const bool overlay = overlay_over_baseline(base, cur);
+        check(overlay, "2-byte case is an overlay");
+        check((cur.cells[cur.at(0, 2)] == ' ') && (cur.cells[cur.at(1, 2)] == ' '), "unchanged 2-byte character is blanked as a pair");
+        check((cur.cells[cur.at(4, 2)] == lead) && (cur.cells[cur.at(5, 2)] == static_cast<char>(0x42)),
+            "2-byte character with a changed trail byte is kept as a pair");
+    }
+    {
+        //! 基準が無い・大きさが違うときは触らない。
+        TermGrid base;
+        TermGrid cur;
+        make_map(cur);
+        const TermGrid expect = cur;
+        check(!overlay_over_baseline(base, cur), "no baseline: not an overlay");
+        TermGrid other;
+        other.reset(41, 8);
+        put(other, 8, 1, "....#");
+        check(!overlay_over_baseline(other, cur), "different size: not an overlay");
+        check(cur.cells == expect.cells, "cells are untouched when the baseline does not apply");
+    }
+    return failed;
+}
+
+bool attack_fx_ready()
+{
+    return attack_fx::glue::ready(gb_awaiting_command() != 0);
+}
+
 } // namespace gb
+
+/* ==================================================================== 魔法・投射物の効果（C から呼ばれる入口。`gb_shim.c`） */
+
+extern "C" void gb_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y,
+    int impact_x, int flags, const int *path, int path_n, const int *area, int area_n)
+{
+    attack_fx::glue::projection(&attack_fx::gensoband_look_name, origin, shape, attr, rad, src_y, src_x, impact_y, impact_x, flags,
+        path, path_n, area, area_n);
+}
+
+extern "C" void gb_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x)
+{
+    attack_fx::glue::missile_step(first, kind, item_id, brand, src_y, src_x, y, x);
+}
+
+extern "C" void gb_named_fx_missile_hit(void)
+{
+    attack_fx::glue::missile_hit();
+}
+
+extern "C" void gb_named_fx_missile_returns(void)
+{
+    attack_fx::glue::missile_returns();
+}

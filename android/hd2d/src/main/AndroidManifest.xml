@@ -24,7 +24,11 @@
              `fullUser` ＝ 4 方向すべて許すが、**端末の回転ロックには従う**
              （`sensor` だと寝転がって遊ぶたびに勝手に回る）。`configChanges` に
              `orientation|screenSize` があるので、回ってもアクティビティは作り直されず
-             SDL の窓の大きさが変わるだけである。 -->
+             SDL の窓の大きさが変わるだけである。
+
+             `density|fontScale` も自分で受ける（2026-09-30。AU-7）。無いと、設定の「表示サイズ」を変えた
+             （エミュレータの `wm density`）だけで Activity が作り直しになり、SDL の `onDestroy()` でゲームが閉じた。
+             密度が変わっても窓の画素数は変わらず、この画面は画素で組むので、受けて何もしなくてよい。 -->
         <activity
             android:name=".HengbandHd2dActivity"
             android:exported="true"
@@ -32,7 +36,7 @@
             android:screenOrientation="fullUser"
             android:launchMode="singleTop"
             android:preferMinimalPostProcessing="true"
-            android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation">
+            android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|density|fontScale|keyboard|keyboardHidden|navigation">
 
             <!-- 裏へ回ったらゲームスレッドを止める（旧版と同じ。A-01 の前提） -->
             <meta-data android:name="SDL_ENV.SDL_ANDROID_BLOCK_ON_PAUSE" android:value="1" />
@@ -42,5 +46,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- プロセスを起こし直すための、画面を持たない活動（2026-10-07。AH-09）。**別のプロセス**で動き、
+             元のプロセスを終わらせてから本体を開き直す（RestartActivity.java の註）。 -->
+        <activity
+            android:name=".RestartActivity"
+            android:process=":restart"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 </manifest>

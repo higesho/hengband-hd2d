@@ -33,6 +33,14 @@ $env:HD2D_CORE_LINK_CHECK='1'
 try { .\HengbandHd2d.exe --ui-check 2>&1 | Out-Host } finally { Remove-Item Env:HD2D_CORE_LINK_CHECK }
 ```
 
+## 命令の番号の検査
+
+コアが送る `pad_commands` の番号 `id` は、画面の割り当て（cfg の `key_bind=`・`pad_bind=`）の鍵になる。0 は「割り当て無し」の予約値なので、1 以上で重複しないことを全コアで確かめる（2026-10-09、変愚・短愚の先頭「使う(m)」が 0 で割り当てられなかった不具合の再発防止）。ゲームには入らず hello だけで済む。
+
+```powershell
+python tools/hd2d_verify/pad_command_ids_check.py all --bin-dir <コアの実行ファイルのあるフォルダ>
+```
+
 ## セーブ・設定・プロセス
 
 検査用セーブは `fixtures/DBG` と `fixtures/DBG.sdl2panels`。旧 `tools/diff_test/fixtures/` から移した検査素材で、同じバイト列を使う。
@@ -44,6 +52,8 @@ try { .\HengbandHd2d.exe --ui-check 2>&1 | Out-Host } finally { Remove-Item Env:
 復元エラーで残った退避元を削除しないこと。
 
 既存の基準は意図した動作変更がある場合だけ更新する。環境差を理由に `--record` で上書きしない。
+
+基準を取り直すのは、動作を変えるつもりのときだけにします。自分の環境で `--record` を流し、環境の違い（ユーザー名・パス・音の装置名）が基準に入っていないことを確かめてください。
 
 ## Windows 配布物の検査
 

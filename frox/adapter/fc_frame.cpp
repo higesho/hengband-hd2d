@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file fc_frame.cpp
  * @brief `fc_frame.h` の実装。
  *
@@ -14,6 +14,7 @@
  */
 
 #include "fc_frame.h"
+#include "bridge/native_targeting_runtime.h"
 
 #include "fc_text.h" //!< CP932 → UTF-8（設計 §3.1）
 
@@ -24,9 +25,11 @@
 #include "fc_sub_panels.h"
 
 #include "frame/cell_feature_bits.h"
+#include "bridge/named_attack_fx_glue.h"
 
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -379,7 +382,224 @@ static bool crop_mirror_to_menu_box(GameFrame &frame)
     return true;
 }
 
-void fill_term_mirror(GameFrame &frame)
+/*!
+ * @name 窓が塗らなかった所の見分け（メニューの写しから、重ねられていない地図・状態列を除く）
+ * @details 箱（`+----`）を持たない全画面の窓（呪文選び・能力値の選択・装備の枠の選択など）は、
+ * **窓の行を塗り直すだけで、窓の左や右、窓の下の地図と状態列はそのまま残る**。写しを全面で積むと、
+ * 新 UI の窓の本文が `menu_term_lines` から作られる（`presentation/bridge/native_modern.h`・
+ * `modern_content.h`）ので、`腕力:` `金` などの状態列の字と地図の字まで本文へ取り込まれていた。
+ *
+ * 基準にするのは**窓が開く直前の画**である。窓が開いたとき、原作は `screen_save()` で画を `Term->mem` へ
+ * 保存する（読むのは `fc_term_saved_row()`）。その画と同じ字・同じ色のセルは窓が塗らなかった所なので
+ * 空白にする。保存画面が読めないとき（`screen_save()` を呼ばずに全画面を描く画面〔建物の画面など〕と、
+ * `Term_save()` を直に呼ぶ doc UI）は、地図だけだった最後の画（idle）で代える。
+ * `Term_load()` は `mem` を捨てないので、保存画面は**`screen_save()` が生きている間だけ**読み、
+ * 窓が開いた最初のフレームで取っておく（窓の中でさらに `Term_save()` が呼ばれても、
+ * 基準が窓の画へ入れ替わらない）。`screen_save()` が閉じるか、地図だけの画に戻ったら捨てる。
+ * @{
+ */
+struct ScreenBase {
+    std::vector<std::string> cells; //!< 行ごとのセル（CP932 のバイト。`cols` バイト）
+    std::vector<std::string> attrs; //!< 行ごとの色。空なら色は比べない
+    int cols = 0;
+    bool valid = false;
+};
+ScreenBase g_idle; //!< 地図だけだった最後の画
+ScreenBase g_saved; //!< 窓が開いたときに原作が保存していた画（窓が閉じるまで持つ）
+
+/*!
+ * @brief Term の画を行ごとに読んで基準にする。読めなければ偽（基準は空）。
+ * @param read_row `fc_term_row` か `fc_term_saved_row`
+ * @param keep_attrs 色も覚えるか
+ */
+bool read_screen_base(ScreenBase &base, int (*read_row)(int, char *, unsigned char *, int), bool keep_attrs)
+{
+    base = ScreenBase();
+    int cols = 0;
+    int rows = 0;
+    if (fc_term_size(&cols, &rows) != FC_OK) {
+        return false;
+    }
+    cols = (std::min)(cols, kMaxCols - 1);
+    base.cells.assign(static_cast<std::size_t>(rows), std::string());
+    if (keep_attrs) {
+        base.attrs.assign(static_cast<std::size_t>(rows), std::string());
+    }
+    char cells[kMaxCols];
+    unsigned char attrs[kMaxCols];
+    for (int y = 0; y < rows; ++y) {
+        std::memset(cells, ' ', sizeof(cells));
+        std::memset(attrs, 1, sizeof(attrs));
+        const int n = read_row(y, cells, attrs, kMaxCols);
+        if (n < 0) {
+            if (y == 0) {
+                base = ScreenBase();
+                return false; //!< 先頭の行が読めない＝その画は無い
+            }
+            continue;
+        }
+        const std::size_t len = static_cast<std::size_t>((std::min)(n, cols));
+        base.cells[static_cast<std::size_t>(y)].assign(cells, len);
+        if (keep_attrs) {
+            base.attrs[static_cast<std::size_t>(y)].assign(reinterpret_cast<const char *>(attrs), len);
+        }
+    }
+    base.cols = cols;
+    base.valid = true;
+    return true;
+}
+
+/*! 地図だけの画のときに呼ぶ。**メニューが開いている間は呼ばない**（窓の字を取り込んでしまう）。 */
+void remember_idle_screen()
+{
+    (void)read_screen_base(g_idle, fc_term_row, false);
+}
+
+void forget_idle_screen()
+{
+    g_idle = ScreenBase();
+}
+
+/*!
+ * 窓が開いている間、毎フレーム呼ぶ。`screen_save()` が生きている間だけ保存画面を持つ。
+ * 閉じたら捨てる（建物の画面の上でヘルプが `screen_save()` したあと、ヘルプが閉じて建物の画面へ戻っても、
+ * 古い保存画面〔建物の画面〕を基準にして画面ぜんぶを空白にしてしまわないため）。
+ * 開いて最初のフレームで取る。取れなければ取らない（呼び手は地図だけだった最後の画で代える）。
+ */
+void latch_saved_screen()
+{
+    if (fc_term_saved_active() == 0) {
+        g_saved = ScreenBase();
+        return;
+    }
+    if (!g_saved.valid) {
+        (void)read_screen_base(g_saved, fc_term_saved_row, true);
+    }
+}
+
+void forget_saved_screen()
+{
+    g_saved = ScreenBase();
+}
+
+/*! 窓の字のすぐ右に付く 1 字として、基準と偶然そろっても窓の字とみなす閉じ記号。 */
+bool is_closing_mark(char c)
+{
+    return (c == ')') || (c == ']') || (c == '}') || (c == '>') || (c == '.') || (c == ',');
+}
+
+/*!
+ * @brief 1 行のうち、基準の画と同じままの所（窓が塗らなかった所）を空白にする。
+ * @param y Term の行
+ * @param cells,attrs その行のセル（**書き換える**）
+ * @param n 行の桁数
+ * @param base 基準の画（窓が開く直前の画）
+ * @details 字（2 バイト字は 1 つ）ごとに、基準と同じ字・同じ色（基準に色があるとき）かを見る。
+ * **違う字のうち、いちばん左といちばん右の間は窓が塗った所**として何も触らない（窓の字が地図の `.` や `#` と
+ * 偶然そろっても欠けない）。その外側、つまり左端〜最初に違う字の手前と、最後に違う字の次〜右端が、
+ * 窓が塗らなかった地図・状態列なので空白にする。行ぜんぶが基準と同じなら行ぜんぶを空白にする。
+ * ただし、窓の字に続く 1 字の閉じ記号（行末の `)` など）は、窓の幅が状態列の `)` の桁とそろうと
+ * 基準と偶然同じになるので残す（欠けるより混ざるほうを選ぶ）。
+ * 行 0 はメッセージ・問いの行（地図でも状態列でもない）なので触らない。
+ */
+void blank_untouched_cells(int y, char *cells, unsigned char *attrs, int n, const ScreenBase &base)
+{
+    if (!base.valid || (base.cols != n) || (y < 1) || (y >= static_cast<int>(base.cells.size()))) {
+        return;
+    }
+    const std::string &base_cells = base.cells[static_cast<std::size_t>(y)];
+    if (static_cast<int>(base_cells.size()) < n) {
+        return;
+    }
+    const std::string *base_attrs = nullptr;
+    if ((y < static_cast<int>(base.attrs.size())) && (static_cast<int>(base.attrs[static_cast<std::size_t>(y)].size()) >= n)) {
+        base_attrs = &base.attrs[static_cast<std::size_t>(y)];
+    }
+
+    int first = -1; //!< 基準と違う最初の字の頭
+    int last_end = -1; //!< 基準と違う最後の字の次
+    for (int x = 0; x < n;) {
+        const int step = (cp932_lead(static_cast<unsigned char>(cells[x])) && ((x + 1) < n)) ? 2 : 1;
+        bool differs = false;
+        for (int k = 0; k < step; ++k) {
+            if ((cells[x + k] != base_cells[static_cast<std::size_t>(x + k)])
+                || ((base_attrs != nullptr) && (attrs[x + k] != static_cast<unsigned char>((*base_attrs)[static_cast<std::size_t>(x + k)])))) {
+                differs = true;
+            }
+        }
+        if (differs) {
+            if (first < 0) {
+                first = x;
+            }
+            last_end = x + step;
+        }
+        x += step;
+    }
+
+    const auto blank_range = [&](int begin, int end) {
+        for (int x = begin; x < end; ++x) {
+            cells[x] = ' ';
+            attrs[x] = 1;
+        }
+    };
+    if (first < 0) {
+        blank_range(0, n); //!< 行ぜんぶが窓の塗らなかった所
+        return;
+    }
+    int right = last_end;
+    if ((right < n) && !cell_is_blank(cells[right - 1]) && is_closing_mark(cells[right])
+        && (((right + 1) >= n) || cell_is_blank(cells[right + 1]))) {
+        ++right; //!< 窓の字の終わりの閉じ記号（基準の `)` と偶然そろった）
+    }
+    blank_range(0, first);
+    blank_range(right, n);
+}
+/*! @} */
+
+/*!
+ * @name 自動拾いの編集画面（`do_cmd_edit_autopick()`）
+ * @details 原作は `screen_save()` も `character_icky` も使わず（`screen_save(); is currently very broken` と註釈がある）、
+ * `Term_clear()` で画面を消して自前のループ（`inkey_special()`）で待つ。`menu_open` の条件（icky・doc UI・地図の外）に
+ * どれも当たらず、編集画面の字が地図の上に重なって見えるだけで、窓も入力待ちも立たなかった（F-frox-303）。
+ * 行 0 の見出し `(^Q:Quit, ^W:Save and exit, ESC:Menu, Other:Input text)`（日本語は `(^Q:終了, ^W:保存して終了, …`）が
+ * 出ている間を編集画面とみなす。**見出しは言語に依らない部分（`(^Q:` と `^W:` と `ESC:`）だけで見分ける。**
+ * 編集中のメニュー（ESC）やメッセージが行 0 を塗り替えても窓が消えないよう、一度見たら**命令待ちに戻るまで**保つ
+ * （doc UI の旗 `fc_doc_ui_active()` と同じ降ろし方）。
+ * @{
+ */
+bool g_autopick_editor = false;
+
+bool autopick_editor_header_visible()
+{
+    char cells[kMaxCols];
+    std::memset(cells, ' ', sizeof(cells));
+    const int n = fc_term_row(0, cells, nullptr, kMaxCols);
+    if (n <= 0) {
+        return false;
+    }
+    const std::string row(cells, static_cast<std::size_t>(n));
+    return row.starts_with("(^Q:") && (row.find("^W:") != std::string::npos) && (row.find("ESC:") != std::string::npos);
+}
+
+/*! 毎フレーム呼ぶ。編集画面が開いていれば真。 */
+bool update_autopick_editor(bool generated, bool dead)
+{
+    if (!generated || dead) {
+        g_autopick_editor = false;
+    } else if (autopick_editor_header_visible()) {
+        g_autopick_editor = true;
+    } else if (fc_awaiting_command() != 0) {
+        g_autopick_editor = false;
+    }
+    return g_autopick_editor;
+}
+/*! @} */
+
+/*!
+ * @param drop_untouched 窓が塗らなかった所（状態列・地図）を空白にするか。生の写しを見たい
+ * `HD2D_NATIVE_MENU_TRACE` だけが偽を渡す。
+ */
+void fill_term_mirror(GameFrame &frame, bool drop_untouched = true)
 {
     int cols = 0;
     int rows = 0;
@@ -394,12 +614,29 @@ void fill_term_mirror(GameFrame &frame)
     frame.menu_term_lines.clear();
     frame.menu_term_lines.reserve(static_cast<std::size_t>(rows));
 
+    /*
+     * 窓の左右と下に残る地図と状態列を除くのは、**地図が生きている間の、題名・誕生・死亡でない画面**だけ。
+     * 全面を塗り直す画面（店・一覧）は元から一致しないので、ここを通っても何も変わらない。
+     * 基準は窓が開く直前に原作が保存した画（読めなければ地図だけだった最後の画）。
+     */
+    const int screen_flags = fc_screen_flags();
+    const bool over_live_map = drop_untouched && ((screen_flags & FC_SCREEN_GENERATED) != 0) && ((screen_flags & FC_SCREEN_DEAD) == 0)
+        && ((screen_flags & FC_SCREEN_DUNGEON) != 0);
+    const ScreenBase *base = nullptr;
+    if (over_live_map) {
+        latch_saved_screen();
+        base = g_saved.valid ? &g_saved : &g_idle;
+    }
+
     for (int y = 0; y < rows; ++y) {
         std::memset(cells, ' ', sizeof(cells));
         std::memset(attrs, 1, sizeof(attrs));
         const int n = fc_term_row(y, cells, attrs, kMaxCols);
         if (n < 0) {
             continue;
+        }
+        if (base != nullptr) {
+            blank_untouched_cells(y, cells, attrs, n, *base);
         }
 
         TermMirrorLine line;
@@ -786,6 +1023,7 @@ uint16_t translate_feature_flags(unsigned short fc_bits)
         { FC_FEAT_RUBBLE, CELL_FEAT_RUBBLE },
         { FC_FEAT_ROOM, CELL_FEAT_ROOM },
         { FC_FEAT_GLOWING, CELL_FEAT_GLOWING },
+        { FC_FEAT_SHAFT, CELL_FEAT_SHAFT },
     };
 
     unsigned bits = 0u;
@@ -874,6 +1112,17 @@ uint16_t resolve_tile_index(const fc_map_cell &cell)
         return 0; // 未視認。真っ暗（地形を漏らさない）
     }
     if ((cell.light_level >= 2) && (cell.object_id != 0)) {
+        /*
+         * 正体の分からないアイテム。`object_unaware_category`
+         * は `fc_shim.c` の `fc_unaware_category()` が既に判定済み（0 = 対象外）。
+         */
+        if (cell.object_unaware_category != 0) {
+            const auto category = static_cast<presentation::UnawareItemCategory>(cell.object_unaware_category);
+            const uint16_t ut = g_manifest->lookup_unaware_representative(category);
+            if (ut != 0) {
+                return ut;
+            }
+        }
         const uint16_t ot = g_manifest->lookup_entity('K', cell.object_id);
         if (ot != 0) {
             return ot;
@@ -904,8 +1153,16 @@ void fill_map(GameFrame &frame)
     frame.view_w = view_w;
     frame.view_h = view_h;
 
-    int ox = px - (view_w / 2);
-    int oy = py - (view_h / 2);
+    int center_x = px;
+    int center_y = py;
+    /*
+     * 位置の確認（`L`。原作の `do_cmd_locate()`）の最中は、見ている区画の中心へカメラを向ける（修-64。
+     * 決めたこと 2026-10-12）。原作は `viewport_origin` だけを動かし @ は動かさないので、追従のままでは
+     * 十字キーを押しても 3D の絵が動かない。`GameFrame::camera_detached` を立てる。手本は幻想蛮怒・Angband・Sil-Q・Umoria。
+     */
+    frame.camera_detached = (fc_locate_panel_center(&center_x, &center_y) != 0);
+    int ox = center_x - (view_w / 2);
+    int oy = center_y - (view_h / 2);
     /* 追従しない設定のときだけ階の端で丸める（変愚と同じ）。 */
     if (!g_camera_follow_player) {
         const int max_ox = (std::max)(0, floor_w - view_w);
@@ -924,8 +1181,16 @@ void fill_map(GameFrame &frame)
 
     frame.cells.clear();
     frame.cells.reserve(static_cast<std::size_t>(n));
+    //! プレイヤの光源で照らされているマス（`cells` と同じ並び、1 マス 1 ビット、下位ビットから）。
+    //! 荒野の窓のずれ（`town_origin`）は別の欄で送っているので、ここは `cells` の並びのままでよい。
+    //! 送るかどうかは光源の種類（`fill_floor_and_lighting` が決める）。
+    std::vector<uint8_t> player_lit((static_cast<std::size_t>(n) + 7) / 8, 0);
     for (int i = 0; i < n; ++i) {
         const fc_map_cell &src = raw[static_cast<std::size_t>(i)];
+        if (src.lit_by_player != 0) {
+            player_lit[static_cast<std::size_t>(i) / 8] = static_cast<uint8_t>(
+                player_lit[static_cast<std::size_t>(i) / 8] | (1u << (static_cast<unsigned>(i) % 8)));
+        }
         MapCellView cell{};
         cell.gx = src.gx;
         cell.gy = src.gy;
@@ -950,6 +1215,7 @@ void fill_map(GameFrame &frame)
         /* `under_tile_index` は 0 固定・`graf_*` は -1 固定（設計 §4 の表）。 */
         frame.cells.push_back(cell);
     }
+    frame.lighting.player_lit = std::move(player_lit);
 
     /* ミニマップ（階の全域）。`cells` は視界ぶんしかないので別に運ぶ。 */
     std::vector<unsigned char> kinds(static_cast<std::size_t>(floor_w) * static_cast<std::size_t>(floor_h));
@@ -975,6 +1241,7 @@ void fill_floor_and_lighting(GameFrame &frame)
 {
     fc_floor_info info{};
     if (fc_read_floor_info(&info) != FC_OK) {
+        frame.lighting.player_lit.clear();
         return;
     }
 
@@ -983,6 +1250,9 @@ void fill_floor_and_lighting(GameFrame &frame)
     frame.floor.kind = info.kind;
     frame.floor.town_id = info.town_id;
     frame.floor.wild_mode = (info.wild_mode != 0);
+    /* 町の地図の左上が窓のどこか（荒野の窓のずれ）。画面側は町の座標が動かない前提なので、これを引いて扱う。 */
+    frame.floor.town_origin_x = info.town_origin_x;
+    frame.floor.town_origin_y = info.town_origin_y;
     /* `generated_turn` は 0 のまま（幻想蛮怒と同じ判断。「毎回違う絵」より害が小さい）。 */
     if (info.place_name[0] != '\0') {
         frame.floor.place_name_utf8 = to_utf8(info.place_name);
@@ -991,6 +1261,11 @@ void fill_floor_and_lighting(GameFrame &frame)
     frame.lighting.day_minute = info.day_minute;
     frame.lighting.daytime = (info.daytime != 0);
     frame.lighting.light_radius = info.light_radius;
+    //! 光源の種類。0（光が無い）なら照らされたマスも送らない（画面側は従来の絵のまま）。
+    frame.lighting.light_kind = static_cast<uint8_t>(info.light_kind);
+    if (frame.lighting.light_kind == 0) {
+        frame.lighting.player_lit.clear();
+    }
 }
 
 /* ======================================================= 戦闘の見せ場（FH-05） */
@@ -1016,6 +1291,10 @@ void fill_combat_fx(GameFrame &frame)
     frame.combat_fx.reserve(static_cast<std::size_t>(n));
     for (int i = 0; i < n; ++i) {
         const fc_fx_event &e = raw[i];
+        //! Term に描かれた弾道・爆発の観測は `projections` が受け持つ（二重に出さない）。HP の減りから拾う命中の火花だけ残す。
+        if (e.scraped) {
+            continue;
+        }
         CombatFxEvent fx{};
         fx.kind = static_cast<CombatFxKind>(e.kind);
         fx.element = static_cast<CombatFxElement>(e.element);
@@ -1030,6 +1309,18 @@ void fill_combat_fx(GameFrame &frame)
         fx.intensity = v;
         frame.combat_fx.push_back(fx);
     }
+}
+
+/* ============================================ 魔法・投射物の効果（projections / missiles） */
+
+/*!
+ * @brief 溜まっている魔法・矢弾の効果を `frame.projections`・`frame.missiles` へ移す（`named_attack_fx.h`）。**汲んだら空になる**。
+ * @details 矢弾は 1 歩ごとに仮置きされ、命令待ち（`fc_awaiting_command()`＝動きの終わり）で確定する。
+ * 入力待ちの 10ms ごとのフレームで、飛行中の 1 発が途中で割れないようにするため。
+ */
+void fill_attack_fx(GameFrame &frame)
+{
+    attack_fx::glue::take_into(frame, fc_awaiting_command() != 0);
 }
 
 /* ============================================ 周囲の地形の内訳（環境音の層） */
@@ -1105,7 +1396,38 @@ std::vector<MenuChoice> g_pregame_choices;
 
 } // namespace
 
+/*!
+ * @brief かかっている状態・常時の効果のアイコン（`GameFrame::status_effects`）。
+ * @details 取り方は `fc_shim.c` の `fc_read_status_effects`（原作の `prt_status()` の旗・左の状態列の式・C 画面の表）。
+ * 名前の文字は原作が画面へ出す字（CP932 か英語）なので UTF-8 にする。
+ * 載せるのはキャラクターがいるあいだだけ。載せるものが無ければ空のまま（線にも出ない）。
+ */
+static void fill_status_effects(GameFrame &frame)
+{
+    static fc_status_effect rows[FC_STATUS_MAX];
+
+    frame.status_effects.clear();
+    const int n = fc_read_status_effects(rows, FC_STATUS_MAX);
+    if (n <= 0) {
+        return;
+    }
+    frame.status_effects.reserve(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        const fc_status_effect &src = rows[i];
+        if ((src.kind < 0) || (src.kind > static_cast<int>(kStatusEffectKindMax))) {
+            continue;
+        }
+        StatusEffectView v{};
+        v.key = src.key;
+        v.label_utf8 = sjis_to_utf8(src.label, std::strlen(src.label));
+        v.amount_utf8 = src.amount;
+        v.kind = static_cast<StatusEffectKind>(src.kind);
+        frame.status_effects.push_back(std::move(v));
+    }
+}
+
 void set_view_size(int w, int h)
+
 {
     if (w > 0) {
         g_view_w = w;
@@ -1163,9 +1485,13 @@ GameFrame capture_frame(unsigned long long frame_id)
      * 品選び・呪文選びほか 6 つの全画面 UI は icky を立てない（`Term_save()` 直叩き）
      * ので、これが無いと一覧が画面へ 1 行も出ない。
      */
+    const bool autopick_editor = update_autopick_editor(generated, dead); //!< 毎フレーム更新する（下の `||` の短絡で飛ばさない）
     frame.menu_open = !generated || dead || ((screen & (FC_SCREEN_ICKY | FC_SCREEN_XTRA)) != 0)
-        || ((screen & FC_SCREEN_DUNGEON) == 0) || (fc_doc_ui_active() != 0);
+        || ((screen & FC_SCREEN_DUNGEON) == 0) || (fc_doc_ui_active() != 0) || autopick_editor;
     frame.pre_game_menu = !generated || dead;
+    frame.game_over = dead; //!< 死亡・引退のあとの画面。題と phase を誕生と分ける（修-10）。
+    presentation::apply_native_targeting_frame(frame);
+    frame.awaiting_command = (fc_awaiting_command() != 0);
     /* `title_screen` は「タイトル画を敷いてよい間」＝ @ が出来るまで。 */
     frame.title_screen = !generated;
 
@@ -1182,6 +1508,16 @@ GameFrame capture_frame(unsigned long long frame_id)
          */
         frame.menu_over_map = generated && !dead && ((screen & FC_SCREEN_DUNGEON) != 0)
             && crop_mirror_to_menu_box(frame);
+        /*
+         * 地表の広域の地図の確認画面（`<`。`do_cmd_world_map()`）は Term を写して
+         * 重ねる画ではなく、`+---+` の箱も無い。ここが偽のままだと画面側の
+         * `frame_shows_map()` が地図を描かず、中央の 3D が真っ暗になる。
+         * コアが持つ旗を読んで、確認画面のあいだは地図の上の重ねとして扱う。
+         */
+        if (!frame.menu_over_map && generated && !dead && ((screen & FC_SCREEN_DUNGEON) != 0)
+            && (fc_world_map_overview_active() != 0)) {
+            frame.menu_over_map = true;
+        }
         /* ゲーム前画面（タイトル＋セーブ選択）の選択肢。カーソル層がこれで動く。 */
         frame.menu_choices = g_pregame_choices;
         /*
@@ -1193,6 +1529,16 @@ GameFrame capture_frame(unsigned long long frame_id)
         if (!core_has_cursor && frame.menu_choices.empty()) {
             (void)fill_menu_choices(frame);
         }
+    } else if (generated && !dead) {
+        /*
+         * 地図だけの画。次にメニューが開いたとき、窓が塗らなかった所を見分けるために取っておく。
+         * 窓が開いたときに取った保存画面は、窓が閉じたここで捨てる。
+         */
+        remember_idle_screen();
+        forget_saved_screen();
+    } else {
+        forget_idle_screen();
+        forget_saved_screen();
     }
     /*
      * **`menu_open` に関わらず毎フレーム。**`[y/n]` と個数入力は `screen_save()` を
@@ -1202,8 +1548,10 @@ GameFrame capture_frame(unsigned long long frame_id)
 
     /* 色表と操作ヒント。どちらも毎フレーム積む（既定と同じ間は codec が省く）。 */
     fill_term_palette(frame);
-    /* M0 は英語。**ASCII だけで組む**（プロトコルへ出すリテラルは ASCII。設計 §3.1）。 */
-    frame.controller_hint = "Move: D-pad/L  Select/F10: menu  A: enter  B: back";
+    /* 英語は **ASCII だけで組む**（プロトコルへ出すリテラルは ASCII。設計 §3.1）。日本語層が起きているときだけ日本語 */
+    frame.controller_hint = (fc_lang_enabled() != 0)
+        ? std::string(reinterpret_cast<const char *>(u8"移動: 十字/L  メニュー: Select/F10  決定: A  戻る: B"))
+        : std::string("Move: D-pad/L  Select/F10: menu  A: enter  B: back");
 
     fill_hud(frame);
     /*
@@ -1215,10 +1563,12 @@ GameFrame capture_frame(unsigned long long frame_id)
     /* サブパネル 7 枚。状態列と同じ理由で毎回積む。 */
     fill_sub_panels(frame);
     fill_messages(frame);
+    fill_status_effects(frame); //!<。名前は原作が画面へ出す字
     fill_map(frame);
     fill_floor_and_lighting(frame);
     /* 戦闘の見せ場（FH-05）。走査＋汲み取りを毎 capture で 1 回。 */
     fill_combat_fx(frame);
+    fill_attack_fx(frame); //!< 
     /* 効果音。見せ場と同じく汲んだら消える。 */
     fill_sounds(frame);
     /* 周囲の地形の内訳。 */
@@ -1230,8 +1580,205 @@ GameFrame capture_frame(unsigned long long frame_id)
      * IME を切る枝が一度も成立しない**（Sil-Q の SH-07 と同じ穴）。
      */
     frame.text_input_active = (fc_text_input_active() != 0);
+    if(const auto *path=std::getenv("HD2D_NATIVE_MENU_TRACE")) {
+        GameFrame native=frame;fill_term_mirror(native,false);
+        if(auto *file=std::fopen(path,"wb")) {
+            int x=0,y=0,w=0,h=0;fc_msg_rect(&x,&y,&w,&h);
+            std::fprintf(file,"screen=%d command=%d message_rect=%d,%d,%d,%d\n",screen,fc_awaiting_command(),x,y,w,h);
+            for(const auto &line:native.menu_term_lines)std::fprintf(file,"%d %s\n",line.source_row,line.text_utf8.c_str());
+            std::fclose(file);
+        }
+    }
 
+    /* Child inputs own A/Enter while they are active.  Keep the root command
+     * menu disabled even if the legacy inkey flag remains visible for a frame. */
+    if (frame.menu_open || frame.pre_game_menu || frame.text_input_active
+        || frame.numeric.active || !frame.prompt.choices.empty()) {
+        frame.awaiting_command = false;
+    }
+
+    presentation::apply_native_targeting_frame(frame);
     return frame;
 }
 
+bool autopick_editor_open()
+{
+    return g_autopick_editor;
+}
+
+int idle_mirror_selftest()
+{
+    int failed = 0;
+    const auto check = [&](bool ok, const char *what) {
+        if (ok) return;
+        std::fprintf(stderr, "[frox] selftest: idle mirror FAIL - %s\n", what);
+        ++failed;
+    };
+    //! 80 桁の 1 行。右端 12 桁が状態列、その左が地図。
+    const auto pad = [](std::string text) {
+        text.resize(80, ' ');
+        return text;
+    };
+    const std::string map_row = pad("..........#####.........@.........:::.......................................");
+    const std::string status_tail = "Level      1";
+    //! 左の 13 桁に地図の字（壁・床・水）が並ぶ行（装備の枠の選択の窓が左 13 桁を塗らない形）
+    const std::string left_row = pad("#.:.~~::.:..:..........................................................");
+    //! 状態列の `)` が桁 76 に来る行
+    const std::string paren_status = "     (19)   ";
+
+    //! 地図の色（基準）。窓が塗った所だけ別の色にする。
+    const unsigned char map_attr = 2;
+    const unsigned char window_attr = 7;
+
+    ScreenBase base;
+    base.cols = 80;
+    base.valid = true;
+    base.cells.assign(6, pad(""));
+    base.attrs.assign(6, std::string(80, static_cast<char>(map_attr)));
+    base.cells[1] = map_row.substr(0, 68) + pad(status_tail).substr(0, 12);
+    base.cells[2] = map_row.substr(0, 68) + pad("STR:       12").substr(0, 12);
+    base.cells[3] = map_row;
+    base.cells[4] = left_row.substr(0, 68) + pad("Gold   12345").substr(0, 12);
+    base.cells[5] = map_row.substr(0, 68) + paren_status;
+
+    char cells[kMaxCols];
+    unsigned char attrs[kMaxCols];
+    //! 基準の同じ位置と同じ字のセルには基準の色、違う字（窓が塗った所）には窓の色を付ける。
+    const auto load = [&](const std::string &row, int base_row) {
+        std::memset(cells, ' ', sizeof(cells));
+        std::memset(attrs, 1, sizeof(attrs));
+        std::memcpy(cells, row.data(), row.size());
+        for (std::size_t x = 0; x < row.size(); ++x) {
+            attrs[x] = (row[x] == base.cells[static_cast<std::size_t>(base_row)][x]) ? map_attr : window_attr;
+        }
+    };
+    const auto text_of = [&]() { return std::string(cells, 80); };
+
+    // 窓が左の 68 桁を塗り直し、右の状態列だけが残った行 → 状態列だけが消え、窓の字は残る
+    {
+        const std::string window = pad("   a) Detect Monsters            [Un]   1   2  19% unknown");
+        load(window.substr(0, 68) + base.cells[1].substr(68, 12), 1);
+        blank_untouched_cells(1, cells, attrs, 80, base);
+        const std::string got = text_of();
+        check(got.substr(0, 68) == window.substr(0, 68), "window text is kept");
+        check(got.substr(68, 12) == pad("").substr(0, 12), "untouched status column is blanked");
+    }
+    // 窓が行の全部を塗り直した行（右に状態列と同じ字が偶然無い）→ 何も変わらない
+    {
+        const std::string full = pad("  a) 3.0 lb  b) 2.0 lb  c) ........... d) ###.###  e) ....#####  f) $$$ gold  Sidebar Y");
+        load(full, 2);
+        blank_untouched_cells(2, cells, attrs, 80, base);
+        check(text_of() == full, "fully repainted row is untouched");
+    }
+    // 窓の下の地図の行（窓が塗らなかった）→ 行ぜんぶが消える
+    {
+        load(base.cells[3], 3);
+        blank_untouched_cells(3, cells, attrs, 80, base);
+        check(text_of() == pad(""), "untouched map row is blanked");
+    }
+    // 行 0（メッセージ・問いの行）は触らない
+    {
+        base.cells[0] = pad("You have a Dagger.");
+        load(base.cells[0], 0);
+        blank_untouched_cells(0, cells, attrs, 80, base);
+        check(text_of() == pad("You have a Dagger."), "row zero is never blanked");
+    }
+    // 窓が地図の左の一部だけを塗った行 → 窓の右に残った地図と状態列が消え、窓の字は残る
+    {
+        std::string partial = map_row;
+        partial.replace(0, 30, "  a) Phase Door   [Un]  1  4  ");
+        load(partial.substr(0, 68) + base.cells[1].substr(68, 12), 1);
+        blank_untouched_cells(1, cells, attrs, 80, base);
+        check(text_of().substr(0, 30) == partial.substr(0, 30), "partly painted row keeps the window text");
+        check(text_of().substr(30, 50) == std::string(50, ' '), "map remnant right of the window is blanked");
+    }
+    // 窓が左の 13 桁を塗らない行（装備の枠の選択）→ 左の地図の字が消え、窓の字は残る
+    {
+        const std::string window = left_row.substr(0, 13) + pad("  e) Right hand :  (empty)").substr(0, 55) + base.cells[4].substr(68, 12);
+        load(window, 4);
+        blank_untouched_cells(4, cells, attrs, 80, base);
+        const std::string got = text_of();
+        check(got.substr(0, 13) == std::string(13, ' '), "map glyphs left of the window are blanked");
+        check(got.substr(13, 55) == window.substr(13, 55), "window text right of the left glyphs is kept");
+        check(got.substr(68, 12) == std::string(12, ' '), "status column right of the window is blanked");
+    }
+    // 窓の行末の `)` が状態列の `)` と同じ桁・同じ字・同じ色でも消えない（オプションの一覧の行）
+    {
+        const std::string text = std::string(61, 'a') + "(allow_friendly)"; //!< 77 桁。`)` は桁 76
+        const std::string window = pad(text);
+        load(window, 5);
+        attrs[76] = map_attr; //!< 最悪の場合：色まで状態列の `)` と同じ
+        blank_untouched_cells(5, cells, attrs, 80, base);
+        check(text_of() == window, "closing mark at the end of a window row is kept");
+    }
+    // 同じ字でも色が違えば窓が塗った所 → 消えない
+    {
+        load(base.cells[3], 3);
+        for (int x = 20; x < 30; ++x) {
+            attrs[x] = window_attr;
+        }
+        blank_untouched_cells(3, cells, attrs, 80, base);
+        const std::string got = text_of();
+        check(got.substr(0, 20) == std::string(20, ' '), "same cells left of a recolored span are blanked");
+        check(got.substr(20, 10) == map_row.substr(20, 10), "recolored cells are kept as window text");
+        check(got.substr(30, 50) == std::string(50, ' '), "same cells right of a recolored span are blanked");
+    }
+    // 2 バイト字は割らない（頭のバイトが同じで後ろのバイトだけ違う字は窓の字）
+    {
+        base.cells[3].replace(30, 2, "\x83\x41");
+        std::string row = base.cells[3];
+        row[31] = '\x42';
+        load(row, 3);
+        blank_untouched_cells(3, cells, attrs, 80, base);
+        check((cells[30] == '\x83') && (cells[31] == '\x42'), "two-byte cell is never split");
+        check(text_of().substr(0, 30) == std::string(30, ' '), "cells left of the two-byte cell are blanked");
+        base.cells[3] = map_row;
+    }
+    // 桁数が違う（Term の大きさが変わった）ときは何もしない
+    {
+        load(base.cells[3], 3);
+        blank_untouched_cells(3, cells, attrs, 79, base);
+        check(text_of() == base.cells[3], "size mismatch is ignored");
+    }
+    // 保存画面が読めず、地図だけだった画（色なし）で代えるとき → 字だけ比べて同じ仕分けになる
+    {
+        base.attrs.clear();
+        const std::string window = pad("   a) Detect Monsters            [Un]   1   2  19% unknown");
+        load(window.substr(0, 68) + base.cells[1].substr(68, 12), 1);
+        blank_untouched_cells(1, cells, attrs, 80, base);
+        check(text_of().substr(0, 68) == window.substr(0, 68), "window text is kept without colors");
+        check(text_of().substr(68, 12) == std::string(12, ' '), "status column is blanked without colors");
+    }
+    return failed;
+}
+
+bool attack_fx_ready()
+{
+    return attack_fx::glue::ready(fc_awaiting_command() != 0);
+}
+
 } // namespace fc
+
+/* ==================================================================== 魔法・投射物の効果（C から呼ばれる入口。`fc_shim.c`） */
+
+extern "C" void fc_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y,
+    int impact_x, int flags, const int *path, int path_n, const int *area, int area_n)
+{
+    attack_fx::glue::projection(&attack_fx::frox_look_name, origin, shape, attr, rad, src_y, src_x, impact_y, impact_x, flags,
+        path, path_n, area, area_n);
+}
+
+extern "C" void fc_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x)
+{
+    attack_fx::glue::missile_step(first, kind, item_id, brand, src_y, src_x, y, x);
+}
+
+extern "C" void fc_named_fx_missile_hit(void)
+{
+    attack_fx::glue::missile_hit();
+}
+
+extern "C" void fc_named_fx_missile_returns(void)
+{
+    attack_fx::glue::missile_returns();
+}

@@ -31,6 +31,14 @@ namespace hd2d {
 constexpr const char *kTitleImagePath = "assets/ui/title.png";
 constexpr const char *kPanelBgBottomPath = "assets/ui/panel_bg_bottom.png";
 constexpr const char *kPanelBgRightPath = "assets/ui/panel_bg_right.png";
+//! HP/MP の玉の 6 層（同じ大きさ・同じ矩形へ重ねる）とアイコンのシート。
+constexpr const char *kOrbBackPath = "assets/ui/hud/orb_back.png";
+constexpr const char *kOrbGlassPath = "assets/ui/hud/orb_glass.png";
+constexpr const char *kOrbLiquidHpPath = "assets/ui/hud/orb_liquid_hp.png";
+constexpr const char *kOrbLiquidMpPath = "assets/ui/hud/orb_liquid_mp.png";
+constexpr const char *kOrbGlassTopPath = "assets/ui/hud/orb_glass_top.png";
+constexpr const char *kOrbFrontPath = "assets/ui/hud/orb_front.png";
+constexpr const char *kStatusIconsPath = "assets/ui/hud/status_icons.png";
 
 //! 原寸で持つ 1 枚絵。**無くても遊べる**ので、読めなくても致命ではない。
 class UiImage {
@@ -41,6 +49,12 @@ public:
      * ここで縮めると規則が成り立たなくなる。
      */
     bool load(const std::string &path, std::string &err);
+    /*!
+     * @brief 縮めて貼る絵のための読み方（ミップマップを作る）。
+     * @details HP/MP の玉の層とアイコンのシートは、画面の大きさによって 1/2〜1/3 に縮めて貼る。
+     * 補間だけだと縮小で粗れる。タイトル画・パネルの背面（等倍か拡大）は `load` のままでよい。
+     */
+    bool load_minified(const std::string &path, std::string &err);
     void unload();
 
     bool valid() const { return this->texture_ != 0; }
@@ -49,6 +63,8 @@ public:
     gl::GLuint texture() const { return this->texture_; }
 
 private:
+    bool load_impl(const std::string &path, std::string &err, bool mipmaps);
+
     gl::GLuint texture_{ 0 };
     int w_{ 0 };
     int h_{ 0 };
@@ -62,9 +78,22 @@ public:
 
     //! 画面の実寸を渡す（正射影の分母と viewport）。
     void begin(int screen_w, int screen_h);
+    void set_layout_scale(float scale) const {layout_scale_=scale;}
+    float layout_scale() const {return layout_scale_;}
 
     //! マスタ内 `(sx,sy,sw,sh)` を `dst` へ**等倍で**貼る。
     void draw_crop(const UiImage &image, const RectPx &dst, int sx, int sy, int sw, int sh, float alpha) const;
+    /*!
+     * @brief マスタ内の範囲（UV。0〜1）を**任意の大きさの** `dst` へ貼る。
+     * @details `draw_crop` は画素で等倍、こちらは UV で拡大縮小する（HP/MP の玉の層や
+     * アイコンのシートのように、画像の大きさと画面での大きさが違うもの用。
+     * ）。`u0 > u1` のような逆向きは鏡写しになる。
+     */
+    void draw_region(const UiImage &image, const RectPx &dst, float u0, float v0, float u1, float v1,
+        float alpha = 1.f) const;
+    //! `draw_region` の、貼り先が小数の座標（左上 x0,y0・右下 x1,y1）の版。流れるアイコン用。
+    void draw_region_f(const UiImage &image, float x0, float y0, float x1, float y1, float u0, float v0, float u1,
+        float v1, float alpha = 1.f) const;
     /*!
      * @brief `dst` を覆うように貼る（縦横比は保ち、はみ出した側を中央で切る）。
      * @details タイトル画のように「画面いっぱいに 1 枚出す」用途。
@@ -72,7 +101,10 @@ public:
     void draw_cover(const UiImage &image, const RectPx &dst, float alpha) const;
 
 private:
+    mutable float layout_scale_{1.f};
     void draw(const UiImage &image, const RectPx &dst, float u0, float v0, float u1, float v1, float alpha) const;
+    void draw_f(const UiImage &image, float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1,
+        float alpha) const;
 
     gl::GLuint program_{ 0 };
     gl::GLuint vao_{ 0 };

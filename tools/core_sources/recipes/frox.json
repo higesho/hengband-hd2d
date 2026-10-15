@@ -2283,6 +2283,10 @@
       "encoding": "utf8",
       "text": "re"
     },
+    "3ae0dee20818bba10f89a8aee3c57c6d142084064511a3b8180668d06a86f51b": {
+      "encoding": "utf8",
+      "text": " //FC: string_printf() never reaches vstrnfmt()"
+    },
     "3b3efd7abdaeb3bab74aaa5fb7cff85375148fb2e8a99e32bbb5d5f7662b3269": {
       "encoding": "utf8",
       "text": " pos)"
@@ -2294,6 +2298,10 @@
     "3bff3c7f1f331995435cf5a99192c25e174d31b0993f0cb6422019b79a0f98b4": {
       "encoding": "utf8",
       "text": ", fc_frame_label(res_name(which)));\n"
+    },
+    "3c8cdad55c81edb6a49d5b0a2af303d6ff3fe091e61f05326f947645805ed614": {
+      "encoding": "utf8",
+      "text": "    /*FC: expose this custom search editor to the Modern text-input surface. */\n    fc_text_input_set(1);\n\n"
     },
     "3d6780af3250f8de07aa3b0b6daccc970b0692d73e566d957e8152f570e3609a": {
       "encoding": "utf8",
@@ -2479,9 +2487,17 @@
       "encoding": "utf8",
       "text": "\n    n = fc_clip(s, n); //FC: never cut a 2-byte char in half\n"
     },
+    "5522c42cd19c6d03d808c452720552825b7ea1c5b491b218511cac7415cf9d9b": {
+      "encoding": "utf8",
+      "text": "            }\n"
+    },
     "556127bf4ac46091efdef39cf62ce20f5567e4c90793f0071a44d340aaf490f5": {
       "encoding": "utf8",
       "text": "    int len;\n\n    text = fc_tr(text); //FC: #100 measure the columns on the translated string\n    len = strlen(text);\n"
+    },
+    "557471a386a5e00cf7f835b85f0c8d1de8469bad4246464274367e4798d2e8e2": {
+      "encoding": "utf8",
+      "text": "            { const char *fc_pf = fc_tr(proficiency); if (fc_pf != proficiency) strncpy(proficiency, fc_pf, 4); } //FC: proficiency abbreviation ([Un] -> its japanese, 4 bytes in CP932)\n"
     },
     "55f55e0bce2d54ca7f4549497212954d3115e320df22d214058243886ca20d1e": {
       "encoding": "utf8",
@@ -2582,6 +2598,10 @@
     "64597e9a1097e43dba5f6fceed28bdf60cce48d7ea08a1c79b8eb8968da48e68": {
       "encoding": "utf8",
       "text": "_insc_abbrev(tag, "
+    },
+    "64bf8b08b639356d124c55c3837085c9b6336f3fc8b1387f40f3cb3b84e76793": {
+      "encoding": "utf8",
+      "text": " //FC: #124"
     },
     "65c20bca910bc66a9d208522d7b7d32567c890c84da77a84748e23bbb1ff591d": {
       "encoding": "utf8",
@@ -2782,10 +2802,6 @@
     "7f006ccf8ba81a2aa776437e01541c43e5f17723d3854ac752ac63bad60ca24f": {
       "encoding": "utf8",
       "text": " //FC: #69"
-    },
-    "7f0561e54689c54eeb4a1eaabe0504e7652629be0d5ca82d98b09d77d9a48afd": {
-      "encoding": "utf8",
-      "text": "        fc_text_input_ascii(0); //FC: #28\n"
     },
     "803cb601088e82362b0f3ad69fc9c084edd52c35368ca447aff62123d7ad88b4": {
       "encoding": "utf8",
@@ -3255,6 +3271,10 @@
       "encoding": "utf8",
       "text": " //FC: #88 string_printf() never reaches vstrnfmt(), and the noun is a bare word"
     },
+    "b4f44596ac42ed4991d3ad9e6533925981323f04ab897c4b13ff6b2233e2b9c4": {
+      "encoding": "utf8",
+      "text": "            fc_text_input_set(0); /*FC: custom search editor */\n"
+    },
     "b5fc8a953955e82f6711ed67fce1b4d590fdc8d5f73ffb30fffcbdeac3aeb8e4": {
       "encoding": "utf8",
       "text": ", s"
@@ -3322,6 +3342,10 @@
     "bf5fed46b4072fd0a382b02de7432494e45cb7578a894c648d61e8b6045861f0": {
       "encoding": "utf8",
       "text": " //FC: #63"
+    },
+    "c301a5b79545c7cc54563bfad41d79619786610dc3e94b586d0d2a4841eeb7a4": {
+      "encoding": "utf8",
+      "text": " //FC: same"
     },
     "c330ec504d82c24fcd10be978fa74b8a3185a8df719604a85443bb9ca279f5a2": {
       "encoding": "utf8",
@@ -3398,6 +3422,10 @@
     "cba7df83df39d8eaa93576ac583f0ea0b5313ddc1c02400aa736a82305c0a065": {
       "encoding": "utf8",
       "text": ", fc_spell_name(_group_choice)); //FC: #53\n        strnfmt(prompt2, sizeof(prompt2), "
+    },
+    "cbecd5cb63c876bcd3ccdc8a149aa7e10ac9f1e0dfb7197c04639dc8076089aa": {
+      "encoding": "utf8",
+      "text": "            fc_text_input_set(0); /*FC: nested item selector owns input now */\n"
     },
     "cc7a8bfe5b972a3d08f90e96077c6d387799e4f4cc72877039234a2d25c0bca2": {
       "encoding": "utf8",
@@ -3519,6 +3547,10 @@
       "encoding": "utf8",
       "text": "\"immune\", "
     },
+    "dd51e05a6bf7e306c432998dbdc362676b6241f260cb02476ba6a0ecc7660dd5": {
+      "encoding": "utf8",
+      "text": "    /*\n     * FC: site #125 - a name with a japanese (0x80+) byte would lose those bytes below and\n     * FC: collapse to \"PLAYER\", and two characters would share one save file.  The adapter\n     * FC: builds an ASCII save name from the whole name instead (\"P\" + 7 letters or digits from a\n     * FC: hash); it returns 0 for a plain ASCII name, which keeps the loop below exactly as it was.\n     */\n    if (fc_save_base_name(player_name, player_base, (int)sizeof(player_base))) //FC: #125\n    {\n        k = (int)strlen(player_base); //FC:\n    }\n    else //FC:\n"
+    },
     "ddfe3e42f2ffc6a0fab9367a104c4322e96831587238f0b7e178806a63682102": {
       "encoding": "utf8",
       "text": "ompt, s"
@@ -3530,6 +3562,10 @@
     "deddeff79aae24e5b8d7e8d61a5adf48c1a2b066cec524569671f406ff1fdf07": {
       "encoding": "utf8",
       "text": "fc_s"
+    },
+    "df636be3ba6976dc123762d4bbd57f63386cccfaf1d2dbdd7dfba96cad4b7d5e": {
+      "encoding": "utf8",
+      "text": "\n    /* FC: site #126 - same as #125: a japanese name gets the adapter's ASCII alias, not \"PLAYER\" */\n    if (fc_save_base_name(name, buf, max)) return; //FC: #126\n"
     },
     "df7d7da906e3616d5d9b015e34e139ad9f03f4075c4f5992a04c16e78fe67138": {
       "encoding": "utf8",
@@ -3550,6 +3586,10 @@
     "e2e0b846c90dd1446afb0306ab3581be48e5cd644ea6d3d971bdd9dbd7f90da1": {
       "encoding": "utf8",
       "text": "        msg_format("
+    },
+    "e374d038bab313e6b89b013aee5ac39c66f6582008463973eb01cb849e3faf3d": {
+      "encoding": "utf8",
+      "text": "            { const char *fc_rk = fc_tr(ryakuji); if (fc_rk != ryakuji) strncpy(ryakuji, fc_rk, 4); } //FC: proficiency abbreviation ([Un] -> its japanese, 4 bytes in CP932)\n"
     },
     "e3b98a4da31a127d4bde6e43033f66ba274cab0eb7eb1c70ec41402bf6273dd8": {
       "encoding": "utf8",
@@ -3639,6 +3679,10 @@
       "encoding": "utf8",
       "text": "    //FC: #54 the five below carry their colour tag, so they are E: keys; the\n    //FC: table name below is an M: key and must be looked up BEFORE it goes\n    //FC: into the tag (docs/FROX_JA_DESIGN.md 8.55).\n"
     },
+    "f4550e81dc89a47fdd8e0d9ebd99af44e20d0b456ee8739e931c198df8f4d95e": {
+      "encoding": "utf8",
+      "text": "            {\n                fc_text_input_set(0); /*FC: custom search editor */\n"
+    },
     "f56f7dd515833ea8799607506ce4bc51d92b5d76164f28a541842e1d7fc33617": {
       "encoding": "utf8",
       "text": "    {\n        //FC: #115 translate the element, not the chaos patron of the same spelling\n        cptr any = \"Random\";\n        return fc_lang_enabled() ? fc_spell_name(any) : any; //FC: #115\n    }\n"
@@ -3690,10 +3734,6 @@
     "f9e1cb8aafdc7ab33e2600f4f640ed070e98bb8822731a19dbd5e4ac3d4a87da": {
       "encoding": "utf8",
       "text": " //FC: #69 - glued onto the class name, so #1 cannot match"
-    },
-    "f9e2dcdcaeed01d657b051aea58fc5c41affdc95fb40105a87e30525fe263029": {
-      "encoding": "utf8",
-      "text": "        //FC: the name becomes the savefile stem, and process_player_name() drops\n        //FC: every 0x80+ byte, so an all-japanese name would collapse to \"PLAYER\"\n        //FC: and two characters would share one save. Keep this field ascii\n        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #28).\n        fc_text_input_ascii(1);\n"
     },
     "fa32e770a041826d6ff776bd4efe7231cd1a1daca2b4d654abcb318c620e52b6": {
       "encoding": "utf8",
@@ -4154,7 +4194,7 @@
       ]
     },
     "autopick.c": {
-      "sha256": "e9f6ae50cb822c91a5c873b1b4be8382665e8073c31c453addc26f3f38e72272",
+      "sha256": "e04ec23689764588750b40cc25b0fd99c5d2089d1cab1e2d40f5f0bb5e0e4bd8",
       "operations": [
         [
           "copy",
@@ -4200,7 +4240,109 @@
           "copy",
           "i00012",
           84896,
-          117537
+          41089
+        ],
+        [
+          "add",
+          "3c8cdad55c81edb6a49d5b0a2af303d6ff3fe091e61f05326f947645805ed614"
+        ],
+        [
+          "copy",
+          "i00012",
+          125985,
+          1256
+        ],
+        [
+          "add",
+          "b4f44596ac42ed4991d3ad9e6533925981323f04ab897c4b13ff6b2233e2b9c4"
+        ],
+        [
+          "copy",
+          "i00012",
+          127241,
+          166
+        ],
+        [
+          "add",
+          "05a8475feebbfea685ece06045be63722edc61bb2ade8060a9f03aed6d49f454"
+        ],
+        [
+          "copy",
+          "i00012",
+          125877,
+          14
+        ],
+        [
+          "add",
+          "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        ],
+        [
+          "add",
+          "f4550e81dc89a47fdd8e0d9ebd99af44e20d0b456ee8739e931c198df8f4d95e"
+        ],
+        [
+          "add",
+          "38113c36d1f8eb3558d5868d285a7ddcba11128374fd2f13537255c351ea8c2f"
+        ],
+        [
+          "copy",
+          "i00012",
+          127588,
+          23
+        ],
+        [
+          "add",
+          "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        ],
+        [
+          "add",
+          "5522c42cd19c6d03d808c452720552825b7ea1c5b491b218511cac7415cf9d9b"
+        ],
+        [
+          "copy",
+          "i00012",
+          127458,
+          118
+        ],
+        [
+          "add",
+          "b4f44596ac42ed4991d3ad9e6533925981323f04ab897c4b13ff6b2233e2b9c4"
+        ],
+        [
+          "copy",
+          "i00012",
+          127576,
+          91
+        ],
+        [
+          "add",
+          "cbecd5cb63c876bcd3ccdc8a149aa7e10ac9f1e0dfb7197c04639dc8076089aa"
+        ],
+        [
+          "copy",
+          "i00012",
+          127667,
+          233
+        ],
+        [
+          "add",
+          "f4550e81dc89a47fdd8e0d9ebd99af44e20d0b456ee8739e931c198df8f4d95e"
+        ],
+        [
+          "copy",
+          "i00012",
+          127900,
+          26
+        ],
+        [
+          "add",
+          "5522c42cd19c6d03d808c452720552825b7ea1c5b491b218511cac7415cf9d9b"
+        ],
+        [
+          "copy",
+          "i00012",
+          127926,
+          74507
         ]
       ]
     },
@@ -8391,7 +8533,7 @@
       ]
     },
     "doppelganger.c": {
-      "sha256": "8aecb9ac605a0b5c14a004215d5d4e48858a5bac4d315b59f4f1c56dc891544b",
+      "sha256": "6af74ca3602366a815212628be8ee79f53c8df3ee5751ca8973171f2cc4ee150",
       "operations": [
         [
           "copy",
@@ -8407,7 +8549,97 @@
           "copy",
           "i00062",
           21,
-          7258
+          1595
+        ],
+        [
+          "add",
+          "01713263fee329d1cdf265e4a18d63a5441709df3cd8ffc751967691856182e2"
+        ],
+        [
+          "copy",
+          "i00062",
+          1616,
+          15
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00062",
+          1631,
+          1
+        ],
+        [
+          "add",
+          "64bf8b08b639356d124c55c3837085c9b6336f3fc8b1387f40f3cb3b84e76793"
+        ],
+        [
+          "copy",
+          "i00062",
+          1632,
+          68
+        ],
+        [
+          "add",
+          "01713263fee329d1cdf265e4a18d63a5441709df3cd8ffc751967691856182e2"
+        ],
+        [
+          "copy",
+          "i00062",
+          1700,
+          15
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00062",
+          1715,
+          1
+        ],
+        [
+          "add",
+          "64bf8b08b639356d124c55c3837085c9b6336f3fc8b1387f40f3cb3b84e76793"
+        ],
+        [
+          "copy",
+          "i00062",
+          1716,
+          4770
+        ],
+        [
+          "add",
+          "01713263fee329d1cdf265e4a18d63a5441709df3cd8ffc751967691856182e2"
+        ],
+        [
+          "copy",
+          "i00062",
+          6486,
+          14
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00062",
+          6500,
+          1
+        ],
+        [
+          "add",
+          "64bf8b08b639356d124c55c3837085c9b6336f3fc8b1387f40f3cb3b84e76793"
+        ],
+        [
+          "copy",
+          "i00062",
+          6501,
+          778
         ],
         [
           "add",
@@ -8927,7 +9159,7 @@
       ]
     },
     "files.c": {
-      "sha256": "3e2ee99ec220b435e668e1e7e3206fabf7ee28b3c7faf9f4e53715cc15e18972",
+      "sha256": "78a71748ea15eaed0e9c52d352b2786fdf75b04a527c8d0b4036cd414570e08a",
       "operations": [
         [
           "copy",
@@ -9043,7 +9275,27 @@
           "copy",
           "i00072",
           53762,
-          40428
+          11910
+        ],
+        [
+          "add",
+          "dd51e05a6bf7e306c432998dbdc362676b6241f260cb02476ba6a0ecc7660dd5"
+        ],
+        [
+          "copy",
+          "i00072",
+          65672,
+          2787
+        ],
+        [
+          "add",
+          "df636be3ba6976dc123762d4bbd57f63386cccfaf1d2dbdd7dfba96cad4b7d5e"
+        ],
+        [
+          "copy",
+          "i00072",
+          68459,
+          25731
         ],
         [
           "add",
@@ -16103,7 +16355,7 @@
       ]
     },
     "py_birth.c": {
-      "sha256": "6beb1d9cd73c753c29e2b64d6606e3793d912d75b2fc24b274134c850b623883",
+      "sha256": "e0d8b6e614cea366f2000dede41b4fa44993bf17c46021f0ec97ea3ffa52c188",
       "operations": [
         [
           "copy",
@@ -16119,27 +16371,7 @@
           "copy",
           "i00164",
           21,
-          98885
-        ],
-        [
-          "add",
-          "f9e2dcdcaeed01d657b051aea58fc5c41affdc95fb40105a87e30525fe263029"
-        ],
-        [
-          "copy",
-          "i00164",
-          98906,
-          80
-        ],
-        [
-          "add",
-          "7f0561e54689c54eeb4a1eaabe0504e7652629be0d5ca82d98b09d77d9a48afd"
-        ],
-        [
-          "copy",
-          "i00164",
-          98986,
-          11170
+          110135
         ]
       ]
     },
@@ -18213,7 +18445,7 @@
       ]
     },
     "shop.c": {
-      "sha256": "2199aaf44d475be5a08e5797e9fac5da9c94b32962e910cde247565061f57546",
+      "sha256": "535e49acfd420ca2b5e7d10f513986d40bd035c17b83f4aa7af39ffb66fa7439",
       "operations": [
         [
           "copy",
@@ -18315,7 +18547,67 @@
           "copy",
           "i00228",
           56139,
-          14098
+          8287
+        ],
+        [
+          "add",
+          "f1cd3381062d8e0d00a61e75834d5501f980275f8897c25b0c6b7f3b1f6b067d"
+        ],
+        [
+          "copy",
+          "i00228",
+          64426,
+          40
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00228",
+          64466,
+          8
+        ],
+        [
+          "add",
+          "3ae0dee20818bba10f89a8aee3c57c6d142084064511a3b8180668d06a86f51b"
+        ],
+        [
+          "copy",
+          "i00228",
+          64474,
+          35
+        ],
+        [
+          "add",
+          "f1cd3381062d8e0d00a61e75834d5501f980275f8897c25b0c6b7f3b1f6b067d"
+        ],
+        [
+          "copy",
+          "i00228",
+          64509,
+          67
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00228",
+          64576,
+          15
+        ],
+        [
+          "add",
+          "c301a5b79545c7cc54563bfad41d79619786610dc3e94b586d0d2a4841eeb7a4"
+        ],
+        [
+          "copy",
+          "i00228",
+          64591,
+          5646
         ],
         [
           "add",
@@ -18595,7 +18887,7 @@
       ]
     },
     "spells.c": {
-      "sha256": "9260e2cdc6d47ac8504e5d1e45585f3c1f00583a6eee179b91d1635d89a03c0b",
+      "sha256": "2b1dd61265c216f5670eb3e294dcb5f2ac6194a3bfde350196db0291886739b6",
       "operations": [
         [
           "copy",
@@ -18801,7 +19093,17 @@
           "copy",
           "i00234",
           13640,
-          34557
+          32976
+        ],
+        [
+          "add",
+          "557471a386a5e00cf7f835b85f0c8d1de8469bad4246464274367e4798d2e8e2"
+        ],
+        [
+          "copy",
+          "i00234",
+          46616,
+          1581
         ],
         [
           "add",
@@ -19841,7 +20143,7 @@
       ]
     },
     "spells3.c": {
-      "sha256": "ef9e47b4bf83eb00745f2ca69f7a68ca3a763dced48e26036801b68addc55dbd",
+      "sha256": "cf1f14bfd783660437761c66de62052fe075ccc585c43620717c9d28d487e232",
       "operations": [
         [
           "copy",
@@ -19963,7 +20265,17 @@
           "copy",
           "i00238",
           61673,
-          46735
+          44406
+        ],
+        [
+          "add",
+          "e374d038bab313e6b89b013aee5ac39c66f6582008463973eb01cb849e3faf3d"
+        ],
+        [
+          "copy",
+          "i00238",
+          106079,
+          2329
         ],
         [
           "add",

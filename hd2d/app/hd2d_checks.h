@@ -77,6 +77,24 @@ int run_cutaway_check(const AppOptions &options);
 /*! @brief `--ui-check`: 画面まわり（パネル・持ち物・メニュー）の検査。**窓と GL が要る。** */
 int run_ui_check(const AppOptions &options);
 
+/*! @brief `--status-hud-check=`: HP/MP の玉とバフ・デバフのアイコンを合成フレームで描いて確かめる。**窓と GL が要る。** */
+int run_status_hud_check(const AppOptions &options);
+
+/*!
+ * @brief `--light-range-check=出力の頭`: 光の届く範囲（プレイヤの光源で照らされているマス）の検査。**窓と GL が要る。**
+ * @details。暗い通路と明るい部屋の合成フレームを光源の種類ごとに描いて、
+ * 画像（PNG）に書き出し、数でも確かめる。**コアは起こさない。**
+ */
+int run_light_range_check(const AppOptions &options);
+
+/*!
+ * @brief `--attack-fx-check=出力の頭`: 攻撃の視覚効果（ボクセルの矢・ファイアボール・爆発）の検査。**窓と GL が要る。**
+ * @param out_stem 絵と連続画像を書き出す頭。空なら書き出さず数と画素の検査だけ。
+ * @details。合成の暗い部屋と通路にプレイヤと的を置き、撃ち方を直接渡して描く。
+ * **コアは起こさない。**
+ */
+int run_attack_fx_check(const AppOptions &options, const std::string &out_stem);
+
 /*!
  * @brief `--prefab-view=`: プレハブを 1 個だけ描いて見せる。**検査ではない**（人が見るもの）。
  * @note 合否を出さないので `tools/hd2d_verify/golden.py` の網には入れていない。

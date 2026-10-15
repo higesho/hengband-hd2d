@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -319,6 +320,8 @@ const TownStyle kDefaultStyle = {
  * | `corridor` | 門から奥への筋を空けない | (3) |
  * | `paths` | 道の網を張らない（全部が草になる） | (8) |
  * | `crag` | **階段を抱えた塊を岩山にする**（2026-08-12 に捨てた規則） | (10) |
+ * | `gate_dir` | **門の向きを「敷地の重心から遠い側」だけで選ぶ**（隣の門のマスへも出る。2026-10-10 に捨てた規則） | (11) |
+ * | `alley` | **別の敷地の壁に挟まれた幅 1 マスの路地も門にする**（2 周目の「壁の切れ目」。2026-10-10 に捨てた規則） | (8)（幻想蛮怒 12 番）(12) |
  *
  * @note `crag` は「モリバントの雑貨屋が岩山になる」不具合そのものを再現する口である。
  * あの直しは規則の**差し替え**なので、検査 (10) が本当にそれを捕まえるかは
@@ -790,6 +793,10 @@ bool load_town_styles(const std::string &voxel_dir, const std::string &core_name
                 town.style.sign_base = data.keep(entry["sign_base"].get<std::string>());
             }
             town.style.blank_gate_props = entry.value("blank_gate_props", town.style.blank_gate_props);
+            //! 夜の明るさ（Angband の町）。書かなければ 1.0＝従来どおり。
+            town.style.night_light = entry.value("night_light", town.style.night_light);
+            //! 山のマスを壁の塊から切り離す（Angband の町）。書かなければ従来どおり。
+            town.style.split_mountains = entry.value("split_mountains", town.style.split_mountains);
             //! 岩天井（覆いの町。2026-08-18 その3）。書かなければ覆わない。
             if (entry.contains("cave_roof") && entry["cave_roof"].is_string()) {
                 town.style.cave_roof = data.keep(entry["cave_roof"].get<std::string>());
@@ -943,7 +950,7 @@ bool load_town_styles(const std::string &voxel_dir, const std::string &core_name
                         continue;
                     }
                     TerrainProp prop{};
-                    if (row["terrain"].is_string()) {
+                    if (row.contains("terrain") && row["terrain"].is_string()) {
                         prop.terrain_key = data.keep(row["terrain"].get<std::string>());
                     }
                     //! 共通の表が知らない地形は**数で名指す**（`rampart_overrides` と同じ）。
@@ -1021,6 +1028,11 @@ bool load_town_styles(const std::string &voxel_dir, const std::string &core_name
                     }
                     yard.storeys = row.value("storeys", 0);
                     yard.fill = row.value("fill", 0.5f);
+                    //! 半壊した店（Angband の町）。書かなければ崩れない。
+                    if (row.contains("collapse") && row["collapse"].is_string()) {
+                        yard.collapse = data.keep(row["collapse"].get<std::string>());
+                    }
+                    yard.collapse_ratio = row.value("collapse_ratio", 0.5f);
                     town.yards.push_back(yard);
                 }
             }
@@ -1339,6 +1351,21 @@ const TownSign *town_signs_for(int town_id)
     }
 }
 
+std::pair<int, int> TownPlan::gate_outside(const TownSite &site) const
+{
+    int x = site.gate_x + site.gate_dx;
+    int y = site.gate_y + site.gate_dy;
+    if ((site.gate_dx == 0) && (site.gate_dy == 0)) {
+        return { site.gate_x, site.gate_y };
+    }
+    //! 門のマスが続くあいだ進む（上限 16 マス。止まる保証のため）。
+    for (int guard = 0; (guard < 16) && (this->role_at(x, y) == TownRole::Gate); ++guard) {
+        x += site.gate_dx;
+        y += site.gate_dy;
+    }
+    return { x, y };
+}
+
 TownRole TownPlan::role_at(int gx, int gy) const
 {
     if ((gx < 0) || (gy < 0) || (gx >= this->width) || (gy >= this->height)) {
@@ -1420,6 +1447,7 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
     out.roles.assign(count, static_cast<std::uint8_t>(TownRole::None));
     out.site_of.assign(count, static_cast<std::int16_t>(-1));
     out.slices.assign(count, static_cast<std::uint8_t>(HouseSlice::Middle));
+    out.gate_face.assign(count, static_cast<std::int8_t>(-1));
     //! 屋敷の棟（デザイン9）。**割らない町では最後まで 0 のまま**＝従来の 1 棟の読み。
     out.wings.assign(count, 0);
     out.fences.assign(count, 0);
@@ -1454,6 +1482,13 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                         continue;
                     }
                     if ((label[at(nx, ny)] >= 0) || !is_site_cell(meaning, nx, ny)) {
+                        continue;
+                    }
+                    /*
+                     * **山と山でない壁はつながない**（`TownStyle::split_mountains`。Angband の町）。
+                     * 表が旗を立てた町でだけ。それ以外は従来どおり 1 つの塊。
+                     */
+                    if (style.split_mountains && (meaning.mountain_at(nx, ny) != meaning.mountain_at(cx, cy))) {
                         continue;
                     }
                     label[at(nx, ny)] = id;
@@ -1583,6 +1618,9 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
         }
     }
 
+    //! いま見ている敷地の**門になるマス**の印（`exit_dir` が「隣の門のマス」へ出ないために使う。敷地ごとに立てて降ろす）。
+    std::vector<char> gate_mark(count, 0);
+
     /* ---- (2) 成分を仕分ける（§10.3）---- */
     for (std::size_t id = 0; id < components.size(); ++id) {
         if (torii_leg[id]) {
@@ -1688,8 +1726,9 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
         int plot_index = -1;
         if (style.plots != nullptr) {
             for (int i = 0; style.plots[i].at_x >= 0; ++i) {
-                const int px = style.plots[i].at_x;
-                const int py = style.plots[i].at_y;
+                //! 表の座標は**町の地図の座標**。フレームの座標へは原点を足す（荒野の窓のずれ）。
+                const int px = style.plots[i].at_x + meaning.identity.town_origin_x;
+                const int py = style.plots[i].at_y + meaning.identity.town_origin_y;
                 if ((px < x0) || (px > x1) || (py < y0) || (py > y1)) {
                     continue;
                 }
@@ -2120,10 +2159,26 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
             return (gx >= x0) && (gx <= x1) && (gy >= y0) && (gy <= y1)
                 && (label[at(gx, gy)] != static_cast<std::int32_t>(id));
         };
-        //! くぐる向き（重心から遠ざかる、敷地でない隣）。無ければ -1。
+        /*
+         * くぐる向き（重心から遠ざかる、敷地でない隣）。無ければ -1。
+         *
+         * **同じ敷地の別の門のマスへは出ない**（`gate_mark`。2026-10-10）。幅のある入口や、L 字の敷地の
+         * 凹みに開いた入口では、端のマスから見て「敷地の重心から遠い」のは横の門のマスのことがある
+         * （4 マス幅の凹みの端のマスは、街路の側より隣の門のマスのほうが点が高く、**門が横を向いた**。
+         * Frox のアナンバール・タロス・モリバント・アングウィル、幻想蛮怒の 12・14 番）。
+         * 向いた先が別の門のマスだと、`gate_outside` はそのまま門のマスを歩いて外へ出るので、
+         * 道の網は凹みの端の外へ届き、門の前が道にならない（`--town-check` (8)）。
+         * **付け替えるのは「背が敷地の壁の向き」だけ**（壁の面に開けた入口の正面）。背が壁でない向き
+         * （開けた野原へ向けただけの横向き）や、別の敷地の壁へは付け替えない。壁を背にできる向きが無いとき
+         * （2 マスだけの袋小路など、出られる向きが門のマスしか無い形）も従来どおり選ぶ。
+         * 向き合っていない門（従来の向きが別の門のマスを向いていない）は触らない。
+         * `HD2D_BREAK_TOWN=gate_dir` は捨てた規則（検査 (11) の検査の検査）。
+         */
         const auto exit_dir = [&](int gx, int gy) {
             int best = -1;
             double best_score = 0.0;
+            int best_free = -1;
+            double best_free_score = 0.0;
             for (int i = 0; i < 4; ++i) {
                 const int nx = gx + kDx[i];
                 const int ny = gy + kDy[i];
@@ -2138,8 +2193,21 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                     best = i;
                     best_score = score;
                 }
+                //! 背（出る向きの反対の隣）が**この敷地の壁**であること＝「壁の面に開けた入口」の正面向き。
+                const int bx = gx - kDx[i];
+                const int by = gy - kDy[i];
+                const bool wall_behind = (bx >= 0) && (by >= 0) && (bx < w) && (by < h)
+                    && (label[at(bx, by)] == static_cast<std::int32_t>(id));
+                //! 付け替え先は**開いたマス**（別の敷地の壁へは向けない）。
+                if ((gate_mark[at(nx, ny)] == 0) && wall_behind && !is_site_cell(meaning, nx, ny)
+                    && ((best_free < 0) || (score > best_free_score))) {
+                    best_free = i;
+                    best_free_score = score;
+                }
             }
-            return best;
+            //! 従来の向きが別の門のマスを向いていないなら、そのまま（付け替えるのは向き合ってしまうときだけ）。
+            const bool faces_gate = (best >= 0) && (gate_mark[at(gx + kDx[best], gy + kDy[best])] != 0);
+            return (faces_gate && (best_free >= 0) && !break_town_is("gate_dir")) ? best_free : best;
         };
 
         std::vector<std::pair<int, int>> gate_front;
@@ -2180,6 +2248,11 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                     return (gx >= 0) && (gy >= 0) && (gx < w) && (gy < h)
                         && (label[at(gx, gy)] == static_cast<std::int32_t>(id));
                 };
+                //! そのマスは**別の敷地**のマスか（敷地に属さないマスと範囲の外は含めない）。
+                const auto is_other_site = [&](int gx, int gy) {
+                    return (gx >= 0) && (gy >= 0) && (gx < w) && (gy < h)
+                        && (label[at(gx, gy)] >= 0) && (label[at(gx, gy)] != static_cast<std::int32_t>(id));
+                };
                 for (int outer = outer0; outer <= outer1; ++outer) {
                     int run = 0;
                     for (int inner = inner0; inner <= inner1 + 1; ++inner) {
@@ -2206,7 +2279,18 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                                     const auto [gx, gy] = cell(outer, start + k);
                                     const bool back = (axis == 0) ? is_mine(gx, gy + side) : is_mine(gx + side, gy);
                                     const bool front = (axis == 0) ? is_mine(gx, gy - side) : is_mine(gx - side, gy);
-                                    wall_face = back && !front;
+                                    /*
+                                     * **反対側（壁の面の外）が別の敷地のマスなら、それは入口ではなく路地である**
+                                     * （幻想蛮怒 12 番の (60,21)〜(60,23)）。
+                                     * 自分の壁と別の敷地の壁に挟まれた幅 1 マスの隙間で、外接矩形の端を「壁」と
+                                     * みなして閉じていただけだった。門にすると、隣の敷地の門の前が門のマスになり、
+                                     * `gate_outside` が門のマスを歩き抜けて道が届かなかった（`--town-check` (8)）。
+                                     * 開きの 1 マスでも別の敷地に接していれば開き全体を門にしない。
+                                     * `HD2D_BREAK_TOWN=alley` は捨てた規則（検査 (12) の検査の検査）。
+                                     */
+                                    const bool other_front = (axis == 0) ? is_other_site(gx, gy - side)
+                                                                         : is_other_site(gx - side, gy);
+                                    wall_face = back && !front && (!other_front || break_town_is("alley"));
                                 }
                                 if (wall_face) {
                                     for (int k = 0; k < run; ++k) {
@@ -2220,6 +2304,9 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                     }
                 }
             }
+        }
+        for (const auto &[gx, gy] : gate_front) {
+            gate_mark[at(gx, gy)] = 1;
         }
         for (std::size_t head = 0; head < gate_front.size(); ++head) {
             const auto [gx, gy] = gate_front[head];
@@ -2239,6 +2326,7 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
              * 代表の門の向きで代用してはならない。
              */
             out.slices[at(gx, gy)] = (kDx[open_dir] != 0) ? 1u : 0u;
+            out.gate_face[at(gx, gy)] = static_cast<std::int8_t>(open_dir);
             ++out.gate_cells;
             if (!entry.has_gate) {
                 entry.has_gate = true;
@@ -2247,6 +2335,9 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                 entry.gate_dx = kDx[open_dir];
                 entry.gate_dy = kDy[open_dir];
             }
+        }
+        for (const auto &[gx, gy] : gate_front) {
+            gate_mark[at(gx, gy)] = 0;
         }
 
         /* ---- (4) 前庭と建物（§10.3。**門からの筋は空ける**）---- */
@@ -2363,8 +2454,21 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
             crags->cells.assign(count, 0u);
         }
         int restored = 0;
+        //! 記憶の添字は**町の座標**（フレームの座標 − 原点。`CragMemory` の註）。範囲外は -1。
+        const int origin_x = meaning.identity.town_origin_x;
+        const int origin_y = meaning.identity.town_origin_y;
+        const auto crag_slot = [w, h, origin_x, origin_y](int gx, int gy) -> std::ptrdiff_t {
+            const int tx = gx - origin_x;
+            const int ty = gy - origin_y;
+            if ((tx < 0) || (ty < 0) || (tx >= w) || (ty >= h)) {
+                return -1;
+            }
+            return (static_cast<std::ptrdiff_t>(ty) * static_cast<std::ptrdiff_t>(w)) + static_cast<std::ptrdiff_t>(tx);
+        };
         for (std::size_t i = 0; i < count; ++i) {
-            if (crags->cells[i] == 0u) {
+            const std::ptrdiff_t slot = crag_slot(static_cast<int>(i % static_cast<std::size_t>(w)),
+                static_cast<int>(i / static_cast<std::size_t>(w)));
+            if ((slot < 0) || (crags->cells[static_cast<std::size_t>(slot)] == 0u)) {
                 continue;
             }
             if (static_cast<TownRole>(out.roles[i]) == TownRole::Crag) {
@@ -2386,7 +2490,11 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
         }
         for (std::size_t i = 0; i < count; ++i) {
             if (static_cast<TownRole>(out.roles[i]) == TownRole::Crag) {
-                crags->cells[i] = 1u;
+                const std::ptrdiff_t slot = crag_slot(static_cast<int>(i % static_cast<std::size_t>(w)),
+                    static_cast<int>(i / static_cast<std::size_t>(w)));
+                if (slot >= 0) {
+                    crags->cells[static_cast<std::size_t>(slot)] = 1u;
+                }
             }
         }
     }
@@ -2498,6 +2606,7 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
                     out.roles[at(gx, gy)] = static_cast<std::uint8_t>(TownRole::Gate);
                     //! 門の姿勢は敷地の門と同じ（1 = 東西にくぐる）。`site_of` は -1 のまま。
                     out.slices[at(gx, gy)] = (kDx[open_dir] != 0) ? 1u : 0u;
+                    out.gate_face[at(gx, gy)] = static_cast<std::int8_t>(open_dir);
                     ++out.gate_cells;
                     ++out.crag_gates;
                     const int odx = kDx[open_dir];
@@ -2965,8 +3074,8 @@ bool rebuild_town_plan(const FloorMeaning &meaning, TownPlan &out, CragMemory *c
             if (!site.has_gate) {
                 continue;
             }
-            const int nx = site.gate_x + site.gate_dx;
-            const int ny = site.gate_y + site.gate_dy;
+            //! 門の**外の最初のマス**（幅や奥行きのある入口では、向きのすぐ隣も門のマスになる）。
+            const auto [nx, ny] = out.gate_outside(site);
             if ((nx >= 0) && (ny >= 0) && (nx < w) && (ny < h) && (open[at(nx, ny)] != 0u)) {
                 points.emplace_back(nx, ny);
             }

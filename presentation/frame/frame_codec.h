@@ -59,6 +59,17 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
 bool decode_frame_sounds(const std::string &json_text, std::vector<SoundEvent> &out, std::string &err);
 
 /*!
+ * @note `decode_frame_messages()`（`decode_frame_sounds` と対になる「捨てるフレームからの
+ * 救済」）は 2026-09 の AH-01 の直しで**使われなくなった**ので削除した——`frame.messages`
+ * はもう「そのフレームにしか載らない一度きりの縁」ではなく、直近 N 行を毎フレーム
+ * 丸ごと送る作りに変わっており（`hd2d/net/core_link.cpp` の `take_new_frame()` の
+ * 註記）、次のフレームの本体に同じ行が既に含まれるため、捨てたフレームから
+ * 救い出して持ち越すと二重表示になる。効果音（`decode_frame_sounds`）と
+ * `teleport_fx.burst` は今もその 1 フレームだけの一度きりの縁なので、こちらは
+ * 引き続き救済が要る。
+ */
+
+/*!
  * @brief 2 つの `GameFrame` が**フィールド単位で**等しいか。
  * @param[out] first_diff 異なるとき、最初に見つかった差異の場所と中身（空文字列を渡すこと）。
  * @details `encode` の結果の byte 比較とは**別の証拠**として使う。byte 比較だけだと

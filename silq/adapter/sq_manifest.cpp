@@ -12,6 +12,7 @@
 
 #include "portable/legacy_os.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
 #include <sstream>
@@ -34,7 +35,7 @@ struct SharedRun {
 };
 
 /*!
- * チュートリアルの地形の記憶（`TV_NOTE` = `defines.h:1082`。`object.txt` の 451〜490）。
+ * チュートリアルの覚え書き（`TV_NOTE` = `defines.h:1082`。`object.txt` の 451〜490）。
  * **40 個とも名前は `& Note~`・記号は `~`** で、違うのは `D:` に書いてある案内文
  * だけである（「まず扉を開けてみよ」など）。紙の絵は 1 枚で足りる。
  *
@@ -196,7 +197,19 @@ int TileManifest::add_entities(const std::string &tile_dir_rel, const std::strin
      * かつては `FindFirstFileA(".../S*.png")` の一発だった。平台を跨ぐために
      * **並べてから絞る**形へ替えた（`S` で始まる縛りは下の名前検査に足してある）。
      */
-    const std::vector<std::string> names = portable::list_files(dir);
+    std::vector<std::string> names = portable::list_files(dir);
+    // A prebuilt voxel is sufficient for gameplay when the PNG is omitted.
+    // Keep the same logical PNG names and ordering in the protocol manifest.
+    const auto tile_part = tile_dir_rel.find("/tilework/");
+    if (tile_part != std::string::npos) {
+        const auto slab_dir = join_path(root, tile_dir_rel.substr(0, tile_part) + "/assets/slab");
+        for (const auto &name : portable::list_files(slab_dir)) {
+            if (name.size() > 4 && name.compare(name.size() - 4, 4, ".vox") == 0)
+                names.push_back(name.substr(0, name.size() - 4) + ".png");
+        }
+    }
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
     if (names.empty()) {
         return 0; // 絵がまだ無い木。**失敗ではない**（アスキー実体で遊べる）
     }
@@ -266,7 +279,7 @@ void TileManifest::apply_shared_runs()
         }
         for (int id = run.first + 1; id <= run.last; ++id) {
             if (this->object_index_.find(id) != this->object_index_.end()) {
-                continue; //!< その番号だけの絵を後から作ったなら、**そちらが勝つ**
+                continue; //!< その番号だけの絵を後から焼いたなら、**そちらが勝つ**
             }
             this->object_index_[id] = shared->second;
 
@@ -283,6 +296,62 @@ void TileManifest::apply_shared_runs()
             ++this->alias_count_;
         }
     }
+}
+
+namespace {
+//! 正体の分からないアイテムの代表タイルに割り当てる id の起点（`object_index_` のキー）。
+//! Sil-Q 自身の k_idx（`object.txt` の N）とはぶつからない帯を選んである。
+constexpr int kUnawareRepresentativeIdBase = 60000; // + 1..8 (UNAWARE_CATEGORY_*) = 60001..60008
+} // namespace
+
+void TileManifest::add_unaware_representative_tiles()
+{
+    /*
+     * 分類 → 変愚の K の番号は
+     * `presentation::unaware_item_representative_bi_id()`（`unaware_item_tiles.h`）の
+     * 1 か所だけにあり、ここは新しい絵を作らずその番号の板（`tilework/sfc/K<id>.png`）を
+     * 目録へ追加登録するだけ。Sil-Q 自身の板（`silq/tilework/128/SK*.png`）は別の絵なので
+     * 触らない——画面側の `SlabLibrary::acquire()` が
+     * ［申告された置き場（`silq/assets/slab`）→ 既定の置き場（`assets/voxel/slab`）］の
+     * 2 段で探し、申告された置き場に無い名前（`K229` 等）は既定へ落ちる。
+     */
+    constexpr presentation::UnawareItemCategory kAllCategories[] = {
+        presentation::UnawareItemCategory::Potion,
+        presentation::UnawareItemCategory::Scroll,
+        presentation::UnawareItemCategory::Ring,
+        presentation::UnawareItemCategory::Amulet,
+        presentation::UnawareItemCategory::Wand,
+        presentation::UnawareItemCategory::Staff,
+        presentation::UnawareItemCategory::Rod,
+        presentation::UnawareItemCategory::Mushroom,
+    };
+
+    int next_index = static_cast<int>(this->message_.assets.size()) + 1;
+    for (const auto category : kAllCategories) {
+        const auto bi_id = presentation::unaware_item_representative_bi_id(category);
+        char path[64]{};
+        std::snprintf(path, sizeof(path), "tilework/sfc/K%u.png", static_cast<unsigned>(bi_id));
+
+        presentation::AssetManifestWireEntry wire;
+        wire.index = next_index;
+        wire.kind = "K";
+        wire.id = kUnawareRepresentativeIdBase + static_cast<int>(category);
+        wire.path = path;
+        this->message_.assets.push_back(wire);
+
+        this->object_index_[wire.id] = static_cast<std::uint16_t>(next_index);
+        ++next_index;
+
+        /* 2D の絵（PNG）が無くても実害は無い（HD2D は .vox しか使わない）。 */
+        if (!file_exists(join_path(this->message_.root, path))) {
+            ++this->missing_files_;
+        }
+    }
+}
+
+std::uint16_t TileManifest::lookup_unaware_representative(presentation::UnawareItemCategory category) const
+{
+    return this->lookup_object(kUnawareRepresentativeIdBase + static_cast<int>(category));
 }
 
 std::uint16_t TileManifest::lookup_terrain(int feat) const

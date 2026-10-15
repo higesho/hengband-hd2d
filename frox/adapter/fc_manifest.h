@@ -24,6 +24,7 @@
 #pragma once
 
 #include "frame/protocol_messages.h"
+#include "bridge/unaware_item_tiles.h"
 
 #include <cstdint>
 #include <string>
@@ -71,6 +72,22 @@ public:
      * @return 1..N、または 0（未登録＝字の板へ落とす）
      */
     std::uint16_t lookup_entity(char kind, int id) const;
+
+    /*!
+     * @brief 正体の分からないアイテムの代表タイルを、目録の末尾へ追加登録する。
+     * @details。分類 → 変愚の K の番号は
+     * `presentation/bridge/unaware_item_tiles.h` の 1 か所だけにあり、ここは
+     * その番号を指す行を追加するだけ（書き写さない）。id は `kUnawareRepresentativeIdBase`
+     * 起点の予約帯（Frox 自身の k_idx とはぶつからない）。
+     * `load_entities()` が真を返した**あとに**呼ぶこと。
+     */
+    void add_unaware_representative_tiles();
+
+    /*!
+     * @brief 分類 → 代表タイルの `tile_index`。
+     * @return 1..N、または 0（`add_unaware_representative_tiles()` を呼んでいない等）
+     */
+    std::uint16_t lookup_unaware_representative(presentation::UnawareItemCategory category) const;
 
     //! 実体の行数（起動時に stderr へ出す）。
     int entity_count() const { return static_cast<int>(this->entity_index_.size()); }

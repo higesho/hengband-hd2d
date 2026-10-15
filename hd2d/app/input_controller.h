@@ -3,15 +3,18 @@
  */
 #pragma once
 #include "app/app_support.h"
+#include "render/targeting_visual.h"
 #include "ui/game_pad.h"
 #include "ui/virtual_pad.h"
 #include "ui/feature_menu.h"
 #include "ui/floor_cutin.h"
 #include "ui/click_path.h"
+#include "ui/map_click.h"
 #include "ui/fps_mode.h"
 #include "ui/game_hud.h"
 #include "frame/protocol_messages.h"
 #include <functional>
+#include <cstdint>
 
 namespace hd2d {
 
@@ -22,7 +25,35 @@ struct InputState {
     bool hover_valid{ false };
     int hover_gx{ 0 };
     int hover_gy{ 0 };
+    std::int64_t menu_finger{};
+    int menu_touch_x{},menu_touch_y{},menu_touch_last_x{},menu_touch_last_y{},menu_touch_axis{};
+    bool menu_touch_active{},menu_touch_scrolled{};
+    //! 地図のクリック・タップの追跡（AH-58。`ui/map_click.h`）。`map_click_enabled` のコアでだけ動く。
+    MapClickState map_click;
+    /*!
+     * Shift＋矢印の「走る」の後半（修-02）。ターゲット画面で方向を受けるコア
+     * （`run_direction_via_targeting_ui`）では、走る命令を押したあとに画面が開くのを待ち、
+     * 開いたら `aim_move` → `aim_confirm` で方向を答える。`active` の間だけ意味を持つ。
+     */
+    struct PendingRun {
+        bool active{ false };
+        int dx{ 0 };
+        int dy{ 0 };
+        int stage{ 0 };                     //!< 0 = 画面が開くのを待つ・1 = 方向を送った（確定の待ち）
+        std::uint32_t since_ms{ 0 };        //!< 待ち始め（`SDL_GetTicks`）
+        std::int32_t last_run_sym{ 0 };     //!< 走るを出したキー。押しっぱなしの連打（repeat）で走りを止めないための記憶
+    } pending_run;
 };
+
+/*!
+ * @brief ソフトキーボード（Android の IME）を出したい画面か。
+ * @details コアが文字入力の中に居る（`text_input_active`）ときだけ。ただし**数量の欄（`numeric`）では出さない**
+ *。数量は新しい UI でも従来の UI でも十字キーで変えられ、キーボードは画面の下半分を覆う。
+ */
+inline bool wants_soft_keyboard(const GameFrame &frame)
+{
+    return frame.text_input_active && !frame.numeric.active;
+}
 
 // フレームごとに作成する。SDL とパッドによるメニューの二重開閉を共通で抑止する。
 struct InputBatch {
@@ -69,18 +100,32 @@ struct InputPumpContext {
     GamePad &pad;
     VirtualPad &vpad;
     const std::vector<PadCommand> &pad_commands; //!< 機能メニューを開くときに渡す
+    /*!
+     * いまのキー配置の種類（"original" / "rogue"。`pad_commands` と一緒に届く）。
+     * "rogue" のとき、照準の画面と視点の回転は hjklyubn を方向として読む（2026-10-07）。
+     */
+    const std::string &pad_keymap;
+    //! 握手の `core_name`。Shift＋矢印で「走る」を出すときに、コアごとの走る命令の字を引くのに要る（修-02）
+    const std::string &core_name;
 
     //! ### UI
     FeatureMenu &feature_menu;
     FloorCutin &floor_cutin;
     HudState &hud_state;         //!< カーソル層と、掴んでいる仕切り
     ClickPath &click_path;
+    /*!
+     * コアが `hello_ack.features` に `"map_click"` を申告したか（AH-58）。真のとき、地図のクリック・
+     * タップは `map_click` として送る（歩く・走る・見る・文脈メニューは原作の動きをコアが決める）。
+     * 偽のコアでは、これまでの「クリックした所まで歩く」（`click_path`）のまま。握手のあとで決まる。
+     */
+    bool map_click_enabled{ false };
     TextOverlay &text;           //!< `menu_choice_at()` が字の幅を測るのに要る
     FpsMode &first_person;
     const std::vector<SubPanelKindChoice> &sub_panel_kind_choices;
 
     //! ### いまのフレーム
     const GameFrame &frame;
+    std::span<const TargetingEntity> targeting_entities;
 
     InputState &state; //!< フレームをまたぐ IME・ホバーの状態
 

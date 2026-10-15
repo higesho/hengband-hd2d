@@ -47,6 +47,16 @@ void main()
 
 bool UiImage::load(const std::string &path, std::string &err)
 {
+    return this->load_impl(path, err, false);
+}
+
+bool UiImage::load_minified(const std::string &path, std::string &err)
+{
+    return this->load_impl(path, err, true);
+}
+
+bool UiImage::load_impl(const std::string &path, std::string &err, bool mipmaps)
+{
     this->unload();
     SDL_Surface *const raw = IMG_Load(path.c_str());
     if (raw == nullptr) {
@@ -70,7 +80,11 @@ bool UiImage::load(const std::string &path, std::string &err)
      * タイトル画だけは覆うために伸びるので、そこは線形のほうがよい。両方に効かせるため
      * 線形にしておく（等倍で貼るときは画素の中心が一致するので、線形でもぼけない）。
      */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(GL_LINEAR));
+    if (mipmaps) {
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+        static_cast<GLint>(mipmaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(GL_LINEAR));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLint>(GL_CLAMP_TO_EDGE));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLint>(GL_CLAMP_TO_EDGE));
@@ -155,13 +169,29 @@ void UiImagePainter::begin(int screen_w, int screen_h)
 void UiImagePainter::draw(const UiImage &image, const RectPx &dst,
     float u0, float v0, float u1, float v1, float alpha) const
 {
-    if (!image.valid() || dst.empty() || (this->program_ == 0) || (alpha <= 0.f)) {
+    if (dst.empty()) {
         return;
     }
-    const auto x0 = static_cast<float>(dst.x);
-    const auto y0 = static_cast<float>(dst.y);
-    const auto x1 = static_cast<float>(dst.x + dst.w);
-    const auto y1 = static_cast<float>(dst.y + dst.h);
+    this->draw_f(image, static_cast<float>(dst.x), static_cast<float>(dst.y), static_cast<float>(dst.x + dst.w),
+        static_cast<float>(dst.y + dst.h), u0, v0, u1, v1, alpha);
+}
+
+void UiImagePainter::draw_region_f(const UiImage &image, float x0, float y0, float x1, float y1, float u0, float v0,
+    float u1, float v1, float alpha) const
+{
+    this->draw_f(image, x0, y0, x1, y1, u0, v0, u1, v1, alpha);
+}
+
+void UiImagePainter::draw_f(const UiImage &image, float fx0, float fy0, float fx1, float fy1,
+    float u0, float v0, float u1, float v1, float alpha) const
+{
+    if (!image.valid() || (fx1 <= fx0) || (fy1 <= fy0) || (this->program_ == 0) || (alpha <= 0.f)) {
+        return;
+    }
+    const float x0 = fx0 * layout_scale_;
+    const float y0 = fy0 * layout_scale_;
+    const float x1 = fx1 * layout_scale_;
+    const float y1 = fy1 * layout_scale_;
     const float vertices[6][4] = {
         { x0, y0, u0, v0 },
         { x1, y0, u1, v0 },
@@ -203,6 +233,12 @@ void UiImagePainter::draw_crop(const UiImage &image, const RectPx &dst,
     const auto th = static_cast<float>(image.height());
     this->draw(image, dst, static_cast<float>(sx) / tw, static_cast<float>(sy) / th,
         static_cast<float>(sx + sw) / tw, static_cast<float>(sy + sh) / th, alpha);
+}
+
+void UiImagePainter::draw_region(const UiImage &image, const RectPx &dst, float u0, float v0, float u1, float v1,
+    float alpha) const
+{
+    this->draw(image, dst, u0, v0, u1, v1, alpha);
 }
 
 void UiImagePainter::draw_cover(const UiImage &image, const RectPx &dst, float alpha) const

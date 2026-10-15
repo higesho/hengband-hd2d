@@ -42,6 +42,9 @@ public:
     void on_flush();
     void on_delay(int ms);
 
+    //! Resize the main Term so native document pagination matches the UI viewport.
+    bool resize_rows(int rows);
+
     /*!
      * @brief リアルタイム: 締切までコマンド入力を待つ
      * @details キーが入れば普通に戻る。締切が来ても何も無ければ `RealtimeClock::set_holding(true)`
@@ -78,5 +81,8 @@ private:
     //! 次の刻みの境界（絶対 ms）。**締切を持つのは Term 側**でコアではない。
     uint32_t rt_next_tick_at_{0};
 };
+
+//! Resize the installed main null Term. False when it is not installed yet.
+bool resize_main_term_rows(int rows);
 
 } // namespace presentation

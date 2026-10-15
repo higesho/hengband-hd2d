@@ -187,6 +187,9 @@ bool UiCursors::handle_prompt(CursorNav nav, presentation::InputEventsMessage &o
         if ((key == 'y') || (key == 'n')) {
             wire.e = "answer";
             wire.value = (key == 'y') ? "yes" : "no";
+        } else if (key == '\t') {
+            wire.e = "key";
+            wire.name = "tab";
         } else {
             //! `[S]弾, [A]矢` のような、はい／いいえではないプロンプト（K-37 相当）。
             wire.e = "key";
@@ -194,6 +197,11 @@ bool UiCursors::handle_prompt(CursorNav nav, presentation::InputEventsMessage &o
         }
         out.events.push_back(wire);
         return true;
+    }
+    /* Look-mode auxiliary actions are deliberately selected with LB/RB.
+     * The D-pad must keep reaching the core because it moves the Look cursor. */
+    if (this->prompt_uses_shoulders()) {
+        return false;
     }
     const int v = vertical_delta(nav);
     const int h = horizontal_delta(nav);
@@ -203,6 +211,15 @@ bool UiCursors::handle_prompt(CursorNav nav, presentation::InputEventsMessage &o
     }
     this->prompt_index_ = ((this->prompt_index_ + delta) + count) % count;
     return true;
+}
+
+void UiCursors::step_prompt(int delta)
+{
+    if (!this->prompt_uses_shoulders() || this->prompt_.choices.empty() || delta == 0) {
+        return;
+    }
+    const int count = static_cast<int>(this->prompt_.choices.size());
+    this->prompt_index_ = ((this->prompt_index_ + delta) + count) % count;
 }
 
 bool UiCursors::handle_choice(CursorNav nav, presentation::InputEventsMessage &out)

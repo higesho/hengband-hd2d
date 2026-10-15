@@ -14,7 +14,7 @@
  *
  * @note `use_sound` は**立てたままにする**。コアの `sound()` はあれが偽だと
  * `Term_xtra` すら呼ばないので、切ると**書き留める機会ごと消える**。
- * 「利用者が効果音を切った」は `sound_on` の側で表す。
+ * 「遊ぶ人が効果音を切った」は `sound_on` の側で表す。
  */
 
 #include "frame/sound_event.h"

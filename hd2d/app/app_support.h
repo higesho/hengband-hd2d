@@ -52,6 +52,13 @@ float distance_for_cell_px(const Camera &camera, float cell_px);
 /*! @brief いまのフレームバッファを BMP で保存する（検査の証拠と `--shot`）。 */
 bool save_framebuffer_bmp(const std::string &path, int width, int height);
 
+/*!
+ * @brief RGBA（行は下から上。`glReadPixels` の並び）を PNG で書く。
+ * @details 検査が絵を人（と AI）に見せるために使う。BMP は多くの閲覧手段で開けないので、
+ * 新しい検査はこちらを使う（`--status-hud-check=`）。
+ */
+bool save_rgba_png(const std::string &path, const unsigned char *rgba_bottom_up, int width, int height);
+
 /*! @brief 町の「入口のマス」を立てた面（プレハブの門を数えるのに使う）。 */
 std::vector<std::uint8_t> town_entrance_mask(const GameFrame &frame, const PrefabLibrary &library);
 
@@ -108,8 +115,42 @@ TextColor from_term_color(std::uint8_t index, float alpha = 1.f);
 /*! @brief 画面の下に 1 行だけ知らせを出す。 */
 void show_message(const std::string &text);
 
-/*! @brief いまの画面で決定キーがコマンドメニューを開くか。 */
-bool confirm_opens_command_menu(const GameFrame &frame);
+/*!
+ * @brief 決定（Enter / パッド A）に**確認する相手が無い**か。
+ * @details 決めたこと 2026-09-25。以前はここが真のときに決定でコマンドメニューを
+ * 開いていたが、いまは**開かない**——真なら決定は何もしない（コアへも送らない）。
+ * コマンドメニューは F1 とパッド Start だけで開く。
+ */
+bool nothing_to_confirm(const GameFrame &frame);
+
+/*!
+ * @brief コマンドメニュー／機能メニュー（F1・F10・パッド Start・Back）を**開いてよいか**（修-01・判-5）。
+ * @details 入力を子が握っている間（コアのメニュー・文字入力・数の入力・選択肢・HUD の窓・狙い中）に加えて、
+ * **`-続く-`（続き待ち）の最中も開かない**。続き待ちの最中に開くと、コアは続きのキーを待っているのに
+ * 画面はメニューにキーを渡し、どちらも進まなくなる。続き待ちの見分けは入力待ちの問い合わせ
+ * （`ui_probe` の `input_wait="more"`）と同じ `presentation::message_more_pending()`。
+ * 規則はここ 1 か所（キー・パッドの全部が `perform_action` 経由でここを通る。
+ * `--ui-check` の `HD2D_TOP_MENU_CHECK` もここを見る）。
+ *
+ * @param modern_active 新 UI の窓（`hud_state.modern`）が出ているか。
+ * @param targeting_active 画面側の狙い（`hud_state.targeting`）が動いているか。
+ * @param tail_marks_more 続き待ちの印を**最新のメッセージの末尾**にだけ付けるコアか
+ * （`core_marks_more_at_message_tail()`。Rogue 系は行 0 のミラーにも問いの文にも印が載らない）。
+ */
+bool top_menu_available(const GameFrame &frame, bool modern_active, bool targeting_active, bool tail_marks_more = false);
+
+/*!
+ * @brief 検査用の問い合わせ（`{"query":"ui"}`）の `phase`（画面の大きな状態）のうち、ゲームの中か外かを決める分。
+ * @return `death`（`game_over`）・`title`・`birth`・`game`。
+ * @details **`game_over` が先**（死亡後の画面は `pre_game_menu` も真なので、誕生と見分けられなくなる。修-10）。
+ * タイトルは、タイトルの選択の窓（`modern.content_type` が `start`）か、まだ窓が出ていないオープニングだけ。
+ * Frox・幻想蛮怒・Sil-Q は `title_screen` が「@ が出来るまで」真のままなので、窓が出てからの誕生の窓
+ * （名前の入力・種族の選択ほか）は `birth`（観-1）。
+ */
+const char *ui_probe_phase(const GameFrame &frame);
+
+/*! @brief 続き待ちの印を最新のメッセージの末尾にだけ付けるコアか（握手の `core_name`。RogueClone2・Rogue 3.6・Rogue 5.4）。 */
+bool core_marks_more_at_message_tail(const std::string &core_name);
 
 /*! @brief フレームを字だけで描く（2D の見え方。`--ascii-map`）。 */
 void draw_frame_as_text(TextOverlay &text, const GameFrame &frame, const std::string &title_line,

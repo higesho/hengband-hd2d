@@ -12,6 +12,19 @@ The respective upstream license terms still apply to derived portions, as outlin
 The changes are documented in `README.md`, as required by condition (2) of Hengband's
 additional terms.
 
+この派生版には許諾の違う部分があります。部分ごとの許諾は次のとおりです（原文は各節と
+`THIRD-PARTY-NOTICES.txt` にあります）。
+
+| 部分 | 許諾 | 節 |
+| --- | --- | --- |
+| 変愚蛮怒・短愚蛮怒・幻想蛮怒・FroxComposband、画面（`hd2d/`）、共通コード（`presentation/` `platform/`）、アダプタ、ツール | Moria / Angband 使用許諾（営利目的の配布を認めない） | §1 |
+| Angband・Umoria のコアに組み込まれる、この派生版の作者のコード（`angband/adapter/` `umoria/adapter/` と、それらが組み込む `presentation/` `platform/` のファイル） | §1 に加えて GPL v2 以降でも提供 | §7 |
+| Sil-Q | GPL v2 または Angband 使用許諾 | §2 |
+| Angband 4.2.6 | GPL v2（原作の二重許諾から GPL v2 を選ぶ） | §3 |
+| Umoria 5.7 系 | GPL v3 | §4 |
+| Rogue 3.6 / Rogue 5.4 | BSD 3 条項 | §5 |
+| RogueClone2 | 原作者の条件（営利目的で販売しない・資料を添付する・制限を加えない） | §6 |
+
 ---
 
 ## 1. Moria / Angband 使用許諾（大部分のコードに適用されます）
@@ -79,23 +92,154 @@ Sil-Q のフォント・音・画像はライセンスが本体と別なので�
 
 ---
 
-## 3. 素材について
+## 3. Angband 4.2.6（`angband/`）
 
-タイル画像・ボクセルモデル（`.vox`）・音の素材は、このリポジトリに含めていません
-（タイル画像だけで約 2.2GB あるためです）。これらを含むビルド済みのパッケージは
-<https://github.com/higesho/hengband-hd2d/releases> にあります。
+Angband は GNU GPL v2 と Angband 使用許諾のどちらかを選べる二重許諾です。原文は
+`angband/LICENSE.md` にあります（原作の `copying.rst` の写しです）。
 
-- ボクセルモデルは `tools/voxel/` の Python スクリプトで生成したものです
-- タイル画像は画像生成 AI（ComfyUI / Stable Diffusion）で生成したものです。生成に使った
-  ワークフローは含めていません
-
-タイル画像は画像生成 AI の出力なので、権利の扱いは国や用途によって異なる可能性があります。
-再配布・改変・商用利用を考える場合は各自でご確認ください。なお、1. の使用許諾により、
-このソースツリー全体が営利目的の配布を認めていない点にもご注意ください。
+- この派生版は、Angband のコア（`AngbandCore.exe`）を **GPL v2 を選んで**配布します。
+- GPL v2 の全文は `silq/LICENSE.md`（「GNU General Public License (GPL)」の節）か
+  <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html> にあります。
+- 原作の記載は、派生版でも二重の表記を残すことを勧めています。そのため `angband/LICENSE.md`
+  をそのまま置いています。
+- Angband のソースと、ゲームデータ（`lib/gamedata` など）はこのリポジトリに含めません。
+  固定版から用意する手順は §8 にあります。
+- Angband のタイル・フォント・音（`lib/tiles` `lib/fonts` `lib/sounds` `lib/icons`）は取り込んでいません。
+  これらは本体とは別の条件で配られています（Shockbolt のタイルは、改変に作者の許可が要り、
+  商用利用には明示の許諾が要ります）。
+- 著作権の表記は `THIRD-PARTY-NOTICES.txt` にもあります。
 
 ---
 
-## 4. 無保証
+## 4. Umoria 5.7 系（`umoria/`）
+
+Umoria 5.7 系は GNU GPL v3 です。原作の各ソースファイルには SPDX の識別子として
+`GPL-3.0-or-later` が書かれていますが、この派生版は Umoria のコア（`UmoriaCore.exe`）を
+**GPL v3** で配布します。
+
+- GPL v3 の全文は、配布物の `licenses/Umoria-LICENSE.txt`（原作の `LICENSE` そのもの）にあります。
+- 著作権者は、Robert A. Koeneke（1981-86）、James E. Wilson（1987-94）、Umoria 5.7.x の
+  Michael R. Cook と、原作の `AUTHORS` に挙がっている人々です。
+- Umoria のソースと、ゲームデータ（原作の `data/`）はこのリポジトリに含めません。
+  用意する手順は §8 にあります。
+- GPL v3 の通知文は `THIRD-PARTY-NOTICES.txt` にあります。
+- このリポジトリの `umoria/lang/ja/` は、英語の原文を鍵にした日本語の訳の表です。
+
+---
+
+## 5. Rogue 3.6 / Rogue 5.4（`rogue36/` `rogue54/` `rogue_legacy/`）
+
+Rogue 3.6（NewRogue 3.6.4）と Rogue 5.4（5.4.4）は BSD 3 条項の許諾です。原作の
+`LICENSE.TXT`（Michael Toy・Ken Arnold・Glenn Wichman の表記と、取り込まれた部分の
+Nicholas J. Kisseberth・David Burren などの表記を含む）の全文を `THIRD-PARTY-NOTICES.txt` に
+載せています。配布物には原作の `LICENSE.TXT` を `licenses/Rogue36-LICENSE.txt`
+`licenses/Rogue54-LICENSE.txt` として入れています。
+
+---
+
+## 6. RogueClone2（`rogue2/`）
+
+RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ日本語版）は、
+原作の `COPYING` に書かれた条件に従います。要点は次のとおりです（全文は
+`THIRD-PARTY-NOTICES.txt` に引用しています）。
+
+(1) 利益を目的として販売しないこと
+(2) すべてのドキュメントを付属させること
+(3) 配布したソースまたは実行ファイルの利用・改変・再配布に、さらに制限を加えないこと
+
+加えて、Rogue Clone の原作者（Tim Stoehr）は、ソースの配布にあたって、ソース先頭の注釈を
+取り除かないこと、作ったのが原作者であることを明示すること、個人的な利益を得ないことを
+求めています。
+
+- RogueClone2 のソースと日本語のメッセージ表（`rogue2/mesg`）はこのリポジトリに含めません。
+  用意する手順は §8 にあります。
+- 原作の `README` `COPYING` `AUTHORS` など、原作に付いているドキュメントの扱いは、
+  上の (2) に関わります。
+
+---
+
+## 7. 許諾の違うコアが同じ配布物に入ることについて
+
+- 配布物は、画面（`HengbandHd2d.exe`）と、ゲームごとのコアの実行ファイル（`HengbandCore.exe`
+  `AngbandCore.exe` `UmoriaCore.exe` など 10 本）でできています。それぞれ別の実行ファイルです。
+- 画面はコアを子プロセスとして起動し、パイプで、この派生版のプロトコル（バージョン 1）を使って
+  やりとりします。画面とコア、コアどうしは、ライブラリとしてリンクされていません。
+- 画面のソース（`hd2d/`）に、Angband・Umoria・Rogue 系の原作のコードは含まれていません。
+- 各コアの実行ファイルは、そのコアの原作のソース（固定版から再構成したもの。§8）に、
+  この派生版のアダプタ（`<コア名>/adapter/`）と共通のコード（`presentation/` `platform/` と
+  `third_party/cpp/` のヘッダーだけのライブラリ）をコンパイルして加えたものです。つまり
+  `AngbandCore.exe`（GPL v2）と `UmoriaCore.exe`（GPL v3）は、原作の GPL のコードと、
+  この派生版のアダプタ・共通のコードを 1 つの実行ファイルに含みます。
+- **この派生版の作者は、Angband と Umoria のコアの実行ファイルに組み込まれる自分のコードを、§1 の
+  使用許諾に加えて GNU GPL v2 以降（GPL v2 or later）でも提供します。** 対象は `angband/adapter/`
+  `umoria/adapter/` と、これらのコアに組み込まれる `presentation/` `platform/` のファイル
+  （`tools/angband/build_windows.py` と `tools/umoria/build_windows.py` が組み込むもの。
+  `presentation/frame/frame_codec.cpp` `protocol_messages.cpp` `protocol_transport.cpp`
+  `presentation/bridge/input_event_adapter.cpp` `native_targeting_runtime.cpp`
+  `platform/portable/legacy_os.cpp` と、それらが取り込むヘッダー）です。これらは変愚蛮怒の
+  原作のコードを含みません。
+- これにより、`AngbandCore.exe` は全体を GPL v2、`UmoriaCore.exe` は全体を GPL v3 の条件で
+  配布します。§1 の営利目的の配布の制限は、この 2 つの実行ファイルには加えません。
+- The author of this derivative also licenses their own code that is built into the Angband and
+  Umoria cores (listed above) under the GNU GPL, version 2 or (at your option) any later version,
+  in addition to the license in §1. `AngbandCore.exe` is therefore distributed under GPL v2 and
+  `UmoriaCore.exe` under GPL v3 as a whole.
+
+---
+
+## 8. GPL のコア（Angband・Umoria）の対応するソース
+
+`AngbandCore.exe`（GPL v2）と `UmoriaCore.exe`（GPL v3）の対応するソースは、次の 2 つを
+組み合わせて得られます。
+
+1. **上流の固定版**（原作そのまま）
+
+   | コア | 上流 | 固定のコミット |
+   | --- | --- | --- |
+   | Angband 4.2.6 | <https://github.com/angband/angband> | `f3082213b73f3e463e3d0d60bff4b00462beae6e`（タグ 4.2.6） |
+   | Umoria 5.7.15 | <https://github.com/dungeons-of-moria/umoria> | `3bf8abc4f76812810e59d738492c7b61fb8f1bb6` |
+
+   コミットは `tools/core_sources/manifest.json` にも書いてあります。
+2. **このリポジトリ**: 原作との差分の定義（`tools/core_sources/recipes/angband.json`
+   `tools/core_sources/recipes/umoria.json`）、アダプタ（`angband/adapter/` `umoria/adapter/`）、
+   共通のコード（`presentation/` `platform/` `third_party/cpp/`）、組み立ての手順
+   （`tools/angband/` `tools/umoria/` `tools/targeting/`）。配布物と同じ版には、その配布物を
+   作ったリリースのタグ（またはコミット）を使ってください。
+
+手順（詳しくは `README.md` の「ビルド」）:
+
+```
+# 上流を ../roguelike-cores/upstream/angband と ../roguelike-cores/upstream/umoria に
+# clone し、上の固定コミットに合わせる（detached HEAD）。prepare.py は他のコアの原作も
+# 要るので、全部の取得先は README.md の「原作の用意」を見てください
+python tools/core_sources/prepare.py                # 原作の固定版とレシピから、改変後のソースを再構成して検証する
+python tools/core_sources/prepare_original_data.py  # Angband の lib/ など、原作のデータを写す
+python tools/angband/build_windows.py               # AngbandCore.exe
+python tools/umoria/build_windows.py                # UmoriaCore.exe
+```
+
+`prepare.py` は、固定コミットのオブジェクトから範囲を取り出して再構成した全ファイルを
+SHA-256 で検証します。このリポジトリのレシピに、原作のソースの本文は含まれていません。
+
+---
+
+## 9. 素材について
+
+ボクセルモデル（`.vox`）・音の素材は、このリポジトリに含めていません。これらを含む
+ビルド済みのパッケージは <https://github.com/higesho/hengband-hd2d/releases> にあります。
+タイル画像（全部で約 2.2GB）は、このリポジトリにも、現在の配布物にも含めていません。
+
+- ボクセルモデルは `tools/voxel/` の Python スクリプトで生成したものです
+- タイル画像は画像生成 AI（ComfyUI / Stable Diffusion）で生成したものです（配布していません）。
+  生成に使ったワークフローは含めていません
+
+タイル画像は画像生成 AI の出力なので、権利の扱いは国や用途によって異なる可能性があります。
+再配布・改変・商用利用を考える場合は各自でご確認ください。なお、§1 の使用許諾が適用される部分は、
+営利目的の配布を認めていない点にもご注意ください。
+
+---
+
+## 10. 無保証
 
 ```
 本プログラムを使用したことによって生じたいかなる損害についても

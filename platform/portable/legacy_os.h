@@ -76,6 +76,14 @@ std::string exe_dir();
 std::string data_dir();
 
 /*!
+ * @brief この関数群が返すパス（Windows は ANSI＝CP932）を、プロトコルの JSON に載せる UTF-8 にする。
+ * @details ファイルを開くのは ANSI のままでよい（古い C のコアは fopen で開く）。**JSON に載せるときだけ**
+ * これを通す。通さずに載せると、日本語の名前のフォルダ（`C:\ゲーム\…`）で握手の返事が作れず、
+ * コアが握手の途中で落ちていた（遊んだ人の報告 2026-10-06）。Windows 以外はそのまま返す。
+ */
+std::string path_to_utf8(const std::string &native_path);
+
+/*!
  * @brief いまの UTC を ISO 8601（`2026-08-21T04:05:06.789Z`）で返す。
  * @details プロトコルの記録（JSON Lines）の時刻欄に使う。Windows は
  * `GetSystemTime`、それ以外は `gettimeofday` + `gmtime_r`——**どちらも UTC**で、

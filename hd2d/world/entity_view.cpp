@@ -190,6 +190,12 @@ std::uint8_t alert_at(const GameFrame &frame, int gx, int gy)
 
 } // namespace
 
+Vec3 screen_aligned_slab_normal(float yaw, float pitch)
+{
+    const float cp = std::cos(pitch);
+    return Vec3{ -std::sin(yaw) * cp, std::cos(yaw) * cp, std::sin(pitch) };
+}
+
 void EntityTracker::reset()
 {
     this->tracks_.clear();
@@ -247,7 +253,7 @@ EntityTracker::Track &EntityTracker::advance(std::uint32_t key, float target_x, 
 void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, SlabLibrary &slabs,
     VoxelRenderer &renderer, float dt, EntityView &out, bool hide_player, float player_min_speed,
     const SlabFacing &facing, GlyphAtlas *glyph_atlas, float glyph_height_cells,
-    GlyphAtlas *fallback_glyphs)
+    GlyphAtlas *fallback_glyphs, bool model_player)
 {
     //! **アスキー実体**。字が焼けないなら板へ落ちる。
     const bool ascii = (glyph_atlas != nullptr) && glyph_atlas->ready();
@@ -255,8 +261,10 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
     GlyphAtlas *const fallback
         = (!ascii && (fallback_glyphs != nullptr) && fallback_glyphs->ready()) ? fallback_glyphs : nullptr;
     out.glyphs.clear();
+    out.glyph_layers.clear();
     out.slabs.clear();
     out.rings.clear();
+    out.targeting_entities.clear();
     out.monsters = 0;
     out.objects = 0;
     out.players = 0;
@@ -280,13 +288,22 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
             continue;
         }
         /*
+         * 描く層（`EntityLayer`）。0xff00 以上の番号は罠など、アイテムではない床の物
+         * （Rogue 系のアダプタがそう送る。`rl_frame.cpp` / `r2_frame.cpp`）。
+         */
+        const EntityLayer layer = is_player ? EntityLayer::Player
+            : (is_monster ? EntityLayer::Monster
+            : ((cell.object_id >= 0xff00u) ? EntityLayer::Object : EntityLayer::Item));
+        /*
          * 絵を用意する。**アスキーでは板の目録を引かない**——字はコアが送ってきた
          * `ascii_fallback` だけで描けるので、タイルの無い実体（従来は
          * `missing_tiles` に数えて消していたもの）もちゃんと出る。
          */
         const GlyphAtlas::Entry *glyph = nullptr;
         int slab = -1;
-        if (ascii) {
+        if (is_player && model_player) {
+            // The GLB is ready; track this player without requiring a sprite asset.
+        } else if (ascii) {
             glyph = glyph_atlas->entry_for(cell.ascii_fallback);
             if (glyph == nullptr) {
                 ++out.missing_tiles; //!< 空白や焼けなかった字。**捏造しない**
@@ -388,7 +405,7 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
             }
         }
 
-        if (is_player && hide_player) {
+        if (is_player && (hide_player || model_player)) {
             // 一人称。カメラが本人の目の位置に居るので絵は出さない（出すと視界を塞ぐ）。
             // 位置の追随（上の `player_x/y`）は済ませてあるので、カメラはなめらかなまま。
             continue;
@@ -436,6 +453,11 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
             board.g = static_cast<float>(rgb.g) / 255.f;
             board.b = static_cast<float>(rgb.b) / 255.f;
             out.glyphs.push_back(board);
+            out.glyph_layers.push_back(layer);
+            if (is_player || is_monster) {
+                out.targeting_entities.push_back({is_player ? -1 : cell.monster_slot,
+                    cell.gx, cell.gy, board.x, board.y, board.z, board.width, board.height,{},true});
+            }
             continue;
         }
 
@@ -456,9 +478,31 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
         slot.inst.sx = width;
         slot.inst.sy = width;
         slot.inst.sz = height;
-        //! 一人称のときだけキャラへ正対させる（見下ろしは南向きのまま）。
+        //! 一人称のときだけキャラへ正対。screen-aligned のときは全板へ同じ画面角を使う。
         slot.inst.yaw = facing_yaw(track.x, track.y, facing);
+        slot.inst.pitch = facing.screen_aligned ? facing.screen_pitch : 0.f;
+        slot.layer = layer;
+        if (facing.screen_aligned) {
+            /*
+             * 画面に正対した板は、足元をマスの中心ではなく**手前の辺（画面の下端）**へ置く
+             * （決めたこと 2026-09-23「マスにぴったりタイルがはまるように」）。板は足元の
+             * 中心線を軸に傾けているので、カメラ側の水平方向へ半マスずらせばよい。
+             * 向きは板の向き（カメラの方位）から出すので、視点を回しても手前の辺に来る。
+             */
+            const float toward_x = -std::sin(slot.inst.yaw);
+            const float toward_y = std::cos(slot.inst.yaw);
+            slot.inst.x += 0.5f * toward_x;
+            slot.inst.y += 0.5f * toward_y;
+            slot.cx += 0.5f * toward_x;
+            slot.cy += 0.5f * toward_y;
+        }
         out.slabs.push_back(slot);
+        if (is_player || is_monster) {
+            const Vec3 normal = screen_aligned_slab_normal(slot.inst.yaw, slot.inst.pitch);
+            out.targeting_entities.push_back({is_player ? -1 : cell.monster_slot,
+                cell.gx, cell.gy, slot.cx, slot.cy, slot.inst.z, width, height,
+                normal,false});
+        }
     }
 
     /*
@@ -469,7 +513,7 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
      * **マスの中心へ置く**（なめらかにしない）——照準はマスを指すものであって、
      * 個体に貼りついているわけではない。敵が動けば次のフレームでマスごと動く。
      */
-    if ((frame.target_gx >= 0) && (frame.target_gy >= 0)) {
+    if (!frame.targeting.active && !frame.targeting.preview_only && (frame.target_gx >= 0) && (frame.target_gy >= 0)) {
         out.rings.push_back(make_ring(static_cast<float>(frame.target_gx) + 0.5f,
             static_cast<float>(frame.target_gy) + 0.5f, kTargetRadius, 11 /* TERM_YELLOW */, kTargetAlpha));
     }

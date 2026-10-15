@@ -74,11 +74,23 @@ void set_tile_manifest(const TileManifest *manifest);
 void set_pregame_choices(const std::vector<MenuChoice> &choices);
 
 /*!
+ * @brief 溜まっている魔法・矢弾の効果があるか（`host_present()` の「画面が変わっていない」の判定を飛ばすのに使う）。
+ * @details 記録は汲まれるまで残るので、組まないと届かない。命令待ち（動きの終わり）なら開いている 1 発も数える。
+ */
+bool attack_fx_ready();
+
+/*!
  * @brief いまのコアの状態を 1 フレームに写す。
  * @param frame_id 通し番号（呼び手が増やす。v1 §6.1 で常に出る唯一の数）
  * @details 呼んでよいのは**ゲームスレッド**だけ（`gb_shim.h` の読み口はどれも
  * 素の大域変数を読む）。
  */
 GameFrame capture_frame(unsigned long long frame_id);
+
+/*!
+ * @brief 重ねの画面の写し（基準との差分）の自己検査。`--selftest` から呼ぶ。
+ * @return 失敗した数
+ */
+int term_mirror_baseline_selftest();
 
 } // namespace gb

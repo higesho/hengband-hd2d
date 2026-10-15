@@ -3,9 +3,16 @@
   <PropertyGroup>
     <HengbandCoreSourceRoot Condition="'$(HengbandCoreSourceRoot)' == '' And '$(HENGBAND_CORE_SOURCE_ROOT)' != ''">$(HENGBAND_CORE_SOURCE_ROOT)</HengbandCoreSourceRoot>
     <HengbandCoreSourceRoot Condition="'$(HengbandCoreSourceRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\roguelike-cores\build-sources'))</HengbandCoreSourceRoot>
+    <HengbandTargetingOverlayRoot Condition="'$(HengbandTargetingOverlayRoot)' == ''">$(HengbandCoreSourceRoot)-targeting-windows</HengbandTargetingOverlayRoot>
+    <HengbandPython Condition="'$(HengbandPython)' == ''">python</HengbandPython>
   </PropertyGroup>
   <Target Name="RequirePreparedCoreSources" BeforeTargets="PrepareForBuild">
     <Error Condition="!Exists('$(HengbandCoreSourceRoot)\.prepared.json')"
            Text="External core sources are missing. Run python tools/core_sources/prepare.py or tools/core_sources/Build-Windows.ps1 before building cores. Override HengbandCoreSourceRoot for another output directory." />
+  </Target>
+  <Target Name="PrepareWindowsTargetingSources" BeforeTargets="PrepareForBuild" DependsOnTargets="RequirePreparedCoreSources">
+    <Exec Command="&quot;$(HengbandPython)&quot; &quot;$(MSBuildThisFileDirectory)..\tools\targeting\prepare_windows_overlay.py&quot; --sources &quot;$(HengbandCoreSourceRoot)&quot; --output &quot;$(HengbandTargetingOverlayRoot)&quot;" />
+    <Error Condition="!Exists('$(HengbandTargetingOverlayRoot)\manifest.json')"
+           Text="Windows targeting overlay was not generated: $(HengbandTargetingOverlayRoot)" />
   </Target>
 </Project>

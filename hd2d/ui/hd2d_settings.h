@@ -93,7 +93,7 @@ struct Hd2dSettings {
      * @brief 起動できるコアの一覧（設計 §6.1）。cfg の `cores=名|パス,名|パス`。
      * @details 空なら**初回**とみなし、`HengbandHd2d.exe` と同じ場所を見て
      * **在るものだけ**自動登録する（`hd2d_app.cpp` の `discover_cores`）。
-     * 1 件しか無ければ選択画面は**出さない**——既存利用者の起動を変えないため。
+     * 1 件しか無ければ選択画面は**出さない**——既存遊ぶ人の起動を変えないため。
      */
     std::vector<CoreEntry> cores;
     /*!
@@ -119,6 +119,12 @@ struct Hd2dSettings {
      * ので、読むときは必ず `layout_for()` を通すこと——`layout` を直に読むと、
      * 縦持ちのときだけ「メニューで選んだ物と出ている物が違う」になる。
      */
+    // New installations use modern UI theme A. Saved preferences still take precedence.
+    bool modern_ui{true};
+    int modern_theme{0};
+    int modern_font_level{0}; // Five steps; zero preserves the existing size.
+    // A/B/C share one theme across all windows; original uses the existing UI path.
+    int window_theme() const {return modern_ui?modern_theme:-1;}
     LayoutMode layout{ LayoutMode::Split };
     /*!
      * @brief **縦持ちの**画面の作り。既定は `Tall`（2026-08-12 に決めた
@@ -376,7 +382,7 @@ struct Hd2dSettings {
     int fps_step_ms{ 160 };
     /*!
      * @brief 操作 → キーボードのキー（`ui/key_binds.h`）。
-     * @details **入っているのは利用者が変えたぶんだけ**。コアのコマンドは既定では
+     * @details **入っているのは遊ぶ人が変えたぶんだけ**。コアのコマンドは既定では
      * コア自身のキー（`拾う` なら `g`）で出るので、ここに無い＝既定のまま、である。
      */
     KeyBinds key_binds{ default_key_binds() };
@@ -392,10 +398,14 @@ struct Hd2dSettings {
      * 分からない）ので、cfg を読んだ時点では入れられず、握手のあとで入れることになる。
      * その「入れたかどうか」を覚える場所がここ。
      *
-     * これが無いと、**利用者が外した割り当てが毎回復活する**。
+     * これが無いと、**遊ぶ人が外した割り当てが毎回復活する**。
      * 逆に持っていれば、既定は初回の 1 度だけ入って、あとは触られたとおりに残る。
+     *
+     * **真偽ではなく既定の版**。0 = 未、1 = 前の版（変愚の並びを字のまま
+     * どのコアでも引いた既定）、2 = コアごとに変愚と同じ意味のコマンドを割り当てた既定
+     * （`kPadDefaultsVersion`）。1 以下で読むと、表が届いたときに `upgrade_pad_defaults` が移す。
      */
-    bool pad_defaults_applied{ false };
+    int pad_defaults_version{ 0 };
     //! 背面の 1 枚絵（タイトル画・パネル）を出すか。
     /*!
      * @brief **実体の表現**。板か、アスキーの文字か。
@@ -475,6 +485,15 @@ struct Hd2dSettings {
 
     EntityStyle entity_style{ EntityStyle::Slab };
     /*!
+     * @brief アイテム・モンスター・プレイヤーの**ボクセル板を画面平面へ固定**する。
+     *
+     * @details 偽（既定）は従来のワールド基準／一人称の向き。真なら通常画面では
+     * カメラの yaw と pitch を板へそのまま与え、板の法線を常に `-Camera::forward()` にする。
+     * したがってカメラ位置に関係なく、全ての板が画面に対して平面で見える。
+     * VR は左右の目で画面平面が別なので、この設定では従来の VR 向きを維持する。
+     */
+    bool entity_slab_screen_aligned{ false };
+    /*!
      * @brief **画調**。
      *
      * @details 2026-08-19 に決めた「TRON 風の HD2D モード」。**独立したモードでは
@@ -490,7 +509,7 @@ struct Hd2dSettings {
     /*!
      * @brief TRON のときに**時刻に応じた空を出すか**（偽 ＝ 真っ黒。既定）。
      *
-     * @details 2026-08-19 に決めた（昼夜・天候・空の扱い＝「利用者が切り替え」）。
+     * @details 2026-08-19 に決めた（昼夜・天候・空の扱い＝「遊ぶ人が切り替え」）。
      *
      * | | 偽（既定） | 真 |
      * |---|---|---|
@@ -551,7 +570,28 @@ struct Hd2dSettings {
     static constexpr int kLeafPctMin = 0;
     static constexpr int kLeafPctMax = 200;
     /*!
-     * @brief **アスキーの字の大きさ**（1 マスに対する %）。2026-08-19 に決めた「設定で回せるように」。
+     * @name 光の届く範囲
+     * @details コアがプレイヤの光源で照らされているマスを送ってきたとき（`LightingState::player_lit`）、
+     * その範囲の床・壁・板・実体を一段明るくする。送らないコアでは何も起きない。
+     * @{
+     */
+    /*!
+     * 範囲の強調の強さ（百分率。0 = 出さない・100 = 最初の調整の値・200 = 倍）。
+     * **既定は 200**（決めたこと 2026-10-08「照明範囲はもう少しはっきりわかるように」で、
+     * 実機の 100% と 200% を見比べて 200% を既定にした）。上限は余裕を見て 400。
+     */
+    int light_range_pct{ 200 };
+    static constexpr int kLightRangePctMin = 0;
+    static constexpr int kLightRangePctMax = 400;
+    //! 範囲に入った・出たマスが目標の明るさへ寄るまでの時間（ミリ秒。0 = 即座に合わせる）。
+    int light_range_fade_ms{ 250 };
+    static constexpr int kLightRangeFadeMsMin = 0;
+    static constexpr int kLightRangeFadeMsMax = 2000;
+    //! 松明の光の揺らぎ（光源の種類が松明のときだけ。1 = 揺らす・既定 / 0 = 安定）。
+    bool torch_flicker{ true };
+    /*! @} */
+    /*!
+     * @brief **アスキーの字の大きさ**（1 マスに対する %）。決めたこと 2026-08-19「設定で回せるように」。
      *
      * @details 既定 80 は実装時の仮の値そのもの（背丈 0.8 マス）。実機で見ながら詰められるように
      * メニューへ出した——**字の読みやすさと地形の見えやすさは相反する**ので、
@@ -633,6 +673,23 @@ struct Hd2dSettings {
     bool damage_flash{ true };
     //! 被弾したときの画面の揺れ。**酔う人がいるのでフラッシュと別に切れる。**
     bool damage_shake{ true };
+    //! 攻撃の視覚効果の画面の揺れ（轟音など）。**酔う人がいるので被弾の揺れと別に切れる。**
+    //! `hd2d.cfg` の `fx_screen_shake`（既定 1。0 で切る）だけ。
+    bool fx_screen_shake{ true };
+    /*!
+     * @name HP/MP の玉の見せ方（`hd2d.cfg` だけ。機能メニューには並べない）
+     * @details 液面の動きの強さは**100 が既定**（`orb_hud.cpp` の基準値に対する割合）。
+     * 波を止めると水面は平らな線になる（酔う人向け。`damage_shake` と同じ考え方）。
+     * @{
+     */
+    bool orb_wave{ true }; //!< 波打つ水面（偽なら平ら。残量の増減の動きは残る）
+    int orb_wave_size_pct{ 100 }; //!< 波の大きさ（%）
+    int orb_wave_speed_pct{ 100 }; //!< 波の速さ（%）
+    int orb_rise_speed_pct{ 100 }; //!< 回復で液面が上がる速さ（%）
+    int orb_fall_speed_pct{ 100 }; //!< ダメージで液面が下がる速さ（%）
+    static constexpr int kOrbPctMin = 10;
+    static constexpr int kOrbPctMax = 400;
+    /*! @} */
     /*!
      * @brief 小窓（持ち物・足元の選択）の裏でも世界を進めるか。
      * @details true = 選んでいる間も殴られ、死ぬこともある（こちらの理想）。

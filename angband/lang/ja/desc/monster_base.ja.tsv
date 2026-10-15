@@ -1,0 +1,58 @@
+# monster_base.ja.tsv — monster_base.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+ancient dragon|desc	ebcc7b8a87	古代ドラゴン／ワイアーム
+ainu|desc	d718d30b60	アイヌア／マイア
+ant|desc	02cc2a6972	アリ
+bat|desc	acdf41b2a8	コウモリ
+bird|desc	fe7e2953e9	鳥
+canine|desc	a31f3765e5	犬
+centipede|desc	f9bc20bd44	ムカデ
+creeping coins|desc	0dfd0a6232	動く貨幣
+dragon|desc	eb22c5e28a	ドラゴン
+dragon fly|desc	d5f24b2ee5	トンボ
+eye|desc	82782e535a	浮遊する目
+elemental|desc	5871bb3619	エレメンタル
+feline|desc	baa581ac7c	猫
+ghost|desc	bf44c9857b	ゴースト
+giant|desc	99a12c26f6	巨人
+golem|desc	413d831ecf	ゴーレム
+humanoid|desc	60b693cd8b	ホビット／エルフ／ドワーフ
+hybrid|desc	8e01f6bc77	合成怪物
+hydra|desc	f291f63813	ヒドラ
+icky thing|desc	c6c096045d	べとべとしたもの
+insect|desc	dd3bffea23	昆虫
+jelly|desc	fd61a3701d	ゼリー
+killer beetle|desc	b75609f2c6	キラー・ビートル
+kobold|desc	30a85f331d	コボルド
+lich|desc	e3596dcb95	リッチ
+lurker|desc	a401ef12dd	ラーカー
+major demon|desc	02e8f37163	大悪魔
+mimic|desc	3f27eab306	ミミック
+minor demon|desc	93469a49a8	小悪魔
+mold|desc	ee77ed0f27	モルド
+mushroom|desc	aa146572ca	キノコ
+naga|desc	5e466f4ca8	ナーガ
+ogre|desc	105bd2ca28	オーガ
+orc|desc	25431a9722	オーク
+person|desc	ecf8d50475	人間
+quadruped|desc	42492e214e	四足獣
+quylthulg|desc	e591f22896	クイルスルグ
+reptile|desc	71903d3914	爬虫類／両生類
+rodent|desc	011cb25073	ネズミ
+skeleton|desc	4337ef337e	スケルトン
+snake|desc	90ec00c2b9	ヘビ
+spider|desc	8d6d012c9e	クモ／サソリ／ダニ
+townsfolk|desc	19a799b659	町の人
+tree|desc	76fb498881	木／エント
+troll|desc	a21d79cdae	トロル
+vampire|desc	729c85d6be	バンパイア
+vortex|desc	5a9a2f0644	ボルテックス
+worm|desc	6067a11db1	ワーム／ワームの群れ
+wraith|desc	7fb481a2e8	ワイト／レイス
+xorn|desc	6e15d92a8c	ゾーン／ザレン
+yeek|desc	f28bf92b83	イーク
+yeti|desc	5772bea463	イエティ
+zephyr hound|desc	ba7e0bce6c	ゼファーハウンド
+zombie|desc	0ef091b3da	ゾンビ／ミイラ
+player|desc	905cb326c7	あなた
+Morgoth|desc	a257ec2731	モルゴス

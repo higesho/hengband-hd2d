@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file ui_checks.cpp
  * @brief 画面まわりの検査（`--ui-check`）。窓と GL が要る。
  *
@@ -63,7 +63,26 @@
 #include "frame/protocol_messages.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h> //!< `--status-hud-check` が素材の画素を測る
 
+#include "app/checks/command_tabs_checks.h"
+#include "app/checks/top_menu_checks.h"
+#include "app/checks/game_over_checks.h"
+#include "app/checks/modern_skin_preview.h"
+#include "app/checks/panel_skin_preview.h"
+#include "app/checks/english_details_preview.h"
+#include "app/checks/menu_input_icons_checks.h"
+#include "app/checks/menu_scale_detection_checks.h"
+#include "app/checks/menu_selection_checks.h"
+#include "app/checks/menu_content_checks.h"
+#include "app/checks/context_popup_checks.h"
+#include "app/checks/footer_cancel_checks.h"
+#include "app/checks/scroll_list_checks.h"
+#include "app/checks/birth_cursor_checks.h"
+#include "app/checks/text_number_input_checks.h"
+#include "app/checks/message_history_checks.h"
+#include "app/checks/panel_font_sync_checks.h"
+#include "app/checks/targeting_checks.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -99,6 +118,24 @@ using namespace hd2d::gl; //!< GL の型と関数は `hd2d::gl` に居る（gl_c
  */
 int run_ui_check(const AppOptions &options)
 {
+    if(const auto *output=std::getenv("HD2D_TARGETING_CHECK"))return run_targeting_checks(options,output);
+    if(const auto *output=std::getenv("HD2D_PANEL_FONT_CHECK"))return run_panel_font_sync_checks(options,output);
+    if(const auto *output=std::getenv("HD2D_MENU_CONTENT_CHECK"))return run_menu_content_checks(options,output);
+    if(const auto *output=std::getenv("HD2D_MENU_SELECTION_CHECK"))return run_menu_selection_checks(options,output);
+    if(const auto *output=std::getenv("HD2D_MENU_SCALE_CHECK"))return run_menu_scale_detection_checks(options,output);
+    if(const auto *output=std::getenv("HD2D_MENU_INPUT_CHECK"))return run_menu_input_icons_check(options,output);
+    if(const auto *output=std::getenv("HD2D_CONTEXT_POPUP_CHECK"))return run_context_popup_check(options,output);
+    if(const auto *output=std::getenv("HD2D_FOOTER_CANCEL_CHECK"))return run_footer_cancel_check(options,output);
+    if(const auto *output=std::getenv("HD2D_ENGLISH_DETAILS_PREVIEW"))return render_english_details_preview(options,output);
+    if(const auto *output=std::getenv("HD2D_PANEL_SKIN_PREVIEW"))return render_panel_skin_preview(options,output);
+    if(const auto *output=std::getenv("HD2D_MENU_SKIN_PREVIEW"))return render_modern_skin_preview(options,output);
+    if (std::getenv("HD2D_COMMAND_TABS_CHECK") != nullptr) return run_command_tabs_checks();
+    if (std::getenv("HD2D_TOP_MENU_CHECK") != nullptr) return run_top_menu_checks();
+    if (std::getenv("HD2D_GAME_OVER_CHECK") != nullptr) return run_game_over_checks();
+    if (std::getenv("HD2D_SCROLL_LIST_CHECK") != nullptr) return run_scroll_list_checks();
+    if (std::getenv("HD2D_BIRTH_CURSOR_CHECK") != nullptr) return run_birth_cursor_checks();
+    if (std::getenv("HD2D_TEXT_NUMBER_INPUT_CHECK") != nullptr) return run_text_number_input_checks();
+    if (std::getenv("HD2D_MESSAGE_HISTORY_CHECK") != nullptr) return message_history_check::run_message_history_checks(options);
     if (std::getenv("HD2D_CORE_LINK_CHECK") != nullptr) {
         return run_core_link_check();
     }
@@ -167,7 +204,18 @@ int run_ui_check(const AppOptions &options)
      * **縦長も 1 つ入れる**（2026-08-12 に決めた で縦持ちの作りが増えた。
      * 横長だけで回していると、縦でだけ潰れる矩形をこの検査は一度も通さない）。
      */
-    const int sizes[][2] = { { screen_w, screen_h }, { 1280, 720 }, { 2560, 1080 }, { 1080, 1920 } };
+    /*!
+     * **実際の窓の大きさが固定のどれかと同じなら、重ねずに 1 度だけ回す。**`--windowed=1280x720` で
+     * 回すと先頭（実際の窓）と 2 番目が同じ大きさになり、同じ配置の検査が 2 度走って、失敗が
+     * 2 度数えられていた（2026-09-30。AH-60 の担当が Linux の `--ui-check` で見つけた）。
+     */
+    std::vector<std::array<int, 2>> sizes;
+    for (const std::array<int, 2> &candidate : { std::array<int, 2>{ screen_w, screen_h }, std::array<int, 2>{ 1280, 720 },
+             std::array<int, 2>{ 2560, 1080 }, std::array<int, 2>{ 1080, 1920 } }) {
+        if (std::find(sizes.begin(), sizes.end(), candidate) == sizes.end()) {
+            sizes.push_back(candidate);
+        }
+    }
 
     std::fprintf(stderr, "[hd2d] ui-check  文字のマス %dx%d  3D を広げる %dpx%s\n",
         text.cell_w(), text.cell_h(), options.grow_scene, options.ui_check_fullscreen ? "  （全画面）" : "");
@@ -269,6 +317,45 @@ int run_ui_check(const AppOptions &options)
                 if (!layout.minimap.empty()
                     && layout.minimap.contains(scene.x + (scene.w / 2), scene.y + (scene.h / 2))) {
                     fail(tag + ": ミニマップが地図の中心（自機の居る所）に被っています");
+                }
+                /*
+                 * **HP/MP の玉**。ゲーム中の作りのどれでも置かれ、
+                 * 地図の中・左右の中央に収まり、最下段の帯・状態列・名前の行・下段のサブパネルと
+                 * 重ならないこと（メッセージとプロンプトの帯は玉の上に重ねて描くので見ない。2026-10-09）。
+                 * **右列のサブパネル（`sub[4..6]`）は見ない**——重なる作りで開いたとき、玉の右の翼の
+                 * 端がパネルの下へ入るのは仕様である（玉は地図の左右の中央に置く）。
+                 */
+                {
+                    const RectPx &orb = layout.orb;
+                    if (orb.empty()) {
+                        fail(tag + ": HP/MP の玉が置かれていません");
+                    } else {
+                        //! 見えている部分（下の薄い影を除く）で見る。設計の矩形は下縁より下へはみ出す（2026-10-09）。
+                        const RectPx shown = orb_visible_rect(orb);
+                        const long long orb_area = static_cast<long long>(shown.w) * static_cast<long long>(shown.h);
+                        if (rect_overlap_area(shown, layout.scene) != orb_area) {
+                            fail(tag + ": 玉が地図の枠からはみ出しています");
+                        }
+                        const std::pair<const char *, RectPx> avoids[] = {
+                            { "bottom_bar", layout.bottom_bar }, { "message_bar", layout.message_bar }, { "status_col", layout.status_col },
+                            { "hud", layout.hud }, { "sub[0]", layout.sub[0] }, { "sub[1]", layout.sub[1] },
+                            { "sub[2]", layout.sub[2] }, { "sub[3]", layout.sub[3] },
+                        };
+                        for (const auto &avoid : avoids) {
+                            const long long overlap = rect_overlap_area(shown, avoid.second);
+                            if (overlap > 0) {
+                                fail(tag + ": 玉と " + avoid.first + " が重なっています（" + std::to_string(overlap) + " 画素）");
+                            }
+                        }
+                        if (std::abs(((orb.x * 2) + orb.w) - ((layout.scene.x * 2) + layout.scene.w)) > 2) {
+                            fail(tag + ": 玉が地図の左右の中央にありません");
+                        }
+                        if ((orb.h > kOrbHeightMax)
+                            || (std::abs((orb.w * kOrbDesignH) - (orb.h * kOrbDesignW)) > kOrbDesignW)) {
+                            fail(tag + ": 玉の大きさが上限を超えているか縦横比が違います（"
+                                + std::to_string(orb.w) + "x" + std::to_string(orb.h) + "）");
+                        }
+                    }
                 }
                 //! @note ここは既定（右上）で回している。5 つの位置は (1'') で別に掃く
                 //! ——**画面中央は「被るのが仕様」**なので、この規則をそのまま当てられない。
@@ -492,6 +579,118 @@ int run_ui_check(const AppOptions &options)
             port.content.h, land.content.h, port.minimap.w, port.minimap.h, port.scene.w, port.scene.h);
     }
 
+    /*
+     * (1b) 状態列の幅（修-15）。字を大きくしても、申告された桁数（＋左右の余白 1 桁ずつ）が幅で切れない。
+     * 13 桁（変愚・短愚など）と 20 桁（幻想蛮怒・Frox）を、作り 3 種・窓 2 種・マスの幅 8〜16 で回す。
+     */
+    for (const int cols : { 13, 20 }) {
+        set_status_col_cols(cols);
+        for (const LayoutMode mode : { LayoutMode::Split, LayoutMode::Hybrid, LayoutMode::Tall }) {
+            for (const std::array<int, 2> &size : { std::array<int, 2>{ 1280, 720 }, std::array<int, 2>{ 2560, 1080 } }) {
+                for (const int cell_w : { 8, 12, 14, 16 }) {
+                    const UiLayout layout = UiLayout::compute(mode, size[0], size[1], cell_w, cell_w * 2, false);
+                    if (layout.status_col.empty()) {
+                        continue; // 状態列が無い作り
+                    }
+                    const int want = cell_w * (cols + 2);
+                    if (layout.status_col.w < want) {
+                        fail(std::string("状態列が桁の幅に足りません（") + layout_mode_name(mode) + " " + std::to_string(size[0])
+                            + "x" + std::to_string(size[1]) + "・" + std::to_string(cols) + "桁・マス " + std::to_string(cell_w)
+                            + "：" + std::to_string(layout.status_col.w) + " < " + std::to_string(want) + "）");
+                    }
+                }
+            }
+        }
+    }
+    set_status_col_cols(0);
+    /*
+     * (1c) 下の帯の操作説明（修-14）。コントローラーの案内（左）とキーの案内（右端）が同じ行に出る。
+     * どんな幅でも、実際に描く幅の合計が帯の幅を超えない（＝矩形が交わらない）。
+     */
+    for (int body_w = 40; body_w <= 1800; body_w += 7) {
+        for (const int hint_w : { 300, 520, 900 }) {
+            for (const int key_w : { 0, 200, 480, 760 }) {
+                const int kw = std::min(key_w, body_w);
+                const int room = bottom_hint_room(body_w, hint_w, kw, 16, 32);
+                const int drawn = (room > 0) ? std::min(hint_w, room) : 0;
+                if (drawn + kw > body_w) {
+                    fail("下の帯の左右の案内が重なります（帯 " + std::to_string(body_w) + "・左 " + std::to_string(hint_w)
+                        + "・右 " + std::to_string(kw) + " → 左を " + std::to_string(drawn) + "）");
+                }
+            }
+        }
+    }
+
+    /*
+     * (1d) 問いの帯の選択肢が幅を超えるとき（修-32 の担当の気づき。Frox の `Travel: `）。右が切れて選んでいる選択肢の枠が
+     * 見えない所へ行っていた。どの選択肢を選んでも、その選択肢が帯に入る（入るときは行も枠も従来のまま）。
+     * 字の幅は ASCII 8・それ以外 16 画素（窓 1280x720 の実測と同じ割合）。
+     */
+    {
+        const auto measure = [](const std::string &s) {
+            int w = 0;
+            for (std::size_t i = 0; i < s.size();) {
+                const unsigned char c = static_cast<unsigned char>(s[i]);
+                if (c < 0x80) {
+                    w += 8;
+                    i += 1;
+                } else {
+                    w += 16;
+                    i += (c >= 0xF0) ? 4 : ((c >= 0xE0) ? 3 : 2);
+                }
+            }
+            return w;
+        };
+        struct Band {
+            std::string head;
+            std::vector<std::string> labels;
+        };
+        const std::vector<Band> bands = {
+            { "Travel: ", { "Select this square", "Next down stairs", "Next up stairs", "Next monster", "Toggle monster visibility", "Journey targets" } },
+            { reinterpret_cast<const char *>(u8"移動先を選ぶ: "),
+                { reinterpret_cast<const char *>(u8"このマスを選ぶ"), reinterpret_cast<const char *>(u8"次の下り階段"),
+                    reinterpret_cast<const char *>(u8"次の上り階段"), reinterpret_cast<const char *>(u8"次のモンスター"),
+                    reinterpret_cast<const char *>(u8"モンスターの表示切替"), reinterpret_cast<const char *>(u8"目的地の一覧") } },
+        };
+        for (const Band &band : bands) {
+            std::string line = band.head;
+            std::vector<std::pair<int, int>> ranges;
+            for (const std::string &label : band.labels) {
+                if (line != band.head) {
+                    line += "  ";
+                }
+                line += '[';
+                ranges.emplace_back(static_cast<int>(line.size()), static_cast<int>(label.size()));
+                line += label;
+                line += ']';
+            }
+            for (const int limit : { 330, 420, 560, 730, 1100, 2000 }) {
+                for (int sel = 0; sel < static_cast<int>(ranges.size()); ++sel) {
+                    const PromptBandView v = fit_prompt_band(line, ranges, sel, limit, measure);
+                    const std::string where = "（帯 " + std::to_string(limit) + "・" + std::to_string(sel) + " 番）";
+                    if (measure(line) <= limit) {
+                        if (v.cut || (v.text != line)) {
+                            fail("問いの帯が入るのに絞っています" + where);
+                        }
+                        continue;
+                    }
+                    const std::string label = band.labels[static_cast<std::size_t>(sel)];
+                    const std::size_t at = v.text.find("[" + label + "]");
+                    if (!v.cut || (at == std::string::npos)) {
+                        fail("問いの帯が入らないのに、選んでいる選択肢が帯に出ません" + where);
+                        continue;
+                    }
+                    if (measure(v.text) > limit) {
+                        fail("問いの帯の絞った字が幅を超えています" + where);
+                    }
+                    if ((v.frame_x != measure(v.text.substr(0, at + 1))) || (v.frame_w != measure(label))) {
+                        fail("問いの帯の枠が選んでいる選択肢とずれています" + where);
+                    }
+                }
+            }
+        }
+    }
+
     /* ---------------------------------------------------- (2) 画素 */
     const unsigned char clear[3] = { 5, 5, 8 };
     for (const LayoutMode mode : modes) {
@@ -551,6 +750,7 @@ int run_ui_check(const AppOptions &options)
         std::vector<Named> want;
         want.push_back(Named{ "status_col", layout.status_col });
         want.push_back(Named{ "hud", layout.hud });
+        want.push_back(Named{ "orb", layout.orb }); //!< 画像なしの検査なので、玉の代わりの棒が描かれる
         want.push_back(Named{ "message_bar", layout.message_bar });
         want.push_back(Named{ "prompt_bar", layout.prompt_bar });
         want.push_back(Named{ "bottom_bar", layout.bottom_bar });
@@ -635,10 +835,15 @@ int run_ui_check(const AppOptions &options)
         const std::vector<unsigned char> empty_label = shoot_hud(std::string());
         const std::vector<unsigned char> spelled_sp = shoot_hud("SP");
         const std::vector<unsigned char> voice = shoot_hud("Voice");
+        /*
+         * 棒は玉（`orb`）に置き換わった（2026-10-08）。この検査は画像を渡さないので、
+         * 玉の矩形の中に**元の棒**が描かれる。名札はそこに出る。
+         * 玉の画像で描いた名札は `--status-hud-check=` が同じ約束で見る。
+         */
         const std::size_t same = count_changed_pixels(empty_label, spelled_sp,
-            screen_w, screen_h, gauge_layout.hud);
+            screen_w, screen_h, gauge_layout.orb);
         const std::size_t moved = count_changed_pixels(empty_label, voice,
-            screen_w, screen_h, gauge_layout.hud);
+            screen_w, screen_h, gauge_layout.orb);
         std::fprintf(stderr, "  (2-b) SP の名札: 空と\"SP\"の差 %zu 画素 / \"Voice\"との差 %zu 画素\n",
             same, moved);
         if (same != 0) {
@@ -1444,6 +1649,15 @@ int run_ui_check(const AppOptions &options)
     /* ---------------------------------------- (4) 機能メニューと設定の保存 */
     {
         Hd2dSettings settings;
+        /*
+         * この節は、Modern UI 導入前からある「従来の機能メニュー」の回帰検査である。
+         * 現在の既定値は modern_ui=true で、Modern 側は Confirm で編集モードへ入る
+         * 設計・タブ式コマンドメニューなので、ここへその既定値をそのまま流すと
+         * 「直接 Right で値を変える」「分類へ潜る」という旧契約の検査そのものが
+         * 別 UI を誤操作して FAIL する。Modern 側は command-tabs / menu-input /
+         * menu-scale / menu-selection / menu-content の専用検査で別に覆う。
+         */
+        settings.modern_ui = false;
         FeatureMenu menu;
         if (menu.is_open()) {
             fail("機能メニュー: 開く前から開いています");
@@ -1498,7 +1712,7 @@ int run_ui_check(const AppOptions &options)
         /*
          * **縦向きの側は別に持っている**（同 2026-08-12）。縦へ切り替えてから回すと
          * 縦だけが動き、横は動かないはず。ここが落ちると「回したら横の設定まで変わる」
-         * ——利用者から見れば「片方を直すともう片方が壊れる」になる。
+         * ——遊ぶ人から見れば「片方を直すともう片方が壊れる」になる。
          */
         {
             const LayoutMode land_before = settings.layout;
@@ -1651,6 +1865,12 @@ int run_ui_check(const AppOptions &options)
          */
         settings.vpad.slot[kVpadLandscape][static_cast<int>(VpadControl::A)] = VpadSlot{ 0.11f, 0.22f, 1.30f };
         settings.vpad.slot[kVpadPortrait][static_cast<int>(VpadControl::A)] = VpadSlot{ 0.77f, 0.88f, 0.70f };
+        /*
+         * **画面が自分で描くサブパネルの種類（100〜104。Rogue 系・Umoria）が往復すること**
+         * （読む側が 0〜15 だけを受けて、保存した割り当てが次の起動で消えていた。2026-10-04）。
+         */
+        settings.sub_panel_kind[1] = kBuiltinSubPanelKindBase + 2;
+        settings.sub_panel_kind[4] = kBuiltinSubPanelKindBase + 4;
         if (!save_settings(cfg_path, settings)) {
             fail("設定の保存: 書けません");
         }
@@ -1960,8 +2180,16 @@ int run_ui_check(const AppOptions &options)
              * 「立った」ところまでを見る（机の前で音が出ると検査が嫌われる。
              * `GB_AUDIO_SILENT` と同じ考え）。
              */
+            /*
+             * `HENGBAND_MUTE=1`（検査で音を鳴らさない。決めたこと 2026-09-26）のときは
+             * 装置を開かないので、装置が要る項目だけ飛ばす。表引き・定位・減衰は下で見る。
+             */
+            std::string audio_log = "HENGBAND_MUTE のため装置は見ていない";
+            const char *audio_mute = std::getenv("HENGBAND_MUTE");
+            if (audio_mute != nullptr && audio_mute[0] != '0') {
+                std::puts("[ui-check] 音の装置: HENGBAND_MUTE のため省いた");
+            } else {
             AudioEngine engine;
-            std::string audio_log;
             if (!engine.open(&audio_log)) {
                 fail((std::string("音: 装置を開けません — ") + audio_log).c_str());
             }
@@ -2016,6 +2244,7 @@ int run_ui_check(const AppOptions &options)
                 std::printf("[ui-check] ベッドの素材: %d 本を読み込み\n", checked);
             }
             engine.close();
+            }
             /*
              * ---- 定位----
              *
@@ -2210,7 +2439,7 @@ int run_ui_check(const AppOptions &options)
          */
         HudState bind_state = state;
         //! 検査用の合成なので、マクロは 1 つも乗っていないことにする（`PadMacroFlags{}`）。
-        bind_state.controller_binds = build_pad_bind_items(settings.pad, many, PadMacroFlags{}, 0);
+        bind_state.controller_binds = build_pad_bind_items(settings.pad, many, PadMacroFlags{}, 0, settings.modern_ui);
         /*
          * **`Split` で描く。**既定の作りであり、**地図の枠が窓と別にある唯一の作り**なので、
          * 「メインのマップパネルに収まる」（2026-08-11 に決めた）を確かめられるのはここだけ。
@@ -2269,14 +2498,17 @@ int run_ui_check(const AppOptions &options)
         SDL_GL_SwapWindow(window.window);
 
         /*
-         * (4''''') **決定でコマンドメニューが開く条件**（2026-08-23 に決めた
-         * 「A に、決定と同じく既定でコマンドメニューを置きたい」）。
+         * (4''''') **決定（Enter / A）が何もしなくなる条件**（決めたこと 2026-09-25。
+         * 元は 2026-08-23 の「A に、決定と同じく既定でコマンドメニューを置きたい」）。
          *
-         * 規則は `confirm_opens_command_menu()` の 1 か所で、パッドの A と
+         * コマンドメニューはいま F1 とパッド Start だけが開く。決定は確認の専任で、
+         * 確認する相手が無いとき（`nothing_to_confirm()`）は**何もしない**
+         * （コアへも送らない）。規則は `nothing_to_confirm()` の 1 か所で、パッドの A と
          * キーボードの Enter が同じそこを見る。ここで押さえるのは 3 つ:
-         *   1. **命令を待っているときだけ開く**（コアが `awaiting_command` を立てたとき）
-         *   2. **`-more-` や `y/n` の待ちでは開かない**（旗が降りている＝決定のまま流す）
-         *   3. **文字を打っている最中は開かない**（打ち終わりの Enter を奪わない）
+         *   1. **命令をただ待っているときだけ「無い」と判定する**
+         *      （コアが `awaiting_command` を立てたとき）
+         *   2. **`-more-` や `y/n` の待ちでは「ある」と判定する**（決定がそのまま答えを運ぶ）
+         *   3. **文字を打っている最中は「ある」と判定する**（打ち終わりの Enter を奪わない）
          *
          * 2 は「旗を立てないコア（変愚・短愚・幻想）では今までどおり」も兼ねている
          * ——あちらは `\r` を受けたコア自身が通常メニューを開く。
@@ -2284,23 +2516,24 @@ int run_ui_check(const AppOptions &options)
         {
             GameFrame waiting{};
             waiting.awaiting_command = true;
-            if (!confirm_opens_command_menu(waiting)) {
-                fail("決定の行き先: 命令を待っているのにコマンドメニューが開きません");
+            if (!nothing_to_confirm(waiting)) {
+                fail("決定の行き先: 命令を待っているのに Enter/A が何もしなくなりません");
             }
             GameFrame busy{};
             busy.awaiting_command = false;
-            if (confirm_opens_command_menu(busy)) {
-                fail("決定の行き先: 命令待ちでないのにコマンドメニューが開きます"
+            if (nothing_to_confirm(busy)) {
+                fail("決定の行き先: 命令待ちでないのに Enter/A が何もしなくなります"
                      "（`-more-` が進まなくなります）");
             }
             GameFrame typing{};
             typing.awaiting_command = true;
             typing.text_input_active = true;
-            if (confirm_opens_command_menu(typing)) {
-                fail("決定の行き先: 文字を打っている最中にコマンドメニューが開きます");
+            if (nothing_to_confirm(typing)) {
+                fail("決定の行き先: 文字を打っている最中に Enter/A が何もしなくなります");
             }
-            std::fprintf(stderr, "  (4''''') 決定の行き先: 命令待ちだけで開く"
-                                 "（`-more-`・文字入力では開かない）\n");
+            std::fprintf(stderr, "  (4''''') 決定の行き先: 命令待ちだけで何もしなくなる"
+                                 "（`-more-`・文字入力では今までどおり確認へ渡る。"
+                                 "コマンドメニューは F1 / Start 専任）\n");
         }
 
         /*
@@ -2361,7 +2594,7 @@ int run_ui_check(const AppOptions &options)
              * 「割り当たっているキーを全部出す」。例は「拾う（`,`）」）。
              *
              * 合成の表は `keys = {'a' + (i % 26)}` なので、「行動」の中の 2 件目
-             * （`id=2`・`i=1`）は `検査の命令 2 (b)` になっていなければならない。
+             * （`id=2`・`i=1`）は `b) 検査の命令 2` になっていなければならない。
              * **出せない命令には綴りを出さない**（`id=1` は `keys` が空）。
              *
              * 綴りは決め打ちしないのが要点なので、**綴りが出ていること**と
@@ -2372,11 +2605,11 @@ int run_ui_check(const AppOptions &options)
                 const auto has = [&labels](const std::string &want) {
                     return std::find(labels.begin(), labels.end(), want) != labels.end();
                 };
-                if (!has("検査の命令 2 (b)")) {
-                    fail("コマンドメニュー: 名札に盤の綴りが出ていません（「検査の命令 2 (b)」のはず）");
+                if (!has("b) 検査の命令 2")) {
+                    fail("コマンドメニュー: 名札に盤の綴りが出ていません（「b) 検査の命令 2」のはず）");
                 }
-                if (!has("検査の命令 3 (c)")) {
-                    fail("コマンドメニュー: 綴りが 1 件だけしか出ていません（「検査の命令 3 (c)」のはず）");
+                if (!has("c) 検査の命令 3")) {
+                    fail("コマンドメニュー: 綴りが 1 件だけしか出ていません（「c) 検査の命令 3」のはず）");
                 }
                 /*
                  * 出せない行は**名札＋「出せません」だけ**であること。
@@ -3731,6 +3964,71 @@ int run_ui_check(const AppOptions &options)
                 }
             }
 
+            /*
+             * (a''') **前の案内の「抜け」「幕が上がる」の最中に次の階へ着いても、新しい案内が始まる**
+             * （2 周目のテストの報告 2026-10-15。案内を閉じて 0.85 秒以内に次の階段を踏むと、
+             * `Idle` でしか受けない版は幕も案内も出さず、新しい階がそのまま見えた）。
+             *
+             * 抜け（`Out`）と幕が上がる間（`Reveal`）の 2 通りで、それぞれ
+             * ① 階だけ新しく地図は元のまま → 幕が張り直される（`pending()`）
+             * ② 続く到着 → 案内が始まる（`blocks_input()`）
+             * を見る。
+             */
+            for (int phase_case = 0; phase_case < 2; ++phase_case) {
+                const bool in_out = (phase_case == 0); //!< 0＝抜けの最中・1＝幕が上がる最中
+                const char *const label = in_out ? "抜けの最中" : "幕が上がる最中";
+                FloorCutin re;
+                std::string re_err;
+                if (!re.init(re_err)) {
+                    fail("カットイン: 用意できませんでした（連続の階段の検査）: " + re_err);
+                    continue;
+                }
+                const GameFrame ra = make_floor_frame(static_cast<int>(FloorKind::Dungeon), 2, 1, false);
+                re.update(ra, 0.016f, layout, true); //!< 覚えるだけ
+                const GameFrame rb = make_floor_frame(static_cast<int>(FloorKind::Dungeon), 2, 2, false);
+                re.update(rb, 0.016f, layout, true); //!< 到着 → 案内が始まる
+                for (int i = 0; i < 120; ++i) {
+                    re.update(rb, 0.016f, layout, true); //!< 入り → 待ち
+                }
+                if (!re.confirm()) {
+                    fail(std::string("カットイン: 連続の階段の検査で決定を受け付けません（") + label + "）");
+                    continue;
+                }
+                //! 抜け（0.30 秒）は 5 フレームで抜けの最中、40 フレーム（0.64 秒）で幕が上がる最中。
+                for (int i = 0; i < (in_out ? 5 : 40); ++i) {
+                    re.update(rb, 0.016f, layout, true);
+                }
+                if (!re.active() || re.blocks_input() == !in_out) {
+                    //! 抜けの間は入力を止めている・幕が上がる間は止めていない（段に居ることの確かめ）。
+                    fail(std::string("カットイン: 連続の階段の検査の段に居ません（") + label + "）");
+                    continue;
+                }
+                //! ① 階だけ新しく・地図は元の階のまま（`-more-` の待ち）。
+                GameFrame rmid = make_floor_frame(static_cast<int>(FloorKind::Dungeon), 2, 3, false);
+                rmid.floor.generated_turn = rb.floor.generated_turn;
+                rmid.minimap = rb.minimap;
+                re.update(rmid, 0.016f, layout, true);
+                if (!re.pending()) {
+                    fail(std::string("カットイン: **前の案内の") + label
+                        + "に次の階段を踏んでも幕が張り直されません**（元の階が見える）");
+                }
+                if (re.blocks_input()) {
+                    fail(std::string("カットイン: 連続の階段で、地図が元の階のままの 1 枚で始まりました（")
+                        + label + "）");
+                }
+                //! ② 行先の地図が来た。**新しい階の案内が始まる。**
+                const GameFrame rarr = make_floor_frame(static_cast<int>(FloorKind::Dungeon), 2, 3, false);
+                re.update(rarr, 0.016f, layout, true);
+                for (int i = 0; i < 40; ++i) {
+                    re.update(rarr, 0.016f, layout, true); //!< 入り（0.42 秒）→ 決定待ち。前の案内の抜けが続くだけなら待ちに着かない
+                }
+                if (!re.waiting()) {
+                    fail(std::string("カットイン: **前の案内の") + label
+                        + "に着いた階の案内が決定待ちに着きません**（新しい階がそのまま見える）");
+                }
+                re.shutdown();
+            }
+
             //! (b) 階が変わったら始まり、**コアへ流させない**。
             GameFrame f2 = make_floor_frame(static_cast<int>(FloorKind::Dungeon), 2, 2, false);
             cutin.update(f2, 0.016f, layout, true);
@@ -3824,6 +4122,7 @@ int run_ui_check(const AppOptions &options)
             cutin.shutdown();
             std::fprintf(stderr, "  (8) カットイン: 層が変わったら出る / 着くまで始めない / "
                                  "**着くまで幕は張る**（元の階を見せない） / "
+                                 "**前の案内の抜け・幕が上がる最中に着いても始まる** / "
                                  "**turn を送らないコアでも出る** / 決定まで待つ / 作り直しただけでは出ない / 全体マップでは出ない / "
                                  "窓の大きさが変わっても落ちない / 地図が消えたら畳む\n");
         }
@@ -3835,6 +4134,2253 @@ int run_ui_check(const AppOptions &options)
     SDL_GL_DeleteContext(window.context);
     SDL_DestroyWindow(window.window);
     SDL_Quit();
+    std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
+    return (failures == 0) ? 0 : 1;
+}
+
+/* ====================================================================== */
+/*  --status-hud-check=出力.png                                            */
+/*  HP/MP の玉とバフ・デバフのアイコン            */
+/* ====================================================================== */
+
+namespace {
+
+//! 画面外の描画先（窓の大きさに縛られず 2560x1080 などを描くため）。
+struct StatusHudTarget {
+    GLuint fbo{ 0 };
+    GLuint tex{ 0 };
+    int w{ 0 };
+    int h{ 0 };
+};
+
+bool make_status_hud_target(StatusHudTarget &t, int w, int h)
+{
+    t.w = w;
+    t.h = h;
+    glGenTextures(1, &t.tex);
+    glBindTexture(GL_TEXTURE_2D, t.tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(GL_RGBA8), w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(GL_LINEAR));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(GL_LINEAR));
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glGenFramebuffers(1, &t.fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, t.fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, t.tex, 0);
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+}
+
+void release_status_hud_target(StatusHudTarget &t)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    if (t.fbo != 0) {
+        glDeleteFramebuffers(1, &t.fbo);
+    }
+    if (t.tex != 0) {
+        glDeleteTextures(1, &t.tex);
+    }
+    t = StatusHudTarget{};
+}
+
+//! 合成のバフ・デバフ（玉の横: 良い 8・悪い 3・知らない名前 1 ／ 常時の列: 良い 14・呪い 3）。
+void fill_status_hud_frame(GameFrame &frame)
+{
+    frame.hud.name = "検査用のキャラクター";
+    frame.hud.hp = 171;
+    frame.hud.hp_max = 245;
+    frame.hud.sp = 38;
+    frame.hud.sp_max = 92;
+    frame.hud.gold = 12345;
+    frame.hud.level = 27;
+    frame.status_effects.clear();
+    const auto add = [&](const char *key, const char *label, const char *amount, StatusEffectKind kind) {
+        StatusEffectView v;
+        v.key = key;
+        v.label_utf8 = label;
+        v.amount_utf8 = amount;
+        v.kind = kind;
+        frame.status_effects.push_back(v);
+    };
+    add("haste", "加速", "+10", StatusEffectKind::Good);
+    add("hero", "ヒーロー", "", StatusEffectKind::Good);
+    add("blessed", "祝福", "", StatusEffectKind::Good);
+    add("res_fire", "火炎耐性", "", StatusEffectKind::Good);
+    add("res_cold", "冷気耐性", "", StatusEffectKind::Good);
+    add("telepathy", "テレパシー", "", StatusEffectKind::Good);
+    add("sh_fire", "火のオーラ", "", StatusEffectKind::Good); //!< 5 文字: 「火の／オーラ」に折れる
+    add("recall", "帰還待ち", "", StatusEffectKind::Waiting);
+    add("poisoned", "毒", "", StatusEffectKind::Bad);
+    add("confused", "混乱", "", StatusEffectKind::Bad);
+    add("cut", "ひどい切り傷", "", StatusEffectKind::Bad); //!< 6 文字: 「ひどい／切り傷」
+    add("no_such_key", "Sense Dragons", "", StatusEffectKind::Good); //!< 英語 2 語: 「Sense／Dragons」
+    //! 常時の効果（良い 14・呪い 3）。名前の長いものを混ぜて、字の縮めを通す。
+    add("res_fire", "耐火炎", "", StatusEffectKind::Permanent);
+    add("imm_cold", "冷気免疫", "", StatusEffectKind::Permanent);
+    add("res_shard", "耐破片", "", StatusEffectKind::Permanent);
+    add("res_chaos", "耐カオス", "", StatusEffectKind::Permanent);
+    add("free_act", "麻痺知らず", "", StatusEffectKind::Permanent);
+    add("senseunseen", "透明視認", "", StatusEffectKind::Permanent);
+    add("telepathy", "テレパシー", "", StatusEffectKind::Permanent);
+    add("esp_dragon", "ドラゴンの感知", "", StatusEffectKind::Permanent); //!< 7 文字: 「ドラゴン／の感知」
+    add("sust_str", "腕力維持", "", StatusEffectKind::Permanent);
+    add("slay_evil", "邪悪攻撃", "", StatusEffectKind::Permanent);
+    add("attk_fire", "火炎攻撃", "", StatusEffectKind::Permanent);
+    add("haste", "加速", "", StatusEffectKind::Permanent);
+    add("lite", "照明", "", StatusEffectKind::Permanent);
+    add("regeneration", "Fast Regeneration", "", StatusEffectKind::Permanent); //!< 英語 2 語
+    add("cursed", "弱い呪い増殖", "", StatusEffectKind::PermanentBad); //!< 6 文字: 「弱い／呪い増殖」
+    add("aggravate", "反感", "", StatusEffectKind::PermanentBad);
+    add("drain_exp", "経験値減少", "", StatusEffectKind::PermanentBad);
+}
+
+//! 同じ合成フレームの名前を英語にする（英語のコアの見え方。空白で折れる名前・折れない 1 語の名前を混ぜる）。
+void make_status_hud_frame_english(GameFrame &frame)
+{
+    struct Entry {
+        const char *key;
+        StatusEffectKind kind;
+        const char *label;
+    };
+    static const Entry kEnglish[] = {
+        { "haste", StatusEffectKind::Good, "Haste" }, { "hero", StatusEffectKind::Good, "Heroism" },
+        { "blessed", StatusEffectKind::Good, "Blessed" }, { "res_fire", StatusEffectKind::Good, "Resist Fire" },
+        { "res_cold", StatusEffectKind::Good, "Resist Cold" }, { "telepathy", StatusEffectKind::Good, "Telepathy" },
+        { "sh_fire", StatusEffectKind::Good, "Fire Aura" }, { "recall", StatusEffectKind::Waiting, "Word of Recall" },
+        { "poisoned", StatusEffectKind::Bad, "Poisoned" }, { "confused", StatusEffectKind::Bad, "Hallucination" },
+        { "cut", StatusEffectKind::Bad, "Deep Gash" }, { "no_such_key", StatusEffectKind::Good, "Sense Dragons" },
+        { "res_fire", StatusEffectKind::Permanent, "Resist Fire" }, { "imm_cold", StatusEffectKind::Permanent, "Immune to Cold" },
+        { "res_shard", StatusEffectKind::Permanent, "Resist Shards" }, { "res_chaos", StatusEffectKind::Permanent, "Resist Chaos" },
+        { "free_act", StatusEffectKind::Permanent, "Free Action" }, { "senseunseen", StatusEffectKind::Permanent, "See Invisible" },
+        { "telepathy", StatusEffectKind::Permanent, "Telepathy" }, { "esp_dragon", StatusEffectKind::Permanent, "Sense Dragons" },
+        { "sust_str", StatusEffectKind::Permanent, "Sustain Strength" }, { "slay_evil", StatusEffectKind::Permanent, "Slay Evil" },
+        { "attk_fire", StatusEffectKind::Permanent, "Fire Brand" }, { "haste", StatusEffectKind::Permanent, "Speed" },
+        { "lite", StatusEffectKind::Permanent, "Light Source" }, { "regeneration", StatusEffectKind::Permanent, "Fast Regeneration" },
+        { "cursed", StatusEffectKind::PermanentBad, "Weak Curse Spread" }, { "aggravate", StatusEffectKind::PermanentBad, "Aggravate" },
+        { "drain_exp", StatusEffectKind::PermanentBad, "Experience Drain" },
+    };
+    for (StatusEffectView &v : frame.status_effects) {
+        for (const Entry &e : kEnglish) {
+            if ((v.key == e.key) && (v.kind == e.kind)) {
+                v.label_utf8 = e.label;
+                break;
+            }
+        }
+    }
+}
+
+} // namespace
+
+int run_status_hud_check(const AppOptions &options)
+{
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::fprintf(stderr, "[hd2d] SDL の初期化に失敗しました。\n");
+        return 1;
+    }
+    Window window;
+    std::string err;
+    if (!create_window(options, window, err)) {
+        std::fprintf(stderr, "[hd2d] %s\n", err.c_str());
+        SDL_Quit();
+        return 1;
+    }
+    TextOverlay text;
+    UiPaint paint;
+    UiImagePainter images;
+    if (!text.init(kTextPx, err) || !paint.init(err) || !images.init(err)) {
+        std::fprintf(stderr, "[hd2d] %s\n", err.c_str());
+        SDL_Quit();
+        return 1;
+    }
+
+    int failures = 0;
+    int passes = 0;
+    const auto check = [&](bool ok, const std::string &what) {
+        if (ok) {
+            ++passes;
+            std::fprintf(stderr, "  PASS %s\n", what.c_str());
+        } else {
+            ++failures;
+            std::fprintf(stderr, "  **FAIL** %s\n", what.c_str());
+        }
+    };
+
+    // ---- 素材 ----
+    UiImage back_image;
+    UiImage glass_image;
+    UiImage liquid_hp_image;
+    UiImage liquid_mp_image;
+    UiImage glass_top_image;
+    UiImage front_image;
+    UiImage icons_image;
+    {
+        const std::pair<UiImage *, const char *> files[] = {
+            { &back_image, kOrbBackPath }, { &glass_image, kOrbGlassPath }, { &liquid_hp_image, kOrbLiquidHpPath },
+            { &liquid_mp_image, kOrbLiquidMpPath }, { &glass_top_image, kOrbGlassTopPath },
+            { &front_image, kOrbFrontPath }, { &icons_image, kStatusIconsPath },
+        };
+        for (const auto &file : files) {
+            std::string load_err;
+            const bool ok = file.first->load_minified(file.second, load_err);
+            check(ok, std::string("素材を読めます: ") + file.second + (ok ? "" : (" / " + load_err)));
+        }
+    }
+    UiBackdrops backdrops;
+    backdrops.painter = &images;
+    backdrops.orb.painter = &images;
+    backdrops.orb.back = &back_image;
+    backdrops.orb.glass = &glass_image;
+    backdrops.orb.liquid_hp = &liquid_hp_image;
+    backdrops.orb.liquid_mp = &liquid_mp_image;
+    backdrops.orb.glass_top = &glass_top_image;
+    backdrops.orb.front = &front_image;
+    backdrops.orb.status_icons = &icons_image;
+    check(backdrops.orb.has_orb() && backdrops.orb.has_icons(), "玉の 6 層とアイコンのシートが揃っています");
+    check(icons_image.valid() && (icons_image.width() / 10 == 64) && (icons_image.height() / 64 >= 8),
+        "アイコンのシートは 64x64 のセルを 10 列に並べたもの");
+
+    // ---- 名前の表 ----
+    check(status_icon_index("haste") == 1 && status_icon_known("haste"), "名前の表: haste = 1");
+    check(status_icon_index("no_such_key") == 0 && !status_icon_known("no_such_key"),
+        "名前の表: 知らない名前は 0 番（汎用）");
+    check(status_icon_index("poisoned") == 70 && status_icon_index("tsuyoshi") == 79, "名前の表: poisoned = 70 / tsuyoshi = 79");
+
+    // ---- 画面の外の描画先と、1 枚描く手 ----
+    GameFrame base;
+    fill_synthetic_ui(base);
+    fill_status_hud_frame(base);
+
+    const auto read_rgba = [&](int w, int h) {
+        std::vector<unsigned char> pixels = read_framebuffer(w, h);
+        for (std::size_t i = 3; i < pixels.size(); i += 4) {
+            pixels[i] = 255; // ブレンドで α が 1 未満に残った所も不透明にして書く
+        }
+        return pixels;
+    };
+    LayoutMode render_mode = LayoutMode::Hybrid; //!< 描く作り（既定は Hybrid。絵の書き出しだけ Full に替える）
+    const auto make_layout = [&](int w, int h) {
+        return UiLayout::compute(render_mode, w, h, text.cell_w(), text.cell_h(), false);
+    };
+    /*
+     * 1 枚描く。**地図の代わりの市松を先に流す**（画像は呼んだ瞬間に描かれ、下敷きと字は
+     * 後で流れるので、市松を後回しにすると玉の上へ乗ってしまう）。
+     */
+    const auto render = [&](StatusHudTarget &target, const GameFrame &frame, HudState &state, std::uint32_t now_ms) {
+        const int w = target.w;
+        const int h = target.h;
+        glBindFramebuffer(GL_FRAMEBUFFER, target.fbo);
+        glViewport(0, 0, w, h);
+        glClearColor(0.05f, 0.06f, 0.08f, 1.f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        paint.begin(w, h);
+        text.begin(w, h);
+        images.begin(w, h);
+        const int tile = 40;
+        for (int ty = 0; ty < ((h / tile) + 1); ++ty) {
+            for (int tx = 0; tx < ((w / tile) + 1); ++tx) {
+                const bool even = ((tx + ty) % 2) == 0;
+                const float v = even ? 0.30f : 0.24f;
+                paint.rect(RectPx{ tx * tile, ty * tile, tile, tile }, PaintColor{ v, v * 1.05f, v * 0.85f, 1.f });
+            }
+        }
+        paint.flush();
+        const UiLayout layout = make_layout(w, h);
+        state.orb_now_ms = now_ms;
+        draw_game_ui(paint, text, layout, frame, state, &backdrops);
+        paint.flush();
+        text.flush();
+        return read_rgba(w, h);
+    };
+    const auto ratio_hp = [](const GameFrame &f) {
+        return static_cast<float>(f.hud.hp) / static_cast<float>(f.hud.hp_max);
+    };
+    const auto ratio_mp = [](const GameFrame &f) {
+        return static_cast<float>(f.hud.sp) / static_cast<float>(f.hud.sp_max);
+    };
+    //! 時刻を 16 ms 刻みで進める（動きだけ。描かない）。
+    const auto advance = [](HudState &state, float hp, float mp, std::uint32_t from_ms, std::uint32_t to_ms) {
+        for (std::uint32_t t = from_ms + 16u; t <= to_ms; t += 16u) {
+            orb_hud_update(state.orb_anim, state.orb_params, hp, mp, t);
+        }
+    };
+
+    std::string stem = options.status_hud_check_path;
+    std::string ext = ".png";
+    {
+        const std::size_t dot = stem.find_last_of('.');
+        const std::size_t slash = stem.find_last_of("/\\");
+        if ((dot != std::string::npos) && ((slash == std::string::npos) || (dot > slash))) {
+            ext = stem.substr(dot);
+            stem = stem.substr(0, dot);
+        }
+    }
+    const auto out_path = [&](int w, int h, const char *suffix) {
+        return stem + "_" + std::to_string(w) + "x" + std::to_string(h) + suffix + ext;
+    };
+
+    // ---- 2 つの大きさで、配置の規則を数える ----
+    for (const std::array<int, 2> &size : { std::array<int, 2>{ 2560, 1080 }, std::array<int, 2>{ 1280, 720 } }) {
+        const int w = size[0];
+        const int h = size[1];
+        const std::string tag = std::to_string(w) + "x" + std::to_string(h);
+        StatusHudTarget target;
+        if (!make_status_hud_target(target, w, h)) {
+            check(false, tag + ": 画面の外の描画先を作れません");
+            release_status_hud_target(target);
+            continue;
+        }
+        const UiLayout layout = make_layout(w, h);
+        const RectPx &orb = layout.orb;
+        const RectPx window_rect{ 0, 0, w, h };
+
+        // 玉の置き場所
+        check(!orb.empty(), tag + ": 玉が置かれています");
+        const RectPx shown = orb_visible_rect(orb); //!< 見えている部分（下の薄い影は下縁より下にはみ出して描かない）
+        const long long orb_area = static_cast<long long>(shown.w) * static_cast<long long>(shown.h);
+        check(rect_overlap_area(shown, layout.scene) == orb_area, tag + ": 玉（見えている部分）は地図の中");
+        check(std::abs(((orb.x * 2) + orb.w) - ((layout.scene.x * 2) + layout.scene.w)) <= 2, tag + ": 玉は左右の中央");
+        const int expected_h = std::clamp(static_cast<int>(std::lround(layout.scene.h * kOrbHeightRatio)), kOrbHeightMin, kOrbHeightMax);
+        check(orb.h == expected_h, tag + ": 玉の高さ = 地図の高さ x 0.247（" + std::to_string(orb.h) + " / 期待 " + std::to_string(expected_h) + "）");
+        check(std::abs((orb.w * kOrbDesignH) - (orb.h * kOrbDesignW)) <= kOrbDesignW, tag + ": 玉の縦横比は 760:250");
+        {
+            const RectPx *const avoid[] = { &layout.bottom_bar, &layout.status_col, &layout.hud };
+            long long overlap = 0;
+            for (const RectPx *rect : avoid) {
+                overlap += rect_overlap_area(shown, *rect);
+            }
+            check(overlap == 0, tag + ": 玉は最下段・状態列・名前の行と重ならない");
+            check(rect_overlap_area(shown, layout.message_bar) == 0, tag + ": メッセージの帯は玉の左で止まる");
+        }
+        {
+            // 玉の下端は地図の下縁（最下段の帯・重なる作りで開いた下段のサブパネルがあればその上）。
+            // メッセージとプロンプトの帯は避けない（帯を玉の上に重ねて描く。決めたこと 2026-10-09）。
+            int want_bottom = layout.scene.y + layout.scene.h;
+            if (!layout.bottom_bar.empty()) {
+                want_bottom = std::min(want_bottom, layout.bottom_bar.y);
+            }
+            if (layout.sub_overlaid) {
+                for (int i = kSubBottomSlot; i < (kSubBottomSlot + kSubBottomMax); ++i) {
+                    if (!layout.sub[static_cast<std::size_t>(i)].empty()) {
+                        want_bottom = std::min(want_bottom, layout.sub[static_cast<std::size_t>(i)].y);
+                    }
+                }
+            }
+            check((shown.y + shown.h) == want_bottom, tag + ": 玉の見えている下端は地図の下縁（" + std::to_string(shown.y + shown.h) + " / 期待 " + std::to_string(want_bottom) + "）");
+        }
+
+        // アイコンの置き場所（玉の横は左右とも 1 行だけ。入りきらない側は輪にして流す）
+        const StatusIconLayout placed = layout_status_icons(text, layout, base);
+        int left_total = 0; //!< 玉の横に置くもの（常時の効果は別の列）
+        int right_total = 0;
+        for (const StatusEffectView &effect : base.status_effects) {
+            left_total += ((effect.kind == StatusEffectKind::Good) || (effect.kind == StatusEffectKind::Waiting)
+                              || (effect.kind == StatusEffectKind::Special)) ? 1 : 0;
+            right_total += (effect.kind == StatusEffectKind::Bad) ? 1 : 0;
+        }
+        check(placed.icon_px == std::clamp(static_cast<int>(std::lround(orb.h * 0.24)), 24, 64),
+            tag + ": アイコンの大きさ = 玉の高さ x 0.24（" + std::to_string(placed.icon_px) + "）");
+        int left_limit = layout.scene.x + layout.cell_w;
+        if (!layout.status_col.empty() && (layout.status_col.x <= layout.scene.x)) {
+            left_limit = std::max(left_limit, layout.status_col.x + layout.status_col.w + layout.cell_w);
+        }
+        const int right_limit = (layout.scene.x + layout.scene.w) - layout.cell_w;
+        bool sides_ok = true;
+        bool inside_ok = true;
+        bool apart_ok = true;
+        bool one_row_ok = true;
+        bool kinds_ok = true;
+        bool order_ok = true;
+        bool icon_ids_ok = true;
+        int left_count = 0;
+        int right_count = 0;
+        const int row0_y = orb.y + static_cast<int>(std::lround(orb.h * 0.42));
+        long long avoided_overlap = 0;
+        const auto true_x = [](const StatusIconPlacement &item) { return static_cast<double>(item.cell.x) + static_cast<double>(item.frac_x); };
+        //! 見えている部分（巡回しているものは枠で切った分）の矩形。
+        const auto visible_rect = [&](const StatusIconPlacement &item) {
+            if (!item.rotating) {
+                return item.cell;
+            }
+            const int x0 = std::max(item.clip.x, static_cast<int>(std::floor(true_x(item))));
+            const int x1 = std::min(item.clip.x + item.clip.w, static_cast<int>(std::ceil(true_x(item) + item.cell.w)));
+            return RectPx{ x0, item.cell.y, std::max(0, x1 - x0), item.cell.h };
+        };
+        for (std::size_t a = 0; a < placed.items.size(); ++a) {
+            const StatusIconPlacement &item = placed.items[a];
+            const StatusEffectView &effect = base.status_effects[static_cast<std::size_t>(item.effect_index)];
+            const bool want_left = (effect.kind != StatusEffectKind::Bad);
+            kinds_ok = kinds_ok && (item.left == want_left);
+            const RectPx vis = visible_rect(item);
+            if (item.left) {
+                ++left_count;
+                sides_ok = sides_ok && ((vis.x + vis.w) <= orb.x) && (vis.x >= left_limit);
+            } else {
+                ++right_count;
+                sides_ok = sides_ok && (vis.x >= (orb.x + orb.w)) && ((vis.x + vis.w) <= right_limit);
+            }
+            const long long vis_area = static_cast<long long>(vis.w) * static_cast<long long>(vis.h);
+            inside_ok = inside_ok && (vis_area > 0) && (rect_overlap_area(vis, layout.scene) == vis_area)
+                && (rect_overlap_area(vis, window_rect) == vis_area);
+            //! プロンプトの帯は見ない（玉とアイコンの上に重ねて描く）。左の段はメッセージの帯と名前の行の上へ逃がすので、
+            //! その 2 つとも重ならない。右の段も同じ高さにそろえる。
+            const RectPx none{};
+            const RectPx *const avoid[] = { &layout.bottom_bar, &layout.status_col, item.left ? &layout.message_bar : &none,
+                item.left ? &layout.hud : &none };
+            for (const RectPx *rect : avoid) {
+                avoided_overlap += rect_overlap_area(vis, *rect);
+            }
+            one_row_ok = one_row_ok && (item.row == 0) && (item.icon.y <= row0_y) && (item.icon.y == placed.items.front().icon.y) && (item.icon.w == placed.icon_px)
+                && (item.icon.h == placed.icon_px);
+            icon_ids_ok = icon_ids_ok && (item.icon_id == status_icon_index(effect.key));
+            for (std::size_t b = a + 1; b < placed.items.size(); ++b) {
+                const StatusIconPlacement &other = placed.items[b];
+                if (item.rotating || other.rotating) {
+                    // 巡回の輪は、隣どうしがちょうど 1 個ぶん（pitch）離れている（重ならない）
+                    if (item.left == other.left) {
+                        apart_ok = apart_ok && (std::fabs(true_x(item) - true_x(other)) >= (item.cell.w - 0.01));
+                    }
+                } else if (rect_overlap_area(item.cell, other.cell) > 0) {
+                    apart_ok = false;
+                }
+            }
+        }
+        //! 玉に近い側から外へ（止まって並ぶ側だけ。巡回する側は輪の検査で見る）
+        for (const bool left_side : { true, false }) {
+            long long last = -1;
+            for (const StatusIconPlacement &item : placed.items) {
+                if ((item.left != left_side) || item.rotating) {
+                    continue;
+                }
+                const long long distance = left_side ? (orb.x - (item.cell.x + item.cell.w)) : (item.cell.x - (orb.x + orb.w));
+                order_ok = order_ok && (distance > last);
+                last = distance;
+            }
+        }
+        //! 左は 良い → 待っている → 特殊 の順（フレームの順の中で kind が増える）。止まって並ぶ側だけ。
+        {
+            int last_kind = -1;
+            for (const StatusIconPlacement &item : placed.items) {
+                if (!item.left || item.rotating) {
+                    continue;
+                }
+                const int kind_rank = (base.status_effects[static_cast<std::size_t>(item.effect_index)].kind == StatusEffectKind::Good) ? 0
+                    : (base.status_effects[static_cast<std::size_t>(item.effect_index)].kind == StatusEffectKind::Waiting) ? 1 : 2;
+                order_ok = order_ok && (kind_rank >= last_kind);
+                last_kind = kind_rank;
+            }
+        }
+        // 入りきる側は止まって全部並び、入りきらない側は輪になって一部だけ見える
+        const auto ring_ok = [&](const StatusRing &ring, int total, int placed_count) {
+            if (!ring.rotating) {
+                return (ring.count == total) && (placed_count == total);
+            }
+            return (ring.count == total) && (ring.capacity >= 1) && (ring.capacity < total)
+                && (placed_count >= ring.capacity) && (placed_count <= (ring.capacity + 1));
+        };
+        check(placed.dropped == 0 && ring_ok(placed.ring_left, left_total, left_count)
+                && ring_ok(placed.ring_right, right_total, right_count),
+            tag + ": 玉の横のアイコンは、入りきるなら全部、入りきらないなら輪の一部が置かれる（左 "
+                + std::to_string(left_count) + "/" + std::to_string(left_total) + (placed.ring_left.rotating ? " 巡回" : " 静止")
+                + " / 右 " + std::to_string(right_count) + "/" + std::to_string(right_total)
+                + (placed.ring_right.rotating ? " 巡回" : " 静止") + "）");
+        //! 入りきる 2560 では回さず、狭い 1280 の左は回る（この合成フレームの左は 9 個）
+        check(placed.ring_left.rotating == (w < 2000), tag + ": 巡回は入りきらないときだけ（左は " + (placed.ring_left.rotating ? "巡回" : "静止") + "）");
+        check(kinds_ok, tag + ": 良い・待っている・特殊は左、悪いは右");
+        check(sides_ok, tag + ": 左のアイコンは玉の左、右は玉の右（端は地図の左右 1 マス内）");
+        check(inside_ok, tag + ": アイコンは地図と画面の中");
+        check(apart_ok, tag + ": アイコンどうしが重ならない");
+        check(avoided_overlap == 0, tag + ": アイコンは最下段・状態列と重ならず、左の段はメッセージの帯と名前の行とも重ならない");
+        check(one_row_ok, tag + ": 玉の横は 1 行だけ（左右の段は同じ高さ。玉の上から 42% か、メッセージの帯と名前の行を避けてそれより上）");
+        check(order_ok, tag + ": 玉に近い側から外へ並ぶ");
+        check(icon_ids_ok, tag + ": 知らない名前は 0 番、知っている名前は表の番号");
+        std::fprintf(stderr, "    （%s: 玉 %d,%d %dx%d / アイコン %dpx / 基準の字 %dpx / 左 %s 右 %s）\n", tag.c_str(), orb.x, orb.y, orb.w, orb.h,
+            placed.icon_px, status_text_reference_px(text, placed.icon_px), placed.ring_left.rotating ? "巡回" : "静止",
+            placed.ring_right.rotating ? "巡回" : "静止");
+
+        // 描いて書き出す（時刻を固定）
+        HudState state;
+        orb_hud_update(state.orb_anim, state.orb_params, 1.f, 1.f, 0u);
+        advance(state, ratio_hp(base), ratio_mp(base), 0u, 3000u);
+        const std::vector<unsigned char> shot = render(target, base, state, 3000u);
+        check(drain_gl_errors().empty(), tag + ": 描いて GL エラーが出ない");
+        check(save_rgba_png(out_path(w, h, ""), shot.data(), w, h), tag + ": 画像を書き出せた " + out_path(w, h, ""));
+
+        // 同じ状態・同じ時刻は同じ絵（泡の乱数も時計に頼らない）
+        {
+            const std::vector<unsigned char> again = render(target, base, state, 3000u);
+            check(count_changed_pixels(shot, again, 0) == 0, tag + ": 同じ状態・同じ時刻なら同じ絵");
+        }
+
+        // ---- 玉の絵の中身（水面の高さ・玉が無いコア・ゲーム前・名札・波の切り替え） ----
+        const double sx = static_cast<double>(orb.w) / static_cast<double>(kOrbDesignW);
+        const double sy = static_cast<double>(orb.h) / static_cast<double>(kOrbDesignH);
+        const auto channel = [&](const std::vector<unsigned char> &img, int x, int y, int c) {
+            return static_cast<int>(img[(((static_cast<std::size_t>(h - 1 - y) * static_cast<std::size_t>(w)) + static_cast<std::size_t>(x)) * 4) + static_cast<std::size_t>(c)]);
+        };
+        const auto liquid_at = [&](const std::vector<unsigned char> &img, int x, int y, bool red) {
+            const int r = channel(img, x, y, 0);
+            const int g = channel(img, x, y, 1);
+            const int b = channel(img, x, y, 2);
+            return red ? ((r >= 100) && ((r * 10) >= (g * 17)) && ((r * 10) >= (b * 17)))
+                       : ((b >= 100) && ((b * 10) >= (r * 15)) && ((b * 10) >= (g * 12)));
+        };
+        //! 玉の真ん中の帯（中心から ±30）の 11 本の縦線で、液体の色が上から数えて最初に出る行。
+        const auto surface_row = [&](const std::vector<unsigned char> &img, double cx_design, bool red) {
+            const int y0 = orb.y + static_cast<int>(std::lround(60.0 * sy));
+            const int y1 = orb.y + static_cast<int>(std::lround(196.0 * sy));
+            for (int y = y0; y < y1; ++y) {
+                int hit = 0;
+                for (int k = -5; k <= 5; ++k) {
+                    const int x = orb.x + static_cast<int>(std::lround((cx_design + (k * 6.0)) * sx));
+                    hit += liquid_at(img, x, y, red) ? 1 : 0;
+                }
+                if (hit >= 8) {
+                    return y;
+                }
+            }
+            return -1;
+        };
+        //! 玉の外接の箱の中で液体の色の画素を数える（2 画素おき）。
+        const auto liquid_count = [&](const std::vector<unsigned char> &img, double cx_design, bool red) {
+            int count = 0;
+            const int x0 = orb.x + static_cast<int>(std::lround((cx_design - kOrbRadius) * sx));
+            const int x1 = orb.x + static_cast<int>(std::lround((cx_design + kOrbRadius) * sx));
+            const int y0 = orb.y + static_cast<int>(std::lround((kOrbCenterY - kOrbRadius) * sy));
+            const int y1 = orb.y + static_cast<int>(std::lround((kOrbCenterY + kOrbRadius) * sy));
+            for (int y = y0; y < y1; y += 2) {
+                for (int x = x0; x < x1; x += 2) {
+                    count += liquid_at(img, x, y, red) ? 1 : 0;
+                }
+            }
+            return count;
+        };
+        const auto expected_row = [&](float ratio) {
+            return static_cast<double>(orb.y) + ((kOrbCenterY + kOrbRadius - (static_cast<double>(ratio) * 2.0 * kOrbRadius)) * sy);
+        };
+        const double tolerance = ((2.6 * 1.3) + 3.0) * sy + 3.0;
+        {
+            const int hp_row = surface_row(shot, kOrbHpCenterX, true);
+            const int mp_row = surface_row(shot, kOrbMpCenterX, false);
+            const double hp_want = expected_row(ratio_hp(base));
+            const double mp_want = expected_row(ratio_mp(base));
+            check((hp_row >= 0) && (std::fabs(static_cast<double>(hp_row) - hp_want) <= tolerance),
+                tag + ": HP の水面の高さ（見つけた行 " + std::to_string(hp_row) + " / 期待 " + std::to_string(static_cast<int>(hp_want))
+                    + " ±" + std::to_string(static_cast<int>(tolerance)) + "）");
+            check((mp_row >= 0) && (std::fabs(static_cast<double>(mp_row) - mp_want) <= tolerance),
+                tag + ": MP の水面の高さ（見つけた行 " + std::to_string(mp_row) + " / 期待 " + std::to_string(static_cast<int>(mp_want))
+                    + " ±" + std::to_string(static_cast<int>(tolerance)) + "）");
+        }
+        {
+            //! MP の玉が無いコア（`sp_max <= 0`）: 青い液体を描かない。赤は残る。
+            GameFrame no_mp = base;
+            no_mp.hud.sp = 0;
+            no_mp.hud.sp_max = 0;
+            HudState fresh;
+            const std::vector<unsigned char> shot_no_mp = render(target, no_mp, fresh, 3000u);
+            check((liquid_count(shot, kOrbMpCenterX, false) > 200) && (liquid_count(shot_no_mp, kOrbMpCenterX, false) == 0)
+                    && (liquid_count(shot_no_mp, kOrbHpCenterX, true) > 200),
+                tag + ": sp_max が 0 以下のコアでは MP の液体を描かない（玉の枠と HP は残る）");
+            //! ゲーム前（`hp_max <= 0`）: 玉は出ない。
+            GameFrame pre = base;
+            pre.hud.hp = 0;
+            pre.hud.hp_max = 0;
+            HudState fresh2;
+            const std::vector<unsigned char> shot_pre = render(target, pre, fresh2, 3000u);
+            check((liquid_count(shot_pre, kOrbHpCenterX, true) == 0) && (liquid_count(shot_pre, kOrbMpCenterX, false) == 0),
+                tag + ": hp_max が 0 以下（ゲーム前）では玉を描かない");
+        }
+        {
+            //! 名札はコアが決める。空は `SP` と 1 画素も違わず、変えると絵が変わる。
+            const auto with_label = [&](const std::string &label) {
+                GameFrame f = base;
+                f.hud.sp_label = label;
+                HudState fresh;
+                return render(target, f, fresh, 3000u);
+            };
+            const std::vector<unsigned char> empty_label = with_label(std::string());
+            const std::vector<unsigned char> spelled = with_label("SP");
+            const std::vector<unsigned char> voice = with_label("Voice");
+            check(count_changed_pixels(empty_label, spelled, w, h, orb) == 0, tag + ": 名札が空のときの絵は `SP` と同じ");
+            check(count_changed_pixels(empty_label, voice, w, h, orb) > 0, tag + ": 名札を変えると絵が変わる（`Voice`）");
+        }
+        {
+            //! 波。打つ設定なら時刻で絵が変わり、止めたら（残量が動かない限り）変わらない。
+            HudState wave_on;
+            HudState wave_off;
+            wave_off.orb_params.wave_enabled = false;
+            for (HudState *st : { &wave_on, &wave_off }) {
+                orb_hud_update(st->orb_anim, st->orb_params, ratio_hp(base), ratio_mp(base), 0u);
+                advance(*st, ratio_hp(base), ratio_mp(base), 0u, 3000u);
+            }
+            const std::vector<unsigned char> on_a = render(target, base, wave_on, 3000u);
+            const std::vector<unsigned char> off_a = render(target, base, wave_off, 3000u);
+            advance(wave_on, ratio_hp(base), ratio_mp(base), 3000u, 3400u);
+            advance(wave_off, ratio_hp(base), ratio_mp(base), 3000u, 3400u);
+            const std::vector<unsigned char> on_b = render(target, base, wave_on, 3400u);
+            const std::vector<unsigned char> off_b = render(target, base, wave_off, 3400u);
+            check(count_changed_pixels(on_a, on_b, w, h, orb) > 0, tag + ": 波あり: 時刻が進むと水面の絵が変わる");
+            check(count_changed_pixels(off_a, off_b, w, h, orb) == 0, tag + ": 波を止める: 時刻が進んでも絵が変わらない（平ら）");
+            check(count_changed_pixels(on_a, off_a, w, h, orb) > 0, tag + ": 波あり・波なしで水面の絵が違う");
+        }
+        release_status_hud_target(target);
+    }
+
+    // ---- 常時の列・名前の縮め・名札（作り 3 つ x 大きさ 3 つ x 状態列の左右） ----
+    {
+        int permanent_total = 0;
+        for (const StatusEffectView &effect : base.status_effects) {
+            permanent_total += ((effect.kind == StatusEffectKind::Permanent) || (effect.kind == StatusEffectKind::PermanentBad)) ? 1 : 0;
+        }
+        const int min_px = std::max(6, static_cast<int>(std::ceil((static_cast<double>(text.base_px()) * static_cast<double>(kStatusTextMinScale)) - 1e-6)));
+        //! 表示上の幅（全角 1 文字 = 2、半角 = 1）。検査側の数え方（実装とは別に書く）。
+        const auto columns_of = [](const std::string &label) {
+            int columns = 0;
+            for (std::size_t i = 0; i < label.size();) {
+                const unsigned char c = static_cast<unsigned char>(label[i]);
+                const std::size_t len = (c >= 0xF0u) ? 4u : (c >= 0xE0u) ? 3u : (c >= 0xC0u) ? 2u : 1u;
+                columns += (len == 1u) ? 1 : 2;
+                i += len;
+            }
+            return columns;
+        };
+        //! 名前の字の大きさの規則を 1 個ずつ数える。
+        //! 1〜4 文字は基準の大きさ（icon の幅に全角 4 文字が収まるいちばん大きい字。普通の字は超えない）。
+        //! 5 文字以上で基準でも収まらないものだけ縮め、下限でも収まらないものだけ幅が広がる。
+        const auto name_rule_ok = [&](const FittedText &fit, int icon_px, const std::string &label) {
+            if (label.empty()) {
+                return true;
+            }
+            const int ref = status_text_reference_px(text, icon_px);
+            const int shown_px = text.sized_px(fit.scale);
+            const bool ref_is_biggest = (ref == text.base_px()) || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref + 1) / static_cast<float>(text.base_px())) > icon_px);
+            if (!ref_is_biggest || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref) / static_cast<float>(text.base_px())) > icon_px)
+                || (ref > text.base_px())) {
+                return false;
+            }
+            if (shown_px > ref) {
+                return false;
+            }
+            if (columns_of(label) <= 8) {
+                return (shown_px == ref) && (fit.width <= icon_px) && !fit.overflow; // 短い名前はすべて基準の大きさ
+            }
+            if (fit.overflow) {
+                return (shown_px == std::min(ref, min_px)) && (fit.width > icon_px); // 下限まで縮めても収まらない
+            }
+            // 収まった: アイコンの幅以内で、1 つ大きい字では収まらなかった（または基準の大きさで収まった）
+            const bool fits = fit.width <= icon_px;
+            const bool biggest = (shown_px == ref)
+                || (text.measure_sized(label, static_cast<float>(shown_px + 1) / static_cast<float>(text.base_px())) > icon_px);
+            return fits && biggest && (shown_px >= std::min(ref, min_px));
+        };
+        /*
+         * 名前（最大 2 行）の規則を 1 個ずつ数える（実装の `fit_status_name` とは別に書く）。
+         * - 基準の大きさで 1 行に収まる・全角 4 文字以内・折る位置が無い、のどれかなら 1 行（`name_rule_ok` の規則）。
+         * - それ以外は 2 行。折る位置は `status_name_break_points` の中にあり、両方の行が収まるいちばん大きい字
+         *   （基準の大きさを上限に、1 画素大きくすると収まらない）、長いほうの行がいちばん短い位置を選ぶ。
+         * - 下限でも収まらないものだけ `overflow`（下限の大きさの 2 行・長いほうの行が幅を超える）。
+         */
+        const auto name_wrap_ok = [&](const FittedText &fit, int icon_px, const std::string &label) {
+            if (label.empty()) {
+                return fit.lines == 1;
+            }
+            const int ref = status_text_reference_px(text, icon_px);
+            const float ref_scale = static_cast<float>(ref) / static_cast<float>(text.base_px());
+            const std::vector<StatusNameBreak> breaks = status_name_break_points(label);
+            const bool one_line_at_ref = (text.measure_sized(label, ref_scale) <= icon_px) || (columns_of(label) <= 8);
+            if (one_line_at_ref || breaks.empty()) {
+                return (fit.lines == 1) && name_rule_ok(fit, icon_px, label) && (status_name_line(label, fit, 0) == label)
+                    && status_name_line(label, fit, 1).empty();
+            }
+            if (fit.lines != 2) {
+                return false;
+            }
+            const int shown_px = text.sized_px(fit.scale);
+            if (shown_px > ref) {
+                return false;
+            }
+            const std::string first = std::string(status_name_line(label, fit, 0));
+            const std::string second = std::string(status_name_line(label, fit, 1));
+            bool is_candidate = false;
+            for (const StatusNameBreak &b : breaks) {
+                is_candidate = is_candidate || ((b.first_end == fit.break_end) && (b.second_begin == fit.break_begin));
+            }
+            const int w0 = text.measure_sized(first, fit.scale);
+            const int w1 = text.measure_sized(second, fit.scale);
+            if (!is_candidate || first.empty() || second.empty() || (fit.line_width[0] != w0) || (fit.line_width[1] != w1)
+                || (fit.width != std::max(w0, w1))) {
+                return false;
+            }
+            //! 長いほうの行がいちばん短い位置か（どの候補もこれより短くならない）。
+            const auto best_widest = [&](int px) {
+                const float s = static_cast<float>(px) / static_cast<float>(text.base_px());
+                int best = 1 << 30;
+                for (const StatusNameBreak &b : breaks) {
+                    best = std::min(best, std::max(text.measure_sized(label.substr(0, b.first_end), s), text.measure_sized(label.substr(b.second_begin), s)));
+                }
+                return best;
+            };
+            if (fit.width != best_widest(shown_px)) {
+                return false;
+            }
+            if (fit.overflow) {
+                return (shown_px == std::min(ref, min_px)) && (fit.width > icon_px);
+            }
+            return (fit.width <= icon_px) && (shown_px >= std::min(ref, min_px))
+                && ((shown_px == ref) || (best_widest(shown_px + 1) > icon_px));
+        };
+        std::vector<std::string> overflow_names;
+        for (const LayoutMode mode : { LayoutMode::Full, LayoutMode::Hybrid, LayoutMode::Split }) {
+            for (const std::array<int, 2> &size : { std::array<int, 2>{ 2560, 1080 }, std::array<int, 2>{ 1920, 1080 }, std::array<int, 2>{ 1280, 720 } }) {
+                for (const int side : { 0, 1 }) {
+                    if ((mode == LayoutMode::Full) && (side == 1)) {
+                        continue; // Full は状態列が無い
+                    }
+                    const int w = size[0];
+                    const int h = size[1];
+                    set_status_col_side(side);
+                    const UiLayout layout = UiLayout::compute(mode, w, h, text.cell_w(), text.cell_h(), false);
+                    set_status_col_side(0);
+                    const std::string tag = std::string(layout_mode_name(mode)) + " " + std::to_string(w) + "x" + std::to_string(h)
+                        + ((side == 1) ? " 状態列が右" : "");
+                    const RectPx &orb = layout.orb;
+                    if (orb.empty()) {
+                        check(false, tag + ": 玉が置かれていない");
+                        continue;
+                    }
+                    const RectPx window_rect{ 0, 0, w, h };
+                    const PermanentIconLayout perm = layout_permanent_icons(text, layout, base);
+                    const StatusIconLayout placed = layout_status_icons(text, layout, base);
+                    const int gap = std::max(4, perm.icon_px / 8);
+                    const int ch = text.cell_h();
+                    // 数・大きさ
+                    {
+                        const bool all_placed = (static_cast<int>(perm.items.size()) == permanent_total) && (perm.dropped == 0);
+                        //! 置けなかった分があるのは、列をもう増やせないときだけ（状態列が右で 1280x720 のような狭い所）
+                        const int next_w = perm.icon_px + gap;
+                        const bool exhausted = !perm.extent.empty()
+                            && (static_cast<int>(perm.items.size()) + perm.dropped == permanent_total)
+                            && (perm.grows_left ? ((perm.extent.x - next_w) < (orb.x + orb.w + gap))
+                                                : ((perm.extent.x + perm.extent.w + next_w) > (orb.x - gap)));
+                        check(all_placed || ((side == 1) && exhausted),
+                            tag + ": 常時の効果 " + std::to_string(permanent_total) + " 個がすべて置かれる（置けた "
+                                + std::to_string(perm.items.size()) + " / 置けなかった " + std::to_string(perm.dropped) + " / 列 "
+                                + std::to_string(perm.columns) + (all_placed ? "" : "。列を増やせる横幅が尽きた") + "）");
+                    }
+                    check(perm.icon_px == std::max(24, static_cast<int>(std::lround(status_icon_size(orb) * 0.8))),
+                        tag + ": 常時の列のアイコンは玉の横の 0.8 倍・下限 24（" + std::to_string(perm.icon_px) + "）");
+
+                    // 置き場（重ならない・範囲の中）
+                    bool inside_ok = true;
+                    bool avoid_ok = true;
+                    bool apart_ok = true;
+                    bool orb_side_apart_ok = true;
+                    long long orb_overlap = 0;
+                    for (std::size_t a = 0; a < perm.items.size(); ++a) {
+                        const PermanentIconPlacement &item = perm.items[a];
+                        const long long area = static_cast<long long>(item.cell.w) * static_cast<long long>(item.cell.h);
+                        inside_ok = inside_ok && (rect_overlap_area(item.cell, layout.scene) == area)
+                            && (rect_overlap_area(item.cell, window_rect) == area)
+                            && (item.cell.y >= perm.top) && ((item.cell.y + item.cell.h) <= perm.bottom);
+                        const RectPx *const avoid[] = { &layout.status_col, &layout.bottom_bar, &layout.message_bar,
+                            &layout.prompt_bar, &layout.minimap, &layout.hud };
+                        for (const RectPx *rect : avoid) {
+                            avoid_ok = avoid_ok && (rect_overlap_area(item.cell, *rect) == 0);
+                        }
+                        orb_overlap += rect_overlap_area(item.cell, orb);
+                        for (const StatusIconPlacement &other : placed.items) {
+                            orb_side_apart_ok = orb_side_apart_ok && (rect_overlap_area(item.cell, other.cell) == 0);
+                        }
+                        for (std::size_t b = a + 1; b < perm.items.size(); ++b) {
+                            apart_ok = apart_ok && (rect_overlap_area(item.cell, perm.items[b].cell) == 0);
+                        }
+                    }
+                    check(inside_ok, tag + ": 常時の列は地図と画面の中・縦の範囲の中");
+                    check(avoid_ok, tag + ": 常時の列は状態列・最下段・メッセージ・プロンプト・ミニマップ・名前の行と重ならない");
+                    check(orb_overlap == 0, tag + ": 常時の列は玉の矩形と重ならない");
+                    check(apart_ok, tag + ": 常時の列のアイコンどうしが重ならない");
+                    check(orb_side_apart_ok, tag + ": 常時の列は玉の横のアイコンと重ならない");
+
+                    // 状態列の横・外へ伸びる向き
+                    {
+                        bool side_ok = true;
+                        for (const PermanentIconPlacement &item : perm.items) {
+                            if (item.column == 0) {
+                                if (side == 1) {
+                                    side_ok = side_ok && (item.cell.x + item.cell.w <= layout.status_col.x);
+                                } else if (!layout.status_col.empty()) {
+                                    side_ok = side_ok && (item.cell.x >= layout.status_col.x + layout.status_col.w);
+                                } else {
+                                    side_ok = side_ok && (item.cell.x >= layout.scene.x + layout.cell_w);
+                                }
+                            }
+                        }
+                        //! 列の番号が増えるほど、右置きでは左へ・左置きでは右へ離れる
+                        for (const PermanentIconPlacement &a : perm.items) {
+                            for (const PermanentIconPlacement &b : perm.items) {
+                                if (b.column > a.column) {
+                                    side_ok = side_ok && ((side == 1) ? (b.cell.x < a.cell.x) : (b.cell.x > a.cell.x));
+                                }
+                            }
+                        }
+                        check(side_ok, tag + ": 常時の列は状態列の" + ((side == 1) ? "左" : (layout.status_col.empty() ? "無い作りでは地図の左端＋1 マス" : "右"))
+                                + "から、外へ向かって列が増える");
+                    }
+
+                    // 良い効果 → 呪い・フレームの順・縦に並ぶ
+                    {
+                        bool order_ok = true;
+                        bool column_ok = true;
+                        long long last_key = -1;
+                        bool seen_bad = false;
+                        for (const PermanentIconPlacement &item : perm.items) {
+                            const long long key = (static_cast<long long>(item.column) * 100000LL) + item.cell.y;
+                            order_ok = order_ok && (key > last_key) && !(seen_bad && !item.bad);
+                            last_key = key;
+                            seen_bad = seen_bad || item.bad;
+                            for (const PermanentIconPlacement &other : perm.items) {
+                                if ((other.column == item.column) && !item.bad && other.bad) {
+                                    column_ok = column_ok && ((item.cell.y + item.cell.h) <= other.cell.y); // 同じ列なら良い効果が呪いより上
+                                }
+                            }
+                        }
+                        check(order_ok, tag + ": 良い効果 → 呪いの順で、中はフレームの順（上から下・列は外へ）");
+                        check(column_ok, tag + ": 同じ列なら良い効果が呪いより上");
+                        //! 縦の並びの幅は 1 本ごとにそろう（同じ列の x が同じ）
+                        bool aligned = true;
+                        for (const PermanentIconPlacement &a : perm.items) {
+                            for (const PermanentIconPlacement &b : perm.items) {
+                                aligned = aligned && ((a.column != b.column) || ((a.cell.x == b.cell.x) && (a.cell.w == b.cell.w)));
+                            }
+                        }
+                        check(aligned, tag + ": 同じ列のアイコンは縦にそろっている");
+                    }
+
+                    // あふれたら右（外）へ
+                    {
+                        bool overflow_ok = true;
+                        for (int c = 1; c < perm.columns; ++c) {
+                            int last_bottom = 0;
+                            for (const PermanentIconPlacement &item : perm.items) {
+                                if (item.column == (c - 1)) {
+                                    last_bottom = std::max(last_bottom, item.cell.y + item.cell.h);
+                                }
+                            }
+                            bool next_is_bad = false; //!< 次の列の先頭が呪いなら、良い効果との間のすき間ぶんも要る
+                            int first_h = 0; //!< 次の列の先頭の実際の高さ（名前の行数で変わる）
+                            for (const PermanentIconPlacement &item : perm.items) {
+                                if ((item.column == c) && ((item.cell.y == perm.column_top[static_cast<std::size_t>(c)]))) {
+                                    next_is_bad = item.bad;
+                                    first_h = item.cell.h;
+                                }
+                            }
+                            const int need = first_h + (next_is_bad ? (perm.icon_px / 2) : 0);
+                            overflow_ok = overflow_ok && ((last_bottom + gap + need) > perm.column_bottom[static_cast<std::size_t>(c - 1)]); // 前の列にはもう入らなかった
+                        }
+                        //! 全部を 1 列に積んだ高さ（1 個ずつ実際の高さ + すき間。良い効果と呪いの間のすき間は数えない = 下限）
+                        int stacked = 0;
+                        for (const PermanentIconPlacement &item : perm.items) {
+                            stacked += item.cell.h + gap;
+                        }
+                        stacked -= gap;
+                        //! 列が 2 以上になるのは、1 列に入りきらないとき（全部が 1 列に入るなら 1 列）
+                        const bool needs_more = (stacked > (perm.bottom - perm.top)) || (perm.dropped > 0);
+                        check(overflow_ok && (perm.columns >= 1) && (needs_more || (perm.columns == 1)),
+                            tag + ": 列があふれたら次の列へ（前の列が満ちてから。列 " + std::to_string(perm.columns) + " / 積んだ高さ "
+                                + std::to_string(stacked) + " / 範囲 " + std::to_string(perm.bottom - perm.top) + "）");
+                    }
+
+                    // 玉の横のアイコン（1 行だけ）は常時の列の下で、重ならない
+                    {
+                        bool below_ok = true;
+                        if (!perm.extent.empty()) {
+                            for (const StatusIconPlacement &item : placed.items) {
+                                below_ok = below_ok && (item.cell.y >= (perm.extent.y + perm.extent.h));
+                            }
+                        }
+                        check(below_ok, tag + ": 玉の横のアイコン（1 行）は常時の列より下にある");
+                    }
+
+                    // 名前は字を縮めてアイコンの幅に収める
+                    {
+                        bool perm_names_ok = true;
+                        bool perm_width_ok = true;
+                        for (const PermanentIconPlacement &item : perm.items) {
+                            const std::string &label = base.status_effects[static_cast<std::size_t>(item.effect_index)].label_utf8;
+                            perm_names_ok = perm_names_ok && name_wrap_ok(item.name, perm.icon_px, label)
+                                && (item.name_band.w >= item.name.width)
+                                && (item.name_band.h == (item.name.lines * perm.name_line_h))
+                                && (item.name_band.y == (item.icon.y + item.icon.h))
+                                && (item.cell.h == (perm.icon_px + item.name_band.h));
+                            bool column_overflows = false;
+                            for (const PermanentIconPlacement &other : perm.items) {
+                                column_overflows = column_overflows || ((other.column == item.column) && other.name.overflow);
+                            }
+                            perm_width_ok = perm_width_ok
+                                && (column_overflows ? (item.cell.w > (perm.icon_px + gap)) : (item.cell.w == (perm.icon_px + gap)));
+                            if (item.name.overflow && (mode == LayoutMode::Hybrid) && (side == 0)) {
+                                overflow_names.push_back(std::to_string(w) + "x" + std::to_string(h) + ":" + label);
+                            }
+                        }
+                        bool side_names_ok = true;
+                        bool width_ok = true;
+                        for (const StatusIconPlacement &item : placed.items) {
+                            const StatusEffectView &effect = base.status_effects[static_cast<std::size_t>(item.effect_index)];
+                            side_names_ok = side_names_ok && name_wrap_ok(item.name, placed.icon_px, effect.label_utf8)
+                                && name_rule_ok(item.amount, placed.icon_px, effect.amount_utf8) && (item.amount.lines == 1)
+                                && (item.name_band.w >= item.name.width)
+                                && (item.name_band.h == (item.name.lines * placed.name_line_h))
+                                && (item.name_band.y == (item.icon.y + item.icon.h))
+                                && ((item.name_band.y + item.name_band.h) <= (item.cell.y + item.cell.h));
+                            const int side_gap = std::max(4, placed.icon_px / 8);
+                            const StatusRing &ring = item.left ? placed.ring_left : placed.ring_right;
+                            if (item.rotating) {
+                                width_ok = width_ok && (item.cell.w == ring.pitch) && (ring.pitch >= (placed.icon_px + side_gap)); // 輪は全員同じ幅
+                            } else if (!item.name.overflow && !item.amount.overflow) {
+                                width_ok = width_ok && (item.cell.w == (placed.icon_px + side_gap)); // 基本は アイコンの幅 + すき間
+                            } else {
+                                width_ok = width_ok && (item.cell.w > (placed.icon_px + side_gap)); // 下限でも収まらないものだけ広がる
+                            }
+                            if (item.name.overflow && (mode == LayoutMode::Hybrid) && (side == 0)) {
+                                overflow_names.push_back(std::to_string(w) + "x" + std::to_string(h) + ":" + effect.label_utf8);
+                            }
+                        }
+                        check(perm_names_ok, tag + ": 常時の列の名前は、基準の大きさで最大 2 行に折り、長いものだけ縮める（下限 " + std::to_string(min_px) + "px）。帯は実際の行数ぶん");
+                        check(perm_width_ok, tag + ": 常時の列の 1 個の幅 = アイコンの幅 + すき間（収まらない名前のある列だけ広い）");
+                        check(side_names_ok, tag + ": 玉の横の名前（最大 2 行）・効果量（1 行）も、基準の大きさ（長いものだけ縮める）でアイコンの幅に収める。帯は実際の行数ぶん");
+                        check(width_ok, tag + ": 玉の横の 1 個の幅 = アイコンの幅 + すき間（収まらないものだけ広い。輪は全員同じ幅）");
+                    }
+
+                    // 玉の名札は、とげの先（設計の単位で 43）より上にある
+                    {
+                        const double sy = static_cast<double>(orb.h) / static_cast<double>(kOrbDesignH);
+                        const double sx = static_cast<double>(orb.w) / static_cast<double>(kOrbDesignW);
+                        const int label_h = text.cell_h_sized(kOrbLabelScale);
+                        const int label_bottom = orb.y + static_cast<int>(std::lround(kOrbLabelBottomY * sy));
+                        const int spike_tip = orb.y + static_cast<int>(std::lround(43.0 * sy));
+                        const int label_w = text.measure_sized("HP", kOrbLabelScale);
+                        check((label_bottom <= spike_tip) && (label_h >= ch) && ((label_bottom - label_h) >= layout.scene.y)
+                                && (label_w <= static_cast<int>(std::lround(kOrbRadius * 2.0 * sx))),
+                            tag + ": 玉の名札は数字の帯の字より大きく、とげの先より上にある（高さ " + std::to_string(label_h) + " / 下端 "
+                                + std::to_string(label_bottom - orb.y) + " <= とげ " + std::to_string(spike_tip - orb.y) + "）");
+                    }
+                }
+            }
+        }
+        {
+            std::sort(overflow_names.begin(), overflow_names.end());
+            overflow_names.erase(std::unique(overflow_names.begin(), overflow_names.end()), overflow_names.end());
+            std::string joined;
+            for (const std::string &n : overflow_names) {
+                joined += (joined.empty() ? "" : "、") + n;
+            }
+            std::fprintf(stderr, "    （下限 %dpx でも収まらなかった名前: %s）\n", min_px, joined.empty() ? "なし" : joined.c_str());
+        }
+        //! 常時の効果を送らないコア（kind 4/5 が無い）では何も置かない。
+        {
+            GameFrame none = base;
+            none.status_effects.erase(std::remove_if(none.status_effects.begin(), none.status_effects.end(),
+                                          [](const StatusEffectView &e) {
+                                              return (e.kind == StatusEffectKind::Permanent) || (e.kind == StatusEffectKind::PermanentBad);
+                                          }),
+                none.status_effects.end());
+            const UiLayout layout = make_layout(2560, 1080);
+            const PermanentIconLayout empty = layout_permanent_icons(text, layout, none);
+            check(empty.items.empty() && empty.dropped == 0 && empty.extent.empty(), "kind 4/5 が無いコアでは、常時の列は何も置かれない");
+        }
+        //! 縮めの確かめ: 同じ名前を、収まる幅・収まらない幅・極端に狭い幅で。
+        {
+            const FittedText fits = fit_status_text(text, "ヒーロー", 200);
+            const FittedText shrinks = fit_status_text(text, "ドラゴン感知", text.measure("ドラゴン感知") - 8);
+            const FittedText floor_case = fit_status_text(text, "ドラゴン感知", 10);
+            check((fits.scale == 1.f) && !fits.overflow, "字の縮め: 収まるときは普通の大きさ");
+            check((shrinks.scale < 1.f) && !shrinks.overflow && (shrinks.width <= (text.measure("ドラゴン感知") - 8)),
+                "字の縮め: 少し足りないときは縮めて収める（" + std::to_string(text.sized_px(shrinks.scale)) + "px）");
+            const int floor_ref = status_text_reference_px(text, 10);
+            check(floor_case.overflow && (text.sized_px(floor_case.scale) == std::min(floor_ref, min_px)) && (floor_case.width > 10),
+                "字の縮め: 下限（普通の 0.55 倍 = " + std::to_string(min_px) + "px。基準がそれより小さければ基準 = " + std::to_string(floor_ref)
+                    + "px）でも収まらないものは下限のまま");
+        }
+        //! 名前の折り方（最大 2 行）。折ってよい位置の一覧を、文字列で確かめる。
+        {
+            struct BreakCase {
+                const char *name;
+                std::vector<std::string> splits; //!< 「1 行目|2 行目」の並び（左から）
+            };
+            const BreakCase cases[] = {
+                { "ドラゴンの感知", { "ドラゴン|の感知", "ドラゴンの|感知", "ドラゴンの感|知" } },
+                { "弱い呪い増殖", { "弱い|呪い増殖", "弱い呪い|増殖", "弱い呪い増|殖" } },
+                { "テレパシー", {} },
+                { "ヒーロー", {} },
+                { "経験値減少", { "経|験値減少", "経験|値減少", "経験値|減少", "経験値減|少" } },
+                { "耐火炎", { "耐|火炎", "耐火|炎" } },
+                { "加速", { "加|速" } },
+                { "火のオーラ", { "火の|オーラ" } },
+                { "ひどい切り傷", { "ひどい|切り傷", "ひどい切り|傷" } },
+                { "ガーディアンの目", { "ガーディアン|の目", "ガーディアンの|目" } },
+                { "毒（軽）", { "毒|（軽）" } },
+                { "HP回復", { "HP回|復" } },
+                { "毒 軽", {} },
+                { "の", {} },
+                { "Sense Dragons", { "Sense|Dragons" } },
+                { "Hallucination", {} },
+                { "Resist Fire", { "Resist|Fire" } },
+                { "Word of Recall", { "Word|of Recall", "Word of|Recall" } },
+                { "a  b", { "a|b" } },
+                { " ab", {} },
+                { "ab ", {} },
+                { "ab", {} },
+                { "", {} },
+            };
+            bool breaks_ok = true;
+            std::string first_bad;
+            for (const BreakCase &c : cases) {
+                const std::string name = c.name;
+                std::vector<std::string> got;
+                for (const StatusNameBreak &b : status_name_break_points(name)) {
+                    got.push_back(name.substr(0, b.first_end) + "|" + name.substr(b.second_begin));
+                }
+                if (got != c.splits) {
+                    breaks_ok = false;
+                    if (first_bad.empty()) {
+                        first_bad = name;
+                    }
+                }
+            }
+            check(breaks_ok, "名前の折る位置: 英語は空白だけ・日本語は「の」の後ろと字の種類の境目だけ（"
+                    + std::to_string(sizeof(cases) / sizeof(cases[0])) + " 例" + (breaks_ok ? "" : "。違った例: " + first_bad) + "）");
+
+            //! 例の名前の折れ方（アイコンの幅 3 とおり）。
+            struct FitCase {
+                const char *name;
+                const char *first;
+                const char *second; //!< 空なら 1 行
+            };
+            const FitCase fits[] = {
+                { "ドラゴンの感知", "ドラゴン", "の感知" }, { "弱い呪い増殖", "弱い", "呪い増殖" }, { "テレパシー", "テレパシー", "" },
+                { "Sense Dragons", "Sense", "Dragons" }, { "Hallucination", "Hallucination", "" }, { "経験値減少", "経験", "値減少" },
+                { "耐火炎", "耐火炎", "" }, { "ヒーロー", "ヒーロー", "" }, { "Resist Fire", "Resist", "Fire" },
+            };
+            for (const int icon : { 64, 43, 34 }) {
+                bool fits_ok = true;
+                bool rule_ok = true;
+                std::string detail;
+                for (const FitCase &c : fits) {
+                    const std::string name = c.name;
+                    const FittedText f = fit_status_name(text, name, icon);
+                    const bool two = c.second[0] != '\0';
+                    const bool lines_ok = (f.lines == (two ? 2 : 1)) && (status_name_line(name, f, 0) == std::string_view(c.first))
+                        && (status_name_line(name, f, 1) == std::string_view(c.second));
+                    fits_ok = fits_ok && lines_ok;
+                    rule_ok = rule_ok && name_wrap_ok(f, icon, name);
+                    detail += std::string(detail.empty() ? "" : "、") + c.name + "→" + std::string(status_name_line(name, f, 0))
+                        + (two ? ("／" + std::string(status_name_line(name, f, 1))) : std::string()) + "(" + std::to_string(text.sized_px(f.scale)) + "px)";
+                }
+                check(fits_ok, "名前の折れ方(アイコン " + std::to_string(icon) + "px): " + detail);
+                check(rule_ok, "名前の折れ方(アイコン " + std::to_string(icon) + "px): 基準の大きさ → 2 行に折る → 2 行のまま縮める、の順で決まる");
+            }
+            //! 基準の大きさで 2 行に収まるなら縮めない（ドラゴンの感知は基準の大きさのまま 2 行）。
+            {
+                const int icon = 64;
+                const int ref = status_text_reference_px(text, icon);
+                const FittedText f = fit_status_name(text, "ドラゴンの感知", icon);
+                check((f.lines == 2) && (text.sized_px(f.scale) == ref) && (f.width <= icon) && !f.overflow,
+                    "名前: 基準の大きさ(" + std::to_string(ref) + "px)で 2 行に収まるなら、そのまま 2 行");
+            }
+            //! 2 行でも基準の大きさで収まらない長い名前は、2 行のまま縮める。さらに下限でも収まらなければ下限の 2 行で幅を広げる。
+            {
+                const int icon = 64;
+                const int ref = status_text_reference_px(text, icon);
+                const FittedText shrunk = fit_status_name(text, "ドラゴンの感知ドラゴンの感知", icon);
+                const FittedText wide = fit_status_name(text, "ドラゴンの感知ドラゴンの感知ドラゴンの感知ドラゴンの感知", icon);
+                check((shrunk.lines == 2) && (wide.lines == 2) && (text.sized_px(shrunk.scale) <= ref)
+                        && (text.sized_px(wide.scale) <= text.sized_px(shrunk.scale)) && wide.overflow && (wide.width > icon)
+                        && (text.sized_px(wide.scale) == std::min(ref, min_px)),
+                    "名前: 2 行でも収まらない長さは 2 行のまま縮め(" + std::to_string(text.sized_px(shrunk.scale)) + "px)、下限("
+                        + std::to_string(text.sized_px(wide.scale)) + "px)でも収まらなければ幅を広げる");
+            }
+            //! 空の名前・折れない名前は 1 行。
+            {
+                const FittedText none = fit_status_name(text, "", 64);
+                const FittedText unbroken = fit_status_name(text, "Hallucinationxxxx", 64);
+                check((none.lines == 1) && (unbroken.lines == 1) && (unbroken.scale < 1.f) && status_name_line("abc", none, 1).empty(),
+                    "名前: 空の名前・折れる位置が無い名前は 1 行のまま（折れない長い名前は縮める）");
+            }
+        }
+        //! 玉の横の段は、名前が 1 行でも 2 行でも高さが変わらない。常時の列は実際の行数で詰める。
+        {
+            for (const LayoutMode mode : { LayoutMode::Full, LayoutMode::Hybrid, LayoutMode::Split }) {
+                for (const std::array<int, 2> &size : { std::array<int, 2>{ 2560, 1080 }, std::array<int, 2>{ 1280, 720 } }) {
+                    const UiLayout layout = UiLayout::compute(mode, size[0], size[1], text.cell_w(), text.cell_h(), false);
+                    const std::string tag = std::string(layout_mode_name(mode)) + " " + std::to_string(size[0]) + "x" + std::to_string(size[1]);
+                    GameFrame short_names = base;
+                    GameFrame long_names = base;
+                    for (StatusEffectView &e : short_names.status_effects) {
+                        e.label_utf8 = "毒";
+                    }
+                    for (StatusEffectView &e : long_names.status_effects) {
+                        e.label_utf8 = (e.kind == StatusEffectKind::Bad) ? "弱い呪い増殖" : "ドラゴンの感知";
+                    }
+                    const StatusIconLayout mixed = layout_status_icons(text, layout, base);
+                    const StatusIconLayout ones = layout_status_icons(text, layout, short_names);
+                    const StatusIconLayout twos = layout_status_icons(text, layout, long_names);
+                    int one_line = 0;
+                    int two_line = 0;
+                    bool same_h = !mixed.items.empty() && !ones.items.empty() && !twos.items.empty();
+                    bool same_y = true;
+                    bool band_ok = true;
+                    for (const StatusIconLayout *l : { &mixed, &ones, &twos }) {
+                        for (const StatusIconPlacement &item : l->items) {
+                            same_h = same_h && (item.cell.h == mixed.items.front().cell.h);
+                            same_y = same_y && (item.cell.y == mixed.items.front().cell.y) && (item.icon.y == mixed.items.front().icon.y);
+                            band_ok = band_ok && (item.name_band.y == (item.icon.y + item.icon.h))
+                                && (item.name_band.h == (item.name.lines * l->name_line_h))
+                                && ((item.name_band.y + (2 * l->name_line_h)) == (item.cell.y + item.cell.h));
+                            if (l == &mixed) {
+                                one_line += (item.name.lines == 1) ? 1 : 0;
+                                two_line += (item.name.lines == 2) ? 1 : 0;
+                            }
+                        }
+                    }
+                    check(same_h && same_y && band_ok && (one_line > 0) && (two_line > 0),
+                        tag + ": 玉の横の段の高さは、名前が 1 行・2 行・混在でも同じ（1 行の名前 " + std::to_string(one_line) + " 個 / 2 行 "
+                            + std::to_string(two_line) + " 個。名前の場所は常に 2 行ぶん）");
+
+                    //! 常時の列: 1 個ずつ実際の行数で詰める（同じ列の隣どうしの間はすき間だけ。良い効果と呪いの境だけ広い）。
+                    const PermanentIconLayout perm = layout_permanent_icons(text, layout, base);
+                    const PermanentIconLayout perm_ones = layout_permanent_icons(text, layout, short_names);
+                    const PermanentIconLayout perm_twos = layout_permanent_icons(text, layout, long_names);
+                    const int gap = std::max(4, perm.icon_px / 8);
+                    int perm_one = 0;
+                    int perm_two = 0;
+                    bool packed_ok = true;
+                    bool height_ok = true;
+                    for (const PermanentIconPlacement &a : perm.items) {
+                        perm_one += (a.name.lines == 1) ? 1 : 0;
+                        perm_two += (a.name.lines == 2) ? 1 : 0;
+                        height_ok = height_ok && (a.cell.h == (perm.icon_px + (a.name.lines * perm.name_line_h)));
+                        for (const PermanentIconPlacement &b : perm.items) {
+                            if ((a.column == b.column) && (b.cell.y > a.cell.y)) {
+                                bool is_next = true;
+                                for (const PermanentIconPlacement &c : perm.items) {
+                                    is_next = is_next && !((c.column == a.column) && (c.cell.y > a.cell.y) && (c.cell.y < b.cell.y));
+                                }
+                                if (is_next) {
+                                    const int space = b.cell.y - (a.cell.y + a.cell.h);
+                                    packed_ok = packed_ok && ((space == gap) || ((space == (gap + (perm.icon_px / 2))) && b.bad && !a.bad));
+                                }
+                            }
+                        }
+                    }
+                    bool all_one = !perm_ones.items.empty();
+                    for (const PermanentIconPlacement &p : perm_ones.items) {
+                        all_one = all_one && (p.cell.h == (perm_ones.icon_px + perm_ones.name_line_h));
+                    }
+                    bool all_two = !perm_twos.items.empty();
+                    for (const PermanentIconPlacement &p : perm_twos.items) {
+                        all_two = all_two && (p.cell.h == (perm_twos.icon_px + (2 * perm_twos.name_line_h)));
+                    }
+                    check(packed_ok && height_ok && (perm_one > 0) && (perm_two > 0) && all_one && all_two,
+                        tag + ": 常時の列は 1 個ずつ実際の行数で詰める（1 行 " + std::to_string(perm_one) + " 個 / 2 行 " + std::to_string(perm_two) + " 個）");
+
+                    //! 英語の名前の合成フレームでも同じ規則（空白でだけ折れ、1 語は折れない）。段の高さは日本語と同じ。
+                    GameFrame english = base;
+                    make_status_hud_frame_english(english);
+                    const StatusIconLayout en_row = layout_status_icons(text, layout, english);
+                    const PermanentIconLayout en_perm = layout_permanent_icons(text, layout, english);
+                    bool en_ok = !en_row.items.empty() && !en_perm.items.empty();
+                    int en_two = 0;
+                    int en_one = 0;
+                    for (const StatusIconPlacement &item : en_row.items) {
+                        const std::string &label = english.status_effects[static_cast<std::size_t>(item.effect_index)].label_utf8;
+                        en_ok = en_ok && name_wrap_ok(item.name, en_row.icon_px, label) && (item.cell.h == mixed.items.front().cell.h);
+                        en_two += (item.name.lines == 2) ? 1 : 0;
+                        en_one += (item.name.lines == 1) ? 1 : 0;
+                    }
+                    for (const PermanentIconPlacement &item : en_perm.items) {
+                        const std::string &label = english.status_effects[static_cast<std::size_t>(item.effect_index)].label_utf8;
+                        en_ok = en_ok && name_wrap_ok(item.name, en_perm.icon_px, label);
+                        en_two += (item.name.lines == 2) ? 1 : 0;
+                        en_one += (item.name.lines == 1) ? 1 : 0;
+                    }
+                    check(en_ok && (en_two > 0) && (en_one > 0),
+                        tag + ": 英語の名前も同じ規則（空白でだけ折れ、1 語は折れない。1 行 " + std::to_string(en_one) + " 個 / 2 行 " + std::to_string(en_two) + " 個）");
+                }
+            }
+        }
+        //! 基準の大きさ: アイコンの幅ごとに 1 つ。1〜4 文字は同じ大きさ、5 文字以上だけ縮む。
+        {
+            for (const int icon : { 64, 43, 34, 24, 200 }) {
+                const int ref = status_text_reference_px(text, icon);
+                const bool fits_ref = text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref) / static_cast<float>(text.base_px())) <= icon;
+                const bool one_bigger_fails = (ref == text.base_px())
+                    || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref + 1) / static_cast<float>(text.base_px())) > icon);
+                const bool floor_case = ref == text.sized_px(0.3f); //!< 極端に狭いとき。収まらなくても下限
+                check((fits_ref || floor_case) && one_bigger_fails && (ref <= text.base_px()),
+                    "基準の字: アイコン " + std::to_string(icon) + "px では全角 4 文字が収まるいちばん大きい字 = " + std::to_string(ref)
+                        + "px（普通の字 " + std::to_string(text.base_px()) + "px を超えない）");
+            }
+            for (const int icon : { 64, 43, 34 }) {
+                const int ref = status_text_reference_px(text, icon);
+                bool same = true;
+                for (const char *label : { "毒", "加速", "祝福", "ヒーロー", "火炎耐性", "Haste", "AB", "+10", "+1" }) {
+                    const FittedText f = fit_status_text(text, label, icon);
+                    same = same && (text.sized_px(f.scale) == ref) && !f.overflow;
+                }
+                const FittedText five = fit_status_text(text, "テレパシー", icon);
+                const FittedText six = fit_status_text(text, "ドラゴン感知", icon);
+                const FittedText english = fit_status_text(text, "Resist Fire", icon);
+                const bool shrinks_only_long = (text.sized_px(five.scale) <= ref) && (text.sized_px(six.scale) < ref || ref <= min_px)
+                    && (text.sized_px(english.scale) < ref || ref <= min_px) && (text.sized_px(six.scale) <= text.sized_px(five.scale));
+                check(same, "基準の字(" + std::to_string(icon) + "px): 1〜4 文字・短い英数字・効果量はすべて同じ大きさ（" + std::to_string(ref) + "px）");
+                check(shrinks_only_long, "基準の字(" + std::to_string(icon) + "px): 5 文字以上・長い英語だけが縮む（5 文字 "
+                        + std::to_string(text.sized_px(five.scale)) + "px / 6 文字 " + std::to_string(text.sized_px(six.scale)) + "px / 英語 "
+                        + std::to_string(text.sized_px(english.scale)) + "px）");
+            }
+        }
+    }
+
+    // ---- 作りを替えた絵（人が見る用）: Full と、状態列が右の Hybrid ----
+    {
+        struct Extra {
+            int w;
+            int h;
+            LayoutMode mode;
+            int side;
+            const char *suffix;
+            bool english{ false }; //!< 名前を英語にした合成フレームで描く
+        };
+        GameFrame english_frame = base;
+        make_status_hud_frame_english(english_frame);
+        for (const Extra &extra : { Extra{ 2560, 1080, LayoutMode::Full, 0, "_full" }, Extra{ 1280, 720, LayoutMode::Full, 0, "_full" },
+                 Extra{ 2560, 1080, LayoutMode::Hybrid, 1, "_right" }, Extra{ 2560, 1080, LayoutMode::Split, 0, "_split" },
+                 Extra{ 2560, 1080, LayoutMode::Hybrid, 0, "_en", true }, Extra{ 1280, 720, LayoutMode::Hybrid, 0, "_en", true } }) {
+            StatusHudTarget target;
+            if (!make_status_hud_target(target, extra.w, extra.h)) {
+                check(false, "画面の外の描画先を作れません（作りを替えた絵）");
+                release_status_hud_target(target);
+                continue;
+            }
+            render_mode = extra.mode;
+            set_status_col_side(extra.side);
+            HudState state;
+            orb_hud_update(state.orb_anim, state.orb_params, 1.f, 1.f, 0u);
+            advance(state, ratio_hp(base), ratio_mp(base), 0u, 3000u);
+            const std::vector<unsigned char> shot = render(target, extra.english ? english_frame : base, state, 3000u);
+            set_status_col_side(0);
+            render_mode = LayoutMode::Hybrid;
+            check(drain_gl_errors().empty(), std::string("描いて GL エラーが出ない（") + extra.suffix + "）");
+            check(save_rgba_png(out_path(extra.w, extra.h, extra.suffix), shot.data(), extra.w, extra.h),
+                "画像を書き出せた " + out_path(extra.w, extra.h, extra.suffix));
+            release_status_hud_target(target);
+        }
+    }
+
+    // ---- 玉の横のアイコンの巡回（あふれたとき。1 行のまま、玉から遠ざかる向きへ等速で止まらずに流す） ----
+    {
+        const char *const left_extra[][2] = {
+            { "berserk", "狂戦士化" }, { "might", "剛力" }, { "stoneskin", "石の肌" }, { "magicdef", "魔法防御" },
+            { "protevil", "邪悪防御" }, { "res_acid", "酸耐性" }, { "res_elec", "電撃耐性" }, { "res_pois", "毒耐性" },
+            { "reflect", "反射" }, { "levitate", "浮遊" }, { "stealth", "隠密" }, { "infravision", "赤外線視力" },
+            { "nightsight", "暗視" }, { "esp_evil", "邪悪感知" }, { "cure", "治癒" },
+        };
+        const char *const right_extra[][2] = {
+            { "blind", "盲目" }, { "paralyzed", "麻痺" }, { "afraid", "恐怖" }, { "slow", "減速" }, { "stun", "朦朧" },
+            { "hungry", "空腹" }, { "hallucination", "幻覚" }, { "expand", "膨張" }, { "no_tele", "転移不能" },
+            { "no_magic", "魔法不能" }, { "slow_regen", "回復低下" }, { "cowardice", "臆病" }, { "self_fire", "自傷火炎" },
+            { "low_ac", "防御低下" },
+        };
+        const auto add_effect = [](GameFrame &f, const char *key, const char *label, StatusEffectKind kind) {
+            StatusEffectView v;
+            v.key = key;
+            v.label_utf8 = label;
+            v.kind = kind;
+            f.status_effects.push_back(v);
+        };
+        GameFrame left_only = base; //!< 左だけあふれる（左 24 個・右 3 個）
+        for (const auto &e : left_extra) {
+            add_effect(left_only, e[0], e[1], StatusEffectKind::Good);
+        }
+        GameFrame over = left_only; //!< 左右ともあふれる（左 24 個・右 17 個）
+        for (const auto &e : right_extra) {
+            add_effect(over, e[0], e[1], StatusEffectKind::Bad);
+        }
+        const auto without_kinds = [](GameFrame f, bool drop_left) {
+            f.status_effects.erase(std::remove_if(f.status_effects.begin(), f.status_effects.end(),
+                                       [&](const StatusEffectView &e) {
+                                           const bool is_left = (e.kind == StatusEffectKind::Good) || (e.kind == StatusEffectKind::Waiting)
+                                               || (e.kind == StatusEffectKind::Special);
+                                           return drop_left ? is_left : (e.kind == StatusEffectKind::Bad);
+                                       }),
+                f.status_effects.end());
+            return f;
+        };
+
+        for (const std::array<int, 2> &size : { std::array<int, 2>{ 2560, 1080 }, std::array<int, 2>{ 1280, 720 } }) {
+            const int w = size[0];
+            const int h = size[1];
+            const std::string tag = "巡回 " + std::to_string(w) + "x" + std::to_string(h);
+            const UiLayout layout = make_layout(w, h);
+            const RectPx &orb = layout.orb;
+            const RectPx window_rect{ 0, 0, w, h };
+            const auto at = [&](const GameFrame &f, double left_ms, double right_ms) {
+                return layout_status_icons(text, layout, f, left_ms, right_ms);
+            };
+            const StatusIconLayout t0 = at(over, 0.0, 0.0);
+            const int icon_px = t0.icon_px;
+            const int gap = std::max(4, icon_px / 8);
+            const double v = static_cast<double>(icon_px + gap); //!< 1 秒にアイコン 1 個ぶん
+            check(t0.ring_left.rotating && t0.ring_right.rotating && (t0.ring_left.count == 24) && (t0.ring_right.count == 17),
+                tag + ": あふれる合成フレーム（左 24・右 17）は左右とも輪になる（枠に入る個数 左 " + std::to_string(t0.ring_left.capacity)
+                    + " / 右 " + std::to_string(t0.ring_right.capacity) + "）");
+            check((t0.ring_left.speed == v) && (t0.ring_right.speed == v),
+                tag + ": 速さは 1 秒にアイコン 1 個ぶん（アイコンの幅 + すき間 = " + std::to_string(static_cast<int>(v)) + " 画素/秒）");
+            const auto side_items = [](const StatusIconLayout &l, bool left) {
+                std::vector<const StatusIconPlacement *> out;
+                for (const StatusIconPlacement &item : l.items) {
+                    if (item.left == left) {
+                        out.push_back(&item);
+                    }
+                }
+                return out;
+            };
+            const auto true_x = [](const StatusIconPlacement &item) { return static_cast<double>(item.cell.x) + static_cast<double>(item.frac_x); };
+
+            for (const bool left : { true, false }) {
+                const std::string side = tag + (left ? " 左" : " 右");
+                const StatusRing &ring = left ? t0.ring_left : t0.ring_right;
+                const int edge_near = left ? orb.x : (orb.x + orb.w);
+                const int n = ring.count;
+                const double pitch = static_cast<double>(ring.pitch);
+                /*
+                 * 段の高さ: 左右とも同じ。玉の上から 42% か、メッセージの帯と名前の行を避けてそれより上
+                 *。左右の両方の枠が同じ高さにあることで見る。
+                 */
+                const int orb_row_y = orb.y + static_cast<int>(std::lround(orb.h * 0.42));
+                const int row0_y = t0.ring_left.window.y + text.cell_h();
+                check((row0_y <= orb_row_y) && (t0.ring_left.window.y == t0.ring_right.window.y), side + ": 段の高さは左右で同じで、玉の横の高さか、それより上");
+
+                // 枠は玉の横・地図の中・1 行ぶんの高さ
+                {
+                    const RectPx &win = ring.window;
+                    const bool near_ok = left ? ((win.x + win.w) == edge_near) : (win.x == edge_near);
+                    const bool inside = (rect_overlap_area(win, layout.scene) == (static_cast<long long>(win.w) * win.h))
+                        && (rect_overlap_area(win, window_rect) == (static_cast<long long>(win.w) * win.h))
+                        && (win.w == (ring.capacity * ring.pitch)) && (win.h == (text.cell_h() + icon_px + (2 * t0.name_line_h)))
+                        && (win.y + text.cell_h() == row0_y);
+                    check(near_ok && inside, side + ": 見えている枠は玉の縁から外へ、1 行ぶんの高さ（" + std::to_string(win.w) + "x" + std::to_string(win.h) + "）");
+                }
+
+                // 全時刻を通した検査（輪を 1 周まるごと + 2 秒を、37 ms 刻みで。継ぎ目も通る）
+                bool count_ok = true;
+                bool window_ok = true;
+                bool position_ok = true;
+                bool chain_ok = true;
+                bool continuity_ok = true;
+                bool fade_ok = true;
+                bool one_row_ok = true;
+                bool seam_seen = false;
+                bool wrap_seen = false;
+                double worst_step = 0.0;
+                const double cycle_ms = (ring.length / v) * 1000.0;
+                std::vector<const StatusIconPlacement *> previous;
+                StatusIconLayout previous_layout;
+                const double step_ms = 37.0;
+                for (double t = 0.0; t <= (cycle_ms + 2000.0); t += step_ms) {
+                    const StatusIconLayout now = at(over, t, t);
+                    std::vector<const StatusIconPlacement *> items = side_items(now, left);
+                    count_ok = count_ok && (static_cast<int>(items.size()) >= ring.capacity) && (static_cast<int>(items.size()) <= (ring.capacity + 1));
+                    std::sort(items.begin(), items.end(), [](const StatusIconPlacement *a, const StatusIconPlacement *b) {
+                        return a->ring_distance < b->ring_distance;
+                    });
+                    for (std::size_t k = 0; k < items.size(); ++k) {
+                        const StatusIconPlacement &it = *items[k];
+                        const double c = static_cast<double>(it.ring_distance);
+                        const double x = true_x(it);
+                        const double want_x = left ? (static_cast<double>(edge_near) - c - pitch) : (static_cast<double>(edge_near) + c);
+                        position_ok = position_ok && (std::fabs(x - want_x) < 0.01);
+                        one_row_ok = one_row_ok && (it.row == 0) && (it.icon.y == row0_y) && it.rotating;
+                        // 枠: 切る枠は輪の枠そのもので、見えている割合が alpha（全部入っていれば 1）
+                        const double win0 = static_cast<double>(ring.window.x);
+                        const double win1 = win0 + static_cast<double>(ring.window.w);
+                        const double visible = std::min(x + pitch, win1) - std::max(x, win0);
+                        window_ok = window_ok && (it.clip.x == ring.window.x) && (it.clip.w == ring.window.w) && (visible > 0.0);
+                        fade_ok = fade_ok && (it.alpha > 0.f) && (it.alpha <= 1.f)
+                            && (std::fabs(static_cast<double>(it.alpha) - std::clamp(visible / pitch, 0.0, 1.0)) < 0.01)
+                            && ((visible < (pitch - 0.01)) || (it.alpha > 0.999f));
+                        if (k > 0) {
+                            const StatusIconPlacement &before = *items[k - 1];
+                            const int step_index = ((it.ring_index - before.ring_index) + n) % n;
+                            chain_ok = chain_ok && (std::fabs(c - static_cast<double>(before.ring_distance) - pitch) < 0.01) && (step_index == 1);
+                            if ((before.ring_index == (n - 1)) && (it.ring_index == 0)) {
+                                seam_seen = true; // 輪の継ぎ目（最後の次に最初）が枠の中で並んだ
+                            }
+                        }
+                        if (c < 0.0) {
+                            wrap_seen = true;
+                        }
+                    }
+                    // 前の標本とのつながり: 同じアイコンの動きは時間に比例し、向きは玉から遠ざかる
+                    if (t > 0.0) {
+                        for (const StatusIconPlacement *a : previous) {
+                            for (const StatusIconPlacement &bi : now.items) {
+                                if ((bi.left == left) && (bi.ring_index == a->ring_index)) {
+                                    const double dx = true_x(bi) - true_x(*a);
+                                    const double dc = static_cast<double>(bi.ring_distance) - static_cast<double>(a->ring_distance);
+                                    const double want_dc = v * step_ms * 0.001;
+                                    worst_step = std::max(worst_step, std::fabs(dc - want_dc));
+                                    continuity_ok = continuity_ok && (std::fabs(dc - want_dc) < 0.01)
+                                        && (std::fabs(dx - (left ? -want_dc : want_dc)) < 0.01);
+                                }
+                            }
+                        }
+                    }
+                    previous_layout = now; // `previous` の指す先を、次の標本まで生かしておく
+                    previous = side_items(previous_layout, left);
+                }
+                check(count_ok, side + ": 枠に見えているのは常に " + std::to_string(ring.capacity) + " 個か " + std::to_string(ring.capacity + 1)
+                        + " 個（半分入りかけ・出かけを含む）");
+                check(position_ok, side + ": 位置は輪の中の距離と一致する（左は玉の縁から左へ・右は右へ）");
+                check(window_ok && one_row_ok, side + ": 見えるものはすべて枠にかかり、1 行のまま（上に段を積まない）");
+                check(fade_ok, side + ": 枠の端で入りかけ・出かけのアイコンは、見えている割合で薄くなる");
+                check(chain_ok && seam_seen && wrap_seen,
+                    side + ": 輪の継ぎ目: 最後の次に最初が、ちょうど 1 個ぶん離れて続く（継ぎ目が枠を通るのを確認 "
+                        + (seam_seen ? "済" : "未") + " / 玉の側から入りかけも確認 " + (wrap_seen ? "済" : "未") + "）");
+                check(continuity_ok, side + ": 37 ms ごとの動きは一定（誤差の最大 " + std::to_string(worst_step) + " 画素。飛ばない・止まらない）");
+
+                // 0 秒・0.5 秒・1 秒・2 秒: 動いた量が時間に比例する（0.5 秒でちょうど半個ぶん）
+                {
+                    const StatusIconLayout base_layout = at(over, 0.0, 0.0);
+                    const std::vector<const StatusIconPlacement *> first = side_items(base_layout, left);
+                    check(!first.empty() && (first.front()->ring_index == 0) && (std::fabs(first.front()->ring_distance) < 0.001f),
+                        side + ": 0 秒は先頭が玉の縁にぴったり（輪の先頭 = 玉に近い側）");
+                    double shift[4]{};
+                    const double times[4] = { 0.0, 500.0, 1000.0, 2000.0 };
+                    bool shift_ok = true;
+                    for (int k = 1; k < 4; ++k) {
+                        const StatusIconLayout later = at(over, times[k], times[k]);
+                        double measured = 0.0;
+                        bool found = false;
+                        for (const StatusIconPlacement *a : first) {
+                            for (const StatusIconPlacement &bi : later.items) {
+                                if ((bi.left == left) && (bi.ring_index == a->ring_index)) {
+                                    const double d = left ? (true_x(*a) - true_x(bi)) : (true_x(bi) - true_x(*a));
+                                    if (!found) {
+                                        measured = d;
+                                        found = true;
+                                    }
+                                    shift_ok = shift_ok && (std::fabs(d - (v * times[k] * 0.001)) < 0.01);
+                                }
+                            }
+                        }
+                        shift[k] = measured;
+                        shift_ok = shift_ok && found;
+                    }
+                    check(shift_ok && (std::fabs(shift[1] - (0.5 * v)) < 0.01) && (std::fabs(shift[2] - v) < 0.01) && (std::fabs(shift[3] - (2.0 * v)) < 0.01)
+                            && (std::fabs((shift[1] * 2.0) - shift[2]) < 0.01),
+                        side + ": 流れた量は時間に比例（0.5 秒 " + std::to_string(shift[1]) + " / 1 秒 " + std::to_string(shift[2]) + " / 2 秒 "
+                            + std::to_string(shift[3]) + " 画素。1 個ぶん = " + std::to_string(v) + "）");
+                }
+            }
+
+            // 入りきる側は回さない（左だけあふれるフレームでは、右の 3 個は時刻が進んでも動かない。左は動く）
+            {
+                const StatusIconLayout a = at(left_only, 0.0, 0.0);
+                const StatusIconLayout b = at(left_only, 7300.0, 7300.0);
+                bool right_same = true;
+                bool left_moved = false;
+                const std::vector<const StatusIconPlacement *> ra = side_items(a, false);
+                const std::vector<const StatusIconPlacement *> rb = side_items(b, false);
+                right_same = (ra.size() == rb.size()) && (ra.size() == 3u) && !a.ring_right.rotating;
+                for (std::size_t i = 0; right_same && (i < ra.size()); ++i) {
+                    right_same = (ra[i]->cell.x == rb[i]->cell.x) && (ra[i]->frac_x == rb[i]->frac_x) && !ra[i]->rotating
+                        && (ra[i]->alpha == 1.f);
+                }
+                const std::vector<const StatusIconPlacement *> la = side_items(a, true);
+                const std::vector<const StatusIconPlacement *> lb = side_items(b, true);
+                for (std::size_t i = 0; (i < la.size()) && (i < lb.size()); ++i) {
+                    left_moved = left_moved || (true_x(*la[i]) != true_x(*lb[i]));
+                }
+                check(right_same && left_moved && a.ring_left.rotating, tag + ": 入りきる側（右 3 個）は時刻が進んでも止まったまま、あふれる左だけが動く（左右は別々に回る）");
+                // 全部入りきるフレーム（合成フレームそのもの。2560 だけ）
+                if (w >= 2000) {
+                    const StatusIconLayout c0 = at(base, 0.0, 0.0);
+                    const StatusIconLayout c1 = at(base, 9100.0, 9100.0);
+                    bool same = (c0.items.size() == c1.items.size()) && !c0.ring_left.rotating && !c0.ring_right.rotating;
+                    for (std::size_t i = 0; same && (i < c0.items.size()); ++i) {
+                        same = (c0.items[i].cell.x == c1.items[i].cell.x) && (c0.items[i].frac_x == c1.items[i].frac_x) && !c0.items[i].rotating;
+                    }
+                    check(same, tag + ": 入りきるときは回さない（時刻を変えても位置が同じ）");
+                }
+            }
+        }
+
+        // ---- 描いた絵（枠の外へ出ない・悪い効果の下敷きが赤・巡回の途中の絵）と、巡回の起点 ----
+        /*
+         * プロンプトを外したフレームで描く。玉とアイコンは地図の下縁に置き、プロンプトの帯はその上に重ねて描く
+         *ので、帯があると名前の下敷きの色を測れない。
+         */
+        GameFrame quiet = over;
+        quiet.prompt.text_utf8.clear();
+        quiet.prompt.choices.clear();
+        for (const std::array<int, 2> &size : { std::array<int, 2>{ 2560, 1080 }, std::array<int, 2>{ 1280, 720 } }) {
+            const int w = size[0];
+            const int h = size[1];
+            const std::string tag = "巡回の絵 " + std::to_string(w) + "x" + std::to_string(h);
+            StatusHudTarget target;
+            if (!make_status_hud_target(target, w, h)) {
+                check(false, tag + ": 画面の外の描画先を作れません");
+                release_status_hud_target(target);
+                continue;
+            }
+            const UiLayout layout = make_layout(w, h);
+            const StatusIconLayout lay = layout_status_icons(text, layout, quiet, 0.0, 0.0);
+            const auto fresh_state = [&](const GameFrame &f) {
+                HudState st;
+                orb_hud_update(st.orb_anim, st.orb_params, ratio_hp(f), ratio_mp(f), 0u);
+                advance(st, ratio_hp(f), ratio_mp(f), 0u, 3000u);
+                return st;
+            };
+            //! 0 秒（3000 ms）・0.5 秒・1 秒の 3 枚（起点は最初に描いた時刻 = 3000）
+            std::vector<unsigned char> shots[3];
+            {
+                HudState st = fresh_state(quiet);
+                const std::uint32_t times[3] = { 3000u, 3500u, 4000u };
+                for (int k = 0; k < 3; ++k) {
+                    advance(st, ratio_hp(quiet), ratio_mp(quiet), (k == 0) ? 3000u : times[k - 1], times[k]);
+                    shots[k] = render(target, quiet, st, times[k]);
+                }
+                const char *const suffix[3] = { "_ring0", "_ring500", "_ring1000" };
+                for (int k = 0; k < 3; ++k) {
+                    check(save_rgba_png(out_path(w, h, suffix[k]), shots[k].data(), w, h), tag + ": 画像を書き出せた " + out_path(w, h, suffix[k]));
+                }
+                check((st.orb_anim.ring_origin_ms[0] == 3000u) && (st.orb_anim.ring_origin_ms[1] == 3000u), tag + ": 巡回の起点は最初に描いた時刻");
+                check((count_changed_pixels(shots[0], shots[1], w, h, lay.ring_left.window) > 0)
+                        && (count_changed_pixels(shots[1], shots[2], w, h, lay.ring_left.window) > 0)
+                        && (count_changed_pixels(shots[0], shots[1], w, h, lay.ring_right.window) > 0)
+                        && (count_changed_pixels(shots[1], shots[2], w, h, lay.ring_right.window) > 0),
+                    tag + ": 0 秒・0.5 秒・1 秒で、左右の枠の中の絵がそれぞれ違う（流れている）");
+            }
+            // 枠の外へ描かない: 片側のアイコンを全部抜いた絵と比べ、枠の外（玉・端の側）が 1 画素も変わらない
+            {
+                const GameFrame no_left = without_kinds(quiet, true);
+                const GameFrame no_right = without_kinds(quiet, false);
+                HudState st_a = fresh_state(quiet);
+                HudState st_l = fresh_state(no_left);
+                HudState st_r = fresh_state(no_right);
+                std::vector<unsigned char> img_a;
+                std::vector<unsigned char> img_l;
+                std::vector<unsigned char> img_r;
+                for (const std::uint32_t t : { 3000u, 3700u }) {
+                    advance(st_a, ratio_hp(quiet), ratio_mp(quiet), (t == 3000u) ? 3000u : 3000u, t);
+                    advance(st_l, ratio_hp(quiet), ratio_mp(quiet), (t == 3000u) ? 3000u : 3000u, t);
+                    advance(st_r, ratio_hp(quiet), ratio_mp(quiet), (t == 3000u) ? 3000u : 3000u, t);
+                    img_a = render(target, quiet, st_a, t);
+                    img_l = render(target, no_left, st_l, t);
+                    img_r = render(target, no_right, st_r, t);
+                }
+                const RectPx &lw = lay.ring_left.window;
+                const RectPx &rw = lay.ring_right.window;
+                const RectPx left_beyond{ layout.scene.x, lw.y, lw.x - layout.scene.x, lw.h };
+                const RectPx right_beyond{ rw.x + rw.w, rw.y, (layout.scene.x + layout.scene.w) - (rw.x + rw.w), rw.h };
+                const std::size_t left_leak = count_changed_pixels(img_a, img_l, w, h, left_beyond) + count_changed_pixels(img_a, img_l, w, h, layout.orb);
+                const std::size_t right_leak = count_changed_pixels(img_a, img_r, w, h, right_beyond) + count_changed_pixels(img_a, img_r, w, h, layout.orb);
+                check((left_leak == 0) && (right_leak == 0),
+                    tag + ": 枠の外（玉の上・端の側）へは 1 画素もはみ出さない（左 " + std::to_string(left_leak) + " / 右 " + std::to_string(right_leak) + " 画素）");
+                check((count_changed_pixels(img_a, img_l, w, h, lw) > 0) && (count_changed_pixels(img_a, img_r, w, h, rw) > 0),
+                    tag + ": 枠の中には描かれている（対照）");
+            }
+            // 巡回の起点: 並びの中身が変わった側だけ先頭へ戻り、効果量の変化では戻らない
+            {
+                HudState st = fresh_state(quiet);
+                render(target, quiet, st, 3000u);
+                render(target, quiet, st, 3500u);
+                const bool first_ok = (st.orb_anim.ring_origin_ms[0] == 3000u) && (st.orb_anim.ring_origin_ms[1] == 3000u);
+                GameFrame amount_changed = quiet;
+                amount_changed.status_effects[0].amount_utf8 = "+11"; // 加速の効果量
+                render(target, amount_changed, st, 3600u);
+                const bool amount_ok = (st.orb_anim.ring_origin_ms[0] == 3000u);
+                GameFrame left_changed = amount_changed;
+                left_changed.status_effects.erase(left_changed.status_effects.begin() + 1); // 左の 1 個（ヒーロー）が切れた
+                render(target, left_changed, st, 3700u);
+                const bool left_ok = (st.orb_anim.ring_origin_ms[0] == 3700u) && (st.orb_anim.ring_origin_ms[1] == 3000u);
+                check(first_ok && amount_ok && left_ok, tag + ": 並びが変わった側だけ先頭へ戻る（効果量だけの変化や反対側は戻らない）");
+            }
+            // 悪い効果の名前の下敷きは暗めの赤、それ以外は黒
+            if (w >= 2000) {
+                GameFrame base_quiet = base; //!< プロンプトの帯が名前に重ならないように外す（上の quiet と同じ理由）
+                base_quiet.prompt.text_utf8.clear();
+                base_quiet.prompt.choices.clear();
+                HudState st = fresh_state(base_quiet);
+                const std::vector<unsigned char> img = render(target, base_quiet, st, 3000u);
+                const StatusIconLayout plain = layout_status_icons(text, layout, base);
+                const PermanentIconLayout perm = layout_permanent_icons(text, layout, base);
+                const auto red_ratio = [&](const RectPx &band) {
+                    int red = 0;
+                    int total = 0;
+                    long long sum_r = 0;
+                    for (int y = band.y; y < (band.y + band.h); ++y) {
+                        for (int x = band.x; x < (band.x + band.w); ++x) {
+                            const std::size_t i = (((static_cast<std::size_t>(h - 1 - y) * static_cast<std::size_t>(w)) + static_cast<std::size_t>(x)) * 4);
+                            const int r = img[i];
+                            const int g = img[i + 1];
+                            const int b = img[i + 2];
+                            red += ((r >= 70) && (r >= (g * 2)) && (r >= (b * 2))) ? 1 : 0;
+                            sum_r += r;
+                            ++total;
+                        }
+                    }
+                    return std::array<double, 2>{ static_cast<double>(red) / std::max(1, total), static_cast<double>(sum_r) / std::max(1, total) };
+                };
+                bool bad_red = true;
+                bool good_dark = true;
+                bool perm_bad_red = true;
+                bool perm_good_dark = true;
+                int bad_n = 0;
+                int good_n = 0;
+                for (const StatusIconPlacement &item : plain.items) {
+                    const StatusEffectView &effect = base.status_effects[static_cast<std::size_t>(item.effect_index)];
+                    if (effect.label_utf8.empty()) {
+                        continue;
+                    }
+                    const auto r = red_ratio(item.name_band);
+                    if (effect.kind == StatusEffectKind::Bad) {
+                        bad_red = bad_red && (r[0] > 0.35);
+                        ++bad_n;
+                    } else {
+                        good_dark = good_dark && (r[0] < 0.01);
+                        ++good_n;
+                    }
+                    if (!item.amount_band.empty()) {
+                        good_dark = good_dark && (red_ratio(item.amount_band)[0] < 0.01);
+                    }
+                }
+                for (const PermanentIconPlacement &item : perm.items) {
+                    const auto r = red_ratio(item.name_band);
+                    if (item.bad) {
+                        perm_bad_red = perm_bad_red && (r[0] > 0.35);
+                    } else {
+                        perm_good_dark = perm_good_dark && (r[0] < 0.01);
+                    }
+                }
+                //! 名前の字: 2 行の名前はどちらの行にも字が描かれ、1 行の名前は下の行（玉の横では空けてある場所）に字が無い。
+                {
+                    const auto bright = [&](const RectPx &r) {
+                        int n = 0;
+                        for (int y = r.y; y < (r.y + r.h); ++y) {
+                            for (int x = r.x; x < (r.x + r.w); ++x) {
+                                const std::size_t i = (((static_cast<std::size_t>(h - 1 - y) * static_cast<std::size_t>(w)) + static_cast<std::size_t>(x)) * 4);
+                                n += ((img[i] >= 190) && (img[i + 1] >= 190) && (img[i + 2] >= 190)) ? 1 : 0;
+                            }
+                        }
+                        return n;
+                    };
+                    bool drawn_ok = true;
+                    bool empty_ok = true;
+                    int two_items = 0;
+                    int one_items = 0;
+                    const int nlh = plain.name_line_h;
+                    for (const StatusIconPlacement &item : plain.items) {
+                        for (int k = 0; k < 2; ++k) {
+                            const RectPx slot{ item.name_band.x, item.icon.y + item.icon.h + (k * nlh), item.name_band.w, nlh };
+                            const int n = bright(slot);
+                            if (k < item.name.lines) {
+                                drawn_ok = drawn_ok && (n >= 3);
+                            } else {
+                                empty_ok = empty_ok && (n == 0);
+                            }
+                        }
+                        two_items += (item.name.lines == 2) ? 1 : 0;
+                        one_items += (item.name.lines == 1) ? 1 : 0;
+                    }
+                    for (const PermanentIconPlacement &item : perm.items) {
+                        for (int k = 0; k < item.name.lines; ++k) {
+                            const RectPx slot{ item.name_band.x, item.icon.y + item.icon.h + (k * perm.name_line_h), item.name_band.w, perm.name_line_h };
+                            drawn_ok = drawn_ok && (bright(slot) >= 3);
+                        }
+                        two_items += (item.name.lines == 2) ? 1 : 0;
+                        one_items += (item.name.lines == 1) ? 1 : 0;
+                    }
+                    check(drawn_ok && empty_ok && (two_items > 0) && (one_items > 0),
+                        tag + ": 名前の字は行数どおりに描かれる（2 行 " + std::to_string(two_items) + " 個はどちらの行にも字がある / 1 行 "
+                            + std::to_string(one_items) + " 個の下の行は空）");
+                }
+                check(bad_red && (bad_n == 3), tag + ": 悪い効果（kind 1）の名前の下敷きは赤（" + std::to_string(bad_n) + " 個）");
+                check(good_dark && (good_n >= 9), tag + ": 良い効果の名前・効果量の下敷きは黒のまま（" + std::to_string(good_n) + " 個）");
+                check(perm_bad_red && !perm.items.empty(), tag + ": 常時の悪い効果（kind 5）の名前の下敷きも赤");
+                check(perm_good_dark, tag + ": 常時の良い効果（kind 4）の名前の下敷きは黒のまま");
+            }
+            check(drain_gl_errors().empty(), tag + ": 描いて GL エラーが出ない");
+            release_status_hud_target(target);
+        }
+    }
+
+    // ---- 動き（数だけ。描かない） ----
+    {
+        OrbHudParams params;
+        // 回復: ゆっくり上がる（既定で 1 秒に 0.2）。泡が昇り、止まったら泡は消える。
+        OrbHudAnimation heal;
+        orb_hud_update(heal, params, 0.3f, 0.3f, 0u);
+        std::uint32_t t = 0;
+        for (t = 16u; t <= 496u; t += 16u) {
+            orb_hud_update(heal, params, 0.7f, 0.7f, t);
+        }
+        const float expect = 0.3f + (0.2f * 0.496f);
+        check((heal.hp.shown > 0.3f) && (heal.hp.shown < 0.7f) && (std::fabs(heal.hp.shown - expect) < 0.02f),
+            "回復: 液面は一定の速さでゆっくり上がる（0.5 秒で " + std::to_string(heal.hp.shown) + " / 期待 " + std::to_string(expect) + "）");
+        check(!heal.hp.bubbles.empty() && (heal.hp.boost == 0.f), "回復: 上がっている間は泡が昇る（波は大きくならない）");
+        for (; t <= 4000u; t += 16u) {
+            orb_hud_update(heal, params, 0.7f, 0.7f, t);
+        }
+        check(heal.hp.shown == 0.7f, "回復: 目標へ着いたら止まる");
+        for (; t <= 12000u; t += 16u) {
+            orb_hud_update(heal, params, 0.7f, 0.7f, t);
+        }
+        check(heal.hp.bubbles.empty(), "回復: 止まったあと、泡は液面へ着いて消える");
+
+        // ダメージ: すばやく下がり、波が大きくなってだんだん静まる。
+        OrbHudAnimation hit;
+        orb_hud_update(hit, params, 0.8f, 0.8f, 0u);
+        orb_hud_update(hit, params, 0.4f, 0.4f, 16u);
+        check(hit.hp.boost > 0.5f, "ダメージ: 波が一時的に大きくなる（" + std::to_string(hit.hp.boost) + "）");
+        std::uint32_t fall_done = 0;
+        for (t = 32u; t <= 4000u; t += 16u) {
+            orb_hud_update(hit, params, 0.4f, 0.4f, t);
+            if ((fall_done == 0u) && (hit.hp.shown - 0.4f) < 0.02f) {
+                fall_done = t;
+            }
+        }
+        std::uint32_t rise_done = 0;
+        OrbHudAnimation slow;
+        orb_hud_update(slow, params, 0.4f, 0.4f, 0u);
+        for (t = 16u; t <= 6000u; t += 16u) {
+            orb_hud_update(slow, params, 0.8f, 0.8f, t);
+            if ((rise_done == 0u) && (0.8f - slow.hp.shown) < 0.02f) {
+                rise_done = t;
+            }
+        }
+        check((fall_done > 0u) && (rise_done > 0u) && (fall_done * 3u < rise_done),
+            "ダメージで下がるのは回復で上がるよりずっと速い（0.4 の差: 下がる " + std::to_string(fall_done) + " ms / 上がる "
+                + std::to_string(rise_done) + " ms）");
+        check((hit.hp.shown == 0.4f) && (hit.hp.boost < 0.05f), "ダメージ: 4 秒後には目標に着き、波は静まる（boost " + std::to_string(hit.hp.boost) + "）");
+
+        // 波を止めると、ダメージでも大波にならない。
+        OrbHudParams calm = params;
+        calm.wave_enabled = false;
+        OrbHudAnimation calm_hit;
+        orb_hud_update(calm_hit, calm, 0.8f, 0.8f, 0u);
+        orb_hud_update(calm_hit, calm, 0.4f, 0.4f, 16u);
+        check(calm_hit.hp.boost == 0.f, "波を止める: ダメージでも波は大きくならない");
+
+        // 間が空いたら（メニューなど）実際の割合へ即座に合わせる。
+        OrbHudAnimation gap;
+        orb_hud_update(gap, params, 0.8f, 0.8f, 0u);
+        orb_hud_update(gap, params, 0.2f, 0.2f, 5000u);
+        check(gap.hp.shown == 0.2f && gap.hp.bubbles.empty(), "描かれていなかった間（1 秒以上）の変化は即座に合わせる");
+    }
+
+    // ---- 2560x1080 で、ダメージの直後と回復の途中も書き出す（人が見る用。時刻は固定） ----
+    {
+        const int w = 2560;
+        const int h = 1080;
+        StatusHudTarget target;
+        if (make_status_hud_target(target, w, h)) {
+            {
+                //! ダメージの直後（120 ms）: 液面が下がりかけ、波が大きい。
+                GameFrame f = base;
+                f.hud.hp = 93;
+                HudState st;
+                orb_hud_update(st.orb_anim, st.orb_params, 171.f / 245.f, ratio_mp(f), 0u);
+                advance(st, ratio_hp(f), ratio_mp(f), 0u, 136u);
+                const std::vector<unsigned char> shot = render(target, f, st, 136u);
+                check((st.orb_anim.hp.shown > ratio_hp(f)) && (st.orb_anim.hp.shown < (171.f / 245.f)) && (st.orb_anim.hp.boost > 0.5f),
+                    "ダメージの直後: 液面は下がりかけで、波が大きい（shown " + std::to_string(st.orb_anim.hp.shown) + " / boost "
+                        + std::to_string(st.orb_anim.hp.boost) + "）");
+                check(save_rgba_png(out_path(w, h, "_hit"), shot.data(), w, h), "ダメージ直後の画像を書き出せた " + out_path(w, h, "_hit"));
+            }
+            {
+                //! 回復の途中（1.5 秒）: 液面がせり上がり、泡が昇る。
+                GameFrame f = base;
+                f.hud.hp = 171;
+                f.hud.sp = 55;
+                HudState st;
+                orb_hud_update(st.orb_anim, st.orb_params, 0.25f, 0.20f, 0u);
+                advance(st, ratio_hp(f), ratio_mp(f), 0u, 1500u);
+                const std::vector<unsigned char> shot = render(target, f, st, 1500u);
+                check((st.orb_anim.hp.shown < ratio_hp(f)) && (st.orb_anim.mp.shown < ratio_mp(f))
+                        && !st.orb_anim.hp.bubbles.empty() && !st.orb_anim.mp.bubbles.empty(),
+                    "回復の途中: 液面は上がりかけで、どちらの玉にも泡が昇っている（泡 "
+                        + std::to_string(st.orb_anim.hp.bubbles.size()) + " / " + std::to_string(st.orb_anim.mp.bubbles.size()) + "）");
+                check(save_rgba_png(out_path(w, h, "_rise"), shot.data(), w, h), "回復途中の画像を書き出せた " + out_path(w, h, "_rise"));
+            }
+            check(drain_gl_errors().empty(), "動きの途中を描いて GL エラーが出ない");
+        } else {
+            check(false, "画面の外の描画先（2560x1080）を作れません");
+        }
+        release_status_hud_target(target);
+    }
+
+    /*
+     * ---- コアごとの玉の素材と配置（決めたこと 2026-10-11）----
+     * 1. コア名 → 素材の組の対応と、変愚の配置が今の定数のままであること
+     * 2. 全コアの素材（6 層）が読めて、配置が設計の範囲に収まり、名札・数字の帯が玉の中に収まる
+     * 3. 配置ごとに、地図の下縁・メッセージの帯・名前の行・アイコンの段と重ならない（3 つの作り x 3 つの大きさ）
+     * 4. 全コアの玉を 1 枚ずつ描いて書き出し、変愚と別の絵であること
+     * 5. 短愚の終末の太陽（残り日数 14・7・1・0・無効）
+     */
+    {
+        struct CoreCase {
+            const char *core_name;
+            const char *key;
+        };
+        //! 握手の `core_name` と、選ばれる素材の組（変愚と知らないコアは空 = `assets/ui/hud/` 直下）。
+        static const CoreCase kCores[] = {
+            { "hengband", "" }, { "tangband", "tangband" }, { "gensoband", "gensoband" }, { "silq", "silq" },
+            { "frox", "frox" }, { "angband", "angband" }, { "Umoria", "umoria" }, { "Rogue 3.6", "rogue36" },
+            { "Rogue 5.4", "rogue54" }, { "RogueClone2", "rogue2" },
+        };
+        const OrbProfile legacy{};
+        const auto same_as_legacy = [&](const OrbProfile &p) {
+            return p.asset_key.empty() && (p.hp_cx == 238.0) && (p.mp_cx == 522.0) && (p.cy == 128.0) && (p.r == 74.0)
+                && (p.number_y == 217.0) && (p.label_bottom_y == 41.0) && (p.art_bottom_y == 230) && !p.emblem.present;
+        };
+
+        // ---- 1. 対応と、変愚は今のまま ----
+        for (const CoreCase &c : kCores) {
+            check(orb_asset_key_for_core(c.core_name) == c.key,
+                std::string("コア名 ") + c.core_name + " の素材の組は「" + c.key + "」（空 = 変愚の素材）");
+        }
+        check(orb_asset_key_for_core("TANGBAND") == "tangband" && orb_asset_key_for_core("PlainCore").empty()
+                && orb_asset_key_for_core("").empty(),
+            "コア名は大文字小文字を区別せず、知らないコア・名前なしは変愚の素材");
+        check(same_as_legacy(legacy), "変愚の配置（既定）は今の定数と同じ（238 / 522 / 128 / 74 / 数字 217 / 名札 41 / 下端 230）");
+        {
+            std::string note;
+            check(same_as_legacy(load_orb_profile("hengband", note)) && note.empty() && same_as_legacy(load_orb_profile("PlainCore", note)),
+                "変愚と知らないコアは、読んでも今の配置のまま");
+            check((orb_layer_path("", "orb_back") == kOrbBackPath) && (orb_layer_path("", "orb_glass") == kOrbGlassPath)
+                    && (orb_layer_path("", "orb_liquid_hp") == kOrbLiquidHpPath) && (orb_layer_path("", "orb_liquid_mp") == kOrbLiquidMpPath)
+                    && (orb_layer_path("", "orb_glass_top") == kOrbGlassTopPath) && (orb_layer_path("", "orb_front") == kOrbFrontPath),
+                "変愚の素材のパスは今のまま（assets/ui/hud/orb_*.png）");
+        }
+        {
+            //! 設定ファイルの読み取り（壊れた・範囲外の値は黙って使わない）。
+            OrbProfile p;
+            std::string perr;
+            check(parse_orb_layout("{ \"cx_hp\": 200.5, \"cx_mp\": 500, \"cy\": 120, \"r\": 90, \"art_bottom_y\": 248, "
+                                   "\"emblem_x\": 350, \"emblem_y\": 125, \"emblem_r\": 20 }", p, perr)
+                    && (p.hp_cx == 200.5) && (p.mp_cx == 500.0) && (p.r == 90.0) && (p.art_bottom_y == 248) && p.emblem.present
+                    && (p.emblem.x == 350.0) && (p.number_y == 217.0),
+                "配置の読み取り: 書いた項目は上書きし、無い項目（名札・数字）は既定のまま");
+            OrbProfile q;
+            check(!parse_orb_layout("{ \"cx_hp\": 200, \"cx_mp\": 500, \"cy\": 120 }", q, perr) && same_as_legacy(q),
+                "配置の読み取り: 必須の項目（r）が無ければ失敗し、値は動かない");
+            check(!parse_orb_layout("{ \"cx_hp\": 20, \"cx_mp\": 500, \"cy\": 120, \"r\": 90 }", q, perr) && same_as_legacy(q),
+                "配置の読み取り: 玉が設計の範囲（760x250）からはみ出す値は失敗する");
+            OrbProfile e;
+            check(parse_orb_layout("{ \"cx_hp\": 200, \"cx_mp\": 500, \"cy\": 120, \"r\": 90, \"emblem_x\": 350 }", e, perr) && !e.emblem.present,
+                "配置の読み取り: 飾りは 3 項目（x・y・r）が揃ったときだけ");
+        }
+
+        // ---- 2. 全コアの素材・範囲・名札と数字の帯 ----
+        const auto surface_bottom_row = [](const std::string &path) {
+            //! 前の層の不透明な画素（α >= 128）の最下段（素材の画素）。読めなければ -1。
+            SDL_Surface *raw = IMG_Load(path.c_str());
+            if (raw == nullptr) {
+                return -1;
+            }
+            SDL_Surface *rgba = SDL_ConvertSurfaceFormat(raw, SDL_PIXELFORMAT_RGBA32, 0);
+            SDL_FreeSurface(raw);
+            if (rgba == nullptr) {
+                return -1;
+            }
+            int last = -1;
+            const unsigned char *px = static_cast<const unsigned char *>(rgba->pixels);
+            for (int y = rgba->h - 1; (y >= 0) && (last < 0); --y) {
+                for (int x = 0; x < rgba->w; ++x) {
+                    if (px[(static_cast<std::size_t>(y) * static_cast<std::size_t>(rgba->pitch)) + (static_cast<std::size_t>(x) * 4) + 3] >= 128) {
+                        last = y;
+                        break;
+                    }
+                }
+            }
+            SDL_FreeSurface(rgba);
+            return last;
+        };
+        const char *const kLayerNames[] = { "orb_back", "orb_glass", "orb_liquid_hp", "orb_liquid_mp", "orb_glass_top", "orb_front" };
+        UiImage *const kLayerImages[] = { &back_image, &glass_image, &liquid_hp_image, &liquid_mp_image, &glass_top_image, &front_image };
+        //! 6 層を読む（全部読めたら true）。
+        const auto load_layers = [&](const std::string &asset_key) {
+            bool all = true;
+            for (int i = 0; i < 6; ++i) {
+                std::string load_err;
+                all = kLayerImages[i]->load_minified(orb_layer_path(asset_key, kLayerNames[i]), load_err) && all;
+            }
+            return all;
+        };
+        constexpr double kLabelH = 36.0; //!< 名札の高さ（設計の単位。1.5 倍の字 ≒ 24 画素 x 1.5。2560x1080 の見た目から）
+        constexpr double kNumberH = 24.0; //!< 数字の帯の高さ
+        for (const CoreCase &c : kCores) {
+            std::string tag = std::string("[") + c.core_name + "] ";
+            std::string note;
+            const OrbProfile p = load_orb_profile(c.core_name, note);
+            check(note.empty() && (p.asset_key == c.key), tag + "配置を読めて、コアの素材の組が選ばれる（assets/ui/hud/" + c.key + "）" + (note.empty() ? "" : " / " + note));
+            if (std::string(c.key).empty()) {
+                continue; // 変愚は上で見た
+            }
+            check((p.r != legacy.r) && (p.hp_cx != legacy.hp_cx) && (p.art_bottom_y != legacy.art_bottom_y || p.cy != legacy.cy),
+                tag + "変愚の定数ではなく、コアの配置になっている（半径 " + std::to_string(p.r) + " / 左の中心 " + std::to_string(p.hp_cx) + "）");
+            const bool in_range = ((p.hp_cx - p.r) >= 0.0) && ((p.mp_cx + p.r) <= kOrbDesignW) && (p.hp_cx < p.mp_cx)
+                && ((p.cy - p.r) >= 0.0) && ((p.cy + p.r) <= kOrbDesignH) && ((p.mp_cx - p.hp_cx) >= (2.0 * p.r));
+            check(in_range, tag + "2 つの玉は設計の範囲（760x250）に収まり、重ならない");
+            //! 名札・数字の帯は、矩形の中で、お互いに重ならず、玉の円の内側に中心がある（玉の外の枠は薄くて入らないコアがある）。
+            const double label_top = p.label_bottom_y - kLabelH;
+            const double number_top = p.number_y - (kNumberH / 2.0);
+            const double number_bottom = p.number_y + (kNumberH / 2.0);
+            const double label_mid = p.label_bottom_y - (kLabelH / 2.0);
+            const bool bands_ok = (label_top >= 0.0) && (number_bottom <= kOrbDesignH) && (p.label_bottom_y <= number_top)
+                && (std::fabs(label_mid - p.cy) <= p.r) && (std::fabs(p.number_y - p.cy) <= p.r);
+            check(bands_ok, tag + "名札（" + std::to_string(label_top) + "〜" + std::to_string(p.label_bottom_y) + "）と数字の帯（"
+                    + std::to_string(number_top) + "〜" + std::to_string(number_bottom) + "）は矩形の中で、重ならず、玉の中");
+            //! 数字の帯の幅（玉の幅の 1.15 倍）が、帯の高さでの玉の弦に収まる（はみ出すと枠の上に乗る）。
+            {
+                const double dy = std::max(std::fabs(number_top - p.cy), std::fabs(number_bottom - p.cy));
+                const double chord = (dy < p.r) ? (2.0 * std::sqrt((p.r * p.r) - (dy * dy))) : 0.0;
+                check(chord >= (p.r * 1.15), tag + "数字の帯は玉の中に収まる（帯の端での弦 " + std::to_string(chord) + " / 帯の幅 "
+                        + std::to_string(p.r * 1.15) + "）");
+            }
+            const bool loaded = load_layers(p.asset_key);
+            bool sizes_ok = loaded;
+            for (int i = 0; i < 6; ++i) {
+                sizes_ok = sizes_ok && (kLayerImages[i]->width() == 1013) && (kLayerImages[i]->height() == 333);
+            }
+            check(sizes_ok, tag + "玉の 6 層が読めて、どれも 1013x333（設計の 4/3 倍）");
+            //! 配置の「絵の見えている下端」は、前の層の実際の画素から測り直した値と一致する（素材と配置のずれ）。
+            const int bottom_row = surface_bottom_row(orb_layer_path(p.asset_key, "orb_front"));
+            const int measured = std::min(kOrbDesignH, static_cast<int>(std::ceil(static_cast<double>(bottom_row + 1) / (4.0 / 3.0))) + 2);
+            check((bottom_row >= 0) && (p.art_bottom_y == measured), tag + "絵の見えている下端 " + std::to_string(p.art_bottom_y)
+                    + " は前の層の画素（最下段 " + std::to_string(bottom_row) + "）から測った値 " + std::to_string(measured) + " と一致");
+            check(p.emblem.present == (std::string(c.key) == "tangband"), tag + "中央の飾りの位置があるのは短愚だけ");
+            if (p.emblem.present) {
+                const bool between = (p.emblem.x > (p.hp_cx + p.r)) && (p.emblem.x < (p.mp_cx - p.r)) && (std::fabs(p.emblem.y - p.cy) < 8.0)
+                    && (p.emblem.r > 10.0) && (p.emblem.r < 30.0);
+                check(between, tag + "飾りは 2 つの玉の間にあり、大きさは玉の半径の 1/4 前後（r = " + std::to_string(p.emblem.r) + "）");
+            }
+        }
+        {
+            //! 変愚の素材も 6 層が読めて 1013x333（既存の検査は 6 層の有無だけ見ていた）。
+            const bool ok = load_layers("");
+            bool sizes_ok = ok;
+            for (int i = 0; i < 6; ++i) {
+                sizes_ok = sizes_ok && (kLayerImages[i]->width() == 1013) && (kLayerImages[i]->height() == 333);
+            }
+            check(sizes_ok, "[hengband] 玉の 6 層が読めて、どれも 1013x333");
+            const int bottom_row = surface_bottom_row(orb_layer_path("", "orb_front"));
+            const int measured = std::min(kOrbDesignH, static_cast<int>(std::ceil(static_cast<double>(bottom_row + 1) / (4.0 / 3.0))) + 2);
+            check(measured == legacy.art_bottom_y,
+                "[hengband] 配置の測り方（前の層の不透明な画素の最下段 + 2）を変愚の素材に当てると 230 になる（今の定数と同じ測り方。測った値 "
+                    + std::to_string(measured) + "）");
+        }
+
+        // ---- 3. 配置ごとの置き場（地図の下縁・メッセージの帯・名前の行・アイコンの段） ----
+        {
+            const std::array<LayoutMode, 3> kModes = { LayoutMode::Full, LayoutMode::Hybrid, LayoutMode::Split };
+            const std::array<std::array<int, 2>, 3> kSizes = { { { 2560, 1080 }, { 1280, 720 }, { 1080, 1920 } } };
+            bool all_ok = true;
+            std::string first_bad;
+            int combos = 0;
+            const auto note_bad = [&](bool ok, const std::string &what) {
+                if (!ok) {
+                    all_ok = false;
+                    if (first_bad.empty()) {
+                        first_bad = what;
+                    }
+                }
+            };
+            for (const CoreCase &c : kCores) {
+                std::string note;
+                const OrbProfile p = load_orb_profile(c.core_name, note);
+                set_orb_profile(p);
+                for (const LayoutMode mode : kModes) {
+                    for (const std::array<int, 2> &size : kSizes) {
+                        const std::string where = std::string(c.core_name) + " / " + std::to_string(size[0]) + "x" + std::to_string(size[1])
+                            + " / mode " + std::to_string(static_cast<int>(mode));
+                        const UiLayout layout = UiLayout::compute(mode, size[0], size[1], text.cell_w(), text.cell_h(), false);
+                        ++combos;
+                        const RectPx &orb = layout.orb;
+                        if (orb.empty()) {
+                            continue; // 極端に狭い窓は玉を置かない（`orb_h < kOrbHeightMin / 2`）。他の検査が見ている
+                        }
+                        const RectPx shown = orb_visible_rect(orb);
+                        const long long shown_area = static_cast<long long>(shown.w) * static_cast<long long>(shown.h);
+                        note_bad(rect_overlap_area(shown, layout.scene) == shown_area, where + ": 玉（見えている部分）が地図の外");
+                        int want_bottom = layout.scene.y + layout.scene.h;
+                        if (!layout.bottom_bar.empty()) {
+                            want_bottom = std::min(want_bottom, layout.bottom_bar.y);
+                        }
+                        note_bad((shown.y + shown.h) == want_bottom, where + ": 絵の下端が地図の下縁に接していない");
+                        note_bad(shown.h == static_cast<int>((static_cast<long long>(orb.h) * p.art_bottom_y + (kOrbDesignH / 2)) / kOrbDesignH),
+                            where + ": 見えている高さが配置の下端と違う");
+                        for (const RectPx *rect : { &layout.bottom_bar, &layout.status_col, &layout.hud, &layout.message_bar }) {
+                            note_bad(rect_overlap_area(shown, *rect) == 0, where + ": 玉が最下段・状態列・名前の行・メッセージの帯と重なる");
+                        }
+                        //! 玉の横のアイコン（左右の段）と常時の列は、玉の矩形（翼を含む）に入らない。
+                        const StatusIconLayout placed = layout_status_icons(text, layout, base);
+                        for (const StatusIconPlacement &item : placed.items) {
+                            RectPx vis = item.cell;
+                            if (item.rotating) {
+                                const int x0 = std::max(item.clip.x, item.cell.x);
+                                const int x1 = std::min(item.clip.x + item.clip.w, item.cell.x + item.cell.w);
+                                vis = RectPx{ x0, item.cell.y, std::max(0, x1 - x0), item.cell.h };
+                            }
+                            note_bad(rect_overlap_area(vis, orb) == 0, where + ": 玉の横のアイコンが玉の矩形に入っている");
+                            note_bad(!item.left || ((rect_overlap_area(vis, layout.message_bar) == 0) && (rect_overlap_area(vis, layout.hud) == 0)),
+                                where + ": 左のアイコンがメッセージの帯か名前の行と重なる");
+                        }
+                        const PermanentIconLayout permanent = layout_permanent_icons(text, layout, base);
+                        for (const PermanentIconPlacement &item : permanent.items) {
+                            note_bad(rect_overlap_area(item.cell, orb) == 0, where + ": 常時の列が玉の矩形に入っている");
+                        }
+                    }
+                }
+            }
+            set_orb_profile(OrbProfile{});
+            check(all_ok, "全コアの配置 x 3 つの作り x 3 つの大きさ（" + std::to_string(combos) + " 通り）で、玉は地図の下縁に接し、最下段・状態列・名前の行・メッセージの帯・アイコンの段と重ならない"
+                    + (first_bad.empty() ? "" : " / 最初の失敗: " + first_bad));
+        }
+
+        // ---- 4. 全コアの玉を描いて書き出す（人が見る用）。変愚と別の絵であること ----
+        const int kW = 2560;
+        const int kH = 1080;
+        StatusHudTarget big;
+        if (make_status_hud_target(big, kW, kH)) {
+            std::vector<unsigned char> heng_crop;
+            std::vector<std::vector<unsigned char>> crops; //!< 上下が反転していない（左上原点）。玉の矩形 + 左右上下の余白
+            RectPx crop_rect{};
+            std::vector<std::string> crop_names;
+            for (const CoreCase &c : kCores) {
+                std::string note;
+                const OrbProfile p = load_orb_profile(c.core_name, note);
+                set_orb_profile(p);
+                const bool loaded = load_layers(p.asset_key);
+                const std::string tag = std::string("[") + c.core_name + "] ";
+                check(loaded && backdrops.orb.has_orb(), tag + "玉の素材を読み直した");
+                HudState st;
+                orb_hud_update(st.orb_anim, st.orb_params, 1.f, 1.f, 0u);
+                advance(st, ratio_hp(base), ratio_mp(base), 0u, 3000u);
+                const std::vector<unsigned char> shot = render(big, base, st, 3000u);
+                check(drain_gl_errors().empty(), tag + "描いて GL エラーが出ない");
+                const std::string suffix = std::string("_core_") + (std::string(c.key).empty() ? "hengband" : c.key);
+                check(save_rgba_png(out_path(kW, kH, suffix.c_str()), shot.data(), kW, kH), tag + "画像を書き出せた " + out_path(kW, kH, suffix.c_str()));
+                //! 玉の矩形の中の、玉の絵が見えている所に、背景の市松以外の画素がある（描かれている）
+                const UiLayout layout = make_layout(kW, kH);
+                const RectPx shown = orb_visible_rect(layout.orb);
+                //! 切り出しの枠は全コアで同じ（見えている下端はどのコアでも地図の下縁に接し、玉の高さも同じ）。
+                crop_rect = RectPx{ layout.orb.x - 40, (shown.y + shown.h) - layout.orb.h - 10, layout.orb.w + 80, layout.orb.h + 30 };
+                crop_rect.y = std::max(0, crop_rect.y);
+                crop_rect.h = std::min(kH - crop_rect.y, crop_rect.h);
+                std::vector<unsigned char> crop(static_cast<std::size_t>(crop_rect.w) * static_cast<std::size_t>(crop_rect.h) * 4, 0);
+                for (int y = 0; y < crop_rect.h; ++y) {
+                    for (int x = 0; x < crop_rect.w; ++x) {
+                        const int sx = std::clamp(crop_rect.x + x, 0, kW - 1);
+                        const int sy = crop_rect.y + y;
+                        const std::size_t from = ((static_cast<std::size_t>(kH - 1 - sy) * static_cast<std::size_t>(kW)) + static_cast<std::size_t>(sx)) * 4;
+                        const std::size_t to = ((static_cast<std::size_t>(y) * static_cast<std::size_t>(crop_rect.w)) + static_cast<std::size_t>(x)) * 4;
+                        for (std::size_t k = 0; k < 4; ++k) {
+                            crop[to + k] = shot[from + k];
+                        }
+                    }
+                }
+                if (std::string(c.key).empty()) {
+                    heng_crop = crop;
+                } else {
+                    check(!heng_crop.empty() && (heng_crop.size() == crop.size()) && (count_changed_pixels(heng_crop, crop, 8) > 20000),
+                        tag + "変愚とは別の絵が描かれている（玉の周りで変わった画素 " + std::to_string(count_changed_pixels(heng_crop, crop, 8)) + "）");
+                }
+                crops.push_back(std::move(crop));
+                crop_names.push_back(c.core_name);
+            }
+            //! 見本の 1 枚（5 行 x 2 列。左上から 変愚・短愚・幻想・Sil-Q・Frox・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2）。
+            if (!crops.empty()) {
+                const int cols = 2;
+                const int rows = static_cast<int>((crops.size() + 1) / 2);
+                const int cw = crop_rect.w;
+                const int ch = crop_rect.h;
+                const int sheet_w = cw * cols;
+                const int sheet_h = ch * rows;
+                std::vector<unsigned char> sheet(static_cast<std::size_t>(sheet_w) * static_cast<std::size_t>(sheet_h) * 4, 255);
+                for (std::size_t i = 0; i < crops.size(); ++i) {
+                    const int ox = static_cast<int>(i % 2) * cw;
+                    const int oy = static_cast<int>(i / 2) * ch;
+                    for (int y = 0; y < ch; ++y) {
+                        //! `save_rgba_png` は下から上の並びを受け取る。
+                        const std::size_t to_row = static_cast<std::size_t>(sheet_h - 1 - (oy + y));
+                        for (int x = 0; x < cw; ++x) {
+                            const std::size_t from = ((static_cast<std::size_t>(y) * static_cast<std::size_t>(cw)) + static_cast<std::size_t>(x)) * 4;
+                            const std::size_t to = ((to_row * static_cast<std::size_t>(sheet_w)) + static_cast<std::size_t>(ox + x)) * 4;
+                            for (std::size_t k = 0; k < 4; ++k) {
+                                sheet[to + k] = crops[i][from + k];
+                            }
+                        }
+                    }
+                }
+                const std::string sheet_path = stem + "_cores_sheet" + ext;
+                check(save_rgba_png(sheet_path, sheet.data(), sheet_w, sheet_h), "全コアの玉の見本を書き出せた " + sheet_path);
+            }
+
+            // ---- 5. 短愚の終末の太陽（残り日数 14・7・1・0 と、無効） ----
+            {
+                std::string note;
+                const OrbProfile tang = load_orb_profile("tangband", note);
+                set_orb_profile(tang);
+                check(load_layers(tang.asset_key) && tang.emblem.present, "[終末の太陽] 短愚の素材と飾りの位置が読めた");
+                const UiLayout layout = make_layout(kW, kH);
+                const RectPx &orb = layout.orb;
+                const auto design_x = [&](double d) { return static_cast<double>(orb.x) + (d * static_cast<double>(orb.w) / kOrbDesignW); };
+                const auto design_y = [&](double d) { return static_cast<double>(orb.y) + (d * static_cast<double>(orb.h) / kOrbDesignH); };
+                const auto rgb_at = [&](const std::vector<unsigned char> &img, int x, int y, int out[3]) {
+                    x = std::clamp(x, 0, kW - 1);
+                    y = std::clamp(y, 0, kH - 1);
+                    const std::size_t at = ((static_cast<std::size_t>(kH - 1 - y) * static_cast<std::size_t>(kW)) + static_cast<std::size_t>(x)) * 4;
+                    out[0] = img[at];
+                    out[1] = img[at + 1];
+                    out[2] = img[at + 2];
+                };
+                const auto luma = [](const int c[3]) { return ((0.30 * c[0]) + (0.59 * c[1]) + (0.11 * c[2])) / 255.0; };
+                const auto near_color = [](const int c[3], const PaintColor &want, int tolerance) {
+                    return (std::abs(c[0] - static_cast<int>(std::lround(want.r * 255.f))) <= tolerance)
+                        && (std::abs(c[1] - static_cast<int>(std::lround(want.g * 255.f))) <= tolerance)
+                        && (std::abs(c[2] - static_cast<int>(std::lround(want.b * 255.f))) <= tolerance);
+                };
+                //! 目盛り 1 本の中心の周りの明るさ（3x3 の最大。傾いた細い四角でも拾う）。
+                const auto tick_luma = [&](const std::vector<unsigned char> &img, int i) {
+                    const double angle = (-1.5707963267948966) + (6.283185307179586 * static_cast<double>(i) / kDoomsdayTicks);
+                    const int cx = static_cast<int>(std::lround(design_x(tang.emblem.x + (std::cos(angle) * tang.emblem.r * 1.62))));
+                    const int cy = static_cast<int>(std::lround(design_y(tang.emblem.y + (std::sin(angle) * tang.emblem.r * 1.62))));
+                    double best = 0.0;
+                    for (int dy = -1; dy <= 1; ++dy) {
+                        for (int dx = -1; dx <= 1; ++dx) {
+                            int c[3];
+                            rgb_at(img, cx + dx, cy + dy, c);
+                            best = std::max(best, luma(c));
+                        }
+                    }
+                    return best;
+                };
+                const int ex = static_cast<int>(std::lround(design_x(tang.emblem.x)));
+                const int ey = static_cast<int>(std::lround(design_y(tang.emblem.y)));
+                std::vector<unsigned char> shot_disabled;
+                std::vector<unsigned char> shot_first;
+                double last_luma = 2.0;
+                for (const int days : { 14, 7, 1, 0, -1 }) {
+                    const std::string tag = std::string("[終末の太陽 残り ") + ((days < 0) ? std::string("無効") : std::to_string(days)) + "] ";
+                    GameFrame f = base;
+                    f.hud.doomsday_days_left = days;
+                    HudState st;
+                    orb_hud_update(st.orb_anim, st.orb_params, 1.f, 1.f, 0u);
+                    advance(st, ratio_hp(f), ratio_mp(f), 0u, 3000u);
+                    const std::vector<unsigned char> shot = render(big, f, st, 3000u);
+                    check(drain_gl_errors().empty(), tag + "描いて GL エラーが出ない");
+                    int center[3];
+                    rgb_at(shot, ex, ey, center);
+                    if (days >= 0) {
+                        const DoomsdaySunLook look = doomsday_sun_look(days);
+                        check(near_color(center, look.disc, 10), tag + "太陽の円の色が期待どおり（描いた色 " + std::to_string(center[0]) + ","
+                                + std::to_string(center[1]) + "," + std::to_string(center[2]) + " / 期待 "
+                                + std::to_string(static_cast<int>(std::lround(look.disc.r * 255.f))) + ","
+                                + std::to_string(static_cast<int>(std::lround(look.disc.g * 255.f))) + ","
+                                + std::to_string(static_cast<int>(std::lround(look.disc.b * 255.f))) + "）");
+                        int lit = 0;
+                        for (int i = 0; i < kDoomsdayTicks; ++i) {
+                            lit += (tick_luma(shot, i) > 0.5) ? 1 : 0;
+                        }
+                        check(lit == days, tag + "明るい目盛りは " + std::to_string(days) + " 本（描いた数 " + std::to_string(lit) + " / 全 "
+                                + std::to_string(kDoomsdayTicks) + " 本）");
+                        check(look.lit_ticks == days && (look.doomsday == (days == 0)), tag + "見た目の記述（明るい目盛りの数・終末の旗）が期待どおり");
+                        const double lum = luma(center);
+                        check((days == 14) ? ((center[0] > 230) && (center[1] > 190) && (center[2] < 90)) // 黄色
+                              : (days == 7)  ? (lum > 0.15 && lum < 0.75 && center[0] > center[2])      // 橙〜燃えさし
+                              : (days == 1)  ? (lum < 0.12)                                              // ほぼ黒い日食
+                                             : ((lum < 0.08) && (center[0] <= 12)),                      // 真っ黒
+                            tag + "円の色の段階（残り 14 は黄色 / 7 は橙〜赤 / 1 はほぼ黒 / 0 は真っ黒）");
+                        if (days >= 1) {
+                            check(lum < last_luma, tag + "日が進むほど円は暗い（明るさ " + std::to_string(lum) + " < 直前 " + std::to_string(last_luma) + "）");
+                            last_luma = lum;
+                        }
+                        if (days == 0) {
+                            //! 終末は赤い光（円のすぐ外が赤い）。
+                            int rim[3];
+                            rgb_at(shot, ex + static_cast<int>(std::lround(tang.emblem.r * 1.15 * orb.w / kOrbDesignW)), ey, rim);
+                            check((rim[0] > 70) && (rim[0] > (rim[1] * 2)) && (rim[0] > (rim[2] * 2)),
+                                tag + "黒い太陽の周りは赤い光（円のすぐ外 " + std::to_string(rim[0]) + "," + std::to_string(rim[1]) + "," + std::to_string(rim[2]) + "）");
+                        }
+                        const std::string suffix = std::string("_doomsday_") + std::to_string(days);
+                        check(save_rgba_png(out_path(kW, kH, suffix.c_str()), shot.data(), kW, kH), tag + "画像を書き出せた " + out_path(kW, kH, suffix.c_str()));
+                        if (days == 14) {
+                            shot_first = shot;
+                        }
+                    } else {
+                        shot_disabled = shot;
+                        int lit = 0;
+                        for (int i = 0; i < kDoomsdayTicks; ++i) {
+                            lit += (tick_luma(shot, i) > 0.5) ? 1 : 0;
+                        }
+                        check(luma(center) < 0.25 && lit == 0, tag + "太陽は描かれず、絵のまま（中央の明るさ " + std::to_string(luma(center)) + " / 明るい目盛り " + std::to_string(lit) + "）");
+                        const RectPx emblem_box{ static_cast<int>(design_x(tang.emblem.x - (tang.emblem.r * 2.0))), static_cast<int>(design_y(tang.emblem.y - (tang.emblem.r * 2.0))),
+                            static_cast<int>(tang.emblem.r * 4.0 * orb.w / kOrbDesignW), static_cast<int>(tang.emblem.r * 4.0 * orb.h / kOrbDesignH) };
+                        check(!shot_first.empty() && (count_changed_pixels(shot_first, shot_disabled, kW, kH, emblem_box) > 500),
+                            tag + "無効のときと残り 14 のときで、飾りの周りの絵が違う");
+                        check(save_rgba_png(out_path(kW, kH, "_doomsday_off"), shot.data(), kW, kH), tag + "画像を書き出せた " + out_path(kW, kH, "_doomsday_off"));
+                    }
+                }
+                //! 飾りの無いコアは、終末の日数が届いても太陽を描かない（短愚だけの見た目）。
+                for (const char *other : { "frox", "hengband" }) {
+                    std::string note2;
+                    const OrbProfile p = load_orb_profile(other, note2);
+                    set_orb_profile(p);
+                    load_layers(p.asset_key);
+                    GameFrame with = base;
+                    with.hud.doomsday_days_left = 7;
+                    GameFrame without = base;
+                    HudState st_a;
+                    HudState st_b;
+                    for (HudState *st : { &st_a, &st_b }) {
+                        orb_hud_update(st->orb_anim, st->orb_params, 1.f, 1.f, 0u);
+                        advance(*st, ratio_hp(base), ratio_mp(base), 0u, 3000u);
+                    }
+                    const std::vector<unsigned char> a = render(big, with, st_a, 3000u);
+                    const std::vector<unsigned char> b = render(big, without, st_b, 3000u);
+                    check(count_changed_pixels(a, b, 0) == 0, std::string("[終末の太陽] ") + other + ": 飾りの位置が無いコアは、日数が届いても太陽を描かない");
+                }
+            }
+        } else {
+            check(false, "画面の外の描画先（2560x1080。コアごとの見本）を作れません");
+        }
+        release_status_hud_target(big);
+        set_orb_profile(OrbProfile{});
+        load_layers("");
+    }
+
+    {
+        //! 送らないコア（`status_effects` が空）ではアイコンは 1 つも置かれない。
+        GameFrame empty = base;
+        empty.status_effects.clear();
+        const UiLayout layout = make_layout(2560, 1080);
+        const StatusIconLayout none = layout_status_icons(text, layout, empty);
+        check(none.items.empty() && (none.dropped == 0), "status_effects が空なら、アイコンは何も置かれない");
+    }
+
+    back_image.unload();
+    glass_image.unload();
+    liquid_hp_image.unload();
+    liquid_mp_image.unload();
+    glass_top_image.unload();
+    front_image.unload();
+    icons_image.unload();
+    images.shutdown();
+    paint.shutdown();
+    text.shutdown();
+    SDL_GL_DeleteContext(window.context);
+    SDL_DestroyWindow(window.window);
+    SDL_Quit();
+    std::fprintf(stderr, "[hd2d] status-hud-check: %d 件 PASS / %d 件 FAIL\n", passes, failures);
     std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
     return (failures == 0) ? 0 : 1;
 }

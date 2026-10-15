@@ -14,6 +14,18 @@ namespace {
 
 using json = nlohmann::json;
 
+/*!
+ * @brief 送る JSON を文字列にする。**不正な UTF-8 は置き換えの字にして、例外を投げない**（frame_codec.cpp の
+ * encode_game_frame と同じ書き方）。古い C のコアはパスを Windows の ANSI（CP932）で持つので、日本語の名前の
+ * フォルダに置くと、握手の返事（hello_ack の板の置き場）で既定の dump() が type_error を投げ、コアが握手の途中で
+ * 落ちていた（遊んだ人の報告 2026-10-06「C:\ゲーム\… で変愚と短愚以外は全部エラー」）。パスそのものは
+ * 各アダプタが portable::path_to_utf8() で UTF-8 にしてから載せる。ここは最後の守り。
+ */
+std::string dump_wire(const json &value)
+{
+    return value.dump(-1, ' ', false, json::error_handler_t::replace);
+}
+
 //! 型が合っていれば取り出す。無い／型違いは既定のまま（v1 §2.3 の「未知キーは無視」の裏返し）。
 void take_string(const json &obj, const char *key, std::string &out)
 {
@@ -143,7 +155,7 @@ std::string encode_hello(const HelloMessage &message)
     if (!message.features.empty()) {
         out["features"] = message.features;
     }
-    return out.dump();
+    return dump_wire(out);
 }
 
 std::string encode_hello_ack(const HelloAckMessage &message)
@@ -167,7 +179,7 @@ std::string encode_hello_ack(const HelloAckMessage &message)
         }
         out["asset_roots"] = std::move(roots);
     }
-    return out.dump();
+    return dump_wire(out);
 }
 
 std::string encode_fatal(const FatalMessage &message)
@@ -175,7 +187,7 @@ std::string encode_fatal(const FatalMessage &message)
     json out = json::object();
     out["t"] = "fatal";
     out["reason"] = message.reason;
-    return out.dump();
+    return dump_wire(out);
 }
 
 std::string encode_exit(const ExitMessage &message)
@@ -183,7 +195,7 @@ std::string encode_exit(const ExitMessage &message)
     json out = json::object();
     out["t"] = "exit";
     out["code"] = message.code;
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_hello(const std::string &json_text, HelloMessage &out, std::string &err)
@@ -250,6 +262,9 @@ bool decode_exit(const std::string &json_text, ExitMessage &out, std::string &er
 std::string encode_ui_state(const UiStateMessage &message)
 {
     json out = json::object();
+    if(message.modern_ui) out["modern_ui"] = true;
+    if(message.targeting_ui)out["targeting_ui"]=true;
+    if(message.main_term_rows>0)out["main_term_rows"]=message.main_term_rows;
     out["t"] = "ui_state";
 
     json view = json::object();
@@ -307,7 +322,7 @@ std::string encode_ui_state(const UiStateMessage &message)
     realtime["self_span"] = message.realtime_self_span_index;
     out["realtime"] = std::move(realtime);
 
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_ui_state(const std::string &json_text, UiStateMessage &out, std::string &err)
@@ -317,6 +332,9 @@ bool decode_ui_state(const std::string &json_text, UiStateMessage &out, std::str
         return false;
     }
     UiStateMessage work;
+    take_bool(parsed,"modern_ui",work.modern_ui);
+    take_bool(parsed,"targeting_ui",work.targeting_ui);
+    take_int(parsed,"main_term_rows",work.main_term_rows);
 
     if (const json *view = take_object(parsed, "view_cells"); view != nullptr) {
         take_int(*view, "w", work.view_w);
@@ -388,7 +406,7 @@ std::string encode_keys(const KeysMessage &message)
     json out = json::object();
     out["t"] = "keys";
     out["keys"] = message.keys;
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_keys(const std::string &json_text, KeysMessage &out, std::string &err)
@@ -407,7 +425,7 @@ std::string encode_quit_request(const QuitRequestMessage &)
 {
     json out = json::object();
     out["t"] = "quit_request";
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_quit_request(const std::string &json_text, QuitRequestMessage &out, std::string &err)
@@ -443,7 +461,7 @@ std::string encode_pad_commands(const PadCommandsMessage &message)
         entries.push_back(std::move(one));
     }
     out["entries"] = std::move(entries);
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_pad_commands(const std::string &json_text, PadCommandsMessage &out, std::string &err)
@@ -489,7 +507,7 @@ std::string encode_sub_panel_kinds(const SubPanelKindsMessage &message)
         entries.push_back(std::move(one));
     }
     out["entries"] = std::move(entries);
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_sub_panel_kinds(const std::string &json_text, SubPanelKindsMessage &out, std::string &err)
@@ -523,7 +541,7 @@ std::string encode_macro_triggers(const MacroTriggersMessage &message)
         patterns.push_back(pattern);
     }
     out["patterns"] = std::move(patterns);
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_macro_triggers(const std::string &json_text, MacroTriggersMessage &out, std::string &err)
@@ -569,7 +587,10 @@ std::string encode_input_events(const InputEventsMessage &message)
     for (const auto &event : message.events) {
         json one = json::object();
         one["e"] = event.e;
-        if (event.e == "move") {
+        if(event.e == "ui_action") {
+            one["revision"]=event.ui_revision;one["request_id"]=event.request_id;
+            one["target"]=event.target;one["action"]=event.action;one["value"]=event.number;
+        } else if (event.e == "move") {
             one["dx"] = event.dx;
             one["dy"] = event.dy;
         } else if (event.e == "answer") {
@@ -603,12 +624,30 @@ std::string encode_input_events(const InputEventsMessage &message)
             }
         } else if (event.e == "keyseq") {
             one["bytes"] = event.bytes;
+        } else if (event.e == "map_click") {
+            // AH-57。座標はダンジョンのマス（`frame.cells[].gx/gy`）。修飾キーは押されているものだけ配列で運ぶ。
+            one["x"] = event.grid_x;
+            one["y"] = event.grid_y;
+            one["button"] = (event.button == 2) ? "right" : "left";
+            json pressed = json::array();
+            if (event.shift) {
+                pressed.push_back("shift");
+            }
+            if (event.ctrl) {
+                pressed.push_back("ctrl");
+            }
+            if (event.alt) {
+                pressed.push_back("alt");
+            }
+            if (!pressed.empty()) {
+                one["mods"] = std::move(pressed);
+            }
         }
         // "cancel" / "confirm" はタグだけ。
         events.push_back(std::move(one));
     }
     out["events"] = std::move(events);
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_input_events(const std::string &json_text, InputEventsMessage &out, std::string &err)
@@ -631,7 +670,17 @@ bool decode_input_events(const std::string &json_text, InputEventsMessage &out, 
         }
         InputEventWire event;
         take_string(element, "e", event.e);
-        if (event.e == "move") {
+        if(event.e == "ui_action") {
+            const auto revision=element.find("revision"),request=element.find("request_id");
+            const auto valid_id=[](const json &v){return v.is_number_integer() && v.get<long long>()>0 && v.get<long long>()<=2000000000LL;};
+            if(revision==element.end() || request==element.end() || !valid_id(*revision) || !valid_id(*request)) continue;
+            event.ui_revision=revision->get<int>();event.request_id=request->get<int>();
+            take_string(element,"target",event.target);take_string(element,"action",event.action);
+            const auto v=element.find("value");
+            if(v==element.end() || !v->is_number_integer() || v->get<long long>()<0 || v->get<long long>()>2000000000LL) continue;
+            event.number=v->get<long long>();
+            if(event.ui_revision<=0 || event.request_id<=0 || event.target.size()>256 || event.action.size()>32) continue;
+        } else if (event.e == "move") {
             take_int(element, "dx", event.dx);
             take_int(element, "dy", event.dy);
             if ((event.dx < -1) || (event.dx > 1) || (event.dy < -1) || (event.dy > 1)) {
@@ -706,6 +755,58 @@ bool decode_input_events(const std::string &json_text, InputEventsMessage &out, 
             if (!ok) {
                 continue;
             }
+        } else if (event.e == "map_click") {
+            /*
+             * AH-57。地図のマスのクリック。**ここが唯一の防波堤**なので、座標・ボタン・修飾キーの
+             * どれが欠けても壊れていても、そのイベントだけ捨てる（`take_int` のように既定値で
+             * 埋めない——欠けた座標を 0 として受けると、左上のマスをクリックしたことになる）。
+             * 座標の値域 0..255 は原作の `mouseclick` の座標が 8 ビットであることに合わせた
+             * （ダンジョンは最大 198×66。コアがさらに自分の階の大きさで検める）。
+             */
+            const auto xit = element.find("x");
+            const auto yit = element.find("y");
+            if ((xit == element.end()) || (yit == element.end()) || !xit->is_number_integer()
+                || !yit->is_number_integer()) {
+                continue;
+            }
+            const auto grid_x = xit->get<long long>();
+            const auto grid_y = yit->get<long long>();
+            if ((grid_x < 0) || (grid_x > 255) || (grid_y < 0) || (grid_y > 255)) {
+                continue;
+            }
+            std::string which_button;
+            take_string(element, "button", which_button);
+            if (which_button == "left") {
+                event.button = 1;
+            } else if (which_button == "right") {
+                event.button = 2;
+            } else {
+                continue; // 中ボタンほかは原作も何もしない。運ばない。
+            }
+            bool mods_ok = true;
+            if (const auto mit = element.find("mods"); mit != element.end()) {
+                if (!mit->is_array()) {
+                    continue;
+                }
+                for (const auto &one_mod : *mit) {
+                    const std::string name = one_mod.is_string() ? one_mod.get<std::string>() : std::string();
+                    if (name == "shift") {
+                        event.shift = true;
+                    } else if (name == "ctrl") {
+                        event.ctrl = true;
+                    } else if (name == "alt") {
+                        event.alt = true;
+                    } else {
+                        mods_ok = false; // 知らない修飾キーで別の操作に化けるより、捨てる。
+                        break;
+                    }
+                }
+            }
+            if (!mods_ok) {
+                continue;
+            }
+            event.grid_x = static_cast<int>(grid_x);
+            event.grid_y = static_cast<int>(grid_y);
         } else {
             continue; // 未知の e はそのイベントだけ捨てる（v1 §8.3）
         }
@@ -743,7 +844,7 @@ std::string encode_asset_manifest(const AssetManifestMessage &message)
         }
         out["aliases"] = std::move(aliases);
     }
-    return out.dump();
+    return dump_wire(out);
 }
 
 bool decode_asset_manifest(const std::string &json_text, AssetManifestMessage &out, std::string &err)

@@ -2,7 +2,7 @@
  * @file sq_shim.h
  * @brief Sil-Q コアと C++ アダプタの**境界**。純 C ABI・自己完結。
  *
- * 基準は （アダプタの構造 ── C の皮と C++ の本体）。
+ * （アダプタの構造 ── C の皮と C++ の本体）。
  *
  * ## この 1 枚が境界である理由
  * Sil-Q のヘッダ（`angband.h` / `externs.h` ほか）は 2000 年代前半世代の C で、
@@ -78,6 +78,9 @@ void sq_term_remove(void);
  * @return SQ_OK / SQ_ERR_STATE
  */
 int sq_term_size(int *cols, int *rows);
+
+/*! @brief 主 Term の行数を新UIの文書表示領域へ合わせる。 */
+int sq_term_resize_rows(int rows);
 
 /*!
  * @brief Term の 1 行を写す（画面ミラーの読み口）。
@@ -209,7 +212,7 @@ int sq_screen_flags(void);
 
 /*!
  * @name サブパネル用の Term
- * @details 実装は `sq_sub_terms.c`（C）と
+ * @details。実装は `sq_sub_terms.c`（C）と
  * `sq_sub_panels.cpp`（C++）に分かれている。**枚数は画面側の
  * `kSubPanelCount`（7）と揃える**——Sil-Q の `ANGBAND_TERM_MAX` は 8 なので
  * `angband_term[1..7]` にちょうど収まる。
@@ -233,7 +236,7 @@ int sq_sub_terms_install(void);
  */
 int sq_window_flag_name(int flag, char *out, int cap);
 
-/*! @brief 画面側が望む桁・行。0 は「申告なし」（v1 §7）。当てるのは `sq_sub_term_apply_cells`。 */
+/*! @brief 画面側が望む桁・行。0 は「申告なし」（v1 §7）。当てるのは `apply_cells`。 */
 void sq_sub_term_set_cells(int panel, int cols, int rows);
 
 /*! @brief 望みの大きさを当てる。@return 変わったら 1（＝いま入っている絵は古い） */
@@ -318,6 +321,22 @@ void sq_set_host_hooks(const sq_host_hooks *hooks);
  */
 void sq_settle_input(int ms);
 
+/*!
+ * @brief タイトル（`initial_menu`）が入力を待っている間だけ真にする（判-17）。
+ * @details 原作のタイトルは取消（Esc）を受けない。真の間、受信したキーのうち Esc を
+ * `d`（`d) Quit`＝やめる）に読み替える。`sq_pick_game()` だけが呼ぶ。
+ */
+void sq_title_menu_set_active(int active);
+
+/*! @brief 上の読み替え。真の間の Esc は `d`、それ以外は素通し（自己検査もこれを呼ぶ）。 */
+int sq_title_menu_map_key(int key);
+
+/*! @brief 自己検査用：Term を空にする。 */
+void sq_term_selftest_clear(void);
+
+/*! @brief 自己検査用：Term の (x, y) へ attr 色で text を書く（画面の見た目の再現に使う）。 */
+void sq_term_selftest_put(int x, int y, int attr, const char *text);
+
 /* ==================================================================== 地図（P3） */
 
 /*!
@@ -346,6 +365,7 @@ void sq_settle_input(int ms);
 #define SQ_FEAT_GLOWING 0x0800u /*!< `CAVE_GLOW` かつ暗がりでない */
 #define SQ_FEAT_CHASM 0x1000u /*!< `FEAT_CHASM`(0x02)。**Sil-Q 固有**（歩けるが落ちる） */
 #define SQ_FEAT_FORGE 0x2000u /*!< `FEAT_FORGE_HEAD`(0x40)〜`TAIL`(0x4F)。**Sil-Q 固有**（鍛冶場） */
+#define SQ_FEAT_SHAFT 0x4000u /*!< `FEAT_LESS_SHAFT` / `FEAT_MORE_SHAFT`。2 階層ぶん移動する階段 */
 /*! @} */
 
 /*!
@@ -363,10 +383,29 @@ typedef struct sq_map_cell {
     unsigned short monster_id; /*!< `m_ptr->r_idx`。**`ml` のときだけ**。0 = 居ない／見えない */
     unsigned short monster_slot; /*!< `m_idx`（個体の通し番号）。条件は `monster_id` と同じ */
     unsigned short object_id; /*!< 先頭の `marked` オブジェクトの `k_idx`。0 = 無い */
+    /*!
+     * @brief 正体の分からないアイテムの分類。0 = 対象外（識別済み・8 分類の外）。
+     * @details。番号は
+     * `presentation::UnawareItemCategory` と同じ並びだが、Sil-Q には巻物・ワンド・
+     * ロッドの tval が無いので、実際に出るのは **1（薬）・3（指輪）・4（アミュレット）・
+     * 6（杖）の 4 つだけ**（2・5・7・8 は出ない）。角笛・薬草は 8 分類の外なので
+     * ここでは 0 のまま（今までどおりの表示を残す）。プロトコル v1 の外形は変えない
+     * （コア内部の `sq_shim.c → sq_frame.cpp` の受け渡しにだけ足した値）。
+     */
+    unsigned char object_unaware_category;
     unsigned char light_level; /*!< 0 = 記憶のみ / 1 = 視界内だが無灯 / 2 = いま照明あり */
     unsigned char fg_color; /*!< `map_info` の `a`（**16 に畳んだ後**。設計 §4.1） */
     unsigned char bg_color; /*!< `map_info` の `ta`（地形層。同じく畳んだ後） */
     char ascii; /*!< `map_info` の `c`（ASCII 1 バイト） */
+    /*!
+     * @brief **プレイヤの光で照らされた（暗黒側なら暗くされた）マスか**（1 = はい）。
+     * @details の `player_lit`。`sq_light_kind` が 0 のときは常に 0。
+     * 原作の `update_view()`（`cave.c`）の式の写し：`CAVE_VIEW` で、`distance(@, マス) <= ABS(cur_light)`。
+     * 光（`cur_light > 0`）は、さらに `CAVE_SEEN`（穴の中で遠くが見えないときを除く）。
+     * 暗黒側（`cur_light < 0`）は、光でも視認でもなく暗くされた範囲。プレイヤの光だけを分ける印は
+     * 原作に無い（`cave_light` は部屋の明かり・敵の光との合計）ので、式を写して立てる。
+     */
+    unsigned char player_lit;
 } sq_map_cell;
 
 /*!
@@ -384,7 +423,7 @@ int sq_player_pos(int *x, int *y);
  * @details ふつうは @ を追って動くので画面側は見なくてよいのだが、
  * **`L`（地図を動かす。`do_cmd_locate`）はこれだけを動かす**——@ は動かない。
  * 画面側は @ を中心に窓を切っているので、そのままでは**押しても何も起きない**
- * （2026-08-26 に気づいた「地図を動かすモードに入るもキー入力をしても画面変化なし」）。
+ * （気づいたこと 2026-08-26「地図を動かすモードに入るもキー入力をしても画面変化なし」）。
  *
  * @param[out] x,y 区画の左上のマス。@param[out] w,h 区画の大きさ（マス）。
  * @return `SQ_OK` / `SQ_ERR_*`。どれも NULL 可。
@@ -473,7 +512,7 @@ int sq_read_overlay(const sq_map_cell *cells, int count, sq_overlay_cell *out, i
  * **attr の背景セットの軸**（`attr = 前景(0..31) + 32 × 背景セット`）に乗っていて、
  * 当方の畳み口（`& 0x0F`）が丸ごと捨てていた——**1 匹もハイライトされていない**。
  *
- * 運ぶのは背景セットではなく**警戒度そのもの**にした（2026-08-22 に決めた
+ * 運ぶのは背景セットではなく**警戒度そのもの**にした（決めたこと 2026-08-22
  * 「板の足元に円形の警戒度に応じた色を変えるリングを表示させる」）。背景セットは
  * 3 値しか無く、地の色を塗る以上のことができない。段を運べば画面側が自由に描ける。
  *
@@ -544,18 +583,121 @@ typedef struct sq_floor_info {
     int dun_level; /*!< `p_ptr->depth`（階。ft は ×50） */
     int kind; /*!< 常に 2（ダンジョン） */
     char place_name[64]; /*!< "Surface" / "550 ft" */
-    int light_radius; /*!< `p_ptr->cur_light` */
+    int light_radius; /*!< `p_ptr->cur_light`（負なら暗黒側。半径は絶対値） */
+    int light_kind; /*!< プレイヤの光源の種類（`SQ_LIGHT_*`。`LightingState::light_kind` と同じ値） */
 } sq_floor_info;
+
+/*!
+ * @name プレイヤの光源の種類（`presentation/frame/game_frame.h` の `LightingState::light_kind` と同じ値）
+ * @{
+ */
+#define SQ_LIGHT_NONE 0 /*!< 光が無い（`cur_light == 0`） */
+#define SQ_LIGHT_TORCH 1 /*!< 木の松明・マロルンの松明（燃料あり） */
+#define SQ_LIGHT_LANTERN 2 /*!< ランタン（燃料あり） */
+#define SQ_LIGHT_ARTEFACT 3 /*!< フェアノールのランプ・小さな宝玉・シルマリル・アーティファクトの光 */
+#define SQ_LIGHT_OTHER 4 /*!< 光源の枠以外の光（`TR2_LIGHT`・内なる光・木々の歌・鍛冶・燃料切れの光源）*/
+#define SQ_LIGHT_DARK 5 /*!< 暗黒側（`cur_light < 0`。暗黒の装備）。暗い範囲を新しい見た目で出す */
+/*! @} */
 
 /*! @brief 階の素性と光。@return SQ_OK（失敗しない。ゲーム前は 0 詰め） */
 int sq_read_floor_info(sq_floor_info *out);
+
+/* ============================================ 状態のアイコン（`GameFrame::status_effects`） */
+
+/*!
+ * @name 常時の効果の旗（`sq_status_state::perm_mask` の桁）
+ * @details C 画面の Flags のページ（`files.c` の `display_player_flag_info()` と `display_player_sust_info()`）の
+ * 行のうち、画面側のアイコンの表に絵がある物。**装備ごとの既知の旗**（`object_flags_known()`）を足し合わせた
+ * ものだけで、未鑑定の物の旗は含まない（原作より情報を増やさない）。
+ * 技能の修正（近接・射撃・隠密・知覚・意志）は、既知の旗を持つ装備の pval の合計が正のときだけ立てる
+ * （負の値の絵は表に無い）。
+ * @{
+ */
+enum {
+    SQ_PERM_SUST_STR = 0,
+    SQ_PERM_SUST_DEX,
+    SQ_PERM_SUST_CON,
+    SQ_PERM_SUST_GRA,
+    SQ_PERM_RES_COLD,
+    SQ_PERM_RES_FIRE,
+    SQ_PERM_RES_ELEC,
+    SQ_PERM_RES_POIS,
+    SQ_PERM_RES_FEAR,
+    SQ_PERM_RES_BLIND,
+    SQ_PERM_RES_CONFU,
+    SQ_PERM_RES_STUN,
+    SQ_PERM_SLOW_DIGEST,
+    SQ_PERM_LIGHT,
+    SQ_PERM_REGEN,
+    SQ_PERM_SEE_INVIS,
+    SQ_PERM_FREE_ACT,
+    SQ_PERM_SLAY_ORC,
+    SQ_PERM_SLAY_TROLL,
+    SQ_PERM_SLAY_WOLF,
+    SQ_PERM_SLAY_SPIDER,
+    SQ_PERM_SLAY_UNDEAD,
+    SQ_PERM_SLAY_RAUKO,
+    SQ_PERM_SLAY_DRAGON,
+    SQ_PERM_SKILL_MEL,
+    SQ_PERM_SKILL_ARC,
+    SQ_PERM_SKILL_STL,
+    SQ_PERM_SKILL_PER,
+    SQ_PERM_SKILL_WIL,
+    SQ_PERM_COUNT
+};
+/*! @} */
+
+/*!
+ * @brief 状態のアイコンの材料。原作の最下段（`prt_frame_extra()`）と、メッセージで知らされる一時的な状態、
+ * 常時の効果を、**段階の数に直して**返す（字と鍵はフレームを作る側が決める）。
+ * @details 読むだけ。ゲーム前は 0 詰め（`in_game` が 0）。
+ */
+typedef struct sq_status_state {
+    int in_game; /*!< `character_generated` */
+    int speed_stage; /*!< 1 = 加速（`pspeed > 2`）／ -1 = 減速（`pspeed < 2`）／ 0 */
+    int blind; /*!< `p_ptr->blind` */
+    int confused; /*!< `p_ptr->confused` */
+    int afraid; /*!< `p_ptr->afraid` */
+    int poisoned; /*!< `p_ptr->poisoned` */
+    int cut_stage; /*!< 0 = なし／ 1 = 出血／ 2 = 致命傷（`p_ptr->cut >= 100`） */
+    int stun_stage; /*!< 0 = なし／ 1 = よろけ／ 2 = 朦朧（`stun > 50`）／ 3 = 昏倒（`stun > 100`） */
+    int hunger_stage; /*!< 0 = 普通／ 1 = 空腹／ 2 = 衰弱／ 3 = 飢餓／ 4 = 満腹（`food >= PY_FOOD_MAX`） */
+    int entranced; /*!< `p_ptr->entranced` */
+    int stealth_mode; /*!< `p_ptr->stealth_mode` */
+    int image; /*!< 幻覚 */
+    int tmp_stat[4]; /*!< 一時的な能力値の上昇（腕力・敏捷・耐久・恩寵の順） */
+    int tim_invis; /*!< 透明視 */
+    int oppose_fire; /*!< 耐火 */
+    int oppose_cold; /*!< 耐冷 */
+    int oppose_pois; /*!< 耐毒 */
+    int tmp_per; /*!< 知覚の上昇 */
+    int rage; /*!< 激怒 */
+    int darkened; /*!< 魔法の暗黒 */
+    int smithing; /*!< 鍛冶の最中（`p_ptr->smithing`） */
+    int fletching; /*!< 矢作りの最中（`p_ptr->fletching`） */
+    int song1; /*!< 主旋律（`SNG_*`。歌っていなければ -1） */
+    int song2; /*!< 副旋律（織り合わせ。歌っていなければ -1） */
+    char song1_name[64]; /*!< 主旋律の名前（`b_name`。CP932 か英語。英語は `Song of ` 付き） */
+    char song2_name[64]; /*!< 副旋律の名前 */
+    unsigned int perm_mask; /*!< 常時の効果の旗（`SQ_PERM_*` の桁） */
+} sq_status_state;
+
+/*! @brief 状態のアイコンの材料を読む。@return SQ_OK（失敗しない） */
+int sq_read_status(sq_status_state *out);
+
+/*!
+ * @brief 状態の組が変わったら変わる値（`sq_change_digest()` に混ぜる）。
+ * @details 一時的な状態の段階と、装備の既知の旗の組。Term の最下段の字が変わらない変化（歌の入れ替え・
+ * 装備の鑑定）でもアイコンを追いつかせる。
+ */
+unsigned long sq_status_stamp(void);
 
 /* ============================================ 周囲の地形の内訳（環境音の層） */
 
 /*!
  * @brief 周囲の地形の内訳（`presentation/frame/game_frame.h` の `SurroundingsView`）。
  * @details 環境音は「いま周りに何が在るか」で層を重ねる
- * **数えるのはコア側の仕事**である——
+ *。**数えるのはコア側の仕事**である——
  * 地形の意味を知っているのは `cave_feat` を読める側だけで、画面側は地形テーブルを持たない。
  *
  * **Sil-Q で埋まるのは 2 つだけ**である。あのコアの地形は床・壁・瓦礫・扉・階段・
@@ -594,7 +736,7 @@ int sq_read_surroundings(sq_surroundings *out);
 /*
  * **コアは鳴らさない。**「どのマスで何の音が要る」という出来事だけをフレームへ載せ、
  * 鳴らすのは画面側（`hd2d/audio/`）である。理由は
- * `presentation/frame/sound_event.h`・——位置で聞き分けるには
+ * `presentation/frame/sound_event.h`・ ——位置で聞き分けるには
  * 聞き手の位置と向き、および HRTF の効くミキサが要り、コアはどちらも持たないため。
  *
  * **Sil-Q の音は `message()` の型そのもの**である（`util.c:2960` が
@@ -606,7 +748,7 @@ int sq_read_surroundings(sq_surroundings *out);
  * （`assets/audio/sfx.jsonc`）に 22 名が当たる。残る 5 つは Angband 系の固有名で、
  * 目録の側に行を足して変愚の wav を割り当ててある。
  *
- * @note 見えていない敵の騒音は
+ * @note 見えていない敵の騒音（の「You hear …」75 か所）は
  * ここには乗らない。あちらは の P4 で、音の道のりを
  * コアが計算して `path` / `heard_*` に載せる別の仕事である。
  */
@@ -636,6 +778,7 @@ int sq_sound_take(sq_sound_event *out, int cap);
  * @brief これまでに積んだ**累計**。digest に混ぜる。
  * @details 音は一度きりの出来事で、鳴った瞬間の Term が 1 セルも動かない場面がある。
  * 混ぜないと**その 1 枚が線に乗らず**、音が次の別の変化まで遅れる
+ *
  */
 unsigned long sq_sound_total(void);
 
@@ -656,6 +799,16 @@ void sq_text_input_set(int active);
 
 /*! @brief いま自由文字入力の待ちか（`frame.text_input_active` の材料）。 */
 int sq_text_input_active(void);
+/*! @brief Sil-Q 内部の互換プレイヤー名（ASCII）を取得する。 */
+int sq_player_internal_name(char *out, int cap);
+/*! @brief 現在の savefile の末尾（実ファイル識別名）を取得する。 */
+int sq_current_save_id(char *out, int cap);
+/*! @brief 現在の savefile が実在するか。新規キャラ編集中との区別に使う。 */
+int sq_current_save_exists(void);
+/*! @brief セーブ実ファイル名に対応する UTF-8 表示名を CP932 で返す。 */
+int sq_player_identity_display_name(const char *save_name, char *out, int cap);
+/*! @brief セーブ削除時に UI 側の表示名 sidecar も削除する。 */
+void sq_player_identity_remove_name(const char *save_name);
 
 /*!
  * @brief いま**次の命令**を待っているか（`frame.awaiting_command` の材料。2026-08-23）。
@@ -668,12 +821,24 @@ int sq_text_input_active(void);
  * （`sq_null_term.c` の `sq_term_event`）で採れる。
  *
  * `-more-` や `y/n` の待ちでは**立たない**——そこが要るところである。
- * 立たない待ちで画面がコマンドメニューを開くと、メッセージが進まなくなる。
+ * 立たない待ちで画面がコマンドメニューを開くと、伝言が進まなくなる。
  *
  * **`silq/src/` には 1 バイトも足していない**（必守制約 2）。`inkey_flag` は
  * `externs.h` が公開している素の大域で、先方の `main-win.c` も同じように読んでいる。
  */
 int sq_awaiting_command(void);
+
+/*!
+ * @brief いまのキー配置の番号（原作 `request_command()` と同じ決め方。2026-10-07）。
+ * @return `KEYMAP_MODE_SIL`(0)・`SIL_HJKL`(1)・`ANGBAND`(2)・`ANGBAND_HJKL`(3)。
+ * 設定の「hjkl などで移動する」（`hjkl_movement`）と「Angband に近い鍵の割り当て」（`angband_keyset`）で決まる。
+ */
+int sq_keymap_mode(void);
+
+/*!
+ * @brief 原作のキー配置の表 `keymap_act[mode][key]`（無ければ NULL）。パッドの表の逆引きに使う。
+ */
+const char *sq_keymap_action(int mode, int key);
 
 /*!
  * @brief **画面が読む旗が `sq_change_digest()` に混ざっているか**を確かめる（検査。2026-08-23）。
@@ -701,7 +866,8 @@ int sq_digest_flag_check(char *report, int cap);
  * @param lib_dir Sil-Q の lib ディレクトリ（`<exe_dir>/silq/lib`）。
  *                末尾の区切りは有っても無くてもよい
  * @param lang `"ja"` なら**実体の定義を `<silq>/lib-ja/edit` から読む**。
- *             NULL / `"en"` / 作った `lib-ja/edit` が無いときは英語のまま
+ *             NULL / `"en"` / 焼いた `lib-ja/edit` が無いときは英語のまま
+ *             （の起動列 7）
  * @return SQ_OK / SQ_ERR_*
  *
  * **`play_game()` は呼ばない。** ゲームを回すのは `sq_run_game()`。
@@ -717,7 +883,7 @@ int sq_bootstrap(const char *lib_dir, const char *lang);
  * @brief 名前の組み立てを並べて出す（`--name-check`）。**診断の口**。
  * @details `sq_bootstrap()` の後に呼ぶ。遊びの筋には入らない。
  * 助数詞・銘の前置き／後置き・風味・アーティファクト・`monster_desc` の
- * 5 つの型を一度に見るためのもの。
+ * 5 つの型を一度に見るためのもの（の P2 受け入れ）。
  * 出力は stderr（v1 §1.1）。
  */
 void sq_name_check(void);
@@ -738,7 +904,7 @@ int sq_run_game(void);
  * @brief 次に `sq_run_game()` を回すとき、**直前に保存した人物を自動で開く**（`--resume`）。
  * @param on 1 = 開く／0 = ふつうにタイトルを出す
  *
- * @details 遊んでいる途中の言語切り替えのための口。
+ * @details 遊んでいる途中の言語切り替え（の案 A）のための口。
  * 画面側が言語を替えると、**コアを保存して畳み、起こし直す**——言語は
  * `init_angband()` に入る前に決まっていなければならないので、それしか手が無い
  * （`sq_bootstrap()` の註）。起こし直したあとに人物を選び直させるのは筋が悪いので、
@@ -773,6 +939,37 @@ const char *sq_last_error(void);
  * 呼んでよいのは**ゲームスレッド**（＝`TERM_XTRA_EVENT` の中）だけ。
  */
 void sq_shutdown_and_quit(void);
+int sq_native_look_map_active(void);
+
+/*!
+ * @brief 画面の退避の深さ（`character_icky`。`screen_save()` が増やし `screen_load()` が減らす計数器）。
+ * @details 見る・狙うの最中に `r`（モンスターの思い出）が画面を重ねている間を、見るの帯を作る側が見分けるために使う
+ * （`presentation/bridge/look_screen_cover.h`）。
+ */
+int sq_screen_depth(void);
+/* Read the active load/delete menu declaration. All rows, including the
+ * keyless delete entry, are exposed independently of terminal highlighting. */
+int sq_save_menu_entry(int index,int *row,int *column,int *selected,int *key,const char **label);
+const char *sq_save_menu_description(void);
+void sq_set_modern_menu(int on);
+void sq_save_picker_begin(const char *directory);
+void sq_save_picker_draw(void);
+int sq_save_picker_key(int key,char *selected,int capacity);
+void sq_save_picker_end(void);
+void sq_save_picker_clear(const char *title,const char *description);
+void sq_save_picker_row(int index,int key,const char *label,int selected);
+
+/*!
+ * @name 魔法・投射物の効果の入口（実装は sq_frame.cpp。`sq_shim.c` の `sq_fx_note_*` が呼ぶ）
+ * @details 共通の記録の置き場（`presentation/bridge/named_attack_fx.h`）へ積む。`attr` は原作の属性のコア名（`GF_` を除いた小文字。
+ * 見た目の名前への変換は C++ 側）。整数の並びは `presentation/bridge/named_attack_fx_glue.h` の冒頭。
+ * @{
+ */
+void sq_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y, int impact_x,
+    int flags, const int *path, int path_n, const int *area, int area_n);
+void sq_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x);
+void sq_named_fx_missile_hit(void);
+/*! @} */
 
 #ifdef __cplusplus
 }

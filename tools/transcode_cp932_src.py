@@ -11,7 +11,8 @@
 | ``cp932`` | CP932 で書かれた木 | ``gensoband/src``（88 ファイルが CP932） |
 | ``utf8`` | UTF-8 で書かれた木 | ``gensoband/adapter`` / ``silq/adapter``（BOM 付き UTF-8） |
 
-**どちらの向きでも、出来上がるリテラルのバイト列は CP932 である。** これは
+**どちらの向きでも、通常の文字列・文字リテラルのバイト列は CP932 にする。**
+`u8`・`u`・`U`・`L` の接頭辞があるリテラルは、それぞれの Unicode 指定を保持する。 これは
 「Windows の実行体と 1 バイトも違わないものを Android でも焼く」という一点のためで、
 向きが 2 つあるのは写し元の書き方が違うからにすぎない。
 
@@ -121,7 +122,7 @@ def _reject_escapes_in_unevaluated(body: bytes) -> None:
 def transcode(src: bytes, source_encoding: str = "cp932") -> tuple[bytes, dict[str, int]]:
     """1 ファイル分を写す。
 
-    @param source_encoding ``"cp932"`` か ``"utf8"``。**出来上がるリテラルはどちらも CP932**。
+    @param source_encoding ``"cp932"`` か ``"utf8"``。**通常のリテラルはどちらも CP932**。Unicode 接頭辞は保持する。
     @return ``(写した中身, 数えたもの)``
     @exception RuntimeError 走査に取りこぼしがあったとき（下の「検算」）。
 
@@ -190,6 +191,90 @@ def transcode(src: bytes, source_encoding: str = "cp932") -> tuple[bytes, dict[s
             stat["not_in_cp932"] += 1
         return _octal(encoded)
 
+    def read_literal(at: int):
+        for prefix in (b"u8", b"u", b"U", b"L", b""):
+            start = at + len(prefix)
+            if not src.startswith(prefix, at) or start >= n:
+                continue
+            if (prefix or src[start:start + 2] == b'R"') and at > 0 and (src[at - 1:at].isalnum() or src[at - 1:at] == b"_"):
+                continue
+            raw_string = src[start:start + 2] == b'R"'
+            if raw_string:
+                opening = src.find(b"(", start + 2, min(n, start + 19))
+                if opening < 0:
+                    continue
+                delimiter = src[start + 2:opening]
+                closing = src.find(b")" + delimiter + b'"', opening + 1)
+                if closing < 0:
+                    raise RuntimeError(f"Unterminated raw string at byte {at}")
+                finish = closing + len(delimiter) + 2
+                quote = 0x22
+                body = src[opening + 1:closing]
+            elif src[start] in (0x22, 0x27):
+                quote, finish = src[start], start + 1
+                while finish < n:
+                    value = src[finish]
+                    if not from_utf8 and is_lead(value) and finish + 1 < n and is_trail(src[finish + 1]):
+                        finish += 2
+                        continue
+                    if value == 0x5C and finish + 1 < n:
+                        finish += 2
+                        continue
+                    finish += 1
+                    if value == quote:
+                        break
+                else:
+                    raise RuntimeError(f"Unterminated literal at byte {at}")
+                body = src[start + 1:finish - 1]
+            else:
+                continue
+            suffix_start = finish
+            while finish < n and (src[finish:finish + 1].isalnum() or src[finish:finish + 1] == b"_"):
+                finish += 1
+            return finish, prefix, quote, raw_string, body, src[suffix_start:finish]
+        return None
+
+    def comment_continues(start: int, end: int) -> bool:
+        if end > start and src[end - 1] == 0x0D:
+            end -= 1
+        if end <= start or src[end - 1] != 0x5C:
+            return False
+        if from_utf8:
+            return True
+        last, pos = start, start
+        while pos < end:
+            last = pos
+            pos += 2 if is_lead(src[pos]) and pos + 1 < end and is_trail(src[pos + 1]) else 1
+        return last == end - 1
+
+    def skip_literal_gap(at: int) -> int:
+        while at < n:
+            if src[at:at + 1].isspace():
+                at += 1
+            elif src[at:at + 2] == b"\\\n":
+                at += 2
+            elif src[at:at + 3] == b"\\\r\n":
+                at += 3
+            elif src[at:at + 2] == b"/*":
+                end = src.find(b"*/", at + 2)
+                if end < 0:
+                    return n
+                at = end + 2
+            elif src[at:at + 2] == b"//":
+                end = src.find(b"\n", at + 2)
+                if end < 0:
+                    return n
+                # A backslash extends a line comment onto the next line.
+                while comment_continues(at, end):
+                    following = src.find(b"\n", end + 1)
+                    if following < 0:
+                        return n
+                    end = following
+                at = end + 1
+            else:
+                break
+        return at
+
     while i < n:
         c = src[i]
 
@@ -202,6 +287,33 @@ def transcode(src: bytes, source_encoding: str = "cp932") -> tuple[bytes, dict[s
             flush("bare_bytes" if state == "N" else "comment_bytes")
 
         if state == "N":
+            # Adjacent string literals share their Unicode prefix, including
+            # ordinary literals before or after a prefixed one.
+            token = read_literal(i) if c in b'"\'uULR' else None
+            if token:
+                finish, prefix, quote, raw_string, body, suffix = token
+                group_end, unicode_group = finish, bool(prefix)
+                if quote == 0x22:
+                    while True:
+                        following = read_literal(skip_literal_gap(group_end))
+                        if not following or following[2] != 0x22:
+                            break
+                        group_end = following[0]
+                        unicode_group = unicode_group or bool(following[1])
+                if unicode_group:
+                    original = src[i:group_end]
+                    converted = original if from_utf8 else original.decode("cp932", errors="replace").encode("utf8")
+                    emit(converted, original)
+                    i = group_end
+                    continue
+                if raw_string:
+                    # Narrow raw strings also need CP932 runtime bytes. A
+                    # normal escaped literal preserves their exact contents.
+                    body = body.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+                    emit(b'"' + as_cp932_literal(body) + b'"' + suffix, src[i:finish])
+                    stat["literal_bytes"] += len(body)
+                    i = finish
+                    continue
             if (c == 0x2F) and ((i + 1) < n) and (src[i + 1] == 0x2F):  # //
                 emit(b"//", src[i : i + 2])
                 state, i = "L", i + 2

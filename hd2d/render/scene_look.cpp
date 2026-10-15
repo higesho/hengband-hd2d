@@ -380,7 +380,7 @@ void upload_look(const LookUniforms &loc, const LookParams &look, const LookGlyp
 {
     /*
      * 面の字。**材が揃っていなければ 0**（用意できていないテクスチャを引かせない）。
-     * `look.face_glyph` は利用者の逃げ口で、`glyphs` は「まだ焼けていない」の側である。
+     * `look.face_glyph` は遊ぶ人の逃げ口で、`glyphs` は「まだ焼けていない」の側である。
      */
     const bool want_glyph = (look.enabled != 0) && look.face_glyph && (glyphs != nullptr) && glyphs->ready();
     if (loc.glyph >= 0) {
@@ -502,7 +502,7 @@ void apply_look_to_post(SceneLookKind kind, bool keep_sky, PostParams &params)
     params.bloom_threshold = 1.00f;
     params.bloom_knee = 0.25f;
     /*
-     * **0.85 では溶岩が白い穴になった**（`docs/screenshots/tron/` の 1 枚目）。自発光は
+     * **0.85 では溶岩が白い穴になった**（実機の 1 枚目）。自発光は
      * 標準でも既に 1 を大きく超えている（HDR 3.15 の実測。`post_process.h`）ので、
      * TRON では「線が滲む」ぶんだけで足り、光源そのものを持ち上げる必要は無い。
      */

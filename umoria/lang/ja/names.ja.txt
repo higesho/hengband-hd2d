@@ -1,0 +1,661 @@
+# Umoria の名前の表。tools/umoria/um_build_names.py が作る（手で直さない）。
+# 英語<TAB>日本語。鍵は原作の名前から & ~ ^ を落とした形。%s を含む行は書式（{1} が %s の中身）。
+*Destruction*	*破壊*
+*Enchant Armor*	*防具強化*
+*Enchant Weapon*	*武器強化*
+[Beginners Handbook]	[入門書]
+[Beginners-Magick]	[魔術入門]
+[Chants and Blessings]	[聖歌と祝福]
+[Exorcisms and Dispellings]	[退魔払邪]
+[Magick I]	[魔術 I]
+[Magick II]	[魔術 II]
+[The Mages' Guide to Power]	[魔術師の力の手引き]
+[Words of Wisdom]	[叡智の言葉]
+a blackened spot	焦げた場所
+a covered pit	覆われた落とし穴
+a dart trap	ダーツ・トラップ
+a down staircase	下り階段
+a gas trap	ガス・トラップ
+a loose rock	ゆるんだ岩
+a strange rune	奇妙なルーン
+a trap door	トラップ・ドア
+Acid Balls	アシッド・ボール
+Adornment	装飾
+Aggravate Monster	反感
+Air Spirit	風のスピリット
+Alchemy Shop	錬金術の店
+an arrow trap	矢のトラップ
+an open pit	開いた落とし穴
+an up staircase	上り階段
+Ancient Black Dragon	古代ブラック・ドラゴン
+Ancient Blue Dragon	古代ブルー・ドラゴン
+Ancient Green Dragon	古代グリーン・ドラゴン
+Ancient Multi-Hued Dragon	古代万色ドラゴン
+Ancient Red Dragon	古代レッド・ドラゴン
+Ancient White Dragon	古代ホワイト・ドラゴン
+Apple Juice	リンゴジュース
+Armory	防具屋
+Arrow	矢
+Augmented Chain Mail	重鎖かたびら
+Awl-Pike	オウル・パイク
+Backsword	バックソード
+Ball and Chain	鎖つき鉄球
+Balrog	バルログ
+Bandit	追い剥ぎ
+Banshee	バンシー
+Bar Chain Mail	強化鎖かたびら
+Barrow Wight	塚ワイト
+Bastard Sword	バスタード・ソード
+Battle Axe (Balestarius)	バトル・アックス(バレスタリウス)
+Battle Axe (European)	バトル・アックス(ヨーロピアン)
+Battle-Scarred Veteran	戦傷兵士
+Beaked Axe	ビークド・アックス
+Berzerker	バーサーカー
+Black Dragon Bat	ブラック・ドラゴンバット
+Black Harpy	ブラック・ハーピー
+Black Knight	黒騎士
+Black Mamba	ブラック・マンバ
+Black Mold	ブラック・モルド
+Black Mushroom patch	黒おばけキノコ
+Black Naga	ブラック・ナーガ
+Black Ooze	ブラック・ウーズ
+Black Orc	ブラック・オーク
+Black Wraith	ブラック・レイス
+Black Yeek	ブラック・イーク
+Bless	祝福
+Blessing	天恵
+Blind Creature	盲目モンスター
+Blindness	盲目
+Bloodshot Eye	充血アイ
+Bloodshot Icky-Thing	充血ベトベト
+Blubbering Icky-Thing	号泣ベトベト
+Blubbering Idiot	泣きじゃくる白痴
+Blue Dragon Bat	ブルー・ドラゴンバット
+Blue Icky-Thing	青ベトベト
+Blue Jelly	ブルー・ゼリー
+Blue Worm mass	青イモムシの大群
+Blue Yeek	ブルー・イーク
+Boldness	恐いもの知らず
+Bolt	クロスボウの矢
+Brass Lantern	真鍮のランタン
+Brigand	追いはぎ
+Broad Axe	ブロード・アックス
+Broadsword	ブロード・ソード
+Broken Dagger	折れたダガー
+broken set of teeth	折れた歯
+broken stick	折れた棒
+Broken Sword	折れた剣
+Brown Mold	ブラウン・モルド
+Brown Yeek	ブラウン・イーク
+Call Light	光の召喚
+Cat-o'-Nine-Tails	九尾の鞭
+Chain Mail	鎖かたびら
+Chant	聖唱歌
+Charisma	魅力
+Clay Golem	土ゴーレム
+Clear Icky-Thing	透明ベトベト
+Clear Mushroom patch	透明おばけキノコ
+Clear Ooze	クリア・ウーズ
+Clear Yeek	クリア・イーク
+Cloak	クローク
+Clone Monster	クローン・モンスター
+closed door	閉じたドア
+Cloud Giant	クラウド・ジャイアント
+Cold Balls	アイス・ボール
+Composite Bow	コンポジット・ボウ
+Confuse Monster	パニック・モンスター
+Confusion	混乱
+Constitution	耐久力
+copper	銅塊
+Copperhead Snake	マムシ
+Create Food	食糧生成
+Creeping Copper Coins	銅のクリーピングコイン
+Creeping Gold Coins	金のクリーピングコイン
+Creeping Silver Coins	銀のクリーピングコイン
+Crimson Mold	クリムゾン・モルド
+Crystal Ooze	クリスタル・ウーズ
+Cure Blindness	盲目治癒
+Cure Confusion	混乱脱出
+Cure Critical Wounds	致命傷の治癒
+Cure Light Wounds	軽傷の治癒
+Cure Medium Wounds	中程度の傷の治癒
+Cure Paranoia	恐怖除去
+Cure Poison	毒消し
+Cure Serious Wounds	重傷の治癒
+Curing	癒し
+Curse Armor	防具呪縛
+Curse Weapon	武器呪縛
+Cutlass	カットラス
+Dagger (Bodkin)	ボドキン
+Dagger (Main Gauche)	マン・ゴーシュ
+Dagger (Misericorde)	ミゼリコルド
+Dagger (Stiletto)	スティレット
+Darkness	暗闇
+Death Quasit	デス・クアシト
+Death Watch Beetle	死番虫
+Detect Doors/Stairs	ドア/階段感知
+Detect Evil	邪悪存在感知
+Detect Invisible	透明物体感知
+Detect Monsters	モンスター感知
+Dexterity	器用さ
+diamonds	ダイヤモンド
+Disarming	トラップ解除
+Disenchanter Bat	劣化コウモリ
+Disenchanter Eye	劣化アイ
+Disenchanter Mold	劣化モルド
+Disenchanter Ooze	劣化ウーズ
+Disenchanter Worm	劣化イモムシの大群
+Dispel Evil	邪悪存在退散
+Dispel Undead	アンデッド退散
+DOOM	破滅
+Door Creation	扉生成
+Door/Stair Location	ドア/階段感知
+Double Chain Mail	二重鎖かたびら
+Drain Life	生命力吸収
+Drooling Harpy	よだれを垂らすハーピー
+Dwarf	ドワーフ
+Dwarf Skeleton	ドワーフの骨
+Dwarven Pick	ドワーフのつるはし
+Dwarven Shovel	ドワーフのシャベル
+Earth Elemental	地のエレメンタル
+Earth Spirit	地のスピリット
+Earthquake	地震
+Earthquakes	地震
+Elf	エルフ
+Elf Skeleton	エルフの骨
+emeralds	エメラルド
+Emperor Lich	エンペラー・リッチ
+Emperor Wight	エンペラー・ワイト
+empty bottle	空のビン
+Enchant Armor	防具強化
+Enchant Weapon To-Dam	武器ダメージ増加
+Enchant Weapon To-Hit	武器命中率上昇
+Evil Iggy	邪悪なイギー
+Executioner's Sword	首切りソード
+Fauchard	フォシャール
+Feather Falling	浮遊
+Filthy Street Urchin	汚いイタズラ小僧
+Find Hidden Traps/Doors	トラップ/隠しドア感知
+Find Traps	トラップ感知
+Fire Ball	ファイア・ボール
+Fire Balls	ファイア・ボール
+Fire Bolt	ファイア・ボルト
+Fire Bolts	ファイア・ボルト
+Fire Elemental	火のエレメンタル
+Fire Giant	ファイアー・ジャイアント
+Fire Spirit	火のスピリット
+First-Aid	応急手当
+Flail	フレイル
+Flask of Oil	油つぼ
+Flesh Golem	肉ゴーレム
+Floating Eye	フローティング・アイ
+Foil	フォイル
+Forest Wight	森ワイト
+Frost Ball	アイス・ボール
+Frost Bolt	アイス・ボルト
+Frost Bolts	アイス・ボルト
+Frost Giant	フロスト・ジャイアント
+Full Plate Armor	フル・プレート・メイル
+Gain Experience	経験値上昇
+garnets	ガーネット
+Gelatinous Cube	ゼラチナス・キューブ
+General Store	雑貨屋
+Genocide	抹殺
+Ghost	ゴースト
+Giant Black Ant	巨大黒アリ
+Giant Black Ant Lion	巨大黒アリジゴク
+Giant Black Bat	巨大黒コウモリ
+Giant Black Centipede	巨大黒ムカデ
+Giant Black Dragon Fly	巨大黒トンボ
+Giant Black Frog	巨大黒ガエル
+Giant Black Louse	巨大黒シラミ
+Giant Black Rat	巨大黒ネズミ
+Giant Black Scorpion	巨大黒サソリ
+Giant Blue Centipede	巨大青ムカデ
+Giant Blue Dragon Fly	巨大青トンボ
+Giant Brown Bat	巨大茶コウモリ
+Giant Brown Scorpion	巨大茶サソリ
+Giant Brown Tick	巨大茶ダニ
+Giant Centipede Skeleton	巨大ムカデの骨
+Giant Clear Ant	巨大透明アリ
+Giant Clear Centipede	巨大透明ムカデ
+Giant Ebony Ant	巨大黒檀アリ
+Giant Fire Bat	巨大火コウモリ
+Giant Fire Tick	巨大火ダニ
+Giant Flea	巨大ノミ
+Giant Fruit Fly	巨大フルーツ・バエ
+Giant Glowing Rat	巨大発光ネズミ
+Giant Gnat	巨大ブヨ
+Giant Green Dragon Fly	巨大緑トンボ
+Giant Green Fly	巨大緑バエ
+Giant Green Frog	巨大アマガエル
+Giant Grey Ant Lion	巨大灰色アリジゴク
+Giant Grey Bat	巨大灰色コウモリ
+Giant Grey Rat	巨大ドブネズミ
+Giant House Fly	巨大イエバエ
+Giant Hunter Ant	巨大ハンターアリ
+Giant Lightning Bat	巨大雷コウモリ
+Giant Long-Eared Bat	巨大長耳コウモリ
+Giant Mottled Ant Lion	巨大まだらアリジゴク
+Giant Purple Worm	巨大紫イモムシ
+Giant Red Ant	巨大赤アリ
+Giant Red Ant Lion	巨大赤アリジゴク
+Giant Red Bat	巨大赤コウモリ
+Giant Red Centipede	巨大赤ムカデ
+Giant Red Dragon Fly	巨大赤トンボ
+Giant Red Frog	巨大赤ガエル
+Giant Red Scorpion	巨大赤サソリ
+Giant Red Speckled Frog	巨大赤斑点ガエル
+Giant Silver Ant	巨大銀アリ
+Giant Spotted Rat	巨大斑点ネズミ
+Giant Static Ant	巨大静電アリ
+Giant Tan Bat	巨大黄褐コウモリ
+Giant Troll	ジャイアント・トロル
+Giant White Ant	巨大シロアリ
+Giant White Ant Lion	巨大白アリジゴク
+Giant White Centipede	巨大白ムカデ
+Giant White Dragon Fly	巨大白トンボ
+Giant White Louse	巨大白シラミ
+Giant White Mouse	巨大ハツカネズミ
+Giant White Rat	巨大白ネズミ
+Giant White Tick	巨大白ダニ
+Giant Yellow Centipede	巨大黄ムカデ
+Giant Yellow Scorpion	巨大黄サソリ
+Giant Yellow Tick	巨大黄ダニ
+Glaive	グレイブ
+Glyph of Warding	守りのルーン
+Gnome	ノーム
+Gnome Skeleton	ノームの骨
+Gnomish Shovel	ノームのシャベル
+gold	金塊
+Golden Crown	金の冠
+Grape Jelly	グレープ・ゼリー
+Grave Wight	墓ワイト
+Greedy Little Gnome	欲深い小さなノーム
+Green Dragon Bat	グリーン・ドラゴンバット
+Green Glutton Ghost	緑の食いしん坊ゴースト
+Green Icky-Thing	緑ベトベト
+Green Jelly	グリーン・ゼリー
+Green Mold	グリーン・モルド
+Green Naga	グリーン・ナーガ
+Green Ooze	グリーン・ウーズ
+Green Worm mass	緑イモムシの大群
+Grey Harpy	グレイ・ハーピー
+Grey Icky-Thing	グレイ・ベトベト
+Grey Mushroom patch	灰色おばけキノコ
+Grey Ooze	グレイ・ウーズ
+Grey Wraith	グレイ・レイス
+Guardian Naga	ガーディアン・ナーガ
+Hairy Mold	毛むくじゃらモルド
+Halberd	ハルベルト
+Half-Elf	ハーフエルフ
+Half-Orc	ハーフオーク
+Half-Troll	ハーフトロル
+Halfling	ホビット
+Hallucination	幻覚
+Hard Biscuit	ビスケット
+Hard Leather Armor	硬革よろい
+Hard Leather Cap	硬革帽子
+Hard Leather Ring Mail	硬革リング・メイル
+Hard Studded Leather	鋲付硬革よろい
+Haste Monster	スピード・モンスター
+Haste Monsters	スピード・モンスター
+Haste Self	スピード
+Heal	体力回復
+Heal Monster	回復モンスター
+Healing	体力回復
+Heavy Crossbow	ヘヴィ・クロスボウ
+Heroism	ヒーロー
+Hill Giant	丘ジャイアント
+Hobgoblin	ホブゴブリン
+Holy Chant	聖唱歌
+Holy Prayer	聖祈言
+Holy Word	聖なる御言葉
+Huge Brown Bat	特大茶コウモリ
+Huge White Bat	特大白コウモリ
+Human	人間
+Human Skeleton	人間の骨
+Human Zombie	ゾンビ
+Ice Troll	雪トロル
+Identify	鑑定
+Increase Damage	ダメージ増加
+Increase To-Hit	命中率上昇
+Infra-Vision	赤外線視力
+Intelligence	知能
+Invisible Stalker	インビジブル・ストーカー
+Invulnerability	無敵
+Iridescent Beetle	タマムシ
+Iron Golem	鉄ゴーレム
+Iron Helm	鉄ヘルメット
+Iron Shot	鉄弾
+Iron Spike	鉄のくさび
+Jackal	ジャッカル
+Javelin	ジャベリン
+Jewel-Encrusted Crown	宝冠
+Katana	カタナ
+Killer Black Beetle	ブラック・キラービートル
+Killer Blue Beetle	ブルー・キラービートル
+Killer Boring Beetle	キラー・ボーリング・ビートル
+Killer Brown Beetle	ブラウン・キラービートル
+Killer Fire Beetle	キラー・ファイア・ビートル
+Killer Green Beetle	グリーン・キラービートル
+Killer Red Beetle	レッド・キラービートル
+Killer Slicer Beetle	キラー・スライス・ビートル
+Killer Stag Beetle	殺人クワガタ
+King Cobra	キング・コブラ
+King Lich	キング・リッチ
+King Vampire	キング・バンパイア
+Kobold	コボルド
+Laminated Armor	ラミネート・アーマー
+Lance	ランス
+Large Black Snake	大黒色ヘビ
+large broken bone	大きな骨の破片
+Large Brown Snake	土ヘビ
+Large Green Snake	大緑色ヘビ
+Large Grey Snake	大灰色ヘビ
+Large Iron Chest	大きな鉄の箱
+Large Leather Shield	革製ラージ・シールド
+Large Metal Shield	金属製ラージ・シールド
+Large Steel Chest	大きな鋼鉄の箱
+Large White Snake	大白ヘビ
+Large Wooden Chest	大きな木の箱
+Lead-Filled Mace	鉛詰めメイス
+Leather Scale Mail	革製スケイル・メイル
+Lich	リッチ
+Light	光
+Light Area	ライト・エリア
+Light Crossbow	ライト・クロスボウ
+Light Cures	軽治癒
+Lightning Balls	サンダー・ボール
+Lightning Bolt	サンダー・ボルト
+Lightning Bolts	サンダー・ボルト
+Long Bow	ロング・ボウ
+Longsword	ロング・ソード
+Lordly Protection (ACID)	王者の加護(酸)
+Lordly Protection (COLD)	王者の加護(冷気)
+Lordly Protection (FIRE)	王者の加護(火炎)
+Lose Experience	経験値低下
+Lose Intelligence	知能低下
+Lose Wisdom	賢さ低下
+Lost Soul	浮遊霊
+Lucerne Hammer	ルツェルン・ハンマー
+Mace	メイス
+Mage	メイジ
+Magic Mapping	魔法の地図
+Magic Missile	マジック・ミサイル
+Magic Shop	魔法の店
+Magic User	魔術師
+Major Cures	大治癒
+Mangy-Looking Leper	不潔な病人
+Mass Genocide	周辺抹殺
+Mass Polymorph	周辺突然変異
+Master Vampire	マスター・バンパイア
+Master Yeek	マスター・イーク
+Mature Black Dragon	ブラック・ドラゴン
+Mature Blue Dragon	ブルー・ドラゴン
+Mature Green Dragon	グリーン・ドラゴン
+Mature Multi-Hued Dragon	万色ドラゴン
+Mature Red Dragon	レッド・ドラゴン
+Mature White Dragon	ホワイト・ドラゴン
+Mean-Looking Mercenary	貧しげな傭兵
+Medium Leather Shield	革製ミディアム・シールド
+Medium Metal Shield	金属製ミディアム・シールド
+Metal Brigandine Armor	金属製ブリガンダイン・アーマー
+Metal Cap	金属帽子
+Metal Lamellar Armor	金属製ラメラー・アーマー
+Metal Scale Mail	金属製スケイル・メイル
+Metallic Blue Centipede	銀青ムカデ
+Metallic Green Centipede	銀緑ムカデ
+Metallic Red Centipede	銀赤ムカデ
+Minor Cures	小治癒
+mithril	ミスリル
+Moaning Spirit	唸るスピリット
+Monster Confusion	パニック・モンスター
+Morningstar	モーニング・スター
+Mummified Human	ミイラ
+Mummified Kobold	ミイラ・コボルド
+Mummified Orc	ミイラ・オーク
+Mummified Troll	ミイラ・トロル
+Nasty Little Gnome	意地悪な小さなノーム
+Necromancer	降霊術師
+Nether Wraith	冥界レイス
+Neutralize Poison	解毒
+Ninja	ニンジャ
+nothing	何もない
+Novice Mage	見習メイジ
+Novice Priest	見習プリースト
+Novice Rogue	見習盗賊
+Novice Warrior	見習戦士
+Object Detection	アイテム感知
+Object Location	アイテム感知
+Ogre	オーガ
+Ogre Mage	オーガ・メイジ
+opals	オパール
+open door	開いたドア
+Orb of Draining	吸収の宝珠
+Orc	オーク
+Orc Shaman	オーク・シャーマン
+Orc Warrior	オーク戦士
+Orc Zombie	ゾンビ・オーク
+Orcish Pick	オークのつるはし
+Pair of Hard Leather Boots	硬革ブーツ
+Pair of Soft Leather Boots	軟革ブーツ
+Pair of Soft Leather Shoes	軟革の靴
+Paladin	パラディン
+Paranoia	恐怖
+Partial Plate Armor	パーシャル・プレート・メイル
+Phase Door	ショート・テレポート
+Pick	つるはし
+Piece of Elvish Waybread	エルフの行糧
+Pike	パイク
+Pint of Fine Ale	高級エール
+Pint of Fine Grade Mush	上質なマッシュ
+Pint of Fine Wine	高級ワイン
+Pitiful-Looking Beggar	哀れな身なりの乞食
+Poison	毒
+Poltergeist	ポルターガイスト
+Polymorph	突然変異
+Polymorph Other	他者変容
+Portal	入口
+Prayer	聖祈言
+Priest	プリースト
+Protection	守り
+Protection from Evil	対邪悪結界
+Purple Mushroom patch	紫おばけキノコ
+Quasit	クアシト
+Quylthulg	クイルスルグ
+Radiation Eye	発光アイ
+Ranger	レンジャー
+Rapier	レイピア
+Rat Skeleton	ネズミの骨
+Ration of Food	食料
+Rattlesnake	ガラガラヘビ
+Recharge Item I	魔力充填 I
+Recharge Item II	魔力充填 II
+Recharging	魔力充填
+Red Dragon Bat	レッド・ドラゴンバット
+Red Icky-Thing	赤ベトベト
+Red Jelly	レッド・ゼリー
+Red Mold	レッド・モルド
+Red Naga	レッド・ナーガ
+Red Worm mass	赤イモムシの大群
+Remove Curse	解呪
+Remove Fear	恐怖除去
+Resist Acid	耐酸
+Resist Cold	耐冷
+Resist Fire	耐火
+Resist Heat	耐火
+Resist Heat and Cold	耐熱耐寒
+Restoration	全復活
+Restore Charisma	魅力復活
+Restore Constitution	耐久力復活
+Restore Dexterity	器用さ復活
+Restore Intelligence	知能復活
+Restore Life Levels	経験値復活
+Restore Mana	魔力復活
+Restore Strength	腕力復活
+Restore Wisdom	賢さ復活
+Ribbed Plate Armor	強化プレート・アーマー
+Robe	ローブ
+Rogue	盗賊
+Rot Jelly	腐敗ゼリー
+Rotting Quylthulg	腐乱クイルスルグ
+Rounded Pebble	丸い小石
+rubies	ルビー
+ruined chest	あばかれた箱
+Rune of Protection	守りのルーン
+Rusty Chain Mail	錆びた鎖かたびら
+Sabre	サーベル
+Salt Water	塩水
+Sanctuary	聖域
+sapphires	サファイア
+Scruffy-Looking Hobbit	貧弱ホビット
+Searching	探索
+secret door	隠しドア
+See Invisible	透明物体感知
+Seedy Looking Human	薄汚い人間
+Sense Invisible	透明視認
+Sense Surroundings	周辺感知
+Set of Gauntlets	ガントレット
+Set of Leather Gloves	革グローブ
+Shimmering Mold	発光モルド
+Short Bow	ショート・ボウ
+Shovel	シャベル
+Shrieker Mushroom patch	絶叫おばけキノコ
+silver	銀塊
+Silver Crown	銀の冠
+Silver Jelly	シルバー・ゼリー
+Silver Mouse	銀ハツカネズミ
+Singing, Happy Drunk	歌を口ずさむ幸せな酔っぱらい
+Skeleton 2-Headed Troll	スケルトン・双頭トロル
+Skeleton Hobgoblin	スケルトン・ホブゴブリン
+Skeleton Human	スケルトン
+Skeleton Kobold	スケルトン・コボルド
+Skeleton Orc	スケルトン・オーク
+Skeleton Troll	スケルトン・トロル
+Slaying	殺戮
+Sleep	眠り
+Sleep I	スリープ・モンスター I
+Sleep II	スリープ・モンスター II
+Sleep III	スリープ・モンスター III
+Sleep Monster	スリープ・モンスター
+Sleep Monsters	スリープ・モンスター
+Slime Mold	スライムモルド
+Slime Mold Juice	スライムモルドジュース
+Sling	スリング
+Slow Digestion	遅消化
+Slow Monster	スロウ・モンスター
+Slow Monsters	スロウ・モンスター
+Slow Poison	減毒
+Slowness	のろま
+Small Iron Chest	小さな鉄の箱
+Small Leather Shield	革製スモール・シールド
+Small Metal Shield	金属製スモール・シールド
+Small Steel Chest	小さな鋼鉄の箱
+Small Sword	スモール・ソード
+Small Wooden Chest	小さな木の箱
+Soft Leather Armor	軟革よろい
+Soft Leather Cap	軟革帽子
+Soft Leather Ring Mail	軟革リング・メイル
+Soft Studded Leather	鋲付軟革よろい
+some corroded rock	腐食した岩
+some Filthy Rags	汚れたボロ服
+some loose rock	崩れかけた岩
+some rubble	岩石
+some shards of pottery	陶器のかけら
+Sorcerer	ソーサラー
+Spear	スピア
+Speed	スピード
+Spirit Troll	スピリット・トロル
+Spotted Mushroom patch	斑点おばけキノコ
+Squint-Eyed Rogue	やぶにらみの悪党
+Starlight	スターライト
+Steel Helm	鋼鉄ヘルメット
+Stinking Cloud	悪臭雲
+Stone Giant	ストーン・ジャイアント
+Stone Golem	石ゴーレム
+Stone-to-Mud	岩石溶解
+Strength	腕力
+Strip of Beef Jerky	牛の乾し肉
+Stupidity	無知
+Summon Monster	サモン・モンスター
+Summon Undead	サモン・アンデッド
+Summoning	召喚
+Super Heroism	スーパー・ヒーロー
+Sustain Charisma	魅力維持
+Sustain Constitution	耐久力維持
+Sustain Dexterity	器用さ維持
+Sustain Intelligence	知能維持
+Sustain Strength	腕力維持
+Sustain Wisdom	賢さ維持
+Swordsman	ソードマン
+Teleport	テレポート
+Teleport Away	テレポート・アウェイ
+Teleport Level	テレポート・レベル
+Teleport Other	テレポート・アウェイ
+Teleport Self	テレポート
+Teleportation	テレポート
+Temple	寺院
+the Magi	賢者
+Thrusting Sword (Baselard)	スラスティング・ソード(バゼラルド)
+Thrusting Sword (Bilbo)	スラスティング・ソード(ビルボ)
+Trap Creation	トラップ創造
+Trap Detection	トラップ感知
+Trap Location	トラップ感知
+Trap/Door Destruction	トラップ/ドア破壊
+Treasure Detection	財宝感知
+Treasure Location	財宝感知
+Troll	トロル
+Turn Stone to Mud	岩石溶解
+Turn Undead	パニック・アンデッド
+Two-Handed Great Flail	両手大フレイル
+Two-Handed Sword (Claymore)	クレイモア
+Two-Handed Sword (Espadon)	エスパドン
+Two-Handed Sword (Flamberge)	フランベルジュ
+Two-Handed Sword (No-Dachi)	野太刀
+Two-Handed Sword (Zweihander)	ツヴァイハンダー
+Two-Headed Troll	双頭トロル
+Ugliness	醜悪
+Umber Hulk	アンバーハルク
+Unhealth	病弱
+Uruk-Hai Orc	ウルク=ハイ
+Vampire	バンパイア
+Violet Mold	バイオレット・モルド
+Vorpal Bunny	ヴォーパル・バニー
+Wall Building	壁生成
+War Hammer	ウォー・ハンマー
+Warrior	戦士
+Water	水
+Water Elemental	水のエレメンタル
+Water Spirit	水のスピリット
+Weakness	脆弱
+Weapon Smiths	武器屋
+White Dragon Bat	ホワイト・ドラゴンバット
+White Harpy	ホワイト・ハーピー
+White Icky-Thing	白ベトベト
+White Jelly	ホワイト・ゼリー
+White Mushroom patch	白おばけキノコ
+White Worm mass	白イモムシの大群
+White Wraith	ホワイト・レイス
+Wisdom	賢さ
+WOE	苦悩
+Wonder	謎
+Wooden Club	木の棍棒
+Wooden Mold	ウッデン・モルド
+Wooden Torch	松明
+Word of Destruction	破壊の言葉
+Word-of-Recall	帰還の詔
+Woven Cord Armor	防護服
+Xorn	ゾーン
+Yellow Jelly	イエロー・ゼリー
+Yellow Mold	イエロー・モルド
+Yellow Mushroom patch	黄おばけキノコ
+Yellow Worm mass	黄イモムシの大群
+Yeti	イエティ
+Young Black Dragon	ヤング・ブラック・ドラゴン
+Young Blue Dragon	ヤング・ブルー・ドラゴン
+Young Green Dragon	ヤング・グリーン・ドラゴン
+Young Multi-Hued Dragon	ヤング万色ドラゴン
+Young Red Dragon	ヤング・レッド・ドラゴン
+Young White Dragon	ヤング・ホワイト・ドラゴン
+Zombie Kobold	ゾンビ・コボルド

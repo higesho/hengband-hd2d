@@ -13,6 +13,10 @@ def build(windows, output, database, toolchain):
     catalog=json.loads((output/'catalog.json').read_text(encoding='utf-8'))
     commands=json.loads(database.read_text(encoding='utf-8'))
     source=Path(os.environ.get('HENGBAND_CORE_SOURCE_ROOT',ROOT.parent/'roguelike-cores/build-sources')).resolve().as_posix()
+    source_roots={source}
+    for row in commands:
+        path=row['file'].replace('\\','/')
+        if '/targeting-sources/' in path:source_roots.add(path.split('/targeting-sources/',1)[0]+'/targeting-sources')
     tree=toolchain/'toolchains/llvm/prebuilt/linux-x86_64'
     for folder in ['sysroot','lib/clang']:
         shutil.copytree(tree/folder,output/'toolchain'/folder,dirs_exist_ok=True)
@@ -27,16 +31,27 @@ def build(windows, output, database, toolchain):
     shutil.copy2(ROOT/'third_party/android/SDL2_mixer/include/SDL_mixer.h',headers/'SDL_mixer.h')
     def replace(s):
         s=s.replace('\\','/')
-        for core in ['gensoband','silq']:
-            s=s.replace(source+'/android-sjis/'+core+'/adapter','{kit}/sdk/'+core+'/adapter')
-            s=s.replace(source+'/android-sjis/'+core+'/src','{source}/'+core+'/src')
-        s=s.replace(source+'/src/external-lib/include','{kit}/sdk/third_party/cpp/include') if active not in ['hengband','tangband'] else s
-        s=s.replace(source,'{source}').replace(ROOT.as_posix(),'{kit}/sdk')
+        # 生成ヘッダは `<原作の再構成先>-generated`（リポジトリの外）。キットでは ZIP から `{source}/generated/` へ再構成される。
+        # 短愚蛮怒の生成ヘッダは `-generated/tangband/`。キットの中では変愚と同じ `{source}/generated/` に置く。
+        s=s.replace(source+'-generated/tangband','{source}/generated')
+        s=s.replace(source+'-generated','{source}/generated')
+        for root in sorted(source_roots,key=len,reverse=True):
+            for core in ['gensoband','silq','frox']:
+                s=s.replace(root+'/android-sjis/'+core+'/adapter','{kit}/sdk/'+core+'/adapter')
+                s=s.replace(root+'/android-sjis/'+core+'/src','{source}/'+core+'/src')
+            if active not in ['hengband','tangband']:s=s.replace(root+'/src/external-lib/include','{kit}/sdk/third_party/cpp/include')
+            s=s.replace(root,'{source}')
+        s=s.replace(ROOT.as_posix(),'{kit}/sdk')
         if s.startswith('-I') and ('/.cxx/' in s or '/third_party/android/' in s):return '-I{kit}/sdk/android-include'
         if s.startswith('--sysroot='):return '--sysroot={kit}/toolchain/sysroot'
         return s
-    for active,target in [('hengband','hengcore'),('tangband','tangcore'),('gensoband','gensocore'),('silq','silcore'),('frox','froxcore')]:
-        recipe=json.loads((output/(active+'.json')).read_text(encoding='utf-8'))
+    cmake_targets={'hengband':'hengcore','tangband':'tangcore','gensoband':'gensocore','silq':'silcore','frox':'froxcore','rogue2':'rogue2core','angband':'angbandcore','rogue36':'rogue36core','rogue54':'rogue54core','umoria':'umoriacore'}
+    for target_id,item in catalog['targets'].items():
+        active=item.get('core',item.get('install_id',target_id))
+        if active not in cmake_targets:raise ValueError('Unknown Android import core: '+active)
+        target=cmake_targets[active]
+        recipe_name=item['recipe']
+        recipe=json.loads((output/recipe_name).read_text(encoding='utf-8'))
         result=[];objects=[]
         for row in commands:
             if 'CMakeFiles/'+target+'.dir/' not in row['command'].replace('\\','/'):continue
@@ -49,15 +64,18 @@ def build(windows, output, database, toolchain):
             file=replace(row['file']);obj='{work}/'+str(len(result))+'.o';objects.append(obj)
             lang='c++' if any(x.startswith('-std=c++') or x.startswith('-std=gnu++') for x in cleaned) else 'c'
             result.append(['{compiler}','-I{kit}/sdk/android-include/SDL2','--driver-mode=g++','-resource-dir={kit}/toolchain/lib/clang/21',*cleaned,'-O1','-Wno-incompatible-pointer-types','-x',lang,'-c',file,'-o',obj])
-        if len(result)<10:raise ValueError('The compile database must contain all five cores: '+target)
+        if len(result)<10:raise ValueError('The compile database must contain all the imported cores: '+target)
         link=['--driver-mode=g++','--target=aarch64-linux-android33','--sysroot={kit}/toolchain/sysroot','-resource-dir={kit}/toolchain/lib/clang/21','--ld-path={linker}','-shared','-static-libstdc++','-Wl,-Bsymbolic','-Wl,--no-undefined','-Wl,-z,max-page-size=16384','-llog']
         if active in ['hengband','tangband']:link+=['-L{kit}/libs','-lSDL2','-lSDL2_mixer']
         link+=['-o','{output}']
         result.append(['{compiler}','@{work}/link.rsp'])
+        if active in ('angband','umoria'):
+            # Android は APK の assets が lib・訳・タイル対応表を持つ。実行ファイルの隣へは写さない。
+            recipe.pop('install_files',None);recipe.pop('install_kit_dirs',None)
         recipe.update(platform='android',output='lib'+target+'.so',commands=result,responses={'link.rsp':'\n'.join('"'+s+'"' for s in objects+link)})
         raw=json.dumps(recipe,ensure_ascii=False,separators=(',',':')).encode()
-        (output/(active+'.json')).write_bytes(raw);catalog['targets'][active]['sha256']=hashlib.sha256(raw).hexdigest()
-        print(active,len(result),flush=True)
+        (output/recipe_name).write_bytes(raw);catalog['targets'][target_id]['sha256']=hashlib.sha256(raw).hexdigest()
+        print(target_id,len(result),flush=True)
     catalog['sdk_sha256']={p.relative_to(output).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((output/'sdk').rglob('*')) if p.is_file() and not any(part.startswith('.') for part in p.relative_to(output).parts)}
     (output/'catalog.json').write_text(json.dumps(catalog,indent=2)+'\n',encoding='utf-8',newline='\n')
 

@@ -16,7 +16,7 @@ namespace {
 /*!
  * @name 比率
  * @details 旧 2D UI の割り付けの定数と**同じ数**である（コードは引かない。必守制約 6）。
- * 既存 UI で利用者が使い込んだ配分なので、`Split` を選んだときに勝手に変えない。
+ * 既存 UI で遊ぶ人が使い込んだ配分なので、`Split` を選んだときに勝手に変えない。
  * @{
  */
 constexpr double kRightColRatio = 0.33;
@@ -240,8 +240,12 @@ void place_grips(UiLayout &layout)
  *   申告された桁数に比例させる（そうしないと 20 桁を申告しても上限が先に噛んで
  *   切れたまま——実測では 1600 幅で 13 桁ぶんの上限に既に当たっている）。
  * @details 桁数は**コアの申告**（`set_status_col_cols`）。申告が無ければ 13 桁。
+ * 修-15：上限の既定を画面幅の 12% から 22% へ上げた。12% は 22pt 前後の字を前提にした値で、
+ * 字の大きさを上げる（文字サイズ・地図の字の大きさ）と桁から出した幅が上限に先に当たり、
+ * 「レベル」「経験」の数字が幅で切れて消えた。22% なら字の高さ 28 でも桁の幅が通る。
+ * 地図の枠はその分だけ狭くなるが、`Split` は左ブロックの 1/2、`Hybrid` は画面の 1/2 で別に止めている。
  */
-int status_col_width(int cell_w, int screen_w, double cap_ratio = 0.12)
+int status_col_width(int cell_w, int screen_w, double cap_ratio = 0.22)
 {
     const int cols = (g_status_col_cols > 0) ? g_status_col_cols : kStatusColRefCells;
     const int by_columns = (cell_w * cols) + (cell_w * 2); // 桁 ＋ 左右の余白 1 桁ずつ
@@ -280,10 +284,14 @@ void place_overlaid_subs(UiLayout &layout, bool subs_open, int usable_h, const S
  * @param free 他の板に取られていない矩形。**`scene` ではない**のは、重なる作りで
  * サブパネルを開いたときにその下敷きになるためである。「どうせ上に描くから」で重ねると、
  * 開いた瞬間にミニマップが消えたように見える。
+ * @param guard_center 地図の中心（自機の居る所）を覆わない大きさまで縮めてよいか。
+ * `Split` / `Tall` と、重なる作りでサブパネルを閉じているときに真。**サブパネルを開いた
+ * 重なる作りは偽**——空いている所が窓の左上だけになるので、下の隅では地図の中心に
+ * 被るのが配置の都合で避けられない（縮めても解けず、従来の絵を変えるだけになる）。
  * @details 高さを幅の 2/3 にするのは**フロアが横長（198×66）だから**である。
  * 正方形にすると 2/3 が空く（旧 HD2D も同じ比で取っている）。
  */
-void place_minimap(UiLayout &layout, const RectPx &free, MinimapCorner corner, int size_pct)
+void place_minimap(UiLayout &layout, const RectPx &free, MinimapCorner corner, int size_pct, bool guard_center)
 {
     if (free.empty()) {
         return;
@@ -345,21 +353,95 @@ void place_minimap(UiLayout &layout, const RectPx &free, MinimapCorner corner, i
      * 隅は**この領域の隅**である（窓の隅ではない）。理由は `UiLayout::minimap_area` の注記。
      */
     layout.minimap_area = free;
-    const int left = free.x + pad;
-    const int right = free.x + free.w - side - pad;
-    const int top = free.y + pad;
-    const int bottom = free.y + free.h - height - pad;
-    switch (corner) {
-    case MinimapCorner::BottomRight:
-        layout.minimap = { right, bottom, side, height };
-        break;
-    case MinimapCorner::TopLeft:
-        layout.minimap = { left, top, side, height };
-        break;
-    case MinimapCorner::BottomLeft:
-        layout.minimap = { left, bottom, side, height };
-        break;
-    case MinimapCorner::Centre: {
+    //! 隅に寄せた矩形（大きさ違いで組み直せるよう式にしてある。下の「中心を覆わない」で使う）。
+    const auto anchored = [&](int w, int h) {
+        const int left = free.x + pad;
+        const int right = free.x + free.w - w - pad;
+        const int top = free.y + pad;
+        const int bottom = free.y + free.h - h - pad;
+        switch (corner) {
+        case MinimapCorner::BottomRight:
+            return RectPx{ right, bottom, w, h };
+        case MinimapCorner::TopLeft:
+            return RectPx{ left, top, w, h };
+        case MinimapCorner::BottomLeft:
+            return RectPx{ left, bottom, w, h };
+        case MinimapCorner::Centre: // ここへは来ない（下の `Centre` の枝が先に返す）
+        case MinimapCorner::TopRight:
+        default:
+            return RectPx{ right, top, w, h };
+        }
+    };
+    /*
+     * **`Full` のゲージと重ならない所まで下げる。**ゲージは左上・ミニマップは右上なので
+     * 横長の窓では当たらないが、**縦長の窓では左右の余裕が無く重なる**
+     * （1080×1920 で 46×48 画素ぶん重なった。縦持ちを足したときに検査が捕まえた。2026-08-12）。
+     * どちらも地図に重ねるのが仕様なので、板どうしの重なりの規則では防げない。
+     * 下げきれないほど狭ければ**そのまま**にする（消すより重なるほうがまし）。
+     */
+    const auto avoid_hud = [&](RectPx r) {
+        if (layout.hud.empty()) {
+            return r;
+        }
+        const bool hits = (r.x < (layout.hud.x + layout.hud.w)) && ((r.x + r.w) > layout.hud.x)
+            && (r.y < (layout.hud.y + layout.hud.h)) && ((r.y + r.h) > layout.hud.y);
+        if (!hits) {
+            return r;
+        }
+        const int pushed = layout.hud.y + layout.hud.h + pad;
+        if ((pushed + r.h + pad) <= (free.y + free.h)) {
+            r.y = pushed;
+        }
+        return r;
+    };
+    if (corner != MinimapCorner::Centre) {
+        layout.minimap = avoid_hud(anchored(side, height));
+        /*
+         * **地図の中心（自機の居る所）を覆わない。**（2026-09-30。Linux の `--ui-check` が捕まえた）
+         *
+         * 下限（`cell_h * 16`）は**行の高さ**で決まるので、行が高いフォントでは狭い地図の
+         * ほとんどを覆う。Linux の配布版が使うフォント（Noto Sans Mono CJK。16px で 8×24）は
+         * Windows の MS ゴシック（8×16）より行が 5 割高く、1280×720 の `Split`（地図 738×408）では
+         * 下限が 384px＝地図の高さの 94% になり、ミニマップが自機の居る中心に被った
+         * （Android の実機で 472px→400px にしか縮まなかったのと同じ根）。
+         *
+         * 直すのは**被ったときだけ**——被らない配置は 1 画素も動かさない（Windows の絵を変えない）。
+         * 被ったら、中心の周り（自機の絵の分に `cell_h * 2` の余白）に入らない最大の大きさまで縮める。
+         * 縮める先の下限は「読める最小」の `cell_h * 6`（`size_pct` を指定したときの下限と同じ）。
+         * そこまで縮めても避けられない狭い窓では、従来の配置のまま残す。
+         * **既定の大きさ以下だけ**（`size_pct` を 100 より大きくしたのは遊ぶ人の指定なので触らない）。
+         */
+        const int mid_x = layout.scene.x + (layout.scene.w / 2);
+        const int mid_y = layout.scene.y + (layout.scene.h / 2);
+        if (guard_center && (size_pct <= 100) && !layout.scene.empty() && layout.minimap.contains(mid_x, mid_y)) {
+            const int clear = layout.cell_h * 2;
+            const auto near_centre = [&](const RectPx &r) {
+                return (r.x < (mid_x + clear)) && ((r.x + r.w) > (mid_x - clear)) && (r.y < (mid_y + clear))
+                    && ((r.y + r.h) > (mid_y - clear));
+            };
+            const auto sized = [&](int s) { return avoid_hud(anchored(s, (s * 2) / 3)); };
+            int lo = layout.cell_h * 6;
+            int hi = side - 1;
+            if ((lo <= hi) && !near_centre(sized(lo))) {
+                while (lo < hi) {
+                    const int mid = (lo + hi + 1) / 2;
+                    if (near_centre(sized(mid))) {
+                        hi = mid - 1;
+                    } else {
+                        lo = mid;
+                    }
+                }
+                layout.minimap = sized(lo);
+            }
+        }
+        return;
+    }
+    /*
+     * **画面中央**。狙って置くものなので、ゲージとの重なり回避（上の `avoid_hud`）も
+     * 中心を覆わない縮め（上の `guard_center`）も掛けない。掛けると「中央」を選んだのに
+     * 中央から動く（被るのが仕様。決めたこと）。
+     */
+    {
         /*
          * **メインマップのど真ん中**（2026-08-19 に決めた:「中央表示は Diablo や
          * シレンシリーズを想定している」→「メインマップのど真ん中だね」→
@@ -397,46 +479,21 @@ void place_minimap(UiLayout &layout, const RectPx &free, MinimapCorner corner, i
         }
         const int fit_h = (fit * 2) / 3;
         layout.minimap = { mid_x - (fit / 2), mid_y - (fit_h / 2), fit, fit_h };
-        break;
-    }
-    case MinimapCorner::TopRight:
-    default:
-        layout.minimap = { right, top, side, height };
-        break;
-    }
-    /*
-     * **画面中央は狙って置いたもの**なので、ゲージとの重なり回避（下の押し下げ）を掛けない。
-     * 掛けると「中央」を選んだのに中央から動く。
-     */
-    if (corner == MinimapCorner::Centre) {
-        return;
-    }
-    /*
-     * **`Full` のゲージと重ならない所まで下げる。**ゲージは左上・ミニマップは右上なので
-     * 横長の窓では当たらないが、**縦長の窓では左右の余裕が無く重なる**
-     * （1080×1920 で 46×48 画素ぶん重なった。縦持ちを足したときに検査が捕まえた。2026-08-12）。
-     * どちらも地図に重ねるのが仕様なので、板どうしの重なりの規則では防げない。
-     * 下げきれないほど狭ければ**そのまま**にする（消すより重なるほうがまし）。
-     */
-    if (layout.hud.empty()) {
-        return;
-    }
-    const bool hits = (layout.minimap.x < (layout.hud.x + layout.hud.w))
-        && ((layout.minimap.x + layout.minimap.w) > layout.hud.x)
-        && (layout.minimap.y < (layout.hud.y + layout.hud.h))
-        && ((layout.minimap.y + layout.minimap.h) > layout.hud.y);
-    if (!hits) {
-        return;
-    }
-    const int pushed = layout.hud.y + layout.hud.h + pad;
-    if ((pushed + height + pad) <= (free.y + free.h)) {
-        layout.minimap.y = pushed;
     }
 }
 
 /*!
  * @brief プロンプトの 1 行。空いている所の**下端**へ。
  * @details ミニマップは右上へ移したので、幅を止める必要はもう無い（2026-08-08）。
+ *
+ * @note **下に丸ごと 1 行ぶんの余白を残す**（AH-37の
+ * `frame.prompt.footer_utf8`。`draw_prompt_bar()` が本文の 1 行下にこの案内を
+ * 出す）。以前は本文と案内で `layout.cell_h * 2` ちょうどしか空けておらず、
+ * 案内の行が `free`（`scene`）の下端ぎりぎりに接していた——実際の字の高さは
+ * `cell_h` より心持ち高いので、案内の下半分が `free` の外（下段のサブパネルの
+ * 背景）にはみ出し、後から描かれるその背景に隠れて上半分しか見えなくなって
+ * いた。本文・案内・余白で 3 行ぶん空ける（箱自体は今までどおり 1 行のまま
+ * ——中身が無いときに空の箱が大きく見えないように、余白は箱の外に残す）。
  */
 void place_prompt_bar(UiLayout &layout, const RectPx &free)
 {
@@ -445,7 +502,7 @@ void place_prompt_bar(UiLayout &layout, const RectPx &free)
     }
     const int pad = layout.cell_w;
     const int w = free.w - (pad * 2);
-    const int y = free.y + free.h - (layout.cell_h * 2);
+    const int y = free.y + free.h - (layout.cell_h * 3);
     if ((w <= (layout.cell_w * 8)) || (y <= free.y)) {
         return; // 置けないほど狭い
     }
@@ -495,7 +552,7 @@ void UiLayout::offset_rects(int dx, int dy)
         r.y += dy;
     };
     RectPx *const singles[] = {
-        &this->content, &this->scene, &this->status_col, &this->hud, &this->message_bar, &this->prompt_bar,
+        &this->content, &this->scene, &this->status_col, &this->hud, &this->orb, &this->message_bar, &this->prompt_bar,
         &this->bottom_bar, &this->minimap, &this->minimap_area, &this->term_full, &this->term_overlay,
     };
     for (RectPx *const r : singles) {
@@ -595,7 +652,7 @@ static UiLayout build_layout(LayoutMode mode, int screen_w, int screen_h, int ce
          * **メッセージの帯は切らない。**Sub1 が受け持っている（`kind < 0` の既定の中身）ので、
          * 別に帯を切ると同じものが 2 か所に出る。矩形を空にしておけば描く側が Sub1 だけを使う。
          */
-        place_minimap(layout, layout.scene, minimap_corner, minimap_size_pct);
+        place_minimap(layout, layout.scene, minimap_corner, minimap_size_pct, true);
         place_prompt_bar(layout, layout.scene);
         place_grips(layout);
         place_term_overlay(layout);
@@ -608,7 +665,7 @@ static UiLayout build_layout(LayoutMode mode, int screen_w, int screen_h, int ce
         /*
          * 上下の比も下段 3 枚の配分も **`Split` と同じ数**である（参考画像の実測でも
          * 地図 674 : 下段 335 ＝ 2:1、下段は 25:24:50 だった。偶然ではなく、
-         * 利用者が横で使い込んだ配分をそのまま縦へ持ってきているということ）。
+         * 遊ぶ人が横で使い込んだ配分をそのまま縦へ持ってきているということ）。
          */
         const int bottom_h = static_cast<int>(std::floor(static_cast<double>(usable_h) * kBottomRowRatio));
         const int main_h = usable_h - bottom_h;
@@ -637,7 +694,7 @@ static UiLayout build_layout(LayoutMode mode, int screen_w, int screen_h, int ce
         place_bottom_subs(layout, 0, w, main_h, bottom_h, split);
 
         //! メッセージの帯は切らない（`Split` と同じ理由——Sub1 が受け持っている）。
-        place_minimap(layout, layout.scene, minimap_corner, minimap_size_pct);
+        place_minimap(layout, layout.scene, minimap_corner, minimap_size_pct, true);
         place_prompt_bar(layout, layout.scene);
         place_grips(layout);
         place_term_overlay(layout);
@@ -662,7 +719,13 @@ static UiLayout build_layout(LayoutMode mode, int screen_w, int screen_h, int ce
      */
     const int msg_h = subs_open ? 0 : std::min(ch * 3, std::max(ch, content_bottom / 3));
     if (msg_h > 0) {
-        layout.message_bar = { layout.cell_w, content_bottom - msg_h, right_edge - (layout.cell_w * 2), msg_h };
+        /*
+         * 幅は**左から 2/5 ほど**（決めたこと 2026-10-09「メッセージ枠を左側から2/5くらいにして」）。
+         * 玉は地図の下縁の中央に置くので、帯が玉の下へ潜らないように左へ寄せる。左の一時的な効果の
+         * アイコンは、この帯（と名前の行）の上へ逃がす（`layout_status_icons`）。
+         */
+        const int msg_w = std::max(layout.cell_w * 20, ((right_edge * 2) / 5) - layout.cell_w);
+        layout.message_bar = { layout.cell_w, content_bottom - msg_h, std::min(msg_w, right_edge - (layout.cell_w * 2)), msg_h };
     }
 
     int free_x = 0;
@@ -687,7 +750,8 @@ static UiLayout build_layout(LayoutMode mode, int screen_w, int screen_h, int ce
         ? layout.status_col.x
         : right_edge;
     const RectPx free{ free_x, 0, free_right - free_x, content_bottom - msg_h };
-    place_minimap(layout, free, minimap_corner, minimap_size_pct);
+    //! サブパネルを開いていると空いている所が左上だけになる（`place_minimap` の `guard_center` の注記）。
+    place_minimap(layout, free, minimap_corner, minimap_size_pct, !subs_open);
     place_prompt_bar(layout, free);
     /*
      * **重なる作りでは `scene` が窓そのもの**なので、`place_term_overlay()` は
@@ -713,8 +777,8 @@ UiLayout UiLayout::compute(LayoutMode mode, int screen_w, int screen_h, int cell
      * 棒は「減ったことに一目で気づく」ためのものなので別物である。
      */
     {
-        const int gauge_w = std::min(layout.scene.w - (layout.cell_w * 2), layout.cell_w * 30);
-        const int gauge_h = layout.cell_h * 3;
+        const int gauge_w = std::min(layout.scene.w - (layout.cell_w * 2), layout.cell_w * 60); //!< 名前の行の最大幅（長い名前と LV・AU が入る）
+        const int gauge_h = layout.cell_h; //!< 名前の 1 行だけ（棒は玉に置き換わった。2026-10-08）
         /*
          * **下端は最下段の帯より上**。`Full` / `Hybrid` では地図が窓いっぱいなので、
          * 地図の下端に置くと帯の下へ潜る（`--ui-check` が捕まえた）。
@@ -731,6 +795,75 @@ UiLayout UiLayout::compute(LayoutMode mode, int screen_w, int screen_h, int cell
             bottom = std::min(bottom, layout.prompt_bar.y);
         }
         /*
+         * ---- HP/MP の玉（`orb`。決めたこと 2026-10-08）----
+         * 地図の左右の中央。下端は地図の下端（最下段の帯があればその上。**重なる作りでサブパネルを開いているとき**は
+         * 下段のサブパネルの上）。
+         * 大きさは素材の設計の単位（760x250）の縦横比のまま、地図の高さの約 1/4。
+         */
+        {
+            /*
+             * **メッセージの帯とプロンプトの帯は避けない**（決めたこと 2026-10-09「メインtermの下縁ギリギリに置いて」。
+             * 帯が出ている間は、帯を玉の上に重ねて描く——`draw_game_hud` は玉の後に帯を描く）。
+             * 避けるのは最下段の帯と、重なる作りで開いた下段のサブパネルだけ。
+             */
+            int orb_bottom = layout.scene.y + layout.scene.h;
+            if (!layout.bottom_bar.empty()) {
+                orb_bottom = std::min(orb_bottom, layout.bottom_bar.y);
+            }
+            if (layout.sub_overlaid) {
+                for (int i = kSubBottomSlot; i < (kSubBottomSlot + kSubBottomMax); ++i) {
+                    const RectPx &sub = layout.sub[static_cast<std::size_t>(i)];
+                    if (!sub.empty()) {
+                        orb_bottom = std::min(orb_bottom, sub.y);
+                    }
+                }
+            }
+            //! 余白は付けない（絵の見えている下端が地図の枠に接する）。
+            int orb_h = std::clamp(static_cast<int>(std::lround(static_cast<double>(layout.scene.h) * kOrbHeightRatio)),
+                kOrbHeightMin, kOrbHeightMax);
+            int orb_w = (orb_h * kOrbDesignW) / kOrbDesignH;
+            /*
+             * 幅の上限。**状態列が地図に重なっている作り（`Hybrid`）では、その幅ぶんを両側から削る**
+             * （中央に置いたまま、状態列に食い込まないように。縦長の窓で `--ui-check` が捕まえた）。
+             * `Split` / `Tall` は状態列が地図の外なので削らない。
+             */
+            int column_inset = 0;
+            if (!layout.status_col.empty()) {
+                if (layout.status_col.x <= layout.scene.x) {
+                    column_inset = std::max(0, (layout.status_col.x + layout.status_col.w) - layout.scene.x);
+                } else {
+                    column_inset = std::max(0, (layout.scene.x + layout.scene.w) - layout.status_col.x);
+                }
+            }
+            const int max_w = layout.scene.w - (2 * (column_inset + layout.cell_w));
+            if (orb_w > max_w) {
+                orb_w = max_w;
+                orb_h = (orb_w * kOrbDesignH) / kOrbDesignW;
+            }
+            const int room_h = orb_bottom - layout.scene.y;
+            if (orb_h > room_h) {
+                orb_h = room_h;
+                orb_w = (orb_h * kOrbDesignW) / kOrbDesignH;
+            }
+            //! 縮めすぎて読めない（地図が極端に低い・狭い）ときは置かない。黙って重ねるより出さない。
+            if ((orb_h >= (kOrbHeightMin / 2)) && (orb_w > 0)) {
+                //! 見えている下端（`kOrbArtBottomY`）を `orb_bottom` に合わせ、下の薄い影ははみ出させて描かない。
+                const int visible_h = orb_visible_rect(RectPx{ 0, 0, orb_w, orb_h }).h;
+                layout.orb = { layout.scene.x + ((layout.scene.w - orb_w) / 2), orb_bottom - visible_h, orb_w, orb_h };
+            }
+        }
+        /*
+         * メッセージの帯は**玉の矩形（翼を含む）の左で止める**（決めたこと 2026-10-09
+         * 「メッセージ123の枠はオーブの位置に被らない位置までにして」）。幅の基本は左から 2/5 ほど。
+         */
+        if (!layout.orb.empty() && !layout.message_bar.empty()
+            && (layout.message_bar.y < (layout.orb.y + layout.orb.h)) && ((layout.message_bar.y + layout.message_bar.h) > layout.orb.y)) {
+            const int msg_right = layout.orb.x - layout.cell_w;
+            if ((layout.message_bar.x + layout.message_bar.w) > msg_right) {
+                layout.message_bar.w = std::max(layout.cell_w, msg_right - layout.message_bar.x);
+            }
+        }
+        /*
          * 左端は**状態列の右**から（`Hybrid` は地図が窓いっぱいで、左に状態列が
          * 重なっている）。状態列にも数字は出るが、棒はその外に出す。
          */
@@ -742,10 +875,21 @@ UiLayout UiLayout::compute(LayoutMode mode, int screen_w, int screen_h, int cell
         if (!layout.status_col.empty() && (layout.status_col.x <= layout.scene.x)) {
             left = std::max(left, layout.status_col.x + layout.status_col.w + layout.cell_w);
         }
-        const int width = std::min(gauge_w, (layout.scene.x + layout.scene.w) - left - layout.cell_w);
+        /*
+         * 右端は地図の右端の手前。**玉があるときは玉の左端の手前で切る**（名前の行が
+         * 玉の素材の矩形に食い込まないように。玉の左の翼は矩形の左 1/10 あたりにある）。
+         * 手前に 8 マスも取れない狭い窓では名前を出さない（状態列・キャラクターのサブパネルに出る）。
+         */
+        int right_limit = (layout.scene.x + layout.scene.w) - layout.cell_w;
+        if (!layout.orb.empty()) {
+            right_limit = std::min(right_limit, layout.orb.x - layout.cell_w);
+        }
+        const int width = std::min(gauge_w, right_limit - left);
         const int y = bottom - gauge_h - (layout.cell_h / 2);
-        if ((width > (layout.cell_w * 10)) && (y > (layout.scene.y + layout.cell_h))) {
+        if ((width > (layout.cell_w * 8)) && (y > (layout.scene.y + layout.cell_h))) {
             layout.hud = { left, y, width, gauge_h };
+        } else {
+            layout.hud = RectPx{}; //!< `Full` の組み立てが置いた左上の 3 行の枠（棒の名残）も残さない
         }
     }
     /*
@@ -776,6 +920,23 @@ void set_term_mirror_rows(int rows)
 int term_mirror_rows()
 {
     return g_term_mirror_rows;
+}
+
+namespace {
+
+//! いま覚えている玉の配置（既定は変愚。`set_orb_profile`）。
+OrbProfile g_orb_profile;
+
+} // namespace
+
+const OrbProfile &orb_profile()
+{
+    return g_orb_profile;
+}
+
+void set_orb_profile(const OrbProfile &profile)
+{
+    g_orb_profile = profile;
 }
 
 void set_status_col_cols(int cols)

@@ -391,11 +391,10 @@ void fc_text_input_set(int active);
  * @brief **この入力欄は ASCII だけ**（追補 A1。フック #28）。
  * @param on 1 = ASCII だけの欄に入った／0 = 出た
  *
- * @details **冒険者の名前がこれである。** 名前はセーブファイルの綴りになるが、
- * `process_player_name()`（`files.c`）は **0x80 以上のバイトを 1 つ残らず捨てる**
- * ので、日本語だけの名前は綴りが空になり `PLAYER` へ落ちる
- * ——**別の冒険者どうしが同じセーブへ書き合う**。Sil-Q が同じ穴を踏み、
- * 「名前は英数字だけ」で決着している。
+ * @details **2026-10-14（遊びのテスト 1 周目 修-57・判-6）から、冒険者の名前はこの欄ではなくなった**
+ * （名前に日本語を使える。`py_birth.c` の呼び出しはレシピから外した）。名前がセーブの綴りになる件は、
+ * `process_player_name()` 側のフック #125（`fc_save_base_name()`）で塞いだ。
+ * 関数は残してある（旗を立てれば画面側の「半角だけ」の門と IME の抑止が働く）が、いま立てる呼び出しは無い。
  *
  * 門は**画面側**に置く——`on` の間は `fc_text_input_active()` が 0 を返すので、
  * IME の窓が出ず、非 ASCII のバイトがそもそも送られてこない。
@@ -403,11 +402,27 @@ void fc_text_input_set(int active);
 void fc_text_input_ascii(int on);
 
 /*!
+ * @brief 名前に日本語（0x80 以上のバイト）が入っていれば、セーブの名前に使う **ASCII の別名**を作る（フック #125・#126。修-57）。
+ * @param full_name 冒険者の名前（CP932）
+ * @param out 別名の置き場
+ * @param cap `out` の大きさ（バイト）
+ * @return 1 = 別名を作った／0 = 半角だけの名前（原作の道をそのまま通す）
+ *
+ * @details 原作の `process_player_name()`（`files.c`）は 0x80 以上のバイトを 1 つ残らず捨てるので、日本語だけの名前は
+ * 綴りが空になって `PLAYER` へ落ち、別の冒険者どうしが同じセーブへ書き合う。別名は `P` ＋ 7 字（英数字）で、
+ * 名前の UTF-8 のハッシュから作る（Sil-Q の `sq_save_base_name()` と同じ式）。実装は `fc_main.cpp`（C++）。
+ */
+int fc_save_base_name(const char *full_name, char *out, int cap);
+
+/*!
  * @brief 旗が立っているか（`fc_frame.cpp` と `fc_change_digest()` が読む）。
  * @return 1 = 自由入力の待ちで、**日本語を受け付ける**／0 = それ以外
  * @note `fc_text_input_ascii(1)` の間は 0 を返す（上の註記）。
  */
 int fc_text_input_active(void);
+/* Editing state is independent of language and IME availability. */
+int fc_text_edit_active(void);
+int fc_text_ascii_only(void);
 
 /*! @brief CP932 の 2 バイト文字の先行バイトか。`h-config.h` の `iskanji` と同じ範囲。 */
 int fc_is_sjis_lead(int c);

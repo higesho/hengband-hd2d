@@ -1,8 +1,13 @@
-﻿/*!
+/*!
  * @file feature_menu.cpp
  * @brief `feature_menu.h` の実装。
  */
 #include "ui/feature_menu.h"
+#include "app/ui_probe.h"
+#include "ui/menu_scale.h"
+#include "ui/menu_frame.h"
+#include "ui/modern_skin.h"
+#include "ui/text_wrap.h"
 
 #include "i18n/lang.h"
 #include "render/text_overlay.h"
@@ -33,7 +38,7 @@ std::string on_off(bool on)
 }
 
 /*!
- * @brief 音量の段の値の欄（2026-08-21 に決めた「0〜10」）。
+ * @brief 音量の段の値の欄（決めたこと 2026-08-21「0〜10」）。
  * @details 数字だけだと**上限が読めない**（7 が大きいのか小さいのか分からない）ので
  * 「7 / 10」と出す。**0 は無音**、入切が切のときは「効かない」ことをその場で言う
  * ——行を出し入れするとカーソルが飛ぶので、効かないことは値の欄で言う流儀
@@ -114,7 +119,7 @@ bool core_supports_audio()
 
 namespace {
 
-//! ミニマップを置く所の名前（2026-08-19 に決めた の 5 つ。並びは `MinimapCorner` と同じ）。
+//! ミニマップを置く所の名前（決めたこと 2026-08-19 の 5 つ。並びは `MinimapCorner` と同じ）。
 const char *minimap_corner_label(MinimapCorner corner)
 {
     switch (corner) {
@@ -179,6 +184,9 @@ FeatureMenu::Page FeatureMenu::page_of(Item item)
     //! 入口に直接並ぶ値の項目（2026-08-19）。**節ではない。**
     case Item::Language:
         return Page::Root;
+    case Item::ModernMode:
+    case Item::ModernTheme:
+    case Item::ModernFontSize:
     case Item::WindowMode:
     case Item::Layout:
     case Item::MainPanelItem:
@@ -199,6 +207,7 @@ FeatureMenu::Page FeatureMenu::page_of(Item item)
     case Item::SurfaceWear:
     case Item::LeafDetail:
     case Item::EntityStyleItem:
+    case Item::EntitySlabFacing:
     case Item::EntityGlyphSize:
     case Item::GlyphFallback:
     case Item::Backdrops:
@@ -286,6 +295,7 @@ FeatureMenu::Page FeatureMenu::page_of(Item item)
     case Item::RealtimeSpeed:
     case Item::DamageFlash:
     case Item::DamageShake:
+    case Item::FxScreenShake:
     case Item::RealtimePrompt:
     case Item::RealtimeSelfSpan:
         return Page::Realtime;
@@ -324,7 +334,7 @@ std::vector<FeatureMenu::Page> FeatureMenu::root_pages()
         Page::SubPanels, Page::Binds };
 #endif
     /*
-     * 音（2026-08-21 に決めた）は**コアが申告したときだけ**（`realtime` と同じ扱い）。
+     * 音は**コアが申告したときだけ**（`realtime` と同じ扱い）。
      * **並べる場所はサブパネルの後ろ**——「どこに置くか・どう描くか・どこから見るか」を
      * 見終えたところで「どう聞こえるか」、その次が操作、という順にする。
      */
@@ -340,11 +350,12 @@ std::vector<FeatureMenu::Page> FeatureMenu::root_pages()
         pages.push_back(Page::Realtime);
     }
     /*
-     * **VR の節はこの実行体に VR があるなら常に並べる**（2026-08-14 に決めた
+     * **VR の節はこの実行体に VR があるなら常に並べる**（決めたこと 2026-08-14
      * 「ゲーム内から VR モードを起動できないか？」）。始める口がここにある以上、
      * 平らな画面のときこそ入口が要る。電話の Android には VR が無いので並べないが、
      * **Quest（`HENGBAND_QUEST`）は Android でも並べる**——拡大率・視点高さ・字の
      * 大きさ・板の角度は実機で詰めるものなので、機の中から触れなければ話にならない
+     *
      */
 #if !defined(__ANDROID__) || defined(HENGBAND_QUEST)
     pages.push_back(Page::Vr);
@@ -354,6 +365,7 @@ std::vector<FeatureMenu::Page> FeatureMenu::root_pages()
 
 bool FeatureMenu::item_is_absent(Item item)
 {
+    if(item==Item::ModernMode)return true; // The unified design selector owns this choice.
 #if defined(__ANDROID__)
     /*
      * **Android に窓モードは無い**（`hd2d_app.cpp` の `create_window`）。押しても
@@ -458,6 +470,9 @@ const char *FeatureMenu::item_label(Item item)
         return i18n::tr("hd2d.ui.feature-menu.map-glyph-size");
     case Item::StatusColSideItem:
         return i18n::tr("hd2d.ui.feature-menu.status-col-side");
+    case Item::ModernMode: return i18n::current()=="ja" ? "ウインドウ操作" : "Window controls";
+    case Item::ModernFontSize: return i18n::current()=="ja"?"文字サイズ（メニュー・パネル）":"Text size (menus / panels)";
+    case Item::ModernTheme: return i18n::current()=="ja" ? "ウィンドウのデザイン" : "Window design";
     case Item::Layout:
         return i18n::tr("hd2d.app.hd2d-app.layout");
     case Item::Subs:
@@ -470,6 +485,8 @@ const char *FeatureMenu::item_label(Item item)
         return i18n::tr("hd2d.ui.feature-menu.movement-smoothing");
     case Item::EntityStyleItem:
         return i18n::tr("hd2d.ui.feature-menu.entity-style");
+    case Item::EntitySlabFacing:
+        return i18n::tr("hd2d.ui.feature-menu.voxel-slab-facing");
     case Item::EntityGlyphSize:
         return i18n::tr("hd2d.ui.feature-menu.entity-glyph-size");
     case Item::GlyphFallback:
@@ -514,6 +531,8 @@ const char *FeatureMenu::item_label(Item item)
         return i18n::tr("hd2d.ui.feature-menu.damage-flash");
     case Item::DamageShake:
         return i18n::tr("hd2d.ui.feature-menu.damage-shake");
+    case Item::FxScreenShake:
+        return i18n::tr("hd2d.ui.feature-menu.screen-shake-from-attack-effects");
     case Item::RealtimePrompt:
         return i18n::tr("hd2d.ui.feature-menu.behind-the-pop-up");
     case Item::RealtimeSelfSpan:
@@ -607,7 +626,7 @@ const char *FeatureMenu::item_label(Item item)
         if (vpad_button_index(item) >= 0) {
             return vpad_control_name(static_cast<VpadControl>(vpad_button_index(item)));
         }
-        //! VR の部位は `xr::panel_slot_label()` が定義の置き場（綴りを 2 か所に置かない）。
+        //! VR の部位は `xr::panel_slot_label()` が正本（綴りを 2 か所に置かない）。
         if (vr_panel_index(item) >= 0) {
             return xr::panel_slot_label(static_cast<xr::PanelSlot>(vr_panel_index(item)));
         }
@@ -667,7 +686,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
     /*
      * **システムが押さえているものを最初に出す。**割り当てられないことを画面で言っておかないと、
      * 「決定を別のキーにしたいのにカーソルが止まらない」を不具合だと思われる。
-     * 綴りは `ui/key_binds.h` の表と同じ（あちらが判定の定義）。
+     * 綴りは `ui/key_binds.h` の表と同じ（あちらが判定の正本）。
      */
     heading(i18n::tr("hd2d.ui.feature-menu.system-cannot-be-changed"));
     fixed(i18n::tr("hd2d.ui.feature-menu.choose-advance"), i18n::tr("hd2d.ui.feature-menu.arrow-keys-numpad"), i18n::tr("hd2d.ui.feature-menu.d-pad-left-stick"));
@@ -676,7 +695,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
     /*
      * **軸はこの表では割り当てられない。**表の値は「押したボタン」（`PadInput`）で、
      * スティックの傾きはそこに無い。並べるのは、割り当てられなくても
-     * 「何がその操作をするのか」は知りたいからである（2026-08-11 に決めた の
+     * 「何がその操作をするのか」は知りたいからである（決めたこと 2026-08-11 の
      * 「見下ろし角の調整／キーボード 割り当てなし／コントローラー 右スティック上下」）。
      */
     fixed(i18n::tr("hd2d.ui.feature-menu.adjust-the-camera-pitch"), kUnassigned, i18n::tr("hd2d.ui.feature-menu.right-stick-up-and-down"));
@@ -693,7 +712,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
     /*
      * コアのコマンド。**分類（`group_utf8`）ごとに見出しを挟む。**60 を超える行を
      * 素で並べるとスクロールしても現在地が分からない。順序はコアが送ってきたままで、
-     * 並べ替えはしない（コアの `menu_info` の並びが利用者の記憶と一致している）。
+     * 並べ替えはしない（コアの `menu_info` の並びが遊ぶ人の記憶と一致している）。
      */
     std::string last_group;
     for (const auto &command : this->pad_commands_) {
@@ -714,7 +733,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
     }
 
     /*
-     * **割り当ての無いボタンはマクロのトリガーになる**（2026-08-14 に決めた）。
+     * **割り当ての無いボタンはマクロのトリガーになる**。
      * ここに出さないと、この道は画面のどこにも現れず**誰にも見つけられない**。
      * 空いているボタンとその綴りを並べる——`@` の「トリガーキー:」で押したときに
      * 出るのと同じ綴りなので、見比べれば迷わない。
@@ -773,6 +792,7 @@ bool Hd2dSettings::*FeatureMenu::toggle_setting(Item item)
     case Item::RealtimeEnabled: return &Hd2dSettings::realtime_enabled;
     case Item::DamageFlash: return &Hd2dSettings::damage_flash;
     case Item::DamageShake: return &Hd2dSettings::damage_shake;
+    case Item::FxScreenShake: return &Hd2dSettings::fx_screen_shake;
     default: return nullptr;
     }
 }
@@ -794,13 +814,37 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
             return i18n::tr("hd2d.ui.feature-menu.not-shown-with-this-split");
         }
         const int flag = settings.sub_panel_kind[kind_index];
+        /*
+         * コアから種類一覧がまだ来ていない場合でも「種類 6」のような内部番号だけを
+         * 遊ぶ人へ見せない。変愚系の既知番号は実際の内容名で出す。
+         * -1 は UI 側の固定内容なので、場所ごとの実際の中身を表示する。
+         */
+        if (flag < 0) {
+            switch (kind_index) {
+            case 0: return i18n::tr("hd2d.ui.feature-menu.panel-content-messages");
+            case 1: return i18n::tr("hd2d.ui.feature-menu.panel-content-equipment");
+            case 2: return i18n::tr("hd2d.ui.feature-menu.panel-content-enemies");
+            case 3: return i18n::tr("hd2d.ui.feature-menu.panel-content-character");
+            case 4: return i18n::tr("hd2d.ui.feature-menu.panel-content-inventory");
+            default: return i18n::tr("hd2d.ui.feature-menu.ui-default");
+            }
+        }
         for (const auto &choice : this->kind_choices_) {
             if (choice.flag == flag) {
                 return choice.label_utf8;
             }
         }
-        //! コアから一覧が来ていない（まだ握手直後）／知らない番号。**番号だけでも出す。**
-        return (flag < 0) ? std::string(i18n::tr("hd2d.ui.feature-menu.ui-default")) : (i18n::tr("hd2d.ui.feature-menu.kind") + std::to_string(flag));
+        switch (flag) {
+        case 0: return i18n::tr("hd2d.ui.feature-menu.panel-content-inventory");
+        case 1: return i18n::tr("hd2d.ui.feature-menu.panel-content-equipment");
+        case 2: return i18n::tr("hd2d.ui.feature-menu.panel-content-magic");
+        case 3: return i18n::tr("hd2d.ui.feature-menu.panel-content-status");
+        case 4: return i18n::tr("hd2d.ui.feature-menu.panel-content-enemies");
+        case 6: return i18n::tr("hd2d.ui.feature-menu.panel-content-messages");
+        case 7: return i18n::tr("hd2d.ui.feature-menu.panel-content-surroundings");
+        case 8: return i18n::tr("hd2d.ui.feature-menu.panel-content-monster-memory");
+        default: return i18n::tr("hd2d.ui.feature-menu.unknown-panel-content");
+        }
     }
     /*
      * 仕切り。**「残り」も出す**——1/20 単位の数字だけでは、動かした結果どこが
@@ -845,9 +889,17 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         return settings.fps_wall_upper ? i18n::tr("hd2d.ui.feature-menu.on-dungeon-walls-are-two-tiers") : i18n::tr("hd2d.ui.feature-menu.off-the-usual-single-tier");
     case Item::FpsCeiling:
         return settings.fps_ceiling ? i18n::tr("hd2d.ui.feature-menu.on-the-dungeon-has-a-ceiling") : i18n::tr("hd2d.ui.feature-menu.off-no-ceiling");
+    case Item::ModernMode: return settings.modern_ui ? (i18n::current()=="ja"?"新UI（試作）":"Modern (preview)") : (i18n::current()=="ja"?"従来UI":"Original");
+    case Item::ModernFontSize: {
+        constexpr const char *percent[]={"100","112.5","125","150","175"};const int level=std::clamp(settings.modern_font_level,0,4);
+        return std::to_string(level+1)+" / 5 ("+std::string(percent[level])+"%)";
+    }
+    case Item::ModernTheme:
+        if(!settings.modern_ui)return i18n::current()=="ja"?"オリジナル":"Original";
+        return settings.modern_theme==1?"B":(settings.modern_theme==2?"C":"A");
     case Item::Layout: {
         /*
-         * **いま向いている側の作りを出す**（縦横で別に持つ。2026-08-12 に決めた）。
+         * **いま向いている側の作りを出す**（縦横で別に持つ。決めたこと 2026-08-12）。
          * どちらを触っているかを添えないと、回した先で「さっき選んだ物と違う」に見える。
          */
         const char *name = i18n::tr("hd2d.ui.feature-menu.hybrid");
@@ -882,6 +934,7 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
             ? i18n::tr("hd2d.ui.feature-menu.2d-ascii-map")
             : i18n::tr("hd2d.ui.feature-menu.3d-voxels");
     case Item::AsciiPanelSize: {
+        if(settings.modern_ui)return i18n::current()=="ja"?"共通の文字サイズに連動":"Uses shared text size";
         if (settings.main_panel != Hd2dSettings::MainPanel::Ascii) {
             return i18n::tr("hd2d.ui.feature-menu.2d-ascii-only");
         }
@@ -925,12 +978,19 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         return (settings.move_smoothing == MoveSmoothing::All) ? i18n::tr("hd2d.ui.feature-menu.everything") : i18n::tr("hd2d.ui.feature-menu.entities-only");
     case Item::EntityStyleItem:
         /*
-         * **入／切で出す**（2026-08-19 に決めた「アスキーキャラクター ON/OFF」）。
+         * **入／切で出す**（決めたこと 2026-08-19「アスキーキャラクター ON/OFF」）。
          * 前は「タイルの板／アスキー文字」と両方の名前を出していたが、行の名前が
          * `実体の表現` だったので、どちらが既定でどちらが切なのかが読めなかった。
          * 名前を `アスキーキャラクター` にしたぶん、値は入切だけでよい。
          */
         return on_off(settings.entity_style == Hd2dSettings::EntityStyle::Ascii);
+    case Item::EntitySlabFacing:
+        if (settings.entity_style != Hd2dSettings::EntityStyle::Slab) {
+            return i18n::tr("hd2d.ui.feature-menu.slab-only");
+        }
+        return settings.entity_slab_screen_aligned
+            ? i18n::tr("hd2d.ui.feature-menu.screen-aligned")
+            : i18n::tr("hd2d.ui.feature-menu.world-oriented");
     case Item::EntityGlyphSize:
         /*
          * **板のときは効かないことを言う。**回しても絵が変わらない項目を黙って出すと、
@@ -990,7 +1050,7 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         return buf;
     case Item::MinimapEnter:
         /*
-         * **小節への入口は「詳細を開く」で揃える**（2026-08-19 に決めた）。
+         * **小節への入口は「詳細を開く」で揃える**。
          * ここは `右上` のように**いまの状態**を出していたが、値の欄が普通の設定と
          * 同じ顔をするので、**下に画面があることが読めなかった**。状態は入った先で見える。
          */
@@ -1010,13 +1070,13 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
     case Item::MinimapRelative:
         /*
          * **何が起きるかを書く。**「相対」だけだと何に対する相対か読めないので、
-         * 地図が回るのかどうかを添える（2026-08-19 に決めた「地図ごと回すかどうか」）。
+         * 地図が回るのかどうかを添える（決めたこと 2026-08-19「地図ごと回すかどうか」）。
          */
         return settings.minimap_relative ? i18n::tr("hd2d.ui.feature-menu.relative-map-turns")
                                          : i18n::tr("hd2d.ui.feature-menu.absolute-north-up");
     case Item::BgmModeItem:
         /*
-         * **誰が鳴らすかまでは書かない。**利用者が選ぶのは「何が流れるか」であって、
+         * **誰が鳴らすかまでは書かない。**遊ぶ人が選ぶのは「何が流れるか」であって、
          * コア側か画面側かは実装の都合である。
          */
         switch (settings.bgm_mode) {
@@ -1292,6 +1352,14 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
     case Item::FpsCeiling:
         settings.fps_ceiling = !settings.fps_ceiling;
         break;
+    case Item::ModernMode: settings.modern_ui=!settings.modern_ui;break;
+    case Item::ModernFontSize: settings.modern_font_level=std::clamp(settings.modern_font_level+(delta>0?1:-1),0,4);break;
+    case Item::ModernTheme: {
+        const int selected=settings.modern_ui?std::clamp(settings.modern_theme,0,2):3;
+        const int next=(selected+(delta>0?1:3))%4;
+        settings.modern_ui=next!=3;if(next!=3)settings.modern_theme=next;
+        break;
+    }
     case Item::MainPanelItem:
         settings.main_panel = (settings.main_panel == Hd2dSettings::MainPanel::Ascii)
             ? Hd2dSettings::MainPanel::Hd2d
@@ -1308,6 +1376,7 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
         settings.entity_glyph_fallback = !settings.entity_glyph_fallback;
         break;
     case Item::AsciiPanelSize:
+        if(settings.modern_ui){settings.modern_font_level=std::clamp(settings.modern_font_level+(delta>0?1:-1),0,4);break;}
         /*
          * 0（UI と同じ）を**下限の下に置く**。左へ回しきると「UI と同じ」へ戻り、
          * そこからさらに左へは動かない——0 を並びの真ん中に挟むと、
@@ -1349,7 +1418,7 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
     }
     case Item::Layout: {
         /*
-         * 4 つを順に回す。**どれかを既定にして他を捨てるのではない**（決めたこと）。
+         * 4 つを順に回す。**どれかを既定にして他を捨てるのではない**。
          * 動かすのは**いま向いている側**だけ（縦横で別に持つ。同 2026-08-12）。
          */
         static constexpr LayoutMode kOrder[] = { LayoutMode::Full, LayoutMode::Hybrid, LayoutMode::Split,
@@ -1380,6 +1449,9 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
         settings.entity_style = (settings.entity_style == Hd2dSettings::EntityStyle::Ascii)
             ? Hd2dSettings::EntityStyle::Slab
             : Hd2dSettings::EntityStyle::Ascii;
+        break;
+    case Item::EntitySlabFacing:
+        settings.entity_slab_screen_aligned = !settings.entity_slab_screen_aligned;
         break;
     case Item::EntityGlyphSize:
         settings.entity_glyph_pct = std::clamp(settings.entity_glyph_pct + (delta * 5),
@@ -1452,13 +1524,13 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
     case Item::VrEnter:
         break; //!< 入切は決定だけ（左右で走ると、隣を触るつもりで HMD が起きる）
     case Item::VrTileM:
-        //! 5mm 刻み。0.5cm 〜 30cm（「ブロックをもっと拡大したい」と決めた）。
+        //! 5mm 刻み。0.5cm 〜 30cm（決めたこと「ブロックをもっと拡大したい」）。
         settings.vr_tile_m = std::clamp(settings.vr_tile_m + (static_cast<float>(delta) * 0.005f), 0.005f, 0.30f);
         break;
     case Item::VrTableHeight:
         //! 0 は「頭の高さから」。下限を下回ったら自動へ戻す（切り替える手段をここに置く）。
         settings.vr_table_height_m += static_cast<float>(delta) * 0.05f;
-        //! **床（0.05m）まで下げられる**（2026-08-14 に決めた）。そこを割ったら自動へ。
+        //! **床（0.05m）まで下げられる**。そこを割ったら自動へ。
         if (settings.vr_table_height_m < 0.05f) {
             settings.vr_table_height_m = 0.f;
         } else if (settings.vr_table_height_m > 1.40f) {
@@ -1575,8 +1647,11 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
     }
 }
 
-void FeatureMenu::open(const Hd2dSettings &)
+void FeatureMenu::open(const Hd2dSettings &settings)
 {
+    command_key_prefix_.clear();
+    command_tabs_enabled_=settings.modern_ui;
+    features_from_tab_=false;
     this->open_ = true;
     this->page_ = Page::Root;
     /*
@@ -1615,10 +1690,14 @@ void FeatureMenu::open_commands(const Hd2dSettings &settings)
     this->commands_direct_ = true;
     this->cursor_ = this->next_command_row(this->command_rows(), -1, 1);
     this->command_scroll_ = 0;
+    enter_command_tabs();
 }
 
 void FeatureMenu::close()
 {
+    command_key_prefix_.clear();
+    if(features_from_tab_) {feature_resume_page_=page_;feature_resume_cursor_=cursor_;}
+    if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
     this->open_ = false;
     this->stop_waiting();
 }
@@ -1639,7 +1718,7 @@ void FeatureMenu::update(std::uint32_t now_ms)
         return;
     }
     /*
-     * **15 秒未入力で降りる**（2026-08-11 に決めた）。ESC を「割り当ての消去」に
+     * **15 秒未入力で降りる**。ESC を「割り当ての消去」に
      * 使っているので、変更モードから何も変えずに降りる道が時間しか無い。
      * 引き算は符号なしで回り込むが、`now_ms` は単調に増えるので差は正しく出る。
      */
@@ -1651,7 +1730,7 @@ void FeatureMenu::update(std::uint32_t now_ms)
 /*
  * ============================================================ コマンドの一覧（2026-08-22）
  *
- * 「変愚の通常メニューを UI 側で作成してすべてのコマンドを実行できるようにしよう」と決めた。
+ * 決めたこと「変愚の通常メニューを UI 側で作成してすべてのコマンドを実行できるようにしよう」。
  *
  * **並べるものは既に線の上にある。** 変愚コアは自分の通常メニュー
  * （`src/cmd-io/cmd-menu-content-table.cpp` の `menu_info`）を平坦化して `pad_commands` で
@@ -1701,11 +1780,234 @@ static std::string key_sequence_label(const std::vector<int> &keys)
     return out;
 }
 
+
+static std::string command_display_label(const std::vector<int> &keys,const std::string &label) {
+    return (keys.empty()?std::string():key_sequence_label(keys)+") ")+label;
+}
+
+bool FeatureMenu::handle_native_key(int key,Hd2dSettings &) {
+    if(!open_||page_!=Page::Commands||waiting_)return false;
+    if(command_requested_present_)return true;
+    if((key==27||key==8)&&!command_key_prefix_.empty()){command_key_prefix_.clear();return true;}
+    if(key==13&&command_key_prefix_.empty())return false;
+    if(key!=13)command_key_prefix_.push_back(key);
+    const auto rows=command_rows();int exact=-1,matches=0;
+    const auto search=[&](){exact=-1;matches=0;for(size_t i=0;i<rows.size();++i) {
+        const auto &r=rows[i];if(r.heading||!r.available||r.keys.size()<command_key_prefix_.size())continue;
+        if(!std::equal(command_key_prefix_.begin(),command_key_prefix_.end(),r.keys.begin()))continue;
+        ++matches;if(r.keys.size()==command_key_prefix_.size())exact=exact==-1?static_cast<int>(i):-2;
+    }};
+    search();
+    if(!matches){command_key_prefix_.clear();return false;}
+    if(exact>=0&&(matches==1||key==13)) {
+        cursor_=exact;command_requested_=rows[exact].id;command_requested_present_=true;command_key_prefix_.clear();
+        if(command_tabs_enabled_)command_tabs_.remember(cursor_,command_scroll_);
+    }
+    return true;
+}
+bool FeatureMenu::click_row(int x,int y,Hd2dSettings &settings) {
+    if(!open_||waiting_||command_requested_present_)return false;
+    if(click_tab_header(x,y,settings))return true;
+    x=int(x/painted_scale_);y=int(y/painted_scale_);
+    if(settings.modern_ui&&settings_editing_) {
+        if(settings_minus_.contains(x,y))handle(MenuNav::Left,settings);
+        else if(settings_plus_.contains(x,y))handle(MenuNav::Right,settings);
+        return true;
+    }
+    if(settings.modern_ui&&!showing_commands()&&!showing_bindings()&&settings_details_rect_.contains(x,y)){settings_details_focus_=true;return true;}
+    if(showing_command_tabs()&&command_details_rect_.contains(x,y)){command_details_focus_=true;return true;}
+    for(const auto &hit:painted_rows_)if(hit.first.contains(x,y)) {
+        command_details_focus_=false;command_details_scroll_=0;settings_details_focus_=false;settings_details_scroll_=0;
+        command_key_prefix_.clear();cursor_=hit.second;
+        if(showing_command_tabs()&&!command_categories_)command_tabs_.remember(cursor_,command_scroll_);
+        return true;
+    }
+    return false;
+}
+void FeatureMenu::scroll_at(int x,int y,int direction,Hd2dSettings &settings) {
+    if(waiting_)return;
+    if(showing_command_tabs())command_details_focus_=command_details_rect_.contains(int(x/painted_scale_),int(y/painted_scale_));
+    else if(settings.modern_ui&&!showing_bindings()) {
+        if(settings_details_rect_.contains(int(x/painted_scale_),int(y/painted_scale_))) {
+            settings_details_scroll_=std::max(0,settings_details_scroll_+direction);if(!settings_editing_)settings_details_focus_=true;return;
+        }
+        if(settings_editing_)return;settings_details_focus_=false;
+    }
+    handle(direction<0?MenuNav::Up:MenuNav::Down,settings);
+}
+
+bool FeatureMenu::click_tab_header(int x,int y,Hd2dSettings &settings) {
+    x=int(x/painted_scale_);y=int(y/painted_scale_);
+    if(!tab_navigation_active())return false;
+    if(header_layout_.previous.contains(x,y)){handle(MenuNav::PreviousTab,settings);return true;}
+    if(header_layout_.next.contains(x,y)){handle(MenuNav::NextTab,settings);return true;}
+    for(size_t i=0;i<header_layout_.tabs.size();++i)if(header_layout_.tabs[i].contains(x,y)) {
+        const int target=header_first_+static_cast<int>(i);
+        /*
+         * **目当てのタブへ一度で移る**（2026-10-07）。以前は 1 つずつ「次のタブ」を繰り返していて、
+         * 途中のタブの `restore_feature_tab()` が走った——「持ち物一覧」を通ると一覧を開く要求が
+         * 立ったまま残り、「機能」を押したのに持ち物の一覧が開いた（Android のエミュレータで見た）。
+         * Rogue 系では途中の「設定」を通ると原作の設定画面のコマンドまで送られうる。
+         * 1 つずつ移るとき（`handle_command_tabs` の NextTab）と同じ後始末をして、着いたタブだけ処理する。
+         */
+        jump_to_command_tab(target);
+        return true;
+    }
+    return false;
+}
+
+void FeatureMenu::jump_to_command_tab(int target) {
+    if(target<0||target>=static_cast<int>(command_tabs_.tabs().size())||command_tabs_.index()==target)return;
+    if(!command_categories_)command_tabs_.remember(cursor_,command_scroll_);
+    command_details_focus_=false;command_details_scroll_=0;
+    command_key_prefix_.clear();
+    command_tabs_.select(target);command_categories_=false;
+    cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();restore_feature_tab();
+}
+
+void FeatureMenu::restore_feature_tab() {
+    if(!command_categories_&&!command_tabs_.tabs().empty()&&command_tabs_.tabs()[command_tabs_.index()].id=="@inventory") {
+        inventory_requested_=true;return;
+    }
+    if(!command_categories_&&!command_tabs_.tabs().empty()&&command_tabs_.tabs()[command_tabs_.index()].id=="設定") {
+        /*
+         * Rogue の原作オプションは、タブの中に「原作の設定」という入口をもう一段
+         * 置かない。大項目の「設定」を選んだ時点で original `o` を送り、各設定値を
+         * 左右で直接変更できる Modern settings list を開く。
+         */
+        const auto option=std::find_if(pad_commands_.begin(),pad_commands_.end(),[](const auto &command) {
+            return command.group_utf8=="設定"&&command.command=='o'&&!command.keys.empty();
+        });
+        if(option!=pad_commands_.end()) {
+            command_requested_=option->id;command_requested_present_=true;return;
+        }
+    }
+    if(!command_categories_ && !command_tabs_.tabs().empty() && command_tabs_.tabs()[command_tabs_.index()].id=="@ui-features"
+        && feature_resume_page_!=Page::Commands) {
+        features_from_tab_=true;page_=feature_resume_page_;cursor_=feature_resume_cursor_;
+    }
+}
+void FeatureMenu::open_command_tab(int index,const Hd2dSettings &settings) {
+    open_commands(settings);inventory_requested_=false;features_from_tab_=false;page_=Page::Commands;command_categories_=false;
+    command_tabs_.select(index);cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();restore_feature_tab();
+}
+void FeatureMenu::open_features(const Hd2dSettings &settings) {
+    /*
+     * **新 UI ではコマンドメニューと機能メニューは同じ 1 つの窓**（決めたこと
+     * 2026-09-25）。F10 / パッド Back も F1 / Start（`open_commands()`）と同じ道を
+     * 通す——**以前はここで最後の「機能」タブへ強制的に移していたが、それをやめた**。
+     * `open_commands()` はすでに前回のタブと位置を復元する
+     * （`enter_command_tabs()` → `MenuTabs::cursor()/scroll()`。`close()` が
+     * `command_tabs_.remember()` で覚える）ので、F10 で開き直しても F1 で開き直しても
+     * 同じ所へ戻る。前回が持ち物一覧タブだったときにそこで一覧を開く要求
+     * （`restore_feature_tab()` の `inventory_requested_=true`）も、いまはここで
+     * 打ち消さない——F1 で戻ってきたときと同じに扱う。
+     */
+    if(!settings.modern_ui) {open(settings);return;}
+    open_commands(settings);
+}
+
+void FeatureMenu::refresh_command_tabs()
+{
+    std::vector<MenuTab> tabs;
+    for(const auto &command:pad_commands_) {
+        auto it=std::find_if(tabs.begin(),tabs.end(),[&](const auto &tab){return tab.id==command.group_utf8;});
+        if(it==tabs.end()) {
+            tabs.push_back({command.group_utf8,command.group_utf8.empty()?i18n::tr("hd2d.ui.feature-menu.other"):command.group_utf8,{}});
+            it=tabs.end()-1;
+        }
+        it->items.push_back(std::to_string(command.id));
+    }
+    if(!pad_commands_.empty())tabs.push_back({"@inventory",i18n::current()=="ja"?"持ち物一覧":"Inventory",{"inventory"}});
+    MenuTab features{"@ui-features",i18n::current()=="ja"?"機能":"Features",{"language"}};
+    for(const auto page:root_pages())if(page!=Page::Commands)features.items.push_back(std::to_string(static_cast<int>(page)));
+    tabs.push_back(std::move(features));
+    command_tabs_.reset(std::move(tabs));
+    if(showing_command_tabs() && !command_categories_) {
+        cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();
+    }
+}
+void FeatureMenu::enter_command_tabs()
+{
+    if(!command_tabs_enabled_)return;
+    command_categories_=false;
+    refresh_command_tabs();
+    /*
+     * Rogue の「設定」タブは、選んだ時点で原作の o をコアへ送る。前回そのタブのまま
+     * 設定画面を閉じた場合、メニューを開き直しただけで o が送られ、メニューの代わりに
+     * 設定画面が開いてしまう。開き直すときは先頭のタブから始める。
+     */
+    if(!command_tabs_.tabs().empty()&&command_tabs_.tabs()[command_tabs_.index()].id=="設定")command_tabs_.select(0);
+    cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();
+    restore_feature_tab();
+}
+std::vector<std::string> FeatureMenu::command_tab_labels() const
+{
+    std::vector<std::string> labels;
+    for(const auto &tab:command_tabs_.tabs())labels.push_back(tab.label);
+    return labels;
+}
+void FeatureMenu::handle_command_tabs(MenuNav nav, Hd2dSettings &settings)
+{
+    if(!command_categories_)command_tabs_.remember(cursor_,command_scroll_);
+    if(nav==MenuNav::Categories) {
+        command_categories_=!command_categories_;
+        cursor_=command_categories_?command_tabs_.index():command_tabs_.cursor();
+        command_scroll_=command_categories_?0:command_tabs_.scroll();return;
+    }
+    if(nav==MenuNav::PreviousTab || nav==MenuNav::NextTab) {
+        command_details_focus_=false;command_details_scroll_=0;
+        command_key_prefix_.clear();
+        command_tabs_.step(nav==MenuNav::PreviousTab?-1:1);command_categories_=false;
+        cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();restore_feature_tab();return;
+    }
+    if(nav==MenuNav::PreviousPane){command_details_focus_=false;return;}
+    if(nav==MenuNav::NextPane){command_details_focus_=true;return;}
+    if(nav==MenuNav::TogglePane){command_details_focus_=!command_details_focus_;return;}
+    if(command_details_focus_) {
+        if(nav==MenuNav::Up)command_details_scroll_=std::max(0,command_details_scroll_-1);
+        if(nav==MenuNav::Down)++command_details_scroll_;
+        if(nav==MenuNav::Cancel||nav==MenuNav::Confirm)command_details_focus_=false;
+        return;
+    }
+    if(nav==MenuNav::Left||nav==MenuNav::Right)return;
+    if(nav==MenuNav::Cancel) {
+        if(command_categories_) {command_categories_=false;cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();restore_feature_tab();return;}
+        if(commands_direct_)close();else {page_=Page::Root;cursor_=root_cursor_;}
+        return;
+    }
+    const auto rows=command_rows();
+    if(rows.empty())return;
+    cursor_=std::clamp(cursor_,0,static_cast<int>(rows.size())-1);
+    if(nav==MenuNav::Up){cursor_=(cursor_-1+static_cast<int>(rows.size()))%static_cast<int>(rows.size());command_details_scroll_=0;}
+    if(nav==MenuNav::Down){cursor_=(cursor_+1)%static_cast<int>(rows.size());command_details_scroll_=0;}
+    if(!command_categories_ && !command_tabs_.tabs().empty() && command_tabs_.tabs()[command_tabs_.index()].id=="@ui-features"
+        && cursor_==0 && (nav==MenuNav::Left || nav==MenuNav::Right)) {adjust(Item::Language,nav==MenuNav::Left?-1:1,settings);return;}
+    if(nav==MenuNav::Confirm) {
+        if(command_categories_) {
+            command_tabs_.select(cursor_);command_categories_=false;
+            cursor_=command_tabs_.cursor();command_scroll_=command_tabs_.scroll();restore_feature_tab();return;
+        }
+        const auto &row=rows[cursor_];
+        const auto &tab=command_tabs_.tabs()[command_tabs_.index()];
+        if(tab.id=="@ui-features") {
+            feature_root_cursor_=cursor_;
+            if(row.id==-1) {adjust(Item::Language,1,settings);return;}
+            page_=static_cast<Page>(-100-row.id);features_from_tab_=true;cursor_=0;
+            feature_resume_page_=page_;feature_resume_cursor_=0;return;
+        }
+        if(!row.heading && row.available && row.id>=0) {
+            command_requested_=row.id;command_requested_present_=true;
+        }
+    }
+    if(!command_categories_)command_tabs_.remember(cursor_,command_scroll_);
+}
+
 std::vector<FeatureMenu::CommandRow> FeatureMenu::command_rows() const
 {
     std::vector<CommandRow> rows;
     rows.reserve(this->pad_commands_.size() + 12U);
-    if (this->pad_commands_.empty()) {
+    if (this->pad_commands_.empty() && !command_tabs_enabled_) {
         //! 握手の直後はまだ届いていない。**空のパネルを黙って出さない。**
         CommandRow row;
         row.heading = true;
@@ -1724,7 +2026,7 @@ std::vector<FeatureMenu::CommandRow> FeatureMenu::command_rows() const
      */
     const auto command_row = [](const PadCommand &command) {
         CommandRow row;
-        row.id = command.id;
+        row.id = command.id;row.keys=command.keys;
         row.label = command.label_utf8;
         row.available = !command.keys.empty();
         if (!row.available) {
@@ -1732,7 +2034,7 @@ std::vector<FeatureMenu::CommandRow> FeatureMenu::command_rows() const
             return row;
         }
         /*
-         * **キーボードの綴りを添える**（2026-08-23 に決めた。例は「拾う（`,`）」）。
+         * **キーボードの綴りを添える**（例は「拾う（`,`）」）。
          *
          * 綴りは決め打ちしない——**コアごとに違う**（変愚の拾うは `,`、Sil-Q は `g`）し、
          * 同じコアでもキー配列（original / rogue）で変わる。`PadCommand::keys` は
@@ -1741,17 +2043,38 @@ std::vector<FeatureMenu::CommandRow> FeatureMenu::command_rows() const
          *
          * 解決できない行（`keys` が空）には出さない。上で選べなくしてある。
          */
-        const std::string spelling = key_sequence_label(command.keys);
-        if (!spelling.empty()) {
-            row.label += " (" + spelling + ")";
-        }
+
         return row;
     };
 
+    if(command_tabs_enabled_) {
+        const auto &tabs=command_tabs_.tabs();
+        if(command_categories_) {
+            for(const auto &tab:tabs) {CommandRow row;row.label=tab.label;row.available=true;rows.push_back(std::move(row));}
+        } else if(!tabs.empty()) {
+            if(tabs[command_tabs_.index()].id=="@inventory") {
+                CommandRow loading;loading.heading=true;loading.label=i18n::current()=="ja"?"持ち物を読み込み中…":"Loading inventory...";rows.push_back(std::move(loading));return rows;
+            }
+            if(tabs[command_tabs_.index()].id=="@ui-features") {
+                CommandRow language;language.id=-1;language.label=std::string(i18n::current()=="ja"?"表示言語: ":"Language: ")+i18n::current_endonym();rows.push_back(language);
+                for(const auto page:root_pages())if(page!=Page::Commands) {
+                    CommandRow row;row.id=-100-static_cast<int>(page);row.label=page_label(page);rows.push_back(row);
+                }
+                return rows;
+            }
+            for(const auto &command:pad_commands_) {
+                if(command.group_utf8!=tabs[command_tabs_.index()].id)continue;
+                auto row=command_row(command);
+                if(!command.subgroup_utf8.empty())row.label=command.subgroup_utf8+" / "+row.label;
+                rows.push_back(std::move(row));
+            }
+        }
+        return rows;
+    }
     /* ------------------------------------------------------ 1 段目: 分類の一覧 */
     if (this->command_group_.empty()) {
         /*
-         * **並び替えはしない。** コアが送ってきた順がそのまま利用者の記憶の順である
+         * **並び替えはしない。** コアが送ってきた順がそのまま遊ぶ人の記憶の順である
          * （変愚なら通常メニューの並び）。出てきた順に 1 つずつ拾う。
          */
         std::vector<std::string> seen;
@@ -1837,7 +2160,7 @@ std::vector<std::string> FeatureMenu::command_labels() const
 {
     std::vector<std::string> out;
     for (const CommandRow &row : this->command_rows()) {
-        out.push_back(row.label);
+        out.push_back(command_display_label(row.keys,row.label));
     }
     return out;
 }
@@ -1870,7 +2193,7 @@ int FeatureMenu::next_command_row(const std::vector<CommandRow> &rows, int from,
 /*
  * ------------------------------------------------------------ 2 列の動き（2026-08-23）
  *
- * 「メニューは変愚同様 2 列にして縦長になりすぎないように」と決めた。
+ * 決めたこと「メニューは変愚同様 2 列にして縦長になりすぎないように」。
  * 並べ方は変愚と同じ**行優先**（`input-key-requester.cpp:401` の
  * `base_y + num / 2` / `base_x + (num % 2) * 24`）なので、
  * **↓ は添字 +2・→ は +1** になる。描く側（`draw_commands`）も同じ式で置く。
@@ -1923,32 +2246,67 @@ int FeatureMenu::next_command_row_horizontal(const std::vector<CommandRow> &rows
     return at;
 }
 
+void FeatureMenu::draw_command_tab_header(UiPaint &paint, TextOverlay &text, const UiLayout &layout,const RectPx &box,int &top_y) const {
+    const auto skin=modern_skin(paint_theme_);
+    const auto kLabelColor=paint_theme_>=0?skin.text:hd2d::kLabelColor;
+    const auto kValueColor=paint_theme_>=0?skin.text:hd2d::kValueColor;
+    const auto kPickedColor=paint_theme_>=0?skin.strong:hd2d::kPickedColor;
+    const auto kHintColor=paint_theme_>=0?skin.muted:hd2d::kHintColor;
+    const auto kHeadingColor=paint_theme_>=0?skin.strong:hd2d::kHeadingColor;
+    const auto kFixedColor=paint_theme_>=0?skin.muted:hd2d::kFixedColor;
+    const auto kEmptyColor=paint_theme_>=0?skin.muted:hd2d::kEmptyColor;
+
+    const int cell_w=layout.cell_w,cell_h=layout.cell_h;
+    if(command_tabs_enabled_) {
+        const auto &tabs=command_tabs_.tabs();
+        const int current=command_tabs_.index();
+        std::vector<std::string> all_labels;for(const auto &tab:tabs)all_labels.push_back(tab.label);
+        const auto [first,show]=menu_header_visible_range(text,box,all_labels,current,header_first_);
+        std::vector<std::string> labels(all_labels.begin()+first,all_labels.begin()+first+show);
+        header_first_=first;
+        header_layout_=draw_menu_header(paint,text,box,top_y-6,labels,current-first,paint_theme_);
+        top_y+=cell_h*2;
+        if(command_categories_) {text.draw(box.x+cell_w,top_y,i18n::current()=="ja"?"分類を選択":"Choose category",kPickedColor);top_y+=cell_h*2;}
+    }
+}
+
 void FeatureMenu::draw_commands(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
     const RectPx &box, int top_y) const
 {
+    const auto skin=modern_skin(paint_theme_);
+    const auto kLabelColor=paint_theme_>=0?skin.text:hd2d::kLabelColor;
+    const auto kValueColor=paint_theme_>=0?skin.text:hd2d::kValueColor;
+    const auto kPickedColor=paint_theme_>=0?skin.strong:hd2d::kPickedColor;
+    const auto kHintColor=paint_theme_>=0?skin.muted:hd2d::kHintColor;
+    const auto kHeadingColor=paint_theme_>=0?skin.strong:hd2d::kHeadingColor;
+    const auto kFixedColor=paint_theme_>=0?skin.muted:hd2d::kFixedColor;
+    const auto kEmptyColor=paint_theme_>=0?skin.muted:hd2d::kEmptyColor;
+
     const int cell_w = layout.cell_w;
     const int cell_h = layout.cell_h;
     const std::vector<CommandRow> rows = this->command_rows();
     const int count = static_cast<int>(rows.size());
+    draw_command_tab_header(paint,text,layout,box,top_y);
     const int label_x = box.x + cell_w;
     //! 右端は送りの印（▲▼）の場所。`draw_binds()` と同じ空け方にする。
     const int gutter = cell_w * 3;
-    const int list_w = (box.x + box.w) - gutter - label_x;
+    const int full_width = (box.x + box.w) - gutter - label_x;
+    const int list_w = command_tabs_enabled_?full_width*55/100:full_width;
 
     /*
-     * **2 列に置く**（2026-08-23 に決めた「メニューは変愚同様 2 列にして
+     * **2 列に置く**（決めたこと 2026-08-23「メニューは変愚同様 2 列にして
      * 縦長になりすぎないように」）。並べ方は変愚と同じ**行優先**で、
      * 添字 `i` は段 `i / 2`・列 `i % 2` に置く（`input-key-requester.cpp:401`）。
      *
      * 案内の行（一覧が届いていないとき）だけは**1 列で幅いっぱい**に出す——
      * 文が長いので半分の幅では切れる。
      */
-    const bool two_columns = !rows.empty() && !((count == 1) && rows.front().heading);
+    const bool two_columns = !command_tabs_enabled_ && !rows.empty() && !((count == 1) && rows.front().heading);
     const int columns = two_columns ? 2 : 1;
     const int col_w = list_w / columns;
 
     //! 下の 2 行は操作説明に取っておく（一覧に食われると、出方が分からなくなる）。
-    const int list_bottom = (box.y + box.h) - (cell_h * 3);
+    const int list_bottom = (box.y + box.h) - (cell_h * (paint_theme_>=0?5:3)) - (paint_theme_>=0?8:0);
     const int visible = std::max(1, (list_bottom - top_y) / cell_h);
     this->command_visible_rows_ = visible;
     //! **送りは「段」で数える**（マスではない）。2 列なら 1 段に 2 件入る。
@@ -1973,7 +2331,25 @@ void FeatureMenu::draw_commands(UiPaint &paint, TextOverlay &text, const UiLayou
     //! `draw_binds()` と同じ。位置が負になる経路が今後できても描画を守る。
     scroll = std::clamp(scroll, 0, std::max(0, lines - visible));
     this->command_scroll_ = scroll;
+    command_details_rect_={};
+    if(command_tabs_enabled_) {
+        command_details_rect_={label_x+list_w+16,top_y,std::max(1,full_width-list_w-16),std::max(cell_h,list_bottom-top_y)};
+        paint_modern_inset(paint,command_details_rect_,paint_theme_);
+        paint.frame(command_details_focus_?command_details_rect_:RectPx{label_x,top_y,list_w,std::max(cell_h,list_bottom-top_y)},skin.trim,2);
+        if(cursor_>=0&&cursor_<count) {
+            const auto &chosen=rows[cursor_];std::string detail=chosen.label;
+            if(!chosen.keys.empty())detail+="\n\n"+std::string(i18n::current()=="ja"?"キー: ":"Keys: ")+key_sequence_label(chosen.keys);
+            if(!command_categories_&&!command_tabs_.tabs().empty())detail+="\n\n"+std::string(i18n::current()=="ja"?"分類: ":"Category: ")+command_tabs_.tabs()[command_tabs_.index()].label;
+            const auto wrapped=wrap_ui_text(detail,std::max(1,command_details_rect_.w-24),[&](std::string_view part,int width){return text.fit_bytes(part,width);});
+            const int n=std::max(1,(command_details_rect_.h-20)/cell_h);
+            command_details_scroll_=std::clamp(command_details_scroll_,0,std::max(0,int(wrapped.size())-n));
+            for(int i=command_details_scroll_;i<std::min<int>(wrapped.size(),command_details_scroll_+n);++i)
+                text.draw(command_details_rect_.x+12,top_y+10+(i-command_details_scroll_)*cell_h,wrapped[i],kLabelColor,command_details_rect_.w-24);
+            if(int(wrapped.size())>n){const int thumb=std::max(10,command_details_rect_.h*n/int(wrapped.size()));paint.rect({command_details_rect_.x+command_details_rect_.w-4,top_y+(command_details_rect_.h-thumb)*command_details_scroll_/std::max(1,int(wrapped.size())-n),3,thumb},skin.trim);}
+        }
+    }
 
+    if(paint_theme_>=0){paint_modern_rule(paint,{label_x,top_y-5,list_w,1},paint_theme_);paint_modern_rule(paint,{label_x,list_bottom+4,list_w,1},paint_theme_);}
     int y = top_y;
     for (int line = scroll; (line < lines) && (line < (scroll + visible)); ++line) {
         for (int col = 0; col < columns; ++col) {
@@ -1984,26 +2360,34 @@ void FeatureMenu::draw_commands(UiPaint &paint, TextOverlay &text, const UiLayou
             const CommandRow &row = rows[static_cast<std::size_t>(i)];
             const bool picked = (i == this->cursor_);
             const int cell_x = label_x + (col * col_w);
+            if(!row.heading) {
+                painted_rows_.push_back({{cell_x-(cell_w/2),y,col_w,cell_h},i});
+                painted_items_.push_back(ProbeItem{row.id>0?std::to_string(row.id):std::string(),command_display_label(row.keys,row.label),{},row.available,picked});
+                if(ui_probe().enabled()) {
+                    const RectPx r=menu_scaled_rect(painted_rows_.back().first,painted_scale_);
+                    ui_probe().button(painted_items_.back().label,ProbeRect{r.x,r.y,r.w,r.h},row.available,picked,"menu-row",false,painted_items_.back().id);
+                }
+            }
             if (picked) {
                 //! **マスの帯**（行いっぱいではない）。2 列で行を塗ると隣のマスまで光る。
-                paint.rect(RectPx{ cell_x - (cell_w / 2), y, col_w, cell_h },
-                    PaintColor{ 0.95f, 0.85f, 0.30f, 0.18f });
+                if(paint_theme_>=0)paint_modern_selection(paint,{cell_x-(cell_w/2),y,col_w,cell_h},paint_theme_);
+                else paint.rect(RectPx{ cell_x - (cell_w / 2), y, col_w, cell_h }, PaintColor{ 0.95f, 0.85f, 0.30f, 0.18f });
             }
             const TextColor color = row.heading
                 ? kHintColor
                 : (picked ? kPickedColor : (row.available ? kLabelColor : kHintColor));
             //! 字はマスの幅で切る（隣の列へ食い込ませない）。
-            text.draw(row.heading ? cell_x : (cell_x + cell_w), y, row.label, color,
+            text.draw(row.heading ? cell_x : (cell_x + cell_w), y, command_display_label(row.keys,row.label), color,
                 col_w - (row.heading ? 0 : cell_w));
         }
         y += cell_h;
     }
     //! 送りの印。**上下に続きがあるかを出す**（無いと一覧の端が分からない）。
     if (scroll > 0) {
-        text.draw((box.x + box.w) - gutter, top_y, "▲", kHintColor);
+        text.draw(label_x+list_w-cell_w, top_y, "▲", kHintColor);
     }
     if ((scroll + visible) < lines) {
-        text.draw((box.x + box.w) - gutter, y - cell_h, "▼", kHintColor);
+        text.draw(label_x+list_w-cell_w, y - cell_h, "▼", kHintColor);
     }
     /*
      * 下の案内は**いまの段に潜る行があるか**で選ぶ（段の数では選ばない）。
@@ -2015,6 +2399,19 @@ void FeatureMenu::draw_commands(UiPaint &paint, TextOverlay &text, const UiLayou
             can_descend = true;
             break;
         }
+    }
+    if(command_tabs_enabled_) {
+        if(!command_key_prefix_.empty())text.draw(label_x,(box.y+box.h)-(cell_h*5),
+            (i18n::current()=="ja"?"キー入力: ":"Keys: ")+key_sequence_label(command_key_prefix_)+" ...",kHintColor,list_w);
+        text.draw(label_x,(box.y+box.h)-(cell_h*4),command_categories_
+            ? (i18n::current()=="ja"?"上下: 選択  決定: 分類へ移動  取消: 戻る":"Up/Down: select  Confirm: open category  Cancel: back")
+            : (i18n::current()=="ja"?"上下: 選択 / スクロール  Tab・L2/R2: 一覧 / 説明  決定: 開始":"Up/Down: select / scroll  Tab/L2/R2: list / details  Confirm: run"),kHintColor,full_width);
+        std::string hint=i18n::current()=="ja"?"分類切替: 左Shift/右Shift・L1/R1   分類一覧: パッドX・F2":"Change tab: Left/Right Shift or L1/R1   Categories: gamepad X or F2";
+        for(int line=0;line<2&&!hint.empty();++line) {
+            const auto take=text.fit_bytes(hint,full_width);if(!take)break;
+            text.draw(label_x,box.y+box.h-cell_h*(3-line),hint.substr(0,take),kHintColor,full_width);hint.erase(0,take);
+        }
+        return;
     }
     text.draw(label_x, (box.y + box.h) - (cell_h * 2),
         can_descend ? i18n::tr("hd2d.ui.feature-menu.up-down-to-choose-enter-to-open")
@@ -2045,7 +2442,7 @@ bool FeatureMenu::handle_bind_key(int keycode, int mods, Hd2dSettings &settings)
     }
     if (key_is_reserved(keycode)) {
         /*
-         * 十字・Enter・ESC。**ESC だけは「割り当ての消去」として食う**（決めたこと）。
+         * 十字・Enter・ESC。**ESC だけは「割り当ての消去」として食う**。
          * ほかは変更モードのまま無視する。ここで黙って降りると、押し間違えた人には
          * 「割り当てたつもりが変わっていない」に見える。
          */
@@ -2077,7 +2474,7 @@ bool FeatureMenu::handle_bind_pad(PadInput input, int mods, Hd2dSettings &settin
     if (this->wait_col_ == 0) {
         /*
          * キーボードのマスを狙っている最中のボタン。**捨てるが、黙って捨てない**
-         * （2026-08-14 に気づいた「割り当てで同時押しが入らない」。捨てていることが
+         * （気づいたこと 2026-08-14「割り当てで同時押しが入らない」。捨てていることが
          * 画面に出ていないと、押しが届いていないのと見分けが付かない）。
          */
         this->wait_note_ = pad_chord_display_name(input, mods) + i18n::tr("hd2d.ui.feature-menu.received")
@@ -2090,7 +2487,7 @@ bool FeatureMenu::handle_bind_pad(PadInput input, int mods, Hd2dSettings &settin
      * `handle()` の側が先に食うので、ここへは来ない）。
      */
     /*
-     * **固定なのは単独押しのときだけ**（2026-08-14 に気づいた。`PadBinds::assign` の注記）。
+     * **固定なのは単独押しのときだけ**（`PadBinds::assign` の注記）。
      * `LB＋A` は空いている枠なので受け取る。
      */
     if ((mods == 0) && pad_input_is_fixed(input)) {
@@ -2166,6 +2563,8 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
     if (!this->open_) {
         return;
     }
+    command_key_prefix_.clear();
+    painted_rows_.clear();
     if (ui_break_enabled("menu")) {
         return; // `HD2D_BREAK_UI=menu`。**検査が FAIL になるのが正しい。**
     }
@@ -2178,8 +2577,50 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
          */
         return;
     }
+    if(!settings.modern_ui){settings_editing_=false;settings_details_focus_=false;}
+    if(settings.modern_ui&&page_!=Page::Binds&&page_!=Page::Commands) {
+        settings_editing_=false;
+        const auto items=page_items();const bool on_item=cursor_>=0&&cursor_<int(items.size());
+        if(nav==MenuNav::PreviousPane){settings_details_focus_=false;return;}
+        if(nav==MenuNav::NextPane){settings_details_focus_=true;return;}
+        if(nav==MenuNav::TogglePane){settings_details_focus_=!settings_details_focus_;return;}
+        if(settings_details_focus_) {
+            if(nav==MenuNav::Up)settings_details_scroll_=std::max(0,settings_details_scroll_-1);
+            if(nav==MenuNav::Down)++settings_details_scroll_;
+            if(nav==MenuNav::Cancel||nav==MenuNav::Confirm)settings_details_focus_=false;
+            if(nav!=MenuNav::PreviousTab&&nav!=MenuNav::NextTab&&nav!=MenuNav::Categories)return;
+            settings_details_focus_=false;
+        }
+        if(nav==MenuNav::Up||nav==MenuNav::Down)settings_details_scroll_=0;
+        if(nav==MenuNav::Left||nav==MenuNav::Right) {
+            if(on_item) {
+                const auto item=items[cursor_];
+                const bool action=item==Item::VpadButtonsEnter||item==Item::MinimapEnter||item==Item::EffectsEnter||item==Item::VrEnter
+                    ||item==Item::FpsPanelsEnter||item==Item::VpadLayoutEdit||item==Item::VpadResetAll;
+                if(!action&&!item_value(item,settings).empty())adjust(item,nav==MenuNav::Left?-1:1,settings);
+            }
+            return;
+        }
+        if(nav==MenuNav::Confirm&&on_item) {
+            const auto item=items[cursor_];
+            const bool action=item==Item::VpadButtonsEnter||item==Item::MinimapEnter||item==Item::EffectsEnter||item==Item::VrEnter
+                ||item==Item::FpsPanelsEnter||item==Item::VpadLayoutEdit||item==Item::VpadResetAll;
+            if(!action&&!item_value(item,settings).empty())return;
+        }
+    }
 
     /* ------------------------------------------------------ コマンドの一覧 */
+    if(features_from_tab_) {
+        if(nav==MenuNav::PreviousTab || nav==MenuNav::NextTab || nav==MenuNav::Categories) {
+            feature_resume_page_=page_;feature_resume_cursor_=cursor_;
+            features_from_tab_=false;page_=Page::Commands;cursor_=feature_root_cursor_;
+            handle_command_tabs(nav,settings);return;
+        }
+        if(nav==MenuNav::Cancel && std::none_of(sub_page_links().begin(),sub_page_links().end(),[&](const auto &link){return link.child==page_;})) {
+            features_from_tab_=false;feature_resume_page_=Page::Commands;page_=Page::Commands;cursor_=feature_root_cursor_;return;
+        }
+    }
+    if(showing_command_tabs()) {handle_command_tabs(nav,settings);return;}
     if (this->page_ == Page::Commands) {
         const std::vector<CommandRow> rows = this->command_rows();
         const int count = static_cast<int>(rows.size());
@@ -2196,7 +2637,7 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
             }
         }
         switch (nav) {
-        //! **2 列なので上下は 2 つずつ**（2026-08-23 に決めた。`next_command_row_vertical`）。
+        //! **2 列なので上下は 2 つずつ**（`next_command_row_vertical`）。
         case MenuNav::Up:
             this->cursor_ = this->next_command_row_vertical(rows, this->cursor_, -1);
             break;
@@ -2261,7 +2702,7 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
             }
             if (this->commands_direct_) {
                 /*
-                 * **ボタン 1 つで直に開いたパネルは、取消で閉じる**（2026-08-23 に気づいた
+                 * **ボタン 1 つで直に開いたパネルは、取消で閉じる**（気づいたこと 2026-08-23
                  * 「メニューをキャンセルで抜けた際に機能メニューが立ち上がってしまう」）。
                  * 入口へ落とすと、命令を選ぶのをやめただけなのに**設定の画面が
                  * 立ち上がったように見える**——押していないものが出てくるのが困る。
@@ -2333,7 +2774,7 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
     if (this->page_ == Page::Root) {
         /*
          * 入口は**「値の項目（言語）→ 分類」の順**に並ぶ（2026-08-19）。
-         * 「終了」はもう並ばない（2026-08-11 に決めた。終わらせる道はコアの通常の終了だけ）。
+         * 「終了」はもう並ばない（終わらせる道はコアの通常の終了だけ）。
          */
         const std::vector<Item> root_values = root_items();
         const std::vector<Page> pages = root_pages();
@@ -2355,10 +2796,14 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
             }
             break;
         case MenuNav::Right:
+            if (on_value) {
+                this->adjust(root_values[static_cast<std::size_t>(this->cursor_)], 1, settings);
+                break;
+            }
+            [[fallthrough]];
         case MenuNav::Confirm:
             if (on_value) {
-                //! 言語は決定でも回る（入切の項目と同じ。左右を探さずに済む）。
-                this->adjust(root_values[static_cast<std::size_t>(this->cursor_)], 1, settings);
+                if(!settings.modern_ui)this->adjust(root_values[static_cast<std::size_t>(this->cursor_)], 1, settings);
                 break;
             }
             this->root_cursor_ = this->cursor_;
@@ -2376,6 +2821,7 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
             }
             if (this->page_ == Page::Commands) {
                 //! **必ず 1 段目（分類の一覧）から**。前に開いた分類を覚えていると迷う。
+                command_tabs_enabled_=settings.modern_ui;
                 this->command_group_.clear();
                 this->command_group_cursor_ = 0;
                 this->command_subgroup_.clear();
@@ -2384,6 +2830,7 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
                 this->commands_direct_ = false;
                 this->cursor_ = this->next_command_row(this->command_rows(), -1, 1);
                 this->command_scroll_ = 0;
+                enter_command_tabs();
             }
             break;
         case MenuNav::Cancel:
@@ -2454,7 +2901,7 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
             settings.vpad.reset_all();
             break;
         }
-        this->adjust(item, 1, settings); // 入切の項目は決定でも動く（左右を探さずに済む）
+        if(!settings.modern_ui)this->adjust(item, 1, settings); // original UI keeps confirm-to-cycle
         break;
     case MenuNav::Cancel: {
         /*
@@ -2692,6 +3139,7 @@ RectPx FeatureMenu::panel_rect(const UiLayout &layout, TextOverlay *text, const 
 {
     const int cell_w = layout.cell_w;
     const int cell_h = layout.cell_h;
+    if(command_tabs_enabled_)return fixed_menu_rect(layout);
 
     /*
      * **行がコアから届く 2 つ（`Binds` と `Commands`）は下の「枠で決める」道を通る。**
@@ -2701,7 +3149,7 @@ RectPx FeatureMenu::panel_rect(const UiLayout &layout, TextOverlay *text, const 
     if ((this->page_ != Page::Binds) && (this->page_ != Page::Commands)) {
         /*
          * **1 画面に必ず収める。**分類ごとに分けたのは、項目を全部並べると低い窓で
-         * 下が見切れたためである（2026-08-08）。ここで高さを実測して丸めておけば、
+         * 下が見切れたためである（遊ぶ人・2026-08-08）。ここで高さを実測して丸めておけば、
          * 分類が増えても「入らない」が起きない。
          */
         //! **入口は「値の項目＋分類」の 2 段**（2026-08-19）。片方だけ数えるとパネルが足りない。
@@ -2711,7 +3159,7 @@ RectPx FeatureMenu::panel_rect(const UiLayout &layout, TextOverlay *text, const 
         /*
          * **幅は中身を測って決める**（`text_overlay.h`「呼び出し側で何文字で切るかを
          * 決めると必ず溢れるか余る」）。前は 56 桁の直書きで、日本語なら収まっていたが
-         * 英語にすると値が切れた（`Full-screen 3D (Landsca` で途切れた。実機で見た様子）。
+         * 英語にすると値が切れた（`Full-screen 3D (Landsca` で途切れた。遊ぶ人の画面）。
          * 同じ文でも言語で字数も字幅も変わるので、桁数を書いた時点で必ずどれかが溢れる。
          * 測る手段が無い（検査が寸法だけ見る）ときは、従来の 56 桁へ落とす。
          */
@@ -2731,7 +3179,7 @@ RectPx FeatureMenu::panel_rect(const UiLayout &layout, TextOverlay *text, const 
     }
 
     /*
-     * 割り当ての一覧と**コマンドの一覧**。**メインの地図の枠に収める**（2026-08-11 に決めた
+     * 割り当ての一覧と**コマンドの一覧**。**メインの地図の枠に収める**（決めたこと 2026-08-11
      * 「操作割り当ての画面が大きすぎる。メインのマップパネルに収まるようにして」）。
      * 行はコアのコマンドの数だけあってどう畳んでも 1 画面には入らないので、
      * パネルの大きさは中身ではなく**枠**で決め、入らないぶんを送る（スクロール）。
@@ -2761,7 +3209,7 @@ RectPx FeatureMenu::panel_rect(const UiLayout &layout, TextOverlay *text, const 
     const int room_h = std::max(cell_h * 8, bottom - top);
     int h = std::min(room_h, cell_h * 26);
     /*
-     * **コマンドの一覧は入るぶんだけに縮める**（2026-08-23 に決めた
+     * **コマンドの一覧は入るぶんだけに縮める**（決めたこと 2026-08-23
      * 「縦長になりすぎないように」）。2 列にして段が半分になったので、
      * ほとんどの段は 26 行の枠より小さい——枠のまま出すと、下半分が
      * 何も無い黒いパネルになる（実際にそうなった）。
@@ -2771,15 +3219,46 @@ RectPx FeatureMenu::panel_rect(const UiLayout &layout, TextOverlay *text, const 
      * `段 + 6` 行あれば全部見える。**この式を変えるならあちらも変える。**
      */
     if (this->page_ == Page::Commands) {
-        const int lines = (static_cast<int>(this->command_rows().size()) + 1) / 2;
+        const int lines = command_tabs_enabled_ ? static_cast<int>(command_rows().size())+2+(command_categories_?2:0) : (static_cast<int>(this->command_rows().size()) + 1) / 2;
         h = std::clamp((lines + 6) * cell_h, cell_h * 8, h);
     }
     const int w = std::min(std::max(area.w - (cell_w * 2), cell_w * 40), cell_w * 78);
     return RectPx{ area.x + ((area.w - w) / 2), top + ((room_h - h) / 2), w, h };
 }
 
-void FeatureMenu::draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const Hd2dSettings &settings) const
+void FeatureMenu::draw(UiPaint &paint,TextOverlay &text,const UiLayout &layout,const Hd2dSettings &settings) const {
+    MenuScaleScope scope(paint,text,settings.modern_ui?menu_font_scale(settings.modern_font_level):1.f);
+    painted_scale_=scope.scale;
+    painted_rows_.clear();
+    painted_items_.clear();
+    const UiProbeLayer probe_layer("menu");
+    draw_logical(paint,text,menu_logical_layout(layout,scope.scale,&text),settings);
+    if(ui_probe().enabled()&&open_) {
+        //! 検査用の問い合わせ：開いている機能メニュー（コマンドの一覧・設定）。行の矩形は上で部品として記録済み。
+        ProbeWindow w;
+        w.kind="feature-menu";
+        w.stage=showing_commands()?"commands":"settings";
+        if(showing_command_tabs()&&!command_tabs_.tabs().empty())w.title=command_tabs_.tabs()[command_tabs_.index()].label;
+        else w.title=page_label(page_);
+        w.items=painted_items_;
+        {const RectPx r=menu_scaled_rect(panel_rect(menu_logical_layout(layout,scope.scale,&text),&text,&settings),scope.scale);
+         w.has_rect=true;w.rect=ProbeRect{r.x,r.y,r.w,r.h};}
+        for(std::size_t i=0;i<painted_rows_.size();++i)if(painted_rows_[i].second==cursor_)w.selected=static_cast<int>(i);
+        ui_probe().window(std::move(w));
+    }
+}
+void FeatureMenu::draw_logical(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const Hd2dSettings &settings) const
 {
+    paint_theme_=settings.modern_ui?settings.modern_theme:-1;
+    const auto skin=modern_skin(paint_theme_);
+    const auto kLabelColor=paint_theme_>=0?skin.text:hd2d::kLabelColor;
+    const auto kValueColor=paint_theme_>=0?skin.text:hd2d::kValueColor;
+    const auto kPickedColor=paint_theme_>=0?skin.strong:hd2d::kPickedColor;
+    const auto kHintColor=paint_theme_>=0?skin.muted:hd2d::kHintColor;
+    const auto kHeadingColor=paint_theme_>=0?skin.strong:hd2d::kHeadingColor;
+    const auto kFixedColor=paint_theme_>=0?skin.muted:hd2d::kFixedColor;
+    const auto kEmptyColor=paint_theme_>=0?skin.muted:hd2d::kEmptyColor;
+
     if (!this->open_) {
         return;
     }
@@ -2804,7 +3283,7 @@ void FeatureMenu::draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout
     style.fill = PaintColor{ 0.06f, 0.07f, 0.11f, panel_transparent() ? 0.72f : 0.96f };
     style.border = PaintColor{ 0.55f, 0.62f, 0.78f, 1.f };
     style.border_px = 2;
-    paint.panel(box, style);
+    if(paint_theme_>=0)paint_modern_window(paint,box,paint_theme_);else paint.panel(box, style);
 
     const int x = box.x + layout.cell_w;
     /*
@@ -2820,14 +3299,21 @@ void FeatureMenu::draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout
     if (widest_value > 0) {
         widest_value += text.measure("◀  ▶");
     }
-    const int value_x = std::max(box.x + box.w - layout.cell_w - widest_value,
+    const int pane_right=paint_theme_>=0&&!binds&&page_!=Page::Commands?box.x+box.w*55/100:box.x+box.w;
+    const int value_x = std::max(pane_right - layout.cell_w - std::min(widest_value,(pane_right-box.x)/2),
         box.x + (box.w / 3)); //!< 名前の側が潰れない下限
     int y = box.y + cell_h;
+    if(showing_command_tabs()) {draw_commands(paint,text,layout,box,y);return;}
+    if(features_from_tab_)draw_command_tab_header(paint,text,layout,box,y);
 
     if (root) {
         text.draw(x, y, i18n::tr("hd2d.ui.feature-menu.feature-menu"), kPickedColor);
     } else {
         text.draw(x, y, std::string(i18n::tr("hd2d.ui.feature-menu.feature-menu-2")) + page_label(this->page_), kPickedColor);
+        if (this->page_ == Page::SubPanels) {
+            text.draw(x, y + cell_h, i18n::tr("hd2d.ui.feature-menu.sub-panels-help"), kHintColor,
+                pane_right - x - layout.cell_w);
+        }
     }
     y += cell_h * 2;
 
@@ -2854,16 +3340,43 @@ void FeatureMenu::draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout
         this->draw_commands(paint, text, layout, box, y);
         return;
     }
+    settings_details_rect_={};settings_minus_={};settings_plus_={};
+    if(paint_theme_>=0) {
+        settings_details_rect_={pane_right+12,y,std::max(1,box.x+box.w-pane_right-28),std::max(cell_h,box.y+box.h-cell_h*4-y)};
+        paint_modern_inset(paint,settings_details_rect_,paint_theme_);
+        if(!settings_editing_)paint.frame(settings_details_focus_?settings_details_rect_:RectPx{box.x+8,y,pane_right-box.x-12,settings_details_rect_.h},skin.trim,2);
+        std::string detail;
+        if(cursor_>=0&&cursor_<item_count)detail=std::string(item_label(items[cursor_]))+"\n\n"+item_value(items[cursor_],settings);
+        else if(root&&cursor_>=item_count&&cursor_-item_count<int(pages.size()))detail=page_label(pages[cursor_-item_count]);
+        const auto lines=wrap_ui_text(detail,std::max(1,settings_details_rect_.w-24),[&](std::string_view part,int width){return text.fit_bytes(part,width);});
+        const int n=std::max(1,(settings_details_rect_.h-20)/cell_h);
+        settings_details_scroll_=std::clamp(settings_details_scroll_,0,std::max(0,int(lines.size())-n));
+        for(int i=settings_details_scroll_;i<std::min<int>(lines.size(),settings_details_scroll_+n);++i)
+            text.draw(settings_details_rect_.x+12,y+10+(i-settings_details_scroll_)*cell_h,lines[i],kLabelColor,settings_details_rect_.w-24);
+        if(int(lines.size())>n){const int thumb=std::max(10,settings_details_rect_.h*n/int(lines.size()));paint.rect({settings_details_rect_.x+settings_details_rect_.w-4,y+(settings_details_rect_.h-thumb)*settings_details_scroll_/std::max(1,int(lines.size())-n),3,thumb},skin.trim);}
+    }
 
-    for (int i = 0; i < count; ++i) {
+    const int visible=paint_theme_>=0?std::max(1,(box.y+box.h-cell_h*4-y)/cell_h):count;
+    page_scroll_=std::clamp(page_scroll_,0,std::max(0,count-visible));
+    if(cursor_<page_scroll_)page_scroll_=cursor_;if(cursor_>=page_scroll_+visible)page_scroll_=cursor_-visible+1;
+    if(paint_theme_>=0){paint_modern_rule(paint,{box.x+8,y-5,pane_right-box.x-16,1},paint_theme_);paint_modern_rule(paint,{box.x+8,y+std::min(count,visible)*cell_h+4,pane_right-box.x-16,1},paint_theme_);}
+    for (int i = page_scroll_; i < std::min(count,page_scroll_+visible); ++i) {
+        painted_rows_.push_back({{box.x+8,y,pane_right-box.x-16,cell_h},i});
+        painted_items_.push_back(ProbeItem{std::string(),(root && (i >= item_count)) ? std::string(page_label(pages[static_cast<std::size_t>(i - item_count)]))
+                                                              : std::string(item_label(items[static_cast<std::size_t>(i)])),{},true,i==this->cursor_});
+        if(ui_probe().enabled()) {
+            const RectPx r=menu_scaled_rect(painted_rows_.back().first,painted_scale_);
+            ui_probe().button(painted_items_.back().label,ProbeRect{r.x,r.y,r.w,r.h},true,i==this->cursor_,"menu-row");
+        }
         const bool picked = (i == this->cursor_);
         if (picked) {
-            paint.rect(RectPx{ box.x + 2, y, box.w - 4, cell_h }, PaintColor{ 0.95f, 0.85f, 0.30f, 0.18f });
+            if(paint_theme_>=0)paint_modern_selection(paint,{box.x+8,y,pane_right-box.x-16,cell_h},paint_theme_);
+            else paint.rect(RectPx{ box.x + 2, y, box.w - 4, cell_h }, PaintColor{ 0.95f, 0.85f, 0.30f, 0.18f });
         }
         if (root && (i >= item_count)) {
             const std::string label
                 = std::string(page_label(pages[static_cast<std::size_t>(i - item_count)])) + " …";
-            text.draw(x, y, label, picked ? kPickedColor : kLabelColor, box.w - (layout.cell_w * 2));
+            text.draw(x, y, label, picked ? kPickedColor : kLabelColor, pane_right-box.x - (layout.cell_w * 2));
             y += cell_h;
             continue;
         }
@@ -2871,13 +3384,26 @@ void FeatureMenu::draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout
         text.draw(x, y, item_label(item), picked ? kPickedColor : kLabelColor, value_x - x);
         const std::string value = item_value(item, settings);
         if (!value.empty()) {
-            const std::string shown = picked ? ("◀ " + value + " ▶") : value;
-            text.draw(value_x, y, shown, picked ? kPickedColor : kValueColor, (box.x + box.w) - value_x - layout.cell_w);
+            const std::string shown = picked&&paint_theme_<0 ? ("◀ " + value + " ▶") : value;
+            text.draw(value_x, y, shown, picked ? kPickedColor : kValueColor, pane_right - value_x - layout.cell_w);
         }
         y += cell_h;
     }
 
     y += cell_h / 2;
+    if(paint_theme_>=0) {
+        y=box.y+box.h-cell_h*3;
+        if(settings_editing_&&cursor_>=0&&cursor_<item_count) {
+            settings_minus_={box.x+16,y-6,40,cell_h+10};settings_plus_={box.x+box.w-56,y-6,40,cell_h+10};
+            paint_modern_inset(paint,settings_minus_,paint_theme_);paint_modern_inset(paint,settings_plus_,paint_theme_);
+            text.draw(settings_minus_.x+12,y,"−",kPickedColor,24);text.draw(settings_plus_.x+12,y,"+",kPickedColor,24);
+            text.draw(box.x+68,y,item_value(items[cursor_],settings),kValueColor,box.w-136);
+        }
+        text.draw(x,box.y+box.h-cell_h,
+            i18n::current()=="ja"?"上下: 選択 / スクロール  左右: 値選択  Tab・L2/R2: 一覧 / 説明  決定: 開く / 実行":"Up/Down: select / scroll  Left/Right: choose value  Tab/L2/R2: list / details  Confirm: open / run",
+            kHintColor,box.w-32);
+        return;
+    }
     if (root) {
         //! **←→ も要る**（入口の 1 行目は言語という値の項目である。2026-08-19）。
         text.draw(x, y, i18n::tr("hd2d.ui.feature-menu.up-down-choose-left-right-change-enter"), kHintColor);
@@ -2895,6 +3421,15 @@ void FeatureMenu::draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout
 void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
     const Hd2dSettings &settings, const RectPx &box, int top_y) const
 {
+    const auto skin=modern_skin(paint_theme_);
+    const auto kLabelColor=paint_theme_>=0?skin.text:hd2d::kLabelColor;
+    const auto kValueColor=paint_theme_>=0?skin.text:hd2d::kValueColor;
+    const auto kPickedColor=paint_theme_>=0?skin.strong:hd2d::kPickedColor;
+    const auto kHintColor=paint_theme_>=0?skin.muted:hd2d::kHintColor;
+    const auto kHeadingColor=paint_theme_>=0?skin.strong:hd2d::kHeadingColor;
+    const auto kFixedColor=paint_theme_>=0?skin.muted:hd2d::kFixedColor;
+    const auto kEmptyColor=paint_theme_>=0?skin.muted:hd2d::kEmptyColor;
+
     const int cell_w = layout.cell_w;
     const int cell_h = layout.cell_h;
     const std::vector<BindRow> rows = this->bind_rows();
@@ -2904,7 +3439,7 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
      * 列。**マスの左端を先に決めてから**中身を書く（枠と字を同じ矩形から作るので、
      * 「囲ってあるのに別の字が入っている」が起きない。必守制約 3 の親戚）。
      *
-     * 幅は枠から割り出す（決め打ちにしない）。地図の枠に収めた（2026-08-11 に決めた）ぶん
+     * 幅は枠から割り出す（決め打ちにしない）。地図の枠に収めたぶん
      * 横が狭くなりうるので、22 桁を当て続けると操作名の欄が消える。
      *
      * 右端の `gutter` は**送りの印（▲▼）の場所**である。ここを空けておかないと
@@ -2922,7 +3457,7 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
     int y = top_y + (cell_h * 3 / 2);
 
     //! 下の 2 行は操作説明に取っておく（一覧に食われると、出方が分からなくなる）。
-    const int list_bottom = (box.y + box.h) - (cell_h * 3);
+    const int list_bottom = (box.y + box.h) - (cell_h * (paint_theme_>=0?5:3)) - (paint_theme_>=0?8:0);
     const int visible = std::max(1, (list_bottom - y) / cell_h);
     this->bind_visible_rows_ = visible;
 
@@ -2938,12 +3473,14 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
     }
     this->bind_scroll_ = std::clamp(this->bind_scroll_, 0, std::max(0, count - visible));
 
+    if(paint_theme_>=0){paint_modern_row_rules(paint,{box.x+8,y,box.w-16,visible*cell_h},cell_h,paint_theme_);paint_modern_rule(paint,{box.x+8,y-5,box.w-16,1},paint_theme_);paint_modern_rule(paint,{box.x+8,list_bottom+4,box.w-16,1},paint_theme_);}
     for (int i = this->bind_scroll_; (i < count) && (i < (this->bind_scroll_ + visible)); ++i) {
         const BindRow &row = rows[static_cast<std::size_t>(i)];
         const bool picked = (i == this->cursor_);
         const bool heading = (row.action == kActionNone) && !row.fixed;
         if (picked) {
-            paint.rect(RectPx{ box.x + 2, y, box.w - 4, cell_h }, PaintColor{ 0.95f, 0.85f, 0.30f, 0.14f });
+            if(paint_theme_>=0)paint_modern_selection(paint,{box.x+8,y,box.w-16,cell_h},paint_theme_);
+            else paint.rect(RectPx{ box.x + 2, y, box.w - 4, cell_h }, PaintColor{ 0.95f, 0.85f, 0.30f, 0.14f });
         }
         const TextColor label_color = heading ? kHeadingColor : (row.fixed ? kFixedColor : (picked ? kPickedColor : kLabelColor));
         text.draw(label_x, y, row.label, label_color, label_w);
@@ -2956,11 +3493,11 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
                 text.draw(col_x[col] + (cell_w / 2), y, value, value_color, col_w - cell_w);
                 if (picked && (col == this->bind_col_) && !row.fixed) {
                     /*
-                     * **カーソルはマスを囲む枠**（2026-08-11 に決めた「＞で表しているが
+                     * **カーソルはマスを囲む枠**（決めたこと 2026-08-11「＞で表しているが
                      * 実機では□枠」）。変更モードの間は色を変えて、待っていることを示す。
                      */
-                    const PaintColor frame_color = this->waiting_ ? PaintColor{ 1.f, 0.55f, 0.35f, 1.f }
-                                                                  : PaintColor{ 0.95f, 0.85f, 0.30f, 1.f };
+                    const PaintColor frame_color = paint_theme_>=0?modern_skin(paint_theme_).trim:
+                        (this->waiting_ ? PaintColor{ 1.f, 0.55f, 0.35f, 1.f } : PaintColor{ 0.95f, 0.85f, 0.30f, 1.f });
                     paint.frame(RectPx{ col_x[col], y - 1, col_w, cell_h + 2 }, frame_color, 2);
                 }
             }
@@ -2987,7 +3524,7 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
             left);
         text.draw(box.x + layout.cell_w, hint_y, buf, kPickedColor, box.w - (cell_w * 2));
         /*
-         * **受け取ったのに入らなかったものを出す**（2026-08-14 に気づいた）。
+         * **受け取ったのに入らなかったものを出す**。
          * 上の行の下へ重ねる（変更モードの間しか出ないので、割り付けは食わない）。
          */
         if (!this->wait_note_.empty()) {

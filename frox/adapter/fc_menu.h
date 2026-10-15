@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file fc_menu.h
  * @brief コアのカーソルとプロンプトの読み取り（M0.5 FH-01。設計 §14.2(b)）。
  *
@@ -11,8 +11,10 @@
 #pragma once
 
 #include "frame/game_frame.h"
+#include "frame/protocol_messages.h"
 
 namespace fc {
+std::vector<ModernAction> birth_menu_actions(const GameFrame &frame);
 
 /*!
  * @brief コアが自前で描いているカーソル `"> "` を Term ミラーから探す。
@@ -35,6 +37,29 @@ bool fill_core_cursor(GameFrame &frame);
  * 行 1〜2 へ落ちるので、行 0〜2 を見る（§14.1 の事実 4）。
  */
 void fill_row0_prompt(GameFrame &frame);
+
+/*!
+ * @brief 移動の目標のマスを選ぶ問い（`tgt_pt()`）のあいだ、カーソルのマスを 3D の地図へ出す（修-32）。
+ * @details `fill_row0_prompt()` で `frame.prompt` が `Travel: ` の帯になっているときだけ、Term のカーソルのマスを
+ * 入力を受けない狙いの重ね（`frame.targeting.preview_only` の十字線）として積む。
+ * **`apply_native_targeting_menu_frame()` の後に呼ぶ**——あれは重ねだけの `targeting` を毎回空にする。
+ */
+void fill_travel_reticle(GameFrame &frame);
+
+/*! @brief 文がクエストの説明（`名前 (Level N): 説明文`。日本語は `（レベル N）`）か（修-33）。 */
+bool is_quest_message_text(const std::string &text);
+
+/*!
+ * @brief 建物の画面で、クエストの説明文がメッセージの箱に出しっぱなしか（修-33）。
+ * @details 原作は説明文を出したあとキーを待たずに建物の命令待ちへ戻るので、文は次の命令まで残る。
+ */
+bool building_quest_message_shown();
+
+/*!
+ * @brief 説明文が出ているあいだの決定が、説明文を出した命令の繰り返しか（修-33）。真なら命令は送らず、説明文を閉じるだけにする。
+ * @param key 決定が送ろうとしているキー。@param last_key 原作へ最後に渡したキー。
+ */
+bool repeats_command_under_message(int key, int last_key, bool message_shown);
 
 /*!
  * @brief ミラーの全行から選択肢の札を集めて `frame.menu_choices` へ積む。
@@ -104,5 +129,94 @@ int command_label_selftest();
  * その先の行が元の札を持ったまま残り、窓の 2 件のはずが 29 件出ていた。
  */
 int obj_prompt_choice_selftest();
+
+//! Rare selector/list grammars added by the command/UI audit.
+int audit_semantics_selftest();
+
+/*!
+ * @brief **オプションの一覧を、原作のオプションの表から全件にする**（2026-10-10 の決めたこと）。
+ *
+ * @details 原作 `cmd4.c` の `do_cmd_options_aux()` は、`bottom_opt = Term->hgt - 3` を超える件数を
+ * 「下へスクロール」の札で隠し、見える行だけを描く。新しい UI の一覧は Term の写しの見える行から作る
+ * （共通の `modern_boolean_settings()`）ので、窓が小さいと 20 件ほどで切れて、後ろの項目
+ * （誕生時オプションの `no_selling` など）が一覧に出なかった。
+ *
+ * 画面の高さは変えない（キーを受ける途中で `Term_resize()` を呼ぶとゲーム本体が落ちた）。代わりに:
+ * - `apply()`: 共通の側が作った窓の**行**を、原作の表（`option_info[]`。`fc_options_row()`）の全件に差し替える。
+ *   見えている行は共通の側が作った行をそのまま使い、見えていない行だけ表から足す（訳も同じ口 `fc_tr_arg`）。
+ *   右の欄（原作の画面を並べた本文）は触らない——原作が自分でスクロールするので、カーソルを動かせば追いかける。
+ *   ゲーム中の閲覧のみの頁（`settings_readonly`）には行の選択が無いので、本文のほうを全件にする。
+ * - `rewrite_focus()`: 画面がカーソルを動かすたびに送る focus の知らせを、**原作のカーソルを 1 つ動かす上下のキー**
+ *   （`native_key` の `2`/`8`）に直す。原作は端で回り込むので、近いほうの向きへ動かす。値は書き換えない
+ *   （左右は共通の側が原作の `y`/`n` に直している）。
+ */
+class OptionsList {
+public:
+    void apply(GameFrame &frame);
+    void rewrite_focus(presentation::InputEventWire &event) const;
+
+private:
+    std::vector<std::string> ids_;
+    std::string cursor_;
+};
+OptionsList &options_list();
+
+//! オプションの一覧の検査（`--selftest` から呼ぶ）。落ちた件数。
+int options_list_selftest();
+
+/*!
+ * @brief **選択メニュー（原作の `menu_choose`）の一覧を、全件・原作の並びで組む**（2026-10-10 の決めたこと）。
+ *
+ * @details 原作の `menu_choose()`（`menu.c`）は項目を全部 Term の行へ描き、スクロールしない。新しい UI の一覧は
+ * Term の写しの行から作る（`fill_menu_choices()`。選択肢は 64 件まで）ので、(1) 項目が Term の高さを超えるとはみ出した項目が一覧に
+ * 出ず選べない、(2) 2 列に割るメニュー（突然変異・才能の選択）は行ごとに読まれて並びが a, s, b, t … と混ざる。
+ *
+ * 呼ぶ側の翻訳単位だけ、組み立ての設定で `menu_choose` を `fc_menu_choose`（`fc_shim.c`）に差し替えてある
+ * （`fc_shim.h` の「選択メニュー `menu_choose()` の全件」）。`fc_menu_choose()` はメニューの全件を原作の
+ * コールバックから先に取って置き、原作の `menu_choose()` をそのまま呼ぶ。ここは**取った全件でフレームの選択肢を組み直す**。
+ * - 項目ごとに、Term の写しの行に見えているもの（共通の側が読んだ選択肢、または `キー) 字` の行の探索）はその行の位置を
+ *   使い（右の欄の本文から選択肢の字を抜く処理が行の位置を頼る）、見えていないもの（Term の外へはみ出した項目）は行の無い選択肢にする。
+ * - 並びは原作の項目の並び。字は原作が描く字と同じ（`fc_spell_name`）。説明（`MENU_HELP`）は選択肢の説明にする。
+ * - 色が `TERM_DARK` の項目は、原作もキーを付けず行を描かない（選べない）ので出さない。
+ * - 行に結び付かない補助の選択肢（`C` 人物調書・`?` 閲覧）は項目の後ろに残す。
+ * Term に 1 項目も見えていないとき（人物調書の画面など、メニューの画でないとき）は何も変えない。
+ * 選ぶと画面側がその項目のキーを送り、原作の入力の処理（`get_com`）がそのまま受ける。
+ */
+struct MenuChooseItem {
+    int key{};            //!< 押すキー（原作が振ったもの。小文字化も済み）
+    std::string text;     //!< 表示の字（UTF-8）
+    std::string help;     //!< 説明（UTF-8。無ければ空）
+};
+//! 開いている選択メニューの全件を `fc_menu_choose_item()` から読む（開いていなければ空）。
+std::vector<MenuChooseItem> menu_choose_items();
+//! 全件で `frame.menu_choices` を組み直す。組み直したら true。
+bool menu_choose_apply(GameFrame &frame, const std::vector<MenuChooseItem> &items);
+//! `menu_choose_items()` で読んで `menu_choose_apply()` する。
+void menu_choose_apply(GameFrame &frame);
+
+//! 選択メニューの検査（`--selftest` から呼ぶ）。落ちた件数。
+int menu_choose_selftest();
+
+/*!
+ * @brief 店の購入の確認を、決定だけで通せるようにする（初期の選択を「はい」にする）。
+ * @details 購入の確認は原作の `msg_prompt("…Really buy %s for %d gp? [y/n]", "ny", PROMPT_YES_NO)`（`shop.c` の `_sell_aux`）。
+ * `[y/n]` は小文字なので、共通の側（`modern_content.h`）の既定は「いいえ」になる（`[Y/n]` だけ「はい」）。
+ * 品と個数を選んだあとの確認で「いいえ」が初期だと、決定ボタン（A）・Enter を続けて押すと**買わずに店の一覧へ戻り**、
+ * 画面は何も言わない（買えないように見える。2026-10-11 の気づいたこと）。売る・譲る・取り置き・品揃えの入れ替えは
+ * 取り返しのつかない確認なので「いいえ」のまま。購入の確認だけ「はい」にする（変愚・短愚の店の確認は `[Y/n]` で、もとから「はい」）。
+ * 店が開いていて確認の段（`frame.modern.stage == "confirm"`）の文が購入の確認のときだけ変える。
+ */
+void store_purchase_default_yes(GameFrame &frame);
+//! `store_purchase_default_yes()` の検査（`--selftest` から呼ぶ）。落ちた件数。
+int store_purchase_default_selftest();
+
+/*!
+ * @brief 店の命令の同義キー（`p` `g` `d`）を、店の窓がコアへ送れるか（`--selftest` から呼ぶ）。落ちた件数。
+ * @details 原作の店は同じ命令を複数のキーで受ける（`[b/p/g] Buy  [s/d] Sell`。`shop.c`・`home.c`）が、アダプタが申告する選択肢は
+ * 各札の先頭の 1 キー（`b`・`s`）だけである。以前は `p` を押すと『この画面では使えないキーです。』と断られた（2026-10-11）。
+ * Frox 以外のプロファイルでは同義キーを広げない（他のコアの店は変えない）こともここで見る。
+ */
+int store_native_key_selftest();
+
 
 } // namespace fc

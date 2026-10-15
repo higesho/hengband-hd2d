@@ -22,11 +22,18 @@ ZIP 内の先頭フォルダー名は任意。改行と UTF-8 BOM の違いは�
 
 | コア | 対応版 | 固定コミットのソース |
 |---|---|---|
-| hengband | 3.0.2.4-Beta | [ZIP](https://github.com/hengband/hengband/archive/43106a70d7057dc6c506bac96b0888ecdaddb4b8.zip) |
-| tangband | 26.0.4 | [ZIP](https://github.com/tanguband/tangband/archive/8d8e1f2cd74fe467a153d7dbdb0b2c5ed0ab72e2.zip) |
+| hengband | 3.0.2.5-Beta | [ZIP](https://github.com/hengband/hengband/archive/18b10d6ea5fd234c119053e0a209c90aede21fa4.zip) |
+| tangband | 26.0.4 | [ZIP](https://github.com/tanguband/tangband/archive/8d8e1f2cd74fe467a153d7dbdb0b2c5ed0ab72e2.zip)（変愚の固定版 [ZIP](https://github.com/hengband/hengband/archive/43106a70d7057dc6c506bac96b0888ecdaddb4b8.zip) も使う） |
 | gensoband | 2.1.6 | [ZIP](https://github.com/asamayim/gensoband/archive/fc4418078a62db9fae2915c8b6ab24a063609093.zip) |
 | silq | 1.5.1.0-beta2 | [ZIP](https://github.com/sil-quirk/sil-q/archive/d0355bf97e873ba10e6b364aa127bc5ebbbd05f1.zip) |
 | frox | 7.3.pipari.2 | [ZIP](https://github.com/Gliktch/froxcomposband/archive/c7641efca8caf6069aa9a71a4b5c8547a64013be.zip) |
+| angband | 4.2.6 | [ZIP](https://github.com/angband/angband/archive/f3082213b73f3e463e3d0d60bff4b00462beae6e.zip) |
+| umoria | 5.7.15 | [ZIP](https://github.com/dungeons-of-moria/umoria/archive/3bf8abc4f76812810e59d738492c7b61fb8f1bb6.zip) |
+| rogue2 | 6.0 | Rogue2.Official のコミット 895a468ab632c7ba05d88b706ac1db478dffbbe8 |
+| rogue36 | 3.6.4 | usotopr/newrogue3.6 のコミット 570c8825d867ee4da1f03f9fd5309bb9c454a26e |
+| rogue54 | 5.4.4 | Davidslv/rogue のコミット f4653c2a2ee6981a73abe9dfda055134285e1e79 |
+
+対応版の一覧の正本は `supported_versions.json`（追加・削除の方針は `SUPPORTED_VERSIONS.md`）。
 
 短愚は表にある短愚と変愚の固定版ZIPを両方使う。選択順序は任意。共通ソースを入力からコピー・変換して再構成し、TANGBAND指定でビルドする。
 任意の別版への自動対応、改造版、元のゲーム EXE の取り込みは対象外。

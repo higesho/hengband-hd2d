@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file sq_menu.h
  * @brief 選ぶ画面をコアが**名乗る**ための層。
  *
@@ -39,6 +39,9 @@
 #include "frame/game_frame.h"
 
 namespace sq {
+// Native colour-based menus, including the eight post-death actions, expose
+// their choices and selected row to the common modern UI.
+std::string menu_title();
 
 /*!
  * @brief Term 行 0 を読んで `frame.prompt` / `frame.numeric` を埋める。
@@ -63,5 +66,8 @@ void fill_row0_prompt(GameFrame &frame);
  * 訳のフックを 1 つも通らないので、**どの言語でも必ずこの綴りで出る**。
  */
 bool fill_menu_choices(GameFrame &frame);
+
+//! Pure semantic checks for the command/UI audit additions.
+int menu_semantics_selftest();
 
 } // namespace sq

@@ -5,6 +5,8 @@
  * 依存は `frame/` のヘッダと JSON ライブラリだけ（中立性は frame_codec.h 冒頭のとおり）。
  */
 #include "frame/frame_codec.h"
+#include "frame/modern_window_codec.h"
+#include "frame/targeting_codec.h"
 
 #include <nlohmann/json.hpp>
 
@@ -200,39 +202,8 @@ const json *sub_arr(const json &o, const char *key, std::string &err, bool &ok)
  * ============================================================================
  */
 
-// ---- SubPanelLine（status_col_lines / depth / sub_panels[].lines） ----
-json enc_sub_panel_line(const SubPanelLine &v)
-{
-    const SubPanelLine def{};
-    json o = json::object();
-    put_str(o, "text_utf8", v.text_utf8, def.text_utf8);
-    put_num<uint8_t>(o, "color", v.color, def.color);
-    return o;
-}
-
-bool dec_sub_panel_line(const json &o, SubPanelLine &v, std::string &err)
-{
-    return rd_str(o, "text_utf8", v.text_utf8, err) && rd_num(o, "color", v.color, err);
-}
-
-// ---- TermTextRun（bottom_row_runs） ----
-json enc_term_text_run(const TermTextRun &v)
-{
-    const TermTextRun def{};
-    json o = json::object();
-    put_num(o, "col", v.col, def.col);
-    put_str(o, "text_utf8", v.text_utf8, def.text_utf8);
-    put_num<uint8_t>(o, "color", v.color, def.color);
-    return o;
-}
-
-bool dec_term_text_run(const json &o, TermTextRun &v, std::string &err)
-{
-    return rd_num(o, "col", v.col, err) && rd_str(o, "text_utf8", v.text_utf8, err) &&
-           rd_num(o, "color", v.color, err);
-}
-
-// ---- TermColorSpan（menu_term_lines[].color_spans） ----
+// ---- TermColorSpan（menu_term_lines[].color_spans / status_col_lines[].color_spans /
+//      bottom_row_runs[].color_spans） ----
 json enc_term_color_span(const TermColorSpan &v)
 {
     const TermColorSpan def{};
@@ -247,6 +218,75 @@ bool dec_term_color_span(const json &o, TermColorSpan &v, std::string &err)
 {
     return rd_num(o, "begin", v.begin, err) && rd_num(o, "len", v.len, err) &&
            rd_num(o, "color", v.color, err);
+}
+
+//! AH-25 で `SubPanelLine`/`TermTextRun` も `color_spans` を持つようになったので、
+//! 3 者で使い回す小さな部品にした（元は `enc_term_mirror_line()`/`dec_term_mirror_line()`
+//! だけがこの形の配列を読み書きしていた）。
+json enc_color_spans_array(const std::vector<TermColorSpan> &spans)
+{
+    json arr = json::array();
+    for (const TermColorSpan &span : spans) {
+        arr.push_back(enc_term_color_span(span));
+    }
+    return arr;
+}
+
+bool dec_color_spans_array(const json &o, std::vector<TermColorSpan> &spans, std::string &err)
+{
+    bool ok = true;
+    if (const json *arr = sub_arr(o, "color_spans", err, ok)) {
+        spans.resize(arr->size());
+        for (size_t i = 0; i < arr->size(); ++i) {
+            if (!(*arr)[i].is_object() || !dec_term_color_span((*arr)[i], spans[i], err)) {
+                if (err.empty()) {
+                    err = "color_spans[] is not an object";
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    return ok;
+}
+
+// ---- SubPanelLine（status_col_lines / depth / sub_panels[].lines） ----
+json enc_sub_panel_line(const SubPanelLine &v)
+{
+    const SubPanelLine def{};
+    json o = json::object();
+    put_str(o, "text_utf8", v.text_utf8, def.text_utf8);
+    put_num<uint8_t>(o, "color", v.color, def.color);
+    if (!v.color_spans.empty()) {
+        o["color_spans"] = enc_color_spans_array(v.color_spans);
+    }
+    return o;
+}
+
+bool dec_sub_panel_line(const json &o, SubPanelLine &v, std::string &err)
+{
+    return dec_color_spans_array(o, v.color_spans, err) && rd_str(o, "text_utf8", v.text_utf8, err) &&
+           rd_num(o, "color", v.color, err);
+}
+
+// ---- TermTextRun（bottom_row_runs） ----
+json enc_term_text_run(const TermTextRun &v)
+{
+    const TermTextRun def{};
+    json o = json::object();
+    put_num(o, "col", v.col, def.col);
+    put_str(o, "text_utf8", v.text_utf8, def.text_utf8);
+    put_num<uint8_t>(o, "color", v.color, def.color);
+    if (!v.color_spans.empty()) {
+        o["color_spans"] = enc_color_spans_array(v.color_spans);
+    }
+    return o;
+}
+
+bool dec_term_text_run(const json &o, TermTextRun &v, std::string &err)
+{
+    return dec_color_spans_array(o, v.color_spans, err) && rd_num(o, "col", v.col, err) &&
+           rd_str(o, "text_utf8", v.text_utf8, err) && rd_num(o, "color", v.color, err);
 }
 
 // ---- TermMirrorLine（menu_term_lines） ----
@@ -305,6 +345,11 @@ json enc_menu_choice(const MenuChoice &v, const MenuChoice &def)
     put_num(o, "key_begin", v.key_begin, def.key_begin);
     put_num(o, "key_len", v.key_len, def.key_len);
     put_num(o, "key", v.key, def.key);
+    put_bool(o,"available",v.available,def.available);
+    put_str(o,"reason_utf8",v.reason_utf8,def.reason_utf8);
+    put_str(o,"description_utf8",v.description_utf8,def.description_utf8);
+    put_str(o,"label_utf8",v.label_utf8,def.label_utf8);
+    put_bool(o,"selected",v.selected,def.selected);
     return o;
 }
 
@@ -312,7 +357,7 @@ bool dec_menu_choice(const json &o, MenuChoice &v, std::string &err)
 {
     return rd_num(o, "line_index", v.line_index, err) && rd_num(o, "span_begin", v.span_begin, err) &&
            rd_num(o, "span_len", v.span_len, err) && rd_num(o, "key_begin", v.key_begin, err) &&
-           rd_num(o, "key_len", v.key_len, err) && rd_num(o, "key", v.key, err);
+           rd_num(o, "key_len", v.key_len, err) && rd_num(o, "key", v.key, err) && rd_bool(o,"available",v.available,err) && rd_str(o,"reason_utf8",v.reason_utf8,err) && rd_str(o,"description_utf8",v.description_utf8,err) && rd_str(o,"label_utf8",v.label_utf8,err) && rd_bool(o,"selected",v.selected,err);
 }
 
 // ---- PromptChoice ----
@@ -417,6 +462,163 @@ bool dec_sounds(const json &j, std::vector<SoundEvent> &out, std::string &err, b
             !rd_num(e, "p", s.path, err) || !rd_num(e, "g", s.gain, err)) {
             return false;
         }
+    }
+    return true;
+}
+
+/*!
+ * @brief `status_effects` の配列を読む。
+ * @details 鍵が無いのは成功・0 件。配列や要素、各欄の型違いは失敗。
+ * `t`（kind）が知らない値（負や `kStatusEffectKindMax` より大きい）なら**その 1 件だけ捨てる**。
+ * フレームごと失敗にすると、新しいコアを古い画面につないだときに絵が 1 枚も出なくなる
+ * （v1 §3.2「未知は捨てる・既定へ落ちる」）。
+ */
+bool dec_status_effects(const json &j, std::vector<StatusEffectView> &out, std::string &err, bool &ok)
+{
+    const json *const arr = sub_arr(j, "status_effects", err, ok);
+    if (arr == nullptr) {
+        return ok;
+    }
+    out.clear();
+    out.reserve(arr->size());
+    for (size_t i = 0; i < arr->size(); ++i) {
+        const json &e = (*arr)[i];
+        if (!e.is_object()) {
+            err = "status_effects[] is not an object";
+            return false;
+        }
+        StatusEffectView s{};
+        int kind = static_cast<int>(s.kind);
+        if (!rd_str(e, "k", s.key, err) || !rd_str(e, "l", s.label_utf8, err) ||
+            !rd_str(e, "a", s.amount_utf8, err) || !rd_num(e, "t", kind, err)) {
+            return false;
+        }
+        if ((kind < 0) || (kind > static_cast<int>(kStatusEffectKindMax))) {
+            continue; // 知らない種類はこの 1 件だけ捨てる
+        }
+        s.kind = static_cast<StatusEffectKind>(kind);
+        out.push_back(std::move(s));
+    }
+    return true;
+}
+
+/*
+ * ---- 攻撃の視覚効果----
+ * マスの並びは `[[y,x], ...]`（経路）と `[[y,x,dist], ...]`（爆発の範囲）。
+ */
+json enc_fx_cells(const std::vector<FxCell> &cells, bool with_dist)
+{
+    json arr = json::array();
+    for (const FxCell &c : cells) {
+        json a = json::array();
+        a.push_back(c.y);
+        a.push_back(c.x);
+        if (with_dist) {
+            a.push_back(c.dist);
+        }
+        arr.push_back(std::move(a));
+    }
+    return arr;
+}
+
+bool dec_fx_cells(const json &o, const char *key, bool with_dist, std::vector<FxCell> &out, std::string &err)
+{
+    out.clear();
+    const auto it = o.find(key);
+    if (it == o.end()) {
+        return true;
+    }
+    if (!it->is_array()) {
+        err = sfmt("%s is not an array", key);
+        return false;
+    }
+    const size_t arity = with_dist ? 3 : 2;
+    out.reserve(it->size());
+    for (const json &a : *it) {
+        if (!a.is_array() || (a.size() != arity)) {
+            err = sfmt("%s[] is not a %u-element tuple", key, static_cast<unsigned>(arity));
+            return false;
+        }
+        for (const json &v : a) {
+            if (!v.is_number_integer()) {
+                err = sfmt("%s[][] is not an integer", key);
+                return false;
+            }
+        }
+        FxCell c{};
+        c.y = a[0].get<int16_t>();
+        c.x = a[1].get<int16_t>();
+        if (with_dist) {
+            c.dist = a[2].get<uint8_t>();
+        }
+        out.push_back(c);
+    }
+    return true;
+}
+
+bool dec_projections(const json &j, std::vector<ProjectionFx> &out, std::string &err, bool &ok)
+{
+    const json *const arr = sub_arr(j, "projections", err, ok);
+    if (arr == nullptr) {
+        return ok;
+    }
+    out.clear();
+    out.reserve(arr->size());
+    for (const json &e : *arr) {
+        if (!e.is_object()) {
+            err = "projections[] is not an object";
+            return false;
+        }
+        ProjectionFx p{};
+        int origin = static_cast<int>(p.origin);
+        int shape = static_cast<int>(p.shape);
+        if (!rd_num(e, "seq", p.seq, err) || !rd_num(e, "o", origin, err) || !rd_num(e, "s", shape, err) ||
+            !rd_str(e, "at", p.attr, err) || !rd_num(e, "r", p.rad, err) || !rd_num(e, "sy", p.src_y, err) ||
+            !rd_num(e, "sx", p.src_x, err) || !rd_num(e, "iy", p.impact_y, err) || !rd_num(e, "ix", p.impact_x, err) ||
+            !rd_num(e, "f", p.flags, err) || !dec_fx_cells(e, "p", false, p.path, err) ||
+            !dec_fx_cells(e, "a", true, p.area, err)) {
+            return false;
+        }
+        if ((origin < 0) || (origin > static_cast<int>(AttackFxOrigin::Other)) || (shape < 0) ||
+            (shape > static_cast<int>(ProjectionShape::Touch))) {
+            continue; // 知らない値はこの 1 件だけ捨てる（status_effects と同じ約束）
+        }
+        p.origin = static_cast<AttackFxOrigin>(origin);
+        p.shape = static_cast<ProjectionShape>(shape);
+        out.push_back(std::move(p));
+    }
+    return true;
+}
+
+bool dec_missiles(const json &j, std::vector<MissileFx> &out, std::string &err, bool &ok)
+{
+    const json *const arr = sub_arr(j, "missiles", err, ok);
+    if (arr == nullptr) {
+        return ok;
+    }
+    out.clear();
+    out.reserve(arr->size());
+    for (const json &e : *arr) {
+        if (!e.is_object()) {
+            err = "missiles[] is not an object";
+            return false;
+        }
+        MissileFx m{};
+        int origin = static_cast<int>(m.origin);
+        int kind = static_cast<int>(m.kind);
+        if (!rd_num(e, "seq", m.seq, err) || !rd_num(e, "o", origin, err) || !rd_num(e, "k", kind, err) ||
+            !rd_num(e, "it", m.item_id, err) || !rd_str(e, "br", m.brand, err) || !rd_num(e, "sy", m.src_y, err) ||
+            !rd_num(e, "sx", m.src_x, err) || !rd_bool(e, "h", m.hit, err) ||
+            !dec_fx_cells(e, "p", false, m.path, err) || !dec_fx_cells(e, "rp", false, m.return_path, err)) {
+            return false;
+        }
+        if ((origin < 0) || (origin > static_cast<int>(AttackFxOrigin::Other)) || (kind < 0) ||
+            (kind > static_cast<int>(MissileKind::Boomerang))) {
+            continue;
+        }
+        m.origin = static_cast<AttackFxOrigin>(origin);
+        m.kind = static_cast<MissileKind>(kind);
+        out.push_back(std::move(m));
     }
     return true;
 }
@@ -543,6 +745,7 @@ std::string encode_game_frame(const GameFrame &f)
         if (!f.minimap.kinds.empty()) {
             o["kinds_b64"] = frame_base64_encode(f.minimap.kinds);
         }
+        if(!f.minimap.markers.empty())o["markers_b64"]=frame_base64_encode(f.minimap.markers);
         put_obj(j, "minimap", std::move(o));
     }
 
@@ -560,6 +763,8 @@ std::string encode_game_frame(const GameFrame &f)
         put_num(o, "gold", f.hud.gold, def.hud.gold);
         put_num(o, "depth", f.hud.depth, def.hud.depth);
         put_num(o, "level", f.hud.level, def.hud.level);
+        //! 既定（-1 = 終末の日数が無い）なら書かない。短愚だけが送る（古い画面・他のコアのフレームは 1 バイトも変わらない）。
+        put_num(o, "doomsday_days_left", f.hud.doomsday_days_left, def.hud.doomsday_days_left);
         put_str(o, "status_line", f.hud.status_line, def.hud.status_line);
         if (!f.hud.right_top_lines.empty()) {
             o["right_top_lines"] = f.hud.right_top_lines;
@@ -619,6 +824,7 @@ std::string encode_game_frame(const GameFrame &f)
     }
     put_num(j, "target_gx", f.target_gx, def.target_gx);
     put_num(j, "target_gy", f.target_gy, def.target_gy);
+    if(f.targeting.active||f.targeting.preview_only)j["targeting"]=encode_targeting(f.targeting);
 
     // ---- combat_fx----
     if (!f.combat_fx.empty()) {
@@ -665,13 +871,84 @@ std::string encode_game_frame(const GameFrame &f)
         j["sounds"] = std::move(arr);
     }
 
+    // ---- status_effects----
+    if (!f.status_effects.empty()) {
+        const StatusEffectView edef{};
+        json arr = json::array();
+        for (const StatusEffectView &s : f.status_effects) {
+            json o = json::object();
+            o["k"] = s.key; //!< 名前は**必ず**書く（画面側はこれでアイコンを引く）
+            o["l"] = s.label_utf8;
+            put_str(o, "a", s.amount_utf8, edef.amount_utf8);
+            if (s.kind != edef.kind) {
+                o["t"] = static_cast<int>(s.kind);
+            }
+            arr.push_back(std::move(o));
+        }
+        j["status_effects"] = std::move(arr);
+    }
+
+    // ---- 攻撃の視覚効果----
+    if (!f.projections.empty()) {
+        const ProjectionFx pdef{};
+        json arr = json::array();
+        for (const ProjectionFx &p : f.projections) {
+            json o = json::object();
+            o["seq"] = p.seq;
+            put_num<uint8_t>(o, "o", static_cast<uint8_t>(p.origin), static_cast<uint8_t>(pdef.origin));
+            put_num<uint8_t>(o, "s", static_cast<uint8_t>(p.shape), static_cast<uint8_t>(pdef.shape));
+            o["at"] = p.attr; //!< 属性の名前は**必ず**書く（画面側はこれで見た目を引く）
+            put_num(o, "r", p.rad, pdef.rad);
+            put_num(o, "sy", p.src_y, pdef.src_y);
+            put_num(o, "sx", p.src_x, pdef.src_x);
+            put_num(o, "iy", p.impact_y, pdef.impact_y);
+            put_num(o, "ix", p.impact_x, pdef.impact_x);
+            put_num(o, "f", p.flags, pdef.flags);
+            if (!p.path.empty()) {
+                o["p"] = enc_fx_cells(p.path, false);
+            }
+            if (!p.area.empty()) {
+                o["a"] = enc_fx_cells(p.area, true);
+            }
+            arr.push_back(std::move(o));
+        }
+        j["projections"] = std::move(arr);
+    }
+    if (!f.missiles.empty()) {
+        const MissileFx mdef{};
+        json arr = json::array();
+        for (const MissileFx &m : f.missiles) {
+            json o = json::object();
+            o["seq"] = m.seq;
+            put_num<uint8_t>(o, "o", static_cast<uint8_t>(m.origin), static_cast<uint8_t>(mdef.origin));
+            put_num<uint8_t>(o, "k", static_cast<uint8_t>(m.kind), static_cast<uint8_t>(mdef.kind));
+            put_num(o, "it", m.item_id, mdef.item_id);
+            put_str(o, "br", m.brand, mdef.brand);
+            put_num(o, "sy", m.src_y, mdef.src_y);
+            put_num(o, "sx", m.src_x, mdef.src_x);
+            put_bool(o, "h", m.hit, mdef.hit);
+            if (!m.path.empty()) {
+                o["p"] = enc_fx_cells(m.path, false);
+            }
+            if (!m.return_path.empty()) {
+                o["rp"] = enc_fx_cells(m.return_path, false);
+            }
+            arr.push_back(std::move(o));
+        }
+        j["missiles"] = std::move(arr);
+    }
+
     put_str(j, "controller_hint", f.controller_hint, def.controller_hint);
     put_bool(j, "text_input_active", f.text_input_active, def.text_input_active);
+    put_bool(j, "player_name_input_active", f.player_name_input_active, def.player_name_input_active);
     put_bool(j, "awaiting_command", f.awaiting_command, def.awaiting_command);
+    put_str(j, "command_menu_keys", f.command_menu_keys, def.command_menu_keys);
     put_bool(j, "camera_detached", f.camera_detached, def.camera_detached);
     put_bool(j, "menu_open", f.menu_open, def.menu_open);
     put_bool(j, "menu_over_map", f.menu_over_map, def.menu_over_map);
+    put_bool(j, "menu_popup", f.menu_popup, def.menu_popup);
     put_bool(j, "pre_game_menu", f.pre_game_menu, def.pre_game_menu);
+    put_bool(j, "game_over", f.game_over, def.game_over);
     put_bool(j, "title_screen", f.title_screen, def.title_screen);
 
     if (!f.sub2_lines.empty()) {
@@ -751,6 +1028,7 @@ std::string encode_game_frame(const GameFrame &f)
         j["term_palette"] = std::move(arr);
     }
 
+    if(f.modern.version) j["modern_ui"]=encode_modern_window(f.modern);
     if (!f.menu_term_lines.empty()) {
         json arr = json::array();
         for (const TermMirrorLine &ln : f.menu_term_lines) {
@@ -795,6 +1073,7 @@ std::string encode_game_frame(const GameFrame &f)
             o["choices"] = std::move(arr);
         }
         put_str(o, "footer_utf8", f.prompt.footer_utf8, def.prompt.footer_utf8);
+        put_bool(o, "lightweight", f.prompt.lightweight, def.prompt.lightweight);
         put_num(o, "line_index", f.prompt.line_index, def.prompt.line_index);
         put_obj(j, "prompt", std::move(o));
     }
@@ -838,6 +1117,17 @@ std::string encode_game_frame(const GameFrame &f)
         //! カットイン演出（P10。2026-08-11）。**追加だけ**なので版は上げない。
         put_str(o, "place_name", f.floor.place_name_utf8, def.floor.place_name_utf8);
         put_bool(o, "wild_mode", f.floor.wild_mode, def.floor.wild_mode);
+        //! 町の地図の左上が階の座標のどこか（Frox の荒野の窓のずれ。2026-10-10）。0 は出さない。
+        put_num(o, "town_origin_x", f.floor.town_origin_x, def.floor.town_origin_x);
+        put_num(o, "town_origin_y", f.floor.town_origin_y, def.floor.town_origin_y);
+        //! 区域（Umoria の部屋の種類。2026-10-03）。1 件 5 要素 `[style, x0, y0, x1, y1]`。
+        if (!f.floor.zones.empty()) {
+            json arr = json::array();
+            for (const FloorZone &z : f.floor.zones) {
+                arr.push_back(json::array({ z.style, z.x0, z.y0, z.x1, z.y1 }));
+            }
+            o["zones"] = std::move(arr);
+        }
         put_obj(j, "floor", std::move(o));
     }
 
@@ -847,6 +1137,11 @@ std::string encode_game_frame(const GameFrame &f)
         put_num(o, "day_minute", f.lighting.day_minute, def.lighting.day_minute);
         put_bool(o, "daytime", f.lighting.daytime, def.lighting.daytime);
         put_num(o, "light_radius", f.lighting.light_radius, def.lighting.light_radius);
+        put_num(o, "light_kind", f.lighting.light_kind, def.lighting.light_kind);
+        put_num(o, "memory_dim", f.lighting.memory_dim, def.lighting.memory_dim);
+        if (!f.lighting.player_lit.empty()) {
+            o["player_lit_b64"] = frame_base64_encode(f.lighting.player_lit);
+        }
         put_obj(j, "lighting", std::move(o));
     }
 
@@ -955,6 +1250,15 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
             err = "minimap.kinds_b64 is not valid base64";
             return false;
         }
+        std::string markers;
+        if(!rd_str(*o,"markers_b64",markers,err))return false;
+        if(!markers.empty()) {
+            if(!frame_base64_decode(markers,f.minimap.markers)||!f.minimap.valid()
+                ||f.minimap.markers.size()!=f.minimap.kinds.size()
+                ||std::any_of(f.minimap.markers.begin(),f.minimap.markers.end(),[](uint8_t m){return m>4;})) {
+                err="minimap.markers_b64 is invalid";return false;
+            }
+        }
     } else if (!ok) {
         return false;
     }
@@ -965,6 +1269,7 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
             !rd_num(*o, "hp_max", f.hud.hp_max, err) || !rd_num(*o, "sp", f.hud.sp, err) ||
             !rd_num(*o, "sp_max", f.hud.sp_max, err) || !rd_num(*o, "gold", f.hud.gold, err) ||
             !rd_num(*o, "depth", f.hud.depth, err) || !rd_num(*o, "level", f.hud.level, err) ||
+            !rd_num(*o, "doomsday_days_left", f.hud.doomsday_days_left, err) ||
             !rd_str(*o, "status_line", f.hud.status_line, err)
             || !rd_str(*o, "hp_label", f.hud.hp_label, err)
             || !rd_str(*o, "sp_label", f.hud.sp_label, err)) {
@@ -1069,6 +1374,7 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
     if (!rd_num(j, "target_gx", f.target_gx, err) || !rd_num(j, "target_gy", f.target_gy, err)) {
         return false;
     }
+    if(j.contains("targeting")&&!decode_targeting(j.at("targeting"),f.targeting,err))return false;
 
     // ---- combat_fx ----
     if (const json *arr = sub_arr(j, "combat_fx", err, ok)) {
@@ -1100,12 +1406,26 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
         return false;
     }
 
+    // ---- status_effects ----
+    if (!dec_status_effects(j, f.status_effects, err, ok)) {
+        return false;
+    }
+
+    // ---- 攻撃の視覚効果 ----
+    if (!dec_projections(j, f.projections, err, ok) || !dec_missiles(j, f.missiles, err, ok)) {
+        return false;
+    }
+
     if (!rd_str(j, "controller_hint", f.controller_hint, err) ||
         !rd_bool(j, "text_input_active", f.text_input_active, err) ||
+        !rd_bool(j, "player_name_input_active", f.player_name_input_active, err) ||
         !rd_bool(j, "awaiting_command", f.awaiting_command, err) ||
+        !rd_str(j, "command_menu_keys", f.command_menu_keys, err) ||
         !rd_bool(j, "camera_detached", f.camera_detached, err) ||
         !rd_bool(j, "menu_open", f.menu_open, err) || !rd_bool(j, "menu_over_map", f.menu_over_map, err) ||
+        !rd_bool(j, "menu_popup", f.menu_popup, err) ||
         !rd_bool(j, "pre_game_menu", f.pre_game_menu, err) ||
+        !rd_bool(j, "game_over", f.game_over, err) ||
         !rd_bool(j, "title_screen", f.title_screen, err)) {
         return false;
     }
@@ -1231,6 +1551,9 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
         return false;
     }
 
+    if(auto it=j.find("modern_ui");it!=j.end()) {
+        if(!decode_modern_window(*it,f.modern)) {err="invalid modern_ui";return false;}
+    }
     if (const json *arr = sub_arr(j, "menu_term_lines", err, ok)) {
         f.menu_term_lines.resize(arr->size());
         for (size_t i = 0; i < arr->size(); ++i) {
@@ -1286,6 +1609,7 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
     if (const json *o = sub_obj(j, "prompt", err, ok)) {
         if (!rd_str(*o, "text_utf8", f.prompt.text_utf8, err) ||
             !rd_str(*o, "footer_utf8", f.prompt.footer_utf8, err) ||
+            !rd_bool(*o, "lightweight", f.prompt.lightweight, err) ||
             !rd_num(*o, "line_index", f.prompt.line_index, err)) {
             return false;
         }
@@ -1331,8 +1655,31 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
             !rd_num(*o, "kind", f.floor.kind, err) ||
             !rd_num(*o, "town_id", f.floor.town_id, err) ||
             !rd_str(*o, "place_name", f.floor.place_name_utf8, err) ||
-            !rd_bool(*o, "wild_mode", f.floor.wild_mode, err)) {
+            !rd_bool(*o, "wild_mode", f.floor.wild_mode, err) ||
+            !rd_num(*o, "town_origin_x", f.floor.town_origin_x, err) ||
+            !rd_num(*o, "town_origin_y", f.floor.town_origin_y, err)) {
             return false;
+        }
+        const auto zit = o->find("zones");
+        if (zit != o->end()) {
+            if (!zit->is_array()) {
+                err = "floor.zones is not an array";
+                return false;
+            }
+            for (const json &a : *zit) {
+                if (!a.is_array() || (a.size() != 5)) {
+                    err = "floor.zones[] is not a 5-element tuple";
+                    return false;
+                }
+                for (const json &v : a) {
+                    if (!v.is_number_integer()) {
+                        err = "floor.zones[] has a non-integer";
+                        return false;
+                    }
+                }
+                f.floor.zones.push_back(FloorZone{ a[0].get<int>(), a[1].get<int>(), a[2].get<int>(),
+                    a[3].get<int>(), a[4].get<int>() });
+            }
         }
     }
     if (!ok) {
@@ -1343,7 +1690,17 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
     if (const json *o = sub_obj(j, "lighting", err, ok)) {
         if (!rd_num(*o, "day_minute", f.lighting.day_minute, err) ||
             !rd_bool(*o, "daytime", f.lighting.daytime, err) ||
-            !rd_num(*o, "light_radius", f.lighting.light_radius, err)) {
+            !rd_num(*o, "light_radius", f.lighting.light_radius, err) ||
+            !rd_num(*o, "light_kind", f.lighting.light_kind, err) ||
+            !rd_num(*o, "memory_dim", f.lighting.memory_dim, err)) {
+            return false;
+        }
+        std::string lit_b64;
+        if (!rd_str(*o, "player_lit_b64", lit_b64, err)) {
+            return false;
+        }
+        if (!lit_b64.empty() && !frame_base64_decode(lit_b64, f.lighting.player_lit)) {
+            err = "lighting.player_lit_b64 is not valid base64";
             return false;
         }
     }
@@ -1392,15 +1749,30 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
  */
 namespace {
 
+//! AH-25。`SubPanelLine`/`TermTextRun` の `color_spans` の突き合わせ（`menu_term_lines[].color_spans`
+//! の突き合わせと同じ形）。
+bool eq_color_spans(const std::vector<TermColorSpan> &a, const std::vector<TermColorSpan> &b)
+{
+    if (a.size() != b.size()) {
+        return false;
+    }
+    for (size_t i = 0; i < a.size(); ++i) {
+        if (a[i].begin != b[i].begin || a[i].len != b[i].len || a[i].color != b[i].color) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool eq_sub_panel_line(const SubPanelLine &a, const SubPanelLine &b)
 {
-    return a.text_utf8 == b.text_utf8 && a.color == b.color;
+    return a.text_utf8 == b.text_utf8 && a.color == b.color && eq_color_spans(a.color_spans, b.color_spans);
 }
 
 bool eq_menu_choice(const MenuChoice &a, const MenuChoice &b)
 {
     return a.line_index == b.line_index && a.span_begin == b.span_begin && a.span_len == b.span_len &&
-           a.key_begin == b.key_begin && a.key_len == b.key_len && a.key == b.key;
+           a.key_begin == b.key_begin && a.key_len == b.key_len && a.key == b.key && a.available==b.available && a.reason_utf8==b.reason_utf8 && a.description_utf8==b.description_utf8 && a.label_utf8==b.label_utf8 && a.selected==b.selected;
 }
 
 //! float は**ビット単位**で見る（`==` だと -0.0 と +0.0 が同一視されて落ちが見えない）。
@@ -1423,6 +1795,9 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
         return false;
     };
 
+    if (encode_modern_window(a.modern) != encode_modern_window(b.modern)) {
+        return fail("modern_ui differs");
+    }
     // -- スカラ（frame_id 〜 player_gy）
     if (a.frame_id != b.frame_id) {
         return fail(sfmt("frame_id %llu != %llu", static_cast<unsigned long long>(a.frame_id),
@@ -1527,7 +1902,9 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     if (a.target_gy != b.target_gy) {
         return fail(sfmt("target_gy %d != %d", a.target_gy, b.target_gy));
     }
+    if(a.targeting!=b.targeting)return fail("targeting differs");
 
+    if(a.minimap.markers!=b.minimap.markers)return fail("minimap markers differ");
     // -- minimap
     if (a.minimap.width != b.minimap.width) {
         return fail(sfmt("minimap.width %d != %d", a.minimap.width, b.minimap.width));
@@ -1577,6 +1954,9 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     if (a.hud.level != b.hud.level) {
         return fail(sfmt("hud.level %d != %d", a.hud.level, b.hud.level));
     }
+    if (a.hud.doomsday_days_left != b.hud.doomsday_days_left) {
+        return fail(sfmt("hud.doomsday_days_left %d != %d", a.hud.doomsday_days_left, b.hud.doomsday_days_left));
+    }
     if (a.hud.hp_label != b.hud.hp_label) {
         return fail("hud.hp_label differs");
     }
@@ -1612,20 +1992,30 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     if (a.text_input_active != b.text_input_active) {
         return fail("text_input_active differs");
     }
+    if (a.player_name_input_active != b.player_name_input_active) {
+        return fail("player_name_input_active differs");
+    }
     if (a.camera_detached != b.camera_detached) {
         return fail("camera_detached differs");
     }
+    if (a.command_menu_keys != b.command_menu_keys) return fail("command_menu_keys differs");
     if (a.awaiting_command != b.awaiting_command) {
         return fail("awaiting_command differs");
     }
     if (a.menu_over_map != b.menu_over_map) {
         return fail("menu_over_map differs");
     }
+    if (a.menu_popup != b.menu_popup) {
+        return fail("menu_popup differs");
+    }
     if (a.menu_open != b.menu_open) {
         return fail("menu_open differs");
     }
     if (a.pre_game_menu != b.pre_game_menu) {
         return fail("pre_game_menu differs");
+    }
+    if (a.game_over != b.game_over) {
+        return fail("game_over differs");
     }
     if (a.title_screen != b.title_screen) {
         return fail("title_screen differs");
@@ -1638,6 +2028,59 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     }
     if (a.sub5_lines != b.sub5_lines) {
         return fail("sub5_lines differs");
+    }
+
+    // -- status_effects（全欄を突き合わせる）
+    if (a.status_effects.size() != b.status_effects.size()) {
+        return fail(sfmt("status_effects.size %u != %u", static_cast<unsigned>(a.status_effects.size()),
+            static_cast<unsigned>(b.status_effects.size())));
+    }
+    for (size_t i = 0; i < a.status_effects.size(); ++i) {
+        const StatusEffectView &x = a.status_effects[i];
+        const StatusEffectView &y = b.status_effects[i];
+        if (x.key != y.key || x.label_utf8 != y.label_utf8 || x.amount_utf8 != y.amount_utf8 || x.kind != y.kind) {
+            return fail(sfmt("status_effects[%u] differs", static_cast<unsigned>(i)));
+        }
+    }
+
+    // -- 攻撃の視覚効果（全欄を突き合わせる）
+    {
+        const auto same_cells = [](const std::vector<FxCell> &p, const std::vector<FxCell> &q) {
+            if (p.size() != q.size()) {
+                return false;
+            }
+            for (size_t k = 0; k < p.size(); ++k) {
+                if ((p[k].y != q[k].y) || (p[k].x != q[k].x) || (p[k].dist != q[k].dist)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        if (a.projections.size() != b.projections.size()) {
+            return fail("projections.size differs");
+        }
+        for (size_t i = 0; i < a.projections.size(); ++i) {
+            const ProjectionFx &x = a.projections[i];
+            const ProjectionFx &y = b.projections[i];
+            if ((x.seq != y.seq) || (x.origin != y.origin) || (x.shape != y.shape) || (x.attr != y.attr) ||
+                (x.rad != y.rad) || (x.src_y != y.src_y) || (x.src_x != y.src_x) || (x.impact_y != y.impact_y) ||
+                (x.impact_x != y.impact_x) || (x.flags != y.flags) || !same_cells(x.path, y.path) ||
+                !same_cells(x.area, y.area)) {
+                return fail(sfmt("projections[%u] differs", static_cast<unsigned>(i)));
+            }
+        }
+        if (a.missiles.size() != b.missiles.size()) {
+            return fail("missiles.size differs");
+        }
+        for (size_t i = 0; i < a.missiles.size(); ++i) {
+            const MissileFx &x = a.missiles[i];
+            const MissileFx &y = b.missiles[i];
+            if ((x.seq != y.seq) || (x.origin != y.origin) || (x.kind != y.kind) || (x.item_id != y.item_id) ||
+                (x.brand != y.brand) || (x.src_y != y.src_y) || (x.src_x != y.src_x) || (x.hit != y.hit) ||
+                !same_cells(x.path, y.path) || !same_cells(x.return_path, y.return_path)) {
+                return fail(sfmt("missiles[%u] differs", static_cast<unsigned>(i)));
+            }
+        }
     }
 
     // -- sub_panels（`kSubPanelCount` 枚）
@@ -1680,7 +2123,8 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     for (size_t i = 0; i < a.bottom_row_runs.size(); ++i) {
         const TermTextRun &x = a.bottom_row_runs[i];
         const TermTextRun &y = b.bottom_row_runs[i];
-        if (x.col != y.col || x.text_utf8 != y.text_utf8 || x.color != y.color) {
+        if (x.col != y.col || x.text_utf8 != y.text_utf8 || x.color != y.color
+            || !eq_color_spans(x.color_spans, y.color_spans)) {
             return fail(sfmt("bottom_row_runs[%u] differs", static_cast<unsigned>(i)));
         }
     }
@@ -1783,6 +2227,9 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     if (a.prompt.footer_utf8 != b.prompt.footer_utf8) {
         return fail("prompt.footer_utf8 differs");
     }
+    if (a.prompt.lightweight != b.prompt.lightweight) {
+        return fail("prompt.lightweight differs");
+    }
     if (a.prompt.line_index != b.prompt.line_index) {
         return fail(sfmt("prompt.line_index %d != %d", a.prompt.line_index, b.prompt.line_index));
     }
@@ -1852,6 +2299,20 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     if (a.floor.town_id != b.floor.town_id) {
         return fail(sfmt("floor.town_id %d != %d", a.floor.town_id, b.floor.town_id));
     }
+    if ((a.floor.town_origin_x != b.floor.town_origin_x) || (a.floor.town_origin_y != b.floor.town_origin_y)) {
+        return fail(sfmt("floor.town_origin (%d,%d) != (%d,%d)", a.floor.town_origin_x, a.floor.town_origin_y,
+            b.floor.town_origin_x, b.floor.town_origin_y));
+    }
+    if (a.floor.zones.size() != b.floor.zones.size()) {
+        return fail("floor.zones size differs");
+    }
+    for (std::size_t i = 0; i < a.floor.zones.size(); ++i) {
+        const FloorZone &za = a.floor.zones[i];
+        const FloorZone &zb = b.floor.zones[i];
+        if ((za.style != zb.style) || (za.x0 != zb.x0) || (za.y0 != zb.y0) || (za.x1 != zb.x1) || (za.y1 != zb.y1)) {
+            return fail("floor.zones differs");
+        }
+    }
 
     // -- lighting（P5 で新設。同上）
     if (a.lighting.day_minute != b.lighting.day_minute) {
@@ -1862,6 +2323,17 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
     }
     if (a.lighting.light_radius != b.lighting.light_radius) {
         return fail(sfmt("lighting.light_radius %d != %d", a.lighting.light_radius, b.lighting.light_radius));
+    }
+    if (a.lighting.light_kind != b.lighting.light_kind) {
+        return fail(sfmt("lighting.light_kind %u != %u", static_cast<unsigned>(a.lighting.light_kind),
+            static_cast<unsigned>(b.lighting.light_kind)));
+    }
+    if (a.lighting.memory_dim != b.lighting.memory_dim) {
+        return fail(sfmt("lighting.memory_dim %u != %u", static_cast<unsigned>(a.lighting.memory_dim),
+            static_cast<unsigned>(b.lighting.memory_dim)));
+    }
+    if (a.lighting.player_lit != b.lighting.player_lit) {
+        return fail("lighting.player_lit differs");
     }
 
     // -- surroundings（環境音の層。同上）

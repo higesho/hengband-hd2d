@@ -103,6 +103,10 @@ struct UiStatePanelCells {
  * （0 桁の Term や 0 マスの視界は意味を持たないので、既定値と欠落を区別する必要が無い）。
  */
 struct UiStateMessage {
+    bool modern_ui{false};
+    bool targeting_ui{false}; // Explicit capability; older clients keep native input.
+    //! Main Term rows requested by the modern document viewport. 0 = unspecified.
+    int main_term_rows{0};
     //! `Bridge::set_view_size` 相当。0 なら適用しない。
     int view_w{ 0 };
     int view_h{ 0 };
@@ -164,7 +168,7 @@ struct UiStateMessage {
     bool realtime_enabled{ false };
     //! 1 行動あたりの秒数の表への添字（`Hd2dSettings::realtime_seconds_per_turn`）。
     int realtime_speed_index{ 4 };
-    //! 小窓の裏でも世界を進めるか（利用者の好み。設計書 §7）。
+    //! 小窓の裏でも世界を進めるか（遊ぶ人の好み。設計書 §7）。
     bool realtime_prompt_live{ true };
     //! 速さの振れ幅の段（設計書 §4-2）。
     int realtime_self_span_index{ 1 };
@@ -286,15 +290,19 @@ struct AssetManifestMessage {
  * 受け手（アダプタ）は検査なしで読んでよい。
  */
 struct InputEventWire {
-    std::string e; //!< "move" | "cancel" | "confirm" | "answer" | "key" | "text" | "fkey" | "set_number" | "keyseq"
+    int ui_revision{};
+    int request_id{};
+    std::string target;
+    std::string action;
+    std::string e; //!< "move" | "cancel" | "confirm" | "answer" | "key" | "text" | "fkey" | "set_number" | "keyseq" | "map_click"
     int dx{ 0 }; //!< move: -1..1
     int dy{ 0 }; //!< move: -1..1
     std::string value; //!< answer: "yes" | "no"
     std::string chr; //!< key: 印字 ASCII 1 文字（"char" キーのワイヤ表現）
     std::string name; //!< key: "tab" | "delete" | "backspace"
-    bool ctrl{ false }; //!< key / fkey
-    bool shift{ false }; //!< fkey
-    bool alt{ false }; //!< fkey
+    bool ctrl{ false }; //!< key / fkey / map_click
+    bool shift{ false }; //!< fkey / map_click
+    bool alt{ false }; //!< fkey / map_click
     std::string text; //!< text: UTF-8 文字列
     int n{ 0 }; //!< fkey: 1..12
     long long number{ 0 }; //!< set_number: 値（"value" キー。answer の value とはキー名が同じでも型で区別）
@@ -310,6 +318,20 @@ struct InputEventWire {
      * （生のキーで送ると、キー配列の違いを送り手が背負うことになる）。
      */
     std::vector<int> bytes;
+    /*!
+     * @name map_click（AH-57。地図のマスのクリック・タップ）
+     * @details `e == "map_click"` のときだけ意味を持つ。**`hello_ack.features` に `"map_click"` を
+     * 申告したコアだけ**へ送る（いまは Angband だけ）。ほかのコアへ迷い込んでも、共用の展開器
+     * （`append_input_event_keys()`）は `e` を知らないイベントとして何も積まない。修飾キーは
+     * 上の `shift` / `ctrl` / `alt` を使う（ワイヤでは `"mods": ["shift", "ctrl", "alt"]` の配列）。
+     * @{
+     */
+    //! ダンジョンのマスの座標（0..255。**画面の座標ではなく `frame.cells[].gx/gy` と同じもの**）。
+    int grid_x{ 0 };
+    int grid_y{ 0 };
+    //! 1 = 左、2 = 右（ワイヤでは `"left"` / `"right"`。原作 Angband の `mouseclick.button` と同じ番号）。
+    int button{ 1 };
+    /*! @} */
 };
 
 //! ui → core（v1 §8.3）。`keys` の後継。v1 では keys と共存し、到着順に消費される。

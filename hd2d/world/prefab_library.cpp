@@ -375,6 +375,10 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
             entry.cover_x1 = static_cast<int>(std::floor(static_cast<float>(span_x1 - 1) / static_cast<float>(per)));
             entry.cover_y0 = static_cast<int>(std::floor(static_cast<float>(span_y0) / static_cast<float>(per)));
             entry.cover_y1 = static_cast<int>(std::floor(static_cast<float>(span_y1 - 1) / static_cast<float>(per)));
+            entry.cover_fx0 = static_cast<float>(span_x0) / static_cast<float>(per);
+            entry.cover_fx1 = static_cast<float>(span_x1) / static_cast<float>(per);
+            entry.cover_fy0 = static_cast<float>(span_y0) / static_cast<float>(per);
+            entry.cover_fy1 = static_cast<float>(span_y1) / static_cast<float>(per);
         }
         entry.top_z = top;
         entry.is_ground = (top <= 0.05f);

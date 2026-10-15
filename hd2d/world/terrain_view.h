@@ -28,6 +28,7 @@
 #pragma once
 
 #include "render/frustum.h"
+#include "model/model_asset.h"
 #include "render/light_shaft.h"
 #include "render/voxel_renderer.h"
 #include "voxel/prefab.h"
@@ -67,7 +68,22 @@ struct TerrainViewLight {
     float intensity{ 0.f }; //!< 昼夜を掛ける前の強さ
 };
 
+// Optional replacements for ordinary dungeon terrain. Special terrain retains its rule.
+struct TerrainModels {
+    float wall_height{ 0.f };
+    bool floor{ false };
+    bool replace_all{ false };
+    std::array<bool,kTerrainModelCount> parts{};
+    std::array<float,kTerrainModelCount> part_heights{};
+};
+
 struct TerrainView {
+    std::vector<ModelInstance> model_walls;
+    std::vector<ModelInstance> model_floors;
+    std::vector<ModelInstance> model_under_floors;
+    std::vector<ModelInstance> model_blocks;
+    std::vector<ModelInstance> model_ground;
+    std::array<std::vector<ModelInstance>,kTerrainModelCount> model_parts;
     //! 床の板（`slab` プレハブ）。
     std::vector<InstanceData> slabs;
     //! 夜だけ灯す点光源のリクエスト（龍神像のライトアップなど。置く側が夜の度合いを掛ける）。
@@ -136,6 +152,8 @@ struct TerrainView {
      * @{
      */
     bool covered{ false };
+    //! 町の表の `night_light`（夜の明るさ。1.0 なら従来どおり）。町の中でだけ 1 以外になる。
+    float night_light{ 1.f };
     //! 屋根外しの層が刳り抜く下限（マス）。覆いの町でだけ意味を持つ。
     float cave_min_z{ 3.1f };
     //! 天井の天面の高さ（マス）。影の直方体をここまで持ち上げる。
@@ -294,11 +312,15 @@ struct PropLatch {
  * @details 走査するのはフロア全域（198×66 で約 13,000 マス）。可視窓ではなくフロア全域を
  * 見るのは、**背の高いものが窓の外から画面へ写り込む**ため（§9 ①の理由そのもの）。
  */
+// Replaces only ordinary ground/block instances. Building and functional prefabs remain intact.
+void apply_terrain_model_replacements(TerrainView &out,const TerrainMemory *memory,
+    const PrefabLibrary *library,const TerrainModels &models);
+
 void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, TerrainView &out,
     const TerrainMemory *memory = nullptr, const PrefabLibrary *library = nullptr,
     const TownPlan *town = nullptr, float night = 0.f, float wall_inset = 0.f, bool black_unknown = false,
     PropLatch *latch = nullptr, bool fps_wall_upper = false, bool fps_ceiling = false,
-    bool blocks_only = false);
+    bool blocks_only = false, const TerrainModels &models = TerrainModels{});
 
 /*!
  * @brief 中身の詰まった直方体のプレハブをその場で作る（ファイルを読まない）。

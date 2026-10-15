@@ -1,0 +1,90 @@
+# trap.ja.tsv — trap.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+glyph of warding|desc	a769847b28	モンスターが容易には通り抜けられない魔法のルーンだ。
+decoy|desc	1b5d97f160	見た目も音もプレイヤーそっくりな、魔法のおとりだ。
+door lock|desc	70f52581a9	閉じたドアを開けにくくする仕掛けだ。
+web|desc	586fbdb8c8	粘つくクモの巣がもつれ合ったものだ。
+trap door|desc	a2d0bd62a6	床のように見えるが、うっかり踏むと下へ落ちる。
+trap door|msg	609ad14d17	落とし戸に落ちた！
+trap door|msg-good	9b0a93cee7	ふわりと次の階へ降りた。
+pit|desc	6b36ba1d17	油断した者を捕らえるために掘られた穴だ。
+pit|msg	45d04ae383	落とし穴に落ちた！
+pit|msg-good	09ae9eef9f	ふわりと落とし穴の底へ降りた。
+pit|desc#2	5522f950d3	油断した者を捕らえるために掘られた、とげのある穴だ。
+pit|msg#2	a0e028a5fd	とげのある落とし穴に落ちた！
+pit|msg-good#2	ed18b665d1	とげを器用によけて、ふわりと落とし穴の底へ降りた。
+pit|msg-xtra	8cdd05a17e	とげが刺さった！
+pit|desc#3	24ab4427ce	油断した者を捕らえるために掘られた、毒を塗ったとげのある穴だ。
+pit|msg#3	a0e028a5fd	とげのある落とし穴に落ちた！
+pit|msg-good#3	ed18b665d1	とげを器用によけて、ふわりと落とし穴の底へ降りた。
+pit|msg-xtra#2	746fc5c0f7	毒のとげが刺さった！
+strange rune|desc	b8a6bad645	モンスターを1体呼び寄せてあなたを襲わせる魔法のルーンだ。
+strange rune|msg	e1b529a183	どこからともなく新たな敵が現れた！
+strange rune|desc#2	b68c804801	モンスターたちを呼び寄せてあなたを襲わせる魔法のルーンだ。
+strange rune|msg#2	97b86a4805	煙の雲に包まれた！
+strange rune|desc#3	d90c85f038	アンデッドを呼び寄せてあなたを襲わせる魔法のルーンだ。
+strange rune|msg#3	81c0cf97f5	恐ろしい気配が押し寄せてきた……。
+strange rune|desc#4	c9fef59923	ドラゴンを呼び寄せてあなたを襲わせる魔法のルーンだ。
+strange rune|msg#4	cec0bbe298	ドラゴンの呼び声が聞こえた！
+strange rune|desc#5	25ab67bd17	悪魔を呼び寄せてあなたを襲わせる魔法のルーンだ。
+strange rune|msg#5	7c43c8816e	悪魔が現れた！
+strange rune|desc#6	6bb82e67a4	あなたをランダムな場所へテレポートさせる魔法のルーンだ。
+strange rune|msg#6	44f9853fe2	テレポートのトラップにかかった！
+discolored spot|desc	19e86677d2	地面にある奇妙な色の染みだ。炎の攻撃に気をつけろ。
+discolored spot|msg	e6c4d31645	炎に包まれた！
+discolored spot|desc#2	7eb1a0ba84	地面にある奇妙な色の染みだ。酸の攻撃に気をつけろ。
+discolored spot|msg#2	6e15b406f5	酸を浴びた！
+dart trap|desc	d58c1c618c	動きを遅くする矢を放つトラップだ。
+dart trap|msg-good	206ac40c3e	小さな矢がかろうじてそれた。
+dart trap|msg-bad	081c620dd3	小さな矢が当たった！
+dart trap|desc#2	5b5f98f9d6	傷を負わせる矢を放つトラップだ。
+dart trap|msg-good#2	206ac40c3e	小さな矢がかろうじてそれた。
+dart trap|msg-bad#2	081c620dd3	小さな矢が当たった！
+dart trap|desc#3	5b5f98f9d6	傷を負わせる矢を放つトラップだ。
+dart trap|msg-good#3	206ac40c3e	小さな矢がかろうじてそれた。
+dart trap|msg-bad#3	081c620dd3	小さな矢が当たった！
+dart trap|desc#4	5b5f98f9d6	傷を負わせる矢を放つトラップだ。
+dart trap|msg-good#4	206ac40c3e	小さな矢がかろうじてそれた。
+dart trap|msg-bad#4	081c620dd3	小さな矢が当たった！
+gas trap|desc	3e48bb945f	ガスを出してあなたを盲目にするトラップだ。
+gas trap|msg	f168076678	黒いガスに包まれた！
+gas trap|desc#2	f3ecd08eb4	ガスを出してあなたを混乱させるトラップだ。
+gas trap|msg#2	d6c3a1bde0	きらめく色のガスに包まれた！
+gas trap|desc#3	b8b77679fc	ガスを出してあなたを毒に冒すトラップだ。
+gas trap|msg#3	22c3903101	鼻をつく緑のガスに包まれた！
+gas trap|desc#4	095dc1bdee	ガスを出してあなたを眠らせるトラップだ。
+gas trap|msg#4	24da836d5e	奇妙な白い霧に包まれた！
+alarm|desc	6be9d71c43	近くのモンスターを起こし、あなたのほうへ向かわせるトラップだ。
+alarm|msg	3ed30cec12	甲高い笛の音がダンジョンに鳴り響いた！
+alarm|desc#2	12ea1a9396	近くのモンスターを起こすトラップだ。
+alarm|msg#2	2e848e1f64	角笛の音が響いた！
+explosion|desc	b6ccc0a582	床を吹き飛ばすトラップだ。
+explosion|msg	c665a99978	まわりの床が爆発した！
+explosion|desc#2	b5e8f4d70c	爆発を起こすトラップだ。
+explosion|msg#2	99657ea31e	空気に火がついたようだ！
+mind blast trap|desc	5ba0416df8	感覚を打ちのめすトラップだ。
+mind blast trap|msg	7dec58d59e	心に圧迫を感じた。
+mind blast trap|msg-good	c2ae625474	頭を振って、元に戻った。
+mind blast trap|msg-bad	16de507d2b	霊力で心が打ちのめされた！
+mind blast trap|desc#2	5ba0416df8	感覚を打ちのめすトラップだ。
+mind blast trap|msg#2	7dec58d59e	心に圧迫を感じた。
+mind blast trap|msg-good#2	c2ae625474	頭を振って、元に戻った。
+mind blast trap|msg-bad#2	16de507d2b	霊力で心が打ちのめされた！
+ancient mechanism|desc	dc852de5e7	あなたの上に大岩を落とすトラップだ。
+ancient mechanism|msg	f190dd3982	頭の上に岩が落ちてきた！
+ancient mechanism|desc#2	458dbf1d13	地震を起こすトラップだ。
+ancient mechanism|msg#2	0e5bfcd35a	地面が揺れた。
+ancient mechanism|desc#3	3e3a9f7bac	あなたの後ろに石の塊を落とす踏み板だ。
+ancient mechanism|msg#3	5153d05573	後ろで天井の一部が崩れ落ちた！
+ancient mechanism|desc#4	4abd68a20c	まわりの一帯を一掃するトラップだ。
+ancient mechanism|msg#4	cfab79e299	トラップが爆発し、あたりを吹き払った！
+trap|desc	d6d304f866	光の球を作り出すトラップだ。
+trap|msg	78d61d0734	まばゆい光が降り注いだ！
+trap|desc#2	ad43435e86	あなたを闇で包むトラップだ。
+trap|msg#2	5542cc8d5e	何もかもが薄れ始めた……。
+trap|msg#3	cbb0712d5f	力が吸い取られていくのを感じた。
+trap|desc#3	3f46b1e49c	マナを吸い取るトラップだ。
+trap|msg#4	0ab4fb2d61	刃があなたのまわりで渦を巻き、肌を切り裂いた！
+trap|desc#4	6f5b83e1c8	あなたを失血死させるよう作られたトラップだ。
+trap|msg#5	fe2b0bc820	体が石に変わっていくのを感じた！
+trap|desc#5	c690faecc3	あなたを朦朧とさせ、肌を石にするトラップだ。

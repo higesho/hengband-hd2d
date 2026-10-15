@@ -29,6 +29,8 @@
  */
 #pragma once
 
+#include "ui/orb_profile.h"
+
 #include <string>
 
 namespace hd2d {
@@ -188,6 +190,34 @@ struct SubSplit {
  */
 constexpr double kTallContentRatio = 0.526;
 
+/*!
+ * @name HP/MP の玉の寸法（素材の設計の単位）
+ * @details 素材（`assets/ui/hud/orb_*.png`）は 4/3 倍の 1013x333 だが、画面側は設計の単位
+ * 760x250 で寸法を持つ（`tools/hud/gen_orb_hud.py` と同じ値）。
+ * @{
+ */
+constexpr int kOrbDesignW = 760;
+constexpr int kOrbDesignH = 250;
+//! 玉の高さの、地図の高さに対する比（目安）と、画素の上限・下限。
+constexpr double kOrbHeightRatio = 0.247;
+constexpr int kOrbHeightMax = 333;
+constexpr int kOrbHeightMin = 90;
+/*!
+ * 絵の見えている下端（設計の単位）は**コアごと**（`OrbProfile::art_bottom_y`。既定の `kOrbArtBottomY` は変愚の 230）。
+ * これより下は影がだんだん薄くなるだけの部分で、**地図の下縁より下へはみ出させて描かない**（決めたこと 2026-10-09
+ * 「もっとギリギリ下にして」）。`layout.orb` は設計の矩形のまま（下へはみ出す）、見えている部分は `orb_visible_rect`。
+ */
+/*! @} */
+
+//! 玉の矩形のうち、絵が見えている部分（下の薄い影を除いた、地図の中に収まる部分）。下端は `orb_profile().art_bottom_y`。
+inline RectPx orb_visible_rect(const RectPx &orb)
+{
+    if (orb.empty()) {
+        return orb;
+    }
+    return RectPx{ orb.x, orb.y, orb.w, static_cast<int>((static_cast<long long>(orb.h) * orb_profile().art_bottom_y + (kOrbDesignH / 2)) / kOrbDesignH) };
+}
+
 struct UiLayout {
     LayoutMode mode{ LayoutMode::Hybrid };
     /*!
@@ -225,16 +255,29 @@ struct UiLayout {
      * @details `Full` / `Hybrid` では窓いっぱい、`Split` / `Tall` では MainMap の矩形。
      */
     RectPx scene{};
+    RectPx preview_menu{}; //!< Temporary menu rectangle beside a visible effect preview.
 
     //! キャラクター状態の列（`Hybrid` / `Split`）。`Full` では空。
     RectPx status_col{};
     /*!
-     * @brief HP/MP の棒。**全部の作りで地図の左下**（2026-08-14 に決めた）。
-     * @details もとは `Full` の左上だけだった。作りごとに置き場所が変わると、
-     * 切り替えるたびに目が探し直すことになる。状態列にも数字は出るが、
-     * 棒は「減ったことに一目で気づく」ための別物である。
+     * @brief 名前の 1 行（`名前  LV n  AU n`）。**全部の作りで地図の左下**。
+     * @details もとは HP/MP の棒と名前の 3 行で、`Full` の左上だけだった。作りごとに置き場所が
+     * 変わると、切り替えるたびに目が探し直すことになる。**棒は玉（`orb`）に置き換わった**
+     *ので、ここには名前の行だけが残る（高さ `cell_h`）。
+     * 幅は玉の左端の手前で切る（玉の左の翼と重ならないように）。
+     * 玉の素材が読めなかったときの棒は、`orb` の中へ描く（`orb_hud.cpp`）。
      */
     RectPx hud{};
+    /*!
+     * @brief HP/MP の玉（オーブ）の全体。
+     * @details **地図の左右の中央・下寄り**に重ねる。下端は `hud` と同じ求め方（地図の下端・
+     * 最下段の帯・メッセージの帯・プロンプト）に、**重なる作りでサブパネルを開いているときは
+     * 下段のサブパネルの上**を足したもので、そこから `cell_h / 4` 上げる。
+     * 縦横比は素材の設計の単位（`kOrbDesignW` × `kOrbDesignH`）のまま。玉の左右に
+     * バフ・デバフのアイコンが並ぶが、アイコンはこの矩形の外へ出る（矩形は玉の素材の範囲）。
+     * 棒に代わるものなので、`hud`（名前の 1 行だけになった）とは別の矩形。
+     */
+    RectPx orb{};
     /*!
      * @brief 直近のメッセージ。**Sub1 が出ているときは空**。
      * @details **メッセージの家は 1 つ。**Sub1 の既定の中身がメッセージなので
@@ -301,7 +344,7 @@ struct UiLayout {
      * @brief 画面の実寸と文字のマスから全部の矩形を出す。
      * @param screen_w,screen_h **使える大きさ**（切り欠きを避けた後。窓の実寸とは限らない）。
      * @param subs_open サブパネルを開いているか（重なる作りでのみ効く）。
-     * @param split サブパネルの枚数と仕切り（`SubSplit`）。**利用者が機能メニューで選んだ
+     * @param split サブパネルの枚数と仕切り（`SubSplit`）。**遊ぶ人が機能メニューで選んだ
      *   枚数と、境界を掴んで動かした結果**がここへ来る。既定は下段 3・右 2 ＝ 従来の絵。
      * @param origin_x,origin_y 使える範囲の左上（窓の座標）。既定の 0,0 は「窓いっぱい」。
      *   **中の割り付けは今までどおり 0 起点で組み、最後にまとめてずらす**

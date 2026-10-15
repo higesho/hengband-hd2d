@@ -82,7 +82,7 @@ constexpr int kPadModAlt = 2; //!< RB を押しながら（`alt-`）
 //! 層の数（無し・C・A・C+A）。表示用の配列の寸法に使う。
 constexpr int kPadModLayerCount = 4;
 
-//! 修飾に使うボタンか（LB / RB）。**固定**なので利用者は変えられない。
+//! 修飾に使うボタンか（LB / RB）。**固定**なので遊ぶ人は変えられない。
 bool pad_input_is_modifier(PadInput input);
 //! そのボタンが表す修飾。修飾でなければ 0。
 int pad_modifier_of(PadInput input);
@@ -307,6 +307,25 @@ public:
     //! 「握ったまま」を全部忘れる（焦点を失ったとき・メニューを開いたとき）。
     void forget_hold();
 
+    /*!
+     * @brief **方向の握りだけ**忘れる（スティック・十字キーの連続移動と右スティックの傾き）。
+     * @details 画面（窓の種類）が替わったときに使う。スティックの連続移動を次の画面へ持ち越さないのが目的で、
+     * 押している最中の LB/RB（`PadChord`）と取り出し待ちの押し（`pressed_`）は**残す**。
+     * `forget_hold()` で消すと、RB を押したまま画面が替わった場合に、離しても単独の押しにならず捨てられる
+     * （F-rogue36-08）。
+     */
+    void forget_direction_hold();
+
+    /*!
+     * @brief すでに繋がっている機器を開く（修-03）。
+     * @details SDL の「機器が追加された」知らせ（`SDL_CONTROLLERDEVICEADDED`）は、`SDL_Init` したときにしか来ない。
+     * Windows の言語切り替えは `SDL_Quit` をせず同じプロセスで `run()` をやり直す（`hd2d_app.cpp` 末尾）ので、
+     * 起こし直した後の `GamePad` は、繋ぎっぱなしの機器の知らせを二度と受け取れず、十字キーが効かなくなる。
+     * そのため `run()` の頭で、いま繋がっている機器を数えて開く。すでに 1 本持っていれば何もしない
+     * （初回起動で知らせも届いたときに二重に開かない）。Quest では開かない（`open()` と同じ）。
+     */
+    void open_present_devices();
+
 private:
     void open(int joystick_index);
     //! いまの十字とスティックから向きを出す（ヒステリシスつき）。
@@ -413,6 +432,11 @@ struct PadBinds {
  * 「拾う」のつもりが別のコマンドになる。文字なら意味が変わらない。
  * 見つからないコマンドは**黙って飛ばす**（版によっては無いこともある）。
  *
+ * @note **上の表は変愚（と短愚・幻想蛮怒・Frox）の並び**で、ほかのコアは「変愚の同じボタンと**同じ意味**の
+ * コマンド」を、そのコアの字で割り当てる。字が同じでも意味は違う
+ * （Rogue 3.6 の `f` は走る・Angband の `s` は盗む）ので、字をそのまま写さない。原作に同じ意味の
+ * コマンドが無いボタンは空ける。対応の表は `game_pad.cpp` の各並びの前に書いてある。
+ * 検査は `--pad-check`（`input_checks.cpp` の 5b）。
  * @note **`s` と `S` は別のコマンドである**（2026-08-11 に直した）。
  * `src/cmd-io/cmd-menu-content-table.cpp` の表で
  * `s` = **探す**（1 回探索する）／`S` = **探索モードの ON/OFF** となっている。
@@ -421,6 +445,38 @@ struct PadBinds {
  * 表を 1 度は読んで確かめること。
  */
 bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &commands,
+    const std::string &core_name, bool previous_edition = false);
+
+/*!
+ * @brief 既定の割り当ての版。**cfg の `pad_defaults` が持つ**。
+ * @details 0 = まだ入れていない／1 = 前の版（変愚の並びを、字のままどのコアの表でも引いた既定）／
+ * 2 = コアごとに変愚と同じ意味のコマンドを割り当てた既定（Sil-Q の Start はコマンドメニュー。
+ * 前の版では原作の主メニュー `m` だった）。**既定の中身を変えたら 1 つ上げる**
+ * （上げないと、すでに cfg を持つ人には新しい既定が届かない）。
+ */
+inline constexpr int kPadDefaultsVersion = 2;
+
+/*!
+ * @brief cfg の `pad_defaults`（版）に応じて既定を入れる・移す。**表が届いたあとに呼ぶ。**
+ * @param version 設定が持つ版。**呼んだあとは `kPadDefaultsVersion` になる**（0 以下を含む）。
+ *   すでに `kPadDefaultsVersion` 以上なら何もしない（遊ぶ人が外した割り当てを復活させない）。
+ * @return 割り当てが変わったら true。
+ * @details 版 0 は `apply_default_pad_binds` を入れる。版 1 は `migrate_pad_binds` で、前の版の既定と
+ * 同じ枠だけを今の既定へ置き換える（遊ぶ人が自分で変えた枠は残す）。
+ */
+bool upgrade_pad_defaults(PadBinds &binds, int &version, const std::vector<PadCommand> &commands,
+    const std::string &core_name);
+
+/*!
+ * @brief 前の版（版 1）の既定のままの枠だけを、今の版の既定へ置き換える。
+ * @details 前の版の既定は `apply_default_pad_binds(.., previous_edition = true)` を**同じ表で引き直して**
+ * 作る（番号は表の並びで決まるので、古い番号を焼かない）。枠ごとに、
+ * - 前の版の既定と同じ番号が入っている枠：今の版の既定の番号に置き換える（今の版で空なら空にする）。
+ * - ちがう番号が入っている枠（遊ぶ人が変えた・外した枠）：そのまま残す。今の版の既定が置こうとした操作を
+ *   その遊ぶ人が別の枠に持っているときは、その既定は置かない（同じ操作を 2 枠に持たせない）。
+ * @return 割り当てが変わったら true。
+ */
+bool migrate_pad_binds(PadBinds &binds, const std::vector<PadCommand> &commands,
     const std::string &core_name);
 
 /*!
@@ -432,8 +488,39 @@ bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &com
  * @note **キーボードから来ても パッドから来ても同じここを通る。**入口ごとに書くと、
  * 片方だけ直された状態に必ずなる（既存 UI の K-18 と同じ話）。
  */
+// Explicit menu selection may use core ID 0; binding ID 0 still means unassigned.
 bool emit_core_command(int command_id, const std::vector<PadCommand> &commands,
+    presentation::InputEventsMessage &out, bool explicit_menu_selection = false);
+
+/*!
+ * @brief 「走る」の命令を原作のオリジナル配列で押すキー 1 文字（`PadCommand::command`）を返す（修-02）。
+ * @param core_name 握手の `core_name`（`hello_ack`）。
+ * @return 走る命令が原作にあるコアではその字。**無い・知らないコアでは 0**（Shift＋矢印は今までどおり 1 歩）。
+ * @details 変愚・短愚・幻想蛮怒・Frox・Sil-Q・Angband・Umoria は `.`、Rogue 3.6 は `f`、
+ * Rogue 5.4 は `g`、RogueClone2 は `^F`（0x06）。**配置ごとのキー（ローグライクで `,` になるなど）は
+ * 持たない**——それはコアが届ける `PadCommand::keys`（いまの配置での逆引き）に任せる。
+ */
+int run_command_char_for_core(const std::string &core_name);
+
+/*!
+ * @brief 「走る」の命令のキー列だけを積む（修-02。Shift＋矢印の前半）。
+ * @param[out] out 走る命令の解決済みのキー列を積む（`emit_core_command` と同じ道）。方向は積まない。
+ * @return 積んだら true。そのコアに走る命令が無い・いまの配置で解決できないときは false（何も積まない。
+ *   呼び出し側は今までどおり `move` 1 つを送る）。
+ * @details プロトコルを変えない。パッドの「走る」ボタンと同じ道で走る命令を押す。方向は、続けて
+ * `move` で答える（`run_direction_via_targeting_ui` が偽のコア）か、ターゲット画面で答える（真のコア）。
+ */
+bool emit_run_command(const std::string &core_name, const std::vector<PadCommand> &commands,
     presentation::InputEventsMessage &out);
+
+/*!
+ * @brief 走る命令が訊いてくる方向を、コアがターゲット画面（`direction8`）で受けるか（修-02）。
+ * @details 変愚・短愚・幻想蛮怒・Frox・Sil-Q・Angband は、方向を訊く場面でターゲット画面を開き、
+ * 生の `move` や方向のキーを読まない（開いたあとの画面に `aim_move`・`aim_confirm` で答える）。
+ * そのため走る命令を押したあと、画面が開くのを待って方向を答える必要がある（`input_controller.cpp`）。
+ * Umoria・Rogue 3.6・Rogue 5.4・RogueClone2 は普通のキーで方向を読むので、`move` をすぐ続けて送ればよい。
+ */
+bool run_direction_via_targeting_ui(const std::string &core_name);
 
 /*!
  * @brief 割り当ての無いボタンを「マクロのトリガーを押した」としてコアへ送る。
@@ -452,11 +539,17 @@ bool emit_pad_macro_trigger(PadInput input, int mods, presentation::InputEventsM
  * @details 旧 2D UI（削除済み）にあったものを
  * この exe にも置く（2026-08-11 に決めた「すべてのコントローラーキーの割り当てを表示」）。
  *
- * **未割り当ても並べる。**割り当てが無いことも利用者が知りたい情報であり、
+ * **未割り当ても並べる。**割り当てが無いことも遊ぶ人が知りたい情報であり、
  * 「出ていない」と「割り当てが無い」は画面から見分けられなければならない。
  * 折り返しは呼び出し側（字送りを知っているのは描画側だけ）。
+ *
+ * @param modern_ui **新 UI では機能メニューとコマンドメニューは同じ 1 つの窓**
+ * （AH-37）。真のときは `Back` の項目を出さない——
+ * 同じ窓を Start と両方で案内すると 2 つの入口があるように見えてしまう
+ * （Back で開いても Start と同じ窓が開くだけ）。旧 UI（偽）では今までどおり
+ * `Back:機能メニュー` と `Start:...` の両方を出す。
  */
 std::vector<std::string> build_pad_bind_items(const PadBinds &binds, const std::vector<PadCommand> &commands,
-    const PadMacroFlags &macros, int chord_mask);
+    const PadMacroFlags &macros, int chord_mask, bool modern_ui);
 
 } // namespace hd2d

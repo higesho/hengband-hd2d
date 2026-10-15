@@ -1,0 +1,1274 @@
+# Umoria の画面の字の表。tools/umoria/um_build_messages.py が作る（手で直さない）。
+# 英語<TAB>日本語。書式（%s %d など）の値は {1} {2} … で英語での順番を書く。
+! - A potion.	! - 薬。
+" - An amulet, periapt, or necklace.	" - アミュレット、ペリアプト、ネックレス。
+# - A stone wall.	# - 石の壁。
+$ - Treasure.	$ - 財宝。
+%  - Generate a dungeon item	%  - ダンジョンのアイテムを生成
+% - A magma or quartz vein.	% - マグマまたは石英の鉱脈。
+% - Not used.	% - 使われていない。
+%28sGold%8s %7d	{1}                           所持金     {2} {3}
+%3d.%d lb	{1}.{2} lb
+%7sExp to Adv : %7d	{1}      次レベル   : {2}
+%7sExp to Adv : *******	{1}      次レベル   : *******
+%7sExperience : %7d	{1}      経験値     : {2}
+%7sLevel      : %7d	{1}      レベル     : {2}
+%7sMax Exp    : %7d	{1}      最大経験   : {2}
+%9d [Fixed]	{1} [固定]
+%d and that's final.	{1} で決まりだ。
+%d feet	{1} フィート
+%d for such a fine item?  HA!  No less than %d.	{1} でこんな上等な品を？ ハッ！ {2} より安くはできん。
+%d for that piece of junk?  No more than %d.	そんながらくたに {1} だと？ {2} までだ。
+%d gold for that junk, no more.	そのがらくたに {1} 金貨、それ以上は出さん。
+%d gold pieces and be thankful for it!	{1} 金貨だ。ありがたく思え！
+%d gold pieces and not a copper more.	{1} 金貨、銅貨一枚たりとも上乗せせんぞ。
+%d gold?  HA!  %d is more like it.	{1} 金貨？ ハッ！ {2} がいいところだ。
+%d is an insult!  Try %d gold pieces.	{1} とは侮辱だ！ {2} 金貨でどうだ。
+%d is far too little, how about %d?	{1} では安すぎる。{2} ではどうだ。
+%d is my final offer; take it or leave it.	{1} が最後の提示額だ。買うか、やめるかだ。
+%d is too much, let us say %d gold.	{1} は高すぎる。{2} 金貨としよう。
+%d of the contributors to your monster memory %s	あなたの怪物の記憶に貢献した者のうち{1}人{2}
+%d?  Are you mad?!?  How about %d gold pieces?	{1} だと？ 正気か！？ {2} 金貨でどうだ。
+%d?  NEVER!  %d is more like it.	{1} だと？ とんでもない！ {2} がいいところだ。
+%d?!?  You would rob my poor starving children?	{1} だと！？ 飢えた子供たちから奪う気か？
+%dd%d	{1}d{2}
+%s %s %s. [(r)ecall]	{1}{2}{3}がいる。[(r)ecall]
+%s %s ---pause---	{1}{2}がある。---pause---
+%s appears confused.	{1}は混乱したようだ。
+%s appears stunned!	{1}は朦朧としたようだ！
+%s appears to be cursed.	{1}どうやら呪われているようだ。
+%s Au	{1} 金貨
+%s begs you for money.	{1}にお金をせがまれた。
+%s bites you.	{1}に噛まれた。
+%s breathes acid.	{1}は酸のブレスを吐いた。
+%s breathes fire.	{1}は火炎のブレスを吐いた。
+%s breathes frost.	{1}は冷気のブレスを吐いた。
+%s breathes gas.	{1}はガスのブレスを吐いた。
+%s breathes lightning.	{1}は稲妻のブレスを吐いた。
+%s breathes on you.	{1}に息を吹きかけられた。
+%s cast unknown spell.	{1}は未知の呪文を唱えた。
+%s casts a spell.	{1}は呪文を唱えた。
+%s claws you.	{1}に引っ掻かれた。
+%s crawls on you.	{1}に這い寄られた。
+%s cringes from the light!	{1}は光にひるんだ！
+%s crushes you.	{1}に押し潰された。
+%s damned	{1}呪われた
+%s dances around you!	{1}はあなたの周りで踊った！
+%s defiles you!	{1}に汚された！
+%s dies in a fit of agony.	{1}は苦悶の中で息絶えた。
+%s dissolves!	{1}は溶けた！
+%s drools on you.	{1}によだれをたらされた。
+%s embraces you.	{1}に抱きつかれた。
+%s empty	{1}空
+%s envelops a creature!	{1}が生き物を包み込んだ！
+%s envelops several creatures!	{1}が数体の生き物を包み込んだ！
+%s Exp	{1} 経験値
+%s falls asleep.	{1}は眠り込んだ。
+%s gazes at you.	{1}に睨まれた。
+%s gives you the finger!	{1}に中指を立てられた！
+%s grunts in pain!	{1}は苦痛にうめいた！
+%s hits you.	{1}に殴られた。
+%s humiliates you!	{1}に辱められた！
+%s ID (%s	{1} ID ({2}
+%s ignores your bash!	{1}はあなたの体当たりを無視した！
+%s insults you!	{1}に侮辱された！
+%s insults your mother!	{1}にあなたの母を侮辱された！
+%s is embedded in the rock.	{1}は岩に埋め込まれた。
+%s is in your way!	{1}が行く手をふさいでいる！
+%s is repelled.	{1}は追い払われた。
+%s is unaffected.	{1}には効果がなかった。
+%s kicks you.	{1}に蹴られた。
+%s magically summons a monster!	{1}は魔法でモンスターを召喚した！
+%s magically summons an undead!	{1}は魔法でアンデッドを召喚した！
+%s magik	{1}魔法
+%s makes a horrible wail.	{1}は恐ろしい叫び声をあげた。
+%s makes obscene gestures!	{1}は卑猥な身振りをした！
+%s misses you.	{1}の攻撃は外れた。
+%s moons you!!!	{1}にお尻を向けられた！！！
+%s recovers and glares at you.	{1}は立ち直り、あなたを睨みつけた。
+%s releases a cloud of spores.	{1}は胞子の雲を放った。
+%s runs frantically!	{1}は狂ったように走り回っている！
+%s screams in agony.	{1}は苦悶の叫びをあげた。
+%s shrivels away in the light!	{1}は光を浴びて萎れた！
+%s shudders.	{1}は身震いした。
+%s spits on you.	{1}につばを吐きかけられた。
+%s starts moving faster.	{1}は動きが速くなった。
+%s starts moving slower.	{1}は動きが遅くなった。
+%s stings you.	{1}に刺された。
+%s strikes %s	{1}は{2}に命中した。
+%s touches you.	{1}に触られた。
+%s tramples you.	{1}に踏みつけられた。
+%s tried	{1}試した
+%s wails out in pain!	{1}は苦痛の叫びをあげた！
+%s wearing	{1}身につけているが、
+%s wets on your leg!	{1}に足へ小便をかけられた！
+%s which one?	{1}のはどれ？
+%s wielding	{1}装備しているが、
+%s%s of	の{1}{2}
+%s' fails.	セーブファイル '{1}' の保存に失敗しました。
+%s' present. Attempting restore.	セーブファイル '{1}' があります。復元を試みます。
+%sappears confused.	{1}は混乱したようだ。
+%sappears healthier.	{1}は元気になったようだ。
+%sdraws psychic energy from you!	{1}はあなたから精神エネルギーを吸い取った！
+%sis unaffected.	{1}には効果がなかった。
+&  - Summon random monster	&  - ランダムな怪物を召喚
+& %s Amulet	{1}のアミュレット
+& %s Mushroom~	{1}のキノコ
+& %s Potion~	{1}の薬
+& %s Ring	{1}の指輪
+& %s Staff	{1}の杖
+& %s Wand	{1}の魔法棒
+& - Treasure chest.	& - 宝箱。
+& Amulet	アミュレット
+& Book~ of Magic Spells %s	魔法書 {1}
+& Hairy %s Mold~	毛むくじゃらの{1}モルド
+& Hairy Mold~	毛むくじゃらモルド
+& Holy Book~ of Prayers %s	祈祷書 {1}
+& Mushroom~	キノコ
+& Potion~	薬
+& Ring	指輪
+& Scroll~	巻物
+& Scroll~ titled "%s"	題名「{1}」の巻物
+& Staff	杖
+& Wand	魔法棒
+' - An open door.	' - 開いたドア。
+( - Soft armor.	( - 軟らかい防具。
+(%c%d to stealth)	(隠密行動{1}{2})
+(%c%d to STR)	(腕力{1}{2})
+(%c-%c%s%s%s, space to break, ESC to exit) %s which one?	({1}-{2}{3}{4}{5}, スペースで中断, ESC で終了) {6} どれ？
+(%d charges)	({1}回分)
+(%dd%d)	({1}d{2})
+(%s: %c-%c,%s%s / for %s, or ESC) %s	({1}: {2}-{3},{4}{5} / で{6}, または ESC) {7}
+(0 - 32767) Mana       =	(0 - 32767) マナ =
+(1 - 32767) Hit points =	(1 - 32767) ヒットポイント =
+(3 - 118) Charisma     =	(3 - 118) 魅力         =
+(3 - 118) Constitution =	(3 - 118) 耐久         =
+(3 - 118) Dexterity    =	(3 - 118) 器用         =
+(3 - 118) Intelligence =	(3 - 118) 知能         =
+(3 - 118) Strength     =	(3 - 118) 腕力         =
+(3 - 118) Wisdom       =	(3 - 118) 賢さ         =
+(^ and then H), or you can type ' ' (i.e. the space character) after the	スペース(' ')を入力してください。コマンドの入力を求められ、
+(alive and well)	(存命中)
+(end of input: saved)	(入力終了: セーブ済)
+(ESC to abort, return to print on screen, or file name)	(ESC で中止、リターンで画面に表示、またはファイル名)
+(Items %c-%c, ESC to exit) %s	(アイテム {1}-{2}, ESC で終了) {3}
+(Items %c-%c,%s%s ESC to exit) %s	(アイテム {1}-{2},{3}{4} ESC で終了) {5}
+(Miscellaneous Abilities)	(その他の能力)
+(saved)	(セーブ済)
+(Spells %c-%c, *=List, <ESCAPE>=exit) %s	(呪文 {1}-{2}, *=一覧, <ESCAPE>=中止) {3}
+) - A shield.	) - 盾。
+*  - Wizard light	*  - ウィザード・ライト
+* - Gems.	* - 宝石。
+* for inventory list,	* で持ち物一覧,
+* to see,	* で表示,
+*** %d objects	*** アイテム {1} 個
+*** CONGRATULATIONS *** You have won the game.	*** おめでとう *** あなたはゲームに勝利した。
+*** For Level %d	*** {1} 階の場合
+*** Random Object Sampling:	*** ランダム・アイテムの標本抽出:
+**KING**	**王**
+**QUEEN**	**女王**
+*CHOKE* For that!?  Let's say %d.	*むせる* これで！？ {1} としておこう。
+*King*	*王*
+*Queen*	*女王*
+*Unknown value*	*不明な値*
+*Winner*	*勝利者*
++  - Gain experience	+  - 経験値を得る
++ - A closed door.	+ - 閉じたドア。
++ To AC	AC修正
++ To AC     : %6d	AC修正      : {1}
++ To Damage	ダメージ修正
++ To Damage : %6d	ダメージ修正: {1}
++ To Hit	命中修正
++ To Hit    : %6d	命中修正    : {1}
++To AC :	AC修正+  :
++To dam:	ダメージ修正+:
++To hit:	命中修正+:
+, * to list	, * で一覧
+, - Food or mushroom patch.	, - 食べ物またはおばけキノコ。
+, / for Equip	, / で装備一覧
+, / for Inven	, / で持ち物一覧
+, and	、そして
+, and is also	、また
+, but	、しかし
+- - A wand	- - 魔法棒。
+- An open pit.	- 開いた落とし穴。
+- cont. -	- 続く -
+--Aborting look--	--見るのを中止--
+--pause--	--pause--
+. - Floor.	. - 床。
+/            RIP            \   \  :   :     /   \	/            冥福           \   \  :   :     /   \
+/       Identify a character      |   >       Go down a down-staircase	/       文字の意味を調べる        |   >       下り階段を下る
+/ - A pole weapon.	/ - 長柄武器。
+1 - Entrance to General Store.	1 - 雑貨屋の入口。
+2 - Entrance to Armory.	2 - 防具屋の入口。
+3 - Entrance to Weaponsmith.	3 - 武器屋の入口。
+4  5  6  [5 to rest]	4  5  6  [5で休息]
+4 - Entrance to Temple.	4 - 寺院の入口。
+5 - Entrance to Alchemy shop.	5 - 錬金術の店の入口。
+6 - Entrance to Magic-Users store.	6 - 魔法の店の入口。
+:  - Map area (panel)	:  - マップの表示範囲(パネル)
+: - Rubble.	: - 岩石。
+; - A loose rock.	; - ゆるんだ岩。
+; 1 time in %d	；{1}回に1回の頻度
+<        Go up an up-staircase       |   CTRL-X   Save character and quit	<        上り階段を上る              |   CTRL-X   セーブして終了する
+< - An up staircase.	< - 上り階段。
+<f>ile character description. <c>hange character name.	<f> キャラクター記述をファイルへ。 <c> 名前を変更。
+=       Set options               |   <       Go up an up-staircase	=       オプション設定            |   <       上り階段を上る
+= - A ring.	= - 指輪。
+>        Go down a down-staircase    | @ ~        For movement	>        下り階段を下る              | @ ~        移動用
+> - A down staircase.	> - 下り階段。
+? - A scroll.	? - 巻物。
+@  - Create an object *CAN CAUSE FATAL ERROR*	@  - オブジェクトを作成 *致命的エラーの恐れあり*
+@ -  ~    Move without pickup       |   ?       View this page	@ -  ~    拾わずに移動する          |   ?       このページを見る
+@ CTRL  ~ Tunnel in a direction     |   CTRL-X  Save character and quit	@ CTRL  ~ 指定方向に掘る            |   CTRL-X  セーブして終了する
+@ CTRL-P  Previous message review   |   {       Inscribe an object	@ CTRL-P  過去のメッセージ          |   {       アイテムに銘を刻む
+@ f ~     Force (bash) item or mons.|   F       Fill lamp with oil	@ f ~     物や怪物に体当たり        |   F       ランプに油を注ぐ
+@ j ~      Jam a door with spike       |   M        Map (shown reduced size)	@ j ~      扉にくさびを打つ            |   M        地図(縮小表示)
+@ o ~      Open a door/chest           | @ T ~      Tunnel in a direction	@ o ~      扉・箱を開ける              | @ T ~      指定方向に掘る
+@ o ~     Open a door/chest         |   P       Peruse a book	@ o ~     扉・箱を開ける            |   P       呪文書を閲覧する
+@ s        Search for traps or doors   |   {        Inscribe an object	@ s        罠や扉を探す                |   {        アイテムに銘を刻む
+@ s       Search for traps or doors |   T       Take off an item	@ s       罠や扉を探す              |   T       アイテムをはずす
+@ SHIFT ~ Run in direction          | @ ~       For movement	@ SHIFT ~ 指定方向に走る            | @ ~       移動用
+[ - Hard armor.	[ - 硬い防具。
+[ press any key to continue, or Q to exit ]	[ 何かキーを押すと続行、Q で終了 ]
+[Character's Equipment List]	[キャラクターの装備一覧]
+[General Inventory List]	[持ち物一覧]
+\  - Wizard Help	\  - ウィザード・ヘルプ
+\ - A hafted weapon.	\ - 柄付き武器。
+] - Misc. armor.	] - その他の防具。
+^ - A trap.	^ - トラップ。
+^A - Cure all maladies and remove curses	^A - すべての異常を治し、呪いを解く
+^B - Print random objects sample to file	^B - ランダムなアイテムの見本をファイルに出力
+^D - Jump to depth # (level)	^D - 指定した階へ移動
+^E - Edit character stats	^E - キャラクターの能力値を編集
+^F - Vanquish monsters within sight	^F - 視界内の怪物を一掃
+^G - Generate random items	^G - ランダムなアイテムを生成
+^H - Wizard Help	^H - ウィザード・ヘルプ
+^I - Identify an item	^I - アイテムを識別
+^L - Wizard light	^L - ウィザード・ライト
+^O - Print random objects sample to file	^O - ランダムなアイテムの見本をファイルに出力
+^T - Teleport player randomly	^T - プレイヤーをランダムにテレポート
+^U - Summon random monster	^U - ランダムな怪物を召喚
+^W - Wizard mode on/off	^W - ウィザード・モードのオン/オフ
+_ - A staff.	_ - 杖。
+a        Aim and fire a wand         | @ B ~      Bash item or monster	a        魔法棒で狙う                | @ B ~      物や怪物に体当たりする
+A - Giant Ant Lion.	A - 巨大アリジゴク。
+a - Giant Ant.	a - 巨大アリ。
+A black gas surrounds you!	黒いガスがあなたを包んだ！
+A count of 0 defaults to a count of 99. Counts only work with some commands,	0 は 99 回として扱われます。回数が使えるのは一部のコマンドだけで、
+A creature digs itself out from the rock!	何者かが岩の中から這い出してきた！
+a falling rock	落石
+a fire trap	火のトラップ
+A gas of scintillating colors surrounds you!	色とりどりに輝くガスがあなたを包んだ！
+a granite wall	花崗岩の壁
+A kill of this	この
+A line of blue shimmering light appears.	青くきらめく光の筋が現れた。
+A pleasure to do business with you!	あんたと取引できて光栄だ！
+a poison gas trap	毒ガスのトラップ
+a poison needle	毒針
+A puff of yellow gas surrounds you!	黄色いガスがぱっと広がり、あなたを包んだ！
+A pungent green gas surrounds you!	刺激のある緑のガスがあなたを包んだ！
+a quartz vein	石英の鉱脈
+a race, and a class. Anytime before you have made these specifications,	これらを指定し終えるまでは、いつでも control-C で中断できます。
+A small dart barely misses you.	小さなダーツがかろうじてあなたをかすめた。
+A small dart hits you!	小さなダーツがあなたに当たった！
+A small dart hits you.	小さなダーツがあなたに当たった。
+A small dart saps your health!	小さなダーツがあなたの健康を蝕んだ！
+A small dart weakens you!	小さなダーツがあなたを弱らせた！
+A small needle has pricked you!	小さな針があなたを刺した！
+a small object	小さな物 1 つ
+A stinging red gas swirls about you.	ヒリヒリする赤いガスがあなたの周りに渦巻いた。
+A strange red gas surrounds you.	奇妙な赤いガスがあなたを包んだ。
+A strange white mist surrounds you!	奇妙な白い霧があなたを包んだ！
+A veil of darkness surrounds you.	暗闇があなたを包んだ。
+Aborted.	中止しました。
+About body	体の周り
+AC	ＡＣ
+AC     :	AC       :
+accepted on game version	のものを、次のゲーム版で受け付けました:
+Accepted!	そうしよう！
+Acid Ball	アシッド・ボール
+Afraid	恐怖
+After a long bargaining session, you agree upon the price.	長い値段交渉の末、価格に合意した。
+Age	年齢
+Age%11s %6d	年齢         {1} {2}
+Aim which wand?	どの魔法棒で狙いますか？
+All Hail the Mighty	偉大なる者に栄光あれ
+Allocate?	割り当てますか?
+Allocated.	割り当てました。
+Allowed commands:	使えるコマンド:
+Alter speed? (+/-)	速度を変えますか? (+/-)
+always moves and attacks by using magic	常に魔法を使って移動し攻撃する
+an %s	{1}
+an acid trap	酸のトラップ
+An arrow barely misses you.	矢がかろうじてあなたをかすめた。
+An arrow hits you.	矢があなたに当たった。
+an exploding chest	爆発する箱
+an object	物 1 つ
+and	、および
+and a%s life rating of %dd%d.	体力は{2}d{3}{1}である。
+and comes with ABSOLUTELY NO WARRANTY	また、いかなる保証もありません
+and its contents!	そして中身も！
+and will be terminated by the same things that end a rest or a run. In	休息や走行を終わらせるものと同じ事柄で中断されます。特に、
+Aren't you brilliant!	なんて頭がいいんだ！
+Around neck	首
+As scrap this would bring %d.  Try %d in gold.	くずとして売っても {1} にはなる。金貨 {2} でどうだ。
+Asking	希望
+Asking Price	希望価格
+at least %d of the beasts %s been exterminated.	少なくとも{1}体{2}が退治されている。
+At least %d of these creatures %s	この怪物のうち少なくとも{1}体{2}
+at normal speed	通常の速さである
+attacked. A count with control-P will specify the number of previous messages	CTRL-P に回数を付けると、表示する過去のメッセージの
+Attempting a resurrection!	復活を試みます!
+b        Browse a book               |   C        Character description	b        呪文書を閲覧する            |   C        キャラクターの情報
+b - Giant Bat.	b - 巨大コウモリ。
+B - The Balrog.	B - バルログ。
+Babe in arms	赤ん坊
+Bad	悪い
+BAH!  No more shall you insult me!	ふん！ もう俺を侮辱させんぞ！
+been killed by contributors to your monster memory.	、あなたの怪物の記憶に貢献した者に殺されている。
+been killed by this creature, and	が、この怪物に殺されており、
+Beep for invalid character	無効な文字でビープ音を鳴らす
+Begone!  I have had enough abuse for one day.	立ち去れ！ 今日はもう侮辱は十分だ。
+Black Sphere	黒の球体
+Blind	盲目
+Bows/Throw  :	射撃・投擲  :
+Bows/Throw  : %-10s	射撃・投擲  : {1}
+But you are not carrying any spell-books!	しかし、あなたは魔道書を持っていない！
+But you are not carrying anything!	しかし、あなたは何も持っていない！
+But you are not carrying anything.	しかし何も持っていない。
+But you are not using a lamp.	だが、ランプを使っていない。
+But you are wielding no weapons.	しかし武器を装備していない。
+But you have no spikes.	だが、くさびを持っていない。
+But you're not carrying anything -more-	しかし何も持っていない -more-
+But you're not carrying anything.	しかし何も持っていない。
+But you're not using anything -more-	しかし何も装備していない -more-
+But your mind quickly clears.	しかし、すぐに頭がはっきりした。
+by	、量は
+by an alphabetic character - entering a capital causes a desription to be	大文字を入力すると説明が表示され、選択を
+C - Gelatinous Cube.	C - ゼラチナス・キューブ。
+c - Giant Centipede.	c - 巨大ムカデ。
+c ~      Close a door                | @ D ~      Disarm a trap/chest	c ~      扉を閉める                  | @ D ~      トラップ・箱の解除
+c ~     Close a door              |   C       Character description	c ~     扉を閉める                |   C       キャラクターの情報
+Can not find help file '%s	ヘルプファイルが見つかりません: '{1}
+Can't create new file '%s	新しいファイル '{1}' を作成できません。
+Can't delete '%s	'{1}' を削除できません。
+Can't make new save file. Overwrite old?	新しいセーブファイルを作れません。古いものを上書きしますか?
+Can't open file %s:	ファイル {1} を開けません:
+Can't open file for reading.	読み込み用にファイルを開けません。
+Can't open score file '	スコアファイルを開けません: '
+cannot be charmed or slept	魅了も睡眠も効かない
+carry	持っていることがある:
+carrying in your pack	ザックに入れている
+Cast %s (%d mana, %d%% fail)?	{1}を唱えますか (マナ{2}、失敗率{3}%)？
+Cast which spell?	どの呪文を唱えますか？
+Character Background	キャラクターの経歴
+Character has no equipment in use.	キャラクターは何も装備していません。
+Character has no objects in inventory.	キャラクターは何も持っていません。
+Character record?	キャラクターの記録?
+Choose a class (? for Help):	職業を選んでください (? でヘルプ):
+Choose a sex (? for Help):	性別を選んでください (? でヘルプ):
+CHP	現ＨＰ
+CHR :	魅力:
+CHR : %s	魅力: {1}
+Class       :	職業        :
+Class%8s %-23s	職業        {1} {2}
+Click!	カチッ！
+Cold Ball	アイス・ボール
+Come back tomorrow.	明日出直してこい。
+Come back when thou art richer.	金持ちになってから出直すがいい。
+Command Summary (@ is optional count, ~ is direction, ^R redraws, ESC aborts)	コマンド一覧 (@は回数指定可, ~は方向, ^Rで再描画, ESCで中止)
+Command:	コマンド:
+Compacting monsters...	モンスターを整理中...
+Compacting objects...	アイテムを整理中...
+Completed.	完了しました。
+CON :	耐久:
+CON : %s	耐久: {1}
+Confused	混乱
+Continuing with inventory command?	持ち物コマンドを続けますか？
+Control-	コントロール-
+Control-R will redraw the screen whenever it is input, not only at command	Control-R は、コマンド入力中に限らず、押せばいつでも画面を再描画します。
+corrosion gas	腐食ガス
+Cost :	価格 :
+Counted searches or tunnels will terminate on success, or if you are	回数付きの探索や掘削は、成功するか、あなたが攻撃されると終了します。
+creature is worth %d.%02d point%c	怪物を倒したときの経験値は{1}.{2}ポイント{3}
+Cur Hit Points	現在HP
+Cur Hit Points : %6d	現在HP         : {1}
+Cur Mana	現在マナ
+Cur Mana%8s %6d	現在マナ       {1} {2}
+Current=%d  (-1-18) Stealth =	現在値={1}  (-1-18) 隠密行動 =
+Current=%d  (0-100) Save =	現在値={1}  (0-100) 魔法防御 =
+Current=%d  (0-200) Base to hit =	現在値={1}  (0-200) 基本命中 =
+Current=%d  (0-200) Bows/Throwing =	現在値={1}  (0-200) 射撃・投擲 =
+Current=%d  (0-200) Disarming =	現在値={1}  (0-200) 解除 =
+Current=%d  (0-200) Searching =	現在値={1}  (0-200) 探索 =
+Current=%d  Gold =	現在値={1}  金貨 =
+Current=%d  Weight =	現在値={1}  体重 =
+d        Drop an item                |   E        Eat some food	d        アイテムを落とす            |   E        食べる
+d       Drop an item              | @ D ~     Disarm a trap/chest	d       アイテムを落とす          | @ D ~     トラップ・箱の解除
+d  : drop object	d  : アイテムを落とす
+D - An Ancient Dragon (Beware).	D - 古代ドラゴン (要注意)。
+d - Dragon.	d - ドラゴン。
+Damage (dice):	ダメージ (ダイス数):
+Damage (sides):	ダメージ (面の数):
+Darkness surrounds you.	闇があなたを包んだ。
+DEX :	器用:
+DEX : %s	器用: {1}
+Directions:     7  8  9	方向:           7  8  9
+Directions:     y  k  u	方向:           y  k  u
+Disarming   :	解除        :
+Disarming   : %-10s	解除        : {1}
+Display rest/repeat counts	休憩/繰り返しの回数を表示する
+Do you really want to quit?	本当に終了しますか?
+Do you wish to do business or not?	取引する気はあるのか、ないのか？
+does not deign to chase intruders	侵入者を追おうとはしない
+Done!	よし！
+Drop	落とす
+Drop all %s	{1}をすべて落とす
+Dropped %s	{1}を落とした。
+Dungeon/Store object	ダンジョン/店のアイテム
+Duplicate	複製
+e        Equipment list              |   F        Fill lamp with oil	e        装備一覧                    |   F        ランプに油を注ぐ
+e       Equipment list            |   E       Eat some food	e       装備一覧                  |   E       食べる
+e  : list used equipment	e  : 装備の一覧
+E - Elemental.	E - エレメンタル。
+e - Floating Eye.	e - フローティング・アイ。
+e/i/t/w/x/d/?/ESC:	e/i/t/w/x/d/?/ESC:
+East	東
+Eat what?	何を食べますか？
+Energy drains from your pack!	ザックからエネルギーが吸い取られた！
+ENOUGH!  You have abused me once too often!	もうたくさんだ！ 何度も俺をコケにしやがって！
+Enter character to be identified :	識別する文字を入力 :
+Enter your player's name  [press <RETURN> when finished]	プレイヤーの名前を入力  [終わったら <RETURN> を押す]
+Entire inventory is shown.	在庫をすべて表示した。
+Equip	装備
+erratically	不規則で
+Error during reading of file.	ファイルの読み込み中にエラーが発生しました。
+Error in objdes()	objdes() でエラー
+Error opening score file '%s	スコアファイル '{1}' を開く際にエラーが発生しました。
+Error writing to file '%s	ファイル '{1}' への書き込みでエラーが発生しました。
+ESC when finished, y/n to set options, <return> or - to move cursor	ESC で終了、y/n で設定、<return> か - でカーソル移動
+ESC) Exit from Building.        ^R) Redraw the screen.	ESC) 建物から出る。             ^R) 画面を描き直す。
+ESC) Quit Haggling.	ESC) 値段交渉をやめる。
+ESC: exit	ESC: 終了
+evil	邪悪な
+Exceed your weight limit to pick up %s	重量制限を超えて拾う: {1}
+Excellent	卓越
+EXP	経験
+Exp to Adv.	次レベル
+Exp to Adv.: *******	次レベル   : *******
+Experience	経験値
+f        Fire/Throw an item          |   G        Gain new magic spells	f        アイテムを撃つ/投げる       |   G        新しい魔法を覚える
+F - Giant Fly.	F - 巨大バエ。
+f - Giant Frog.	f - 巨大ガエル。
+Fair	普通
+Fast	加速
+Female	女性
+Fighting    :	打撃命中    :
+Fighting    : %-10s	打撃命中    : {1}
+File could not be opened.	ファイルを開けませんでした。
+File exists. Delete old save file?	ファイルが存在します。古いセーブファイルを削除しますか?
+File name:	ファイル名:
+Final offer	最終提示
+Final Offer	最終提示
+Finally!  I accept.	やっとか！ 受けよう。
+Fine.	結構だ。
+Fire/Throw which one?	どれを撃つ/投げますか？
+Flags (In HEX):	フラグ (16進):
+For %d I could own ten of those.  Try %d.	{1} あればそんなもの十個は買える。{2} でどうだ。
+for a%s %d%s level character.	、レベル{2}{1}{3}のキャラクターの場合。
+For more information: https://github.com/dungeons-of-moria/umoria	詳しくは: https://github.com/dungeons-of-moria/umoria
+forgotten	忘却
+G - Ghost.	G - ゴースト。
+g - Golem.	g - ゴーレム。
+Game seed must be a decimal number between 1 and 2147483647	ゲームのシードは 1 から 2147483647 の 10 進数で指定してください
+Gee, ain't you cute!	あら、かわいいじゃない！
+Go to which level (0-99) ?	何階へ行きますか (0-99) ?
+GOLD	金貨
+Gold	所持金
+Gold Remaining : %d	所持金 : {1}
+Good	良い
+h  .  l  [. to rest]	h  .  l  [.で休息]
+h - Harpy.	h - ハーピー。
+H - Hobgoblin.	H - ホブゴブリン。
+Ha!  No less than %d gold pieces.	ハッ！ {1} 金貨より安くはできん。
+Hah!  Try again.	ハッ！ やり直しだ。
+Height	身長
+Height%8s %6d	身長         {1} {2}
+Hey!  This is good stuff!  * Hick! *	おい！ これはいい酒だ！ * ヒック！ *
+Highlight and notice mineral seams	鉱脈を目立たせて気づけるようにする
+Hit any key to continue	続けるには何かキーを押してください
+Hit space to re-roll or ESC to accept characteristics:	スペースで振り直し、ESC で能力値を確定:
+Hmmm, it seems to be cursed.	うーん、呪われているようだ。
+Hmmm, nice weather we're having.	うーむ、いい天気だなぁ。
+Hmmm, there was something under this rock.	ふむ、この岩の下に何かがあった。
+holding ready by your side	予備として携帯
+How about %d?	{1} ではどうだ。
+How dare you!	何のつもりだ！
+Hungry	空腹
+i        Inventory list              |   L        Locate with map	i        持ち物一覧                  |   L        地図で位置を調べる
+i       Inventory list            |   G       Gain new magic spells	i       持ち物一覧                |   G       新しい魔法を覚える
+i  : inventory of pack	i  : ザックの中身
+i - Icky Thing.	i - ベトベト。
+I am currently out of stock.	今は在庫を切らしている。
+I am sorry, but I have not the money to afford such a fine item.	申し訳ないが、そんな上等なアイテムを買い取る金がない。
+I came, I saw, I conquered!	我来たり、我見たり、我勝てり！
+I do not buy such items.	そんなアイテムは買わない。
+I do not see anything to disarm there.	そこには解除できるものは見当たらない。
+I do not see anything you can close there.	そこには閉められるものは見当たらない。
+I do not see anything you can open there.	そこには開けられるものは見当たらない。
+I don't hear you.	聞こえんな。
+I don't see a trap.	罠は見当たらない。
+I have not the room in my store to keep it.	店に置く場所がない。
+I must have heard you wrong.	聞き間違いだろうか。
+I paid more than %d for it myself, try %d.	わしだって {1} より高く仕入れたんだ。{2} でどうだ。
+I see no down staircase here.	ここに下り階段は見当たらない。
+I see no up staircase here.	ここに上り階段は見当たらない。
+I will not buy that!	そんなものは買わない！
+I wouldn't pay %d for your children, try %d.	お前の子供にだって {1} は払わん。{2} でどうだ。
+I'll buy it as scrap for %d.	くずとして {1} で買い取ろう。
+I'll give you no more than %d.	{1} より安くはせんぞ。
+I'll pay no more than %d; take it or leave it.	{1} までしか出さん。売るか、やめるかだ。
+I'm sorry, say that again.	すまんが、もう一度言ってくれ。
+If this is your first time playing, you may want to read the manual first.	初めて遊ぶ場合は、先にマニュアルを読むことをお勧めします。
+IMPOSSIBLE! Attempt to restore while still alive!	ありえない! 生存中に復元しようとした!
+IMPOSSIBLE: I don't see how you can use that.	ありえない: それをどう使うのか分からない。
+incredibly	信じられないほど
+Infra-Vision:	赤外線視力  :
+Infra-Vision: %s	赤外線視力  : {1}
+Inscribing %s	{1}に銘を刻む
+Inscription:	銘:
+INT :	知能:
+INT : %s	知能: {1}
+Internal error in playerEat()	playerEat() で内部エラー
+Internal error in potion()	potion() で内部エラー
+Internal error in scroll()	scroll() で内部エラー
+Internal error in staffs()	staffs() で内部エラー
+Internal error in wands()	wands() で内部エラー
+intruders, which it may notice from %d feet.	、侵入者には{1}フィート先から気づくことがある。
+Invalid command with a count.	回数指定付きでは使えないコマンドです。
+Invalid ID. Must be %s	ID が不正です。{1} の範囲で指定してください
+Invalid rest count.	休息の回数が不正です。
+Inven	持ち物
+is ever vigilant for	常に警戒しており
+is fairly observant of	わりと観察力があり
+is observant of	観察力があり
+is very observant of	非常に観察力があり
+is vigilant for	警戒しており
+Is wizard	ウィザード中
+It	何か
+it	何か
+It appears to be stuck.	びくともしないようだ。
+It can	それは次のことができる:
+It can breathe	吐けるブレス:
+It got at your rations!	それはあなたの食料に手を付けた！
+It has an armor rating of %d	それの防御力は{1}で、
+It has no physical attacks.	それには物理攻撃がない。
+It is	それは
+It is in	そこには
+It is normally found at depths of %d feet	それは通常、深さ{1}フィートで見つかる
+it is not ever known to have been defeated.	この怪物を倒したという記録はない。
+It is on	そこには
+It is resistant to	耐性を持つもの:
+It is susceptible to	それは次に弱い:
+It is warm blooded	それは温血であり
+It lives in the town	それは町に住んでいる
+It may	それは
+It was a *GREAT* hit! (x5 damage)	*会心* の一撃だ！(ダメージ x5)
+It was a good hit! (x2 damage)	いい命中だ！(ダメージ x2)
+It was a superb hit! (x4 damage)	見事な命中だ！(ダメージ x4)
+It was an excellent hit! (x3 damage)	素晴らしい命中だ！(ダメージ x3)
+Item	アイテム
+Item you wish identified?	鑑定したいアイテムは？
+j - Jackal.	j - ジャッカル。
+J - Jelly.	J - ゼリー。
+Just lifting	持っているだけ
+just typed in.  To avoid this, you can either enter ^H as two characters	これを避けるには、^H を 2 文字(^ と H)で入力するか、数字の後に
+K - Killer Beetle.	K - キラービートル。
+k - Kobold.	k - コボルド。
+key strokes by typing ^ and then a letter.	入力で入力できます。
+Killing one of these wins the game!	これを倒すとゲームに勝利する！
+King!	王!
+l - Giant Louse.	l - 巨大シラミ。
+L - Lich.	L - リッチ。
+l ~      Look given direction        | @ R        Rest (count or *=restore)	l ~      方向を指定して見る          | @ R        休息(回数 / *=全回復)
+Learn which spell?	どの呪文を覚えますか？
+Leave my place.  Begone!	店から出て行け！ 消え失せろ！
+Left  ring finger	左手の指輪
+Let's be reasonable. How about %d gold pieces?	常識的にいこうじゃないか。{1} 金貨でどうだ。
+LEV	ＬＶ
+Level	レベル
+Level :	レベル :
+level. Control commands may be entered with a single key stroke, or with two	Control コマンドは、1 回のキー入力か、^ に続けて英字を押す 2 回のキー
+Liar!  You have not the gold!	嘘つき！ 金が足りないではないか！
+Light source	光源
+Light source is	光源
+Light source was	光源だった物:
+Light source was %s	光源の{1}を外した
+Lightning Ball	サンダー・ボール
+Lightning strikes you!	稲妻があなたを打った！
+Look which direction?	どの方向を見ますか？
+Lv Mana Fail	Lv マナ 失敗率
+m        Magic spell casting         |   S        Search mode	m        呪文を唱える                |   S        探索モード
+m       Magic spell casting       |   M       Map (shown reduced size)	m       呪文を唱える              |   M       地図(縮小表示)
+m - Mold.	m - モルド。
+M - Mummy.	M - ミイラ。
+m) Male       f) Female	m) 男性       f) 女性
+Magic Device:	魔道具使用  :
+Magic Device: %-10s	魔道具使用  : {1}
+magical, casting spells which	魔法を使い、次のような呪文を唱える:
+Magnificent	偉大なる者
+Male	男性
+MANA	マナ
+Map sector [%d,%d], which is%s your sector. Look which direction?	地図の区画 [{1},{2}] は、あなたの区画{3}にあたります。どの方向を見ますか?
+Max Exp	最大経験
+Max Hit Points	最大HP
+Max Hit Points : %6d	最大HP         : {1}
+Max Mana	最大マナ
+Max Mana%8s %6d	最大マナ       {1} {2}
+maximized	（最大値）
+maximum values.	まで休息します。
+May the Balrog find you tasty!  %d gold pieces?	バルログに賞味されるがいい！ {1} 金貨でどうだ。
+May the fleas of 1000 Orcs molest you.  I want %d.	1000匹のオークのノミに苦しめられるがいい。{1} よこせ。
+May your chickens grow lips.  I want %d in gold!	お前のニワトリに唇が生えるがいい。金貨 {1} よこせ！
+MHP	最ＨＰ
+moves	その動きは
+My mother you can get for %d, this costs %d.	うちの母親なら {1} で譲ってやるが、こいつは {2} だ。
+My patience grows thin.  %d is final.	そろそろ我慢の限界だ。{1} で決まりだ。
+My poor sick children may starve, but done!	病気の子供が飢えるかもしれんが、よし！
+My spouse will skin me, but accepted.	連れ合いにどやされるだろうが、承知した。
+n - Naga.	n - ナーガ。
+Name	名前
+Name        :	名前        :
+Name%9s %-23s	名前        {1} {2}
+natural	自然の
+New Save file [ESC to give up]:	新しいセーブ名 [ESC で中止]:
+no	いいえ
+No known battles to the death are recalled.	命を懸けて戦った記録は残っていない。
+No primary weapon.	主武器がない。
+North	北
+Not Used.	使われていない。
+Nothing is known about its attack.	その攻撃については何も分かっていない。
+nothing.	何もない。
+Number :	個数     :
+number at which point you will get a command prompt and backspace will	バックスペースが
+number of previous messages to display.	過去のメッセージの数を指定できます。
+O - Ooze.	O - ウーズ。
+o - Orc or Ogre.	o - オークまたはオーガ。
+objects	物
+of 0 defaults to a count of 99. Counts only work with some commands, and	0 は 99 回として扱われます。回数が使えるのは一部のコマンドだけで、
+Offer	提示
+often	よく
+often as you like by entering '%' to the class request. This will also	選び直せます。このとき
+Ok.	オーケーだ。
+On arm	腕
+On body	胴体
+On feet	足
+On hands	両手
+On head	頭
+On left hand	左手
+On right hand	右手
+one or two	1 つか 2 つの
+Oops! It feels deathly cold!	うわ！ すさまじく冷たい！
+or	、または
+or treasure	、または財宝
+Out of my place!	店から出て行け！
+out... Out... OUT!!!	出ろ...出ろ...出て行け！！！
+p        Pray                        |   V        View scoreboard	p        祈る                        |   V        スコア一覧を見る
+p       Pray                      |   Q       Quit the game	p       祈る                      |   Q       ゲームを終了する
+P - Giant humanoid.	P - 巨人。
+p - Person (Humanoid).	p - 人間 (人型)。
+p) Purchase an item.           b) Browse store's inventory.	p) アイテムを買う。            b) 店の在庫を見る。
+Paralysed	麻痺
+Parameters no good.	パラメータが不正です。
+particular, typing any character during the execution of a counted command	回数付きコマンドの実行中に何かキーを押すと、そのコマンドは中断されます。
+pays little attention to	あまり注意を払わず
+pays very little attention to	ほとんど注意を払わず
+Perception  :	知覚        :
+Perception  : %s	知覚        : {1}
+Pick up %s	拾う: {1}
+Please try again without that save file.	そのセーブファイルを使わずに、もう一度試してください。
+poison	毒
+Poisoned	毒
+poisonous food.	毒入りの食べ物。
+Poor	劣る
+Pray hard enough and your prayers may be answered.	十分に祈れば、あなたの祈りは聞き届けられるかもしれない。
+prayer	祈り
+prefers to ignore	あえて気にとめず
+Press ? for help	? でヘルプを表示
+Press any key to stop resting...	休息をやめるには何かキーを押してください...
+Primary weapon   :	主武器           :
+printed, and the selection may be aborted.	中止することもできます。
+Produce how many objects?:	アイテムをいくつ生成しますか?:
+Produce objects on what level?:	何階のアイテムを生成しますか?:
+Program was manually aborted with the message:	プログラムは次のメッセージとともに手動で中断されました:
+Prompt to pick up objects	アイテムを拾うとき確認する
+Put ring on which hand (l/r/L/R)?	どちらの手に指輪をはめますか (l/r/L/R)？
+q        Quaff a potion              |   =        Set options	q        薬を飲む                    |   =        オプション設定
+q       Quaff a potion            | @ R       Rest (count or *=restore)	q       薬を飲む                  | @ R       休息(回数 / *=全回復)
+q - Quasit.	q - クアシト。
+Q - Quylthulg (Pulsing Flesh Mound).	Q - クイルスルグ (脈打つ肉塊)。
+Quaff which potion?	どの薬を飲みますか？
+Queen!	女王!
+quickly	素早い
+Quitting	途中終了
+r        Read a scroll               |   ?        View this page	r        巻物を読む                  |   ?        このページを見る
+r       Read a scroll             | @ S ~     Spike a door	r       巻物を読む                | @ S ~     扉にくさびを打つ
+R - Reptile.	R - 爬虫類。
+r - Rodent.	r - 齧歯類。
+Race        :	種族        :
+Race%9s %-23s	種族        {1} {2}
+random objects being produced...	ランダムなアイテムを生成中...
+Rank  Points Name              Sex Race       Class  Lvl Killed By	順位  得点   名前              性別種族       職業   Lv  死因
+Read which scroll?	どの巻物を読みますか？
+Reading data from %s	{1} からデータを読み込み中
+Recharge which item?	どのアイテムを再充填しますか？
+Recite which prayer?	どの祈りを唱えますか？
+regenerate your attributes.	能力値も再生成されます。
+Repeat	繰り返し
+Repeat %-.3d	繰り返し {1}
+Repeat count:	繰り返し回数:
+Replace	置き換える
+Replace %s New inscription:	{1}を置き換える 新しい銘:
+Replace existing file %s	既存のファイル {1} を置き換えますか
+Rest	休憩
+Rest %-5d	休憩 {1}
+Rest *	休憩 *
+Rest for how long?	どのくらい休みますか？
+Restoring Character...	キャラクターを復元中...
+Restoring Memory of a departed spirit...	死せる魂の記憶を復元中...
+Restoring Memory...	記憶を復元中...
+Resurrect a dead character?	死んだキャラクターを復活させますか?
+Resurrected	復活済
+Ridiculous!	ばかばかしい！
+Right ring finger	右手の指輪
+Ripe Old Age	老衰
+Robbed again.	またしてやられたよ。
+Robert A. Koeneke's classic dungeon crawler.	ロバート・A・コーネケによる古典的なダンジョン探索ゲーム。
+Robert A. Koeneke's classic roguelike	Robert A. Koeneke の古典的ローグライク
+Rogue like commands	ローグライク・コマンド
+Running: cut known corners	走行: 既知の曲がり角を切って進む
+Running: examine potential corners	走行: 曲がり角になりそうな所を調べる
+Running: print self during run	走行: 走行中に自分を表示する
+Running: run through open doors	走行: 開いたドアを通り抜ける
+Running: stop when map sector changes	走行: 地図の区画が変わると止まる
+S - Giant Scorpion.	S - 巨大サソリ。
+s - Skeleton.	s - スケルトン。
+s) Sell an item.               i/e/t/w/x) Inventory/Equipment Lists.	s) アイテムを売る。            i/e/t/w/x) 持ち物と装備の一覧。
+Save file '%s	セーブファイル '{1}' の保存に失敗しました。
+Save file does not exist.	セーブファイルが存在しません。
+Save file version	セーブファイルの版
+Saving data to %s	{1} にデータを保存中
+Saving game...	ゲームをセーブ中...
+Saving Throw:	魔法防御    :
+Saving Throw: %-10s	魔法防御    : {1}
+Saving with '%s	'{1}' でセーブ中...
+Search	探索
+Searching   :	探索        :
+Searching   : %s	探索        : {1}
+Secondary weapon	予備の武器
+Sell this for such a pittance?  Give me %d gold.	こんなはした金で売れるか？ {1} 金貨をよこせ。
+Selling %s	{1}を売る
+Selling %s (%c)	{1} ({2}) を売る
+Sex         :	性別        :
+Sex%10s %-23s	性別        {1} {2}
+Show weights in inventory	持ち物に重さを表示する
+Sigh.  I'll take it.	はぁ...。それで手を打とう。
+Slow	減速
+slowly	遅い
+small objects	小さな物
+Small objects only?	小さなアイテムだけにしますか?
+Social Class	社会的地位
+Social Class : %6d	社会的地位 : {1}
+Some commands will prompt for a spell, or an inventory item. Selection is	呪文やアイテムを尋ねられるコマンドがあります。選ぶには英字を入力します。
+some dark rock	黒っぽい岩
+Something	何か
+Something shatters inside your pack!	ザックの中で何かが砕け散った！
+sometimes	ときどき
+Sorry, scores for games restored from panic save files are not saved.	申し訳ありません。緊急セーブから復元したゲームのスコアは記録されません。
+Sorry, this character is retired from moria.	申し訳ありません。このキャラクターはモリアから引退しています。
+Sorry, what was that again?	すまん、もう一度言ってくれんか。
+Sorry. This save file is from a different version of umoria.	申し訳ありません。このセーブファイルは別の版の Umoria のものです。
+Sorry. This score file is from a different version of umoria.	申し訳ありません。このスコアファイルは別の版の Umoria のものです。
+South	南
+Spare weapon	予備の武器
+Specify an asking-price in gold pieces.	希望価格を金貨で指定してください。
+Specify an offer in gold pieces.	提示額を金貨で指定してください。
+spell	呪文
+starvation	飢餓
+Stealth     :	隠密行動    :
+Stealth     : %-10s	隠密行動    : {1}
+STR :	腕力:
+STR : %s	腕力: {1}
+Study	学習
+Subval :	副種別値 :
+success, or if you are attacked. A count with control-P will specify the	攻撃されると終了します。CTRL-P に回数を付けると、表示する
+Superb	超越
+t        Take off an item            | @ -        Move without pickup	t        アイテムをはずす            | @ -        拾わずに移動する
+t       Throw an item             |   V       View scores	t       アイテムを投げる          |   V       スコア一覧を見る
+t  : take off item	t  : 装備を外す
+t - Giant Tick.	t - 巨大ダニ。
+T - Troll.	T - トロル。
+Take off	外す
+Taken!	わかった！
+takes a while to see	気づくのに時間がかかり
+takes quite a while to see	気づくのにかなり時間がかかり
+Tchar  :	表示文字 :
+tends to overlook	見落としがちで
+THAT DOES IT!  You shall waste my time no more!	もう限界だ！ これ以上俺の時間を無駄にさせん！
+That isn't a door!	それはドアではない!
+That looks war surplus!  Say %d gold.	戦争の余り物のようだな！ {1} 金貨でどうだ。
+That's all you see in that direction.	その方向に見えるのはこれで全部だ。
+That's all you see.	見えるのはこれで全部だ。
+That's an insult!	侮辱だ！
+The %s	{1}
+the %s	{1}
+The %s disappears.	{1}は消えた。
+The %s hits the %s.	{1}は{2}に命中した。
+The %s is in your way!	{1}が邪魔をしている!
+The %s turns into mud.	{1}は泥に変わった。
+The %s you are	{1}を
+The %s you are wielding appears to be cursed.	装備している{1}は呪われているようだ。
+The %s:	{1}:
+The air about you becomes charged.	あたりの空気が帯電した。
+The chest holds firm.	箱はびくともしない。
+The chest is trapped!	箱には罠が仕掛けられている！
+The chest was not trapped.	その箱には罠がなかった。
+The door appears to be broken.	ドアは壊れているようだ。
+The door crashes open!	ドアが勢いよく開いた！
+The door holds firm.	ドアはびくともしない。
+The door must be closed first.	まずドアを閉めなければならない。
+The doors are locked.	扉に鍵がかかっている。
+The effect of the poison has been reduced.	毒の効果が弱まった。
+The enchantment fails.	強化に失敗した。
+The end of the staff bursts into a blue shimmering light.	杖の先から青く揺らめく光が放たれた。
+the entrance to the %s.	{1}の入口。
+The game will not be scored if you enter wizard mode. Are you sure?	ウィザードモードに入るとスコアは記録されません。よろしいですか?
+The gods may think you presumptuous for this! Confirm?	神々はこれを不遜と思うかもしれない！よろしいですか？
+The heroism wears off.	英雄的な気分が消えた。
+The lock breaks open!	鍵が壊れて開いた！
+the number, and you will be prompted for the command, which may be a digit.	するとコマンドの入力を求められます(数字でもかまいません)。
+The potion makes you vomit!	薬のせいで吐いた！
+The prayer has expired.	祈りの効果が切れた。
+The rune of protection is broken!	守りのルーンが壊れた！
+The staff glows blue for a moment..	杖が一瞬青く光った。
+The staff has no charges left.	杖にはもう魔力が残っていない。
+The super heroism wears off.	超英雄的な気分が消えた。
+The veil of darkness lifts.	闇のとばりが上がった。
+The wall turns into mud.	壁が泥に変わった。
+The wand has no charges left.	魔法棒にはもう魔力が残っていない。
+There are several screams of agony!	いくつもの苦悶の叫びが響いた！
+There are sparks coming from your pack!	ザックから火花が出ている！
+There is a bright flash of light!	まばゆい閃光が走った！
+There is a bright flash of light.	まばゆい閃光が走った。
+There is a closed door blocking your way.	行く手を閉じたドアがふさいでいる。
+There is a high pitched humming noise.	甲高いうなり音が聞こえる。
+There is a puff of smoke!	ぼんと煙が上がった！
+There is a scream of agony!	苦悶の叫びが響いた！
+There is a searing blast of light!	焼けつくような閃光が走った！
+There is a static feeling in the air.	空気中に静電気のような感覚がある。
+There is a sudden explosion!	突然、爆発が起きた！
+There is already an object under you.	あなたの足元にはすでに物がある。
+There is an acrid smell coming from your pack!	ザックから鼻を突く臭いがしてくる！
+There is an acrid smell coming from your pack.	ザックから鼻を突く臭いがしてくる。
+There is rubble blocking your way.	行く手を瓦礫がふさいでいる。
+There is smoke coming from your pack!	ザックから煙が出ている！
+There's no room to drop anything here.	ここには落とす場所がない。
+There's something about what you are %s...	あなたが{1}ものには、何か特別なものがある...
+This character is already on the scoreboard; it will not be scored again.	このキャラクターは既にスコアボードに載っています。再度は記録されません。
+This game is from a panic save.  Score will not be added to scoreboard.	このゲームは緊急セーブのものです。スコアは記録されません。
+This is a genocide scroll.	これは抹殺の巻物だ。
+This is a mass genocide scroll.	これは周辺抹殺の巻物だ。
+This is a Recharge-Item scroll.	これは魔力充填の巻物だ。
+This is an identify scroll.	これは鑑定の巻物だ。
+This is getting nowhere.  I'm going home!	らちがあかん。帰らせてもらう！
+This save file cannot be used to get on the score board.	このセーブファイルではスコアボードに載れません。
+This seems to be permanent rock.	これは永久岩のようだ。
+Thou knave!  No less than %d gold pieces.	この悪党め！ {1} 金貨より安くはできん。
+Throw off	投げ捨てる
+Title%8s %-23s	称号        {1} {2}
+to	で
+to display.	数を指定できます。
+To give a count to a command, type a '#', followed by the digits. A count	コマンドに回数を指定するには、'#' に続けて数字を入力します。
+To give a count to a command, type the number in digits, then the command.	コマンドに回数を指定するには、数字を入力してからコマンドを入力します。
+Total AC	合計AC
+Total AC  : %6d	合計AC    : {1}
+Town level	町
+treasure.	財宝。
+treasures.	財宝。
+Try	試す
+Try about %d gold.	{1} 金貨ぐらいでどうだ。
+tunnel left is the backspace character, and will delete the number you have	バックスペース文字であり、入力したばかりの数字が消えてしまうためです。
+Tunnel through what?  Empty air?!?	何を掘るのですか？空気ですか？！？
+Tval   :	種別値   :
+Type '?' for help.	'?' でヘルプ。
+Type '?' or '\' for help.	'?' または '\' でヘルプ。
+Type '?' or ^H for help.	'?' または ^H でヘルプ。
+Type ^ <letter> for a control char	^ <文字> でコントロール文字を入力
+type control-V and view sections 15-17 of the License.	control-V を押し、ライセンスの 15 〜 17 節を見てください。
+Type ESC to skip the inventory:	ESC で持ち物の表示を省略:
+Type ESCAPE to abort the look command at any point.	ESC を押すと、見るコマンドをいつでも中止できます。
+Typing `R*' will make you rest until both your mana and your hp reach their	`R*' と入力すると、マナと HP の両方が最大値になる
+u        Use a staff                 |   . ~      Run in direction	u        杖を使う                    |   . ~      指定方向に走る
+U - Umber Hulk.	U - アンバーハルク。
+Umoria %d.%d.%d is released under a GPL-3.0-or-later license.	Umoria {1}.{2}.{3} は GPL-3.0-or-later ライセンスで公開されています。
+Umoria 5.7.15	Umoria 5.7.15
+Umoria comes with ABSOLUTELY NO WARRANTY; for details,	Umoria には、いかなる保証もありません。詳細は
+Umoria is free software released under GPL-3.0	Umoria は GPL-3.0 で公開されているフリーソフトウェアです
+Umoria is free software, and you are welcome to distribute it	Umoria はフリーソフトウェアです。一定の条件のもとで、
+unbelievably	信じがたいほど
+undead	不死の
+under certain conditions; for details, type control-V.	自由に再配布できます。詳細は control-V を押してください。
+unexpected eof	予期しない入力終了
+unknown	未習得
+Unknown equipment position ID	不明な装備位置ID
+Unknown trap value.	不明なトラップの値です。
+untried	未使用
+up to %d	最大{1}個の
+Use 'Q' to when you are ready to quit.	終了の準備ができたら 'Q' を使ってください。
+Use <Control>-K when you are ready to quit.	終了の準備ができたら <Control>-K を使ってください。
+Use which Holy Book?	どの聖典を使いますか？
+Use which spell-book?	どの魔道書を使いますか？
+Use which staff?	どの杖を使いますか？
+Using repeat counts with the tunnel left command does not work well, because	「左に掘る」コマンドに回数を付けても、うまく動きません。左に掘るキーが
+using to light the way	明かりとして使用
+v        Version info and credits    |   /        Identify a character	v        バージョンと製作者          |   /        文字の意味を調べる
+v       Version info and credits  |   W       Where: locate self	v       バージョンと製作者        |   W       現在位置を調べる
+V - Vampire.	V - バンパイア。
+Veni, Vidi, Vici!	来た、見た、勝った！
+very	非常に
+Very Bad	最低
+Very Fast	超加速
+Very Good	大変良い
+Very Slow	超減速
+w        Wear/Wield an item          |   CTRL-K   Quit the game	w        アイテムを装備する          |   CTRL-K   ゲームを終了する
+w       Wear/Wield an item        |   X       Exchange weapon	w       アイテムを装備する        |   X       武器を持ち替える
+w  : wear or wield object	w  : アイテムを装備する
+W - Wight or Wraith.	W - ワイトまたはレイス。
+w - Worm or Worm Mass.	w - イモムシまたはイモムシの大群。
+Warning: This routine can cause a fatal error.	警告: この処理は致命的なエラーを起こす可能性があります。
+Was wearing	身に着けていた物:
+Was wearing %s	{1}を脱いだ
+Was wielding	装備していた物:
+Was wielding %s	{1}を外した
+Was wizard	元ウィザード
+Weak	衰弱
+Wear/Wield	装備する
+wearing about your body	体の周りに装備
+wearing around your neck	首に装備
+wearing on your arm	腕に装備
+wearing on your body	胴体に装備
+wearing on your feet	足に装備
+wearing on your hands	手に装備
+wearing on your head	頭に装備
+wearing on your left hand	左手に装備
+wearing on your right hand	右手に装備
+Weight	体重
+Weight :	重さ     :
+Weight%8s %6d	体重         {1} {2}
+Welcome to level %d.	レベル {1} へようこそ。
+Welcome to Moria!	Moria へようこそ！
+West	西
+What did you say?	なんと言った？
+What do you offer?	いくらで買いますか？
+What price do you ask?	いくらで売りますか？
+What was that?	なんだって？
+Which Book?	どの魔法書?
+Which direction?	どの方向?
+Which item are you interested in?	どのアイテムが気になりますか？
+Which one?	どれ？
+Which type of creature do you wish exterminated?	どの種類の生き物を全滅させますか？
+Why, I'll take no less than %d gold pieces.	いやいや、{1} 金貨より安くはできんよ。
+wielding	武器として装備
+Wielding	武器
+will be terminated by the same things that end a rest or a run. In	休息や走行を終わらせるものと同じ事柄で中断されます。特に、
+will terminate the command. Counted searches or tunnels will terminate on	回数付きの探索や掘削は、成功するか、あなたが
+will terminate the command. To count a movement command, hit space after	移動コマンドに回数を付けるには、数字の後でスペースを押します。
+WIS :	賢さ:
+WIS : %s	賢さ: {1}
+with %d turns of light	{1}ターン分の光
+with damage	、ダメージは
+wizard item	ウィザード用アイテム
+Wizard mode is for debugging and experimenting.	ウィザードモードはデバッグと実験用です。
+Wizard mode off.	ウィザードモード終了。
+Wizard mode on.	ウィザードモード開始。
+work correctly.	正しく働くようになります。
+Worn about body	身にまとっている
+Worn around neck	首に装備
+Worn on body	体に装備
+Worn on feet	足に装備
+Worn on hands	手に装備
+Worn on head	頭に装備
+Worn on shield arm	盾の腕に装備
+Wow!  What bulging muscles!	うわっ！ すごい筋肉だ！
+Writing character sheet...	キャラクターシートを書き出し中...
+x        Exchange weapon             | @ CTRL-P   Repeat the last message	x        武器を持ち替える            | @ CTRL-P   直前のメッセージ再表示
+x  : exchange weapons	x  : 武器を持ち替える
+X - Xorn.	X - ゾーン。
+x ~     Examine surroundings      |   Z       Zap a staff	x ~     周囲を調べる              |   Z       杖を使う
+y - Yeek.	y - イーク。
+Y - Yeti.	Y - イエティ。
+yes	はい
+You are a Total Winner,  your character must be retired.	あなたは完全勝利者です。キャラクターは引退しなければなりません。
+You are afraid!	あなたは怖気づいた！
+You are bloated from overeating.	食べ過ぎて腹がふくれている。
+You are carrying %d.%d pounds. In your pack there is %s	{1}.{2}ポンド運んでいる。ザックの中身は{3}
+You are carrying %d.%d pounds. Your capacity is %d.%d pounds. In your pack is -	{1}.{2}ポンド運んでいる。限界は{3}.{4}ポンドだ。ザックの中身は-
+You are carrying:	あなたの持ち物:
+You are confused.	あなたは混乱している。
+You are covered by a veil of darkness.	暗闇のヴェールに包まれた。
+You are covered in acid!	あなたは酸に覆われた！
+You are covered with frost!	あなたは冷気に覆われた！
+You are enveloped in flames!	あなたは炎に包まれた！
+You are full.	満腹だ。
+You are getting hungry.	お腹が空いてきた。
+You are getting weak from hunger.	空腹で衰弱してきた。
+You are hit by falling rock.	あなたは落石に打たれた。
+You are not carrying any books.	魔法書を持っていません。
+You are not carrying any food.	食べ物を持っていない。
+You are not carrying any Holy Books!	あなたは聖典を持っていない！
+You are not carrying any potions.	薬を持っていない。
+You are not carrying any scrolls!	巻物を持っていない！
+You are not carrying any staffs.	杖を持っていない。
+You are not carrying any wands.	魔法棒を持っていない。
+You are not carrying anything to inscribe.	銘を刻めるアイテムを持っていない。
+You are not carrying anything!	何も持っていない！
+You are not carrying anything.	何も持っていない。
+You are not using any equipment.	何も装備していない。
+You are not using anything.	何も装備していない。
+You are off balance.	あなたはバランスを崩した。
+You are off-balance.	あなたはバランスを崩した。
+You are on	足元には
+You are paralyzed.	あなたは麻痺した。
+You are splashed with acid!	あなたは酸を浴びた！
+You are strong enough to wield your weapon.	あなたは武器を扱えるだけの力がある。
+You are suddenly afraid!	あなたは突然恐怖に襲われた！
+You are surrounded by a white light.	あなたは白い光に包まれた。
+You are too afraid!	あなたは怖くてできない！
+You are too confused to pick the lock.	あなたは混乱していて鍵を開けられない。
+You are too confused to read a scroll.	混乱していて巻物が読めない。
+You are too confused.	混乱していてできません。
+You are unaffected.	あなたには効果がなかった。
+You are using -	装備しているもの -
+You are using:	あなたの装備:
+You are wearing	身につけているのは
+You are wearing %s	{1}を身に着けている
+You are wielding	手に持っている武器
+You are wielding %s	{1}を武器として持っている
+You bash at empty space.	あなたは何もない空間を殴りつけた。
+You bash it, but nothing interesting happens.	あなたは殴りつけたが、何も起こらなかった。
+You become dizzy for a moment,  it passes.	一瞬めまいがしたが、治まった。
+You become very dizzy.	あなたはひどいめまいを覚えた。
+you can interrupt with control-C. You can also specify the race as	職業を尋ねられたときに '%' を入力すれば、種族を何度でも
+You can learn some new %ss now.	新しい{1}を覚えられるようになった。
+You can not resurrect a retired character.	引退したキャラクターは復活させられません。
+You can't believe what you are seeing! It's like a dream!	信じられない光景が目の前にある！まるで夢のようだ！
+You can't carry %s	{1}は持てない
+You can't carry it.	持てない。
+You can't carry it.  Drop it?	持てない。 落としますか？
+You can't cast spells!	あなたは呪文を唱えられない！
+You can't learn any new %ss!	あなたは新しい{1}を覚えられない！
+You can't see a damn thing!	何も見えない！
+You can't see to read the scroll.	目が見えなくて巻物が読めない。
+You can't see to read your prayer!	祈りを読むための明かりがない！
+You can't see to read your spell book!	目が見えないので魔法書が読めない!
+You can't see your map.	地図が見えません。
+You can't tunnel through that.	それは掘れない。
+You cannot carry that many different items.	それほど多くの種類のアイテムは持てない。
+You cannot save this game, but you may retire when ready.	このゲームは保存できませんが、準備ができたら引退できます。
+You choke and pass out.	あなたはむせて気を失った。
+You combine similar objects from the shop and dungeon.	店とダンジョンの似たアイテムをまとめた。
+You could wield -	装備できるもの -
+You dig in the rubble.	あなたは瓦礫を掘っている。
+You dig with your hands, making no progress.	あなたは素手で掘ったが、何も進まない。
+You do not understand the language.	その言語が理解できません。
+You don't know any prayers in that book.	あなたはその本の祈りを何も知らない。
+You don't know any spells in that book.	あなたはその本の呪文を何も知らない。
+You don't know that %s.	あなたはその{1}を知らない。
+You drive a hard bargain, but taken.	なかなかの値切り上手だな。だが引き受けた。
+You enter a maze of down staircases.	下り階段の迷路に入った。
+You enter a maze of up staircases.	上り階段の迷路に入った。
+You failed to disarm the chest.	箱の罠の解除に失敗した。
+You failed to disarm the trap.	罠の解除に失敗した。
+You failed to get the spell off!	呪文の発動に失敗した！
+You failed to pick the lock.	鍵開けに失敗した。
+You failed to use the staff properly.	杖をうまく使えなかった。
+You failed to use the wand properly.	魔法棒をうまく使えなかった。
+You faint from fatigue!	あなたは疲労で気絶した！
+You faint from the effort!	あなたは気力を使い果たして気絶した！
+You faint from the lack of food.	食料不足で気絶した。
+You fall asleep.	あなたは眠りに落ちた。
+You feel a little better.	少し気分が良くなった。
+You feel as if someone is watching over you.	誰かに見守られているような気がする。
+You feel better.	気分が良くなった。
+You feel bolder now.	勇気が湧いてきた。
+You feel clumsy for a moment, but it passes.	一瞬、不器用になったが、元に戻った。
+You feel confused.	あなたは混乱した。
+You feel drugged.	意識がもうろうとしてきた。
+You feel less clumsy.	不器用さが和らいだ。
+You feel less confused now.	混乱が少し収まった。
+You feel less thirsty.	喉の渇きが和らいだ。
+You feel like a HERO!	英雄になった気分だ!
+You feel like a SUPER HERO!	超英雄になった気分だ!
+You feel more clumsy.	あなたはより不器用になった。
+You feel more dexterous.	より器用になった気がする。
+You feel more experienced.	更に経験を積んだような気がする。
+You feel more limber!	体がしなやかになった！
+You feel much better.	ずっと気分が良くなった。
+You feel naive for a moment,  it passes.	一瞬世間知らずになった気がしたが、治まった。
+You feel righteous!	正義感に満たされた!
+You feel sick for a moment,  it passes.	一瞬気分が悪くなったが、治まった。
+You feel something roll beneath your feet.	足元で何かが転がった気がした。
+You feel sore for a moment,  it passes.	一瞬体が痛んだが、治まった。
+You feel terrified!	恐怖を感じた！
+You feel tingly for a moment.	一瞬、体がぴりぴりした。
+You feel very good.	とても気分が良い。
+You feel very naive.	あなたはとても世間知らずになった気がする。
+You feel very sick.	あなたはひどく気分が悪くなった。
+You feel very sore.	あなたは全身がひどく痛む。
+You feel warm all over.	体中が温かくなった。
+You feel weakened!	あなたは弱った気がする！
+You feel weaker for a moment, but it passes.	一瞬、力が抜けたが、元に戻った。
+You feel weaker.	あなたは弱くなった気がする。
+You feel your health returning!	健康が戻ってくるのを感じた！
+You feel your health returning.	健康が戻ってくるのを感じた。
+You feel your life draining away!	あなたは生命力が吸い取られていくのを感じた！
+You feel your life energies returning.	あなたは生命力が戻ってくるのを感じた。
+You feel your looks returning.	容姿が戻ってくるのを感じた。
+You feel your memories fade.	記憶が薄れていく。
+You feel your strength returning.	力が戻ってくるのを感じた。
+You feel your wisdom returning.	賢さが戻ってくるのを感じた。
+You feel yourself moving faster.	体の動きが速くなった気がする。
+You feel yourself moving slower.	体の動きが遅くなっていく。
+You feel yourself slow down.	加速が切れて動きが遅くなった。
+You feel yourself speed up.	動きが元の速さに戻った。
+You feel yourself yanked downwards!	体が下へ引きずり下ろされた!
+You feel yourself yanked upwards!	体が上へ引っ張り上げられた!
+You fell into a covered pit.	あなたは覆われた落とし穴に落ちた。
+You fell into a pit!	あなたは落とし穴に落ちた！
+You fell through a trap door!	あなたは落とし戸から落ちた！
+You gently float down.	あなたはふわりと降り立った。
+You grab hold of your backpack!	あなたはバックパックにしがみついた！
+You have %d charges remaining.	あと{1}回分の魔力が残っている。
+You have %s	持っているのは{1}
+You have %s (%c)	{1}を持っている ({2})
+You have damaged your health!	あなたは健康を損なった！
+You have destroyed the chest.	あなたは箱を壊した。
+You have disarmed the chest.	あなたは箱の罠を解除した。
+You have disarmed the trap.	あなたは罠を解除した。
+You have discovered a trap on the chest!	あなたは箱の罠を発見した！
+You have finished the tunnel.	あなたは掘り終えた。
+You have forgotten the %s of %s.	{2}の{1}を忘れてしまった。
+You have found %d gold pieces worth of %s	{1}ゴールド相当の{2}を見つけた
+You have found %s	見つけた: {1}
+You have found a secret door.	あなたは隠し扉を見つけた。
+You have found something!	あなたは何かを見つけた！
+You have have a warm feeling.	温かい気持ちになった。
+You have killed something!	あなたは何かを倒した！
+You have killed the %s.	あなたは{1}を倒した。
+You have learned the prayer of %s.	{1}の祈りを覚えた。
+You have no light to read by.	読むための明かりがありません。
+You have no oil.	油を持っていない。
+You have nothing to recharge.	再充填するものがない。
+You have nothing to sell to this store!	この店に売れるものは何もない！
+You have nothing to wear or wield.	装備できるアイテムがない。
+You have nothing you could wield.	装備できるものがない。
+You have picked the lock.	あなたは鍵を開けた。
+You have remembered the %s of %s.	{2}の{1}を思い出した。
+You have removed the rubble.	あなたは瓦礫を取り除いた。
+You have slain %s.	あなたは{1}を倒した。
+You have trouble thinking clearly.	あなたはうまく考えられなくなった。
+You have trouble wielding such a heavy weapon.	あなたはこんな重い武器を扱うのに苦労している。
+You haven't even made your first offer yet!	まだ最初の提示すらしていない！
+You hear a cry as the %s finds a mark.	{1}が何かに命中したらしく、叫び声が聞こえた。
+You hear a door burst open!	ドアが勢いよく開く音が聞こえた！
+You hear a scream muffled by rock!	岩に遮られた悲鳴が聞こえた！
+You hear a sudden stirring in the distance!	遠くで突然、騒ぎ出す気配がした！
+You hit %s.	あなたは{1}を殴った。
+You hit a teleport trap!	あなたはテレポート・トラップを踏んだ！
+You jam the door with a spike.	ドアにくさびを打ち込んだ。
+You lost your concentration!	あなたは集中力を失った！
+You may:	できること:
+You miss %s.	{1}への攻撃は外れた。
+You move more easily under the weight of your pack.	荷物の重さの下でも楽に動けるようになった。
+You no longer feel safe from cold.	冷気から守られている感じがしなくなった。
+You no longer feel safe from evil.	邪悪から守られている感じがしなくなった。
+You no longer feel safe from flame.	炎から守られている感じがしなくなった。
+You pass through a one-way door.	一方通行のドアを通り抜けた。
+You quickly protect your money pouch!	あなたはすばやく財布を守った！
+You recall those details?	それらの詳細を思い出しますか？
+You resist the effects of the spell.	あなたは呪文の効果に抵抗した。
+You resist the effects!	あなたは効果に抵抗した！
+You see	目の前には
+You see nothing of interest in that direction.	その方向に興味を引くものは何も見えない。
+You see nothing of interest.	興味を引くものは何も見えない。
+You seem to be missing a book.	あなたは本が足りないようだ。
+You sense the presence of evil!	あなたは邪悪な存在を感じ取った！
+You sense the presence of invisible creatures!	あなたは見えない生き物の存在を感じ取った！
+You sense the presence of monsters!	あなたはモンスターの存在を感じ取った！
+You set a trap off!	あなたは罠を作動させてしまった！
+You set the trap off!	あなたは罠を作動させてしまった！
+You smash into the door!	あなたはドアに体当たりした！
+You stop running to catch your breath.	あなたは息を整えるために走るのをやめた。
+You suddenly have a profound thought!	突然、深い考えが浮かんだ！
+You summon your limited strength to cast this one! Confirm?	あなたは限られた力を振り絞ってこの呪文を唱える！よろしいですか？
+You try my patience.	我慢にも限度があるぞ。
+You tunnel into the granite wall.	あなたは花崗岩の壁を掘っている。
+You tunnel into the magma intrusion.	あなたはマグマの岩脈を掘っている。
+You tunnel into the quartz vein.	あなたは石英の鉱脈を掘っている。
+You will have to do better than that!	それでは話にならん！
+You will have to drop something first.	まず何かを落とさなければならない。
+You'd better be kidding!	冗談であってくれよ！
+You'll force me bankrupt, but it's a deal.	破産しそうだが、商談成立だ。
+You'll get no more than %d from me.	{1} より多くは出さんぞ。
+You've been slimed!	あなたはぬるぬるの粘液をかけられた！
+You've gone past the end of your map.	地図の端を越えました。
+You've got to be kidding!	冗談だろう！
+You've sold %s	{1}を売った。
+Your %s glows black, fades.	{1}は黒く光り、そして消えた。
+Your %s glows brightly!	{1}は明るく輝いた！
+Your %s glows faintly!	{1}はかすかに光った！
+Your %s is damaged!	{1}が傷ついた！
+Your %s resists damage!	{1}はダメージに耐えた！
+Your backpack feels lighter.	バックパックが軽くなった気がする。
+Your body resists the effects of the disease.	あなたの体は病気の影響に抵抗した。
+Your eyes begin to sting.	あなたの目がヒリヒリし始めた。
+Your eyes begin to tingle.	目がちくちくしてきた。
+Your feel your head clear.	頭がすっきりした。
+Your first task is to generate a character. You must specify a gender,	最初の仕事はキャラクターの作成です。性別、種族、職業を指定してください。
+Your hands begin to glow.	手が光りだした。
+Your hands stop glowing.	あなたの手の輝きが消えた。
+Your head spins a moment.	一瞬、頭がくらくらした。
+Your health is damaged!	あなたの健康が損なわれた！
+Your lamp is full.	ランプは満タンだ。
+Your lamp is half full.	ランプは半分入っている。
+Your lamp is less than half full.	ランプは半分に満たない。
+Your lamp is more than half full.	ランプは半分以上入っている。
+Your lamp overflows, spilling oil on the ground.	ランプから油があふれ、地面にこぼれた。
+Your last bid %d	前回の提示額 {1}
+Your last offer : %d	前回の提示額 : {1}
+Your light dims.	明かりが暗くなってしまった。
+Your light has gone out!	明かりが消えた!
+Your light is growing faint.	明かりが弱くなってきた。
+Your light source is	あなたの光源は
+Your light source is %s	{1}を光源にしている
+Your mother was a Troll!  %d or I'll tell.	お前の母親はトロルだ！ {1} 払わんと言いふらすぞ。
+Your pack is so heavy that it slows you down.	荷物が重すぎて動きが遅くなった。
+Your purse feels lighter.	財布が軽くなった気がする。
+Your skin returns to normal.	肌が元に戻った。
+Your skin starts to itch, but feels better now.	皮膚がかゆくなってきたが、もう良くなった。
+Your skin starts to itch.	皮膚がかゆくなってきた。
+Your skin stops itching.	肌のかゆみが止まった。
+Your skin turns into steel!	肌が鋼のように硬くなった!
+Your wisdom is drained.	あなたの賢さが吸い取られた。
+Your wisdom is sustained.	あなたの賢さは維持された。
+z       Zap a wand                |   #       Search mode	z       魔法棒で狙う              |   #       探索モード
+z - Zombie.	z - ゾンビ。
+{ - Arrow, bolt, or bullet.	{ - 矢、クロスボウの矢、弾。
+|               the               |   ___	|                                 |   ___
+|            killed by            |	|              死因               |
+|            Level :              |          /    \	|            レベル:              |          /    \
+|        Died on Level :          |         _;,,,,;_	|              死亡階層:          |         _;,,,,;_
+| - A sword or dagger.	| - 剣または短剣。
+} - Bow, crossbow, or sling.	} - 弓、クロスボウ、スリング。
+~ - Miscellaneous item.	~ - その他のアイテム。

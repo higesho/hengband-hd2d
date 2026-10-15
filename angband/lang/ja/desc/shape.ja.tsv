@@ -1,0 +1,6 @@
+# shape.ja.tsv — shape.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+bat|effect-msg	7957504381	コウモリの姿をとること
+warg|effect-msg	ac0d3ca727	ワーグの姿をとること
+vampire|effect-msg	0dd9bd5167	吸血鬼の姿をとること
+werewolf|effect-msg	79c59fa62e	人狼の姿をとること

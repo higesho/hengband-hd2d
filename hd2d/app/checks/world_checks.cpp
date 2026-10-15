@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file world_checks.cpp
  * @brief 世界と町の検査（`--world-check` / `--town-check`）。**窓も GL も要らない。**
  *
@@ -27,6 +27,7 @@
 #include <SDL2/SDL.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -63,6 +64,77 @@ int run_world_check(const AppOptions &options)
     std::fprintf(stderr, "[hd2d] world-check: %s\n", floor_meaning_summary(meaning).c_str());
 
     int failures = 0;
+
+    // 階段の上に @ が載ると minimap は Player になる。それでも地形の階段を失わないこと。
+    // RogueClone2 の「階段が消える」回帰と、2階層階段の共通フラグを同時に見る。
+    {
+        GameFrame stair_frame;
+        stair_frame.floor.dungeon_id = 99;
+        stair_frame.floor.dun_level = 5;
+        stair_frame.floor.generated_turn = 1;
+        stair_frame.floor.kind = static_cast<int>(FloorKind::Dungeon);
+        stair_frame.minimap.width = 3;
+        stair_frame.minimap.height = 3;
+        stair_frame.minimap.kinds.assign(9, static_cast<std::uint8_t>(MinimapKind::Floor));
+        stair_frame.minimap.kinds[4] = static_cast<std::uint8_t>(MinimapKind::Player);
+        MapCellView stair_cell;
+        stair_cell.gx = 1;
+        stair_cell.gy = 1;
+        stair_cell.feature_flags = CELL_FEAT_KNOWN | CELL_FEAT_STAIRS | CELL_FEAT_PLAYER;
+        stair_frame.cells.push_back(stair_cell);
+
+        FloorMeaning stair_meaning;
+        const bool built = rebuild_floor_meaning(stair_frame, stair_meaning);
+        const bool stair_kept = built && (stair_meaning.role_at(1, 1) == CellRole::Stairs);
+        const bool normal_ok = built && !stair_meaning.shaft_at(1, 1);
+        std::fprintf(stderr, "  (階段) @で上書きされた通常階段を復元: %s / 2階層印なし: %s\n",
+            stair_kept ? "OK" : "**NG**", normal_ok ? "OK" : "**NG**");
+        failures += stair_kept ? 0 : 1;
+        failures += normal_ok ? 0 : 1;
+
+        /*
+         * ここまで通っても「意味は Stairs だが 3D 側で何も置かなかった」なら実機では
+         * 階段が見えない。RogueClone2 の再報告（2026-09-21）を受け、役割判定だけでなく
+         * 本番の PrefabLibrary -> build_terrain_view まで通して stairs_down の実体を数える。
+         */
+        PrefabLibrary stair_library;
+        std::string stair_lib_err;
+        const bool stair_lib_ok = stair_library.load(options.voxel_dir, stair_lib_err);
+        bool stair_prefab_ok = false;
+        if (stair_lib_ok) {
+            Camera stair_camera;
+            stair_camera.viewport_w = 800;
+            stair_camera.viewport_h = 600;
+            stair_camera.target = Vec3{ 1.5f, 1.5f, 0.f };
+            stair_camera.distance = distance_for_cell_px(stair_camera, 120.f);
+            TerrainView stair_view;
+            build_terrain_view(stair_meaning, Frustum::from(stair_camera.view_projection()), stair_view,
+                nullptr, &stair_library);
+            const int stairs_down = stair_library.find("stairs_down");
+            stair_prefab_ok = (stairs_down >= 0)
+                && (static_cast<std::size_t>(stairs_down) < stair_view.lib.size())
+                && !stair_view.lib[static_cast<std::size_t>(stairs_down)].empty();
+        }
+        std::fprintf(stderr, "  (階段) 3D stairs_down プレハブ生成: %s%s%s\n",
+            stair_prefab_ok ? "OK" : "**NG**",
+            stair_lib_ok ? "" : " / library: ", stair_lib_ok ? "" : stair_lib_err.c_str());
+        failures += stair_prefab_ok ? 0 : 1;
+
+        // ミニマップも階も不変のまま、近づいて初めて「坑道」と判明するケース。
+        stair_frame.cells.front().feature_flags |= CELL_FEAT_SHAFT;
+        const bool detail_rebuilt = rebuild_floor_meaning(stair_frame, stair_meaning);
+        const bool shaft_learned = detail_rebuilt && stair_meaning.shaft_at(1, 1);
+        std::fprintf(stderr, "  (階段) 詳細セルで2階層印を学習: %s\n", shaft_learned ? "OK" : "**NG**");
+        failures += shaft_learned ? 0 : 1;
+
+        // 詳細セルが視界外へ出ても、同じフロアでは坑道の色を忘れない。
+        stair_frame.cells.clear();
+        const bool offscreen_rebuilt = rebuild_floor_meaning(stair_frame, stair_meaning);
+        const bool shaft_remembered = offscreen_rebuilt && (stair_meaning.role_at(1, 1) == CellRole::Stairs)
+            && stair_meaning.shaft_at(1, 1);
+        std::fprintf(stderr, "  (階段) 視界外でも2階層印を保持: %s\n", shaft_remembered ? "OK" : "**NG**");
+        failures += shaft_remembered ? 0 : 1;
+    }
 
     // (1) 同じ引数なら同じ種。
     {
@@ -104,6 +176,40 @@ int run_world_check(const AppOptions &options)
         }
         const PrefabLibrary *lib_ptr = lib_ok ? &library : nullptr;
         const TerrainMemory *mem_ptr = lib_ok ? &memory : nullptr;
+
+        /*
+         * RogueClone2 は terrain_id を持たないので、階段は role=Stairs の既定規則だけで描く。
+         * `stairs_down` は床面を含むプレハブなので、同じマスへ通常床を重ねると開口部が塞がる。
+         * 「意味づけが Stairs になった」だけでは実機の見た目を保証できなかったため、
+         * ライブラリを通した最終 TerrainView までここで固定する。
+         */
+        if (lib_ok) {
+            const TerrainRule *const stair_rule = library.rule_for_role(CellRole::Stairs, false);
+            const int stair_prefab = library.find("stairs_down");
+            const bool stair_rule_ok = stair_rule != nullptr && stair_rule->ground.empty()
+                && !stair_rule->object.empty() && stair_prefab >= 0;
+
+            FloorMeaning stair_scene;
+            stair_scene.width = 3;
+            stair_scene.height = 3;
+            stair_scene.identity.kind = static_cast<int>(FloorKind::Dungeon);
+            stair_scene.roles.assign(9, static_cast<std::uint8_t>(CellRole::Unknown));
+            stair_scene.marks.assign(9, 0u);
+            stair_scene.wall_depth.assign(9, 0u);
+            stair_scene.mountains.assign(9, 0u);
+            stair_scene.shafts.assign(9, 0u);
+            stair_scene.roles[4] = static_cast<std::uint8_t>(CellRole::Stairs);
+
+            camera.target = Vec3{ 1.5f, 1.5f, 0.f };
+            TerrainView stair_view;
+            build_terrain_view(stair_scene, Frustum::from(camera.view_projection()), stair_view, nullptr, &library);
+            const bool stair_drawn = stair_rule_ok && stair_prefab < static_cast<int>(stair_view.lib.size())
+                && !stair_view.lib[static_cast<std::size_t>(stair_prefab)].empty();
+            std::fprintf(stderr, "  (階段) role既定が床で穴を塞がない: %s / stairs_down生成: %s\n",
+                stair_rule_ok ? "OK" : "**NG**", stair_drawn ? "OK" : "**NG**");
+            failures += stair_rule_ok ? 0 : 1;
+            failures += stair_drawn ? 0 : 1;
+        }
 
         // 部屋の中に立たせる（合成マップは 16×14 間隔で部屋と通路を敷いてある）。
         camera.target = Vec3{ 100.5f, 44.5f, 0.f };
@@ -683,25 +789,240 @@ int run_world_check(const AppOptions &options)
 }
 
 /*!
- * @brief `--town-check`: **実データの町**で敷地の分解を確かめる（設計書 §10）。窓も GL も不要。
+ * @brief **町の原点の検査**（`HD2D_TOWN_ORIGIN_CHECK=66,22` を付けた `--town-check`）。
  *
- * @details 見るのは 7 つ。
- * | # | 何を | なぜ |
- * |---|---|---|
- * | 1 | 敷地・城壁・世界の枠に分かれる | §10.3 の読みそのもの。1 つに潰れていたら意味づけが効いていない |
- * | 2 | **データの入口が全部「門」になる** | 実データの記号（店・施設）が正。取りこぼしは絵に穴が開く |
- * | 3 | **門から奥への筋に建物が無い** | §10.3-3。ここが埋まると入口が建物に隠れる |
- * | 4 | 柵は**敷地の外**を向いた辺だけ | 内側に立つと敷地が檻に見える |
- * | 5 | 建物は 2×2 以上・敷地からはみ出さない | 1 マス幅の家を作らない（§10.4 の「露店」へ落とす） |
- * | 6 | ライブラリの素材が**実際に置かれる** | 名前の引き忘れ（罠 36）はここでしか出ない |
- * | 7 | **町の種が訪れ直しで変わらない** | `town_id` を足した理由そのもの（§12-2） |
+ * @details Frox の町は荒野の窓の中の 1 枚の区画で、窓がずれると町の地図の左上がフレームの座標の
+ * どこかが変わる（`FloorIdentity::town_origin_x`。気づいたこと 2026-10-10「町の中に岩山がたくさん出る・
+ * 歩く位置で町の意匠が変わる」）。画面側は**町の座標（フレームの座標 − 原点）**で意匠の表・乱数の種・
+ * 街灯の格子・岩山の記憶を扱う。この検査は、**同じ町を窓の中の 3 か所**（原点 0・(ox,oy)・(2ox,2oy)）へ
+ * 平行移動して読み、置き場所が**平行移動しただけ**で同じであることを確かめる:
  *
- * **検査の検査**は `HD2D_BREAK_TOWN`（`sites` / `gate` / `corridor`）。
+ *  1. 意味づけ・敷地・岩山の数と役割の並びが同じ（岩山の記憶と山・階段の引き継ぎを**同じ入れ物で**
+ *     3 フレームぶん続けて使う——窓が動いたときの実際の流れ）。
+ *  2. 『覚えていた岩山』を 1 マスも戻さない（窓の外へ出た山が別のマスに残らない）。
+ *  3. 地形の描画（`build_terrain_view`）の置き場所（プレハブごとの個数と、原点を引いた位置）が同じ。
+ *     意匠の表の区画・目印・名指しの敷地・小川・見た目の乱数の種・街灯の格子が、原点を足した座標で
+ *     使われているかをここで見る。
+ *
+ * 原点を足していない版では、2 と 3 が落ちる（表の座標がフレームの座標のまま使われ、窓がずれると
+ * 目印の位置・区画・種が変わる）。町の地図が窓に固定されたコア（原点 0）の出力は変わらない。
  */
-int run_town_check(const AppOptions &options)
+int run_town_origin_check(const AppOptions &options, int origin_x, int origin_y)
 {
     const std::string path = options.town_data_path.empty()
-        ? std::string("lib/edit/towns/01_Outpost_Full.txt")
+        ? std::string("lib/edit/towns/03_Morivant.jsonc")
+        : options.town_data_path;
+    PrefabLibrary library;
+    std::string err;
+    if (!library.load(options.voxel_dir, err)) {
+        std::fprintf(stderr, "[hd2d] **ライブラリを読めませんでした**: %s\n", err.c_str());
+        return 1;
+    }
+    GameFrame base;
+    if (!load_town_frame(path, library, base, err)) {
+        std::fprintf(stderr, "[hd2d] %s\n", err.c_str());
+        return 1;
+    }
+    load_styles_for_check(options);
+    const int base_w = base.minimap.width;
+    const int base_h = base.minimap.height;
+    /*
+     * 3 枚とも同じ大きさの窓（町が全部収まる）。**町の周りに余白（`margin` マス）を残す**——窓の縁に
+     * 町の端が触れると、町の端が『世界の枠』と読まれて、ずらした絵と役割が合わなくなる
+     * （窓の縁の効果であって、原点の話ではない）。
+     */
+    const int margin = 3;
+    const int canvas_w = base_w + (2 * margin) + (2 * std::max(0, origin_x));
+    const int canvas_h = base_h + (2 * margin) + (2 * std::max(0, origin_y));
+
+    struct Shot {
+        int ox;
+        int oy;
+        FloorMeaning meaning;
+        TownPlan plan;
+        TerrainView view;
+    };
+    //! 入れ物は 3 フレームぶん**使い回す**（窓が動いたときの実際の流れ。岩山の記憶と引き継ぎを通す）。
+    FloorMeaning meaning;
+    TownPlan plan;
+    CragMemory crags;
+    TerrainMemory memory;
+    std::vector<Shot> shots;
+    int failures = 0;
+    for (int step = 0; step < 3; ++step) {
+        GameFrame frame = base;
+        embed_town_frame(frame, margin + (step * origin_x), margin + (step * origin_y), canvas_w, canvas_h);
+        const std::vector<std::uint8_t> entrances = town_entrance_mask(frame, library);
+        if (!rebuild_floor_meaning(frame, meaning)) {
+            //! 原点だけが変わった次のフレームも作り直す（`rebuild_floor_meaning` の原点の差の条件）。
+            std::fprintf(stderr, "  FAIL 意味づけを作り直せませんでした（step %d・原点 (%d,%d)）\n", step,
+                margin + (step * origin_x), margin + (step * origin_y));
+            ++failures;
+            continue;
+        }
+        if (!rebuild_town_plan(meaning, plan, &crags, &entrances)) {
+            std::fprintf(stderr, "  FAIL 町を読めませんでした（step %d）\n", step);
+            ++failures;
+            continue;
+        }
+        memory.update(frame);
+        Shot shot;
+        shot.ox = margin + (step * origin_x);
+        shot.oy = margin + (step * origin_y);
+        shot.meaning = meaning;
+        shot.plan = plan;
+        build_terrain_view(shot.meaning, Frustum::everything(), shot.view, &memory, &library, &shot.plan, 0.f);
+        shots.push_back(std::move(shot));
+    }
+    if (shots.size() != 3) {
+        std::fprintf(stderr, "[hd2d] RESULT: FAIL（町を 3 回読めなかった）\n");
+        return 1;
+    }
+    const Shot &ref = shots[0];
+    std::fprintf(stderr, "[hd2d] town-origin-check: %s  原点 (%d,%d) / (%d,%d) / (%d,%d)  窓 %dx%d\n", path.c_str(),
+        shots[0].ox, shots[0].oy, shots[1].ox, shots[1].oy, shots[2].ox, shots[2].oy, canvas_w, canvas_h);
+    std::fprintf(stderr, "  基準 %s\n", town_plan_summary(ref.plan).c_str());
+    for (std::size_t k = 1; k < shots.size(); ++k) {
+        const Shot &cur = shots[k];
+        const int dx = cur.ox - ref.ox;
+        const int dy = cur.oy - ref.oy;
+        int plan_diff = 0;
+        //! 役割の並び（町の地図の範囲）。
+        for (int gy = 0; gy < base_h; ++gy) {
+            for (int gx = 0; gx < base_w; ++gx) {
+                const bool same = (ref.plan.role_at(gx + ref.ox, gy + ref.oy) == cur.plan.role_at(gx + cur.ox, gy + cur.oy))
+                    && (ref.plan.site_at(gx + ref.ox, gy + ref.oy) == cur.plan.site_at(gx + cur.ox, gy + cur.oy));
+                plan_diff += same ? 0 : 1;
+            }
+        }
+        int seed_diff = 0;
+        if (ref.plan.sites.size() == cur.plan.sites.size()) {
+            for (std::size_t i = 0; i < ref.plan.sites.size(); ++i) {
+                seed_diff += (ref.plan.sites[i].seed == cur.plan.sites[i].seed) ? 0 : 1;
+            }
+        }
+        const bool counts_same = (ref.plan.sites.size() == cur.plan.sites.size())
+            && (ref.plan.crag_cells == cur.plan.crag_cells) && (ref.plan.house_cells == cur.plan.house_cells)
+            && (ref.plan.yard_cells == cur.plan.yard_cells) && (ref.plan.rampart_cells == cur.plan.rampart_cells);
+        std::fprintf(stderr, "  (1) 原点 (%d,%d): 敷地 %zu 件・岩山 %d マス・建物 %d マス／役割の食い違い %d・敷地の種の食い違い %d\n",
+            cur.ox, cur.oy, cur.plan.sites.size(), cur.plan.crag_cells, cur.plan.house_cells, plan_diff, seed_diff);
+        if (!counts_same || (plan_diff != 0) || (seed_diff != 0)) {
+            std::fprintf(stderr, "  FAIL (1) 町の読みが、平行移動しただけでは済まず変わった\n");
+            ++failures;
+        }
+        //! 山の数（意味づけ）。窓がずれても同じ町の山は 1 マスも増減しない。
+        if (ref.meaning.mountain_cells != cur.meaning.mountain_cells) {
+            std::fprintf(stderr, "  FAIL (2) 山のマス数が変わった: %d → %d（覚えていた山の引き継ぎが原点のずれを見ていない）\n",
+                ref.meaning.mountain_cells, cur.meaning.mountain_cells);
+            ++failures;
+        }
+        //! 地形の描画の置き場所。プレハブごとに、原点を引いた (x, y, z) の集まりが**誤差の範囲で同じ**かを見る。
+        //! 並べて比べると、x がほぼ等しい 2 個の並びが丸め誤差で入れ替わるので、近いものどうしを 1 対 1 で組にする。
+        const auto keyed = [](const TerrainView &view, int ox, int oy) {
+            std::map<std::size_t, std::vector<std::array<float, 3>>> out;
+            for (std::size_t p = 0; p < view.lib.size(); ++p) {
+                for (const InstanceData &inst : view.lib[p]) {
+                    out[p].push_back({ inst.x - static_cast<float>(ox), inst.y - static_cast<float>(oy), inst.z });
+                }
+            }
+            return out;
+        };
+        const auto a = keyed(ref.view, ref.ox, ref.oy);
+        const auto b = keyed(cur.view, cur.ox, cur.oy);
+        int bad_prefabs = 0;
+        std::string first_bad;
+        std::size_t total = 0;
+        const auto name_of = [&library](std::size_t prefab) {
+            return (static_cast<int>(prefab) < library.count()) ? library.entry(static_cast<int>(prefab)).name : std::string("?");
+        };
+        for (const auto &[prefab, list] : a) {
+            total += list.size();
+            const auto other = b.find(prefab);
+            std::size_t unmatched = list.size();
+            std::array<float, 3> first_unmatched{};
+            if ((other != b.end()) && (other->second.size() == list.size())) {
+                //! 0.01 マスの格子へ入れて、隣の格子まで探す（誤差は 1e-3 未満）。
+                std::map<std::pair<int, int>, std::vector<std::size_t>> grid;
+                for (std::size_t i = 0; i < other->second.size(); ++i) {
+                    grid[{ static_cast<int>(std::floor(other->second[i][0] * 100.f)),
+                              static_cast<int>(std::floor(other->second[i][1] * 100.f)) }]
+                        .push_back(i);
+                }
+                std::vector<char> used(other->second.size(), 0);
+                unmatched = 0;
+                for (const auto &mine : list) {
+                    bool found = false;
+                    const int kx = static_cast<int>(std::floor(mine[0] * 100.f));
+                    const int ky = static_cast<int>(std::floor(mine[1] * 100.f));
+                    for (int ddx = -1; (ddx <= 1) && !found; ++ddx) {
+                        for (int ddy = -1; (ddy <= 1) && !found; ++ddy) {
+                            const auto cell = grid.find({ kx + ddx, ky + ddy });
+                            if (cell == grid.end()) {
+                                continue;
+                            }
+                            for (const std::size_t idx : cell->second) {
+                                const auto &theirs = other->second[idx];
+                                if ((used[idx] == 0) && (std::fabs(theirs[0] - mine[0]) < 1e-3f)
+                                    && (std::fabs(theirs[1] - mine[1]) < 1e-3f) && (std::fabs(theirs[2] - mine[2]) < 1e-3f)) {
+                                    used[idx] = 1;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!found) {
+                        if (unmatched == 0) {
+                            first_unmatched = mine;
+                        }
+                        ++unmatched;
+                    }
+                }
+            }
+            if (unmatched != 0) {
+                ++bad_prefabs;
+                if (first_bad.empty()) {
+                    char buf[220]{};
+                    std::snprintf(buf, sizeof(buf), "%s [組にならない %zu 個。例 (%.3f,%.3f,%.3f)・個数 %zu vs %zu]", name_of(prefab).c_str(),
+                        unmatched, first_unmatched[0], first_unmatched[1], first_unmatched[2], list.size(),
+                        (other != b.end()) ? other->second.size() : static_cast<std::size_t>(0));
+                    first_bad = buf;
+                }
+            }
+        }
+        for (const auto &[prefab, list] : b) {
+            if (a.find(prefab) == a.end() && !list.empty()) {
+                ++bad_prefabs;
+                if (first_bad.empty()) {
+                    first_bad = name_of(prefab);
+                }
+            }
+        }
+        std::fprintf(stderr, "  (3) 原点 (%d,%d): 置き場所 %zu 個・プレハブ %zu 種／食い違った種 %d（最初: %s）・個数 %d vs %d\n",
+            cur.ox, cur.oy, total, a.size(), bad_prefabs, first_bad.empty() ? "-" : first_bad.c_str(), ref.view.lib_instances,
+            cur.view.lib_instances);
+        if ((bad_prefabs != 0) || (ref.view.lib_instances != cur.view.lib_instances) || (ref.view.prop_count != cur.view.prop_count)
+            || (ref.view.slabs.size() != cur.view.slabs.size()) || (ref.view.boxes.size() != cur.view.boxes.size())) {
+            std::fprintf(stderr, "  FAIL (3) 地形の置き場所が、平行移動しただけでは済まず変わった（dx=%d dy=%d）\n", dx, dy);
+            ++failures;
+        }
+    }
+    std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
+    return (failures == 0) ? 0 : 1;
+}
+
+int run_town_check(const AppOptions &options)
+{
+    //! 町の原点の検査へ切り替える（`HD2D_TOWN_ORIGIN_CHECK=66,22`）。ふつうの `--town-check` は変わらない。
+    {
+        int origin_x = 0;
+        int origin_y = 0;
+        if (read_origin_env("HD2D_TOWN_ORIGIN_CHECK", origin_x, origin_y)) {
+            return run_town_origin_check(options, origin_x, origin_y);
+        }
+    }
+    const std::string path = options.town_data_path.empty()
+        ? std::string("lib/edit/towns/01_Outpost_Full.jsonc")
         : options.town_data_path;
     /*
      * ライブラリを先に読む。町のデータの記号（`F:1:GENERAL_STORE`）を `terrain_id` へ翻訳するのに
@@ -816,7 +1137,9 @@ int run_town_check(const AppOptions &options)
                 line += glyph;
             }
             //! 世界の枠と岩山だけの行は出さない（198×66 の全部を流すと読めない）。
-            if (any && (line.find_first_not_of(" +1234") != std::string::npos)) {
+            //! `HD2D_TOWN_CHECK_FULL=1` なら全行を出す（岩山と枠だけの行も。町の地図を原作と並べて見る用）。
+            const bool full = std::getenv("HD2D_TOWN_CHECK_FULL") != nullptr;
+            if (full || (any && (line.find_first_not_of(" +1234") != std::string::npos))) {
                 std::fprintf(stderr, "  %2d %s\n", gy, line.c_str());
             }
         }
@@ -872,21 +1195,8 @@ int run_town_check(const AppOptions &options)
      * 「開いている隣を向きとする」規則は `tools/voxel/town_entrances.py` と同じ。
      */
     {
-        std::FILE *fp = std::fopen(path.c_str(), "rb");
-        std::vector<std::string> rows;
-        if (fp != nullptr) {
-            char line[1024];
-            while (std::fgets(line, sizeof(line), fp) != nullptr) {
-                std::string text(line);
-                while (!text.empty() && ((text.back() == '\n') || (text.back() == '\r'))) {
-                    text.pop_back();
-                }
-                if (text.rfind("D:", 0) == 0) {
-                    rows.push_back(text.substr(2));
-                }
-            }
-            std::fclose(fp);
-        }
+        //! 変愚 3.0.2.5 からの `.jsonc`（`mapVariants[0].rows`）も旧 `.txt`（`D:` 行）も読む
+        const std::vector<std::string> rows = load_town_map_rows(path);
         const std::string entrance_glyphs = "0123456789abcdefghijklmnop";
         int total = 0;
         int as_gate = 0;
@@ -1294,13 +1604,37 @@ int run_town_check(const AppOptions &options)
     {
         int gates = 0;
         int reached = 0;
+        std::string unreached;
         for (const TownSite &site : town.sites) {
             if (!site.has_gate) {
                 continue;
             }
             ++gates;
-            if (town.role_at(site.gate_x + site.gate_dx, site.gate_y + site.gate_dy) == TownRole::Path) {
+            if (std::getenv("HD2D_TOWN_CHECK_FULL") != nullptr) {
+                std::fprintf(stderr, "  (8) 門の向き: 敷地 (%d,%d)-(%d,%d) 門 (%d,%d) 向き (%d,%d)\n", site.x0, site.y0,
+                    site.x1, site.y1, site.gate_x, site.gate_y, site.gate_dx, site.gate_dy);
+            }
+            //! 門の**外の最初のマス**で見る（幅・奥行きのある入口は、向きのすぐ隣も門のマス）。
+            const auto [front_x, front_y] = town.gate_outside(site);
+            if (town.role_at(front_x, front_y) == TownRole::Path) {
                 ++reached;
+            } else {
+                //! 道の通っていない門の位置を残す（門 (x,y)→前のマス (x,y) の役割の番号）。
+                char buf[96]{};
+                std::snprintf(buf, sizeof(buf), " 門(%d,%d)→前(%d,%d)=役割%d", site.gate_x, site.gate_y,
+                    front_x, front_y, static_cast<int>(town.role_at(front_x, front_y)));
+                unreached += buf;
+            }
+        }
+        if (std::getenv("HD2D_TOWN_CHECK_FULL") != nullptr) {
+            //! 門のマスごとの向き（1 = 東西にくぐる / 0 = 南北）。門の向きを変える直しの前後を突き合わせる用。
+            for (int gy = 0; gy < town.height; ++gy) {
+                for (int gx = 0; gx < town.width; ++gx) {
+                    if (town.role_at(gx, gy) == TownRole::Gate) {
+                        std::fprintf(stderr, "  (8) 門のマス (%d,%d) 向き %d\n", gx, gy,
+                            static_cast<int>(static_cast<std::uint8_t>(town.slice_at(gx, gy))));
+                    }
+                }
             }
         }
         const int open_cells = town.path_cells + town.turf_cells;
@@ -1314,6 +1648,7 @@ int run_town_check(const AppOptions &options)
         }
         if (reached < gates) {
             std::fprintf(stderr, "  (8) **道の通っていない門があります**（繋がっていない道は道ではない）\n");
+            std::fprintf(stderr, "  (8) 道の通っていない門:%s\n", unreached.c_str());
             ++failures;
         }
         if (share > 0.5f) {
@@ -1428,6 +1763,18 @@ int run_town_check(const AppOptions &options)
      *
      * @note **山塊の町（ズル）は除く。**あの町は「地図の縁で山が切れると山の外が見える」
      * ので、枠の石マス 524 マスをわざと山に含めている（`TownRole::Crag` の注記）。
+     *
+     * @note **山に完全に囲まれた永久壁は許す**（Frox のタロスの
+     * 北東にある永久壁 6 マス＝(185..187, 16..17)）。原作の地図では山の塊の真ん中に永久壁の
+     * 小さな島（3×2）が浮かんでいる。町の読みは「塊の過半が山なら塊ごと岩山」（`crag_mass`）
+     * なので、この島も岩山になり、**山の中の石の露頭が山の一部として立つ**。島の周りは四方とも山
+     * なので町の壁にも建物にもならず、見た目は山肌の続きとして正しい。直す（島だけ塀にする）と、
+     * 山の真ん中に孤立した石の柱が立って絵が悪くなるので、**岩山のままにする**のが決定。
+     * 許す条件は 2 つを両方満たすときだけ:
+     *   (a) データが山でない Crag マスの 4 連結の塊（島）の外側の隣が、**すべて岩山で、かつデータも山**
+     *   (b) その島が属する Crag の塊（4 連結）の **過半がデータの山**
+     * 山でない塊が**山に囲まれていない**とき（モリバントの雑貨屋の敷地が岩山に化けた不具合）は
+     * 従来どおり落とす。検査の検査は `HD2D_BREAK_TOWN=crag`（階段に接した塊を岩山にする捨てた規則）。
      */
     {
         if (town.crag_cells >= kCragMassCells) {
@@ -1435,31 +1782,279 @@ int run_town_check(const AppOptions &options)
                                  "（枠の石マスをわざと山に含めている）\n",
                 town.crag_cells);
         } else {
-            int not_mountain = 0;
-            std::string where;
+            const std::size_t cell_total = static_cast<std::size_t>(town.width) * static_cast<std::size_t>(town.height);
+            const auto cell_at = [&town](int gx, int gy) {
+                return (static_cast<std::size_t>(gy) * static_cast<std::size_t>(town.width)) + static_cast<std::size_t>(gx);
+            };
+            const auto in_range = [&town](int gx, int gy) {
+                return (gx >= 0) && (gy >= 0) && (gx < town.width) && (gy < town.height);
+            };
+            const auto is_crag = [&](int gx, int gy) {
+                return in_range(gx, gy) && (town.role_at(gx, gy) == TownRole::Crag);
+            };
+            const auto data_mountain = [&](int gx, int gy) {
+                return in_range(gx, gy) && (frame.minimap.at(gx, gy) == MinimapKind::Mountain);
+            };
+            const std::array<std::pair<int, int>, 4> kNeighbors{
+                std::pair<int, int>{ 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 }
+            };
+            //! Crag の 4 連結の塊ごとの「マス数」と「データが山のマス数」。
+            std::vector<int> mass_of(cell_total, -1);
+            std::vector<std::pair<int, int>> mass_cells; // (全体, データが山)
             for (int gy = 0; gy < town.height; ++gy) {
                 for (int gx = 0; gx < town.width; ++gx) {
-                    if (town.role_at(gx, gy) != TownRole::Crag) {
+                    if (!is_crag(gx, gy) || (mass_of[cell_at(gx, gy)] >= 0)) {
                         continue;
                     }
-                    if (frame.minimap.at(gx, gy) == MinimapKind::Mountain) {
-                        continue;
-                    }
-                    ++not_mountain;
-                    if (where.size() < 100) {
-                        char buf[24]{};
-                        std::snprintf(buf, sizeof(buf), " (%d,%d)", gx, gy);
-                        where += buf;
+                    const int id = static_cast<int>(mass_cells.size());
+                    mass_cells.emplace_back(0, 0);
+                    std::vector<std::pair<int, int>> stack{ { gx, gy } };
+                    mass_of[cell_at(gx, gy)] = id;
+                    while (!stack.empty()) {
+                        const auto [cx, cy] = stack.back();
+                        stack.pop_back();
+                        ++mass_cells[static_cast<std::size_t>(id)].first;
+                        mass_cells[static_cast<std::size_t>(id)].second += data_mountain(cx, cy) ? 1 : 0;
+                        for (const auto &[dx, dy] : kNeighbors) {
+                            const int nx = cx + dx;
+                            const int ny = cy + dy;
+                            if (is_crag(nx, ny) && (mass_of[cell_at(nx, ny)] < 0)) {
+                                mass_of[cell_at(nx, ny)] = id;
+                                stack.emplace_back(nx, ny);
+                            }
+                        }
                     }
                 }
             }
-            std::fprintf(stderr, "  (10) 岩山 %d マス / データが山でないもの %d マス%s\n",
-                town.crag_cells, not_mountain, where.c_str());
+            //! 山でない Crag マスの島（4 連結）を数え、山に囲まれた島だけ許す。
+            std::vector<int> island_of(cell_total, -1);
+            int not_mountain = 0;
+            int enclosed = 0;
+            std::string where;
+            for (int gy = 0; gy < town.height; ++gy) {
+                for (int gx = 0; gx < town.width; ++gx) {
+                    if (!is_crag(gx, gy) || data_mountain(gx, gy) || (island_of[cell_at(gx, gy)] >= 0)) {
+                        continue;
+                    }
+                    std::vector<std::pair<int, int>> island;
+                    std::vector<std::pair<int, int>> stack{ { gx, gy } };
+                    island_of[cell_at(gx, gy)] = 1;
+                    while (!stack.empty()) {
+                        const auto [cx, cy] = stack.back();
+                        stack.pop_back();
+                        island.emplace_back(cx, cy);
+                        for (const auto &[dx, dy] : kNeighbors) {
+                            const int nx = cx + dx;
+                            const int ny = cy + dy;
+                            if (is_crag(nx, ny) && !data_mountain(nx, ny) && (island_of[cell_at(nx, ny)] < 0)) {
+                                island_of[cell_at(nx, ny)] = 1;
+                                stack.emplace_back(nx, ny);
+                            }
+                        }
+                    }
+                    //! 島の外側の隣が、すべて「岩山かつデータも山」か。
+                    bool surrounded = true;
+                    for (const auto &[cx, cy] : island) {
+                        for (const auto &[dx, dy] : kNeighbors) {
+                            const int nx = cx + dx;
+                            const int ny = cy + dy;
+                            if (is_crag(nx, ny) && !data_mountain(nx, ny)) {
+                                continue; // 島の内側
+                            }
+                            surrounded = surrounded && is_crag(nx, ny) && data_mountain(nx, ny);
+                        }
+                    }
+                    const auto &[mass_all, mass_mountain] = mass_cells[static_cast<std::size_t>(mass_of[cell_at(gx, gy)])];
+                    const bool mostly_mountain = (mass_mountain * 2) >= mass_all;
+                    if (surrounded && mostly_mountain) {
+                        enclosed += static_cast<int>(island.size());
+                        continue;
+                    }
+                    for (const auto &[cx, cy] : island) {
+                        ++not_mountain;
+                        if (where.size() < 100) {
+                            char buf[24]{};
+                            std::snprintf(buf, sizeof(buf), " (%d,%d)", cx, cy);
+                            where += buf;
+                        }
+                    }
+                }
+            }
+            std::fprintf(stderr, "  (10) 岩山 %d マス / データが山でないもの %d マス%s"
+                                 " / 山に囲まれた永久壁（許す）%d マス\n",
+                town.crag_cells, not_mountain, where.c_str(), enclosed);
             if (not_mountain > 0) {
                 std::fprintf(stderr, "  (10) **山でない塊を岩山にしています**"
                                      "（クエストの入口に接した敷地や城壁が岩山に化けていないか）\n");
                 ++failures;
             }
+        }
+    }
+
+    /*
+     * ---- (11) **門の向きは、同じ敷地の別の門のマスを向かない** ----
+     *
+     * 凹みのある入口（4 マス幅の凹みなど）では、門のマスの隣に**同じ敷地の別の門のマス**が並ぶ。
+     * 「敷地の重心から遠ざかる側」で向きを選ぶと、凹みの端のマスは「街路の側」より
+     * 「隣の門のマス」のほうが点が高くなり、**門が横（東西）を向く**ことがあった（`exit_dir`。
+     * 実機の絵で気づいた。Frox のモリバント・アングウィル・タロス、幻想蛮怒の 12 番・14 番）。
+     * 向いた先が別の門のマスでは、門をくぐって出た人は建物の側面の壁沿いに歩くことになり、
+     * 道の網（`gate_outside`）も凹みの端の外へ届かない。
+     *
+     * 見るのは**門のマスごとの向き**（`TownPlan::gate_face`）: 向いた先のマスが同じ敷地の別の門なら誤り。
+     * 敷地ごとの代表の門（`TownSite::gate_dx/dy`）も同じ目で見る。
+     *
+     * **直せるときだけ誤りにする**。直せる＝別の向きで、そちらへ出られ（敷地でも同じ敷地の門でもない隣）、
+     * かつ**背（その反対の隣）が敷地の壁**である（壁の面に開けた入口の正面）。
+     * 向きを選べない形（1×2 の袋小路で、両方のマスが門になり、互いが唯一の開いた隣）は誤りにしない。
+     * 壁を背にできる向きが無いなら、そもそも付け替える先が無い。
+     * 検査の検査は `HD2D_BREAK_TOWN=gate_dir`（向きを重心からの遠さだけで選ぶ捨てた規則）。
+     */
+    {
+        const int face_dx[4] = { 0, 0, -1, 1 };
+        const int face_dy[4] = { -1, 1, 0, 0 };
+        int checked = 0;
+        int sideways_sites = 0;
+        int sideways_cells = 0;
+        std::string where;
+        const auto site_at = [&town](int gx, int gy) {
+            if ((gx < 0) || (gy < 0) || (gx >= town.width) || (gy >= town.height)) {
+                return -2; // 範囲の外
+            }
+            return static_cast<int>(
+                town.site_of[(static_cast<std::size_t>(gy) * static_cast<std::size_t>(town.width)) + static_cast<std::size_t>(gx)]);
+        };
+        //! (gx,gy) の門が (tx,ty) を向いたとき、それは同じ敷地の別の門のマスで、かつほかに出口があるか。
+        const auto faces_gate = [&](int gx, int gy, int tx, int ty, int site) {
+            if ((town.role_at(tx, ty) != TownRole::Gate) || (site_at(tx, ty) != site)) {
+                return false;
+            }
+            for (int i = 0; i < 4; ++i) {
+                const int nx = gx + face_dx[i];
+                const int ny = gy + face_dy[i];
+                const int other = site_at(nx, ny);
+                if (((nx == tx) && (ny == ty)) || (other == -2) || (other == site)) {
+                    continue; // いまの向き・範囲の外・同じ敷地（壁か門）へは出られない
+                }
+                const TownRole open_role = town.role_at(nx, ny);
+                if ((open_role != TownRole::None) && (open_role != TownRole::Path) && (open_role != TownRole::Turf)) {
+                    continue; // 別の敷地の壁・前庭・門などへは出られない（開いたマスだけ）
+                }
+                //! 背（反対の隣）が同じ敷地の壁（門でない）か。
+                const int bx = gx - face_dx[i];
+                const int by = gy - face_dy[i];
+                if ((site_at(bx, by) == site) && (town.role_at(bx, by) != TownRole::Gate)) {
+                    return true; // 壁を背に、開いた隣へ正面を向けられた
+                }
+            }
+            return false;
+        };
+        for (std::size_t si = 0; si < town.sites.size(); ++si) {
+            const TownSite &site = town.sites[si];
+            if (!site.has_gate) {
+                continue;
+            }
+            ++checked;
+            if (faces_gate(site.gate_x, site.gate_y, site.gate_x + site.gate_dx, site.gate_y + site.gate_dy,
+                    static_cast<int>(si))) {
+                ++sideways_sites;
+                if (where.size() < 160) {
+                    char buf[56]{};
+                    std::snprintf(buf, sizeof(buf), " 敷地(%d,%d)の代表の門(%d,%d)", site.x0, site.y0, site.gate_x, site.gate_y);
+                    where += buf;
+                }
+            }
+        }
+        for (int gy = 0; gy < town.height; ++gy) {
+            for (int gx = 0; gx < town.width; ++gx) {
+                if (town.role_at(gx, gy) != TownRole::Gate) {
+                    continue;
+                }
+                const std::size_t at = (static_cast<std::size_t>(gy) * static_cast<std::size_t>(town.width))
+                    + static_cast<std::size_t>(gx);
+                const int site = site_at(gx, gy);
+                const int face = static_cast<int>(town.gate_face[at]);
+                if ((site < 0) || (face < 0) || (face > 3)) {
+                    continue; // 山肌の入口（敷地に属さない）
+                }
+                if (faces_gate(gx, gy, gx + face_dx[face], gy + face_dy[face], site)) {
+                    ++sideways_cells;
+                    if (where.size() < 160) {
+                        char buf[48]{};
+                        std::snprintf(buf, sizeof(buf), " 門(%d,%d)向き(%d,%d)", gx, gy, face_dx[face], face_dy[face]);
+                        where += buf;
+                    }
+                }
+            }
+        }
+        std::fprintf(stderr, "  (11) 門の向き: 敷地 %d 件 / 代表の門が別の門を向くもの %d 件 / 別の門のマスを向いた門のマス %d 個%s\n",
+            checked, sideways_sites, sideways_cells, where.c_str());
+        if ((sideways_sites > 0) || (sideways_cells > 0)) {
+            std::fprintf(stderr, "  (11) **門が同じ敷地の別の門のマスを向いています**"
+                                 "（凹みのある入口で、門が横を向いていないか）\n");
+            ++failures;
+        }
+    }
+
+    /*
+     * ---- (12) **別の敷地の壁に挟まれた幅 1 マスの路地は、門にならない** ----
+     *
+     * 決めたこと（案 A。2026-10-10）。幻想蛮怒の 12 番では、敷地 A の壁と敷地 B の壁の間に
+     * 幅 1 マスの路地（(60,21)〜(60,23)）が通っていて、2 周目の「壁の切れ目」の判定がこれを
+     * **A の門 3 マス**にしていた（A の外接矩形の端も「壁」とみなして閉じるため）。
+     * B の門 (59,23) は東の路地を向くが、その先 (60,23) が A の門のマスなので、`gate_outside` は
+     * A の門のマスを歩き抜けて A の前庭に着き、B の門の前が道にならなかった（(8)）。
+     * 路地は門ではなく**ただの通り道**である。
+     *
+     * 見るのは**挟まれた門のマス**: 門のマス（敷地 S）の向かい合う 2 つの隣が、
+     * 一方は S の壁（門でない S のマス）、もう一方は**別の敷地 T のマス**であるもの。
+     * 壁の面に開けた本物の入口は、向かい合う隣がどちらも S の壁か S の門のマスなので当たらない。
+     * 検査の検査は `HD2D_BREAK_TOWN=alley`（路地を門にする捨てた規則）。
+     */
+    {
+        const auto site_at = [&town](int gx, int gy) {
+            if ((gx < 0) || (gy < 0) || (gx >= town.width) || (gy >= town.height)) {
+                return -2; // 範囲の外
+            }
+            return static_cast<int>(
+                town.site_of[(static_cast<std::size_t>(gy) * static_cast<std::size_t>(town.width)) + static_cast<std::size_t>(gx)]);
+        };
+        //! 門のマス (gx,gy)（敷地 site）の (gx+dx,gy+dy) が S の壁で、反対側 (gx-dx,gy-dy) が別の敷地のマスか。
+        const auto pinched_on = [&](int gx, int gy, int site, int dx, int dy) {
+            const int other = site_at(gx - dx, gy - dy);
+            return (site_at(gx + dx, gy + dy) == site) && (town.role_at(gx + dx, gy + dy) != TownRole::Gate)
+                && (other >= 0) && (other != site);
+        };
+        int gates_checked = 0;
+        int pinched = 0;
+        std::string where;
+        for (int gy = 0; gy < town.height; ++gy) {
+            for (int gx = 0; gx < town.width; ++gx) {
+                if (town.role_at(gx, gy) != TownRole::Gate) {
+                    continue;
+                }
+                const int site = site_at(gx, gy);
+                if (site < 0) {
+                    continue; // 山肌の入口（敷地に属さない）
+                }
+                ++gates_checked;
+                if (pinched_on(gx, gy, site, 1, 0) || pinched_on(gx, gy, site, -1, 0) || pinched_on(gx, gy, site, 0, 1)
+                    || pinched_on(gx, gy, site, 0, -1)) {
+                    ++pinched;
+                    if (where.size() < 160) {
+                        char buf[32]{};
+                        std::snprintf(buf, sizeof(buf), " 門(%d,%d)", gx, gy);
+                        where += buf;
+                    }
+                }
+            }
+        }
+        std::fprintf(stderr, "  (12) 路地: 敷地の門のマス %d 個 / 別の敷地の壁に挟まれた門のマス %d 個%s\n", gates_checked,
+            pinched, where.c_str());
+        if (pinched > 0) {
+            std::fprintf(stderr, "  (12) **別の敷地の壁に挟まれた路地が門になっています**"
+                                 "（幅 1 マスの路地は門ではなく通り道）\n");
+            ++failures;
         }
     }
 

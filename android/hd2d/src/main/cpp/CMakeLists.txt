@@ -19,11 +19,15 @@
 #
 #  作られる .so
 #    libmain.so      … 画面（hd2d/ と presentation/frame、Android の入口）
+#    libopenal.so    … OpenAL Soft（画面側の音。電話版だけ。Quest は組まない）
 #    libhengcore.so  … 変愚蛮怒のコア
 #    libtangcore.so  … 短愚蛮怒のコア（同じソースを TANGBAND=1 でビルド）
 #    libgensocore.so … 幻想蛮怒のコア
 #    libsilcore.so   … Sil-Q のコア
 #    libfroxcore.so  … FroxComposband のコア
+#    librogue2core.so … RogueClone2 のコア
+#    librogue36core.so … Rogue 3.6.4 のコア
+#    librogue54core.so … Rogue 5.4.4 のコア
 #  起動時のコア選択画面で選ばれた .so を dlopen し、hengband_core_entry を呼びます。
 #
 #  Meta Quest 版は android/quest/ からこのファイルを -DHENGBAND_QUEST=ON で使います。
@@ -39,8 +43,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 get_filename_component(HB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../.." ABSOLUTE)
 set(HB_TP "${HB_ROOT}/third_party/android")
 
-# UI 単体では原作ソースを要求しない。通常の APK は既存どおり 5 コアを同梱する。
-option(HENGBAND_BUILD_CORES "Build the five external game cores" ON)
+# UI 単体では原作ソースを要求しない。通常の APK は 8 コアを同梱する。
+option(HENGBAND_BUILD_CORES "Build the eight external game cores" ON)
 get_filename_component(HB_DEFAULT_CORE_SOURCES "${HB_ROOT}/../roguelike-cores/build-sources" ABSOLUTE)
 if(DEFINED ENV{HENGBAND_CORE_SOURCE_ROOT})
     set(HB_DEFAULT_CORE_SOURCES "$ENV{HENGBAND_CORE_SOURCE_ROOT}")
@@ -52,6 +56,9 @@ endif()
 
 
 message(STATUS "[hengband-hd2d] root = ${HB_ROOT}")
+include("${HB_ROOT}/tools/core_sources/generated_headers.cmake")
+include("${HB_ROOT}/tools/targeting/targeting_sources.cmake")
+include("${HB_ROOT}/tools/rogue_legacy/rogue_legacy_sources.cmake")
 
 # -----------------------------------------------------------------------------
 # SDL2 群（third_party/android。tools/fetch_android_deps.ps1 が展開する）
@@ -112,10 +119,37 @@ set(SDL2MIXER_WAVE    ON  CACHE BOOL "" FORCE)
 add_subdirectory("${HB_TP}/SDL2_mixer" SDL2_mixer EXCLUDE_FROM_ALL)
 
 # -----------------------------------------------------------------------------
+# OpenAL Soft（画面側の音。 の 3 番・）
+#
+# Windows と同じ hd2d/audio/audio_engine.cpp（HRTF）をそのまま組むための依存。
+# 版は Windows の vcpkg と同じ 1.25.1（tools/fetch_android_deps.ps1 が展開する）。
+# **LGPL なので共有ライブラリ（libopenal.so）で入れる**（LIBTYPE SHARED）。
+# 出力は OpenSL ES。Oboe（AAudio）は別のソースが要るので切る。
+# 電話版だけ。Quest（-DHENGBAND_QUEST=ON）は指示があるまで空実装のまま。
+# -----------------------------------------------------------------------------
+if(NOT HENGBAND_QUEST)
+    if(NOT EXISTS "${HB_TP}/openal-soft/CMakeLists.txt")
+        message(FATAL_ERROR
+            "third_party/android/openal-soft がありません。"
+            "先に tools/fetch_android_deps.ps1 を実行してください。")
+    endif()
+    set(LIBTYPE SHARED CACHE STRING "" FORCE)
+    foreach(opt UTILS EXAMPLES TESTS INSTALL INSTALL_CONFIG INSTALL_HRTF_DATA
+            INSTALL_AMBDEC_PRESETS INSTALL_EXAMPLES INSTALL_UTILS UPDATE_BUILD_VERSION
+            ENABLE_MODULES BACKEND_OBOE BACKEND_WAVE EAX)
+        set(ALSOFT_${opt} OFF CACHE BOOL "" FORCE)
+    endforeach()
+    set(ALSOFT_NO_CONFIG_UTIL ON CACHE BOOL "" FORCE)
+    set(ALSOFT_BACKEND_OPENSL ON CACHE BOOL "" FORCE)
+    set(ALSOFT_REQUIRE_OPENSL ON CACHE BOOL "" FORCE)
+    add_subdirectory("${HB_TP}/openal-soft" openal-soft EXCLUDE_FROM_ALL)
+endif()
+
+# -----------------------------------------------------------------------------
 # コア（src/）— **内部 UTF-8**（Windows の HengbandCore.exe と同じ）
 #
 # かつては EUC の変換ツリー（transcode_src_to_euc.py）を組んでいた。NDK の clang に
-# `-fexec-charset` が無く、`_()` のリテラルを EUC で作る必要があったためである。
+# `-fexec-charset` が無く、`_()` のリテラルを EUC で焼く必要があったためである。
 # 内部 UTF-8 になった今、**ソース（UTF-8）をそのまま組めばリテラルも UTF-8** で、
 # 変換ツリーは丸ごと要らない（clang の実行文字集合は既定で UTF-8）。
 # EUC のセーブ・中継サーバのワイヤは iconv の道（locale/character-encoding.cpp。
@@ -139,10 +173,20 @@ set(HB_CORE_EXCLUDE
 foreach(pat ${HB_CORE_EXCLUDE})
     list(FILTER HB_CORE_SRC EXCLUDE REGEX "${pat}")
 endforeach()
+list(FILTER HB_CORE_SRC EXCLUDE REGEX "/src/term/(z-term|screen-processor)\\.cpp$")
 list(LENGTH HB_CORE_SRC HB_CORE_COUNT)
 message(STATUS "[hengband-hd2d] core sources = ${HB_CORE_COUNT}")
 
 list(APPEND HB_CORE_SRC "${HB_CORE_SOURCE_ROOT}/src/external-lib/fmt/format.cc")
+
+# 短愚蛮怒（libtangcore.so）は変愚 3.0.2.4 の写し（tangband/src）を自分のソースとして組む。
+# 変愚の版上げで短愚を変えないため。除外は上と同じ。
+file(GLOB_RECURSE HB_TANG_SRC CONFIGURE_DEPENDS "${HB_CORE_SOURCE_ROOT}/tangband/src/*.cpp")
+foreach(pat ${HB_CORE_EXCLUDE})
+    list(FILTER HB_TANG_SRC EXCLUDE REGEX "${pat}")
+endforeach()
+list(FILTER HB_TANG_SRC EXCLUDE REGEX "/src/term/(z-term|screen-processor)\\.cpp$")
+list(APPEND HB_TANG_SRC "${HB_CORE_SOURCE_ROOT}/tangband/src/external-lib/fmt/format.cc")
 
 # -----------------------------------------------------------------------------
 # presentation（プロトコルとコア側の橋）— ui/ は組まない（hd2d が代わり）
@@ -156,10 +200,14 @@ list(FILTER HB_PRESENTATION_SRC EXCLUDE REGEX "/audio/sdl_win_audio\\.cpp$")
 # -----------------------------------------------------------------------------
 file(GLOB_RECURSE HB_HD2D_SRC CONFIGURE_DEPENDS "${HB_ROOT}/hd2d/*.cpp")
 list(FILTER HB_HD2D_SRC EXCLUDE REGEX "/hd2d/edit/")
-# 音の装置。**OpenAL の本体は Windows だけ**で、
-# こちらは空実装（audio_engine_null.cpp）を組む。あちらを Android でどう組むかが
-# 決まったら、この 1 行を外して null のほうを外す。
-list(FILTER HB_HD2D_SRC EXCLUDE REGEX "/hd2d/audio/audio_engine\\.cpp$")
+# 音の装置（の 3 番。2026-09-25 に決定）。
+# 電話版は Windows と同じ OpenAL Soft の本体（audio_engine.cpp）を組み、空実装を外す。
+# Quest は指示があるまで空実装（audio_engine_null.cpp）のまま。
+if(HENGBAND_QUEST)
+    list(FILTER HB_HD2D_SRC EXCLUDE REGEX "/hd2d/audio/audio_engine\\.cpp$")
+else()
+    list(FILTER HB_HD2D_SRC EXCLUDE REGEX "/hd2d/audio/audio_engine_null\\.cpp$")
+endif()
 list(LENGTH HB_HD2D_SRC HB_HD2D_COUNT)
 message(STATUS "[hengband-hd2d] hd2d sources = ${HB_HD2D_COUNT}")
 
@@ -203,10 +251,10 @@ file(WRITE "${HB_SDL_COMPAT_DIR}/SDL2/SDL_ttf.h"    "#pragma once\n#include <SDL
 file(WRITE "${HB_SDL_COMPAT_DIR}/SDL2/SDL_mixer.h"  "#pragma once\n#include <SDL_mixer.h>\n")
 
 # =============================================================================
-# ライブラリ構成
+# ライブラリ構成（多コア形）
 #   libmain.so     … UI（hd2d/**＋presentation/frame＋Android 入口）。コアを含まない
 #   libhengcore.so … 変愚蛮怒コア（src/**＋presentation/**＋core_main）
-# libtangcore.so … 短愚蛮怒コア
+#   libtangcore.so … 短愚蛮怒コア（同じ木＋TANGBAND=1）
 # コア選択画面で選ばれた .so を dlopen して `hengband_core_entry` を引く——Windows の
 # HengbandCore.exe / TangbandCore.exe の選択と同じ形を 1 プロセスでやる。
 # =============================================================================
@@ -218,8 +266,14 @@ function(hengband_common_config target)
         "${HB_ROOT}/hd2d"
         "${HB_ROOT}/platform"
     )
-    if(NOT "${target}" STREQUAL "main")
-        target_include_directories(${target} PRIVATE "${HB_CORE_SOURCE_ROOT}/src" "${HB_CORE_SOURCE_ROOT}/src/external-lib/include")
+    # 短愚蛮怒は自分のソース（tangband/src）と、そこから作った生成ヘッダだけを見る。
+    if("${target}" STREQUAL "tangcore")
+        target_include_directories(${target} PRIVATE "${HB_GENERATED_INCLUDE_DIR_TANGBAND}" "${HB_CORE_SOURCE_ROOT}/tangband/src" "${HB_CORE_SOURCE_ROOT}/tangband/src/external-lib/include")
+    else()
+        target_include_directories(${target} PRIVATE "${HB_GENERATED_INCLUDE_DIR}")
+        if(NOT "${target}" STREQUAL "main")
+            target_include_directories(${target} PRIVATE "${HB_CORE_SOURCE_ROOT}/src" "${HB_CORE_SOURCE_ROOT}/src/external-lib/include")
+        endif()
     endif()
     target_compile_definitions(${target} PRIVATE
         JP
@@ -230,9 +284,9 @@ function(hengband_common_config target)
         HENGBAND_SDL2_UI=1      # HengbandCore.exe と同じ（src/main-win.cpp の WinMain を黙らせる等）
     )
     target_compile_options(${target} PRIVATE
-        # NDK の -DANDROID を打ち消す
+        # NDK の -DANDROID を打ち消す（コアの PlayerRaceType::ANDROID と衝突。ANDROID_PORT.md A-T1）
         -UANDROID
-        # bionic の iconv は EUC-JP 非対応。自前実装へ差し替える
+        # bionic の iconv は EUC-JP 非対応。自前実装へ差し替える（ANDROID_PORT.md §1.2a）
         -Diconv_open=hb_iconv_open
         -Diconv_close=hb_iconv_close
         -Diconv=hb_iconv
@@ -264,19 +318,40 @@ target_link_libraries(main PRIVATE z
     android
     log
 )
+if(NOT HENGBAND_QUEST)
+    target_link_libraries(main PRIVATE OpenAL)   # libopenal.so（上の OpenAL Soft）
+endif()
 
-# コアも SDL2 / SDL2_mixer にリンクする——Android では**音はコア側が鳴らす**
-# （presentation/audio/sdl_mixer_audio.cpp。v1 の「音はコアが自分で鳴らす」建付け）。
+# コアも SDL2 / SDL2_mixer にリンクする——画面側の音の装置（OpenAL）が開けなかったときは
+# **コア側が鳴らす**（presentation/audio/sdl_mixer_audio.cpp）。
+# 電話版は 2026-09-25 から画面側が開くので、ふだんはこちらは鳴らさない。
 # libSDL2.so は共有なので、UI と同じ実体を使う＝単一ライブラリ時代と同じ意味論。
 if(HENGBAND_BUILD_CORES)
 add_library(hengcore SHARED ${HB_CORE_SRC} ${HB_PRESENTATION_SRC} ${HB_CORE_PLATFORM_SRC})
 hengband_common_config(hengcore)
 target_link_libraries(hengcore PRIVATE SDL2::SDL2 SDL2_mixer::SDL2_mixer log)
 
-add_library(tangcore SHARED ${HB_CORE_SRC} ${HB_PRESENTATION_SRC} ${HB_CORE_PLATFORM_SRC})
+add_library(tangcore SHARED ${HB_TANG_SRC} ${HB_PRESENTATION_SRC} ${HB_CORE_PLATFORM_SRC})
 hengband_common_config(tangcore)
 target_compile_definitions(tangcore PRIVATE TANGBAND=1)
 target_link_libraries(tangcore PRIVATE SDL2::SDL2 SDL2_mixer::SDL2_mixer log)
+
+# 変愚蛮怒・短愚蛮怒コアのプリコンパイル済みヘッダ。Windows（VisualStudio/CorePch.props）・Linux
+# （platform/linux/CMakeLists.txt）と同じ platform/shared/hengband_core_pch.h（原作の stdafx.h と、
+# ほぼ全ソースが読む原作のヘッダの一覧）を使う。注意点は の「共有のプリコンパイル済みヘッダ」。
+# 環境変数 HB_CORE_PCH=OFF（または -DHB_CORE_PCH=OFF）で使わずに組む（ヘッダに隠れた #include の書き忘れを見つける）。
+# プリコンパイル済みヘッダを使うのは原作の src/ だけで、presentation・core_main・fmt は Windows と同じく外す。
+# gradle から渡しにくいので、環境変数 HB_CORE_PCH=OFF でも切り替えられる（PowerShell: $env:HB_CORE_PCH='OFF'。環境変数を外せば ON に戻る）。
+if(DEFINED ENV{HB_CORE_PCH})
+    set(HB_CORE_PCH "$ENV{HB_CORE_PCH}")
+endif()
+option(HB_CORE_PCH "Use the shared Hengband precompiled header for hengcore/tangcore" ON)
+if(HB_CORE_PCH)
+    foreach(core hengcore tangcore)
+        target_precompile_headers(${core} PRIVATE "${HB_ROOT}/platform/shared/hengband_core_pch.h")
+    endforeach()
+    set_source_files_properties(${HB_PRESENTATION_SRC} ${HB_CORE_PLATFORM_SRC} "${HB_CORE_SOURCE_ROOT}/src/external-lib/fmt/format.cc" "${HB_CORE_SOURCE_ROOT}/tangband/src/external-lib/fmt/format.cc" PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+endif()
 
 # =============================================================================
 #  C で書かれた 2 つのコア（幻想蛮怒・Sil-Q）: libgensocore.so / libsilcore.so
@@ -311,9 +386,10 @@ set(HB_SJIS_DIR "${HB_CORE_SOURCE_ROOT}/android-sjis")
 
 #! 写す木の一覧。`(写し元, 行き先, 元の文字コード, 拡張子)` の 4 つ組を `|` で綴じる。
 set(HB_SJIS_TREES
-    "gensoband/src|gensoband/src|cp932|.c,.h"
-    "gensoband/adapter|gensoband/adapter|utf8|.c,.cpp,.h"
-    "silq/adapter|silq/adapter|utf8|.c,.cpp,.h"
+    "gensoband/src|gensoband/src|cp932|.c,.h,.inl"
+    "gensoband/adapter|gensoband/adapter|utf8|.c,.cpp,.h,.inl,.inc"
+    "silq/adapter|silq/adapter|utf8|.c,.cpp,.h,.inl,.inc"
+    "frox/adapter|frox/adapter|utf8|.c,.cpp,.h,.inl,.inc"
 )
 
 # 段取り前に 1 回走らせる。**glob より先でなければならない**（無い木は glob できない）。
@@ -336,6 +412,8 @@ foreach(spec ${HB_SJIS_TREES})
     if(NOT rc EQUAL 0)
         message(FATAL_ERROR "変換ツリーを作れませんでした: ${from_dir}（rc=${rc}）")
     endif()
+    file(GLOB_RECURSE HB_SJIS_INPUTS CONFIGURE_DEPENDS "${from_path}/*.c" "${from_path}/*.cpp" "${from_path}/*.h" "${from_path}/*.inl" "${from_path}/*.inc")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${HB_SJIS_INPUTS})
 endforeach()
 
 # 中身が変わったときのために、**組むたびにも**走らせる（同じ中身のファイルは触らない
@@ -368,6 +446,7 @@ add_custom_target(hb_transcode_sjis ALL
 
 #! 線の符号化と入力の翻訳。**この 4 つだけ**が新旧で共有される（vcxproj と同じ並び）。
 set(HB_LEGACY_SHARED_SRC
+    "${HB_ROOT}/presentation/bridge/native_targeting_runtime.cpp"
     "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
     "${HB_ROOT}/presentation/frame/frame_codec.cpp"
     "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
@@ -423,6 +502,7 @@ file(GLOB HB_GB_SRC CONFIGURE_DEPENDS "${HB_SJIS_DIR}/gensoband/src/*.c")
 foreach(pat ${HB_LEGACY_EXCLUDE})
     list(FILTER HB_GB_SRC EXCLUDE REGEX "${pat}")
 endforeach()
+list(FILTER HB_GB_SRC EXCLUDE REGEX "/store\\.c$")
 file(GLOB HB_GB_ADAPTER_SRC CONFIGURE_DEPENDS
     "${HB_SJIS_DIR}/gensoband/adapter/*.c" "${HB_SJIS_DIR}/gensoband/adapter/*.cpp")
 list(LENGTH HB_GB_SRC HB_GB_COUNT)
@@ -442,6 +522,7 @@ file(GLOB HB_SQ_SRC CONFIGURE_DEPENDS "${HB_CORE_SOURCE_ROOT}/silq/src/*.c")
 foreach(pat ${HB_LEGACY_EXCLUDE})
     list(FILTER HB_SQ_SRC EXCLUDE REGEX "${pat}")
 endforeach()
+list(FILTER HB_SQ_SRC EXCLUDE REGEX "/cmd3\\.c$")
 file(GLOB HB_SQ_ADAPTER_SRC CONFIGURE_DEPENDS
     "${HB_SJIS_DIR}/silq/adapter/*.c" "${HB_SJIS_DIR}/silq/adapter/*.cpp")
 list(LENGTH HB_SQ_SRC HB_SQ_COUNT)
@@ -452,11 +533,8 @@ hengband_legacy_config(silcore "${HB_CORE_SOURCE_ROOT}/silq/src" "${HB_SJIS_DIR}
 
 # ---- FroxComposband
 #
-# Sil-Q と同じ英語の C コアだが**さらに素直**——`frox/src` も `frox/adapter` も
-# 影に写さない。src は純 ASCII（P3 で全数確認済み）、アダプタは註釈が UTF-8 で
-# **リテラルは ASCII だけ**（設計 §3.1。clang は UTF-8 をそのまま読む）。
-# M1 で日本語リテラルが入ったら silq/adapter と同じく変換ツリーへ移すこと
-# （HB_SJIS_TREES に 1 行足すだけ）。
+# 原作の英語ソースはそのまま使い、日本語を含むアダプタはCP932の通常リテラルを変換する。
+# Unicode接頭辞付きリテラルはUnicodeのまま維持する。
 #
 # MSVC の穴 2 つ（設計 §3.7）はどちらもこちらでは要らない:
 #   - `z-doc.c` の `/FIwindows.h` … windows.h が無いので衝突も無い
@@ -476,8 +554,9 @@ set(HB_FC_EXCLUDE
 foreach(pat ${HB_FC_EXCLUDE})
     list(FILTER HB_FC_SRC EXCLUDE REGEX "${pat}")
 endforeach()
+list(FILTER HB_FC_SRC EXCLUDE REGEX "/(shop|home|util)\\.c$")
 file(GLOB HB_FC_ADAPTER_SRC CONFIGURE_DEPENDS
-    "${HB_ROOT}/frox/adapter/*.c" "${HB_ROOT}/frox/adapter/*.cpp")
+    "${HB_SJIS_DIR}/frox/adapter/*.c" "${HB_SJIS_DIR}/frox/adapter/*.cpp")
 list(FILTER HB_FC_ADAPTER_SRC EXCLUDE REGEX "/fc_compat\\.c$")
 list(LENGTH HB_FC_SRC HB_FC_COUNT)
 message(STATUS "[hengband-hd2d] frox sources = ${HB_FC_COUNT}")
@@ -493,12 +572,31 @@ set_source_files_properties(
     "${HB_CORE_SOURCE_ROOT}/frox/src/wiz_obj.c"
     PROPERTIES COMPILE_DEFINITIONS "Term_save=fc_ui_term_save;Term_load=fc_ui_term_load")
 
+# 選択メニューの全件（原作の menu_choose）: vcxproj のファイル単位 define と同じ 12 TU にだけ、
+# 呼び先を `fc_menu_choose`（`frox/adapter/fc_shim.c`）へ替える。上の 6 TU とは重ならない
+# （重なるようになったら、`COMPILE_DEFINITIONS` を 1 つの値にまとめる——この命令は値を上書きする）。
+set_source_files_properties(
+    "${HB_CORE_SOURCE_ROOT}/frox/src/bldg.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/equip.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/mut.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/psion.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/r_dragon.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/r_mummy.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/r_ring.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/ragemage.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/rune_kt.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/samurai.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/wild_talent.c"
+    "${HB_CORE_SOURCE_ROOT}/frox/src/yeqrezh.c"
+    PROPERTIES COMPILE_DEFINITIONS "menu_choose=fc_menu_choose")
+
 # 共有 TU は FroxCore.vcxproj と同じ並び。**ただし `cp932.cpp` はここだけ足す**
 # ——Windows の `fc_text.cpp` は `MultiByteToWideChar` を直に呼ぶが、Android には
 # あれが無く、`platform/portable/cp932.cpp` の表引きに落ちるためである
 # （M0 のあいだは「Frox は CP932 の世界を持たない」ので入れていなかった。
-# M1 の日本語層で要るようになった（2026-08-24）。
+# M1 の日本語層で要るようになった。2026-08-24）。
 add_library(froxcore SHARED ${HB_FC_SRC} ${HB_FC_ADAPTER_SRC}
+    "${HB_ROOT}/presentation/bridge/native_targeting_runtime.cpp"
     "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
     "${HB_ROOT}/presentation/frame/frame_codec.cpp"
     "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
@@ -506,7 +604,218 @@ add_library(froxcore SHARED ${HB_FC_SRC} ${HB_FC_ADAPTER_SRC}
     "${HB_ROOT}/platform/portable/legacy_os.cpp"
     "${HB_ROOT}/platform/portable/cp932.cpp"
 )
-hengband_legacy_config(froxcore "${HB_CORE_SOURCE_ROOT}/frox/src" "${HB_ROOT}/frox/adapter")
+hengband_legacy_config(froxcore "${HB_CORE_SOURCE_ROOT}/frox/src" "${HB_SJIS_DIR}/frox/adapter")
+
+# ---- RogueClone2 -------------------------------------------------------------
+set(HB_R2_SOURCE_ROOT "${HB_TARGET_GENERATED_ROOT}")
+set(HB_R2_SRC_DIR "${HB_R2_SOURCE_ROOT}/rogue2/patched-src")
+file(GLOB HB_R2_SRC CONFIGURE_DEPENDS "${HB_R2_SRC_DIR}/*.c")
+list(FILTER HB_R2_SRC EXCLUDE REGEX "/main\\.c$")
+set(HB_R2_MAIN "${HB_R2_SRC_DIR}/main.c")
+set_source_files_properties(${HB_R2_MAIN} PROPERTIES COMPILE_DEFINITIONS "main=r2_game_main")
+set(HB_R2_ADAPTER_C
+    "${HB_ROOT}/rogue2/adapter/r2_curses.c"
+    "${HB_ROOT}/rogue2/adapter/r2_compat_iconv.c"
+    "${HB_ROOT}/rogue2/adapter/r2_persist.c"
+    "${HB_ROOT}/rogue2/adapter/r2_shim.c"
+)
+set(HB_R2_ADAPTER_CPP
+    "${HB_ROOT}/rogue2/adapter/r2_main.cpp"
+    "${HB_ROOT}/rogue2/adapter/r2_frame.cpp"
+    "${HB_ROOT}/presentation/frame/frame_codec.cpp"
+    "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
+    "${HB_ROOT}/presentation/frame/protocol_transport.cpp"
+    "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
+    "${HB_ROOT}/platform/portable/legacy_os.cpp"
+)
+add_library(rogue2core SHARED ${HB_R2_SRC} ${HB_R2_MAIN} ${HB_R2_ADAPTER_C} ${HB_R2_ADAPTER_CPP})
+target_include_directories(rogue2core PRIVATE
+    "${HB_ROOT}/rogue2/adapter/compat"
+    "${HB_ROOT}/rogue2/adapter"
+    "${HB_R2_SRC_DIR}"
+    "${HB_ROOT}/third_party/cpp/include"
+    "${HB_ROOT}/presentation"
+    "${HB_ROOT}/platform"
+)
+target_compile_definitions(rogue2core PRIVATE JAPAN TOPSCO HENGBAND_ANDROID=1)
+target_compile_options(rogue2core PRIVATE
+    $<$<COMPILE_LANGUAGE:C>:-include;${HB_ROOT}/rogue2/adapter/compat/r2_build_config.h>
+    -Wno-everything -ffunction-sections -fdata-sections)
+target_link_options(rogue2core PRIVATE -Wl,--gc-sections)
+target_link_libraries(rogue2core PRIVATE log)
+
+# ---- Rogue 3.x / 5.x ---------------------------------------------------------
+function(hengband_rogue_legacy target source_dir generation entry wrapper forced_config)
+    hb_rogue_legacy_collect(legacy_all "${source_dir}" "${generation}")
+    set(legacy_src ${legacy_all})
+    list(FILTER legacy_src EXCLUDE REGEX "/main\\.c$")
+    set(legacy_main "${source_dir}/main.c")
+    set_source_files_properties(${legacy_main} PROPERTIES COMPILE_DEFINITIONS "main=${entry}")
+    add_library(${target} SHARED
+        ${legacy_src} ${legacy_main}
+        "${HB_ROOT}/rogue_legacy/adapter/rl_curses.c"
+        "${HB_ROOT}/rogue_legacy/adapter/rl_i18n.c"
+        "${HB_ROOT}/rogue_legacy/adapter/rl_exit.c"
+        "${HB_ROOT}/rogue_legacy/adapter/rl_inventory.c"
+        "${HB_ROOT}/rogue_legacy/adapter/rl_sound.c"
+        "${wrapper}"
+        "${HB_ROOT}/rogue_legacy/adapter/rl_frame.cpp"
+        "${HB_ROOT}/presentation/frame/frame_codec.cpp"
+        "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
+        "${HB_ROOT}/presentation/frame/protocol_transport.cpp"
+        "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
+        "${HB_ROOT}/platform/portable/legacy_os.cpp")
+    target_include_directories(${target} PRIVATE
+        "${HB_ROOT}/rogue_legacy/adapter/compat"
+        "${HB_ROOT}/rogue_legacy/adapter"
+        "${source_dir}"
+        "${HB_ROOT}/third_party/cpp/include"
+        "${HB_ROOT}/presentation"
+        "${HB_ROOT}/platform")
+    target_compile_definitions(${target} PRIVATE HENGBAND_ANDROID=1 RL_GENERATION=${generation})
+    target_compile_options(${target} PRIVATE
+        $<$<COMPILE_LANGUAGE:C>:-include;${forced_config}>
+        -Wno-everything -ffunction-sections -fdata-sections)
+    target_link_options(${target} PRIVATE -Wl,--gc-sections)
+    target_link_libraries(${target} PRIVATE log)
+endfunction()
+
+hengband_rogue_legacy(rogue36core "${HB_TARGET_GENERATED_ROOT}/rogue36/patched-src" 36 r36_game_main
+    "${HB_ROOT}/rogue36/adapter/r36_main.cpp" "${HB_ROOT}/rogue_legacy/adapter/compat/r36_build_config.h")
+hengband_rogue_legacy(rogue54core "${HB_TARGET_GENERATED_ROOT}/rogue54/patched-src" 54 r54_game_main
+    "${HB_ROOT}/rogue54/adapter/r54_main.cpp" "${HB_ROOT}/rogue_legacy/adapter/compat/r54_build_config.h")
+
+# ---- Angband 4.2.6---------------------------------
+#
+# `tools/angband/build_windows.py` の Windows 版と同じ並び（clang / LLVM-MinGW で
+# 組んでいて MSVC の CP932 実行文字集合を経由しないため、gensoband/silq/frox と違って
+# CP932 の変換ツリーは要らない。アダプタの日本語は註釈だけで、送る文字列はすべて英語
+# ＝設計 §3.6 相当。ASCII 前提は Frox と同じ）。
+# 149 本（`main-*.c` / `snd-*.c` / `wiz-stats.c` を除く。`main.c` も除く——起動列は
+# `an_bootstrap.c` が写す）。
+set(HB_AN_CORE_FILES
+    buildid.c cave-map.c cave-square.c cave-view.c cave.c cmd-cave.c cmd-core.c cmd-misc.c
+    cmd-obj.c cmd-pickup.c cmd-spoil.c cmd-wizard.c datafile.c debug.c effect-handler-attack.c effect-handler-general.c
+    effects-info.c effects.c game-event.c game-input.c game-world.c gen-cave.c gen-chunk.c gen-monster.c
+    gen-room.c gen-util.c generate.c grafmode.c guid.c init.c load.c message.c
+    mon-attack.c mon-blows.c mon-desc.c mon-group.c mon-init.c mon-list.c mon-lore.c mon-make.c
+    mon-move.c mon-msg.c mon-predicate.c mon-spell.c mon-summon.c mon-timed.c mon-util.c obj-chest.c
+    obj-curse.c obj-desc.c obj-gear.c obj-ignore.c obj-info.c obj-init.c obj-knowledge.c obj-list.c
+    obj-make.c obj-pile.c obj-power.c obj-properties.c obj-randart.c obj-slays.c obj-tval.c obj-util.c
+    option.c parser.c player-attack.c player-birth.c player-calcs.c player-class.c player-history.c player-path.c
+    player-properties.c player-quest.c player-race.c player-spell.c player-timed.c player-util.c player.c project-feat.c
+    project-mon.c project-obj.c project-player.c project.c randname.c save-charoutput.c save.c savefile.c
+    score-util.c score.c sound-core.c source.c store.c target.c trap.c ui-birth.c
+    ui-command.c ui-context.c ui-curse.c ui-death.c ui-display.c ui-effect.c ui-entry-combiner.c ui-entry-renderers.c
+    ui-entry.c ui-equip-cmp.c ui-event.c ui-game.c ui-help.c ui-history.c ui-init.c ui-input.c
+    ui-keymap.c ui-knowledge.c ui-map.c ui-menu.c ui-mon-list.c ui-mon-lore.c ui-obj-list.c ui-object.c
+    ui-options.c ui-output.c ui-player-properties.c ui-player.c ui-prefs.c ui-score.c ui-signals.c ui-spell.c
+    ui-spoil.c ui-store.c ui-target.c ui-term.c ui-visuals.c ui-wizard.c wiz-debug.c wiz-spoil.c
+    z-bitflag.c z-color.c z-dice.c z-expression.c z-file.c z-form.c z-quark.c z-queue.c
+    z-rand.c z-textblock.c z-type.c z-util.c z-virt.c
+)
+list(LENGTH HB_AN_CORE_FILES HB_AN_CORE_COUNT)
+if(NOT HB_AN_CORE_COUNT EQUAL 149)
+    message(FATAL_ERROR "[hengband-hd2d] angband: expected 149 core .c files, got ${HB_AN_CORE_COUNT}")
+endif()
+
+#! **`HB_CORE_SOURCE_ROOT` ではなく `HB_TARGET_ORIGINAL_ROOT` を使う。**
+#! `tools/targeting/targeting_sources.cmake` が `HB_CORE_SOURCE_ROOT` を
+#! `targeting-sources`（オーバーレイ生成木。src/frox/gensoband/silq だけコピーする）へ
+#! 差し替えている——`angband/patched-src` はそこに無い。Rogue 3.6/5.4 と同じ理由で
+#! 元の準備済みソース（`HB_TARGET_ORIGINAL_ROOT`）を直接見る。
+set(HB_AN_SRC_DIR "${HB_TARGET_ORIGINAL_ROOT}/angband/patched-src")
+set(HB_AN_ADAPTER_DIR "${HB_ROOT}/angband/adapter")
+
+set(HB_AN_ADAPTER_C_FILES
+    an_bootstrap.c an_null_term.c an_wiz_stats_stub.c an_map_shim.c
+    an_native_inventory.c an_text_hooks.c an_pad_shim.c an_ui_shim.c
+    an_targeting.c an_town_rng.c an_town_map.c an_profile.c an_fx.c
+    an_wide.c an_name_ja.c an_lore_ja.c)
+
+set(HB_AN_CORE_SRC)
+foreach(name IN LISTS HB_AN_CORE_FILES)
+    list(APPEND HB_AN_CORE_SRC "${HB_AN_SRC_DIR}/${name}")
+endforeach()
+# 原作側だけ警告を黙らせる（設計 §3「アダプタ側は警告を黙らせない」。Windows 版と同じ切り分け）。
+set_source_files_properties(${HB_AN_CORE_SRC} PROPERTIES COMPILE_OPTIONS "-w")
+
+set(HB_AN_ADAPTER_SRC)
+foreach(name IN LISTS HB_AN_ADAPTER_C_FILES)
+    list(APPEND HB_AN_ADAPTER_SRC "${HB_AN_ADAPTER_DIR}/${name}")
+endforeach()
+
+add_library(angbandcore SHARED
+    ${HB_AN_CORE_SRC}
+    ${HB_AN_ADAPTER_SRC}
+    "${HB_AN_ADAPTER_DIR}/an_main.cpp"
+    "${HB_AN_ADAPTER_DIR}/an_frame.cpp"
+    "${HB_AN_ADAPTER_DIR}/an_manifest.cpp"
+    "${HB_AN_ADAPTER_DIR}/an_lang.cpp"
+    "${HB_ROOT}/presentation/frame/frame_codec.cpp"
+    "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
+    "${HB_ROOT}/presentation/frame/protocol_transport.cpp"
+    "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
+    "${HB_ROOT}/presentation/bridge/native_targeting_runtime.cpp"
+    "${HB_ROOT}/platform/portable/legacy_os.cpp"
+)
+target_include_directories(angbandcore PRIVATE
+    "${HB_AN_ADAPTER_DIR}"
+    "${HB_AN_SRC_DIR}"
+    "${HB_ROOT}/presentation"
+    "${HB_ROOT}/platform"
+    "${HB_ROOT}/third_party/cpp/include"
+)
+target_compile_definitions(angbandcore PRIVATE HENGBAND_ANDROID=1)
+target_compile_options(angbandcore PRIVATE
+    # 20 年もの、というほどではないが、C99 の緩い書き方が残っている（build_windows.py も
+    # アダプタは通常の警告のままで組んでいる。ここでは link を落とさないための最小限だけ緩める）。
+    $<$<COMPILE_LANGUAGE:C>:-fcommon>
+    -ffunction-sections -fdata-sections
+)
+target_link_options(angbandcore PRIVATE -Wl,--gc-sections)
+target_link_libraries(angbandcore PRIVATE log)
+
+# ---- Umoria 5.7------------------------------------
+#
+# `tools/umoria/build_windows.py` と同じ並び: 原作の .cpp のうち curses の端末 `ui_io.cpp` を除く全部
+# （`umoria/adapter/um_io.cpp` が代わる）。原作の `main()` は `um_game_main` へ改名する。
+# 原作は C++14・警告を黙らせる。攻撃の効果の観測の呼び出しを足した写し（`HB_TARGET_GENERATED_ROOT`。tools/targeting/native_fx_overlay.py）を組む。
+# **原作の `exit()` は `um_game_exit` へ差し替える**——1 プロセスに同居するので、そのままだと
+# セーブして終えた瞬間にアプリごと終わる（`um_main.cpp` が例外にしてコアのスレッドの入口へ戻す）。
+set(HB_UM_SRC_DIR "${HB_TARGET_GENERATED_ROOT}/umoria/patched-src")
+file(GLOB HB_UM_CORE_SRC CONFIGURE_DEPENDS "${HB_UM_SRC_DIR}/*.cpp")
+list(FILTER HB_UM_CORE_SRC EXCLUDE REGEX "/ui_io\.cpp$")
+set_source_files_properties(${HB_UM_CORE_SRC} PROPERTIES
+    COMPILE_OPTIONS "-std=c++14;-w"
+    COMPILE_DEFINITIONS "exit=um_game_exit")
+set_source_files_properties("${HB_UM_SRC_DIR}/main.cpp" PROPERTIES
+    COMPILE_DEFINITIONS "exit=um_game_exit;main=um_game_main")
+add_library(umoriacore SHARED
+    ${HB_UM_CORE_SRC}
+    "${HB_ROOT}/umoria/adapter/um_io.cpp"
+    "${HB_ROOT}/umoria/adapter/um_main.cpp"
+    "${HB_ROOT}/umoria/adapter/um_frame.cpp"
+    "${HB_ROOT}/umoria/adapter/um_town.cpp"
+    "${HB_ROOT}/umoria/adapter/um_lang.cpp"
+    "${HB_ROOT}/umoria/adapter/um_recall_ja.cpp"
+    "${HB_ROOT}/presentation/frame/frame_codec.cpp"
+    "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
+    "${HB_ROOT}/presentation/frame/protocol_transport.cpp"
+    "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
+    "${HB_ROOT}/platform/portable/legacy_os.cpp"
+)
+target_include_directories(umoriacore PRIVATE
+    "${HB_ROOT}/umoria/adapter"
+    "${HB_UM_SRC_DIR}"
+    "${HB_ROOT}/presentation"
+    "${HB_ROOT}/platform"
+    "${HB_ROOT}/third_party/cpp/include"
+)
+target_compile_definitions(umoriacore PRIVATE HENGBAND_ANDROID=1)
+target_compile_options(umoriacore PRIVATE -ffunction-sections -fdata-sections)
+target_link_options(umoriacore PRIVATE -Wl,--gc-sections)
+target_link_libraries(umoriacore PRIVATE log)
 
 endif() # HENGBAND_BUILD_CORES
 

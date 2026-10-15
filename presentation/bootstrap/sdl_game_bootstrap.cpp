@@ -1,3 +1,4 @@
+#include "bridge/native_save_picker.h"
 /*!
  * @file sdl_game_bootstrap.cpp
  * @brief SDL 入口本置換のコア起動シーケンス（既存 public API のみ）
@@ -289,18 +290,7 @@ std::vector<std::filesystem::path> savefile_companions(const std::filesystem::pa
  */
 bool remove_savefile(const std::filesystem::path &save, std::string &err)
 {
-    std::error_code ec;
-    bool ok = true;
-    for (const auto &companion : savefile_companions(save)) {
-        if (!std::filesystem::remove(companion, ec) || ec) {
-            ok = false;
-            err = "cannot delete " + companion.filename().string();
-        }
-    }
-    if (!std::filesystem::remove(save, ec) || ec) {
-        return (void)(err = "cannot delete " + save.filename().string()), false;
-    }
-    return ok;
+    err=presentation::remove_native_save(save.parent_path(),save.filename().string());return err.empty();
 }
 
 /*!
@@ -668,6 +658,10 @@ int run_sdl_game(const std::filesystem::path &lib_path, Bridge &bridge, const Ui
 
     // 1. パス初期化（GDI init_windows は呼ばない。init_file_paths は公開 API）。
     init_file_paths(lib_path);
+#if defined(HENGBAND_DESKTOP_LINUX)
+    // Desktop data is already separated per user by the Linux entry point.
+    ANGBAND_DIR_USER = lib_path / "user";
+#endif
 #ifdef TANGBAND
     /*
      * 短愚蛮怒はデータ・記録系だけ tangband/lib/ に分離する（tangband/UPSTREAM.md）。

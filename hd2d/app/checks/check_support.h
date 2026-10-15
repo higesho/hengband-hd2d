@@ -38,9 +38,32 @@ std::string style_core_env();
 /*! @brief 検査のために意匠の表（町・洞）を読み込む。 */
 void load_styles_for_check(const AppOptions &options);
 
+/*!
+ * @brief 町のデータの地図の行（1 文字 1 マス）を読む。
+ * @details 変愚 3.0.2.5 からの `towns/*.jsonc`（`mapVariants[0].rows`）と、旧 `towns/*.txt`（`D:` 行）の両方を読む。
+ * 読めなければ空。
+ */
+std::vector<std::string> load_town_map_rows(const std::string &path);
+
 /*! @brief 保存した町のフレームを読む（`--town-check` と `--town-view`）。 */
 bool load_town_frame(const std::string &path, const PrefabLibrary &library,
     GameFrame &frame, std::string &err);
+
+/*!
+ * @brief 町のフレームを、広い窓の (origin_x, origin_y) の位置へ**平行移動して**埋め込む。
+ * @details Frox の町は荒野の窓の中にあり、窓がずれると町の地図の左上がフレームの座標のどこかが変わる
+ * （`FloorIdentity::town_origin_x`）。その状況を合成フレームで作る。地図・ミニマップ・可視窓・自キャラを
+ * 動かし、`floor.town_origin_x/y` に原点を載せる。窓は `canvas_w` × `canvas_h`（町が収まる大きさ。空きは未探知）。
+ * @param canvas_w 0 以下なら町の大きさ + 原点（収まる最小）。
+ */
+void embed_town_frame(GameFrame &frame, int origin_x, int origin_y, int canvas_w = 0, int canvas_h = 0);
+
+/*!
+ * @brief 環境変数 `name`（`"66,22"` の形）を読む。無い・読めなければ偽。
+ * @details `HD2D_TOWN_ORIGIN`（`--town-view` で町を窓の中でずらして描く）と
+ * `HD2D_TOWN_ORIGIN_CHECK`（`--town-check` を町の原点の検査へ切り替える）が使う。
+ */
+bool read_origin_env(const char *name, int &origin_x, int &origin_y);
 
 /*!
  * @brief 検査用の合成フレームを作る（床と壁が市松に混ざったフロア）。

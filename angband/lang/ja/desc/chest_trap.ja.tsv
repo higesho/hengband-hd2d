@@ -1,0 +1,11 @@
+# chest_trap.ja.tsv — chest_trap.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+gas trap|msg	241a6916b5	緑色のガスがぷっと噴き出してあなたを包んだ！
+poison needle|msg	0756f251b9	小さな針がちくりと刺さった！
+poison needle|msg-death	ac41b5999e	毒針
+poison needle|msg#2	0756f251b9	小さな針がちくりと刺さった！
+poison needle|msg-death#2	ac41b5999e	毒針
+summoning runes|msg	97b86a4805	煙の雲に包まれた！
+gas trap|msg#2	06601a59e4	黄色いガスがぷっと噴き出してあなたを包んだ！
+explosion device|msg	1b7591be9b	突然爆発が起きた！箱の中身はすべて壊れた！
+explosion device|msg-death	fc095acab2	爆発した箱

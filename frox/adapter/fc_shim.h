@@ -41,6 +41,7 @@ extern "C" {
 #define FC_ERR_QUIT (-4) /* コアが quit() を踏んだ */
 #define FC_ERR_CORE (-5) /* コアが core() を踏んだ */
 #define FC_ERR_STATE (-6) /* 手順違い（Term 無しで起動列を呼んだ等） */
+#define FC_BIRTH_CANCEL 1 /* `fc_run_game()` の戻り値：誕生の最初の画面（遊び方の選択）で取消された。タイトルへ戻る（修-61） */
 
 /*!
  * @brief コアの名。プロトコル v1 の握手で使う `core_name`。
@@ -78,6 +79,9 @@ void fc_term_remove(void);
 /*! @brief 立っている Term の大きさ。立っていなければ `FC_ERR_STATE`。 */
 int fc_term_size(int *cols, int *rows);
 
+/*! @brief 主 Term の行数を新UIの文書表示領域へ合わせる。 */
+int fc_term_resize_rows(int rows);
+
 /*!
  * @brief Term の 1 行を読む（画のミラー）。
  * @param y 行
@@ -87,6 +91,20 @@ int fc_term_size(int *cols, int *rows);
  * @return 書いた文字数、または負の失敗
  */
 int fc_term_row(int y, char *text, unsigned char *attr, int cap);
+
+/*!
+ * @brief 原作が保存した画面（`Term->mem`）が生きているか（`screen_save()` の中か）。
+ * @details `Term_load()` は `mem` を捨てないので、`screen_save()` が閉じたあとの `mem` は古い画である。
+ * `Term_save()` を直に呼ぶ doc UI は終わりが見えないので数えない。
+ */
+int fc_term_saved_active(void);
+
+/*!
+ * @brief 原作が保存した画面（`Term->mem`）の 1 行を読む。引数と返り値は `fc_term_row` と同じ。
+ * @details `fc_term_saved_active()` が偽のときは `FC_ERR_STATE` を返す。基準にするのは「窓が開く直前の画」
+ * （窓が塗らなかった所を見分けるため。`fc_frame.cpp` の `blank_untouched_cells()`）。
+ */
+int fc_term_saved_row(int y, char *text, unsigned char *attr, int cap);
 
 /*! @brief カーソルの位置と可視。`visible` は「画面外でなく、かつ可視」のとき 1。 */
 int fc_term_cursor(int *x, int *y, int *visible);
@@ -150,6 +168,18 @@ int fc_message_count(void);
  */
 int fc_message_text(int age, char *out, int cap);
 
+/*!
+ * @brief 古さ `age` のメッセージが、メッセージ履歴（Ctrl+P）の文書に流れたときの字（訳を通し、色の印を落とした字）。
+ * @return 書いた文字数（無ければ 0）。履歴の行をメッセージごとにまとめるときに使う（`fc_history.h`）。
+ */
+int fc_message_display_text(int age, char *out, int cap);
+
+/*!
+ * @brief 古さ `age` のメッセージが続けて何回出たか（`msg_t::count`。2 回以上のとき履歴は ` (x2)` を付ける）。
+ * @return 回数（範囲外は 0）。履歴の行をメッセージごとにまとめるときに使う（`fc_history.h`）。
+ */
+int fc_message_repeat(int age);
+
 /*! @brief `character_generated`。 */
 int fc_character_generated(void);
 
@@ -167,6 +197,13 @@ int fc_rogue_like_commands(void);
 
 /*! @brief 上の旗の束。 */
 int fc_screen_flags(void);
+
+/*!
+ * @brief 画面の退避の深さ（`character_icky`。`screen_save()` が増やし `screen_load()` が減らす計数器）。
+ * @details 見る・狙うの最中に `r`（モンスターの思い出）が画面を重ねている間を、見るの帯を作る側が見分けるために使う
+ * （`presentation/bridge/look_screen_cover.h`）。
+ */
+int fc_screen_depth(void);
 
 /* ------------------------------------------ メッセージ行の置き場（FH-13） */
 
@@ -191,6 +228,12 @@ int fc_screen_flags(void);
  *       `fc_mark_msg_ready()` を通った後だけ真を返す。
  */
 int fc_msg_rect(int *x, int *y, int *w, int *h);
+
+/*! @brief メッセージの箱に文が出ているか（修-33）。 */
+int fc_msg_line_shown(void);
+
+/*! @brief メッセージの箱の文を消す（修-33。原作の `msg_line_clear()`）。 */
+void fc_msg_line_clear(void);
 
 /*! @brief `init_angband()` が済んだ合図（`fc_bootstrap.c` が 1 度だけ呼ぶ）。 */
 void fc_mark_msg_ready(void);
@@ -229,6 +272,32 @@ void fc_msg_rect_use_shop_for_test(int on);
  * 混ぜないとミラーが開いたまま残る。
  */
 int fc_doc_ui_active(void);
+
+/*!
+ * @name オプションの一覧（原作の `do_cmd_options_aux()` が頁ごとに並べる項目の全件）
+ * @details 画面の高さが足りないと、原作は一覧の途中までしか描かず（「下へスクロール」）、Term の写しから
+ * 作る新しい UI の一覧にも途中までしか出ない。そこで**原作のオプションの表（`option_info[]`）から全件を先に取り**、
+ * 新しい UI の一覧に全件を出す。カーソルは原作が持つので、画面が動かしたい項目へ上下のキーで動かす
+ * （`fc_menu.cpp` の `OptionsList`）。頁の番号は原作の `OPT_PAGE_*`（1〜8）と Frox の頁（9）。
+ * @{
+ */
+#define FC_OPTION_PAGE_FIRST 1
+#define FC_OPTION_PAGE_BIRTH 6
+#define FC_OPTION_PAGE_FROX 9
+
+/*!
+ * @brief 頁の `index` 番目（0 始まり）の項目。無ければ 0。
+ * @param ident 行の終わりの `(名前)`（原作は 19 文字まで）。原作が付けない項目は空
+ * @param desc 項目の説明（CP932。日本語層が起きていれば訳したもの）
+ */
+int fc_options_row(int page, int index, char *ident, int ident_cap, char *desc, int desc_cap);
+
+/*! @brief 項目の今の値の字（原作の画面と同じ書式。CP932）。無ければ 0。 */
+int fc_options_value(int page, int index, char *buf, int cap);
+
+/*! @brief 画面の 0 行目（見出し。CP932）が Frox の頁（`OPT_PAGE_FROX`）の見出しか。 */
+int fc_options_title_is_frox_page(const char *row0);
+/*! @} */
 
 /*!
  * @brief **品選びの窓（`obj_prompt`）が開いているか**（フック #37。2026-08-28）。
@@ -277,6 +346,7 @@ int fc_ui_term_load(void);
 #define FC_FEAT_RUBBLE 0x1000u /*!< `FF_HURT_ROCK`（44）かつ壁でも扉でもない（＝瓦礫） */
 #define FC_FEAT_ROOM 0x2000u /*!< `CAVE_ROOM` */
 #define FC_FEAT_GLOWING 0x4000u /*!< `CAVE_GLOW` かつ `CAVE_MNDK` でない */
+#define FC_FEAT_SHAFT 0x8000u /*!< `FF_SHAFT`（101）。2 階層ぶん移動する階段 */
 
 /*!
  * @brief 1 マスぶんの材料。
@@ -290,11 +360,25 @@ typedef struct fc_map_cell {
     unsigned short monster_id; /*!< 見えている敵の `ap_r_idx`（居なければ 0） */
     unsigned short monster_slot; /*!< `cave[][].m_idx`（居なければ 0） */
     unsigned short object_id; /*!< 照らされた床の物の `k_idx`（無ければ 0） */
+    /*!
+     * @brief 正体の分からないアイテムの分類（1..8）。0 = 対象外（識別済み・8 分類の外）。
+     * @details。番号は
+     * `presentation::UnawareItemCategory` と同じ並び（1=薬 2=巻物 3=指輪 4=アミュレット
+     * 5=ワンド 6=杖 7=ロッド 8=キノコ）。プロトコル v1 の外形は変えない
+     * （コア内部の `fc_shim.c → fc_frame.cpp` の受け渡しにだけ足した値）。
+     */
+    unsigned char object_unaware_category;
     unsigned short feature_flags; /*!< 上の `FC_FEAT_*` */
     unsigned char fg_color; /*!< `map_info()` の `a & 0x0F` */
     unsigned char bg_color; /*!< `map_info()` の `ta & 0x0F` */
     char ascii; /*!< `map_info()` の `c`。**字の板の出どころ**（設計 §6.2） */
     unsigned char light_level; /*!< 0 = 闇 / 1 = 視界内 / 2 = 照らされている */
+    /*!
+     * プレイヤの光源で照らされているマス（`CAVE_LITE`）なら 1。明るい部屋（`CAVE_GLOW`）や
+     * モンスターの光（`CAVE_MNLT`）は含めない。`fc_frame.cpp` が `lighting.player_lit` のビット列にする
+     *
+     */
+    unsigned char lit_by_player;
 } fc_map_cell;
 
 /*! @brief いまの階の大きさ（`cur_wid` / `cur_hgt`）。 */
@@ -302,6 +386,21 @@ int fc_floor_size(int *width, int *height);
 
 /*! @brief @ の位置（`px` / `py`）。 */
 int fc_player_pos(int *x, int *y);
+
+/*!
+ * @brief 位置の確認（`L`。原作の `do_cmd_locate()`）の最中か（修-64）。
+ * @return 最中なら 1（`*cx`/`*cy` に見ている区画の中心のマス）。そうでなければ 0。
+ * @details 行 0 の `Map sector [`（日本語は `マップ位置 [`）で見分ける。原作は変えない。
+ */
+int fc_locate_panel_center(int *cx, int *cy);
+
+/*!
+ * @brief Term のカーソルが指している地図のマス（修-32。移動の目標のマスを選ぶ問い `tgt_pt()` の十字キー）。
+ * @return 1（`*gx`/`*gy` にそのマスの階の座標）。ゲーム内でない・カーソルが地図の外・マスが階の外なら 0。
+ * @details 原作は `move_cursor_relative()` で Term のカーソルを動かすだけで、地図には何も描かない。
+ * 地図の区画の左上（`ui_map_rect()`）と見ている区画の原点（`viewport_origin`）で、カーソルの桁と行をマスへ戻す。
+ */
+int fc_term_cursor_cave_cell(int *gx, int *gy);
 
 /*! @brief @ の職と種族（`p_ptr->pclass` / `p_ptr->prace`）。 */
 int fc_player_kind(int *pclass, int *prace);
@@ -353,11 +452,70 @@ typedef struct fc_floor_info {
     int day_minute; /*!< 0..1439 */
     int daytime; /*!< `is_daytime()` */
     int light_radius; /*!< `p_ptr->cur_lite` */
+    /*!
+     * 光源の種類（`LightingState::light_kind`）。0 = 光が無い、1 = 松明、2 = ランタン（フェアノールのランプを含む）、
+     * 3 = アーティファクトの光源、4 = それ以外（光源が無い・燃料切れ・暗黒の光源でも残る、種族・職・装備の光）。
+     */
+    int light_kind;
+    /*!
+     * 町の地図の左上が、階の座標（`cave` の x, y）のどこに出ているか（マス）。
+     * 荒野の窓が動くと変わる（`fc_read_floor_info` の註）。町の外・ダンジョン・広域マップでは 0。
+     */
+    int town_origin_x;
+    int town_origin_y;
     char place_name[96];
 } fc_floor_info;
 
 /*! @brief 階の素性を読む。 */
 int fc_read_floor_info(fc_floor_info *out);
+
+/*!
+ * @brief 光源の種類の判定（`fc_floor_info::light_kind`）を、作った物で全数照合する。
+ * @param err 最初に外れた組み合わせの名前を入れる（失敗が無ければ空）
+ * @param cap `err` の容量
+ * @return 外れた組み合わせの数（0 なら全部合っている）
+ * @details キャラクターは要らない。`--selftest` から呼ぶ（`lib` が読めていれば足りる）。
+ */
+int fc_light_selftest(char *err, int cap);
+
+/* ============================================ 状態のアイコン（`GameFrame::status_effects`） */
+
+/*! @brief 状態のアイコン 1 個ぶん。`key` は `hd2d/ui/status_icon_table.inc` にある名前。 */
+typedef struct fc_status_effect {
+    char key[40];
+    char label[64]; /*!< アイコンの下の名前。CP932（英語なら ASCII） */
+    char amount[24]; /*!< アイコンの上の効果量（`+10`・`33%` など）。無ければ空 */
+    int kind; /*!< 0 良い・1 悪い・2 待っている・3 特殊・4 常時の良い・5 常時の悪い（`StatusEffectKind`） */
+} fc_status_effect;
+
+/*! 1 回に返す最大数（状態の旗 195 + 左の状態列 + 常時の効果 約 100）。 */
+#define FC_STATUS_MAX 400
+
+/*!
+ * @brief いまの状態を並べて返す（速さ → 状態の旗 → 左の状態列 → 常時の効果）。
+ * @return 件数。キャラクターがいなければ 0
+ * @details 一時的な状態の旗は `prt_status()` が最後に組んだもの（`tools/targeting/overlay.py` の 1 行が
+ * `fc_status_record()` へ渡す）。常時の効果は鑑定済みの旗だけ。
+ */
+int fc_read_status_effects(fc_status_effect *out, int cap);
+
+/*! @brief `prt_status()` から呼ばれる記録の関数（overlay.py が足す 1 行の呼び先）。`bar < 0` は組み直しの始まり。 */
+void fc_status_record(int bar, const char *label, int attr);
+
+/*! @brief 旗の組が変わったら変わる値（`fc_change_digest` に混ぜる）。 */
+unsigned long fc_status_stamp(void);
+
+/*! @brief 状態のアイコンの表の自己検査（キャラクター不要）。@return 外れた件数 */
+int fc_status_selftest(char *err, int cap, int *checked);
+
+/*! @brief 表を読む関数（検査用）。 */
+int fc_status_bar_table_count(void);
+const char *fc_status_bar_table_key(int bar, int *kind);
+int fc_status_perm_row_count(void);
+const char *fc_status_perm_row_key(int row, int *kind);
+int fc_status_res_row_count(void);
+const char *fc_status_res_row_key(int row, const char **imm_key);
+
 
 /* ============================================ 周囲の地形の内訳（環境音の層） */
 
@@ -429,6 +587,7 @@ int fc_read_surroundings(fc_surroundings *out);
 typedef struct fc_fx_event {
     unsigned char kind; /*!< FC_FX_KIND_* */
     unsigned char element; /*!< `CombatFxElement` と同じ番号 */
+    unsigned char scraped; /*!< 真なら Term に描かれた弾道・爆発の観測（旧来）。魔法・矢弾の効果の記録（projections / missiles）と二重になるので積まない */
     short y; /*!< 起きたマス（Bolt は着弾側） */
     short x;
     short src_y; /*!< Bolt の出所。ほかは y/x と同じ */
@@ -455,6 +614,19 @@ void fc_fx_scan_deltas(void);
 void fc_fx_push_spark(int gy, int gx, int ch, int attr);
 /*! @brief `sound(SOUND_KILL)` を 1 回聞いた（とどめの突き合わせに使う）。 */
 void fc_fx_note_kill_sound(void);
+/*! @} */
+
+/*!
+ * @name 魔法・投射物の効果の入口（実装は fc_frame.cpp。`fc_shim.c` の `fc_fx_note_*` が呼ぶ）
+ * @details 共通の記録の置き場（`presentation/bridge/named_attack_fx.h`）へ積む。`attr` は原作の属性のコア名（`GF_` を除いた小文字。
+ * 見た目の名前への変換は C++ 側）。整数の並びは `presentation/bridge/named_attack_fx_glue.h` の冒頭。
+ * @{
+ */
+void fc_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y, int impact_x,
+    int flags, const int *path, int path_n, const int *area, int area_n);
+void fc_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x);
+void fc_named_fx_missile_hit(void);
+void fc_named_fx_missile_returns(void);
 /*! @} */
 
 /* ==================================================================== 効果音 */
@@ -623,9 +795,17 @@ int fc_bootstrap(const char *lib_dir, const char *lang);
 /*!
  * @brief `play_game()` を回す。**戻ってくるのは遊び終えたとき**（設計 §3.2）。
  * @param new_game 真なら新規、偽なら再開
- * @return FC_OK（正常終了）/ FC_ERR_CORE
+ * @return FC_OK（正常終了）/ FC_ERR_CORE / FC_BIRTH_CANCEL（誕生の最初の画面で取消された。呼び出し側がタイトルを出し直す）
  */
 int fc_run_game(int new_game);
+
+/*!
+ * @brief 誕生の最初の画面（遊び方の選択）で取消のキーを積んだと記録する（`fc_null_term.c` から呼ぶ）。
+ * @details 原作の `py_birth()` は、この画面の ESC で `UI_CANCEL` を返し、`player_birth()` が `quit(NULL)` を呼ぶ。
+ * 進行の段の `quit()` フックは、この記録があれば正常終了ではなく `FC_BIRTH_CANCEL` で `fc_run_game()` を抜ける。
+ * 原作の流れは変えない（`py_birth()` は自分で後始末を済ませてから返る）。ゲームのルールにも触れない。
+ */
+void fc_birth_cancel_mark(void);
 
 /*! @brief 直近の失敗の説明（静的な文字列）。 */
 const char *fc_last_error(void);
@@ -763,6 +943,65 @@ int fc_monster_defined(int r_idx);
  * @return 1 = 定義あり / 0 = 空き枠 / 負 = 範囲外
  */
 int fc_object_defined(int k_idx);
+
+int fc_awaiting_command(void);
+
+/*!
+ * @brief 地表の広域の地図の確認画面（`do_cmd_world_map()`。`<` で開く）が出ているか。
+ *
+ * @details コアのグローバル `world_map_overview_active`（`variable.c:99`）を返す。
+ * この画面は `Term_save()` の差し替え（`fc_ui_term_save()`）で `fc_doc_ui_active()` を
+ * 立てるが、Term の写しに `+---+` の箱が無いので `crop_mirror_to_menu_box()` が偽を返し、
+ * `menu_over_map` が偽のまま画面側が 3D の地図を描かなくなる。読むのは `fc_frame.cpp`。
+ *
+ * @return 1 = 確認画面が出ている / 0 = 出ていない
+ */
+int fc_world_map_overview_active(void);
+
+/*!
+ * @name 選択メニュー `menu_choose()` の全件（組み立ての設定による差し替え）
+ * @details 原作の `menu_choose()`（`menu.c`）は、能力・突然変異・呪文の系統などを選ぶメニューで、項目を全部 Term の
+ * 行へ描く（`y + i`。2 列に割るメニューは `i % col_entries`）。**スクロールはしない**ので、項目が Term の高さを超えると
+ * 画面の外へ描かれ、新しい UI の一覧（Term の写しの行から作る）にも出ず選べない。2 列のメニューは一覧の並びも
+ * 左右の列が交互に混ざる（a, s, b, t …）。
+ *
+ * そこで**呼ぶ側の翻訳単位だけ**、組み立ての設定で `menu_choose` を `fc_menu_choose` に差し替える
+ * （`Term_save` を `fc_ui_term_save` に差し替えるのと同じ流儀。原作のソースは書き換えない）。
+ * - Windows: `VisualStudio/FroxCore/FroxCore.vcxproj` の各 `ClCompile` の `PreprocessorDefinitions`
+ * - Linux: `platform/linux/CMakeLists.txt` の `set_source_files_properties`
+ * - Android/Quest: `android/hd2d/src/main/cpp/CMakeLists.txt` の `set_source_files_properties`
+ *
+ * 対象は `menu_choose()` を呼ぶ 12 の翻訳単位: `bldg.c` `equip.c` `mut.c` `psion.c` `r_dragon.c` `r_mummy.c`
+ * `r_ring.c` `ragemage.c` `rune_kt.c` `samurai.c` `wild_talent.c` `yeqrezh.c`。呼び手を足す・外すときは
+ * この 3 か所を揃えて直すこと（`menu.h` の宣言ごと改名されるので、差し替えが漏れた翻訳単位は原作の
+ * `menu_choose()` を呼ぶだけで、動きは変わらない）。
+ *
+ * `fc_menu_choose()` は新しい UI が有効なときだけ、メニューの全件を原作のコールバック（`menu->fn`）から先に取って
+ * 置き、そのうえで**原作の `menu_choose()` をそのまま呼ぶ**（描画・キーの受け取り・`?` の閲覧・`C` の人物調書・
+ * `REPEAT_PULL`・返す番号は原作のまま。ゲームの規則は変わらない）。取った全件は `fc_menu.cpp` の `menu_choose_apply()` が
+ * 読んで、画面側へ渡す一覧を**全件・原作の並び**で組む。選ぶと画面側が項目のキーを送り、原作の入力の処理がそのまま受ける。
+ * 新しい UI が無効なとき（Term の写しで遊ぶとき）は何も取らず、原作と同じに動く。
+ * @{
+ */
+
+/*! @brief 新しい UI（`ui_mode=modern`）が有効か（`fc_main.cpp` が答える。`fc_menu_choose()` が読む）。 */
+int fc_modern_ui_enabled(void);
+
+/*! @brief 開いている選択メニューの項目数。開いていなければ 0。 */
+int fc_menu_choose_count(void);
+
+/*!
+ * @brief 開いている選択メニューの `index` 番目（0 始まり）の項目。無ければ 0。
+ * @param[out] key 押すキー。0 は選べない項目（原作は色が `TERM_DARK` の項目のキーを `'\0'` にして行を描かない）
+ * @param[out] attr 原作の色（`TERM_*`）
+ * @param[out] text 表示の字（CP932。日本語層が起きていれば訳したもの）
+ * @param[out] help 説明（CP932。無ければ空）
+ */
+int fc_menu_choose_item(int index, int *key, int *attr, char *text, int text_cap, char *help, int help_cap);
+
+/*! @brief 全件の取り方の検査（`--selftest` から呼ぶ）。落ちた件数。 */
+int fc_menu_choose_selftest(void);
+/*! @} */
 
 #ifdef __cplusplus
 } /* extern "C" */

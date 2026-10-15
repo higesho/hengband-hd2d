@@ -1,0 +1,393 @@
+# object.ja.tsv — tools/angband/an_build_names.py が作る（手で直さない）。
+# 英語名 \t 日本語名 \t 出どころ（票＝承認済みの用語票 2026-09-24／変愚／Frox／Sil-Q／遊ぶ人／自作）
+amulet:Adornment	装飾	変愚
+amulet:Devotion	献身	票
+amulet:ESP	テレパシー	票
+amulet:Inertia	遅鈍	票
+amulet:Infravision	赤外線視力	変愚
+amulet:Regeneration	再生	Sil-Q
+amulet:Resist Acid	耐酸	変愚
+amulet:Resist Lightning	耐電	票
+amulet:Resistance	耐性	変愚
+amulet:Searching	探索	変愚
+amulet:Slow Digestion	遅消化	変愚
+amulet:Sustenance	滋養	Sil-Q
+amulet:Teleportation	テレポート	変愚
+amulet:Trickery	策略	票
+amulet:Weaponmastery	武器の達人	票
+amulet:Wisdom	賢さ	変愚
+amulet:the Magi	賢者	変愚
+arrow:& Arrow~	矢	変愚
+arrow:& Mithril Arrow~	ミスリルの矢	票
+arrow:& Seeker Arrow~	追尾の矢	変愚
+bolt:& Bolt~	クロスボウの矢	変愚
+bolt:& Mithril Bolt~	ミスリルのボルト	票
+bolt:& Seeker Bolt~	追尾クロスボウの矢	変愚
+boots:& Pair~ of Ethereal Slippers	天上のスリッパ	票
+boots:& Pair~ of Iron Shod Boots	鉄鋲底の靴	票
+boots:& Pair~ of Leather Boots	革ブーツ	票
+boots:& Pair~ of Leather Sandals	革サンダル	票
+boots:& Pair~ of Mithril Shod Boots	ミスリル鋲底の靴	票
+boots:& Pair~ of Steel Shod Boots	鋼鋲底の靴	票
+bow:& Heavy Crossbow~	ヘヴィ・クロスボウ	変愚
+bow:& Light Crossbow~	ライト・クロスボウ	変愚
+bow:& Long Bow~	ロング・ボウ	変愚
+bow:& Short Bow~	ショート・ボウ	変愚
+bow:& Sling~	スリング	変愚
+chest:& Large iron chest~	大きな鉄の箱	変愚
+chest:& Large steel chest~	大きな鋼鉄の箱	変愚
+chest:& Large wooden chest~	大きな木の箱	変愚
+chest:& Small iron chest~	小さな鉄の箱	変愚
+chest:& Small steel chest~	小さな鋼鉄の箱	変愚
+chest:& Small wooden chest~	小さな木の箱	変愚
+cloak:& Cloak~	クローク	変愚
+cloak:& Elven Cloak~	エルフのクローク	変愚
+cloak:& Ethereal Cloak~	天上のクローク	変愚
+cloak:& Fur Cloak~	毛皮のクローク	変愚
+crown:& Golden Crown~	金の冠	変愚
+crown:& Iron Crown~	鉄冠	変愚
+crown:& Jewel Encrusted Crown~	宝冠	変愚
+crown:& Massive Iron Crown~	堂々たる鉄冠	変愚
+digger:& Mattock~	戦闘用つるはし	変愚
+digger:& Pick~	つるはし	変愚
+digger:& Shovel~	シャベル	変愚
+dragon armor:Balance Dragon Scale Mail~	バランスドラゴン・スケイルメイル	変愚
+dragon armor:Black Dragon Scale Mail~	ブラックドラゴン・スケイルメイル	変愚
+dragon armor:Blue Dragon Scale Mail~	ブルードラゴン・スケイルメイル	変愚
+dragon armor:Chaos Dragon Scale Mail~	カオスドラゴン・スケイルメイル	変愚
+dragon armor:Gold Dragon Scale Mail~	ゴールドドラゴン・スケイルメイル	変愚
+dragon armor:Green Dragon Scale Mail~	グリーンドラゴン・スケイルメイル	変愚
+dragon armor:Law Dragon Scale Mail~	ロードラゴン・スケイルメイル	変愚
+dragon armor:Multi-Hued Dragon Scale Mail~	万色ドラゴン・スケイルメイル	変愚
+dragon armor:Power Dragon Scale Mail~	パワードラゴン・スケイルメイル	変愚
+dragon armor:Red Dragon Scale Mail~	レッドドラゴン・スケイルメイル	変愚
+dragon armor:Shining Dragon Scale Mail~	シャイニングドラゴン・スケイルメイル	票
+dragon armor:White Dragon Scale Mail~	ホワイトドラゴン・スケイルメイル	変愚
+flask:& Flask~ of oil	油つぼ	変愚
+food:& Apple~	リンゴ	票
+food:& Draught~ of the Ents	エントの飲み物	票
+food:& Flask~ of Whisky	ウイスキー	票
+food:& Handful~ of Dried Fruits	干し果物	票
+food:& Hard Biscuit~	ビスケット	変愚
+food:& Honey-cake~	蜂蜜菓子	票
+food:& Piece~ of Elvish Waybread	エルフの行糧	変愚
+food:& Pint~ of Fine Wine	高級ワイン	変愚
+food:& Ration~ of Food	食料	変愚
+food:& Scrap~ of Flesh	肉片	票
+food:& Sip~ of Miruvor	ミルヴォール	票
+food:& Slice~ of Meat	肉の切り身	票
+food:& Slime Mold~	スライムモルド	変愚
+food:& Swig~ of Orcish Liquor	オークの酒	票
+gloves:& Set~ of Alchemist's Gloves	錬金術師のグローブ	票
+gloves:& Set~ of Caestus	セスタス	票
+gloves:& Set~ of Gauntlets	ガントレット	変愚
+gloves:& Set~ of Leather Gloves	革グローブ	変愚
+gloves:& Set~ of Mithril Gauntlets	& ミスリルの篭手~	Sil-Q
+gold:adamantite	アダマンタイト	変愚
+gold:copper	銅塊	変愚
+gold:diamonds	ダイヤモンド	変愚
+gold:emeralds	エメラルド	変愚
+gold:garnets	ガーネット	変愚
+gold:gold	金塊	変愚
+gold:mithril	ミスリル	変愚
+gold:opals	オパール	変愚
+gold:rubies	ルビー	変愚
+gold:sapphires	サファイア	変愚
+gold:silver	銀塊	変愚
+hafted:& Ball-and-Chain~	鎖つき鉄球	変愚
+hafted:& Flail~	フレイル	変愚
+hafted:& Great Hammer~	グレート・ハンマー	変愚
+hafted:& Lead-Filled Mace~	鉛詰めメイス	変愚
+hafted:& Mace~	メイス	変愚
+hafted:& Mace~ of Disruption	粉砕のメイス	変愚
+hafted:& Maul~	大木槌	票
+hafted:& Mighty Hammer~	冥界の大鉄杖	変愚
+hafted:& Morning Star~	モーニング・スター	変愚
+hafted:& Quarterstaff~	クォータースタッフ	変愚
+hafted:& Throwing Hammer~	投げ鎚	票
+hafted:& Two-Handed Great Flail~	両手大フレイル	票
+hafted:& War Hammer~	ウォー・ハンマー	変愚
+hafted:& Whip~	ムチ	変愚
+hard armor:Adamantite Plate Mail~	アダマンタイト製プレート・メイル	変愚
+hard armor:Augmented Chain Mail~	重鎖かたびら	変愚
+hard armor:Bar Chain Mail~	強化鎖かたびら	変愚
+hard armor:Chain Mail~	鎖かたびら	変愚
+hard armor:Full Plate Armour~	フル・プレート・メイル	変愚
+hard armor:Metal Brigandine Armour~	金属製ブリガンダイン・アーマー	変愚
+hard armor:Metal Lamellar Armour~	金属製ラメラー・アーマー	変愚
+hard armor:Metal Scale Mail~	金属製スケイル・メイル	変愚
+hard armor:Mithril Chain Mail~	ミスリル製鎖かたびら	変愚
+hard armor:Mithril Plate Mail~	ミスリル製プレート・メイル	変愚
+hard armor:Partial Plate Armour~	パーシャル・プレート・メイル	変愚
+hard armor:Ribbed Plate Armour~	強化プレート・アーマー	変愚
+helm:& Hard Leather Cap~	硬革帽子	変愚
+helm:& Iron Helm~	鉄ヘルメット	変愚
+helm:& Metal Cap~	金属帽子	変愚
+helm:& Steel Helm~	鋼鉄ヘルメット	変愚
+light:& Lantern~	ランタン	票
+light:& Wooden Torch~	松明	変愚
+magic book:[Arcane Control]	[秘術の制御]	自作
+magic book:[Attacks and Knowledge]	[攻撃と知識]	自作
+magic book:[First Spells]	[初歩の呪文]	自作
+magic book:[Magical Defences]	[魔法の守り]	自作
+magic book:[Wizard's Tome of Power]	[魔術師の力の大典]	自作
+mushroom:Clear Mind	明晰	票
+mushroom:Debility	衰弱	票
+mushroom:Emergency	緊急	票
+mushroom:Fast Recovery	快復	票
+mushroom:Purging	浄化	票
+mushroom:Second Sight	千里眼	票
+mushroom:Shadows	影	Sil-Q
+mushroom:Sprinting	疾走	票
+mushroom:Stoneskin	石肌	票
+mushroom:Terror	恐慌	Sil-Q
+mushroom:Turbulence	乱気流	票
+mushroom:Vigor	活力	票
+nature book:[Creature Dominion]	[生き物の支配]	自作
+nature book:[Gifts of Nature]	[自然の恵み]	自作
+nature book:[Lesser Charms]	[小さなまじない]	自作
+nature book:[Nature Craft]	[自然の技]	自作
+nature book:[Wild Forces]	[野生の力]	自作
+polearm:& Awl-Pike~	オウル・パイク	変愚
+polearm:& Battle Axe~	バトル・アックス	変愚
+polearm:& Beaked Axe~	ビークド・アックス	変愚
+polearm:& Broad Axe~	ブロード・アックス	変愚
+polearm:& Glaive~	グレイブ	変愚
+polearm:& Great Axe~	グレート・アックス	変愚
+polearm:& Halberd~	ハルベルト	変愚
+polearm:& Lance~	ランス	変愚
+polearm:& Lochaber Axe~	ロッホアーバー・アックス	変愚
+polearm:& Lucerne Hammer~	ルツェルン・ハンマー	変愚
+polearm:& Pike~	パイク	変愚
+polearm:& Scythe~	大鎌	変愚
+polearm:& Scythe~ of Slicing	切り裂きの大鎌	変愚
+polearm:& Spear~	スピア	変愚
+polearm:& Throwing Axe~	投げ斧	票
+polearm:& Trident~	トライデント	変愚
+potion:*Enlightenment*	啓蒙	変愚
+potion:*Healing*	体力回復	変愚
+potion:Augmentation	増強	変愚
+potion:Berserk Strength	狂戦士化	変愚
+potion:Blindness	盲目	変愚
+potion:Boldness	恐いもの知らず	変愚
+potion:Brawn	筋力	票
+potion:Confusion	混乱	変愚
+potion:Constitution	耐久力	変愚
+potion:Contemplation	瞑想	票
+potion:Cure Critical Wounds	致命傷の治癒	変愚
+potion:Cure Light Wounds	軽傷の治癒	変愚
+potion:Cure Serious Wounds	重傷の治癒	変愚
+potion:Dexterity	器用さ	変愚
+potion:Dragon Breath	ドラゴンのブレス	票
+potion:Enlightenment	啓蒙	変愚
+potion:Experience	経験	変愚
+potion:Healing	体力回復	変愚
+potion:Heroism	ヒーロー	変愚
+potion:Infravision	赤外線視力	変愚
+potion:Intellect	知力	票
+potion:Intelligence	知能	変愚
+potion:Life	生命	変愚
+potion:Neutralize Poison	解毒	変愚
+potion:Nimbleness	敏捷	票
+potion:Poison	毒	変愚
+potion:Resist Cold	耐冷	変愚
+potion:Resist Heat	耐火	変愚
+potion:Resist Poison	耐毒	票
+potion:Restore Life Levels	経験値復活	変愚
+potion:Restore Mana	魔力復活	変愚
+potion:Salt Water	塩水	変愚
+potion:Sleep	眠り	変愚
+potion:Slime Mold Juice	スライムモルドジュース	変愚
+potion:Slowness	のろま	変愚
+potion:Speed	スピード	変愚
+potion:Strength	腕力	変愚
+potion:Surprise	驚き	票
+potion:Toughness	頑健	票
+potion:True Seeing	真実の目	票
+potion:Wisdom	賢さ	変愚
+prayer book:[Battle Blessings]	[戦いの祝福]	自作
+prayer book:[Cleansing Power]	[浄化の力]	自作
+prayer book:[Healing and Sanctuary]	[癒しと聖域]	自作
+prayer book:[Novice's Handbook]	[見習いの手引き]	自作
+prayer book:[Wrath of the Valar]	[ヴァラールの怒り]	自作
+ring:Accuracy	精度	変愚
+ring:Acid	酸	変愚
+ring:Bodykeeping	肉体維持	票
+ring:Constitution	耐久力	変愚
+ring:Damage	ダメージ	変愚
+ring:Dexterity	器用さ	変愚
+ring:Digging	採掘	票
+ring:Escaping	逃走	票
+ring:Feather Falling	浮遊	票
+ring:Flames	火炎	変愚
+ring:Free Action	麻痺知らず	変愚
+ring:Ice	氷	変愚
+ring:Intelligence	知能	変愚
+ring:Light	光	変愚
+ring:Lightning	電撃	変愚
+ring:Open Wounds	開いた傷	票
+ring:Protection	守り	変愚
+ring:Reckless Attacks	無謀な攻撃	票
+ring:Resist Fire and Cold	耐火耐冷	票
+ring:Resist Poison	耐毒	票
+ring:Searching	探索	変愚
+ring:See Invisible	透明物体感知	変愚
+ring:Slaying	殺戮	変愚
+ring:Slow Digestion	遅消化	変愚
+ring:Soulkeeping	精神維持	票
+ring:Speed	スピード	変愚
+ring:Strength	腕力	変愚
+ring:Teleportation	テレポート	変愚
+ring:the Dog	犬	票
+ring:the Mouse	ネズミ	票
+rod:Acid Balls	アシッド・ボール	変愚
+rod:Acid Bolts	アシッド・ボルト	変愚
+rod:Cold Balls	アイス・ボール	変愚
+rod:Curing	癒し	変愚
+rod:Detection	全感知	変愚
+rod:Disable Traps	トラップ解除	票
+rod:Drain Life	生命力吸収	票
+rod:Fire Balls	ファイア・ボール	変愚
+rod:Fire Bolts	ファイア・ボルト	変愚
+rod:Frost Bolts	アイス・ボルト	変愚
+rod:Healing	体力回復	変愚
+rod:Hold Monster	モンスター拘束	票
+rod:Illumination	イルミネーション	変愚
+rod:Light	光	変愚
+rod:Lightning Balls	サンダー・ボール	変愚
+rod:Lightning Bolts	サンダー・ボルト	変愚
+rod:Magic Mapping	魔法の地図	変愚
+rod:Polymorph	チェンジ・モンスター	変愚
+rod:Probing	調査	変愚
+rod:Recall	帰還	変愚
+rod:Restoration	全復活	変愚
+rod:Slow Monster	スロウ・モンスター	変愚
+rod:Speed	スピード	変愚
+rod:Teleport Other	テレポート・アウェイ	変愚
+rod:Treasure Location	財宝感知	変愚
+scroll:*Acquirement*	獲得	変愚
+scroll:*Destruction*	*破壊*	変愚
+scroll:*Enchant Armour*	防具強化	変愚
+scroll:*Enchant Weapon*	*武器強化*	変愚
+scroll:*Remove Curse*	解呪	変愚
+scroll:Acquirement	獲得	変愚
+scroll:Aggravate Monster	エキサイト・モンスター	変愚
+scroll:Banishment	消滅	票
+scroll:Blessing	天恵	変愚
+scroll:Curse Armour	防具呪縛	変愚
+scroll:Curse Weapon	武器呪縛	変愚
+scroll:Darkness	暗闇	変愚
+scroll:Deep Descent	深層降下	票
+scroll:Detect Invisible	透明物体感知	変愚
+scroll:Dispel Undead	アンデッド退散	変愚
+scroll:Door Destruction	ドア破壊	票
+scroll:Enchant Armour	防具強化	変愚
+scroll:Enchant Weapon To-Dam	武器ダメージ増加	変愚
+scroll:Enchant Weapon To-Hit	武器命中率上昇	変愚
+scroll:Holy Chant	聖唱歌	変愚
+scroll:Holy Prayer	聖祈言	変愚
+scroll:Identify Rune	ルーン解読	票
+scroll:Light	光	変愚
+scroll:Magic Mapping	魔法の地図	変愚
+scroll:Mass Banishment	周辺消滅	票
+scroll:Monster Confusion	パニック・モンスター	変愚
+scroll:Phase Door	ショート・テレポート	変愚
+scroll:Protection from Evil	対邪悪結界	変愚
+scroll:Recharging	魔力充填	変愚
+scroll:Remove Curse	解呪	変愚
+scroll:Remove Hunger	空腹除去	票
+scroll:Rune of Protection	守りのルーン	変愚
+scroll:Summon Monster	サモン・モンスター	変愚
+scroll:Summon Undead	サモン・アンデッド	変愚
+scroll:Teleport Level	テレポート・レベル	変愚
+scroll:Teleportation	テレポート	変愚
+scroll:Trap Creation	トラップ創造	変愚
+scroll:Treasure Detection	財宝感知	変愚
+scroll:Word of Recall	帰還の詔	変愚
+shadow book:[Corruption of Spirit]	[魂の堕落]	自作
+shadow book:[Dark Rituals]	[闇の儀式]	自作
+shadow book:[Deadly Powers]	[死の力]	自作
+shadow book:[Fear and Torment]	[恐怖と苦悶]	自作
+shadow book:[Into the Shadows]	[影の中へ]	自作
+shield:& Knight's Shield~	ナイト・シールド	変愚
+shield:& Large Metal Shield~	金属製ラージ・シールド	変愚
+shield:& Leather Shield~	革製シールド	票
+shield:& Mithril Shield~	& ミスリルの盾~	Sil-Q
+shield:& Small Metal Shield~	金属製スモール・シールド	変愚
+shield:& Wicker Shield~	枝編みシールド	票
+shot:& Iron Shot~	鉄弾	変愚
+shot:& Mithril Shot~	ミスリルの弾	変愚
+shot:& Rounded Pebble~	丸い小石	変愚
+soft armor:& Robe~	ローブ	変愚
+soft armor:Hard Leather Armour~	硬革よろい	変愚
+soft armor:Leather Scale Mail~	革製スケイル・メイル	変愚
+soft armor:Soft Leather Armour~	軟革よろい	変愚
+soft armor:Studded Leather Armour~	鋲付革よろい	票
+staff:*Destruction*	*破壊*	変愚
+staff:Banishment	消滅	票
+staff:Confuse Monsters	パニック・モンスター	票
+staff:Cure Light Wounds	軽傷の治癒	変愚
+staff:Curing	癒し	変愚
+staff:Darkness	暗闇	変愚
+staff:Detect Evil	邪悪存在感知	変愚
+staff:Detect Invisible	透明物体感知	変愚
+staff:Dispel Evil	邪悪存在退散	変愚
+staff:Earthquakes	地震	変愚
+staff:Haste Monsters	スピード・モンスター	変愚
+staff:Healing	体力回復	変愚
+staff:Holiness	聖浄	変愚
+staff:Light	光	変愚
+staff:Mapping	魔法の地図	票
+staff:Power	力	変愚
+staff:Remove Curse	解呪	変愚
+staff:Sleep Monsters	スリープ・モンスター	変愚
+staff:Slow Monsters	スロウ・モンスター	変愚
+staff:Speed	スピード	変愚
+staff:Starlight	スターライト	変愚
+staff:Summoning	召喚	変愚
+staff:Teleportation	テレポート	変愚
+staff:the Magi	賢者	変愚
+sword:& Bastard Sword~	バスタード・ソード	変愚
+sword:& Blade~ of Chaos	カオス・ブレード	変愚
+sword:& Broad Sword~	ブロード・ソード	変愚
+sword:& Cutlass~	カットラス	変愚
+sword:& Dagger~	ダガー	変愚
+sword:& Executioner's Sword~	首切りソード	変愚
+sword:& Katana~	カタナ	変愚
+sword:& Long Sword~	ロング・ソード	変愚
+sword:& Main~ Gauche~	マン・ゴーシュ	変愚
+sword:& Rapier~	レイピア	変愚
+sword:& Scimitar~	シミター	変愚
+sword:& Short Sword~	ショート・ソード	変愚
+sword:& Tulwar~	タルワール	変愚
+sword:& Zweihander~	ツヴァイハンダー	変愚
+wand:Acid Balls	アシッド・ボール	変愚
+wand:Acid Bolts	アシッド・ボルト	変愚
+wand:Annihilation	消滅	変愚
+wand:Clone Monster	クローン・モンスター	変愚
+wand:Cold Balls	アイス・ボール	変愚
+wand:Confuse Monster	パニック・モンスター	変愚
+wand:Darkness	暗闇	変愚
+wand:Disable Traps	トラップ解除	票
+wand:Dragon's Breath	ドラゴン・ブレス	変愚
+wand:Dragon's Flame	ドラゴンの火炎	変愚
+wand:Dragon's Frost	ドラゴンの冷気	変愚
+wand:Drain Life	生命力吸収	票
+wand:Fire Balls	ファイア・ボール	変愚
+wand:Fire Bolts	ファイア・ボルト	変愚
+wand:Frost Bolts	アイス・ボルト	変愚
+wand:Haste Monster	スピード・モンスター	変愚
+wand:Heal Monster	回復モンスター	変愚
+wand:Hold Monster	モンスター拘束	票
+wand:Light	光	変愚
+wand:Lightning Balls	サンダー・ボール	変愚
+wand:Lightning Bolts	サンダー・ボルト	変愚
+wand:Magic Missile	マジック・ミサイル	変愚
+wand:Polymorph	チェンジ・モンスター	変愚
+wand:Scare Monster	恐慌モンスター	変愚
+wand:Slow Monster	スロウ・モンスター	変愚
+wand:Stinking Cloud	悪臭雲	変愚
+wand:Stone to Mud	岩石溶解	変愚
+wand:Stun Monster	モンスター朦朧	票
+wand:Teleport Other	テレポート・アウェイ	変愚
+wand:Wonder	謎	変愚

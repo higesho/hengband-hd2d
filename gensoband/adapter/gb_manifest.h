@@ -8,6 +8,7 @@
 #pragma once
 
 #include "frame/protocol_messages.h"
+#include "bridge/unaware_item_tiles.h"
 
 #include <cstdint>
 #include <string>
@@ -34,6 +35,22 @@ public:
      * K150 ほか）ので、素の `split(',')` では割れない（§5.1）。
      */
     bool load(const std::string &csv_path, const std::string &root);
+
+    /*!
+     * @brief 正体の分からないアイテムの代表タイルを、目録の末尾へ追加登録する。
+     * @details。分類 → 変愚の K の番号は
+     * `presentation/bridge/unaware_item_tiles.h` の 1 か所だけにあり、ここは
+     * その番号を指す行を追加するだけ（書き写さない）。id は `kUnawareRepresentativeIdBase`
+     * 起点の予約帯（幻想蛮怒自身の k_idx は 1000 未満なのでぶつからない）。
+     * `load()` が真を返した**あとに**呼ぶこと。
+     */
+    void add_unaware_representative_tiles();
+
+    /*!
+     * @brief 分類 → 代表タイルの `tile_index`。
+     * @return 1..N、または 0（`add_unaware_representative_tiles()` を呼んでいない等）
+     */
+    std::uint16_t lookup_unaware_representative(presentation::UnawareItemCategory category) const;
 
     //! v1 §8.2 の `asset_manifest`。`load()` が成功していれば行数ぶん入っている。
     const presentation::AssetManifestMessage &message() const { return this->message_; }

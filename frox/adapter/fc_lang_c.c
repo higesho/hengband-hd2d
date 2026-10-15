@@ -302,6 +302,9 @@ void fc_text_input_ascii(int on)
     }
 }
 
+int fc_text_edit_active(void) { return fc_text_input_depth > 0; }
+int fc_text_ascii_only(void) { return fc_text_input_ascii_depth > 0; }
+
 int fc_text_input_active(void)
 {
     if (!fc_lang_enabled()) {

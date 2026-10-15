@@ -68,8 +68,19 @@ def prepare(upstream,output,verify_only=False):
     if marker.is_file() and json.loads(marker.read_text(encoding='utf8')).get('fingerprint')==fingerprint:
         for source in manifest['sources']:verify_core(output/source['output'],source)
         print('Prepared sources verified:',output);return
+    if output.exists():
+        # A recipe/manifest update may leave an otherwise byte-identical
+        # prepared tree with only a stale marker.  Verify every file before
+        # refreshing that marker; any unrecorded/generated-source edit still
+        # fails closed and is never overwritten here.
+        try:
+            for source in manifest['sources']:verify_core(output/source['output'],source)
+        except (ValueError,OSError) as exc:
+            if verify_only:raise ValueError('No matching prepared sources: '+str(output)) from exc
+            raise ValueError('Output already exists and does not match the current source manifest; choose a new empty output path: '+str(output)) from exc
+        marker.write_text(json.dumps({'schema':2,'fingerprint':fingerprint,'baseline':manifest['baseline']},indent=2)+'\n',encoding='utf8',newline='\n')
+        print('Prepared sources verified; refreshed marker:',output);return
     if verify_only:raise ValueError('No matching prepared sources: '+str(output))
-    if output.exists():raise ValueError('Output already exists; choose a new empty output path: '+str(output))
     output.parent.mkdir(parents=True,exist_ok=True)
     with staging_directory(output.parent) as stage:
         result=stage/'result';result.mkdir()

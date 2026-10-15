@@ -1,0 +1,1686 @@
+{
+  "schema": 2,
+  "inputs": {
+    "i00000": {
+      "archive": "source",
+      "path": "src/character.cpp",
+      "sha256": "472cb476e902860be17519a63a96d5acd359bf1f71f4f39dd99085b1e577f59b",
+      "transform": "raw",
+      "transformed_sha256": "472cb476e902860be17519a63a96d5acd359bf1f71f4f39dd99085b1e577f59b"
+    },
+    "i00001": {
+      "archive": "source",
+      "path": "src/character.h",
+      "sha256": "8891303e4a6010b4700da363fb8d24cec9f78697d238c50b8484ff9fc0189122",
+      "transform": "raw",
+      "transformed_sha256": "8891303e4a6010b4700da363fb8d24cec9f78697d238c50b8484ff9fc0189122"
+    },
+    "i00002": {
+      "archive": "source",
+      "path": "src/config.cpp",
+      "sha256": "d0d78d946abf9db0fa18f501770cec292db624d49f92facbd0b6babbb82c3870",
+      "transform": "raw",
+      "transformed_sha256": "d0d78d946abf9db0fa18f501770cec292db624d49f92facbd0b6babbb82c3870"
+    },
+    "i00003": {
+      "archive": "source",
+      "path": "src/config.h",
+      "sha256": "3ce02e354171854851906810b225a7ea4063954418c45422bef79da90090c853",
+      "transform": "raw",
+      "transformed_sha256": "3ce02e354171854851906810b225a7ea4063954418c45422bef79da90090c853"
+    },
+    "i00004": {
+      "archive": "source",
+      "path": "src/curses.h",
+      "sha256": "35953118b65a9355cc43fcb042bdc3b0e806ae544e8616aabcbc06f69a6f70f9",
+      "transform": "raw",
+      "transformed_sha256": "35953118b65a9355cc43fcb042bdc3b0e806ae544e8616aabcbc06f69a6f70f9"
+    },
+    "i00005": {
+      "archive": "source",
+      "path": "src/data_creatures.cpp",
+      "sha256": "814cb5ca04bbbe27a5d91d18fbd57ed7f3e5fd84799a278851575e99af7f2e9f",
+      "transform": "raw",
+      "transformed_sha256": "814cb5ca04bbbe27a5d91d18fbd57ed7f3e5fd84799a278851575e99af7f2e9f"
+    },
+    "i00006": {
+      "archive": "source",
+      "path": "src/data_player.cpp",
+      "sha256": "ec5406def35371c41bfca00b9990f64438edd5ac89195a67855fa72339f5f29f",
+      "transform": "raw",
+      "transformed_sha256": "ec5406def35371c41bfca00b9990f64438edd5ac89195a67855fa72339f5f29f"
+    },
+    "i00007": {
+      "archive": "source",
+      "path": "src/data_recall.cpp",
+      "sha256": "f7ef6718f3e164fb3c125d6d9c7368a388d1fb6aa7f18ce5cf1e9d829c3e9ee9",
+      "transform": "raw",
+      "transformed_sha256": "f7ef6718f3e164fb3c125d6d9c7368a388d1fb6aa7f18ce5cf1e9d829c3e9ee9"
+    },
+    "i00008": {
+      "archive": "source",
+      "path": "src/data_store_owners.cpp",
+      "sha256": "08f634ce463ce4145da2a07715ef192bbdb416bd4656833f0bf2113800097e7d",
+      "transform": "raw",
+      "transformed_sha256": "08f634ce463ce4145da2a07715ef192bbdb416bd4656833f0bf2113800097e7d"
+    },
+    "i00009": {
+      "archive": "source",
+      "path": "src/data_stores.cpp",
+      "sha256": "85a5d5e2a6d690785a83dd871f3ea641ec4497a0f660c3fc126dc05d3b709c78",
+      "transform": "raw",
+      "transformed_sha256": "85a5d5e2a6d690785a83dd871f3ea641ec4497a0f660c3fc126dc05d3b709c78"
+    },
+    "i00010": {
+      "archive": "source",
+      "path": "src/data_tables.cpp",
+      "sha256": "299a9cc9bd9cf60fe7e15ebc01175c626fef0e36bd492a9a8081e42a48bb381e",
+      "transform": "raw",
+      "transformed_sha256": "299a9cc9bd9cf60fe7e15ebc01175c626fef0e36bd492a9a8081e42a48bb381e"
+    },
+    "i00011": {
+      "archive": "source",
+      "path": "src/data_treasure.cpp",
+      "sha256": "67ada0047888df7a51e8cf2d708bbc573364945a6d85937ff11a92a12da58eb7",
+      "transform": "raw",
+      "transformed_sha256": "67ada0047888df7a51e8cf2d708bbc573364945a6d85937ff11a92a12da58eb7"
+    },
+    "i00012": {
+      "archive": "source",
+      "path": "src/dice.cpp",
+      "sha256": "e856bed236c8ac7527280bd411a1c095d4a0672e35ffdd13983b63db5ccb0e63",
+      "transform": "raw",
+      "transformed_sha256": "e856bed236c8ac7527280bd411a1c095d4a0672e35ffdd13983b63db5ccb0e63"
+    },
+    "i00013": {
+      "archive": "source",
+      "path": "src/dice.h",
+      "sha256": "5a1dbfba567107e85bb09fbf36e44648f4e51c15f9a29a2653e9293707d70d94",
+      "transform": "raw",
+      "transformed_sha256": "5a1dbfba567107e85bb09fbf36e44648f4e51c15f9a29a2653e9293707d70d94"
+    },
+    "i00014": {
+      "archive": "source",
+      "path": "src/dungeon.cpp",
+      "sha256": "0f0fe82689857827080c562ff612a26eec08e23a017494522a9a51d9dd1fccd0",
+      "transform": "raw",
+      "transformed_sha256": "0f0fe82689857827080c562ff612a26eec08e23a017494522a9a51d9dd1fccd0"
+    },
+    "i00015": {
+      "archive": "source",
+      "path": "src/dungeon.h",
+      "sha256": "ccd00802d93d7dd7bbd70c67992bf1b90e9eac3ce11951d8c5e21106165e9adb",
+      "transform": "raw",
+      "transformed_sha256": "ccd00802d93d7dd7bbd70c67992bf1b90e9eac3ce11951d8c5e21106165e9adb"
+    },
+    "i00016": {
+      "archive": "source",
+      "path": "src/dungeon_generate.cpp",
+      "sha256": "219bdb6aaafb5a236932c4bf023747104500a4443a8790273a33f51e1e7aea97",
+      "transform": "raw",
+      "transformed_sha256": "219bdb6aaafb5a236932c4bf023747104500a4443a8790273a33f51e1e7aea97"
+    },
+    "i00017": {
+      "archive": "source",
+      "path": "src/dungeon_los.cpp",
+      "sha256": "6ca86b8f3d7769b80911894ccbfdbabfb74bfb70f1e2d62adbf5a951d3251d22",
+      "transform": "raw",
+      "transformed_sha256": "6ca86b8f3d7769b80911894ccbfdbabfb74bfb70f1e2d62adbf5a951d3251d22"
+    },
+    "i00018": {
+      "archive": "source",
+      "path": "src/dungeon_tile.h",
+      "sha256": "9f69f74c03816fc0b180e4ca9396ac054716339b29274151e62fe124ba439f14",
+      "transform": "raw",
+      "transformed_sha256": "9f69f74c03816fc0b180e4ca9396ac054716339b29274151e62fe124ba439f14"
+    },
+    "i00019": {
+      "archive": "source",
+      "path": "src/game.cpp",
+      "sha256": "ad1debef6bf4390dc675e7bee0b2863e10d725181dfbccf9c694505365a0b2d9",
+      "transform": "raw",
+      "transformed_sha256": "ad1debef6bf4390dc675e7bee0b2863e10d725181dfbccf9c694505365a0b2d9"
+    },
+    "i00020": {
+      "archive": "source",
+      "path": "src/game.h",
+      "sha256": "eba5ee9562e37cbd39d5fc7616f4bd065d897d70155fa0e942afa97839c12752",
+      "transform": "raw",
+      "transformed_sha256": "eba5ee9562e37cbd39d5fc7616f4bd065d897d70155fa0e942afa97839c12752"
+    },
+    "i00021": {
+      "archive": "source",
+      "path": "src/game_death.cpp",
+      "sha256": "e7e8b3e52e9412887e8b4f3fc663e8c6b95798d54f39ea9298ac25b0347a663f",
+      "transform": "raw",
+      "transformed_sha256": "e7e8b3e52e9412887e8b4f3fc663e8c6b95798d54f39ea9298ac25b0347a663f"
+    },
+    "i00022": {
+      "archive": "source",
+      "path": "src/game_files.cpp",
+      "sha256": "0a68e7cfea8dc797c266f7e2d73fdbc3efbe37944f1b97f8b03be81c0d04914e",
+      "transform": "raw",
+      "transformed_sha256": "0a68e7cfea8dc797c266f7e2d73fdbc3efbe37944f1b97f8b03be81c0d04914e"
+    },
+    "i00023": {
+      "archive": "source",
+      "path": "src/game_objects.cpp",
+      "sha256": "f78c2acf5944c1ecb86aa8caa1c05f6eb6adb817cec3ad1d75926111abfa2195",
+      "transform": "raw",
+      "transformed_sha256": "f78c2acf5944c1ecb86aa8caa1c05f6eb6adb817cec3ad1d75926111abfa2195"
+    },
+    "i00024": {
+      "archive": "source",
+      "path": "src/game_run.cpp",
+      "sha256": "9f931bc05aaa34940c37e16677528b70653699cd5cefb8a38364a2cc47fc37b5",
+      "transform": "raw",
+      "transformed_sha256": "9f931bc05aaa34940c37e16677528b70653699cd5cefb8a38364a2cc47fc37b5"
+    },
+    "i00025": {
+      "archive": "source",
+      "path": "src/game_save.cpp",
+      "sha256": "a7f44fe312d5068075dc641fe01192bdad2678573ea99bef013abcc4e1c1158c",
+      "transform": "raw",
+      "transformed_sha256": "a7f44fe312d5068075dc641fe01192bdad2678573ea99bef013abcc4e1c1158c"
+    },
+    "i00026": {
+      "archive": "source",
+      "path": "src/headers.h",
+      "sha256": "0eebc20131ed36a1e5d9c5c3b519482e58d3447e26b5ebed95ee3ffe2bded71e",
+      "transform": "raw",
+      "transformed_sha256": "0eebc20131ed36a1e5d9c5c3b519482e58d3447e26b5ebed95ee3ffe2bded71e"
+    },
+    "i00027": {
+      "archive": "source",
+      "path": "src/helpers.cpp",
+      "sha256": "afdcca2a546bfe090cd4a8ae34e54f64890f50ac845173feadbe70f7ec9134db",
+      "transform": "raw",
+      "transformed_sha256": "afdcca2a546bfe090cd4a8ae34e54f64890f50ac845173feadbe70f7ec9134db"
+    },
+    "i00028": {
+      "archive": "source",
+      "path": "src/helpers.h",
+      "sha256": "6959d65093e060a30ca835b8826aad356f2073b362f42a5085573e9ce374ebd7",
+      "transform": "raw",
+      "transformed_sha256": "6959d65093e060a30ca835b8826aad356f2073b362f42a5085573e9ce374ebd7"
+    },
+    "i00029": {
+      "archive": "source",
+      "path": "src/identification.cpp",
+      "sha256": "b03f404e090f44e86a8c3e89d5c23293fee099ab4b8e6c48664d9690b4000765",
+      "transform": "raw",
+      "transformed_sha256": "b03f404e090f44e86a8c3e89d5c23293fee099ab4b8e6c48664d9690b4000765"
+    },
+    "i00030": {
+      "archive": "source",
+      "path": "src/identification.h",
+      "sha256": "04887ef02f61d8b02bbfbfa7faccc4e740c7de1ec9eedd4092c9662cc8741a48",
+      "transform": "raw",
+      "transformed_sha256": "04887ef02f61d8b02bbfbfa7faccc4e740c7de1ec9eedd4092c9662cc8741a48"
+    },
+    "i00031": {
+      "archive": "source",
+      "path": "src/inventory.cpp",
+      "sha256": "634c95c13642ffef10830dbd09f5090a1301dd33dbacb82f60b88f0a64206894",
+      "transform": "raw",
+      "transformed_sha256": "634c95c13642ffef10830dbd09f5090a1301dd33dbacb82f60b88f0a64206894"
+    },
+    "i00032": {
+      "archive": "source",
+      "path": "src/inventory.h",
+      "sha256": "6e1541b841a8c1fabacb1316cb6213c0533c41581e7361427a08128f75975494",
+      "transform": "raw",
+      "transformed_sha256": "6e1541b841a8c1fabacb1316cb6213c0533c41581e7361427a08128f75975494"
+    },
+    "i00033": {
+      "archive": "source",
+      "path": "src/mage_spells.cpp",
+      "sha256": "ca99916162736c2d0112422a7a91a7855b164159cefa59adde63a49d853c5d04",
+      "transform": "raw",
+      "transformed_sha256": "ca99916162736c2d0112422a7a91a7855b164159cefa59adde63a49d853c5d04"
+    },
+    "i00034": {
+      "archive": "source",
+      "path": "src/mage_spells.h",
+      "sha256": "f9d825e1ee2b9cd82a67517e79efb18b3fae05d94344b0ecd06cf4d113469d98",
+      "transform": "raw",
+      "transformed_sha256": "f9d825e1ee2b9cd82a67517e79efb18b3fae05d94344b0ecd06cf4d113469d98"
+    },
+    "i00035": {
+      "archive": "source",
+      "path": "src/main.cpp",
+      "sha256": "1f5fd11dfc907d5c3a5e22d93cee0b332ac5d6a4dc6cb5c0466e672dab7729db",
+      "transform": "raw",
+      "transformed_sha256": "1f5fd11dfc907d5c3a5e22d93cee0b332ac5d6a4dc6cb5c0466e672dab7729db"
+    },
+    "i00036": {
+      "archive": "source",
+      "path": "src/monster.cpp",
+      "sha256": "446e87d1788aa24e32bb442baea86fedcafbea7474c9a20c7a00ccf2284b02a6",
+      "transform": "raw",
+      "transformed_sha256": "446e87d1788aa24e32bb442baea86fedcafbea7474c9a20c7a00ccf2284b02a6"
+    },
+    "i00037": {
+      "archive": "source",
+      "path": "src/monster.h",
+      "sha256": "ba755b7b7bd70b969bebcb1fd16df31a93147b2409d6401225cf84e756a86439",
+      "transform": "raw",
+      "transformed_sha256": "ba755b7b7bd70b969bebcb1fd16df31a93147b2409d6401225cf84e756a86439"
+    },
+    "i00038": {
+      "archive": "source",
+      "path": "src/monster_manager.cpp",
+      "sha256": "a457b56d6f563909c5ba3e8bb043e276f627d36b102cfd360bdd9888f1cd2d81",
+      "transform": "raw",
+      "transformed_sha256": "a457b56d6f563909c5ba3e8bb043e276f627d36b102cfd360bdd9888f1cd2d81"
+    },
+    "i00039": {
+      "archive": "source",
+      "path": "src/player.cpp",
+      "sha256": "38dd41140ef2dee7d6dce2c344d69f289f2d212b315fd38b930c52e7b2ecc170",
+      "transform": "raw",
+      "transformed_sha256": "38dd41140ef2dee7d6dce2c344d69f289f2d212b315fd38b930c52e7b2ecc170"
+    },
+    "i00040": {
+      "archive": "source",
+      "path": "src/player.h",
+      "sha256": "a2d19f7eca4bedddf614cc5bf73ac26a6628818a7f5ce9ef121aad08e3cc2dff",
+      "transform": "raw",
+      "transformed_sha256": "a2d19f7eca4bedddf614cc5bf73ac26a6628818a7f5ce9ef121aad08e3cc2dff"
+    },
+    "i00041": {
+      "archive": "source",
+      "path": "src/player_bash.cpp",
+      "sha256": "38929b6ebf23e19504bec0441aeb14c72bfbcf7ed0baa33b96dbb81ee06535cc",
+      "transform": "raw",
+      "transformed_sha256": "38929b6ebf23e19504bec0441aeb14c72bfbcf7ed0baa33b96dbb81ee06535cc"
+    },
+    "i00042": {
+      "archive": "source",
+      "path": "src/player_eat.cpp",
+      "sha256": "e5f5cb16e21781e0b9096541898b3dbc8f5cdc1772bef61ba004492a2313efae",
+      "transform": "raw",
+      "transformed_sha256": "e5f5cb16e21781e0b9096541898b3dbc8f5cdc1772bef61ba004492a2313efae"
+    },
+    "i00043": {
+      "archive": "source",
+      "path": "src/player_magic.cpp",
+      "sha256": "e4a8cc5bab90aa79f6ac5fea2ff7e9154ed2dc1ce58771b91cffd2c457dd6f9f",
+      "transform": "raw",
+      "transformed_sha256": "e4a8cc5bab90aa79f6ac5fea2ff7e9154ed2dc1ce58771b91cffd2c457dd6f9f"
+    },
+    "i00044": {
+      "archive": "source",
+      "path": "src/player_move.cpp",
+      "sha256": "70ae7b20b69e839ebb2b9c3ab9b59df8aeb84849987ac83b7aca101d3906b88f",
+      "transform": "raw",
+      "transformed_sha256": "70ae7b20b69e839ebb2b9c3ab9b59df8aeb84849987ac83b7aca101d3906b88f"
+    },
+    "i00045": {
+      "archive": "source",
+      "path": "src/player_pray.cpp",
+      "sha256": "a0d52bca106f0059dfb52f214ce18791f6b1f02a072bca16d3268845f8451b97",
+      "transform": "raw",
+      "transformed_sha256": "a0d52bca106f0059dfb52f214ce18791f6b1f02a072bca16d3268845f8451b97"
+    },
+    "i00046": {
+      "archive": "source",
+      "path": "src/player_quaff.cpp",
+      "sha256": "e69e021786208b6628ba37f4e2b170b8920b0eab01ac00fc1d8737c1b1240d1a",
+      "transform": "raw",
+      "transformed_sha256": "e69e021786208b6628ba37f4e2b170b8920b0eab01ac00fc1d8737c1b1240d1a"
+    },
+    "i00047": {
+      "archive": "source",
+      "path": "src/player_run.cpp",
+      "sha256": "040915277b6c092b770e36ba37e72b0c6a97e5b37d7bb57fecf5e79093b5adef",
+      "transform": "raw",
+      "transformed_sha256": "040915277b6c092b770e36ba37e72b0c6a97e5b37d7bb57fecf5e79093b5adef"
+    },
+    "i00048": {
+      "archive": "source",
+      "path": "src/player_stats.cpp",
+      "sha256": "3a56bb4138ed6de1a95cff0f1ad88034d7685b1ab34a08e64799dfb56b03a9d3",
+      "transform": "raw",
+      "transformed_sha256": "3a56bb4138ed6de1a95cff0f1ad88034d7685b1ab34a08e64799dfb56b03a9d3"
+    },
+    "i00049": {
+      "archive": "source",
+      "path": "src/player_throw.cpp",
+      "sha256": "1bc2804ddd1100a30123afdb7ffab81b958fe735754b77113a987099ce683970",
+      "transform": "raw",
+      "transformed_sha256": "1bc2804ddd1100a30123afdb7ffab81b958fe735754b77113a987099ce683970"
+    },
+    "i00050": {
+      "archive": "source",
+      "path": "src/player_traps.cpp",
+      "sha256": "0a79fa2919675760bf06ca05302f0cc48060fa1ff8cf88373c3c16127d891a63",
+      "transform": "raw",
+      "transformed_sha256": "0a79fa2919675760bf06ca05302f0cc48060fa1ff8cf88373c3c16127d891a63"
+    },
+    "i00051": {
+      "archive": "source",
+      "path": "src/player_tunnel.cpp",
+      "sha256": "a771da9f1352eadd6d174b7e489a774a509098b55362c321cf2f47ddec2f4025",
+      "transform": "raw",
+      "transformed_sha256": "a771da9f1352eadd6d174b7e489a774a509098b55362c321cf2f47ddec2f4025"
+    },
+    "i00052": {
+      "archive": "source",
+      "path": "src/recall.cpp",
+      "sha256": "ad473fe519217d275bb45eeffa6575d126040bc7c7f004e12059072b8e079ed5",
+      "transform": "raw",
+      "transformed_sha256": "ad473fe519217d275bb45eeffa6575d126040bc7c7f004e12059072b8e079ed5"
+    },
+    "i00053": {
+      "archive": "source",
+      "path": "src/recall.h",
+      "sha256": "0641abf8b2684cf9d7e429bf87500912279fb3c9abc388622233b39c4966a458",
+      "transform": "raw",
+      "transformed_sha256": "0641abf8b2684cf9d7e429bf87500912279fb3c9abc388622233b39c4966a458"
+    },
+    "i00054": {
+      "archive": "source",
+      "path": "src/rng.cpp",
+      "sha256": "da7cbc9000344cb7036e315df367ce8c74fea19498eb6401835cf66f7ec7bff9",
+      "transform": "raw",
+      "transformed_sha256": "da7cbc9000344cb7036e315df367ce8c74fea19498eb6401835cf66f7ec7bff9"
+    },
+    "i00055": {
+      "archive": "source",
+      "path": "src/rng.h",
+      "sha256": "08f5121f3972ab65c4cf7c3ab6cb19c8b9bac82ed25b658d806802d877318d1a",
+      "transform": "raw",
+      "transformed_sha256": "08f5121f3972ab65c4cf7c3ab6cb19c8b9bac82ed25b658d806802d877318d1a"
+    },
+    "i00056": {
+      "archive": "source",
+      "path": "src/scores.cpp",
+      "sha256": "26dc16ad1cf23303cfc33cc0af5fd8e4890611dbdc1f35bc284f4bf01b6695a9",
+      "transform": "raw",
+      "transformed_sha256": "26dc16ad1cf23303cfc33cc0af5fd8e4890611dbdc1f35bc284f4bf01b6695a9"
+    },
+    "i00057": {
+      "archive": "source",
+      "path": "src/scores.h",
+      "sha256": "6a2c2c48f38e50c328fc5f7f4862f882132a886e2370cea942db61d3b00af1b3",
+      "transform": "raw",
+      "transformed_sha256": "6a2c2c48f38e50c328fc5f7f4862f882132a886e2370cea942db61d3b00af1b3"
+    },
+    "i00058": {
+      "archive": "source",
+      "path": "src/scrolls.cpp",
+      "sha256": "49dadced813a4e90f16924890d2ad5563c4611606b8c658f9e2ca93bd2608d36",
+      "transform": "raw",
+      "transformed_sha256": "49dadced813a4e90f16924890d2ad5563c4611606b8c658f9e2ca93bd2608d36"
+    },
+    "i00059": {
+      "archive": "source",
+      "path": "src/scrolls.h",
+      "sha256": "c219b00e489dd5967d251206c860abf359041db7ea7b1864b386af133fb1fbfc",
+      "transform": "raw",
+      "transformed_sha256": "c219b00e489dd5967d251206c860abf359041db7ea7b1864b386af133fb1fbfc"
+    },
+    "i00060": {
+      "archive": "source",
+      "path": "src/spells.cpp",
+      "sha256": "cf65542687e1299505309808f99c7aef09952533582f0318efc5b8b71cc1d69e",
+      "transform": "raw",
+      "transformed_sha256": "cf65542687e1299505309808f99c7aef09952533582f0318efc5b8b71cc1d69e"
+    },
+    "i00061": {
+      "archive": "source",
+      "path": "src/spells.h",
+      "sha256": "9a234d28f5fbc58715fedac04ff2f648c5edc244498697b0777b8a8665a68aca",
+      "transform": "raw",
+      "transformed_sha256": "9a234d28f5fbc58715fedac04ff2f648c5edc244498697b0777b8a8665a68aca"
+    },
+    "i00062": {
+      "archive": "source",
+      "path": "src/staves.cpp",
+      "sha256": "eabce99b17620182147bb248fbf6162f33466ad65f5deed4ba45e152ee43ba55",
+      "transform": "raw",
+      "transformed_sha256": "eabce99b17620182147bb248fbf6162f33466ad65f5deed4ba45e152ee43ba55"
+    },
+    "i00063": {
+      "archive": "source",
+      "path": "src/staves.h",
+      "sha256": "46e4f35376fda5c75721dc00be108008c258827b278d885d6060d98c382794b4",
+      "transform": "raw",
+      "transformed_sha256": "46e4f35376fda5c75721dc00be108008c258827b278d885d6060d98c382794b4"
+    },
+    "i00064": {
+      "archive": "source",
+      "path": "src/store.cpp",
+      "sha256": "e33470344dbfd6e9510344eaf74720bc9f5bde5be497a3110130a867a92f633c",
+      "transform": "raw",
+      "transformed_sha256": "e33470344dbfd6e9510344eaf74720bc9f5bde5be497a3110130a867a92f633c"
+    },
+    "i00065": {
+      "archive": "source",
+      "path": "src/store.h",
+      "sha256": "2c769ecdda231ada8063c615149da8f0420709fb494fd022667b69d9e6574068",
+      "transform": "raw",
+      "transformed_sha256": "2c769ecdda231ada8063c615149da8f0420709fb494fd022667b69d9e6574068"
+    },
+    "i00066": {
+      "archive": "source",
+      "path": "src/store_inventory.cpp",
+      "sha256": "e94c3e8126b875303119d42112c3b35f641940b8648cab10051c67300daab5b5",
+      "transform": "raw",
+      "transformed_sha256": "e94c3e8126b875303119d42112c3b35f641940b8648cab10051c67300daab5b5"
+    },
+    "i00067": {
+      "archive": "source",
+      "path": "src/treasure.cpp",
+      "sha256": "5da7debc250f457ca74f68ef99d86d1749fb808607b761a5da90a22f40abb022",
+      "transform": "raw",
+      "transformed_sha256": "5da7debc250f457ca74f68ef99d86d1749fb808607b761a5da90a22f40abb022"
+    },
+    "i00068": {
+      "archive": "source",
+      "path": "src/treasure.h",
+      "sha256": "0e631c8ffe7195101bbf90071213424808b56759c694a43a9253b353bccf9ced",
+      "transform": "raw",
+      "transformed_sha256": "0e631c8ffe7195101bbf90071213424808b56759c694a43a9253b353bccf9ced"
+    },
+    "i00069": {
+      "archive": "source",
+      "path": "src/types.h",
+      "sha256": "365c8f68e4464adb7687dcbb15963c16975447fa004ab77aa1249714e1ca2ef4",
+      "transform": "raw",
+      "transformed_sha256": "365c8f68e4464adb7687dcbb15963c16975447fa004ab77aa1249714e1ca2ef4"
+    },
+    "i00070": {
+      "archive": "source",
+      "path": "src/ui.cpp",
+      "sha256": "64808c0354462246eb931cd2b15ea9506d4686fc809aa22a2ce80f514fae2c32",
+      "transform": "raw",
+      "transformed_sha256": "64808c0354462246eb931cd2b15ea9506d4686fc809aa22a2ce80f514fae2c32"
+    },
+    "i00071": {
+      "archive": "source",
+      "path": "src/ui.h",
+      "sha256": "7c2c908a2a01f70b90c0c82747f680fe2a230812f1b1256bf5b275a2c2212b95",
+      "transform": "raw",
+      "transformed_sha256": "7c2c908a2a01f70b90c0c82747f680fe2a230812f1b1256bf5b275a2c2212b95"
+    },
+    "i00072": {
+      "archive": "source",
+      "path": "src/ui_inventory.cpp",
+      "sha256": "ed3d0553b1daa697d06c8cf15994528e336e8bc24527498add6e9d8a99413f40",
+      "transform": "raw",
+      "transformed_sha256": "ed3d0553b1daa697d06c8cf15994528e336e8bc24527498add6e9d8a99413f40"
+    },
+    "i00073": {
+      "archive": "source",
+      "path": "src/ui_io.cpp",
+      "sha256": "f88b332c6492055bd17e6fb942eaa69a61fe4d2f7448a6978175c24d2666183b",
+      "transform": "raw",
+      "transformed_sha256": "f88b332c6492055bd17e6fb942eaa69a61fe4d2f7448a6978175c24d2666183b"
+    },
+    "i00074": {
+      "archive": "source",
+      "path": "src/version.h",
+      "sha256": "720e545c506706d2cde86a183482254d8e587df3cd69e86c59d31d7391ad4249",
+      "transform": "raw",
+      "transformed_sha256": "720e545c506706d2cde86a183482254d8e587df3cd69e86c59d31d7391ad4249"
+    },
+    "i00075": {
+      "archive": "source",
+      "path": "src/wizard.cpp",
+      "sha256": "03e876b8dde8be822bdb8a775f2806f1cb1b1991e638ef81fc291fa8dba0460f",
+      "transform": "raw",
+      "transformed_sha256": "03e876b8dde8be822bdb8a775f2806f1cb1b1991e638ef81fc291fa8dba0460f"
+    },
+    "i00076": {
+      "archive": "source",
+      "path": "src/wizard.h",
+      "sha256": "129ec605b167541b7eb8dae92628b698a5a559bfa9e8f2017672d1ed81a27e0a",
+      "transform": "raw",
+      "transformed_sha256": "129ec605b167541b7eb8dae92628b698a5a559bfa9e8f2017672d1ed81a27e0a"
+    }
+  },
+  "additions": {
+    "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413": {
+      "encoding": "utf8",
+      "text": "    }\n"
+    },
+    "69511ed5b39f7c3097769b131c4f245ce031d500e1a20b2b2189a055015aea2c": {
+      "encoding": "utf8",
+      "text": "    if (!umoria_build_town_from_map()) { // HD2D: the fixed town map (docs/UMORIA_TOWN_DESIGN.md)\n"
+    },
+    "69b3873a8c49264bd32cc1c7f9577f00b127508acfd2a5d019d4c7bbfccb3161": {
+      "encoding": "utf8",
+      "text": "            umoria_command_input_active = false;\n"
+    },
+    "9474db0cab5234d34551fd29fc0984a0737874b33a5f7050663195bcd1ad509a": {
+      "encoding": "utf8",
+      "text": "extern bool umoria_command_input_active; // HD2D: set while game_run.cpp reads a command key\nbool umoria_build_town_from_map();               // HD2D: builds the town from umoria/hd2d/town.txt\nvoid umoria_town_start_position(Coord_t &coord);  // HD2D: start position on that map\n"
+    },
+    "c83803cb72c413464b0f581299e151e8ad803c797c62538064f3a06db1e3007c": {
+      "encoding": "utf8",
+      "text": "    umoria_town_start_position(coord); // HD2D: the map's start position (keeps coord without a map)\n"
+    },
+    "f8ebf575f89d9cffc998ffc1df36f3acc18815a021c240819d561ee3cbf41bc4": {
+      "encoding": "utf8",
+      "text": "            umoria_command_input_active = true; // HD2D: the frame tells the UI a command is awaited\n"
+    }
+  },
+  "files": {
+    "character.cpp": {
+      "sha256": "df395b18b4f72aa9ad4630ae70defe45db4640f06ab805521321f3cf405f34b4",
+      "operations": [
+        [
+          "copy",
+          "i00000",
+          0,
+          16754
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "character.h": {
+      "sha256": "67d09b35fab4217bdeaf52211553d3b0c7b70f3b0de0054583402455276d1797",
+      "operations": [
+        [
+          "copy",
+          "i00001",
+          0,
+          3342
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "config.cpp": {
+      "sha256": "e954a6e21ea1e2ea68c07fbb36aa68f7a7523075943eb90004d71bd99fb23f22",
+      "operations": [
+        [
+          "copy",
+          "i00002",
+          0,
+          314
+        ],
+        [
+          "copy",
+          "i00002",
+          320,
+          55
+        ],
+        [
+          "copy",
+          "i00002",
+          381,
+          57
+        ],
+        [
+          "copy",
+          "i00002",
+          444,
+          41
+        ],
+        [
+          "copy",
+          "i00002",
+          491,
+          60
+        ],
+        [
+          "copy",
+          "i00002",
+          557,
+          44
+        ],
+        [
+          "copy",
+          "i00002",
+          607,
+          58
+        ],
+        [
+          "copy",
+          "i00002",
+          671,
+          57
+        ],
+        [
+          "copy",
+          "i00002",
+          734,
+          71
+        ],
+        [
+          "copy",
+          "i00002",
+          811,
+          56
+        ],
+        [
+          "copy",
+          "i00002",
+          873,
+          58
+        ],
+        [
+          "copy",
+          "i00002",
+          937,
+          16536
+        ]
+      ]
+    },
+    "config.h": {
+      "sha256": "40bb610ab1c021c5795d200a591b32db9183aec2f14be12b95f645a47f3fd0a0",
+      "operations": [
+        [
+          "copy",
+          "i00003",
+          0,
+          233
+        ],
+        [
+          "copy",
+          "i00003",
+          239,
+          42
+        ],
+        [
+          "copy",
+          "i00003",
+          287,
+          43
+        ],
+        [
+          "copy",
+          "i00003",
+          336,
+          36
+        ],
+        [
+          "copy",
+          "i00003",
+          378,
+          45
+        ],
+        [
+          "copy",
+          "i00003",
+          429,
+          33
+        ],
+        [
+          "copy",
+          "i00003",
+          468,
+          40
+        ],
+        [
+          "copy",
+          "i00003",
+          514,
+          43
+        ],
+        [
+          "copy",
+          "i00003",
+          563,
+          50
+        ],
+        [
+          "copy",
+          "i00003",
+          619,
+          39
+        ],
+        [
+          "copy",
+          "i00003",
+          664,
+          40
+        ],
+        [
+          "copy",
+          "i00003",
+          710,
+          11606
+        ]
+      ]
+    },
+    "curses.h": {
+      "sha256": "ffd15ded7252b5dc15123b305f2ede839cc19b1adbf4008b0a5832df95851f4f",
+      "operations": [
+        [
+          "copy",
+          "i00004",
+          0,
+          686
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_creatures.cpp": {
+      "sha256": "1b1c8e45c6f6376e4068d0fa931d3850b62924b34ad80f3220ffe468d2afe83f",
+      "operations": [
+        [
+          "copy",
+          "i00005",
+          0,
+          48124
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_player.cpp": {
+      "sha256": "b719091d76c05104bd64853f9f2974d39b721f69bc406ec09acde6c910e8f8b9",
+      "operations": [
+        [
+          "copy",
+          "i00006",
+          0,
+          24242
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_recall.cpp": {
+      "sha256": "9741238bd9f918263ac1765fd68bda2f56a18bdfe99de8da91d5889aa3e6985d",
+      "operations": [
+        [
+          "copy",
+          "i00007",
+          0,
+          1994
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_store_owners.cpp": {
+      "sha256": "efce9674c6001aa2c5f6325d43d1b06ca8e786035d9d63c5024ca537b5cd4152",
+      "operations": [
+        [
+          "copy",
+          "i00008",
+          0,
+          5363
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_stores.cpp": {
+      "sha256": "a78adb537aef3200330d9ee13aff0bc0b55df30428a42f240307a9fc2a3b5de2",
+      "operations": [
+        [
+          "copy",
+          "i00009",
+          0,
+          2014
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_tables.cpp": {
+      "sha256": "1a6f15bbd9534bbe90b0afaf2349710347799ce5c8a6b97d33922d959095bb12",
+      "operations": [
+        [
+          "copy",
+          "i00010",
+          0,
+          6878
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "data_treasure.cpp": {
+      "sha256": "30656673369fe0422004c2ed56c0919d3479254f391df4d347bab5fac1f30611",
+      "operations": [
+        [
+          "copy",
+          "i00011",
+          0,
+          59556
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dice.cpp": {
+      "sha256": "e2dd00d6ce63eb4842175f2f24ae76e59097cb11308b9094b4ae82da196a9068",
+      "operations": [
+        [
+          "copy",
+          "i00012",
+          0,
+          474
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dice.h": {
+      "sha256": "8b2dd77c2a8a59119202f8411cd56d6d524bc2988b949ba6d21ed7a02dce2e46",
+      "operations": [
+        [
+          "copy",
+          "i00013",
+          0,
+          283
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dungeon.cpp": {
+      "sha256": "ecbae17abb39161bfd0ee61c6d3df930956e66b4f321fb587d80fa13c5dcfe77",
+      "operations": [
+        [
+          "copy",
+          "i00014",
+          0,
+          20145
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dungeon.h": {
+      "sha256": "2c95deb82c67d7afe0fd242d8832d1cb1a5b9f0403d1243b76cf42485e116d63",
+      "operations": [
+        [
+          "copy",
+          "i00015",
+          0,
+          3443
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dungeon_generate.cpp": {
+      "sha256": "c77cfe4c9537b6629ad627c496a0b45e0f54552574f9cd96b7924bfbb9c47ccd",
+      "operations": [
+        [
+          "copy",
+          "i00016",
+          0,
+          42435
+        ],
+        [
+          "add",
+          "69511ed5b39f7c3097769b131c4f245ce031d500e1a20b2b2189a055015aea2c"
+        ],
+        [
+          "copy",
+          "i00016",
+          42435,
+          223
+        ],
+        [
+          "add",
+          "4893f40e3781eb896c82d046a08067a11e35cdf2f1dfaf26fea90b8db6676413"
+        ],
+        [
+          "copy",
+          "i00016",
+          42658,
+          170
+        ],
+        [
+          "add",
+          "c83803cb72c413464b0f581299e151e8ad803c797c62538064f3a06db1e3007c"
+        ],
+        [
+          "copy",
+          "i00016",
+          42828,
+          937
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dungeon_los.cpp": {
+      "sha256": "1144802ba9f24ac3a3a067dd5fe3360604da10b0e9d57b58ec1281249bdb7b60",
+      "operations": [
+        [
+          "copy",
+          "i00017",
+          0,
+          19196
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "dungeon_tile.h": {
+      "sha256": "3aa1760754a4ad520bdb2d357a391434405b9e944605552ce47b4642fa1cada9",
+      "operations": [
+        [
+          "copy",
+          "i00018",
+          0,
+          1765
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game.cpp": {
+      "sha256": "cbb3cd900d562d2ed31e730f48619567e4f0091e17646c67ec3d702e57e2c5cb",
+      "operations": [
+        [
+          "copy",
+          "i00019",
+          0,
+          9102
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game.h": {
+      "sha256": "be148864fff64b0d6934d8aab0952c3a5ce2f982997d5ba93158a68a0fd271b8",
+      "operations": [
+        [
+          "copy",
+          "i00020",
+          0,
+          4403
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game_death.cpp": {
+      "sha256": "0ba5d27c36a7e5772520cb0d2239e37e6055f092f3e4b5a8eedcc77391e52690",
+      "operations": [
+        [
+          "copy",
+          "i00021",
+          0,
+          4461
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game_files.cpp": {
+      "sha256": "c9c8bd07925d2b79efa22b7767bc4736592d1598279bfb4663ac03a4f4aa5ad7",
+      "operations": [
+        [
+          "copy",
+          "i00022",
+          0,
+          14471
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game_objects.cpp": {
+      "sha256": "771674ee5534b35bf183fd3246675f1642fb9302716a6211ca957e0697e90dc1",
+      "operations": [
+        [
+          "copy",
+          "i00023",
+          0,
+          5736
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game_run.cpp": {
+      "sha256": "4db948938c4987c22e943dce59e0757873ad86634f807ff3bc9a0596d089bce3",
+      "operations": [
+        [
+          "copy",
+          "i00024",
+          0,
+          29645
+        ],
+        [
+          "add",
+          "f8ebf575f89d9cffc998ffc1df36f3acc18815a021c240819d561ee3cbf41bc4"
+        ],
+        [
+          "copy",
+          "i00024",
+          29645,
+          48
+        ],
+        [
+          "add",
+          "69b3873a8c49264bd32cc1c7f9577f00b127508acfd2a5d019d4c7bbfccb3161"
+        ],
+        [
+          "copy",
+          "i00024",
+          29693,
+          41170
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "game_save.cpp": {
+      "sha256": "6533abef1bd71d5f3aea9788af8bddfacbdd137baa840f28df9cea40a0492bfd",
+      "operations": [
+        [
+          "copy",
+          "i00025",
+          0,
+          41165
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "headers.h": {
+      "sha256": "dba2e1c158c637e97a06afffc339f0b4f3cb2a53192717824a71cd6faadcdc2a",
+      "operations": [
+        [
+          "copy",
+          "i00026",
+          0,
+          1427
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "helpers.cpp": {
+      "sha256": "9fe79a462a0026f0f982d395ce9f8ddf83aadd7972157f474a4156e7da82a79f",
+      "operations": [
+        [
+          "copy",
+          "i00027",
+          0,
+          3997
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "helpers.h": {
+      "sha256": "0dfdb4f465a90eee110d406c4710f8c558449fd716a2bc89ae7715cbcbb8abef",
+      "operations": [
+        [
+          "copy",
+          "i00028",
+          0,
+          697
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "identification.cpp": {
+      "sha256": "9fff610a76fa82da11a996199fd4e641191d3721f227a82232efd9ebc97c41aa",
+      "operations": [
+        [
+          "copy",
+          "i00029",
+          0,
+          30791
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "identification.h": {
+      "sha256": "ebb543781ba668b6e11a5b51b3bb11dcf04baee539a8414538888ce288d81626",
+      "operations": [
+        [
+          "copy",
+          "i00030",
+          0,
+          3237
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "inventory.cpp": {
+      "sha256": "867118a64281c7fdeb5ff3d2b34ab520f5d12ad559dd52f4d44cd86bcda0142b",
+      "operations": [
+        [
+          "copy",
+          "i00031",
+          0,
+          19621
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "inventory.h": {
+      "sha256": "8cd289c55b3d0aca5da82095010e1f7fcc5e43d2636a4e5f18734c92c95c2f0b",
+      "operations": [
+        [
+          "copy",
+          "i00032",
+          0,
+          4523
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "mage_spells.cpp": {
+      "sha256": "2448f303a1352db1ac4c99a812b7203a11647f46e8fb88a0d2f90709b45adb68",
+      "operations": [
+        [
+          "copy",
+          "i00033",
+          0,
+          8935
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "mage_spells.h": {
+      "sha256": "de50863567d57afc84dd575cf7c3c1b3bbf0505eaedcfe00620d3e726d7cc2ee",
+      "operations": [
+        [
+          "copy",
+          "i00034",
+          0,
+          216
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "main.cpp": {
+      "sha256": "ede13defe23a230b6d81b7e174f670eb6c6e4f8cd179a7c6adacac0261ae9e53",
+      "operations": [
+        [
+          "copy",
+          "i00035",
+          0,
+          3484
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "monster.cpp": {
+      "sha256": "847e3246e01a7026c00d23f1d0ae100eb0d8e8e7414849f39a68eab799ef7255",
+      "operations": [
+        [
+          "copy",
+          "i00036",
+          0,
+          63289
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "monster.h": {
+      "sha256": "dad7d07c662b45cc1d06e8a9d76101a3b9ad7fe8c897c9c8cf415866525322b6",
+      "operations": [
+        [
+          "copy",
+          "i00037",
+          0,
+          3538
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "monster_manager.cpp": {
+      "sha256": "5b30db694f34486fa8c1b222020a6a9907f2825b85d04c341a560b290586fbcc",
+      "operations": [
+        [
+          "copy",
+          "i00038",
+          0,
+          10108
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player.cpp": {
+      "sha256": "b9667156a2c351d9ae5a0138129bac8d7c12f6bd74e5d3bd9e60a95df4655263",
+      "operations": [
+        [
+          "copy",
+          "i00039",
+          0,
+          52062
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player.h": {
+      "sha256": "a2610a83b0bf6358f3d8072d368ac2e559d31849ca2822cd8220029d73101bb8",
+      "operations": [
+        [
+          "copy",
+          "i00040",
+          0,
+          11528
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_bash.cpp": {
+      "sha256": "91dae0182f3ded1f5101c3b7cf09b9137ea1af8c0917d3be70fff78d88d206bf",
+      "operations": [
+        [
+          "copy",
+          "i00041",
+          0,
+          7811
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_eat.cpp": {
+      "sha256": "5a1ca4c17f2dfffcfd4c5a483275a5706119c656ba517e772318fb4aee61c25c",
+      "operations": [
+        [
+          "copy",
+          "i00042",
+          0,
+          8834
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_magic.cpp": {
+      "sha256": "f4ecb6e6bc9ddd62c56cd4dff8b240b1b6743a9bf2332e83c645cd0a1440805a",
+      "operations": [
+        [
+          "copy",
+          "i00043",
+          0,
+          3692
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_move.cpp": {
+      "sha256": "b701f8b1a9fe96eaada3c518bf769877bb00cf79ba15510fa9a99bf8475cbdce",
+      "operations": [
+        [
+          "copy",
+          "i00044",
+          0,
+          16741
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_pray.cpp": {
+      "sha256": "3da8a6271aa218ede7da2c7197d0cc7c50b57e7377eead889bd6cef1f33ace0b",
+      "operations": [
+        [
+          "copy",
+          "i00045",
+          0,
+          8570
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_quaff.cpp": {
+      "sha256": "3f1ed422402420d36f26c075a61855056f1f64067d29dfdc092222d8e8fbcde3",
+      "operations": [
+        [
+          "copy",
+          "i00046",
+          0,
+          13811
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_run.cpp": {
+      "sha256": "55836451e945d6f81f53a256466c538739c7384492bd6f63ec186de92c0ae001",
+      "operations": [
+        [
+          "copy",
+          "i00047",
+          0,
+          14885
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_stats.cpp": {
+      "sha256": "ffacd4a4d869eb54ab30255d464efa90e6890bb4de5c3d3c25deaee7bfa1ac6b",
+      "operations": [
+        [
+          "copy",
+          "i00048",
+          0,
+          12458
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_throw.cpp": {
+      "sha256": "96ba175e58edc264dc44dcd84cc72a6f7a268b01574b3d977bf86ad6a7edb458",
+      "operations": [
+        [
+          "copy",
+          "i00049",
+          0,
+          9734
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_traps.cpp": {
+      "sha256": "fee27c58d6b9b56c61be6c4507c213a98f8c3e4d9b6658535b3ad7ea08667e7d",
+      "operations": [
+        [
+          "copy",
+          "i00050",
+          0,
+          6183
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "player_tunnel.cpp": {
+      "sha256": "8ebd3261de2c123d4df651944d761c050112f3306f3f8f29e7bfd1e958e6fa0a",
+      "operations": [
+        [
+          "copy",
+          "i00051",
+          0,
+          5735
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "recall.cpp": {
+      "sha256": "bdac9ee844e9d4f2cc5d82f651ee92cf6f0ed2fb214b72e75aab0d6f0d32673b",
+      "operations": [
+        [
+          "copy",
+          "i00052",
+          0,
+          23510
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "recall.h": {
+      "sha256": "55841bcafe350ec3134b4b7b46f5b7996e00f58eabe5392b7601ef3869c81fd3",
+      "operations": [
+        [
+          "copy",
+          "i00053",
+          0,
+          961
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "rng.cpp": {
+      "sha256": "bbab9e12235cc602146690196b2224ee1e34db6dcb04b68bf72a2e02c0b0d687",
+      "operations": [
+        [
+          "copy",
+          "i00054",
+          0,
+          3217
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "rng.h": {
+      "sha256": "0e2fbecc6dd5182bd5a57e55c79e69dc2339e4e184ad3bc3af8b0860550b392c",
+      "operations": [
+        [
+          "copy",
+          "i00055",
+          0,
+          234
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "scores.cpp": {
+      "sha256": "fc494a361c7243f3d55d7eaa2b43579c447b2561f5a8444fb6793058ba0f870f",
+      "operations": [
+        [
+          "copy",
+          "i00056",
+          0,
+          9162
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "scores.h": {
+      "sha256": "faf48d5d1f2e21fea64f74458722829f72b14d1a1aeb110a78645f99294cfbf1",
+      "operations": [
+        [
+          "copy",
+          "i00057",
+          0,
+          980
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "scrolls.cpp": {
+      "sha256": "6fbedd6d77c11e6b80cd3dc4966387c2bb0b72bde6485b7d36b3a52bba11f768",
+      "operations": [
+        [
+          "copy",
+          "i00058",
+          0,
+          18337
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "scrolls.h": {
+      "sha256": "7386d16e17d9c0a6554d85dfa780434839b7f72b089e13e3d8f6a36a04ed3c7e",
+      "operations": [
+        [
+          "copy",
+          "i00059",
+          0,
+          166
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "spells.cpp": {
+      "sha256": "b537591c665d434a7e868ce429859632743dc79c4aba0aa8281f970f34087df7",
+      "operations": [
+        [
+          "copy",
+          "i00060",
+          0,
+          81477
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "spells.h": {
+      "sha256": "7fdef7b8c5c22a38f848546e38babb8ed703d5b729e5b393b41dd0b250a6ecb2",
+      "operations": [
+        [
+          "copy",
+          "i00061",
+          0,
+          3476
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "staves.cpp": {
+      "sha256": "501d75197cbf37c0908706e2bbd998abadc5d189196c1f33b4f0394b97b5724c",
+      "operations": [
+        [
+          "copy",
+          "i00062",
+          0,
+          15420
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "staves.h": {
+      "sha256": "d3b35a62c75e0720a2c5ce4f0986c5edb080ca45786f53a24b4576b67e66d012",
+      "operations": [
+        [
+          "copy",
+          "i00063",
+          0,
+          180
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "store.cpp": {
+      "sha256": "9b4e8a14b3c41ed488dd8ce58d2706abc2f93038198d13ced361c4ca51322e4d",
+      "operations": [
+        [
+          "copy",
+          "i00064",
+          0,
+          39152
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "store.h": {
+      "sha256": "d77995d6bf23e2c7753b9f08de4f15155dd35d46f6f7fe0c32299362997fb68b",
+      "operations": [
+        [
+          "copy",
+          "i00065",
+          0,
+          2473
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "store_inventory.cpp": {
+      "sha256": "172de33e81c70ea7dc9fd6f8482d4bf922f381986ac5f8b6e4859b3be062c722",
+      "operations": [
+        [
+          "copy",
+          "i00066",
+          0,
+          13129
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "treasure.cpp": {
+      "sha256": "10b9022847f7a0020bcd14de724ef381eb4878fc9129c5ef243f82ebbb47dc2b",
+      "operations": [
+        [
+          "copy",
+          "i00067",
+          0,
+          37698
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "treasure.h": {
+      "sha256": "548d0c2c6c28fa7dea5b30b487da5dc9bbdc7dbbc1a00800a29b093f761b4284",
+      "operations": [
+        [
+          "copy",
+          "i00068",
+          0,
+          2795
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "types.h": {
+      "sha256": "970ef7b55938f26a637a779d4b192ff2aff6b183fb1d601d251caf20719ea9c6",
+      "operations": [
+        [
+          "copy",
+          "i00069",
+          0,
+          857
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "ui.cpp": {
+      "sha256": "5555622fb07584406ff35cdbf12a3e85b78e9aa9cab79b9ee2ef0f78e649deb9",
+      "operations": [
+        [
+          "copy",
+          "i00070",
+          0,
+          25753
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "ui.h": {
+      "sha256": "07d6a5138fe979d29875a514d3dc877700839485da9ff445764621d7697b861d",
+      "operations": [
+        [
+          "copy",
+          "i00071",
+          0,
+          1068
+        ],
+        [
+          "add",
+          "9474db0cab5234d34551fd29fc0984a0737874b33a5f7050663195bcd1ad509a"
+        ],
+        [
+          "copy",
+          "i00071",
+          1068,
+          3258
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "ui_inventory.cpp": {
+      "sha256": "949c07b04b6c1cb41a3a4b7dd69a578d52e25fd88ab0850eeb1bb773af64cc5b",
+      "operations": [
+        [
+          "copy",
+          "i00072",
+          0,
+          43419
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "ui_io.cpp": {
+      "sha256": "c2a42f781a47f9fbb6940c9dd858642c06fb2f0715d9a7f199154e72f5ca2267",
+      "operations": [
+        [
+          "copy",
+          "i00073",
+          0,
+          17550
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "version.h": {
+      "sha256": "0246f55723914a68488bdd6e95c9d44b241638cf2b3c3e0aa23808d2aaddec8c",
+      "operations": [
+        [
+          "copy",
+          "i00074",
+          0,
+          424
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "wizard.cpp": {
+      "sha256": "f514c5fc522a57c28b4ee9c09c7b2d06c404a246164301e7ab555ee89bb67bc8",
+      "operations": [
+        [
+          "copy",
+          "i00075",
+          0,
+          17333
+        ]
+      ],
+      "newline": "crlf"
+    },
+    "wizard.h": {
+      "sha256": "231d1dcb0d2f899219ddc4829e4e619a7d09fe5e7d03d1abc245b9df4508fd6d",
+      "operations": [
+        [
+          "copy",
+          "i00076",
+          0,
+          424
+        ]
+      ],
+      "newline": "crlf"
+    }
+  }
+}

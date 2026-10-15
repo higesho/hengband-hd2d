@@ -69,9 +69,9 @@ def main():
         try:
             assert send('Enter')['phase'] == 'core-select'
             wait_for(lambda: 'New Game' in text(), 'core selected and title displayed')
-            previous = latest().get('frame_id')
             send('Down')
-            wait_for(lambda: latest().get('frame_id') != previous, 'title cursor moved')
+            # 新UIの選択移動はUI内で完結する。次の決定でLoadが開くことを確認する。
+            time.sleep(0.2)
             send('Enter')
             wait_for(lambda: 'Load Game' in text(), 'Enter opens save picker')
             send('Enter')
@@ -99,13 +99,13 @@ def main():
             wait_for(lambda: latest().get('menu_open', False) and len(latest().get('menu_term_lines', [])) > 2 and 'ESC' in text(), 'score display after saving')
             send('Escape')
             wait_for(lambda: any(row.get('dir') == 'in' and row.get('t') == 'exit' for row in records()), 'Ctrl+X saves and exits core')
-            # 同じ入力ファイルを再利用する。再起動後に以前の命令を再送しないことも確認。
-            assert send('Escape')['phase'] == 'core-select'
+            # 保存終了ではアプリ全体を終了する。
+            # 同じプロセスのコア選択画面へ追加のキーを送らない。
             worker.join(timeout=30)
             assert not worker.is_alive(), 'UI did not finish'
             assert not errors, errors
             assert result and result[0].returncode == 0, decode(result[0].stdout)[-2000:]
-            print('PASS: restarted core selection and clean UI exit', flush=True)
+            print('PASS: save exits the entire application cleanly', flush=True)
         finally:
             # run_process の Job が子孫を終了させてから、外側のガードで復元する。
             worker.join()

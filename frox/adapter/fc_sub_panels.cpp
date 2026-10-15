@@ -54,6 +54,22 @@ bool g_want_seen = false;
 constexpr int kUnset = -2;
 int g_applied_kind[kSubPanelCount] = { kUnset, kUnset, kUnset, kUnset, kUnset, kUnset, kUnset };
 /*! @} */
+// Retain edits made in the core's window table until the UI echoes them.
+int g_window_override[kSubPanelCount]={kUnset,kUnset,kUnset,kUnset,kUnset,kUnset,kUnset};
+int g_window_previous[kSubPanelCount]={kUnset,kUnset,kUnset,kUnset,kUnset,kUnset,kUnset};
+bool g_window_table_seen=false;
+void take_window_table_changes(const GameFrame &frame) {
+    bool table=false;
+    for(const auto &line:frame.menu_term_lines)if(line.source_row==0) {
+        const auto &text=line.text_utf8;
+        table=text.starts_with("Window Flags")||text.starts_with(reinterpret_cast<const char*>(u8"サブウィンドウの割り当て"));
+    }
+    if(table&&g_window_table_seen)for(int i=0;i<kSubPanelCount;++i) {
+        const int value=fc_sub_sanitize_kind(fc_sub_current_kind(i));
+        if(value!=g_window_previous[i])g_window_override[i]=value;
+    }
+    g_window_table_seen=table;
+}
 
 /*! 種類の名前。**使い回す**——毎フレーム 7 回読むのは無駄。M0 は ASCII のまま。 */
 const std::string &kind_label(int flag)
@@ -196,7 +212,7 @@ void capture_quiver_lines(std::vector<SubPanelLine> &out)
     if (out.empty()) {
         SubPanelLine line;
         line.color = 8; // 灰
-        line.text_utf8 = "(empty)";
+        line.text_utf8 = (fc_lang_enabled() != 0) ? std::string(reinterpret_cast<const char *>(u8"(空)")) : std::string("(empty)");
         out.push_back(std::move(line));
     }
 }
@@ -321,14 +337,20 @@ void fill_sub_panels(GameFrame &frame)
         need_redraw = true;
     }
 
+    take_window_table_changes(frame);
     for (int i = 0; i < kSubPanelCount; ++i) {
         SubPanelContent &content = frame.sub_panels[static_cast<std::size_t>(i)];
+        int requested=g_want_kind[i];
+        if(g_window_override[i]!=kUnset) {
+            if(requested==g_window_override[i])g_window_override[i]=kUnset;
+            else requested=g_window_override[i];
+        }
 
         /*
          * **矢筒はコアの Term を通らない**（`fc_sub_panels.h` の頭）。その枚の
          * `window_flag` は空（-1）に保ち、中身はこちらで積む。
          */
-        const bool quiver = g_want_seen && (g_want_kind[i] == FC_SUB_KIND_QUIVER);
+        const bool quiver = g_want_seen && (requested == FC_SUB_KIND_QUIVER);
 
         /*
          * **希望を押し続ける**（Sil-Q と同じ判断。「サブパネルの持ち主は
@@ -339,7 +361,7 @@ void fill_sub_panels(GameFrame &frame)
          * **希望を 1 度も受け取っていないうちは触らない**（`g_want_seen`）。
          * 握手の直後にコア自身の既定を消しても、誰の得にもならない。
          */
-        const int want = quiver ? -1 : fc_sub_sanitize_kind(g_want_kind[i]);
+        const int want = quiver ? -1 : fc_sub_sanitize_kind(requested);
         if (g_want_seen && ((g_applied_kind[i] != want) || (fc_sub_current_kind(i) != want))) {
             g_applied_kind[i] = want;
             if (fc_sub_set_kind(i, want) != 0) {
@@ -347,6 +369,7 @@ void fill_sub_panels(GameFrame &frame)
             }
         }
 
+        if(g_window_table_seen)g_window_previous[i]=fc_sub_sanitize_kind(fc_sub_current_kind(i));
         if (quiver) {
             content.kind = FC_SUB_KIND_QUIVER;
             content.title_utf8 = sub_to_utf8(fc_tr("Quiver"));

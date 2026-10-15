@@ -8,7 +8,7 @@
  *
  * ## 作り
  * `TextOverlay` と同じ形にしてある（画素座標・左上原点・1 フレームぶんを積んで 1 draw call）。
- * 違いはテクスチャを持たないことだけ。**文字より先に流す**こと（下敷きなので）。
+ * 静止した素材模様はシェーダーで描き、すりガラスは描画済み背景を縮小してぼかす。**文字より先に流す**こと（下敷きなので）。
  *
  * @note **ポスト処理は通らない。**合成の後、既定のフレームバッファへ直に描く
  * （`post_process.h` の順序の表。通すと文字も枠もにじんでぼける）。
@@ -67,6 +67,8 @@ void set_panel_transparent(bool on);
 bool panel_transparent();
 /*! @} */
 
+enum class UiMaterial { Flat=0, Slate=1, Parchment=2, Washi=3, Wood=4, Glass=5, GlassHighlight=6 };
+
 class UiPaint {
 public:
     bool init(std::string &err);
@@ -74,11 +76,18 @@ public:
 
     //! このフレームの積み上げを空にする。画面の実寸を渡す（正射影の分母）。
     void begin(int screen_w, int screen_h);
+    void set_layout_scale(float scale){layout_scale_=scale;}
+    float layout_scale() const{return layout_scale_;}
 
     //! 塗りつぶした四角。
     void rect(const RectPx &r, const PaintColor &color);
+    //! 小数の座標の四角（左上 x0,y0・右下 x1,y1）。流れるアイコンの下敷き用。
+    void rect_f(float x0, float y0, float x1, float y1, const PaintColor &color);
+    //! Static procedural texture, anchored to this panel; shares the regular UI batch.
+    void surface(const RectPx &r, const PaintColor &color, UiMaterial material);
     //! 枠だけ（内側は塗らない）。
     void frame(const RectPx &r, const PaintColor &color, int thickness = 1);
+    void rounded_frame(const RectPx &r,const PaintColor &color,int radius=10,int thickness=1);
     /*!
      * @brief 三角 1 枚（画素座標・頂点 3 つ）。
      * @details 四角しか無かった所へ足したもの。**向きのある印**（ミニマップの自分）に要る
@@ -99,6 +108,7 @@ public:
     void flush();
 
 private:
+    float layout_scale_{1.f};
     struct Vertex {
         float x{};
         float y{};
@@ -106,6 +116,7 @@ private:
         float g{};
         float b{};
         float a{};
+        float u{},v{},w{},h{},material{};
     };
 
     void push_rect(float x0, float y0, float x1, float y1, const PaintColor &color);
@@ -113,7 +124,10 @@ private:
     gl::GLuint program_{ 0 };
     gl::GLuint vao_{ 0 };
     gl::GLuint vbo_{ 0 };
-    gl::GLint loc_screen_{ -1 };
+    gl::GLint loc_screen_{ -1 },loc_backdrop_{-1};
+    gl::GLuint backdrop_{0},backdrop_fbo_{0};
+    int backdrop_w_{0},backdrop_h_{0};
+    bool uses_glass_{false};
     int screen_w_{ 0 };
     int screen_h_{ 0 };
     std::size_t vbo_capacity_{ 0 };

@@ -16,14 +16,17 @@
 #include <SDL_main.h>
 
 #include <android/log.h>
-
 #if defined(HENGBAND_QUEST)
 #include <sys/system_properties.h>
 #endif
 
 #include <dlfcn.h>
+#include <jni.h>
+#include <unistd.h>
 
 #include <csignal>
+#include <cstdio>
+#include <fstream>
 #include <map>
 #include <string>
 #include <vector>
@@ -40,6 +43,82 @@ namespace {
 constexpr const char *kTag = "hengband-hd2d";
 
 /*!
+ * @brief 起こし直しの申し送りを次のプロセスへ渡すファイル（基準ディレクトリの中。2026-10-07。AH-09）。
+ * @details 言語を替えて同じコアを起こし直すとき、Android では**プロセスごと**起こし直す
+ * （同じプロセスで同じコアを 2 度目に起こすと、コアの大域の状態が残っていて握手の前に止まる）。
+ * 中身は 3 行: コア（.so の名前）・続きから始めるか（0/1）・前の回でコア選択の画を出していたか（0/1）。
+ */
+constexpr const char *kRelaunchFile = "core_relaunch.txt";
+
+bool write_relaunch_file(const hd2d::CoreRelaunch &relaunch)
+{
+    std::ofstream out(kRelaunchFile, std::ios::binary | std::ios::trunc);
+    out << relaunch.core_path << '\n' << (relaunch.resume ? 1 : 0) << '\n' << (relaunch.core_select_shown ? 1 : 0) << '\n';
+    return static_cast<bool>(out);
+}
+
+//! 前のプロセスが置いた申し送りを読む（**読むと消す**。無ければ空）。
+hd2d::CoreRelaunch take_relaunch_file()
+{
+    hd2d::CoreRelaunch relaunch;
+    std::ifstream in(kRelaunchFile, std::ios::binary);
+    if (!in) {
+        return relaunch;
+    }
+    std::string core, resume, shown;
+    std::getline(in, core);
+    std::getline(in, resume);
+    std::getline(in, shown);
+    in.close();
+    (void)std::remove(kRelaunchFile);
+    relaunch.core_path = core;
+    relaunch.resume = (resume == "1");
+    relaunch.core_select_shown = (shown == "1");
+    return relaunch;
+}
+
+/*!
+ * @brief Java の `HengbandHd2dActivity.restartProcess()` を呼ぶ（別のプロセスの活動がこのプロセスを終わらせる）。
+ * @return 呼べたら真（呼べても、起こし直しが実際に起きるのは少し後）。
+ */
+bool request_process_restart()
+{
+    auto *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
+    auto activity = static_cast<jobject>(SDL_AndroidGetActivity());
+    if ((env == nullptr) || (activity == nullptr)) {
+        return false;
+    }
+    bool ok = false;
+    jclass cls = env->GetObjectClass(activity);
+    jmethodID id = (cls != nullptr) ? env->GetMethodID(cls, "restartProcess", "()V") : nullptr;
+    if (id != nullptr) {
+        env->CallVoidMethod(activity, id);
+        ok = !env->ExceptionCheck();
+    }
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+    }
+    if (cls != nullptr) {
+        env->DeleteLocalRef(cls);
+    }
+    env->DeleteLocalRef(activity);
+    return ok;
+}
+
+bool is_packaged_core_name(const std::string &name)
+{
+    static const char *const kPackaged[] = {
+        "libhengcore.so", "libtangcore.so", "libgensocore.so", "libsilcore.so",
+        "libfroxcore.so", "librogue2core.so", "librogue36core.so", "librogue54core.so",
+        "libangbandcore.so", "libumoriacore.so",
+    };
+    for (const char *const packaged : kPackaged) {
+        if (name == packaged) return true;
+    }
+    return false;
+}
+
+/*!
  * @brief コア .so からコアスレッドの入口（`hengband_core_entry`）を引く。
  * @details コア選択の「在るものだけ」判定と接続の両方から呼ばれる。handle は
  * 開きっぱなしで持つ（コアはプロセス寿命と同じ。dlclose の機会が無い）。
@@ -48,23 +127,51 @@ constexpr const char *kTag = "hengband-hd2d";
 hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &requested)
 {
     const auto imported = hd2d::imported_core_path(requested);
-    const std::string so_name = imported.empty() ? requested : imported.string();
+    const std::string cache_key = imported.empty() ? requested : imported.string();
     static std::map<std::string, void *> handles;
-    auto it = handles.find(so_name);
+    auto it = handles.find(cache_key);
     if (it == handles.end()) {
-        void *handle = ::dlopen(so_name.c_str(), RTLD_NOW | RTLD_LOCAL);
-        if (handle == nullptr) {
-            __android_log_print(ANDROID_LOG_WARN, kTag, "core so not available: %s (%s)",
-                so_name.c_str(), ::dlerror());
+        void *handle = nullptr;
+        std::vector<std::string> candidates;
+        if (!imported.empty()) {
+            candidates.push_back(imported.string());
+        } else if (is_packaged_core_name(requested)) {
+            /*
+             * `dlopen("libxxx.so")` は Android の linker namespace / packaging の組み合わせで
+             * 探索結果が端末依存になりうる。ApplicationInfo.nativeLibraryDir の実ファイルが
+             * ある構成（現在の useLegacyPackaging=true）では絶対パスを先に使う。
+             * 将来 APK 内保持へ戻して実ファイルが無い場合は soname にフォールバックする。
+             */
+            const auto native_dir = hd2d::core_import_config().compiler.parent_path();
+            const auto full = native_dir / requested;
+            std::error_code ec;
+            if (std::filesystem::is_regular_file(full, ec)) candidates.push_back(full.string());
+            candidates.push_back(requested);
+        } else {
+            candidates.push_back(requested);
         }
-        it = handles.emplace(so_name, handle).first;
+        for (const auto &candidate : candidates) {
+            handle = ::dlopen(candidate.c_str(), RTLD_NOW | RTLD_LOCAL);
+            if (handle != nullptr) {
+                __android_log_print(ANDROID_LOG_INFO, kTag, "core loaded: %s -> %s",
+                    requested.c_str(), candidate.c_str());
+                break;
+            }
+            const char *const why = ::dlerror();
+            __android_log_print(ANDROID_LOG_WARN, kTag, "core dlopen failed: %s (%s)",
+                candidate.c_str(), why != nullptr ? why : "unknown");
+        }
+        if (handle == nullptr) {
+            __android_log_print(ANDROID_LOG_WARN, kTag, "core so not available: %s", requested.c_str());
+        }
+        it = handles.emplace(cache_key, handle).first;
     }
     if (it->second == nullptr) {
         return nullptr;
     }
     auto entry = reinterpret_cast<hd2d::AppOptions::CoreThreadEntry>(::dlsym(it->second, "hengband_core_entry"));
     if (entry == nullptr) {
-        __android_log_print(ANDROID_LOG_ERROR, kTag, "hengband_core_entry not found in %s", so_name.c_str());
+        __android_log_print(ANDROID_LOG_ERROR, kTag, "hengband_core_entry not found in %s", cache_key.c_str());
     }
     return entry;
 }
@@ -91,23 +198,13 @@ hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &requeste
 bool core_so_available(const std::string &so_name)
 {
     if (!hd2d::imported_core_path(so_name).empty()) return true;
-    static const char *const kPackaged[] = {
-        "libhengcore.so",
-        "libtangcore.so",
-        "libgensocore.so",
-        "libsilcore.so",
-        /*
-         * FroxComposband。CMakeLists が
-         * `froxcore` を条件なしで組むので、他の 4 本と同じ立場である。
-         */
-        "libfroxcore.so",
-    };
-    for (const char *const name : kPackaged) {
-        if (so_name == name) {
-            return std::filesystem::is_regular_file(hd2d::core_import_config().compiler.parent_path() / name);
-        }
-    }
-    return false;
+    /*
+     * ここは「APK に組み込むと決めた名前か」だけを見る。ファイル存在確認をしてはいけない。
+     * extractNativeLibs/useLegacyPackaging の設定次第では .so は APK 内にだけ存在し、
+     * `is_regular_file()` は偽になる。実際に読み込めるかは選択後の resolve_core_entry が
+     * dlopen して判定し、失敗理由を logcat とダイアログへ出す。
+     */
+    return is_packaged_core_name(so_name);
 }
 
 //! 起動を続けられない失敗を、ログと（可能なら）ダイアログの両方で伝える。
@@ -185,6 +282,12 @@ extern "C" int main(int argc, char *argv[])
 
     // 4. hd2d を起動。コアの起こし方だけ Android の形（選ばれた .so のスレッド）に差し替える。
     hd2d::AppOptions options;
+    //! 前のプロセスが言語を替えて起こし直しを頼んでいれば、その申し送り（下の輪の註）。
+    options.relaunch = take_relaunch_file();
+    if (!options.relaunch.core_path.empty()) {
+        __android_log_print(ANDROID_LOG_INFO, kTag, "relaunched process: core=%s resume=%d",
+            options.relaunch.core_path.c_str(), options.relaunch.resume ? 1 : 0);
+    }
     options.core_thread_resolve = &resolve_core_entry;
     //! 「在るか」は開かずに答える（選ぶ前に 4 本とも読み込まないため。上の註）。
     options.core_thread_available = &core_so_available;
@@ -210,6 +313,20 @@ extern "C" int main(int argc, char *argv[])
             options.relaunch = hd2d::CoreRelaunch{};
             __android_log_print(ANDROID_LOG_INFO, kTag, "core finished; back to the core picker");
         }
+        /*
+         * **プロセスごと起こし直す**（2026-10-07。AH-09）。同じプロセスで同じコアを 2 度目に起こすと、
+         * コアの .so に前の回の大域の状態が残っていて握手の前に止まる。申し送りをファイルに書き、
+         * Java の起こし直しを頼んで待つ（別のプロセスの活動がこのプロセスを終わらせる）。
+         * 15 秒たっても終わらなければ、従来どおり同じプロセスで続ける（申し送りのファイルは消す）。
+         */
+        if (write_relaunch_file(options.relaunch) && request_process_restart()) {
+            __android_log_print(ANDROID_LOG_INFO, kTag, "waiting for the process restart");
+            for (int i = 0; i < 150; ++i) {
+                SDL_Delay(100);
+            }
+            __android_log_print(ANDROID_LOG_WARN, kTag, "process restart did not happen; continuing in this process");
+        }
+        (void)std::remove(kRelaunchFile);
         rc = hd2d::run(options);
     }
     __android_log_print(ANDROID_LOG_INFO, kTag, "hd2d::run returned %d", rc);

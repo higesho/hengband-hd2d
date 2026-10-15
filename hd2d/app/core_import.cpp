@@ -300,7 +300,9 @@ struct CoreImport::Impl {
             }
             auto catalog = Json::parse(read_file(config.kit / "catalog.json"));
             const auto item = catalog.at("targets").at(id);
-            if (!safe_name(id)) throw std::runtime_error("Invalid core ID");
+            if (!safe_name(id) || fs::u8path(id).has_parent_path()) throw std::runtime_error("Invalid core ID");
+            const auto install_id = item.value("install_id", id);
+            if (!safe_name(install_id) || fs::u8path(install_id).has_parent_path()) throw std::runtime_error("Invalid install core ID");
             const auto recipe_name = item.at("recipe").get<std::string>();
             if (!safe_name(recipe_name)) throw std::runtime_error("Invalid recipe path");
             auto bytes = read_file(config.kit / recipe_name);
@@ -413,13 +415,55 @@ struct CoreImport::Impl {
                 throw std::runtime_error("Expected an Android arm64 shared library");
             }
             report("install", "Registering core");
-            const auto destination = config.storage / "installed" / (id + "-" + session);
+            const auto destination = config.storage / "installed" / (install_id + "-" + session);
             fs::create_directories(destination.parent_path());
             if (!fs::create_directory(destination)) throw std::runtime_error("Cannot create core installation directory");
             const auto installed = destination / output.filename();
             fs::rename(output, installed);
             fs::permissions(installed, fs::perms::owner_read | fs::perms::owner_exec, fs::perm_options::replace);
-            registry[id] = {{"path", path_text(installed)}, {"name", item.at("name")}, {"version", item.at("version")}, {"sha256", sha(binary)}};
+            /*
+             * 一部の原作は実行時にデータファイルを読む。RogueClone2 の `mesg_J` が最初の例。
+             * レシピが明示した再構成済みファイルだけを、実行ファイルと同じ登録先へ保存する。
+             * 原作 ZIP に無いデータをこちらから補う仕組みではない。
+             */
+            if (recipe.contains("install_files")) {
+                if (!recipe["install_files"].is_object()) throw std::runtime_error("Invalid install file list");
+                for (auto it = recipe["install_files"].begin(); it != recipe["install_files"].end(); ++it) {
+                    if (!safe_name(it.key())) throw std::runtime_error("Unsafe install source path");
+                    const auto relative = it.value().get<std::string>();
+                    if (!safe_name(relative)) throw std::runtime_error("Unsafe install destination path");
+                    const auto source_file = sources / fs::u8path(it.key());
+                    if (!fs::is_regular_file(source_file)) throw std::runtime_error("Missing install source file: " + it.key());
+                    const auto destination_file = destination / fs::u8path(relative);
+                    write_file(destination_file, read_file(source_file));
+                    fs::permissions(destination_file, fs::perms::owner_read, fs::perm_options::replace);
+                }
+            }
+            /*
+             * 実行ファイルの隣から読むデータのうち、UI 側の物（Angband の訳・タイル対応表・ボクセル板など）。
+             * キットの SDK 内のフォルダーを、SHA-256 で照合済みのままそっくり写す。値が空文字なら登録先の直下へ置く。
+             */
+            if (recipe.contains("install_kit_dirs")) {
+                if (!recipe["install_kit_dirs"].is_object()) throw std::runtime_error("Invalid install directory list");
+                for (auto it = recipe["install_kit_dirs"].begin(); it != recipe["install_kit_dirs"].end(); ++it) {
+                    if (!safe_name(it.key())) throw std::runtime_error("Unsafe install directory source");
+                    const auto relative = it.value().get<std::string>();
+                    if (!relative.empty() && !safe_name(relative)) throw std::runtime_error("Unsafe install directory destination");
+                    if (it.key().compare(0, 4, "sdk/") != 0) throw std::runtime_error("Install directory must be inside the SDK");
+                    const auto source_dir = config.kit / fs::u8path(it.key());
+                    if (!fs::is_directory(source_dir)) throw std::runtime_error("Missing install directory: " + it.key());
+                    const auto destination_dir = relative.empty() ? destination : destination / fs::u8path(relative);
+                    for (const auto &entry : fs::recursive_directory_iterator(source_dir)) {
+                        check_cancel();
+                        if (!entry.is_regular_file() || entry.is_symlink()) continue;
+                        const auto rel = entry.path().lexically_relative(source_dir);
+                        const auto destination_file = destination_dir / rel;
+                        write_file(destination_file, read_file(entry.path()));
+                        fs::permissions(destination_file, fs::perms::owner_read, fs::perm_options::replace);
+                    }
+                }
+            }
+            registry[install_id] = {{"path", path_text(installed)}, {"name", item.at("name")}, {"version", item.at("version")}, {"target_id", id}, {"sha256", sha(binary)}};
             const auto temp = config.storage / "registry.json.tmp";
             write_file(temp, registry.dump(2));
 #ifdef _WIN32

@@ -79,6 +79,7 @@ struct Camera {
      * @return 交わったか。地平線より上を指していれば false。
      */
     bool unproject_to_plane(float sx, float sy, float plane_z, Vec3 &out) const;
+    Vec3 ray_direction(float sx, float sy) const;
 
     /*!
      * @brief world → 画面座標。

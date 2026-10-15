@@ -220,6 +220,7 @@ GameFrame make_synthetic_frame()
     f.minimap.player_gx = 3;
     f.minimap.player_gy = 1;
     f.minimap.kinds = { 0, 1, 2, 3, 4, 5, 6, 7, 255, 128, 127, 64, 32, 16, 8, 200 };
+    f.minimap.markers = {0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0};
 
     // ---- hud -----------------------------------------------------------------
     f.hud.name = "ぬるぽ🐉Ω";
@@ -232,6 +233,7 @@ GameFrame make_synthetic_frame()
     f.hud.gold = 1234567;
     f.hud.depth = -2;
     f.hud.level = 50;
+    f.hud.doomsday_days_left = 7; //!< 短愚の終末の残り日数。**既定（-1）でない値を入れる**（番人が既定の残りを見る）
     f.hud.status_line = kNastyText();
     f.hud.right_top_lines = { "右上 1 行目", "right-top 2", "" };
     f.hud.right_bottom_lines = { "右下 1 行目", "right-bottom 2" };
@@ -257,10 +259,13 @@ GameFrame make_synthetic_frame()
     f.controller_hint = "◀▶ 移動 / Ⓐ 決定";
     f.text_input_active = true;
     f.awaiting_command = true;
+    f.command_menu_keys = "xX";
     f.camera_detached = true;
     f.menu_open = true;
     f.menu_over_map = true;
+    f.menu_popup = true;
     f.pre_game_menu = true;
+    f.game_over = true;
     f.title_screen = true;
 
     f.sub2_lines = { "装備 1", "装備 2 🗡", "" };
@@ -359,6 +364,7 @@ GameFrame make_synthetic_frame()
         f.prompt.choices.push_back(pc);
     }
     f.prompt.footer_utf8 = "Ⓑ/ESC:いいえ";
+    f.prompt.lightweight = true;
     f.prompt.line_index = 0; // 既定は -1
 
     // ---- numeric -------------------------------------------------------------
@@ -388,12 +394,70 @@ GameFrame make_synthetic_frame()
     // カットイン演出（P10。2026-08-11）。**既定から外さないと省略されて経路が消える**。
     f.floor.place_name_utf8 = "イークの洞窟";
     f.floor.wild_mode = true;
+    //! 町の地図の左上が階の座標のどこか（Frox の荒野の窓のずれ。2026-10-10）。負も運ぶ（窓の外へずれる町）。
+    f.floor.town_origin_x = 66;
+    f.floor.town_origin_y = -22;
+    f.floor.zones.push_back(FloorZone{ 12, 3, 4, 20, 9 });
 
     // ---- lighting（ボクセル HD2D §12-4・§12-5。同上で 3 本増える） ----
     // `daytime` の既定は true なので、**false にしないと省略されて経路が消える**。
     f.lighting.day_minute = 1387; // 既定 720（正午）から外す
     f.lighting.daytime = false;
     f.lighting.light_radius = 3;
+    f.lighting.light_kind = 2; // ランタン
+    f.lighting.memory_dim = 1; // 記憶のマスを少し暗くする申告（Rogue 系）
+    f.lighting.player_lit = { 0x5a, 0x00, 0xff, 0x01 };
+
+    // ---- status_effects----
+    // 先頭は全欄が既定から外れた要素（効果量あり・kind 1）。2 件目は効果量なし・kind 0（既定）で、
+    // 「既定の欄は省く」経路と、日本語の名前の往復を見る。3 件目は kind 3（範囲の端）。
+    {
+        StatusEffectView s{};
+        s.key = "slow";
+        s.label_utf8 = "減速";
+        s.amount_utf8 = "-10";
+        s.kind = StatusEffectKind::Bad;
+        f.status_effects.push_back(s);
+        s = StatusEffectView{};
+        s.key = "blessed";
+        s.label_utf8 = "祝福";
+        f.status_effects.push_back(s);
+        s = StatusEffectView{};
+        s.key = "tsuyoshi";
+        s.label_utf8 = "つよし";
+        s.kind = StatusEffectKind::Special;
+        f.status_effects.push_back(s);
+    }
+
+    // ---- 攻撃の視覚効果。全欄を既定から外す ----
+    {
+        ProjectionFx p{};
+        p.seq = 41;
+        p.origin = AttackFxOrigin::Monster;
+        p.shape = ProjectionShape::Ball;
+        p.attr = "fire";
+        p.rad = 2;
+        p.src_y = 3;
+        p.src_x = 4;
+        p.impact_y = 5;
+        p.impact_x = 9;
+        p.flags = kProjPlayerBlind | kProjReflected;
+        p.path = { { 4, 6, 0 }, { 5, 9, 0 } };
+        p.area = { { 5, 9, 0 }, { 5, 10, 1 }, { 6, 11, 2 } };
+        f.projections.push_back(p);
+        MissileFx m{};
+        m.seq = 42;
+        m.origin = AttackFxOrigin::Monster;
+        m.kind = MissileKind::Boomerang;
+        m.item_id = 78;
+        m.brand = "cold";
+        m.src_y = 7;
+        m.src_x = 8;
+        m.hit = true;
+        m.path = { { 7, 9, 0 }, { 7, 10, 0 } };
+        m.return_path = { { 7, 9, 0 }, { 7, 8, 0 } };
+        f.missiles.push_back(m);
+    }
 
     return f;
 }
@@ -430,14 +494,16 @@ const std::vector<std::string> &expected_paths()
         "t",
         "frame_id", "cam_x", "cam_y", "view_w", "view_h", "player_gx", "player_gy",
         "cells[][]",
-        "minimap.width", "minimap.height", "minimap.player_gx", "minimap.player_gy", "minimap.kinds_b64",
+        "minimap.width", "minimap.height", "minimap.player_gx", "minimap.player_gy", "minimap.kinds_b64", "minimap.markers_b64",
         "hud.name", "hud.hp", "hud.hp_label", "hud.hp_max", "hud.sp", "hud.sp_max", "hud.sp_label",
-        "hud.gold", "hud.depth", "hud.level",
+        "hud.gold", "hud.depth", "hud.level", "hud.doomsday_days_left",
         "hud.status_line", "hud.right_top_lines[]", "hud.right_bottom_lines[]",
         "messages[].seq", "messages[].color", "messages[].text_utf8",
-        "controller_hint", "text_input_active", "awaiting_command", "camera_detached", "menu_open",
+        "controller_hint", "text_input_active", "awaiting_command", "command_menu_keys", "camera_detached", "menu_open",
         "menu_over_map",
+        "menu_popup",
         "pre_game_menu",
+        "game_over",
         "title_screen",
         "sub2_lines[]", "sub3_lines[]", "sub5_lines[]",
         "sub_panels[].kind", "sub_panels[].title_utf8", "sub_panels[].lines[].text_utf8",
@@ -462,13 +528,20 @@ const std::vector<std::string> &expected_paths()
         "menu_core_cursors[].line_index", "menu_core_cursors[].span_begin", "menu_core_cursors[].span_len",
         "menu_core_cursors[].key_begin", "menu_core_cursors[].key_len", "menu_core_cursors[].key",
         "prompt.text_utf8", "prompt.choices[].label_utf8", "prompt.choices[].key", "prompt.choices[].begin",
-        "prompt.choices[].len", "prompt.footer_utf8", "prompt.line_index",
+        "prompt.choices[].len", "prompt.footer_utf8", "prompt.lightweight", "prompt.line_index",
         "numeric.active", "numeric.prompt_utf8", "numeric.min", "numeric.max", "numeric.value",
         "numeric.digits", "numeric.text_len", "numeric.line_index", "numeric.value_begin", "numeric.value_len",
         "teleport_fx.charge", "teleport_fx.burst",
         "floor.dungeon_id", "floor.dun_level", "floor.generated_turn", "floor.kind", "floor.town_id",
-        "floor.place_name", "floor.wild_mode",
-        "lighting.day_minute", "lighting.daytime", "lighting.light_radius",
+        "floor.place_name", "floor.wild_mode", "floor.town_origin_x", "floor.town_origin_y", "floor.zones[][]",
+        "lighting.day_minute", "lighting.daytime", "lighting.light_radius", "lighting.light_kind",
+        "lighting.memory_dim", "lighting.player_lit_b64",
+        "status_effects[].k", "status_effects[].l", "status_effects[].a", "status_effects[].t",
+        "projections[].seq", "projections[].o", "projections[].s", "projections[].at", "projections[].r",
+        "projections[].sy", "projections[].sx", "projections[].iy", "projections[].ix", "projections[].f",
+        "projections[].p[][]", "projections[].a[][]",
+        "missiles[].seq", "missiles[].o", "missiles[].k", "missiles[].it", "missiles[].br", "missiles[].sy",
+        "missiles[].sx", "missiles[].h", "missiles[].p[][]", "missiles[].rp[][]",
     };
     return paths;
 }
@@ -696,7 +769,9 @@ int run_frame_codec_smoke()
         std::string e;
         const char *bad[] = { "", "{", "[]", "{\"t\":\"hello\"}", "{\"frame_id\":1}",
             "{\"t\":\"frame\",\"cells\":[[1,2,3]]}", "{\"t\":\"frame\",\"minimap\":{\"kinds_b64\":\"!!!!\"}}",
-            "{\"t\":\"frame\",\"cam_x\":\"nope\"}" };
+            "{\"t\":\"frame\",\"cam_x\":\"nope\"}",
+            "{\"t\":\"frame\",\"status_effects\":{}}", "{\"t\":\"frame\",\"status_effects\":[1]}",
+            "{\"t\":\"frame\",\"status_effects\":[{\"k\":1}]}" };
         for (const char *b : bad) {
             if (decode_game_frame(b, dummy, e)) {
                 say("  FAIL reject: 壊れた入力を受け入れた: %s", b);
@@ -711,6 +786,18 @@ int run_frame_codec_smoke()
             ++failed;
         } else {
             say("  PASS reject/forward-compat");
+        }
+        // 知らない kind はその 1 件だけ捨て、フレームは読めること（status_effect.h の kStatusEffectKindMax）。
+        const std::string with_future_kind =
+            "{\"t\":\"frame\",\"status_effects\":[{\"k\":\"a\",\"t\":9},{\"k\":\"b\",\"t\":5},{\"k\":\"c\"}]}";
+        GameFrame fs{};
+        if (!decode_game_frame(with_future_kind, fs, e) || (fs.status_effects.size() != 2)
+            || (fs.status_effects[0].key != "b") || (fs.status_effects[0].kind != StatusEffectKind::PermanentBad)
+            || (fs.status_effects[1].key != "c")) {
+            say("  FAIL forward-compat: 知らない kind の扱いが違う (%s)", e.c_str());
+            ++failed;
+        } else {
+            say("  PASS status_effects の知らない kind を 1 件だけ捨てる");
         }
     }
 

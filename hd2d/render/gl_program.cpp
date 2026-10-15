@@ -102,6 +102,11 @@ GLuint compile_one(GLenum type, const char *source, std::string &err)
 #if defined(HENGBAND_GLES)
     const std::string translated = translate_to_es(source);
     source = translated.c_str();
+#elif defined(HENGBAND_DESKTOP_LINUX)
+    std::string translated(source);
+    constexpr std::string_view version = "#version 460 core";
+    if (translated.starts_with(version)) translated.replace(0, version.size(), "#version 450 core");
+    source = translated.c_str();
 #endif
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);

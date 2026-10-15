@@ -1,4 +1,16 @@
-﻿/*!
+#if defined(HENGBAND_DESKTOP_LINUX)
+#include <csignal>
+#endif
+#include "bridge/native_modern.h"
+#include "bridge/native_item_display_impl.h"
+#include "bridge/native_inventory_menu.h"
+#include "bridge/player_identity.h"
+extern "C" void sq_native_describe_item(const void *,native_store_item *);
+extern "C" int sq_native_owned_item(int,native_store_item *);
+static presentation::NativeInventoryMenu g_inventory_menu;
+#include "sq_menu.h"
+#include <variant>
+/*!
  * @file sq_main.cpp
  * @brief `SilCore.exe` の入口（プロトコル v1 の core 側）。**P2 本実装**。
  *
@@ -36,6 +48,7 @@
 
 #include "sq_frame.h"
 #include "sq_lang.h"
+#include "sq_lang_c.h"
 #include "sq_manifest.h"
 #include "sq_pad_commands.h"
 #include "sq_text.h"
@@ -43,11 +56,13 @@
 
 #include "bridge/input_event_adapter.h"
 #include "frame/frame_codec.h"
+#include "bridge/native_targeting_runtime.h"
 #include "frame/protocol_messages.h"
 #include "frame/protocol_transport.h"
 
 #include "portable/legacy_os.h"
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cstdio>
@@ -213,7 +228,8 @@ std::atomic<bool> g_exit_sent{ false };
  * 1 バイトずつ渡すだけで、組み立てるのは `askfor_aux()` の仕事である。
  */
 std::mutex g_inbox_mutex;
-std::deque<int> g_key_queue;
+presentation::NativeModernMenu g_native_menu;
+std::deque<std::variant<int,presentation::InputEventWire>> g_key_queue;
 /*!
  * @brief 線（UTF-8）→ コア（CP932）の復号器。**変換の家はここ 1 つ**（設計 §3.1）。
  * @details `g_inbox_mutex` の下でだけ触る（`enqueue_keys()` の中）。
@@ -225,6 +241,8 @@ unsigned long g_dropped_keys = 0;
 //! 直近の `ui_state`。視界の大きさとカメラの追従に効く（v1 §7）。
 presentation::UiStateMessage g_ui_state;
 bool g_ui_state_dirty = false;
+//! 画面が望む Term の高さ（行数）。0 は未指定。`apply_wanted_term_rows()` が安全な間にだけ反映する。
+int g_wanted_term_rows = 0;
 
 /*!
  * @name 最初の `ui_state`（設計 §3.3）
@@ -320,6 +338,32 @@ void append_keys_for_silq(const presentation::InputEventsMessage &message, std::
 }
 
 /*!
+ * @brief 共用のメニュー（`NativeModernMenu`）が数の窓の決定から作った列を、Sil-Q の作法へ直す。
+ *
+ * @details 数の窓の決定（`ui_action` の `number`）は、共用の `native_modern.h` が `set_number` を
+ * 共用の `append_input_event_keys()` で展開して、`KTRL('B')` を 10 個・`KTRL('D')` を 10 個・数字・Enter の列にする。
+ * 前の 2 つは変愚と Frox の `askfor` の編集規約で、**Sil-Q の `askfor_aux()` には無い**（上の
+ * `append_keys_for_silq()` の説明のとおり、印字文字でない鍵は `bell()` → `flush()` で後ろの鍵を全部捨てる）。
+ * そのため落とす数・`^A j` の階の窓が、どの決め方でも確定できなかった（遊びのテスト 1 周目の F-silq-01、修-21）。
+ *
+ * 共用のヘッダを変えず（ほかのコアの数の窓に影響しない）、Sil-Q のアダプタ側で直す。
+ * 列の中の「`0x02` ×10 → `0x04` ×10」という並びは、`set_number` の展開にしか現れない
+ * （ほかのキー操作でこの 20 個が連続することは無い）ので、その並びだけを `0x08` ×10 に置き換える。
+ * 数字と Enter はそのまま残す。
+ */
+void rewrite_set_number_keys_for_silq(std::vector<int> &keys)
+{
+    std::vector<int> signature(10, 0x02);
+    signature.insert(signature.end(), 10, 0x04);
+    const auto at = std::search(keys.begin(), keys.end(), signature.begin(), signature.end());
+    if (at == keys.end()) {
+        return;
+    }
+    const auto first = keys.erase(at, at + static_cast<std::ptrdiff_t>(signature.size()));
+    keys.insert(first, 10, 0x08);
+}
+
+/*!
  * @brief 線から来たキーを**内部コードへ直して**キューへ積む（A1-3。2026-08-22）。
  *
  * @details 線の上は UTF-8、コアは CP932。**変換はここ 1 か所**（設計 §3.1）で、
@@ -329,9 +373,10 @@ void append_keys_for_silq(const presentation::InputEventsMessage &message, std::
  * **2026-08-22 まではここで 0x80 以上を捨てていた。** 捨てているかぎり日本語は
  * 1 文字も入らないので、銘（`{`）も地形の記憶（`:`）も英語しか打てなかった。
  *
- * @note **名前だけは日本語を通さない**（決めたこと。設計 §12.5 の問 A-2 の案 c）。
- * その門はここではなく `askfor_name()` の側にある——**セーブファイルの綴りが
- * 潰れる**からで、理由は向こうの `//SQ:` の註記に書いてある。
+ * @note **名前も日本語を通す**（2026-10-12 の決めたこと。遊びのテスト 1 周目の修-57。
+ * 設計 §12.5 の問 A-2 の案 c「日本語名を許さない」は取り消した）。
+ * セーブファイルの綴りが潰れる件は `process_player_name()` の側で塞いである
+ * （フック #24。日本語を含む名前は `sq_save_base_name()` の ASCII の別名にする）。
  */
 void enqueue_keys(const std::vector<int> &raw)
 {
@@ -392,9 +437,17 @@ void receive_loop()
                 std::fprintf(stderr, "[silq] bad \"input_event\": %s\n", err.c_str());
                 continue;
             }
-            std::vector<int> keys;
-            append_keys_for_silq(message, keys);
-            enqueue_keys(keys);
+            for (const auto &event : message.events) {
+                if (event.e == "ui_action") {
+                    std::lock_guard<std::mutex> lock(g_inbox_mutex);
+                    g_key_queue.push_back(event);
+                } else {
+                    std::vector<int> keys;
+                    presentation::InputEventsMessage one; one.events.push_back(event);
+                    append_keys_for_silq(one, keys);
+                    enqueue_keys(keys);
+                }
+            }
             continue;
         }
         if (type == "ui_state") {
@@ -455,11 +508,28 @@ std::string g_last_frame_key;
 bool g_has_last_frame = false;
 unsigned long long g_frame_id = 0;
 
-//! 表を送ったか（v1 §8）。**Sil-Q に配列の切り替えは無い**ので送り直しも無い。
+//! 表を送ったか（v1 §8）。
 bool g_tables_sent = false;
+//! 表を送ったときのキー配置（`sq_keymap_mode()`）。変わったらパッドの表を送り直す（2026-10-07）。
+int g_tables_keymap_mode = -1;
 
 //! タイル目録（設計 §5）。起動時に 1 回読んで、以後 `sq_frame` が索引に使う。
 sq::TileManifest g_manifest;
+
+/*!
+ * @brief 一覧のアイコン用 tile_index。`kind_id` が有ればその種類の板、無ければ
+ * `unaware_category`（正体の分からないアイテム）の代表の板。
+ */
+uint16_t sq_tile_for_row(int kind_id, int unaware_category)
+{
+    if (kind_id) {
+        return g_manifest.lookup_object(kind_id);
+    }
+    if (unaware_category) {
+        return g_manifest.lookup_unaware_representative(static_cast<presentation::UnawareItemCategory>(unaware_category));
+    }
+    return 0;
+}
 
 /*!
  * @brief 初期化完了時の表（v1 §8 / §8.1）。
@@ -475,11 +545,14 @@ void send_startup_tables()
         return;
     }
     g_tables_sent = true;
+    g_tables_keymap_mode = sq_keymap_mode();
     (void)send_message("pad_commands", presentation::encode_pad_commands(sq::build_pad_commands()));
     (void)send_message(
         "sub_panel_kinds", presentation::encode_sub_panel_kinds(sq::build_sub_panel_kinds()));
     if (!g_manifest.message().assets.empty()) {
-        (void)send_message("asset_manifest", presentation::encode_asset_manifest(g_manifest.message()));
+        auto manifest = g_manifest.message();
+        manifest.root = portable::path_to_utf8(manifest.root); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
+        (void)send_message("asset_manifest", presentation::encode_asset_manifest(manifest));
     }
 }
 
@@ -488,6 +561,57 @@ void send_startup_tables()
 //! 直近の安い digest（`sq_change_digest`）。capture を丸ごと省くための門。
 unsigned long long g_last_digest = 0;
 bool g_has_last_digest = false;
+
+int pop_native_key_locked() {
+    while (!g_key_queue.empty()) {
+        auto queued = std::move(g_key_queue.front()); g_key_queue.pop_front();
+        if (auto key = std::get_if<int>(&queued)) return *key;
+        std::vector<int> translated;
+        const auto &event=std::get<presentation::InputEventWire>(queued);
+        if(!presentation::native_targeting().input(event,translated)&&!g_inventory_menu.input(event,translated))g_native_menu.input(event, translated);
+        rewrite_set_number_keys_for_silq(translated);
+        g_has_last_digest = false;
+        for (auto it = translated.rbegin(); it != translated.rend(); ++it) g_key_queue.push_front(*it);
+    }
+    return 0;
+}
+
+
+/*!
+ * @brief Term の高さを変えてよい時か（`sq_screen_flags()` の値と `sq_awaiting_command()` の値で決める）。
+ * @details `SCREEN_HGT`（`defines.h`）は `Term->hgt` から導かれ、地図の窓の高さ・`verify_panel()` の判定・
+ * 全画面の地図（`cave.c` の `do_cmd_view_map` は問いを `Term->hgt - 1` へ置く）が使う。Sil-Q の原作には
+ * `resize_hook` が無く、`Term_resize()` は Term の大きさを替えるだけで、`p_ptr->wy`（地図の窓の位置）の
+ * 取り直しも再描画もしない。そのため、地図の窓を使う問い（見る・狙う）や全画面の別画面（`screen_save()` の間）の
+ * 最中に高さが変わると、窓の高さだけが替わって位置と食い違う。
+ * Android では、問いで `text_input_active` が立つとソフトキーボードが出て窓の使える高さが縮み、
+ * 画面が送る `main_term_rows` が変わる（Frox で再現して直した件と同じ。気づいたこと 2026-10-11）。
+ *
+ * `inkey_flag`（`sq_awaiting_command()`）が真なのは `request_command()` が最上位のコマンドを待つ間だけ。
+ * 全画面の別画面（鍛冶など。`character_icky` が立つ）の間は反映しない。ダンジョンがまだ無い間は、すぐ反映する。
+ * 反映できなかった分は覚えておき、次の呼び出しで再び試す（`sq_term_resize_rows()` は同じ高さなら何もしない）。
+ */
+bool term_resize_allowed(int screen_flags, int awaiting_command)
+{
+    return ((screen_flags & SQ_SCREEN_DUNGEON) == 0) || ((awaiting_command != 0) && ((screen_flags & SQ_SCREEN_ICKY) == 0));
+}
+
+/*! @return Term の高さを実際に変えたか（変えたら画面へ送る絵が変わるので、呼び手は送り直しの判定に使う）。 */
+bool apply_wanted_term_rows()
+{
+    if (g_wanted_term_rows <= 0) {
+        return false;
+    }
+    if (!term_resize_allowed(sq_screen_flags(), sq_awaiting_command())) {
+        return false;
+    }
+    int cols = 0;
+    int rows = 0;
+    if ((sq_term_size(&cols, &rows) != SQ_OK) || (rows == g_wanted_term_rows)) {
+        return false;
+    }
+    return sq_term_resize_rows(g_wanted_term_rows) == SQ_OK;
+}
 
 //! 溜まっている `ui_state` をゲームスレッド側へ渡す（`host_present` の頭で 1 回）。
 bool apply_ui_state()
@@ -501,7 +625,14 @@ bool apply_ui_state()
         g_ui_state_dirty = false;
         state = g_ui_state;
     }
+    g_native_menu.set_enabled(state.modern_ui);
+    g_native_menu.set_language(state.lang);
+    g_native_menu.set_document_profile("sil");
+    g_inventory_menu.configure(state.modern_ui,state.lang,"sil");
+    presentation::configure_native_targeting(state.modern_ui&&state.targeting_ui,state.lang,[](const char *s){return sq::sjis_to_utf8(std::string(s));});
+    sq_set_modern_menu(state.modern_ui?1:0);
     sq::set_view_size(state.view_w, state.view_h);
+    if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
     sq::set_camera_follow_player(state.camera_follow_player);
     /*
      * **効果音を誰が鳴らすか**。Sil-Q は自分では
@@ -548,21 +679,41 @@ void host_present()
     }
 
     /*
+     * キー配置（設定の「hjkl などで移動する」「Angband に近い鍵の割り当て」。セーブの読み込みでも
+     * 変わる）が変わったら、パッドの表をいまの配置で引き直して送り直す（2026-10-07）。
+     * フレームより先に送る——画面側は次の操作から新しいキー列を使う。
+     */
+    if (g_tables_sent && (sq_keymap_mode() != g_tables_keymap_mode)) {
+        g_tables_keymap_mode = sq_keymap_mode();
+        (void)send_message("pad_commands", presentation::encode_pad_commands(sq::build_pad_commands()));
+    }
+
+    /*
      * **安い門**。`host_present` は待ちの間も 10ms ごとに回るので、変わっていない
      * フレームを毎回組み直して比べるのは割に合わない。Term の画・`turn`・@ の状態から
      * digest を採り、変わっていなければ capture ごと省く。
      * 下の払い出し済みペイロード比較（v1 §6.4）は**そのまま残す**——digest は
      * 衝突しうるが、こちらは厳密だから。
      */
-    const bool view_changed = apply_ui_state();
+    bool view_changed = apply_ui_state();
+    if (apply_wanted_term_rows()) {
+        view_changed = true;     // Term の高さが替わると、フレームの Term の写しの行数が替わる
+    }
     const unsigned long long digest = sq_change_digest();
-    if (g_has_last_digest && !view_changed && (digest == g_last_digest)) {
+    // 魔法・矢の効果の記録が溜まっているときは、画が同じでも組む（汲まれるまで残るので、組まないと届かない）。
+    if (g_has_last_digest && !view_changed && (digest == g_last_digest) && !sq::attack_fx_ready()) {
         return;
     }
     g_last_digest = digest;
     g_has_last_digest = true;
 
-    const GameFrame frame = sq::capture_frame(++g_frame_id);
+    GameFrame frame = sq::capture_frame(++g_frame_id);
+    g_native_menu.set_title(sq_help_manual_active()?(sq_lang_enabled()?reinterpret_cast<const char*>(u8"Sil-Q マニュアル"):"Sil-Q Manual"):sq::menu_title());
+    const auto items=g_native_menu.enabled()?presentation::read_native_item_rows(sq_native_describe_item,
+        [](const char *s){return sq::sjis_to_utf8(s);},sq_tile_for_row):std::vector<presentation::NativeItemRow>{};
+    g_native_menu.capture(frame,{},items);
+    g_inventory_menu.capture(frame,[]{return presentation::read_native_owned_items(sq_native_owned_item,
+        [](const char *s){return sq::sjis_to_utf8(s);},sq_tile_for_row);},[]{return sq::build_pad_commands();});
     const std::string wire = presentation::encode_game_frame(frame);
     std::string key = frame_compare_key(wire);
     if (g_has_last_frame && (key == g_last_frame_key)) {
@@ -735,12 +886,11 @@ ScriptKeys g_script;
 
 int host_next_key()
 {
+    if(presentation::native_targeting().take_disabled_wake())return 27;
     {
         std::lock_guard<std::mutex> lock(g_inbox_mutex);
         if (!g_key_queue.empty()) {
-            const int key = g_key_queue.front();
-            g_key_queue.pop_front();
-            return key; // **人（UI）のキーが先**。スクリプトは空いているときだけ流す
+            return pop_native_key_locked(); // **人（UI）のキーが先**。スクリプトは空いているときだけ流す
         }
     }
     return g_script.next();
@@ -752,6 +902,10 @@ void host_drop_keys()
     if (!g_key_queue.empty()) {
         std::fprintf(stderr, "[silq] FLUSH drops %u key(s)\n",
             static_cast<unsigned>(g_key_queue.size()));
+        for(const auto &queued:g_key_queue)if(const auto *event=std::get_if<presentation::InputEventWire>(&queued)) {
+            g_native_menu.adopt_request(event->request_id,"rejected");
+            g_has_last_digest=false;
+        }
         g_key_queue.clear();
     }
 }
@@ -944,6 +1098,51 @@ int run_selftest(const std::string &lib_dir, const std::string &lang, const std:
             "[silq] digest flags: text_input_active / awaiting_command / panel_wx / locate_active OK\n");
     }
 
+    {
+        const int bad=sq::menu_semantics_selftest();
+        std::fprintf(stderr,"[silq] menu semantics: %s\n",bad==0?"ok":"FAIL");
+        if(bad!=0){sq_term_remove();return 1;}
+    }
+
+    /* Term の高さを変えてよい時（見る・狙うや全画面の別画面の最中に変えると、地図の窓の高さだけが替わる） */
+    {
+        int bad = 0;
+        const auto expect = [&](bool ok, const char *what) {
+            if (!ok) {
+                ++bad;
+                std::fprintf(stderr, "[silq] selftest: term resize gate: FAIL - %s\n", what);
+            }
+        };
+        expect(term_resize_allowed(0, 0), "no dungeon yet: resize now");
+        expect(term_resize_allowed(SQ_SCREEN_GENERATED | SQ_SCREEN_DUNGEON, 1), "dungeon, waiting for a command: resize now");
+        expect(!term_resize_allowed(SQ_SCREEN_GENERATED | SQ_SCREEN_DUNGEON, 0), "dungeon, inside a prompt: defer");
+        expect(!term_resize_allowed(SQ_SCREEN_GENERATED | SQ_SCREEN_DUNGEON | SQ_SCREEN_ICKY, 0), "dungeon, inside a menu: defer");
+        expect(!term_resize_allowed(SQ_SCREEN_GENERATED | SQ_SCREEN_DUNGEON | SQ_SCREEN_ICKY, 1), "dungeon, full-screen view with inkey_flag set: defer");
+        std::fprintf(stderr, "[silq] selftest: term resize gate: %s\n", (bad == 0) ? "ok" : "FAIL");
+        if (bad != 0) {
+            sq_term_remove();
+            return 1;
+        }
+    }
+
+    /*
+     * 状態のアイコンの自己検査。キャラクターは要らない。
+     * 環境変数 HENGBAND_STATUS_ICON_TABLE に `hd2d/ui/status_icon_table.inc` の絶対パスがあれば、
+     * 送る鍵が全部その表にあることまで見る（無ければ表の中の整合だけ。関門はパスを渡す）。
+     */
+    {
+        char status_err[160] = { 0 };
+        int status_checked = 0;
+        const int bad = sq::status_selftest(status_err, static_cast<int>(sizeof(status_err)), &status_checked);
+        if (bad != 0) {
+            std::fprintf(stderr, "[silq] selftest: status icons: FAIL - %d case(s), first: %s\n", bad, status_err);
+            sq_term_remove();
+            return 1;
+        }
+        std::fprintf(stderr, "[silq] selftest: status icons: ok (%d keys checked against the icon table, %d permanent rows)\n",
+            status_checked, sq::status_perm_row_count());
+    }
+
     sq_term_remove();
 
     /* 受け入れの合図（設計 §8 P1 / §9-1）。 */
@@ -1017,9 +1216,10 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
         /* 致命ではない——地形の絵が出ないだけで遊べる。**捏造せずに言う**。 */
         std::fprintf(stderr, "[silq] terrain manifest unavailable: %s\n", g_manifest.error().c_str());
     } else {
-        std::fprintf(stderr, "[silq] terrain manifest: %u entries from %s (%d png missing)\n",
-            static_cast<unsigned>(g_manifest.message().assets.size()), csv.c_str(),
-            g_manifest.missing_files());
+        // 地形だけの目録（実体の行が無い）。PNG の有無は数えない——PNG は HD2D が使わない開発の頃の 2D の絵で、
+        // 配布物には無いので「全部無い」と出て、異常のダイアログで原因に見えていた（2026-10-06。slab_presence.h）。
+        std::fprintf(stderr, "[silq] terrain manifest: %u entries from %s\n",
+            static_cast<unsigned>(g_manifest.message().assets.size()), csv.c_str());
         /*
          * 実体の絵（M2）。**在るぶんだけ**足す——1 枚も無ければ 0 で、従来どおり
          * アスキー実体で遊べる。数は必ず出す（黙って 0 枚だと気づけない）。
@@ -1027,6 +1227,12 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
         const int entities = g_manifest.add_entities("silq/tilework/128", exe_dir());
         std::fprintf(stderr, "[silq] entity tiles: %d (R/K/P from silq/tilework/128), %d alias(es)\n",
             entities, g_manifest.alias_count());
+        /*
+         * 正体の分からないアイテムの代表タイルを追加登録する。
+         * 新しい絵は作らない——変愚の既存の板を指す行を目録の末尾へ足すだけ
+         * （sq_manifest.cpp の add_unaware_representative_tiles() 参照）。
+         */
+        g_manifest.add_unaware_representative_tiles();
         sq::set_tile_manifest(&g_manifest);
     }
 
@@ -1044,7 +1250,7 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * ——かつては「コアが自分で鳴らせる」だったが、
      * いまは「**音の出来事を出せる**」である。Sil-Q は音の実体を持たないが、
      * `frame.sounds` へ名前とマスを載せるので画面側が鳴らせる。名乗らないと
-     * 機能メニューの「音」の節が入口から消え、利用者が音量も入切も触れなくなる。
+     * 機能メニューの「音」の節が入口から消え、遊ぶ人が音量も入切も触れなくなる。
      *
      * **`lang-restart` だけ名乗る**（2026-08-23。追補 A2）。意味は
      * 「言語を替えるには**このコアを起こし直す**必要がある」で、画面側はこれを見て
@@ -1058,7 +1264,7 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * 在る。画面側は［申告された置き場 → 既定の置き場］の 2 段で探すので、
      * 申告しておけば Sil-Q の板が先に当たり、無い名前は従来どおり既定へ落ちる。
      */
-    ack.asset_root_slab = under_exe("silq", "assets", "slab");
+    ack.asset_root_slab = portable::path_to_utf8(under_exe("silq", "assets", "slab")); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
     if (!send_message("hello_ack", presentation::encode_hello_ack(ack))) {
         return 5;
     }
@@ -1253,6 +1459,9 @@ extern "C" __attribute__((visibility("default"))) int hengband_core_entry(presen
 
 int main(int argc, char **argv)
 {
+#if defined(HENGBAND_DESKTOP_LINUX)
+    std::signal(SIGPIPE, SIG_IGN);
+#endif
     bool selftest = false;
     bool name_check = false;
     bool has_protocol_arg = false;

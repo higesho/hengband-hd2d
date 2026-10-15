@@ -1,0 +1,124 @@
+{
+  "schema": 1,
+  "targets": [
+    {
+      "id": "hengband-3.0.2.5-Beta",
+      "core": "hengband",
+      "install_id": "hengband",
+      "name": "Hengband",
+      "version": "3.0.2.5-Beta",
+      "output": "HengbandCore.exe",
+      "repo": "hengband",
+      "commit": "18b10d6ea5fd234c119053e0a209c90aede21fa4",
+      "manifest_source": "hengband"
+    },
+    {
+      "id": "tangband",
+      "core": "tangband",
+      "install_id": "tangband",
+      "name": "Tangband",
+      "version": "26.0.4",
+      "output": "TangbandCore.exe",
+      "repo": "tangband",
+      "commit": "8d8e1f2cd74fe467a153d7dbdb0b2c5ed0ab72e2",
+      "manifest_source": "tangband",
+      "shared_sources": [
+        {
+          "archive": "hengband",
+          "repo": "hengband",
+          "name": "Hengband",
+          "version": "3.0.2.4-Beta",
+          "commit": "43106a70d7057dc6c506bac96b0888ecdaddb4b8"
+        }
+      ]
+    },
+    {
+      "id": "gensoband",
+      "core": "gensoband",
+      "install_id": "gensoband",
+      "name": "Gensoband",
+      "version": "2.1.6",
+      "output": "GensobandCore.exe",
+      "repo": "gensoband",
+      "commit": "fc4418078a62db9fae2915c8b6ab24a063609093",
+      "manifest_source": "gensoband"
+    },
+    {
+      "id": "silq",
+      "core": "silq",
+      "install_id": "silq",
+      "name": "Sil-Q",
+      "version": "1.5.1.0-beta2",
+      "output": "SilCore.exe",
+      "repo": "silq",
+      "commit": "d0355bf97e873ba10e6b364aa127bc5ebbbd05f1",
+      "manifest_source": "silq"
+    },
+    {
+      "id": "frox",
+      "core": "frox",
+      "install_id": "frox",
+      "name": "FroxComposband",
+      "version": "7.3.pipari.2",
+      "output": "FroxCore.exe",
+      "repo": "frox",
+      "commit": "c7641efca8caf6069aa9a71a4b5c8547a64013be",
+      "manifest_source": "frox"
+    },
+    {
+      "id": "rogue2",
+      "core": "rogue2",
+      "install_id": "rogue2",
+      "name": "RogueClone2",
+      "version": "6.0",
+      "output": "Rogue2Core.exe",
+      "repo": "rogue2",
+      "commit": "895a468ab632c7ba05d88b706ac1db478dffbbe8",
+      "manifest_source": "rogue2"
+    },
+    {
+      "id": "angband",
+      "core": "angband",
+      "install_id": "angband",
+      "name": "Angband",
+      "version": "4.2.6",
+      "output": "AngbandCore.exe",
+      "repo": "angband",
+      "commit": "f3082213b73f3e463e3d0d60bff4b00462beae6e",
+      "manifest_source": "angband"
+    },
+    {
+      "id": "rogue36",
+      "core": "rogue36",
+      "install_id": "rogue36",
+      "name": "Rogue 3.6",
+      "version": "3.6.4",
+      "output": "Rogue36Core.exe",
+      "repo": "rogue36",
+      "commit": "570c8825d867ee4da1f03f9fd5309bb9c454a26e",
+      "manifest_source": "rogue36"
+    },
+    {
+      "id": "rogue54",
+      "core": "rogue54",
+      "install_id": "rogue54",
+      "name": "Rogue 5.4",
+      "version": "5.4.4",
+      "output": "Rogue54Core.exe",
+      "repo": "rogue54",
+      "commit": "f4653c2a2ee6981a73abe9dfda055134285e1e79",
+      "manifest_source": "rogue54"
+    },
+    {
+      "id": "umoria",
+      "core": "umoria",
+      "install_id": "umoria",
+      "name": "Umoria",
+      "version": "5.7.15",
+      "output": "UmoriaCore.exe",
+      "repo": "umoria",
+      "commit": "3bf8abc4f76812810e59d738492c7b61fb8f1bb6",
+      "manifest_source": "umoria"
+    }
+  ]
+}

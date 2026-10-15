@@ -9,6 +9,10 @@
  */
 #include "bridge/input_event_adapter.h"
 
+#include "frame/game_frame.h"
+
+#include <atomic>
+#include <cstdlib>
 #include <string>
 
 namespace presentation {
@@ -32,7 +36,72 @@ char direction_key(int dx, int dy)
     return table[dy + 1][dx + 1];
 }
 
+//! `set_repeat_count_input_active` の値。
+std::atomic<bool> g_repeat_count_input{ false };
+
 } // namespace
+
+bool parse_repeat_count_line(const std::string &line, int &value, int &prompt_len, int &value_len)
+{
+    static const std::string kPrefixes[] = { reinterpret_cast<const char *>(u8"回数: "), "Count: ", "Repeat: " }; // "Repeat: " は Angband（`textui_get_count()`）
+    for (const auto &prefix : kPrefixes) {
+        if (line.compare(0, prefix.size(), prefix) != 0) {
+            continue;
+        }
+        std::string rest = line.substr(prefix.size());
+        while (!rest.empty() && rest.back() == ' ') {
+            rest.pop_back();
+        }
+        // 原作の上限は 9999（4 桁）。数字以外が混じる行（`Count: max 3` など）は別物。
+        if (rest.size() > 4) {
+            return false;
+        }
+        for (const char c : rest) {
+            if (c < '0' || c > '9') {
+                return false;
+            }
+        }
+        value = rest.empty() ? 0 : std::atoi(rest.c_str());
+        prompt_len = static_cast<int>(prefix.size());
+        value_len = static_cast<int>(rest.size());
+        return true;
+    }
+    return false;
+}
+
+bool fill_repeat_count_input(const std::string &line, NumericInput &out)
+{
+    int count = 0;
+    int prompt_len = 0;
+    int value_len = 0;
+    if (!parse_repeat_count_line(line, count, prompt_len, value_len)) {
+        set_repeat_count_input_active(false);
+        return false;
+    }
+    out = NumericInput{};
+    out.active = true;
+    out.prompt_utf8 = line.substr(0, static_cast<size_t>(prompt_len));
+    out.min = 0;
+    out.max = 9999;
+    out.value = count;
+    out.digits = 4;
+    out.text_len = value_len;
+    out.line_index = -1;
+    out.value_begin = prompt_len;
+    out.value_len = value_len;
+    set_repeat_count_input_active(true);
+    return true;
+}
+
+void set_repeat_count_input_active(bool active)
+{
+    g_repeat_count_input.store(active);
+}
+
+bool repeat_count_input_active()
+{
+    return g_repeat_count_input.load();
+}
 
 void append_input_event_keys(const InputEventsMessage &message, std::vector<int> &out)
 {
@@ -101,6 +170,26 @@ void append_input_event_keys(const InputEventsMessage &message, std::vector<int>
              */
             for (const int byte : event.bytes) {
                 out.push_back(byte);
+            }
+        } else if (event.e == "set_number" && repeat_count_input_active()) {
+            /*
+             * 「繰り返し回数」の入力（`0` の後）。受けるのは数字と退格だけで、
+             * 退格 1 回で 1 桁減る（`command_arg / 10`）。5 桁ぶん消してから打つ。
+             * 退格は 0x7F（DEL）で送る——変愚系は 0x7F と `KTRL('H')` の両方を退格と
+             * 読むが、Rogue 5.4 では `KTRL('H')` が「左へ走る」なので、どのコアでも
+             * コマンドに使われていない 0x7F に揃える（Rogue 3.6/5.4 の回数の入力は
+             * `tools/rogue_legacy/prepare_sources.py` が 0x7F を退格として足している）。
+             * 0 詰めはしない（5 桁目を打つと原作が 9999 に丸めて `bell()` を鳴らし、
+             * Frox の `bell()` は後に積んだキーを捨てる）。
+             * 値が 0 のときは何も打たない——原作は 0 のまま決めると 99 回にする。
+             */
+            for (int i = 0; i < 5; ++i) {
+                out.push_back(0x7F);
+            }
+            if (event.number > 0) {
+                for (const char c : std::to_string(event.number)) {
+                    out.push_back(static_cast<unsigned char>(c));
+                }
             }
         } else if (event.e == "set_number") {
             std::string text = std::to_string(event.number);

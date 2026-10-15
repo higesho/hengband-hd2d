@@ -863,6 +863,14 @@ void PostChain::release_targets()
         glDeleteTextures(1, &this->scene_depth_);
         this->scene_depth_ = 0;
     }
+    if (this->saved_fbo_ != 0) {
+        glDeleteFramebuffers(1, &this->saved_fbo_);
+        this->saved_fbo_ = 0;
+    }
+    if (this->saved_depth_ != 0) {
+        glDeleteTextures(1, &this->saved_depth_);
+        this->saved_depth_ = 0;
+    }
     this->width_ = 0;
     this->height_ = 0;
 }
@@ -973,6 +981,38 @@ bool PostChain::resize(int width, int height, std::string &err)
         return false;
     }
 
+    /*
+     * 深度の写し（`save_scene_depth`）。**画面の深度と同じ形式で作る**——深度の転写
+     * （`glBlitFramebuffer`）は形式が違うと失敗する。色は持たない（影の地図と同じ作り）。
+     * 作れなくても画面は描ける（実体の層の順が深度の順に戻るだけ）ので、失敗は止めない。
+     */
+    glGenTextures(1, &this->saved_depth_);
+    glBindTexture(GL_TEXTURE_2D, this->saved_depth_);
+#if defined(HENGBAND_GLES)
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(GL_DEPTH_COMPONENT24), w, h, 0,
+        GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, nullptr);
+#else
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(GL_DEPTH_COMPONENT24), w, h, 0,
+        GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+#endif
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLint>(GL_NEAREST));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLint>(GL_NEAREST));
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glGenFramebuffers(1, &this->saved_fbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->saved_fbo_);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this->saved_depth_, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    const GLenum saved_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    if (saved_status != GL_FRAMEBUFFER_COMPLETE) {
+        std::fprintf(stderr, "[hd2d] post: 深度の写しの FBO が不完全です (0x%04X)。実体は深度の順で描きます\n", saved_status);
+        glDeleteFramebuffers(1, &this->saved_fbo_);
+        this->saved_fbo_ = 0;
+        glDeleteTextures(1, &this->saved_depth_);
+        this->saved_depth_ = 0;
+    }
+
     // --- ブルームの段 ---
     int level_w = w / 2;
     int level_h = h / 2;
@@ -1081,6 +1121,30 @@ void PostChain::begin_scene(float clear_r, float clear_g, float clear_b)
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void PostChain::save_scene_depth()
+{
+    if ((this->saved_fbo_ == 0) || (this->scene_fbo_ == 0)) {
+        return;
+    }
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, this->scene_fbo_);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->saved_fbo_);
+    glBlitFramebuffer(0, 0, this->width_, this->height_, 0, 0, this->width_, this->height_,
+        GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->scene_fbo_);
+}
+
+void PostChain::restore_scene_depth()
+{
+    if ((this->saved_fbo_ == 0) || (this->scene_fbo_ == 0)) {
+        return;
+    }
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, this->saved_fbo_);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->scene_fbo_);
+    glBlitFramebuffer(0, 0, this->width_, this->height_, 0, 0, this->width_, this->height_,
+        GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->scene_fbo_);
 }
 
 void PostChain::end_scene(int viewport_w, int viewport_h, int viewport_x, int viewport_y, GLuint target_fbo)

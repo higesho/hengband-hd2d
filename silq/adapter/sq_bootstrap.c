@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file sq_bootstrap.c
  * @brief Sil-Q コアの起動列と進行。`init_file_paths()` → `init_angband()` → タイトル → `play_game()`。
  *
@@ -40,6 +40,18 @@
 
 #include "sq_shim.h"
 #include "sq_lang_c.h"
+
+/*
+ * Keep these declarations in an ASCII-only region.  MSVC builds this legacy
+ * C file with the active Windows code page; Japanese // comments immediately
+ * before preprocessor directives can otherwise be misread as a trailing
+ * backslash and splice the next line into the comment.
+ */
+#define SQ_SAVE_COL2 42
+#define SQ_SAVE_SCAN 64
+#define SQ_SAVE_NAME 48
+#define SQ_RESUME_FILE ".resume"
+static int sq_resume_armed = 0;
 
 /*! 起動の段の跳び先（`sq_bootstrap`）。ここへ跳ぶ `quit()` は**失敗**である。 */
 static jmp_buf sq_abort_buf;
@@ -308,12 +320,45 @@ static int sq_prepare_ja_dirs(void)
 }
 
 /*! `init_file_paths()` へ渡す道を組み直す（あちらが buffer を壊すので毎回作る）。 */
+#if defined(HENGBAND_DESKTOP_LINUX)
+// The Linux launcher supplies a separate data root for the current user.
+// Initialize the original Unix identity fields before any permission check.
+static void sq_linux_user_paths(const char *root)
+{
+    char path[1024];
+    player_uid = getuid();
+    player_euid = geteuid();
+    player_egid = getegid();
+    snprintf(path, sizeof(path), "%s%suser", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_USER);
+    ANGBAND_DIR_USER = string_make(path);
+    snprintf(path, sizeof(path), "%s%ssave", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_SAVE);
+    ANGBAND_DIR_SAVE = string_make(path);
+    snprintf(path, sizeof(path), "%s%sapex", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_APEX);
+    ANGBAND_DIR_APEX = string_make(path);
+    snprintf(path, sizeof(path), "%s%sbone", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_BONE);
+    ANGBAND_DIR_BONE = string_make(path);
+    snprintf(path, sizeof(path), "%s%sdata", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_DATA);
+    ANGBAND_DIR_DATA = string_make(path);
+    snprintf(path, sizeof(path), "%s%sscript", root, suffix(root, "/") ? "" : "/");
+    string_free(ANGBAND_DIR_SCRIPT);
+    ANGBAND_DIR_SCRIPT = string_make(path);
+}
+#endif
+
 static void sq_apply_file_paths(void)
 {
     char path[1024];
 
     strcpy(path, sq_lib_dir);
     init_file_paths(path);
+#if defined(HENGBAND_DESKTOP_LINUX)
+    sq_linux_user_paths(sq_lib_dir);
+#endif
 
     if (!sq_use_ja_edit) {
         return;
@@ -426,13 +471,18 @@ int sq_help_manual_hint(void)
     return 1;
 }
 
+static int sq_manual_active = 0;
+int sq_help_manual_active(void) { return sq_manual_active; }
+
 int sq_help_manual_open(int ch)
 {
     if (((ch != 'm') && (ch != 'M')) || !sq_manual_ready()) {
         return 0;
     }
 
+    sq_manual_active = 1;
     (void)show_file(sq_help_file, sq_tr(sq_manual_caption_key), 0);
+    sq_manual_active = 0;
 
     return 1;
 }
@@ -442,6 +492,7 @@ int sq_help_manual_open(int ch)
 int sq_bootstrap(const char *lib_dir, const char *lang)
 {
     size_t len;
+    sq_manual_active = 0;
 
     if (!lib_dir || !lib_dir[0]) {
         strcpy(sq_error_text, "lib directory was not given");
@@ -577,12 +628,12 @@ int sq_bootstrap(const char *lib_dir, const char *lang)
 #define SQ_SAVE_COLS 2
 #define SQ_SAVE_SHOWN (SQ_SAVE_ROWS * SQ_SAVE_COLS)
 //! 2 列目の左端（桁）。1 列目は 7 桁目。
-#define SQ_SAVE_COL2 42
+/* SQ_SAVE_COL2 is defined in the ASCII-only declaration block above. */
 /*! @} */
 //! 読み取る数（並べ替えてから上の数だけ出す）。
-#define SQ_SAVE_SCAN 64
+/* SQ_SAVE_SCAN is defined in the ASCII-only declaration block above. */
 //! 1 件ぶんの名前の長さ。Sil-Q のセーブ名は `op_ptr->base_name`（32）より短い。
-#define SQ_SAVE_NAME 48
+/* SQ_SAVE_NAME is defined in the ASCII-only declaration block above. */
 
 /*!
  * @brief セーブの置き場を読んで名前を並べる。
@@ -635,12 +686,16 @@ static int sq_delete_savefile(const char *name)
 {
     char path[1024];
     char ask[128];
+    char display[512];
 
     if (!name || !name[0] || (name[0] == '.')) {
         return 0; /* 点で始まる名前は一覧に出していない。触らない */
     }
 
-    strnfmt(ask, sizeof(ask), "%s \"%s\"? ", sq_tr("Delete"), name);
+    if (!sq_player_identity_display_name(name, display, sizeof(display))) {
+        my_strcpy(display, name, sizeof(display));
+    }
+    strnfmt(ask, sizeof(ask), "%s \"%s\"? ", sq_tr("Delete"), display);
     if (!get_check(ask)) {
         return 0;
     }
@@ -653,6 +708,8 @@ static int sq_delete_savefile(const char *name)
         return 0;
     }
 
+    sq_player_identity_remove_name(name);
+
     fprintf(stderr, "[silq] deleted %s\n", name);
     fflush(stderr);
     return 1;
@@ -662,10 +719,58 @@ static int sq_delete_savefile(const char *name)
  * @brief 一覧から 1 つ選び、`savefile` を組む。
  * @return 1 = 選んだ / 0 = やめた（タイトルへ戻る）
  */
+static int sq_save_menu_visible = 0;
+static int sq_save_menu_count = 0;
+static int sq_save_menu_selected = 0;
+static int sq_save_menu_rows[SQ_SAVE_SHOWN+1];
+static int sq_save_menu_columns[SQ_SAVE_SHOWN+1];
+static char sq_save_menu_labels[SQ_SAVE_SHOWN+1][512];
+static int sq_save_menu_keys[SQ_SAVE_SHOWN+1];
+static char sq_save_menu_note[4096];
+static int sq_modern_menu_enabled=0;
+void sq_set_modern_menu(int on){sq_modern_menu_enabled=on;}
+const char *sq_save_menu_description(void){return sq_save_menu_visible?sq_save_menu_note:"";}
+void sq_save_picker_clear(const char *title,const char *description)
+{
+    Term_clear();c_put_str(TERM_WHITE,title,1,2);
+    sq_save_menu_count=0;sq_save_menu_selected=0;
+    my_strcpy(sq_save_menu_note,description,sizeof(sq_save_menu_note));
+}
+void sq_save_picker_row(int index,int key,const char *label,int selected)
+{
+    char line[600];if(index<0||index>=SQ_SAVE_SHOWN)return;
+    strnfmt(line,sizeof(line),"%c) %s",key,label);
+    c_put_str(selected?TERM_L_BLUE:TERM_WHITE,line,4+index,2);
+    sq_save_menu_rows[index]=4+index;sq_save_menu_columns[index]=2;sq_save_menu_keys[index]=key;
+    my_strcpy(sq_save_menu_labels[index],label,sizeof(sq_save_menu_labels[index]));
+    sq_save_menu_count=index+1;if(selected)sq_save_menu_selected=index;
+}
+int sq_save_menu_entry(int index,int *row,int *column,int *selected,int *key,const char **label)
+{
+    if(!sq_save_menu_visible || index<0 || index>=sq_save_menu_count)return 0;
+    *row=sq_save_menu_rows[index];*column=sq_save_menu_columns[index];
+    *selected=index==sq_save_menu_selected;*key=sq_save_menu_keys[index];*label=sq_save_menu_labels[index];return 1;
+}
+
 static int sq_pick_savefile(void)
 {
+    if(sq_modern_menu_enabled) {
+        char selected[1024];int result;
+        screen_save();sq_save_picker_begin(ANGBAND_DIR_SAVE);
+        for(;;) {
+            sq_save_picker_draw();sq_save_menu_visible=1;Term_fresh();
+            result=inkey();sq_save_menu_visible=0;
+            result=sq_save_picker_key(result,selected,sizeof(selected));
+            if(result!=-2)break;
+        }
+        sq_save_picker_end();screen_load();
+        if(result!=0)return 0;
+        my_strcpy(op_ptr->full_name,selected,sizeof(op_ptr->full_name));process_player_name(TRUE);
+        path_build(savefile,sizeof(savefile),ANGBAND_DIR_SAVE,selected);return 1;
+    }
     static char names[SQ_SAVE_SCAN][SQ_SAVE_NAME];
-    char line[SQ_SAVE_NAME + 16];
+    char line[600];
+    char display[512];
     int count;
     int shown;
     int highlight = 0;
@@ -719,12 +824,17 @@ static int sq_pick_savefile(void)
              * **letter は a〜z の 26 件まで。**それより後ろは印を空けておく
              * ——無い letter を出すと押せる気にさせてしまう。カーソルでは届く。
              */
+            if (!sq_player_identity_display_name(names[i], display, sizeof(display))) {
+                my_strcpy(display, names[i], sizeof(display));
+            }
             if (i < 26) {
-                strnfmt(line, sizeof(line), "%c) %s", 'a' + i, names[i]);
+                strnfmt(line, sizeof(line), "%c) %s", 'a' + i, display);
             } else {
-                strnfmt(line, sizeof(line), "   %s", names[i]);
+                strnfmt(line, sizeof(line), "   %s", display);
             }
             c_put_str((i == highlight) ? TERM_L_BLUE : TERM_WHITE, line, row, col);
+            sq_save_menu_rows[i]=row;sq_save_menu_columns[i]=col;sq_save_menu_keys[i]=0;
+            my_strcpy(sq_save_menu_labels[i],display,sizeof(sq_save_menu_labels[i]));
         }
 
         /*
@@ -756,11 +866,15 @@ static int sq_pick_savefile(void)
             Term_gotoxy(((highlight < SQ_SAVE_ROWS) ? 7 : SQ_SAVE_COL2) - 2,
                 4 + (highlight % SQ_SAVE_ROWS));
         }
+        sq_save_menu_count=shown+1;sq_save_menu_selected=highlight;sq_save_menu_keys[shown]=0;sq_save_menu_note[0]=0;
+        sq_save_menu_rows[shown]=5+rows_used+((count>shown)?1:0);sq_save_menu_columns[shown]=7;
+        my_strcpy(sq_save_menu_labels[shown],deleting?sq_tr("[ stop deleting ]"):sq_tr("[ delete a character ]"),sizeof(sq_save_menu_labels[shown]));
+        sq_save_menu_visible=1;
         Term_fresh();
-
         hide_cursor = TRUE;
         ch = inkey();
         hide_cursor = FALSE;
+        sq_save_menu_visible=0;
 
         if (ch == ESCAPE) {
             if (deleting) {
@@ -892,10 +1006,10 @@ static int sq_pick_savefile(void)
  */
 
 //! 印の綴り。点で始めること（一覧から外れる条件が「点で始まる」なので）。
-#define SQ_RESUME_FILE ".resume"
+/* SQ_RESUME_FILE is defined in the ASCII-only declaration block above. */
 
 //! `--resume` が渡されたか。`sq_set_resume()` が立て、`sq_pick_game()` が使って倒す。
-static int sq_resume_armed = 0;
+/* sq_resume_armed is declared in the ASCII-only declaration block above. */
 
 /*! @brief 印の道を組む。 */
 static void sq_resume_path(char *buf, size_t max)
@@ -1074,7 +1188,10 @@ static int sq_pick_game(bool *new_game)
     sq_settle_input(300);
 
     for (;;) {
+        /* 取消（Esc）は「やめる」と同じ動きにする（判-17）。原作のタイトルは Esc を受けない。 */
+        sq_title_menu_set_active(1);
         const int choice = initial_menu(&highlight);
+        sq_title_menu_set_active(0);
 
         switch (choice) {
         case 1:
@@ -1170,7 +1287,7 @@ int sq_run_game(void)
          * 「ゲーム終了後、コアの起動画面に遷移させて」）。
          *
          * 先方（`main.c:569`）はここでタイトルへ戻る。**それがチュートリアルの誤爆の元**だった: `close_game()` は保存のあとに人物表と
-         * 成績の画を何枚も出し、利用者はそれを送るために決定を連打する。最後の 1 打が
+         * 成績の画を何枚も出し、遊ぶ人はそれを送るために決定を連打する。最後の 1 打が
          * タイトルへ落ちると、カーソルが乗っている `a) チュートリアル` が始まる
          * （`re_init_some_things()` の `WIPE(p_ptr)` で `is_dead` が消えるので、
          * カーソルは 1 行目に戻っている）。**捨てるだけでは直らない**——

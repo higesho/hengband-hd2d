@@ -65,11 +65,33 @@ void set_tile_manifest(const TileManifest *manifest);
 void set_pregame_choices(const std::vector<MenuChoice> &choices);
 
 /*!
+ * @brief 溜まっている魔法・矢弾の効果があるか（`host_present()` の「画面が変わっていない」の判定を飛ばすのに使う）。
+ * @details 記録は汲まれるまで残るので、組まないと届かない。命令待ち（動きの終わり）なら開いている 1 発も数える。
+ */
+bool attack_fx_ready();
+
+/*!
  * @brief いまのコアの状態を 1 フレームに写す。
  * @param frame_id 通し番号（呼び手が増やす。v1 §6.1 で常に出る唯一の数）
  * @details 呼んでよいのは**ゲームスレッド**だけ（`fc_shim.h` の読み口はどれも
  * 素の大域変数を読む）。
  */
 GameFrame capture_frame(unsigned long long frame_id);
+
+/*!
+ * @brief メニューの写しから「窓が塗らなかった所」を空白にする処理の検査（`--selftest` から呼ぶ）。
+ * @return 落ちた件数（0 なら全部通った）
+ * @details 呪文選びなど枠の無い窓は、右の状態列と窓の下の地図を残したまま重なる。そこの字を新 UI の
+ * 窓の本文へ取り込まないための処理（`blank_untouched_cells()`）。実機のコアは要らず、
+ * 取っておいた画と窓つきの画を自分で組んで確かめる。
+ */
+int idle_mirror_selftest();
+
+/*!
+ * @brief 自動拾いの編集画面（`do_cmd_edit_autopick()`）が開いているか（直前の `capture_frame()` の判定）。
+ * @details 原作は画面を退避せず自前のループで文字を受けるので、画面側へ「文字入力の待ち」として伝える
+ * （`fc_main.cpp` が `frame.text_input_active` に足す。IME・ソフトキーボードと編集の窓のため）。
+ */
+bool autopick_editor_open();
 
 } // namespace fc

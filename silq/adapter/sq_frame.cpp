@@ -1,8 +1,8 @@
-﻿/*!
+/*!
  * @file sq_frame.cpp
  * @brief `sq_frame.h` の実装。**P2 の範囲**（Term ミラー・HUD・メッセージ）。
  *
- * ## 文字コード
+ * ## 文字コード（M1 で変わった）
  * M0 では Sil-Q が純 ASCII だったので変換が 1 か所も無かったが、日本語層を
  * 乗せた M1 からは **Term のセルが CP932（SJIS）**になる。境界はこの TU の
  * **3 か所だけ**である（設計 §3.2 の表）:
@@ -29,6 +29,8 @@
  */
 
 #include "sq_frame.h"
+#include "bridge/player_identity.h"
+#include "bridge/native_targeting_runtime.h"
 
 #include "sq_lang_c.h" //!< `sq_tr`（HUD の名札。SH-08）
 #include "sq_manifest.h"
@@ -38,12 +40,118 @@
 #include "sq_text.h"
 
 #include "frame/cell_feature_bits.h"
+#include "bridge/named_attack_fx_glue.h"
+#include "bridge/modern_content.h"
+#include "bridge/native_save_picker.h"
+#include "portable/legacy_os.h"
+#include <memory>
 
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
+#include <fstream>
+#include <set>
 #include <cstring>
 #include <string>
 #include <vector>
+
+namespace {
+std::unique_ptr<presentation::NativeSavePicker> sq_picker;
+
+std::string silq_identity_display(const std::string &save_name,const std::string &fallback)
+{
+    std::string shown=presentation::player_identity_load("silq",save_name,{});
+    if(!shown.empty())return shown;
+    const auto dot=save_name.find('.');
+    if(dot!=std::string::npos && dot+1<save_name.size()) {
+        shown=presentation::player_identity_load("silq",save_name.substr(dot+1),{});
+        if(!shown.empty())return shown;
+    }
+    return fallback;
+}
+
+void silq_identity_remove(const std::string &save_name)
+{
+    presentation::player_identity_remove("silq",save_name);
+    const auto dot=save_name.find('.');
+    if(dot!=std::string::npos && dot+1<save_name.size())
+        presentation::player_identity_remove("silq",save_name.substr(dot+1));
+}
+}
+
+extern "C" int sq_player_identity_display_name(const char *save_name,char *out,int cap)
+{
+    if(save_name==nullptr||out==nullptr||cap<=0)return 0;
+    const std::string shown=silq_identity_display(save_name,save_name);
+    const std::string encoded=sq::utf8_to_sjis(shown);
+    const std::string &value=encoded.empty()?shown:encoded;
+    if(value.empty())return 0;
+    std::snprintf(out,static_cast<size_t>(cap),"%s",value.c_str());
+    return 1;
+}
+
+extern "C" void sq_player_identity_remove_name(const char *save_name)
+{
+    if(save_name!=nullptr&&*save_name!='\0')silq_identity_remove(save_name);
+}
+
+/*
+ * Fix 57 (play test 1): the core keeps the real (CP932) player name now.  The savefile name must stay ASCII and unique,
+ * so a name with a 0x80+ byte gets "P" + 7 letters/digits from the hash of its UTF-8 form - the same alias that the
+ * older side-store (player_identity.h) used as the core name.  A plain ASCII name returns 0 and keeps the original rules.
+ */
+extern "C" int sq_save_base_name(const char *full_name,char *out,int cap)
+{
+    if(full_name==nullptr||out==nullptr||cap<=1)return 0;
+    bool wide=false;
+    for(const unsigned char *q=reinterpret_cast<const unsigned char*>(full_name);*q;++q)if(*q>=0x80){wide=true;break;}
+    if(!wide)return 0;
+    const std::string alias=presentation::player_identity_core_name(sq::sjis_to_utf8(full_name),8);
+    if(alias.empty())return 0;
+    std::snprintf(out,static_cast<size_t>(cap),"%s",alias.c_str());
+    return 1;
+}
+
+extern "C" void sq_save_picker_begin(const char *directory)
+{
+    const std::string root=directory;
+    sq_picker=std::make_unique<presentation::NativeSavePicker>("Sil-Q",sq_lang_enabled()!=0,
+        [root](){
+            std::vector<std::string> names;
+            for(const auto &name:portable::list_files(root)) {
+                if(name.empty()||name.front()=='.')continue;
+                std::string lower=name;for(char &c:lower)if(c>='A'&&c<='Z')c=char(c-'A'+'a');
+                if(lower=="last_slot.txt")continue;
+                const auto ext=std::filesystem::path(name).extension().string();
+                if(ext==".new"||ext==".old"||ext==".lok"||ext==".sdl2panels"||(ext.size()==4&&ext[1]=='F'&&std::isdigit(static_cast<unsigned char>(ext[2]))&&std::isdigit(static_cast<unsigned char>(ext[3]))))continue;
+                names.push_back(name);
+            }
+            std::sort(names.begin(),names.end());return names;
+        },[root](const std::string &name){
+            const std::string result=presentation::remove_native_save(root,name);
+            if(result.empty())silq_identity_remove(name);
+            return result;
+        },
+        [](const std::string &name){
+            return silq_identity_display(name,sq::sjis_to_utf8(name));
+        });
+    sq_picker->show_load_only();
+}
+extern "C" void sq_save_picker_draw(void)
+{
+    if(!sq_picker)return;
+    const auto page=sq_picker->page();
+    sq_save_picker_clear(sq::utf8_to_sjis(page.title).c_str(),sq::utf8_to_sjis(page.description).c_str());
+    for(size_t i=0;i<page.rows.size();++i){const auto &row=page.rows[i];sq_save_picker_row(int(i),row.key,sq::utf8_to_sjis(row.label).c_str(),row.selected?1:0);}
+}
+extern "C" int sq_save_picker_key(int key,char *selected,int capacity)
+{
+    if(!sq_picker)return -1;
+    const int result=sq_picker->key(key);
+    if(result==0&&capacity>0)std::snprintf(selected,capacity,"%s",sq_picker->selected().c_str());
+    return result;
+}
+extern "C" void sq_save_picker_end(void){sq_picker.reset();}
 
 namespace sq {
 
@@ -265,7 +373,31 @@ void fill_hud(GameFrame &frame)
         return;
     }
 
-    frame.hud.name = to_utf8(data.name);
+    const std::string fallback_name = to_utf8(data.name);
+    char save_id[256]{};
+    (void)sq_current_save_id(save_id, static_cast<int>(sizeof(save_id)));
+    /*
+     * Fix 57: the core holds the real name (japanese included), so the HUD simply shows it.  The side file kept beside the
+     * save is only for the save picker, which cannot read the savefile: keep it equal to the name (rewritten when the name
+     * changes).  Characters made by the older side-store have an ASCII alias as the core name; for them the side file is
+     * still the display name, but only while the core name is that alias.
+     */
+    const bool wide_name = std::any_of(fallback_name.begin(), fallback_name.end(), [](unsigned char c) { return c >= 0x80; });
+    if (wide_name) {
+        frame.hud.name = fallback_name;
+        static std::string kept_id, kept_name;
+        if (save_id[0] != 0 && (kept_id != save_id || kept_name != fallback_name)) {
+            if (presentation::player_identity_load("silq", save_id, {}) != fallback_name)
+                (void)presentation::player_identity_store("silq", save_id, fallback_name);
+            kept_id = save_id;
+            kept_name = fallback_name;
+        }
+    } else if (save_id[0] != 0) {
+        const std::string kept = silq_identity_display(save_id, std::string());
+        frame.hud.name = (!kept.empty() && presentation::player_identity_core_name(kept, 8) == fallback_name) ? kept : fallback_name;
+    } else {
+        frame.hud.name = fallback_name;
+    }
     frame.hud.hp = data.hp;
     frame.hud.hp_max = data.hp_max;
     frame.hud.sp = data.sp;
@@ -300,7 +432,7 @@ void fill_hud(GameFrame &frame)
     const std::string voice = to_utf8(sq_tr("Voice"));
     frame.hud.sp_label = voice;
     /*
-     * `HP` の名札も同じ理由で運ぶ（2026-08-22。実機の絵）。
+     * `HP` の名札も同じ理由で運ぶ（2026-08-22。遊ぶ人の実機の絵）。
      * **`sp_label` だけ入れたら片方だけ日本語になった**——左の状態列はコアが
      * `生命力` と書くのに、HUD のゲージは `HP` と `声` が並ぶ画になっていた。
      * 語は **Sil-Q の状態列と同じ鍵**（`xtra1.c:442` の `Health`）を引く。
@@ -399,7 +531,7 @@ SubPanelLine g_depth_cache;
  *
  * @note **M1 で `>= 0x7F` を `== 0x7F` に改めた**（設計 §3.2）。
  * 0x80 以上は日本語の文字のバイトであって空白ではない。ここを直さないと、
- * 作った `lib-ja/edit` の名前がまるごと空白になる。
+ * 焼いた `lib-ja/edit` の名前がまるごと空白になる。
  * 幻想蛮怒の同名の関数（`gb_frame.cpp`）も同じ形である。
  */
 bool cell_is_blank(char c)
@@ -558,6 +690,174 @@ void row_to_runs(const char *cells, const unsigned char *attrs, int n, int x0,
     flush();
 }
 
+/*
+ * ==== 状態のアイコン（`GameFrame::status_effects`）====
+ *
+ * 範囲:
+ *  - 原作の最下段（`xtra1.c` の `prt_frame_extra()`）の状態：速さ・朦朧・空腹・盲目・混乱・恐怖・毒・切り傷・
+ *    幻惑・鍛冶・矢作り・隠密行動。
+ *  - メッセージで知らされる一時的な状態：幻覚・一時的な能力値の上昇・透明視・耐火・耐冷・耐毒・知覚の上昇・
+ *    激怒・魔法の暗黒。
+ *  - 歌は**曲ごと**の鍵（`sq_song_*`）。主旋律と副旋律（織り合わせ）を歌うときは 2 つ並べる。
+ *  - 常時の効果は、C 画面の Flags のページの**既知の旗**だけ（`sq_read_status()` の `perm_mask`。未鑑定は出さない）。
+ *  - 出さないもの：地形の注意書き（落とし穴・蜘蛛の巣・陽だまり）・休息・繰り返しの回数・残りターン。
+ *
+ * 名前の字はコアの言語で書く（`sq_lang_enabled()`）。原作が最下段へ出す字（`messages.ja.txt` の `xtra1.c` の項）と
+ * 同じ語にそろえ、歌の名前は原作の `b_name`（日本語層が起きていれば日本語）から引く。鍵は画面側の表
+ * （`hd2d/ui/status_icon_table.inc`）にある名前だけ。表に絵が無い物は送らない（`status_selftest()` が見る）。
+ */
+
+//! 日本語層が起きていれば `ja`、でなければ `en`。**UTF-8 にして返す**（修-37）。
+//! 呼び手が渡す字面は、このアダプタの実行文字集合（既定は ACP＝CP932）のバイト列なので、
+//! 線（`label_utf8`）へ入れる前にここで 1 度だけ `to_utf8()` を通す。英語は ASCII なので素通し。
+//! 歌の名前（`song_label()`）はすでに UTF-8 にしてあるので、これを通さない。
+inline std::string ja_en(const char *ja, const char *en) { return to_utf8((sq_lang_enabled() != 0) ? ja : en); }
+
+void add_status(std::vector<StatusEffectView> &out, const char *key, const std::string &label, StatusEffectKind kind)
+{
+    StatusEffectView view{};
+    view.key = key;
+    view.label_utf8 = label;
+    view.kind = kind;
+    out.push_back(std::move(view));
+}
+
+//! 歌の鍵。原作の `SNG_ELBERETH` から `SNG_MASTERY` の順（`defines.h`）。
+const char *const kSongKeys[] = {
+    "sq_song_elbereth", "sq_song_challenge", "sq_song_delvings", "sq_song_freedom", "sq_song_silence", "sq_song_staunching",
+    "sq_song_thresholds", "sq_song_trees", "sq_song_slaying", "sq_song_staying", "sq_song_lorien", "sq_song_mastery",
+};
+constexpr int kSongCount = static_cast<int>(sizeof(kSongKeys) / sizeof(kSongKeys[0]));
+
+//! 歌の名前。英語は `Song of ` を落とす（最下段の `prt_song()` と同じ。日本語は元から付かない）。
+std::string song_label(const char *name)
+{
+    std::string text = to_utf8(name);
+    static const char kPrefix[] = "Song of ";
+    if ((sq_lang_enabled() == 0) && (text.compare(0, sizeof(kPrefix) - 1, kPrefix) == 0)) {
+        text.erase(0, sizeof(kPrefix) - 1);
+    }
+    return text;
+}
+
+//! 常時の効果の表の 1 行。`bit` は `sq_status_state::perm_mask` の桁（`SQ_PERM_*`）。
+struct PermRow {
+    int bit;
+    const char *key;
+    const char *ja;
+    const char *en;
+};
+
+const PermRow kPermRows[] = {
+    { SQ_PERM_SUST_STR, "sust_str", "腕力の維持", "Sustain Str" },
+    { SQ_PERM_SUST_DEX, "sust_dex", "敏捷の維持", "Sustain Dex" },
+    { SQ_PERM_SUST_CON, "sust_con", "耐久の維持", "Sustain Con" },
+    { SQ_PERM_SUST_GRA, "sust_wis", "恩寵の維持", "Sustain Gra" }, // 恩寵（Grace）に当たる維持の絵は無いので、賢さの維持の絵を使う
+    { SQ_PERM_RES_COLD, "res_cold", "冷気耐性", "Resist Cold" },
+    { SQ_PERM_RES_FIRE, "res_fire", "火耐性", "Resist Fire" },
+    { SQ_PERM_RES_ELEC, "res_elec", "電撃耐性", "Resist Elec" },
+    { SQ_PERM_RES_POIS, "res_pois", "毒耐性", "Resist Poison" },
+    { SQ_PERM_RES_FEAR, "res_fear", "恐怖耐性", "Resist Fear" },
+    { SQ_PERM_RES_BLIND, "res_blind", "盲目耐性", "Resist Blind" },
+    { SQ_PERM_RES_CONFU, "res_conf", "混乱耐性", "Resist Conf" },
+    { SQ_PERM_RES_STUN, "res_stun", "朦朧耐性", "Resist Stun" },
+    { SQ_PERM_SLOW_DIGEST, "slow_digest", "腹持ち", "Sustenance" },
+    { SQ_PERM_LIGHT, "lite", "明かり", "Light" },
+    { SQ_PERM_REGEN, "regeneration", "傷の塞がり", "Regeneration" },
+    { SQ_PERM_SEE_INVIS, "senseunseen", "透明を見る", "See Invisible" },
+    { SQ_PERM_FREE_ACT, "free_act", "動きの自由", "Free Action" },
+    { SQ_PERM_SLAY_ORC, "slay_orc", "オーク殺し", "Slay Orc" },
+    { SQ_PERM_SLAY_TROLL, "slay_troll", "トロル殺し", "Slay Troll" },
+    { SQ_PERM_SLAY_WOLF, "slay_animal", "狼殺し", "Slay Wolf" }, // 狼・蜘蛛の絵は無いので、動物倍打の絵を使う
+    { SQ_PERM_SLAY_SPIDER, "slay_animal", "蜘蛛殺し", "Slay Spider" },
+    { SQ_PERM_SLAY_UNDEAD, "slay_undead", "不死者殺し", "Slay Undead" },
+    { SQ_PERM_SLAY_RAUKO, "slay_demon", "魔霊殺し", "Slay Rauko" }, // 魔霊（Rauko）はデーモンに当たる
+    { SQ_PERM_SLAY_DRAGON, "slay_dragon", "竜殺し", "Slay Dragon" },
+    { SQ_PERM_SKILL_MEL, "blows", "打撃上昇", "Melee Up" },
+    { SQ_PERM_SKILL_ARC, "xtra_shots", "射撃上昇", "Archery Up" },
+    { SQ_PERM_SKILL_STL, "stealth", "隠密上昇", "Stealth Up" },
+    { SQ_PERM_SKILL_PER, "search", "知覚上昇", "Perception Up" },
+    { SQ_PERM_SKILL_WIL, "magic_mastery", "意志上昇", "Will Up" },
+};
+
+//! 材料（`sq_read_status()`）→ アイコンの並び。並びは (1) 速さ (2) 最下段 (3) 歌 (4) 知らされる状態 (5) 常時の効果。
+std::vector<StatusEffectView> build_status_effects(const sq_status_state &st)
+{
+    constexpr StatusEffectKind Good = StatusEffectKind::Good;
+    constexpr StatusEffectKind Bad = StatusEffectKind::Bad;
+    constexpr StatusEffectKind Special = StatusEffectKind::Special;
+    std::vector<StatusEffectView> out;
+    if (st.in_game == 0) {
+        return out;
+    }
+
+    // (1) 速さ。原作は「Fast」「Slow」の字だけで数字を出さない（効果量は空）。
+    if (st.speed_stage > 0) {
+        add_status(out, "haste", ja_en("加速", "Fast"), Good);
+    } else if (st.speed_stage < 0) {
+        add_status(out, "slow", ja_en("鈍足", "Slow"), Bad);
+    }
+
+    // (2) 最下段。朦朧 → 空腹 → 盲目・混乱・恐怖・毒・切り傷 → 幻惑・鍛冶・矢作り・隠密行動。
+    switch (st.stun_stage) {
+    case 1: add_status(out, "stun", ja_en("よろけ", "Stun"), Bad); break;
+    case 2: add_status(out, "stun", ja_en("朦朧", "Heavy stun"), Bad); break;
+    case 3: add_status(out, "stun", ja_en("昏倒", "Knocked out"), Bad); break;
+    default: break;
+    }
+    switch (st.hunger_stage) {
+    case 1: add_status(out, "hungry", ja_en("空腹", "Hungry"), Bad); break;
+    case 2: add_status(out, "hungry", ja_en("衰弱", "Weak"), Bad); break;
+    case 3: add_status(out, "hungry", ja_en("飢餓", "Starving"), Bad); break;
+    case 4: add_status(out, "hungry", ja_en("満腹", "Full"), Bad); break;
+    default: break;
+    }
+    if (st.blind > 0) add_status(out, "blind", ja_en("盲目", "Blind"), Bad);
+    if (st.confused > 0) add_status(out, "confused", ja_en("混乱", "Confused"), Bad);
+    if (st.afraid > 0) add_status(out, "afraid", ja_en("恐怖", "Afraid"), Bad);
+    if (st.poisoned > 0) add_status(out, "poisoned", ja_en("毒", "Poisoned"), Bad);
+    if (st.cut_stage == 1) add_status(out, "cut", ja_en("出血", "Bleeding"), Bad);
+    if (st.cut_stage >= 2) add_status(out, "cut", ja_en("致命傷", "Mortal wound"), Bad);
+    if (st.entranced > 0) add_status(out, "paralyzed", ja_en("幻惑", "Entranced"), Bad);
+    if (st.smithing > 0) add_status(out, "sq_smithing", ja_en("鍛冶中", "Smithing"), Special);
+    if (st.fletching > 0) add_status(out, "sq_fletching", ja_en("矢作り", "Fletching"), Special);
+    if (st.stealth_mode != 0) add_status(out, "stealth", ja_en("隠密行動", "Stealth"), Good);
+
+    // (3) 歌。主旋律（1 曲目）と副旋律（織り合わせの 2 曲目）。
+    if ((st.song1 >= 0) && (st.song1 < kSongCount)) add_status(out, kSongKeys[st.song1], song_label(st.song1_name), Good);
+    if ((st.song2 >= 0) && (st.song2 < kSongCount)) add_status(out, kSongKeys[st.song2], song_label(st.song2_name), Good);
+
+    // (4) メッセージで知らされる一時的な状態。
+    if (st.image > 0) add_status(out, "hallucination", ja_en("幻覚", "Hallucinating"), Bad);
+    static const char *const kStatJa[] = { "腕力上昇", "敏捷上昇", "耐久上昇", "恩寵上昇" };
+    static const char *const kStatEn[] = { "Str Up", "Dex Up", "Con Up", "Gra Up" };
+    for (int i = 0; i < 4; ++i) {
+        if (st.tmp_stat[i] > 0) add_status(out, "buildup", ja_en(kStatJa[i], kStatEn[i]), Good);
+    }
+    if (st.tim_invis > 0) add_status(out, "senseunseen", ja_en("透明視", "See Invisible"), Good);
+    if (st.oppose_fire > 0) add_status(out, "res_fire", ja_en("耐火", "Resist Fire"), Good);
+    if (st.oppose_cold > 0) add_status(out, "res_cold", ja_en("耐冷", "Resist Cold"), Good);
+    if (st.oppose_pois > 0) add_status(out, "res_pois", ja_en("耐毒", "Resist Poison"), Good);
+    if (st.tmp_per > 0) add_status(out, "sq_per_up", ja_en("知覚上昇", "Perception Up"), Good);
+    if (st.rage > 0) add_status(out, "berserk", ja_en("激怒", "Rage"), Good);
+    if (st.darkened > 0) add_status(out, "sq_darkened", ja_en("魔法の暗黒", "Darkened"), Bad);
+
+    // (5) 常時の効果（既知の旗だけ）。
+    for (const PermRow &row : kPermRows) {
+        if ((st.perm_mask & (1u << row.bit)) != 0u) {
+            add_status(out, row.key, ja_en(row.ja, row.en), StatusEffectKind::Permanent);
+        }
+    }
+    return out;
+}
+
+void fill_status_effects(GameFrame &frame)
+{
+    sq_status_state st;
+    (void)sq_read_status(&st);
+    frame.status_effects = build_status_effects(st);
+}
+
 /*!
  * @brief 左の状態列（K-28）・最下段の帯（K-32）・階層（K-33）をまとめて写す。
  * @details 読む相手の判断（別画面なら直前の値）が同じなので 1 か所に置く。
@@ -679,6 +979,7 @@ uint16_t translate_feature_flags(unsigned short bits)
         { SQ_FEAT_PASSABLE, CELL_FEAT_PASSABLE },
         { SQ_FEAT_ROOM, CELL_FEAT_ROOM },
         { SQ_FEAT_GLOWING, CELL_FEAT_GLOWING },
+        { SQ_FEAT_SHAFT, CELL_FEAT_SHAFT },
     };
 
     uint16_t out = 0;
@@ -713,6 +1014,29 @@ uint8_t translate_minimap_kind(unsigned char kind)
     }
 }
 
+/*!
+ * @brief そのマスの絵を決める（設計 §5）。
+ * @details 優先は **@ → 見えている敵 → 落ちている品 → 地形**で、変愚の
+ * `presentation_bridge.cpp::resolve_tile_index()` と同じ順である（画面側は
+ * 1 マスに 1 枚しか立てないので、順番を変えると敵が床で塗り潰される）。
+ *
+ * **実体が居て絵が無いときは 0 を返す**（`sq_manifest.h` の「索引 0 のまま」）。
+ * 画面側のアスキー実体が `ascii_fallback` から文字の板を立てて拾う。
+ *
+ * > **かつてここは地形の索引を返していた**（2026-08-21 に直した）。`tile_index` を
+ * > 読むのは画面側の `entity_view.cpp` **だけ**で、そこは「実体が居るマス」しか見ない
+ * > ——地形は `terrain_id` から別に描かれる。だから地形の索引を返すと、画面側はそれを
+ * > **実体の板の番号として** `slab_library` へ持って行く。地形に板（`.vox`）は無いので
+ * > 必ず外れ、何も描かれないまま `警告: タイル欠け` が出る。チュートリアルの床の覚え書き
+ * > （`~`）がまるごと消えていたのがこれである。
+ * >
+ * > 名前がたまたま板と一致すれば、今度は**地形の絵が実体として立つ**——無いより悪い。
+ * > 0 を返すことと嘘の索引を返すことは違う。
+ *
+ * @param src そのマス
+ * @param is_player @ の居るマスか（位置は `fill_map` が知っている）
+ * @param[out] under 実体を立てたときに**足元へ敷く地形**の索引。実体が無ければ 0
+ */
 /*!
  * @brief **Sil-Q の feat を、画面側が読む地形番号へ名寄せする**（2026-08-22）。
  *
@@ -749,29 +1073,6 @@ uint16_t align_terrain_id(uint16_t feat)
     return g_manifest->voxel_terrain(static_cast<int>(feat), feat);
 }
 
-/*!
- * @brief そのマスの絵を決める（設計 §5）。
- * @details 優先は **@ → 見えている敵 → 落ちている品 → 地形**で、変愚の
- * `presentation_bridge.cpp::resolve_tile_index()` と同じ順である（画面側は
- * 1 マスに 1 枚しか立てないので、順番を変えると敵が床で塗り潰される）。
- *
- * **実体が居て絵が無いときは 0 を返す**（`sq_manifest.h` の「索引 0 のまま」）。
- * 画面側のアスキー実体が `ascii_fallback` から文字の板を立てて拾う。
- *
- * > **かつてここは地形の索引を返していた**（2026-08-21 に直した）。`tile_index` を
- * > 読むのは画面側の `entity_view.cpp` **だけ**で、そこは「実体が居るマス」しか見ない
- * > ——地形は `terrain_id` から別に描かれる。だから地形の索引を返すと、画面側はそれを
- * > **実体の板の番号として** `slab_library` へ持って行く。地形に板（`.vox`）は無いので
- * > 必ず外れ、何も描かれないまま `警告: タイル欠け` が出る。チュートリアルの床の地形の記憶
- * > （`~`）がまるごと消えていたのがこれである。
- * >
- * > 名前がたまたま板と一致すれば、今度は**地形の絵が実体として立つ**——無いより悪い。
- * > 0 を返すことと嘘の索引を返すことは違う。
- *
- * @param src そのマス
- * @param is_player @ の居るマスか（位置は `fill_map` が知っている）
- * @param[out] under 実体を立てたときに**足元へ敷く地形**の索引。実体が無ければ 0
- */
 uint16_t resolve_tile_index(const sq_map_cell &src, bool is_player, uint16_t &under)
 {
     under = 0;
@@ -798,6 +1099,17 @@ uint16_t resolve_tile_index(const sq_map_cell &src, bool is_player, uint16_t &un
     }
     /* 品は**いま照明があるとき**だけ（記憶のマスに品の絵を残さない。変愚と同じ）。 */
     if ((src.object_id != 0) && (src.light_level >= 2)) {
+        /*
+         * 正体の分からないアイテム。`object_unaware_category`
+         * は `sq_shim.c` の `sq_unaware_category()` が既に判定済み（0 = 対象外）。
+         */
+        if (src.object_unaware_category != 0) {
+            const auto category = static_cast<presentation::UnawareItemCategory>(src.object_unaware_category);
+            if (const uint16_t ut = g_manifest->lookup_unaware_representative(category)) {
+                under = terrain;
+                return ut;
+            }
+        }
         if (const uint16_t ot = g_manifest->lookup_object(static_cast<int>(src.object_id))) {
             under = terrain;
             return ot;
@@ -840,7 +1152,7 @@ void fill_map(GameFrame &frame)
     int oy = py - (view_h / 2);
     /*
      * **コアが @ から離れた所を見ているなら、そちらへ窓を移す**
-     * （2026-08-26 に気づいた「地図を動かすモードに入るもキー入力をしても画面変化なし」）。
+     * （気づいたこと 2026-08-26「地図を動かすモードに入るもキー入力をしても画面変化なし」）。
      *
      * `L`（`do_cmd_locate`。`cmd3.c:1966`）は `p_ptr->wy` / `wx` を 1 画面ぶんずつ動かすだけで、
      * **@ は動かない**。画面側は @ を中心に窓を切っているので、そのままでは
@@ -854,7 +1166,7 @@ void fill_map(GameFrame &frame)
     if (frame.camera_detached) {
         /*
          * **`L`（地図を動かす）の最中は、コアの区画へ窓を移す**
-         * （2026-08-26 に気づいた「地図を動かすモードに入るもキー入力をしても画面変化なし」）。
+         * （気づいたこと 2026-08-26「地図を動かすモードに入るもキー入力をしても画面変化なし」）。
          *
          * `do_cmd_locate()` が動かすのは `p_ptr->wy` / `wx` だけで **@ は動かない**。
          * 画面側は @ を中心に窓を切っているので、そのままでは 1 画素も変わらなかった。
@@ -870,7 +1182,7 @@ void fill_map(GameFrame &frame)
         if ((sq_panel_view(&panel_x, &panel_y, &panel_w, &panel_h) == SQ_OK) && (panel_w > 0)
             && (panel_h > 0)) {
             /*
-             * **区画の真ん中へ置くが、階の端では端へ寄せる**（2026-08-26 に気づいた
+             * **区画の真ん中へ置くが、階の端では端へ寄せる**（気づいたこと 2026-08-26
              * 「キャラはマップ中ごろにいるので画面に移っていない左側の踏破済み箇所はある」）。
              *
              * こちらの窓（45 マス）はコアの区画（66 マス）より**狭い**ので、真ん中へ
@@ -911,8 +1223,18 @@ void fill_map(GameFrame &frame)
     }
 
     frame.cells.reserve(static_cast<std::size_t>(n));
+    /*
+     * プレイヤの光で照らされた（暗黒側なら暗くされた）マスのビット列（`LightingState::player_lit`）。
+     * `cells` と同じ並び・1 マス 1 ビット・下位ビットから。**送るかどうかは光源の種類が決める**
+     * ので、ここでは作るだけで、`fill_floor_and_lighting()` が種類を見て確定する（光が無ければ捨てる）。
+     */
+    std::vector<std::uint8_t> player_lit((static_cast<std::size_t>(n) + 7u) / 8u, 0u);
     for (int i = 0; i < n; ++i) {
         const sq_map_cell &src = raw[static_cast<std::size_t>(i)];
+        if (src.player_lit != 0) {
+            player_lit[static_cast<std::size_t>(i) >> 3] = static_cast<std::uint8_t>(
+                player_lit[static_cast<std::size_t>(i) >> 3] | (1u << (static_cast<unsigned>(i) & 7u)));
+        }
         MapCellView cell{};
         cell.gx = src.gx;
         cell.gy = src.gy;
@@ -936,6 +1258,7 @@ void fill_map(GameFrame &frame)
         /* `graf_*` は -1 固定（設計 §4 の表）。 */
         frame.cells.push_back(cell);
     }
+    frame.lighting.player_lit = std::move(player_lit);
 
     /*
      * 一過性の重ね書き（SQ-2。`sq_shim.h` の `sq_read_overlay()`）。
@@ -1012,6 +1335,7 @@ void fill_floor_and_lighting(GameFrame &frame)
 {
     sq_floor_info info{};
     if (sq_read_floor_info(&info) != SQ_OK) {
+        frame.lighting.player_lit.clear(); // 光の種類が分からないなら、照らされたマスも送らない
         return;
     }
 
@@ -1040,6 +1364,15 @@ void fill_floor_and_lighting(GameFrame &frame)
     frame.lighting.day_minute = 0;
     frame.lighting.daytime = false;
     frame.lighting.light_radius = info.light_radius;
+    /*
+     * 光の届く範囲。
+     * 種類は `SQ_LIGHT_*`（`LightingState::light_kind` と同じ値。5 = 暗黒側）。
+     * 光が無い（0）なら照らされたマスも送らない（画面側は従来どおり点光源の減衰だけで描く）。
+     */
+    frame.lighting.light_kind = static_cast<std::uint8_t>(info.light_kind);
+    if (info.light_kind == SQ_LIGHT_NONE) {
+        frame.lighting.player_lit.clear();
+    }
 }
 
 /*!
@@ -1100,6 +1433,16 @@ void fill_sounds(GameFrame &frame)
     }
 }
 
+/*!
+ * @brief 溜まっている魔法・矢の効果を `frame.projections`・`frame.missiles` へ移す（`named_attack_fx.h`）。**汲んだら空になる**。
+ * @details 矢は 1 歩ごとに仮置きされ、命令待ち（`sq_awaiting_command()`＝動きの終わり）で確定する。
+ * 入力待ちの 10ms ごとのフレームで、飛行中の 1 発が途中で割れないようにするため。
+ */
+void fill_attack_fx(GameFrame &frame)
+{
+    attack_fx::glue::take_into(frame, sq_awaiting_command() != 0);
+}
+
 } // namespace
 
 void set_view_size(int w, int h)
@@ -1118,6 +1461,160 @@ void set_camera_follow_player(bool follow)
 void set_tile_manifest(const TileManifest *manifest)
 {
     g_manifest = manifest;
+}
+
+int status_selftest(char *err, int cap, int *checked)
+{
+    int failures = 0;
+    if (checked != nullptr) {
+        *checked = 0;
+    }
+    const auto fail = [&](const std::string &what) {
+        ++failures;
+        if ((failures == 1) && (err != nullptr) && (cap > 0)) {
+            std::snprintf(err, static_cast<std::size_t>(cap), "%s", what.c_str());
+        }
+    };
+
+    // 画面側の表（環境変数に絶対パスがあるときだけ読む。関門が渡す）。
+    std::set<std::string> table;
+    if (const char *path = std::getenv("HENGBAND_STATUS_ICON_TABLE")) {
+        std::ifstream in(path);
+        std::string line;
+        while (std::getline(in, line)) {
+            const std::size_t open = line.find("{ \"");
+            if (open == std::string::npos) continue;
+            const std::size_t close = line.find('"', open + 3);
+            if (close != std::string::npos) table.insert(line.substr(open + 3, close - (open + 3)));
+        }
+    }
+    const auto check_key = [&](const std::string &key) {
+        if (table.empty()) return;
+        if (checked != nullptr) ++*checked;
+        if (table.count(key) == 0) fail("key not in the icon table: " + key);
+    };
+
+    // 常時の効果の表が、旗の桁を欠けなく 1 度ずつ覆っている（表の桁と `SQ_PERM_*` の個数が合う）。
+    unsigned int covered = 0;
+    for (const PermRow &row : kPermRows) {
+        if ((row.bit < 0) || (row.bit >= SQ_PERM_COUNT)) fail(std::string("perm row out of range: ") + row.key);
+        covered |= 1u << row.bit;
+        check_key(row.key);
+    }
+    for (int bit = 0; bit < SQ_PERM_COUNT; ++bit) {
+        if ((covered & (1u << bit)) == 0u) fail("perm bit without a row: " + std::to_string(bit));
+    }
+    for (const char *key : kSongKeys) check_key(key);
+
+    // 材料 → アイコン。実機で作りにくい組み合わせも含めて、1 つずつ照合する。
+    const auto base = []() {
+        sq_status_state st;
+        std::memset(&st, 0, sizeof(st));
+        st.in_game = 1;
+        st.song1 = -1;
+        st.song2 = -1;
+        return st;
+    };
+    const auto describe = [](const std::vector<StatusEffectView> &list) {
+        std::string text;
+        for (const StatusEffectView &e : list) {
+            text += e.key + ":" + std::to_string(static_cast<int>(e.kind)) + " ";
+        }
+        return text;
+    };
+    const auto label_is_utf8 = [](const std::string &text) {
+        for (std::size_t i = 0; i < text.size();) {
+            const unsigned char c = static_cast<unsigned char>(text[i]);
+            const std::size_t n = (c < 0x80) ? 1 : ((c >= 0xC2) && (c <= 0xDF)) ? 2 : ((c >= 0xE0) && (c <= 0xEF)) ? 3 : ((c >= 0xF0) && (c <= 0xF4)) ? 4 : 0;
+            if ((n == 0) || (i + n > text.size())) return false;
+            for (std::size_t k = 1; k < n; ++k) {
+                if ((static_cast<unsigned char>(text[i + k]) & 0xC0) != 0x80) return false;
+            }
+            i += n;
+        }
+        return true;
+    };
+    const auto expect = [&](const char *what, const sq_status_state &st, const std::string &want) {
+        const std::vector<StatusEffectView> got = build_status_effects(st);
+        const std::string text = describe(got);
+        if (text != want) {
+            fail(std::string(what) + ": want [" + want + "] got [" + text + "]");
+        }
+        for (const StatusEffectView &e : got) {
+            check_key(e.key);
+            if (e.label_utf8.empty()) fail(std::string(what) + ": empty label for " + e.key);
+            // 名前が UTF-8 として正しい（修-37。CP932 のまま入ると不正なバイト列になる）。日本語層が起きているときは、
+            // 歌（原作の名前を `song_label()` が通す。このテストでは ASCII の仮の名前）以外は非 ASCII を含む。
+            if (!label_is_utf8(e.label_utf8)) fail(std::string(what) + ": label is not valid UTF-8 for " + e.key);
+            const bool ascii_only = std::all_of(e.label_utf8.begin(), e.label_utf8.end(), [](char c) { return static_cast<unsigned char>(c) < 0x80; });
+            if ((sq_lang_enabled() != 0) && ascii_only && (e.key.compare(0, 8, "sq_song_") != 0)) {
+                fail(std::string(what) + ": label is not Japanese for " + e.key);
+            }
+        }
+    };
+
+    expect("nothing", base(), "");
+    {
+        sq_status_state st = base();
+        st.in_game = 0;
+        st.blind = 1;
+        st.perm_mask = ~0u;
+        expect("not in game", st, "");
+    }
+    { sq_status_state st = base(); st.speed_stage = 1; expect("fast", st, "haste:0 "); }
+    { sq_status_state st = base(); st.speed_stage = -1; expect("slow", st, "slow:1 "); }
+    { sq_status_state st = base(); st.stun_stage = 1; expect("stun", st, "stun:1 "); }
+    { sq_status_state st = base(); st.stun_stage = 3; expect("knocked out", st, "stun:1 "); }
+    for (int stage = 1; stage <= 4; ++stage) {
+        sq_status_state st = base();
+        st.hunger_stage = stage;
+        expect("hunger", st, "hungry:1 ");
+    }
+    { sq_status_state st = base(); st.blind = 5; expect("blind", st, "blind:1 "); }
+    { sq_status_state st = base(); st.confused = 5; expect("confused", st, "confused:1 "); }
+    { sq_status_state st = base(); st.afraid = 5; expect("afraid", st, "afraid:1 "); }
+    { sq_status_state st = base(); st.poisoned = 5; expect("poisoned", st, "poisoned:1 "); }
+    { sq_status_state st = base(); st.cut_stage = 1; expect("bleeding", st, "cut:1 "); }
+    { sq_status_state st = base(); st.cut_stage = 2; expect("mortal wound", st, "cut:1 "); }
+    { sq_status_state st = base(); st.entranced = 3; expect("entranced", st, "paralyzed:1 "); }
+    { sq_status_state st = base(); st.smithing = 9; expect("smithing", st, "sq_smithing:3 "); }
+    { sq_status_state st = base(); st.fletching = 9; expect("fletching", st, "sq_fletching:3 "); }
+    { sq_status_state st = base(); st.stealth_mode = 1; expect("stealth mode", st, "stealth:0 "); }
+    { sq_status_state st = base(); st.image = 9; expect("hallucination", st, "hallucination:1 "); }
+    { sq_status_state st = base(); st.tmp_stat[0] = 3; st.tmp_stat[3] = 3; expect("stat up", st, "buildup:0 buildup:0 "); }
+    { sq_status_state st = base(); st.tim_invis = 9; expect("see invisible", st, "senseunseen:0 "); }
+    { sq_status_state st = base(); st.oppose_fire = 9; st.oppose_cold = 9; st.oppose_pois = 9; expect("oppose", st, "res_fire:0 res_cold:0 res_pois:0 "); }
+    { sq_status_state st = base(); st.tmp_per = 9; expect("perception", st, "sq_per_up:0 "); }
+    { sq_status_state st = base(); st.rage = 9; expect("rage", st, "berserk:0 "); }
+    { sq_status_state st = base(); st.darkened = 9; expect("darkened", st, "sq_darkened:1 "); }
+    for (int song = 0; song < kSongCount; ++song) {
+        sq_status_state st = base();
+        st.song1 = song;
+        std::snprintf(st.song1_name, sizeof(st.song1_name), "Song of Test");
+        expect("song", st, std::string(kSongKeys[song]) + ":0 ");
+    }
+    {
+        sq_status_state st = base();
+        st.song1 = 0;
+        st.song2 = 7;
+        std::snprintf(st.song1_name, sizeof(st.song1_name), "Song of A");
+        std::snprintf(st.song2_name, sizeof(st.song2_name), "Song of B");
+        expect("woven themes", st, "sq_song_elbereth:0 sq_song_trees:0 ");
+    }
+    for (const PermRow &row : kPermRows) {
+        sq_status_state st = base();
+        st.perm_mask = 1u << row.bit;
+        expect("permanent", st, std::string(row.key) + ":4 ");
+    }
+    if ((checked != nullptr) && !table.empty() && (*checked == 0)) {
+        fail("no key was compared with the icon table");
+    }
+    return failures;
+}
+
+int status_perm_row_count()
+{
+    return static_cast<int>(sizeof(kPermRows) / sizeof(kPermRows[0]));
 }
 
 GameFrame capture_frame(unsigned long long frame_id)
@@ -1146,6 +1643,11 @@ GameFrame capture_frame(unsigned long long frame_id)
     frame.menu_open = !generated || dead || ((screen & (SQ_SCREEN_ICKY | SQ_SCREEN_XTRA)) != 0)
         || ((screen & SQ_SCREEN_DUNGEON) == 0);
     frame.pre_game_menu = !generated || dead;
+    frame.game_over = dead; //!< 死亡・引退のあとの画面。題と phase を誕生と分ける（修-10）。
+    presentation::apply_native_targeting_frame(frame);
+
+    if(dead && generated && sq_native_look_map_active()){frame.menu_open=false;frame.pre_game_menu=false;frame.game_over=false;}
+
     /*
      * `title_screen` は「タイトル画を敷いてよい間」。Sil-Q には
      * `display_introduction()` と `initial_menu()` があるが、宣言口が無いので
@@ -1169,16 +1671,36 @@ GameFrame capture_frame(unsigned long long frame_id)
      * 通らない＝ icky にならないので、Term ミラーには 1 行も出てこない
      * （M0.5 §1.5 の「いちばん踏みやすい罠」）。行 0 を直に読む。
      */
+    {
+        std::vector<MenuChoice> choices;int row=0,column=0,selected=0,key=0;const char *label=nullptr;
+        for(int index=0;sq_save_menu_entry(index,&row,&column,&selected,&key,&label);++index) {
+            MenuChoice choice;choice.line_index=-1;choice.key=key;choice.selected=selected!=0;choice.description_utf8=sjis_to_utf8(std::string(sq_save_menu_description()));
+            choice.label_utf8=sjis_to_utf8(std::string(label));
+            for(size_t i=0;i<frame.menu_term_lines.size();++i)if(frame.menu_term_lines[i].source_row==row) {
+                choice.line_index=int(i);choice.span_begin=int(presentation::modern_column_byte(frame.menu_term_lines[i].text_utf8,column));
+                choice.span_len=int(frame.menu_term_lines[i].text_utf8.size())-choice.span_begin;
+                // A second save column is a separate choice.
+                const auto gap=frame.menu_term_lines[i].text_utf8.find("  ",choice.span_begin);
+                if(gap!=std::string::npos)choice.span_len=int(gap)-choice.span_begin;
+                break;
+            }
+            if(choice.selected){frame.menu_core_cursor=choice;frame.menu_core_cursors.assign(1,choice);}
+            choices.push_back(std::move(choice));
+        }
+        if(!choices.empty())frame.menu_choices=std::move(choices);
+    }
     fill_row0_prompt(frame);
 
     fill_hud(frame);
     fill_messages(frame);
+    fill_status_effects(frame); //!<。名前は原作の最下段の字・歌は `b_name`
+    fill_attack_fx(frame); //!< 
     fill_status_col(frame);
     fill_map(frame);
     fill_floor_and_lighting(frame);
     /* 効果音。汲んだら消える。 */
     fill_sounds(frame);
-    /* 周囲の地形の内訳。 */
+    /* 周囲の地形の内訳（環境音の層）。 */
     fill_surroundings(frame);
     /*
      * サブパネル 7 枚（M0.5 ②。`sq_sub_panels.h`）。**種類を当てるのもここ**——
@@ -1196,6 +1718,22 @@ GameFrame capture_frame(unsigned long long frame_id)
      * 打鍵が合成へ吸われる（SH-07）。非 ASCII を送る門も同じ旗である（SH-31）。
      */
     frame.text_input_active = (sq_text_input_active() != 0);
+    if (frame.text_input_active && frame.menu_open) {
+        bool saw_enter_name = false;
+        bool saw_tab_random = false;
+        for (const auto &line : frame.menu_term_lines) {
+            // These key labels deliberately stay ASCII in both English and
+            // Japanese Sil-Q.  Matching the translated prose itself here is
+            // unsafe because the adapter source is transcoded to CP932 for
+            // legacy builds before compilation.
+            if (line.text_utf8.find("Enter ") != std::string::npos) saw_enter_name = true;
+            if (line.text_utf8.find("Tab ") != std::string::npos) saw_tab_random = true;
+        }
+        const bool player_name_screen = saw_enter_name && saw_tab_random;
+        frame.player_name_input_active = player_name_screen;
+        // Fix 57: the name is edited by the core itself now (askfor_name() takes japanese), so no side-store edit is started.
+        // Characters made by the older side-store are still read: see the HUD name above and the save picker.
+    }
     /*
      * **いま次の命令を待っているか**（2026-08-23。`sq_awaiting_command()` の註記）。
      * 画面側はこの旗が立っているときだけ A を「コマンドメニューを開く」に使う。
@@ -1203,7 +1741,40 @@ GameFrame capture_frame(unsigned long long frame_id)
      */
     frame.awaiting_command = (sq_awaiting_command() != 0);
 
+    /* The top command menu and a child prompt must never own the same input.
+     * Re-check the fully interpreted frame rather than relying only on the
+     * legacy inkey flag. */
+    if (frame.menu_open || frame.pre_game_menu || frame.text_input_active
+        || frame.numeric.active || !frame.prompt.choices.empty()) {
+        frame.awaiting_command = false;
+    }
+
+    presentation::apply_native_targeting_frame(frame);
     return frame;
 }
 
+bool attack_fx_ready()
+{
+    return attack_fx::glue::ready(sq_awaiting_command() != 0);
+}
+
 } // namespace sq
+
+/* ==================================================================== 魔法・投射物の効果（C から呼ばれる入口。`sq_shim.c`） */
+
+extern "C" void sq_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y,
+    int impact_x, int flags, const int *path, int path_n, const int *area, int area_n)
+{
+    attack_fx::glue::projection(&attack_fx::silq_look_name, origin, shape, attr, rad, src_y, src_x, impact_y, impact_x, flags,
+        path, path_n, area, area_n);
+}
+
+extern "C" void sq_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x)
+{
+    attack_fx::glue::missile_step(first, kind, item_id, brand, src_y, src_x, y, x);
+}
+
+extern "C" void sq_named_fx_missile_hit(void)
+{
+    attack_fx::glue::missile_hit();
+}

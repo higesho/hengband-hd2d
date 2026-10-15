@@ -19,6 +19,7 @@
 #include "xr/xr_math.h"
 #include "app/app_clock.h"
 #include "ui/game_hud.h"
+#include "ui/modern_frame_adapter.h"
 #include "ui/combat_fx_view.h"
 #include "render/term_colors.h"
 #include "frame/frame_codec.h"
@@ -142,7 +143,7 @@ ArenaWatch apply_arena_watch(const GameFrame &frame, bool force, bool first_pers
  * （`net/core_link.cpp` の `dispatch()` と対になっている）。
  */
 void take_core_tables(CoreLink &link, TileCatalog &tile_catalog,
-    std::vector<PadCommand> &pad_commands, PadMacroFlags &pad_macros,
+    std::vector<PadCommand> &pad_commands, std::string &pad_keymap, PadMacroFlags &pad_macros,
     Hd2dSettings &settings, std::vector<SubPanelKindChoice> &sub_panel_kind_choices)
 {
     // (0) コアから届いた表。**`asset_manifest` はビルボードの目録**（v1 §8.2）。
@@ -168,6 +169,12 @@ void take_core_tables(CoreLink &link, TileCatalog &tile_catalog,
             std::string table_err;
             if (presentation::decode_pad_commands(payload, table, table_err)) {
                 const bool rogue = (table.current_keymap == "rogue");
+                /*
+                 * いまのキー配置の種類（"original" / "rogue"）。照準の画面と視点の回転が、
+                 * ローグライクの方向の文字（hjklyubn）を方向として読むのに使う（2026-10-07）。
+                 * **割り当ては番号（`id`）で持つ**ので、ここが変わっても割り当ては動かない。
+                 */
+                pad_keymap = table.current_keymap;
                 pad_commands.clear();
                 for (const auto &entry : table.entries) {
                     PadCommand command;
@@ -187,13 +194,17 @@ void take_core_tables(CoreLink &link, TileCatalog &tile_catalog,
                  * **既定の割り当ては表が届いてから**（2026-08-11 に決めた）。
                  * コアのコマンド `id` は実行時にしか分からないので、cfg を読んだ時点では
                  * 書けない。入れたことは cfg に覚えさせて、**2 度目からは触らない**
-                 * （触ると、利用者が外した割り当てが毎回復活する）。
+                 * （触ると、遊ぶ人が外した割り当てが毎回復活する）。
+                 *
+                 * 覚えるのは真偽ではなく**既定の版**（`kPadDefaultsVersion`）。前の版（1）の cfg は、
+                 * 前の版の既定のままの枠だけを今の既定へ移す（遊ぶ人が変えた枠は残す）。
                  */
-                if (!settings.pad_defaults_applied && !pad_commands.empty()) {
-                    settings.pad_defaults_applied = true;
-                    if (apply_default_pad_binds(settings.pad, pad_commands,
+                if (!pad_commands.empty()) {
+                    const int stored_version = settings.pad_defaults_version;
+                    if (upgrade_pad_defaults(settings.pad, settings.pad_defaults_version, pad_commands,
                             link.hello_ack().core_name)) {
-                        std::fprintf(stderr, "[hd2d] パッドの既定の割り当てを入れました（%s）\n",
+                        std::fprintf(stderr, "[hd2d] パッドの既定の割り当てを%s（%s）\n",
+                            (stored_version <= 0) ? "入れました" : "新しい版へ移しました",
                             settings.pad.to_line().c_str());
                     }
                 }
@@ -330,11 +341,11 @@ void place_vr_hud_panel(bool vr_frame_ready, xr::Session &xr, const xr::Frame &v
  * 色表を貰い、捨てたフレームから持ち越した縁と効果音を混ぜ、サブパネルの
  * 割り当てをコアと擦り合わせる。
  *
- * **色表はここで貰わないと、利用者が色を変えても 1 ドットも変わらない**
+ * **色表はここで貰わないと、遊ぶ人が色を変えても 1 ドットも変わらない**
  * （`render/term_colors.h`）。
  */
 void take_new_frame(CoreLink &link, GameFrame &frame, std::size_t &frame_bytes,
-    HudState &hud_state, CombatFxView &combat_fx, Hd2dSettings &settings,
+    HudState &hud_state, CombatFxView &combat_fx, AttackFxView &attack_fx, Hd2dSettings &settings,
     bool &sub_kinds_synced, const std::vector<SubPanelKindChoice> &sub_panel_kind_choices,
     const int (&sent_sub_kinds)[kUiSubPanels],
     Uint64 perf_freq, double &ms_decode)
@@ -343,7 +354,9 @@ void take_new_frame(CoreLink &link, GameFrame &frame, std::size_t &frame_bytes,
     std::string wire;
     bool carried_burst = false;
     std::vector<SoundEvent> carried_sounds;
-    if (link.take_latest_frame(wire, carried_burst, carried_sounds)) {
+    std::vector<ProjectionFx> carried_projections;
+    std::vector<MissileFx> carried_missiles;
+    if (link.take_latest_frame(wire, carried_burst, carried_sounds, carried_projections, carried_missiles)) {
         const Uint64 decode_start = clock::perf();
         GameFrame decoded{};
         std::string decode_err;
@@ -356,7 +369,7 @@ void take_new_frame(CoreLink &link, GameFrame &frame, std::size_t &frame_bytes,
             /*
              * 色表を取り込む。`&`（カラーの設定）と pref の `V:` 行はコアの
              * `angband_color_table` を書き換えるので、**ここで貰わないと
-             * 利用者が色を変えても 1 ドットも変わらない**（`render/term_colors.h`）。
+             * 遊ぶ人が色を変えても 1 ドットも変わらない**（`render/term_colors.h`）。
              */
             set_term_palette(frame.term_palette);
             if (carried_burst) {
@@ -373,8 +386,20 @@ void take_new_frame(CoreLink &link, GameFrame &frame, std::size_t &frame_bytes,
                     std::make_move_iterator(carried_sounds.begin()),
                     std::make_move_iterator(carried_sounds.end()));
             }
+            /*
+             * AH-01/AH-02 の直し。メッセージは持ち越さない。以前はここで捨てられたフレームの
+             * メッセージを頭へ足していたが、直近 N 行を毎フレーム丸ごと送るコア
+             * （変愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband・Rogue・Angband の全 6 本）では、
+             * 新しいフレームの本体に同じ行がすでに含まれているので、足すと二重に表示されていた
+             *。Angband も他の 5 本と同じく直近 8 行を毎フレーム
+             * 丸ごと送るようにそろえたので、`frame.messages` をそのまま描けば足りる。
+             */
             //! 新しい画面になったらカーソルを取り込む（P8。画面が変われば頭へ戻る）。
             hud_state.cursors.sync(frame);
+            prepare_modern_menu_frame(frame,settings.modern_ui,settings.lang);
+            hud_state.modern.sync(frame,settings.modern_ui);
+            hud_state.targeting.sync(frame.targeting);
+            hud_state.modern_theme=settings.modern_theme;
             /*
              * **コア側で変えられたサブパネルの中身を吸い上げる**（2026-08-19 に決めた
              * 「どちらで設定しても UI の設定に反映するように」）。
@@ -431,6 +456,14 @@ void take_new_frame(CoreLink &link, GameFrame &frame, std::size_t &frame_bytes,
              * 何度も拾って演出が止まらなくなる（コア側は汲んだら空にしている）。
              */
             combat_fx.push(frame.combat_fx, clock::ticks());
+            /*
+             * 攻撃の視覚効果（矢・弾・投げた物・魔法の玉・爆発）。
+             * これも**フレームが来たときだけ**取り込む（コア側は汲んだら空にしている。通し番号でも重複を除く）。
+             * 捨てられたフレームのぶんは古い順に先へ足す（効果音と同じ救済）。
+             */
+            carried_projections.insert(carried_projections.end(), frame.projections.begin(), frame.projections.end());
+            carried_missiles.insert(carried_missiles.end(), frame.missiles.begin(), frame.missiles.end());
+            attack_fx.push(carried_projections, carried_missiles, clock::ticks());
         } else {
             std::fprintf(stderr, "[hd2d] bad \"frame\": %s\n", decode_err.c_str());
         }

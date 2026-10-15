@@ -36,9 +36,19 @@ public:
     //! 索引を引く。未登録は nullptr。
     const TileEntry *find(std::uint16_t tile_index) const;
 
+    /*!
+     * @brief アイテムの番号（`MapCellView::object_id`／`MissileFx::item_id` と同じ番号）から、床のアイテムを描くのと
+     * 同じ絵の索引を引く。無ければ 0。
+     * @details 飛んでいく物の板（攻撃の視覚効果）が、床のアイテムと同じ板を使うための逆引き。
+     * 同じ番号に絵が複数あれば、いちばん小さい索引を返す。別名（`aliases`）の索引も引ける。
+     */
+    std::uint16_t find_item_tile(std::uint16_t item_id) const;
+
 private:
     bool present_{ false };
     std::unordered_map<std::uint16_t, TileEntry> entries_;
+    //! アイテム（`kind == 'K'`）の番号 → 索引。
+    std::unordered_map<std::uint16_t, std::uint16_t> item_tiles_;
 };
 
 } // namespace hd2d

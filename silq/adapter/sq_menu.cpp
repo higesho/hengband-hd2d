@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file sq_menu.cpp
  * @brief `sq_menu.h` の実装。
  *
@@ -22,6 +22,9 @@
  */
 
 #include "sq_menu.h"
+#include "bridge/symbol_prompt.h"
+#include "bridge/look_screen_cover.h"
+#include "frame/message_more.h"
 
 #include "sq_lang_c.h"
 #include "sq_shim.h"
@@ -29,6 +32,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <map>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -99,6 +103,7 @@ std::string term_row_utf8(int y)
     bool wide = false;
     for (int x = 0; x < n; ++x) {
         const auto lead = static_cast<unsigned char>(cells[x]);
+        if (lead >= 0x80) wide = true; // Half-width kana also use the core encoding.
         if (is_sjis_lead(lead) && ((x + 1) < n)) {
             sys.push_back(cells[x]);
             sys.push_back(cells[x + 1]);
@@ -151,19 +156,75 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
 {
     out = PromptBar{};
 
-    const std::string text = trim_right(raw);
-    static const std::string kSuffix = "[y/n]";
-    if ((text.size() <= kSuffix.size())
-        || (text.compare(text.size() - kSuffix.size(), kSuffix.size(), kSuffix) != 0)) {
-        return false;
+    const std::string text = presentation::strip_message_repeat_suffix(trim_right(raw));
+    /*
+     * 見る（照準の途中）の帯。行 0 の末尾の `[...]` は `xtra2.c` の `info` で、次の 5 通りがある:
+     * `(t)arget, (m)anual, <dir>` / `(m)anual, <dir>` / `(t)arget, (a)uto, <dir>` / `(a)uto, <dir>` /
+     * `<space>, <tab>, <dir>`。日本語ではカタログの訳が入る（`messages.ja.txt` の
+     * 「(t) 狙う, (m) 手動, <向き>」）ので、英語の綴りだけで照合すると日本語では帯が出なかった
+     * （2026-10-07。近くに何も無い所で見ると必ずこの形になる）。英語と訳の両方で照合し、
+     * 帯の字（見出し・選択肢・脚注）も日本語のときは日本語にする。
+     * 長い綴りが短い綴りを含む（`(t)arget, (m)anual, <dir>` ⊃ `(m)anual, <dir>`）ので、長いほうから当てる。
+     */
+    static const char *const kLookInfos[] = {
+        "(t)arget, (m)anual, <dir>", "(m)anual, <dir>", "(t)arget, (a)uto, <dir>", "(a)uto, <dir>", "<space>, <tab>, <dir>" };
+    const char *look_info = nullptr;
+    for (const char *const info : kLookInfos) {
+        const std::string translated = tr_utf8(info);
+        if ((text.find(info) != std::string::npos)
+            || (!translated.empty() && (translated != info) && (text.find(translated) != std::string::npos))) {
+            look_info = info;
+            break;
+        }
     }
-    const std::size_t begin = text.size() - kSuffix.size();
-
-    struct Option {
-        const char *label_ascii; //!< カタログの鍵。引けなければこのまま出る
-        char key;
-    };
-    static const Option kOptions[] = { { "Yes", 'y' }, { "No", 'n' } };
+    if (look_info != nullptr) {
+        // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない（`look_screen_cover.h`）。
+        if (presentation::look_screen_cover().covered(sq_screen_depth())) {
+            out = PromptBar{};
+            return false;
+        }
+        const bool ja = sq_lang_enabled() != 0;
+        const auto label = [ja](const char *en) -> std::string {
+            if (!ja) return en;
+            static const struct { const char *en; const char8_t *ja; } kTable[] = {
+                { "Look: ", u8"見る: " }, { "Manual mode", u8"手動モード" }, { "Automatic target mode", u8"自動モード" },
+                { "Select target", u8"ここを対象にする" }, { "Next interesting", u8"次の注目地点" },
+                { "Previous interesting", u8"前の注目地点" },
+                { "LB/RB: select action  A/Enter: run  D-pad: move look cursor", u8"LB/RB: 操作を選ぶ  A/Enter: 実行  十字キー: カーソル移動" } };
+            for (const auto &row : kTable) if (std::strcmp(row.en, en) == 0) return reinterpret_cast<const char *>(row.ja);
+            return en;
+        };
+        const auto add=[&](int key,const char *en){PromptChoice c{};c.key=key;c.label_utf8=label(en);if(!out.text_utf8.empty())out.text_utf8+="  ";out.text_utf8+='[';c.begin=static_cast<int>(out.text_utf8.size());out.text_utf8+=c.label_utf8;c.len=static_cast<int>(c.label_utf8.size());out.text_utf8+=']';out.choices.push_back(std::move(c));};
+        const std::string info(look_info);
+        out.text_utf8=label("Look: ");
+        /*
+         * 見ている物の説明。行 0 の頭にある「<名前> <状態> [(r)ecall, <info>]」（敵）や「<名前> [<info>]」（アイテム・地形）の
+         * `[` より前を、帯の見出しのすぐ後ろへ残す（`xtra2.c` の `target_set_interactive_aux`）。
+         * 選択肢だけを出すと、何を見ているか帯のどこにも出なかった（調-13）。
+         * 続きの待ちの印（`-more-`）は説明に含めない。
+         */
+        {
+            std::string subject;
+            if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
+            const auto trim=[](std::string &s){while(!s.empty()&&s.back()==' ')s.pop_back();std::size_t i=0;while(i<s.size()&&s[i]==' ')++i;s.erase(0,i);};
+            trim(subject);
+            for(const char *const more:{"-more-",reinterpret_cast<const char *>(u8"-続く-")}){const std::string m(more);if(subject.size()>=m.size()&&subject.compare(subject.size()-m.size(),m.size(),m)==0){subject.erase(subject.size()-m.size());trim(subject);}}
+            out.text_utf8+=subject;
+        }
+        if(info.find("(m)anual")!=std::string::npos)add('m',"Manual mode");
+        if(info.find("(a)uto")!=std::string::npos)add('a',"Automatic target mode");
+        if(info.find("(t)arget")!=std::string::npos)add('t',"Select target");
+        if(info.find("<space>")!=std::string::npos)add(' ',"Next interesting");
+        if(info.find("<tab>")!=std::string::npos)add('\t',"Previous interesting");
+        out.footer_utf8=label("LB/RB: select action  A/Enter: run  D-pad: move look cursor");
+        return !out.choices.empty();
+    }
+    if(text.size()<5)return false;
+    const std::size_t begin=text.size()-5;
+    if(text[begin]!='['||text[begin+4]!=']'||(text[begin+2]!='/'&&text[begin+2]!=',')
+        ||(text[begin+1]!='y'&&text[begin+1]!='Y')||(text[begin+3]!='n'&&text[begin+3]!='N'))return false;
+    struct Option {const char *label_ascii;char key;};
+    const Option kOptions[]={{"Yes",text[begin+1]},{"No",text[begin+3]}};
 
     PromptBar built;
     for (const Option &option : kOptions) {
@@ -421,7 +482,7 @@ struct ListCandidate {
  * 落ちている武器である——ので、**桁で束ねて長いほうを採る**。ここが
  * 「行 0 の字面だけで積まない」の担保でもある。
  */
-void collect_list_choices(GameFrame &frame, const std::vector<char> &expected)
+void collect_list_choices(GameFrame &frame, const std::vector<char> &expected,int only_column=-1)
 {
     int cols = 0;
     int rows = 0;
@@ -445,12 +506,13 @@ void collect_list_choices(GameFrame &frame, const std::vector<char> &expected)
             --end;
         }
         for (int x = 0; (x + 1) < end; ++x) {
+            if(only_column>=0&&x!=only_column)continue;
             const char label = cells[x];
             if ((cells[x + 1] != ')')
                 || (std::find(expected.begin(), expected.end(), label) == expected.end())) {
                 continue;
             }
-            if ((x > 0) && !cell_is_blank(cells[x - 1])) {
+            if ((only_column < 0) && (x > 0) && !cell_is_blank(cells[x - 1])) {
                 continue;
             }
             if (((x + 2) < end) && !cell_is_blank(cells[x + 2])) {
@@ -485,7 +547,7 @@ void collect_list_choices(GameFrame &frame, const std::vector<char> &expected)
             const auto at = std::find(expected.begin() + static_cast<std::ptrdiff_t>(cursor),
                 expected.end(), candidate.label);
             if (at == expected.end()) {
-                break; // 申告に無いか、もう通り過ぎた札。ここで打ち切る
+                break; // 名乗りに無いか、もう通り過ぎた札。ここで打ち切る
             }
             if (seq.empty() && (at != expected.begin())) {
                 break; // 一覧は必ず先頭の札から始まる
@@ -538,6 +600,10 @@ void collect_list_choices(GameFrame &frame, const std::vector<char> &expected)
 
         MenuChoice choice;
         choice.line_index = line_index;
+        if(only_column>=0){
+            choice.label_utf8=sjis_to_utf8(cells+candidate.col,n-candidate.col);
+            const auto gap=choice.label_utf8.find("   ",3);if(gap!=std::string::npos)choice.label_utf8.resize(gap);
+        }
         choice.span_begin = begin_byte;
         choice.span_len = (std::max)(0, end_byte - begin_byte);
         choice.key_begin = begin_byte;
@@ -549,7 +615,13 @@ void collect_list_choices(GameFrame &frame, const std::vector<char> &expected)
 
 } // namespace
 
+static void fill_row0_prompt_inner(GameFrame &frame);
 void fill_row0_prompt(GameFrame &frame)
+{
+    const presentation::LookScreenCover::Frame cover_frame(presentation::look_screen_cover()); // 見るの帯を作らなかったフレームで基準を忘れる
+    fill_row0_prompt_inner(frame);
+}
+static void fill_row0_prompt_inner(GameFrame &frame)
 {
     frame.prompt = PromptBar{};
     frame.numeric = NumericInput{};
@@ -559,12 +631,34 @@ void fill_row0_prompt(GameFrame &frame)
         return;
     }
 
+    if (presentation::is_monster_symbol_prompt(row0)) {
+        presentation::expose_ascii_symbol_prompt(frame, row0);
+        return;
+    }
+
     PromptBar prompt;
     NumericInput numeric;
-    if (parse_prompt_line(row0, prompt)) {
+    if (trim_right(row0) == trim_right(tr_utf8("Please verify ABORTING by typing the '@' sign: "))) {
+        prompt.text_utf8=row0;
+        prompt.choices.push_back({sq_lang_enabled()?reinterpret_cast<const char*>(u8"取消 (Esc)"):"Cancel (Esc)",27,0,0});
+        prompt.choices.push_back({"@",'@',0,0});
+        frame.prompt=std::move(prompt);
+    } else if (frame.menu_term_lines.empty() && presentation::message_more_suffix(trim_right(row0))) {
+        /*
+         * 地図の上の `-続く-`（`util.c` の `msg_flush()`）。メニューの外ではミラーが開かないので、
+         * 行 0 をここで渡さないと frame に待っている印が 1 つも無い（持ち物メニューから食べた後に
+         * 「満腹だ！」で止まって見えた。2026-09-25）。Angband・Frox と同じく帯へ出す。
+         */
+        frame.prompt.text_utf8 = trim_right(row0);
+        frame.prompt.line_index = -1;
+        return;
+    } else if (parse_prompt_line(row0, prompt)) {
         frame.prompt = std::move(prompt);
     } else if (parse_numeric_input_line(row0, numeric)) {
         frame.numeric = std::move(numeric);
+    } else if(sq_text_input_active()!=0&&frame.menu_term_lines.empty()) {
+        int cx=0,cy=0;if(sq_term_cursor(&cx,&cy,nullptr)==SQ_OK){frame.prompt.text_utf8=term_row_utf8(cy);frame.menu_term_curs_col=cx;}
+        return;
     } else {
         return;
     }
@@ -586,8 +680,255 @@ void fill_row0_prompt(GameFrame &frame)
     frame.numeric.line_index = line_index;
 }
 
+namespace {
+std::string native_menu_title;
+int list_scope_toggle_key(const std::string &row0)
+{
+    if (row0 == tr_utf8("Monsters you can see (press [ to toggle):")
+        || row0 == tr_utf8("Monsters on screen (press [ to toggle):")) return '[';
+    if (row0 == tr_utf8("Objects you can see (press ] to toggle):")
+        || row0 == tr_utf8("Objects on screen (press ] to toggle):")) return ']';
+    return 0;
+}
+bool has_menu_label(const GameFrame &frame,const char *label) {
+    const auto translated=tr_utf8(label);
+    for(const auto &line:frame.menu_term_lines)if(line.text_utf8.find(translated)!=std::string::npos)return true;
+    return false;
+}
+std::string panel_text(int column) {
+    std::string text;char cells[kRowCells];unsigned char attrs[kRowCells];int cols=0,rows=0;sq_term_size(&cols,&rows);
+    for(int y=2;y<rows;++y){int n=sq_term_row(y,cells,attrs,kRowCells);if(n<=column)continue;
+        auto line=sjis_to_utf8(cells+column,n-column);while(!line.empty()&&line.back()==' ')line.pop_back();
+        text+=line+"\n";
+    }
+    return text;
+}
+void attach_native_cursor(GameFrame &frame,int column,bool smithing) {
+    int x=0,y=0,v=0;sq_term_cursor(&x,&y,&v);
+    char cells[kRowCells];unsigned char attrs[kRowCells];
+    for(auto &choice:frame.menu_choices){
+        if(choice.line_index<0||choice.line_index>=int(frame.menu_term_lines.size()))continue;
+        const auto &line=frame.menu_term_lines[choice.line_index];
+        const int n=sq_term_row(line.source_row,cells,attrs,kRowCells);
+        if(smithing&&column+3<n&&attrs[column+3]==8){choice.available=false;choice.reason_utf8=tr_utf8("Invalid choice.");}
+        if((column<n&&attrs[column]==14)||(line.source_row==y&&x==column&&frame.menu_core_cursor.line_index<0)){
+            frame.menu_core_cursor=choice;frame.menu_core_cursor.key=0;
+            if(smithing){choice.description_utf8=term_row_utf8(0)+"\n"+panel_text(column<16?18:(column<36?38:68));if(!choice.available&&!choice.description_utf8.empty())choice.reason_utf8=choice.description_utf8;}
+        }
+    }
+}
+void named_choices(GameFrame &frame,const char *const *labels,int column,bool smithing) {
+    for(int k=0;labels[k];++k){
+        const auto label=tr_utf8(labels[k]);
+        for(size_t i=0;i<frame.menu_term_lines.size();++i){
+            const auto start=frame.menu_term_lines[i].text_utf8.find(label);if(start==std::string::npos)continue;
+            MenuChoice c;c.line_index=int(i);c.span_begin=int(start);c.span_len=int(label.size());c.key_begin=int(start);c.key_len=1;c.key=labels[k][labels[k][0]=='('?1:0];c.description_utf8=label;frame.menu_choices.push_back(std::move(c));break;
+        }
+    }
+    attach_native_cursor(frame,column,smithing);
+}
+bool highlighted_choice_menu(GameFrame &frame) {
+    int cols=0,rows=0,tx=0,ty=0,tv=0;sq_term_size(&cols,&rows);sq_term_cursor(&tx,&ty,&tv);
+    std::map<int,std::vector<char>> columns;std::map<int,int> active_rows;
+    char cells[kRowCells];unsigned char attrs[kRowCells];
+    for(int y=1;y<rows;++y){
+        const int n=sq_term_row(y,cells,attrs,kRowCells);
+        for(int x=0;x+2<n;++x){
+            const char key=cells[x];
+            if(!((key>='a'&&key<='z')||(key>='A'&&key<='Z'))||cells[x+1]!=')'||!cell_is_blank(cells[x+2])||(x>0&&!cell_is_blank(cells[x-1])))continue;
+            columns[x].push_back(key);
+            if(attrs[x]==14||(attrs[x]==4&&tx==x&&ty==y))active_rows[x]=y;
+        }
+    }
+    int chosen=-1;
+    for(const auto &[col,keys]:columns){
+        if(keys.size()<2||!active_rows.count(col))continue;
+        if(chosen<0||col>chosen)chosen=col;
+    }
+    if(chosen<0)return false;
+    if(columns.count(tx)&&columns[tx].size()>=2&&active_rows.count(tx)&&active_rows[tx]==ty)chosen=tx;
+    collect_list_choices(frame,columns[chosen],chosen);
+    for(auto &choice:frame.menu_choices)if(frame.menu_term_lines[choice.line_index].source_row==active_rows[chosen]){
+        if(chosen==17 && has_menu_label(frame,"Abilities")){
+            /* 能力の一覧（2 段目）は、原作が英字で強調を動かすだけで、買うのは Enter（cmd4.c abilities_menu2）。
+             * 強調中の行は key=0（決定＝Enter）にし、ほかの行は英字のまま（押すと強調が移る）。
+             * 技能の一覧（1 段目）は英字で即選べるので触らない。 */
+            choice.description_utf8=panel_text(42);choice.key=0;
+        }
+        else{
+            for(const auto &line:frame.menu_term_lines)choice.description_utf8+=line.text_utf8+"\n";
+            /* 誓いの種類の一覧（3 段目。キーの桁は 42）も、原作は英字で強調を動かすだけ（cmd4.c oath_menu。小文字は強調を動かして自分を呼び直し、選ぶのは Enter・空白・6）。
+             * 強調中の行は key=0（決定＝Enter）にする。ほかの行は英字のまま（押すと強調が移る）。修-36 の残り。 */
+            if(chosen==42&&has_menu_label(frame,"Mercy")&&has_menu_label(frame,"Silence")&&has_menu_label(frame,"Iron"))choice.key=0;
+        }
+        frame.menu_core_cursor=choice;frame.menu_core_cursor.key=0;frame.menu_core_cursors.assign(1,frame.menu_core_cursor);break;
+    }
+    return !frame.menu_choices.empty()&&frame.menu_core_cursor.line_index>=0;
+}
+
+bool known_choice_menu(GameFrame &frame) {
+
+    /*
+     * The monster/object list is itself a live child screen.  Pressing the
+     * opening key again toggles visible-only versus all-on-screen scope; the
+     * original implementation advertises that operation only in prose on row
+     * zero, so the generic list collector cannot discover it.
+     */
+    const std::string row0=term_row_utf8(0);
+    const int scope_toggle=list_scope_toggle_key(row0);
+    if(scope_toggle!=0) {
+        MenuChoice c{};
+        c.line_index=0;
+        c.key=scope_toggle;
+        c.label_utf8=sq_lang_enabled()?reinterpret_cast<const char*>(u8"表示範囲を切り替える"):"Toggle visible/on-screen scope";
+        c.description_utf8=row0;
+        frame.menu_choices.push_back(std::move(c));
+        native_menu_title=scope_toggle=='['
+            ?(sq_lang_enabled()?reinterpret_cast<const char*>(u8"敵の一覧"):"Monster list")
+            :(sq_lang_enabled()?reinterpret_cast<const char*>(u8"アイテムの一覧"):"Object list");
+        return true;
+    }
+
+    // The native footer is visible only while this form owns input. A child
+    // prompt can leave its parent list behind, so require the live prompt too.
+    for(const auto &spec:std::vector<std::pair<const char*,int>>{{"Interact with Macros",16},{"Interact with Colors",8},{"Interact with Visuals",15}}) {
+        if(trim_right(term_row_utf8(2))!=tr_utf8(spec.first))continue;
+        if(trim_right(term_row_utf8(spec.second))!=trim_right(tr_utf8("Command: ")))return false;
+        native_menu_title=tr_utf8(spec.first);
+        for(size_t i=0;i<frame.menu_term_lines.size();++i){
+            const auto &line=frame.menu_term_lines[i];if(line.source_row<3||line.source_row>=spec.second)continue;
+            const auto start=line.text_utf8.find_first_not_of(' ');if(start==std::string::npos)continue;
+            const auto text=line.text_utf8.substr(start);
+            if(text.size()<4||text[0]!='('||text[2]!=')'||!((text[1]>='0'&&text[1]<='9')||text[1]=='R'))continue;
+            MenuChoice c;c.line_index=int(i);c.span_begin=int(start);c.span_len=int(text.size());c.key=text[1];c.key_begin=int(start)+1;c.key_len=1;c.label_utf8=text;frame.menu_choices.push_back(c);
+        }
+        return !frame.menu_choices.empty();
+    }
+    const bool allocate_stats=has_menu_label(frame,"Arrow keys allocate points to stats");
+    if(allocate_stats||has_menu_label(frame,"Arrow keys allocate points to skills")) {
+        native_menu_title=allocate_stats?(sq_lang_enabled()?reinterpret_cast<const char*>(u8"能力値を決める"):"Allocate stats"):(sq_lang_enabled()?reinterpret_cast<const char*>(u8"技能を伸ばす"):"Increase skills");
+        const int first=allocate_stats?2:7,last=allocate_stats?5:14,column=allocate_stats?74:72;
+        char cells[kRowCells];unsigned char attrs[kRowCells];
+        for(size_t i=0;i<frame.menu_term_lines.size();++i){
+            const int y=frame.menu_term_lines[i].source_row;if(y<first||y>last)continue;
+            const int n=sq_term_row(y,cells,attrs,kRowCells);
+            for(int x=column;x<n;++x)if(attrs[x]==14){frame.menu_core_cursor.line_index=int(i);frame.menu_core_cursor.key=13;frame.menu_term_curs_row=int(i);frame.menu_term_curs_col=column;return true;}
+        }
+    }
+    if(frame.pre_game_menu && has_menu_label(frame,"Enter accept age/height/weight") && has_menu_label(frame,"Space reroll")) {
+        const char *labels[]={"Enter accept age/height/weight","Space reroll","    m manually enter"};const int keys[]={13,32,'m'};
+        std::string body;for(const auto &line:frame.menu_term_lines)body+=line.text_utf8+"\n";
+        for(int k=0;k<3;++k){const auto label=tr_utf8(labels[k]);for(size_t i=0;i<frame.menu_term_lines.size();++i)if(frame.menu_term_lines[i].text_utf8.find(label)!=std::string::npos){MenuChoice c;c.line_index=int(i);c.key=keys[k];c.label_utf8=label;c.description_utf8=body;frame.menu_choices.push_back(c);break;}}
+        return !frame.menu_choices.empty();
+    }
+    if(has_menu_label(frame,"notes   change name   save to a file   abilities   increase skills   ESC")) {
+        native_menu_title=tr_utf8("Character sheet");
+        const char *keys="ncsai";
+        const char *en[]={"notes","change name","save to a file","abilities","increase skills"};
+        const char8_t *ja[]={u8"覚書",u8"名を変える",u8"綴りに保存",u8"能力取得",u8"技能を伸ばす"};
+        std::string sheet;int footer=-1;for(size_t i=0;i<frame.menu_term_lines.size();++i){const auto &line=frame.menu_term_lines[i];if(line.source_row==23)footer=int(i);else sheet+=line.text_utf8+"\n";}
+        if(footer>=0)for(int k=0;k<5;++k){MenuChoice c;c.line_index=footer;c.key=keys[k];c.label_utf8=std::string(1,keys[k])+" "+(sq_lang_enabled()?reinterpret_cast<const char*>(ja[k]):en[k]);c.description_utf8=sheet;frame.menu_choices.push_back(c);}
+        return !frame.menu_choices.empty();
+    }
+
+    static const char *death_labels[]={"a) View scores","b) View inventory and equipment","c) View dungeon","d) View final messages","e) View character sheet","f) Add comment to notes","g) Save character sheet","h) Exit",nullptr};
+    if (frame.pre_game_menu && has_menu_label(frame,death_labels[0]) && has_menu_label(frame,death_labels[7])) {
+        native_menu_title = sq_lang_enabled() ? reinterpret_cast<const char*>(u8"死亡後のメニュー") : "After death";
+        named_choices(frame,death_labels,15,false);
+        std::string summary;
+        for (const auto &line:frame.menu_term_lines) if (line.source_row<10 && !line.text_utf8.empty()) summary+=line.text_utf8+"\n";
+        for (auto &choice:frame.menu_choices) choice.description_utf8=summary;
+        return !frame.menu_choices.empty();
+    }
+    static const char *knowledge_labels[]={"(1) Display known artefacts","(2) Display known monsters","(3) Display known objects","(4) Display names of the fallen","(5) Display kill counts","(6) Display character notes file",nullptr};
+    if(has_menu_label(frame,"Display current knowledge")&&has_menu_label(frame,knowledge_labels[0])){native_menu_title=tr_utf8("Display current knowledge");named_choices(frame,knowledge_labels,5,false);return !frame.menu_choices.empty();}
+    static const char *main_labels[]={"a) Return to game","b) Character sheet","c) Options","d) Map","e) Names of the fallen","f) Known objects","g) Known artefacts","h) Known monsters","i) Slain monsters","j) Write a note","k) Take HTML screenshot","l) Set macros","m) Set colours","n) Show old messages","o) Sil version info","p) Abort current game","q) Save game","r) Save and quit",nullptr};
+    static const char *option_labels[]={"a) Interface Options","b) Visual Options","c) Challenge Options","d) Load a 'Pref' File","e) Append Options to a 'Pref' File","f) Return to Game","g) Debugging Options",nullptr};
+    static const char *smith_labels[]={"a) Base Item","b) Enchant","c) Artifice","d) Numbers","e) Melt","f) Accept","f) Resume",nullptr};
+    if(has_menu_label(frame,main_labels[0])&&has_menu_label(frame,main_labels[17])){native_menu_title=tr_utf8("Main menu");named_choices(frame,main_labels,29,false);return true;}
+    if(has_menu_label(frame,option_labels[0])&&has_menu_label(frame,option_labels[5])){native_menu_title=tr_utf8("Options");named_choices(frame,option_labels,2,false);return true;}
+    for(const char *page:{"Interface Options","Visual Options","Challenge Options","Debugging Options"}) {
+        auto heading=term_row_utf8(1);const auto first=heading.find_first_not_of(' ');if(first!=std::string::npos)heading.erase(0,first);heading=trim_right(heading);
+        if(heading!=tr_utf8(page)&&heading!=page)continue;
+        native_menu_title=tr_utf8(page);char cells[kRowCells];unsigned char attrs[kRowCells];
+        for(size_t i=0;i<frame.menu_term_lines.size();++i){int y=frame.menu_term_lines[i].source_row;if(y<3)continue;int n=sq_term_row(y,cells,attrs,kRowCells);
+            if(n>2&&attrs[2]==14){frame.menu_core_cursor.line_index=int(i);frame.menu_core_cursor.span_begin=0;frame.menu_core_cursor.span_len=int(frame.menu_term_lines[i].text_utf8.size());return true;}
+        }
+    }
+    if(has_menu_label(frame,smith_labels[1])&&has_menu_label(frame,smith_labels[2])){
+        native_menu_title=tr_utf8("Smithing");int col=0,row=0,visible=0;sq_term_cursor(&col,&row,&visible);
+        char cells[kRowCells];unsigned char attrs[kRowCells];int cols=0,rows=0;sq_term_size(&cols,&rows);
+        for(int candidate:{2,16,36,66})for(int y=1;y<rows;++y){int n=sq_term_row(y,cells,attrs,kRowCells);if(candidate+1<n&&cells[candidate]>='a'&&cells[candidate]<='z'&&cells[candidate+1]==')'&&attrs[candidate]==14)col=candidate;}
+        if(col==16||col==36||col==66){std::vector<char> keys;for(char c='a';c<='z';++c)keys.push_back(c);collect_list_choices(frame,keys,col);attach_native_cursor(frame,col,true);}
+        else named_choices(frame,smith_labels,2,true);
+        return !frame.menu_choices.empty();
+    }
+    return highlighted_choice_menu(frame);
+}
+
+int menu_semantics_selftest_impl()
+{
+    int failed=0;
+    const auto check=[&](bool ok,const char *what){if(!ok){std::fprintf(stderr,"[silq] menu selftest FAIL: %s\n",what);++failed;}};
+    check(list_scope_toggle_key(tr_utf8("Monsters you can see (press [ to toggle):"))=='[',"monster visible toggle");
+    check(list_scope_toggle_key(tr_utf8("Monsters on screen (press [ to toggle):"))=='[',"monster screen toggle");
+    check(list_scope_toggle_key(tr_utf8("Objects you can see (press ] to toggle):"))==']',"object visible toggle");
+    check(list_scope_toggle_key(tr_utf8("Objects on screen (press ] to toggle):"))==']',"object screen toggle");
+    check(list_scope_toggle_key("ordinary message")==0,"ordinary message rejected");
+    {
+        // 見る（照準の途中）の帯。英語の綴りと、カタログの訳（日本語）のどちらの行 0 でも出ること（2026-10-07）。
+        PromptBar look;
+        const auto info_row=[](const char *info){return std::string("You see a floor.  [")+tr_utf8(info)+"]";};
+        check(parse_prompt_line(info_row("(t)arget, (m)anual, <dir>"),look)&&look.choices.size()==2&&look.choices[0].key=='m'&&look.choices[1].key=='t',"look free mode (t)arget, (m)anual");
+        check(parse_prompt_line(info_row("(m)anual, <dir>"),look)&&look.choices.size()==1&&look.choices[0].key=='m',"look free mode (m)anual only");
+        check(parse_prompt_line(info_row("(m)anual, <dir>"),look)&&look.text_utf8.find("You see a floor.")!=std::string::npos&&look.text_utf8.find("[",look.text_utf8.find("You see a floor."))==look.choices[0].begin-1,"look band keeps what is being looked at (cho-13)");
+        check(parse_prompt_line(info_row("(t)arget, (a)uto, <dir>"),look)&&look.choices.size()==2&&look.choices[0].key=='a'&&look.choices[1].key=='t',"look auto mode (t)arget, (a)uto");
+        check(parse_prompt_line(info_row("<space>, <tab>, <dir>"),look)&&look.choices.size()==2&&look.choices[0].key==' '&&look.choices[1].key=='\t',"look interesting <space>, <tab>");
+        check(!parse_prompt_line("You see a floor.",look),"look text without info rejected");
+    }
+    {
+        // タイトルの取消（判-17）：タイトルが入力を待つ間だけ Esc を「やめる」（d）に読み替える。ほかのキーと、待っていない間の Esc は素通し。
+        sq_title_menu_set_active(0);
+        check(sq_title_menu_map_key(27)==27,"title cancel: Esc passes through outside the title");
+        sq_title_menu_set_active(1);
+        check(sq_title_menu_map_key(27)=='d',"title cancel: Esc becomes quit (d) while the title waits");
+        check(sq_title_menu_map_key('a')=='a'&&sq_title_menu_map_key('\r')=='\r',"title cancel: other keys pass through");
+        sq_title_menu_set_active(0);
+    }
+    {
+        // 誓いの種類の一覧（修-36 の残り）：強調中の行の鍵は 0（決定＝Enter）、ほかの行は英字のまま。画面は原作の oath_menu と同じ並び（桁 42）。
+        sq_term_selftest_clear();
+        sq_term_selftest_put(42,2,1,"Oath");
+        sq_term_selftest_put(42,4,2,(std::string("a) ")+utf8_to_sjis(tr_utf8("Mercy"))).c_str());
+        sq_term_selftest_put(42,5,2,(std::string("b) ")+utf8_to_sjis(tr_utf8("Silence"))).c_str());
+        sq_term_selftest_put(42,6,2,(std::string("c) ")+utf8_to_sjis(tr_utf8("Iron"))).c_str());
+        sq_term_selftest_put(42,5,14,"b)");   // 強調（TERM_L_BLUE）
+        GameFrame frame;
+        frame.menu_open=true;
+        int cols=0,rows=0;sq_term_size(&cols,&rows);
+        for(int y=0;y<rows;++y){
+            char cells[kRowCells];unsigned char attrs[kRowCells];
+            const int n=sq_term_row(y,cells,attrs,kRowCells);
+            TermMirrorLine line;line.source_row=y;line.text_utf8=n>0?sjis_to_utf8(cells,n):std::string();
+            frame.menu_term_lines.push_back(std::move(line));
+        }
+        const bool ok=highlighted_choice_menu(frame);
+        check(ok&&frame.menu_choices.size()==3,"oath list: three choices collected");
+        int zero_rows=0,letter_rows=0;
+        for(const auto &c:frame.menu_choices){if(c.key==0)++zero_rows;else if(c.key=='a'||c.key=='c')++letter_rows;}
+        check(zero_rows==1&&letter_rows==2,"oath list: the highlighted row has key 0 (Enter), the others keep their letters");
+        check(ok&&frame.menu_core_cursor.line_index>=0&&frame.menu_core_cursor.key==0,"oath list: core cursor is set");
+        sq_term_selftest_clear();
+    }
+    return failed;
+}
+}
+int menu_semantics_selftest(){return menu_semantics_selftest_impl();}
+std::string menu_title(){return native_menu_title;}
+
 bool fill_menu_choices(GameFrame &frame)
 {
+    native_menu_title.clear();
     if (!frame.menu_open || frame.menu_term_lines.empty()) {
         return false;
     }
@@ -597,7 +938,7 @@ bool fill_menu_choices(GameFrame &frame)
      */
     std::vector<char> expected;
     if (!parse_choice_prompt(term_row_utf8(0), expected)) {
-        return false;
+        return known_choice_menu(frame);
     }
     collect_list_choices(frame, expected);
     return !frame.menu_choices.empty();

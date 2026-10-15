@@ -71,6 +71,12 @@ enum CellFeatureBit : uint16_t {
      * 置くための材料。既知マスにしか立たない。
      */
     CELL_FEAT_GLOWING = 0x4000u,
+    /*!
+     * @brief **2 階層ぶん移動する階段（坑道 / shaft）**。
+     * @details `CELL_FEAT_STAIRS` と併用する追加属性。通常階段と形は同じでも、HD2D 側で
+     * 色を変えて見分けられるようにする。RogueClone2 のように坑道を持たないコアは立てない。
+     */
+    CELL_FEAT_SHAFT = 0x8000u,
 };
 
 /*!

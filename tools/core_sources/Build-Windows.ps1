@@ -14,6 +14,6 @@ if (-not $CoreSourceRoot) { $CoreSourceRoot = Join-Path (Split-Path $uiRoot -Par
 if ($LASTEXITCODE -ne 0) { throw 'Core source preparation failed' }
 foreach ($core in @('HengbandCore','TangbandCore','GensobandCore','SilCore','FroxCore')) {
     $buildTarget = if ($Rebuild) { 'Rebuild' } else { 'Build' }
-    & $MSBuild (Join-Path $uiRoot "VisualStudio/$core/$core.vcxproj") /m /v:minimal /nologo "/t:$buildTarget" "/p:Configuration=$Configuration" /p:Platform=Win32 "/p:HengbandCoreSourceRoot=$CoreSourceRoot"
+    & $MSBuild (Join-Path $uiRoot "VisualStudio/$core/$core.vcxproj") /m /v:minimal /nologo "/t:$buildTarget" "/p:Configuration=$Configuration" /p:Platform=Win32 "/p:HengbandCoreSourceRoot=$CoreSourceRoot" "/p:HengbandPython=$Python"
     if ($LASTEXITCODE -ne 0) { throw "Core build failed: $core" }
 }

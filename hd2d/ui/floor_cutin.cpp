@@ -3,6 +3,7 @@
  * @brief 階が変わったときのカットイン演出（P10。基準は `floor_cutin.h`）。
  */
 #include "ui/floor_cutin.h"
+#include "app/ui_probe.h"
 
 #include "i18n/lang.h"
 #include "world/floor_meaning.h"
@@ -61,6 +62,16 @@ float ease_in(float t)
 {
     const float u = std::clamp(t, 0.f, 1.f);
     return u * u * u;
+}
+
+/*!
+ * @brief いまの段から、新しい階の幕（`Pending`）・案内（`begin()`）を始めてよいか。
+ * @details `Idle` に加え、前の案内の**抜け（`Out`）と幕が上がる間（`Reveal`）**も受ける。
+ * 入り・待ち（`In`・`Wait`）は入力が止まっていて階が動かないので受けない。
+ */
+bool can_restart(CutinPhase phase)
+{
+    return (phase == CutinPhase::Idle) || (phase == CutinPhase::Out) || (phase == CutinPhase::Reveal);
 }
 
 //! 幕の色。**真っ黒**（決めたことの「黒画面」そのまま）。
@@ -331,8 +342,17 @@ void FloorCutin::update(const GameFrame &frame, float dt, const UiLayout &layout
      * そこで `Pending` を挟む。幕だけ張って、行先の地図が来たら `begin()` へ進む。
      * **入力は止めない**（`blocks_input()` は偽のまま）——`-more-` を越えるキーが
      * コアへ届かないと、黒い画面のまま先へ進めなくなる。
+     *
+     * **前の案内の「抜け」と「幕が上がる」の最中でも同じに張り直す**（`can_restart()`。
+     * 2 周目のテストの報告 2026-10-15）。案内を閉じて 0.85 秒（`kOutSeconds` +
+     * `kRevealSeconds`）以内に次の階段を踏むと、`Idle` でしか受けない版は
+     * ① 途中の 1 枚で幕を張らず（元の階が薄れた幕の下に出続ける）
+     * ② 続く到着でも `begin()` に入らず、**新しい階の案内が 1 度も出ない**。
+     * 張り直すと幕は一気に真っ黒へ戻る（`draw` の濃さは `Pending` で 1）——
+     * 見えるのは「いま居る階が薄れていく途中で再び暗くなる」だけで、
+     * 決めたこと（2026-08-28「元のフロアの画像を出さない」）に反しない。
      */
-    if (not_arrived_yet && showable && (this->phase_ == CutinPhase::Idle)) {
+    if (not_arrived_yet && showable && can_restart(this->phase_)) {
         this->phase_ = CutinPhase::Pending;
         this->elapsed_ = 0.f;
         this->pending_seconds_ = 0.f;
@@ -341,8 +361,7 @@ void FloorCutin::update(const GameFrame &frame, float dt, const UiLayout &layout
      * 行先が来た。`Pending` からでも `Idle` からでも同じ入口で始める
      * ——`begin()` が読むのは**いまのフレーム**（＝行先の階）だけである。
      */
-    if (changed && showable
-        && ((this->phase_ == CutinPhase::Idle) || (this->phase_ == CutinPhase::Pending))) {
+    if (changed && showable && ((this->phase_ == CutinPhase::Pending) || can_restart(this->phase_))) {
         this->begin(frame, layout);
     }
 
@@ -430,6 +449,11 @@ void FloorCutin::draw(const UiLayout &layout, int screen_w, int screen_h, const 
     const float veil = (this->phase_ == CutinPhase::Reveal)
         ? (1.f - std::clamp(this->elapsed_ / kRevealSeconds, 0.f, 1.f))
         : 1.f;
+    if (ui_probe().enabled()) {
+        //! 検査用の問い合わせ：幕の段。板（`cutin` の窓）が出ない `pending`・`reveal` でも、幕が残っていると分かるように。
+        static const char *const kStageNames[] = { "", "pending", "in", "wait", "out", "reveal" };
+        ui_probe().cutin_stage(kStageNames[static_cast<int>(this->phase_)]);
+    }
     this->paint_.begin(screen_w, screen_h);
     this->paint_.rect(layout.scene, veil_color(veil));
     this->paint_.flush();
@@ -453,6 +477,18 @@ void FloorCutin::draw(const UiLayout &layout, int screen_w, int screen_h, const 
         t = 1.f - ease_in(this->elapsed_ / kOutSeconds);
     }
 
+    const UiProbeLayer probe_layer("cutin");
+    if (ui_probe().enabled()) {
+        //! 検査用の問い合わせ：階の案内（地名と階層）が出ている。
+        ProbeWindow w;
+        w.kind = "cutin";
+        w.stage = (this->phase_ == CutinPhase::Wait) ? "wait" : "moving";
+        w.items = { ProbeItem{ std::string(), this->place_.text, {}, true, false },
+            ProbeItem{ std::string(), this->level_.text, {}, true, false } };
+        w.has_rect = true;
+        w.rect = ProbeRect{ layout.scene.x, layout.scene.y, layout.scene.w, layout.scene.h };
+        ui_probe().window(std::move(w));
+    }
     const int plate_h = (this->font_px_ > 0) ? this->text_.cell_h()
                                             : static_cast<int>(layout.scene.h * kPlateHeightRatio);
     const int gap = plate_h / 5;

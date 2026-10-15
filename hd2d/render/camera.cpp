@@ -108,7 +108,7 @@ Mat4 Camera::view_projection() const
     return this->projection() * this->view();
 }
 
-bool Camera::unproject_to_plane(float sx, float sy, float plane_z, Vec3 &out) const
+Vec3 Camera::ray_direction(float sx, float sy) const
 {
     const float ndc_x = ((2.f * sx) / static_cast<float>(std::max(1, this->viewport_w))) - 1.f;
     const float ndc_y = 1.f - ((2.f * sy) / static_cast<float>(std::max(1, this->viewport_h)));
@@ -117,8 +117,11 @@ bool Camera::unproject_to_plane(float sx, float sy, float plane_z, Vec3 &out) co
     // **左手系なので `上 × 前`**（`math3d.h` の `look_at` と同じ理由。逆にすると鏡像になる）。
     const Vec3 right = normalize(cross(kWorldUp, f));
     const Vec3 up = cross(f, right);
-    const Vec3 dir = normalize(f + (right * (ndc_x * this->tan_half_x())) + (up * (ndc_y * this->tan_half_y())));
-
+    return normalize(f + (right * (ndc_x * this->tan_half_x())) + (up * (ndc_y * this->tan_half_y())));
+}
+bool Camera::unproject_to_plane(float sx, float sy, float plane_z, Vec3 &out) const
+{
+    const Vec3 dir = this->ray_direction(sx, sy);
     const Vec3 origin = this->eye();
     if (std::abs(dir.z) < 1e-6f) {
         return false; // 視線が水平＝面と交わらない

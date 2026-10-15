@@ -1,0 +1,163 @@
+# object.ja.tsv — object.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+flask:& Flask~ of oil|desc	e50bc0b44a	ランタンの燃料にすると7500ターンぶんの明かりになり、最大で15000ターンぶんまで足せる。投げると火のついた物として扱われるので、ふつうより大きな傷を与える（火に耐性のある生き物にも効く）。
+food:& Hard Biscuit~|desc	96907a0f16	主にライ麦で作った、歯が折れそうなほど硬いが腹にたまるビスケットだ。
+food:& Apple~|msg	45458702a9	おいしい。
+food:& Apple~|desc	3036f1db09	しわは寄っているが、傷みは無く甘い。
+food:& Handful~ of Dried Fruits|msg	45458702a9	おいしい。
+food:& Handful~ of Dried Fruits|desc	937693a29a	果物をざっと刻んで日に干したもので、イシリエンのレンジャーの行軍の糧食として作られた。
+food:& Slime Mold~|msg	82c8987731	何も無いよりはましな味だ。
+food:& Slime Mold~|desc	c802d219f3	奇妙なキノコのようなもので、見ていないと動き出しがちだ。あまりおいしくないが、かなり腹にたまる。
+food:& Ration~ of Food|msg	45458702a9	おいしい。
+food:& Ration~ of Food|desc	e35d050690	栄養はあるがかなり味気ないこの食べ物は、作り手の湖の人々にクラムと呼ばれ、長い旅を考える者なら誰でも知っている。腹持ちはよいが、あごの運動になるほかはひどく退屈だ。
+food:& Scrap~ of Flesh|msg	d082069a31	ひどい味だ。
+food:& Scrap~ of Flesh|desc	b04718a3b1	灰色がかった干し肉のかけらで、何の生き物の肉なのかは考えたくもない。よほど追い詰められなければ食べる気にならない。
+food:& Slice~ of Meat|msg	45458702a9	おいしい。
+food:& Slice~ of Meat|desc	edeccf5134	傷まないよう塩漬けにした、厚切りの豚肉だ。とても腹にたまる。
+food:& Honey-cake~|msg	609ce85240	うまい！
+food:& Honey-cake~|desc	bbc0bff69c	ビヨルンの一党は人間の中で最も腕のいいパン焼きとして知られ、その蜂蜜菓子が珍重されるのももっともだ。小麦粉に木の実と蜂蜜を混ぜて二度焼きしたもので、長い行軍を支えてくれる。
+food:& Piece~ of Elvish Waybread|msg	d92d07aa75	とてもおいしい。
+food:& Piece~ of Elvish Waybread|desc	f2144b868d	エルフの食べ物はいつもおいしく、その行糧も例外ではない。この薄い焼き菓子は葉に包まれていて、何か月もおいしさを保つ。
+food:& Flask~ of Whisky|msg	bddce17dc7	とてもうまい！
+food:& Flask~ of Whisky|desc	e57c539346	元気が出る。
+food:& Pint~ of Fine Wine|msg	edbca796d4	とてもうまい！上等の年代物だ。
+food:& Pint~ of Fine Wine|desc	35e73f1866	ほかの点では食欲をそそらない糧食を流し込むのにうってつけだ。
+food:& Sip~ of Miruvor|msg	7938ffca7e	胸が温かくなった。
+food:& Sip~ of Miruvor|desc	32d8ec8df2	この温かく香り高い酒をほんの少し飲むだけで、新たな希望と活力がわいてくる。
+food:& Swig~ of Orcish Liquor|msg	e84ebf4d54	喉が焼けるようだ。
+food:& Swig~ of Orcish Liquor|desc	8fff9765e3	汚い茶色をしている。信用できない。
+food:& Draught~ of the Ents|msg	6c771e8918	すがすがしい！
+food:& Draught~ of the Ents|desc	26c476a22e	澄んだ水のように見えるが、その香りは、夜の涼しい風が遠くから運んでくる遥かな森の匂いを思わせる。
+mushroom:Terror|desc	96d1d9e951	命からがら逃げ出せるようになる。
+mushroom:Stoneskin|desc	b2b9807a67	その毒で、わずかの間だけ肌が石になる。
+mushroom:Sprinting|desc	62b67e774f	しばらくの間加速するが、そのあとしばらく遅くなる。
+mushroom:Purging|msg	9e9ca8baeb	胃がむかむかする。
+mushroom:Purging|desc	8774d60ede	ひどく腹が減るが、ほかの点では体が健やかになる。
+mushroom:Shadows|desc	43bfa6eb7a	少しの間、とても忍び足がうまくなる。
+sword:& Dagger~|desc	7c3fdafd68	突きにも投げにも向いた、短い両刃の刃物だ。
+sword:& Main~ Gauche~|desc	1b499b01cc	大きな鍔のついた短い突き用の刃で、主に決闘に使われる。
+sword:& Rapier~|desc	ed6bb8151a	長く細い突き用の刃で、主に決闘に使われる。
+sword:& Short Sword~|desc	d5d1ee9906	突き用の短い剣だ。
+sword:& Cutlass~|desc	5b571c43da	ダガーを厚く、少し長くしたもので、斬るための剣だ。わずかに反りがあり、片側だけに刃がついている。
+sword:& Tulwar~|desc	2f65df66f9	シャムシールの親類で、刃が広く、反りは浅い。
+sword:& Scimitar~|desc	450b748092	刃がひどく反った長いサーベルだ。
+sword:& Long Sword~|desc	2b8c8cc09d	長くまっすぐな両刃の刃で、柄から左右に突き出た2つの鍔がきれいな十字を形作っている。
+sword:& Broad Sword~|desc	9ed20d98b4	握りのしっかりした、重い片刃の剣だ。
+sword:& Bastard Sword~|desc	cc2e540479	片手半剣とも呼ばれる。ふつうより大きな、まっすぐで両側に刃のある剣だ。
+sword:& Katana~|desc	9a4f86e0fa	わずかに反った柄の長い斬るための剣で、片刃で切っ先はのみのような形をしている。
+sword:& Zweihander~|desc	c50c0cbde1	両手で扱うよう作られた剣だ。
+sword:& Executioner's Sword~|desc	d8b1762cd5	首をきれいに胴から断ち落とすよう作られた、反りのある巨大な刃だ。
+sword:& Blade~ of Chaos|desc	752a3e2ca8	この移り気な武器は無秩序を楽しみ、血に飢えた歓喜とともに敵を叩き斬り、切り裂く。
+hafted:& Whip~|desc	dce3302f0c	重い鞭で、この太い輪を肩から振り出せば大の男でも打ち倒せる。
+hafted:& Ball-and-Chain~|desc	b583e5e412	頑丈なオークの柄から鎖で吊るした、重い鉄球だ。
+hafted:& Morning Star~|desc	d3eeb79662	頑丈な木の柄に鎖で鋼の球をつないだもので、球にはとげが突き出していることが多い。
+hafted:& Flail~|desc	ec4a1cb363	2 本の重い木の棒を短い鎖でつないだもので、打ち砕くような一撃を与えられる。
+hafted:& Two-Handed Great Flail~|desc	fad81737fd	2 本の大きな木の棒を太い鎖でつないだもので、きちんと振るうには両手が要る。
+hafted:& Mace~|desc	a0c2e5aabe	鉄の頭のついた戦棍で、頭にはふつうひれかとげがついている。
+hafted:& Lead-Filled Mace~|desc	d8591e8cea	鉛を詰めた鋼の塊を頭につけた重い戦棍で、打ち砕くような一撃を与えられる。
+hafted:& Quarterstaff~|desc	63b87a057c	1.8メートルのオークの棒で、両手で振るって相手を叩きのめしたり、攻撃を受け止めたりできる。
+hafted:& Throwing Hammer~|desc	9b72a1a410	投げると強く打てる、柄の短い鉄の槌だ。
+hafted:& War Hammer~|desc	014c42d9b9	先の細くなった頭と長い柄を持つ槌だ。
+hafted:& Maul~|desc	2569f92a32	重い頭を持つ、柄の長い槌だ。
+hafted:& Great Hammer~|desc	06b28a16c3	打ち砕き、気絶させるよう作られた、巨大な頭の強力な槌だ。
+hafted:& Mace~ of Disruption|desc	490a0114d9	巨人の武器で、骨も、体も、魂も砕く破壊の力が込められている。
+polearm:& Spear~|desc	d43cd08cca	軽い柄に両刃の刃物を取りつけた、基本の長柄武器だ。投げても十分に役立つ。
+polearm:& Awl-Pike~|desc	f0f7c77c71	基本の長柄武器をより頑丈にしたもので、しっかりした柄に両刃の刃物を取りつけてある。投げてもあまり役立たないが、使い手をいくらか守ってくれる。
+polearm:& Trident~|desc	595674dd6c	三叉の槍で、もとは魚を捕るためのものだ。
+polearm:& Halberd~|desc	d921a02b4c	長柄武器の中で最も成功したもので、長い柄に重い斧の刃とその反対側のとげを取りつけ、先端には突くための穂先がついている。
+polearm:& Pike~|desc	80a7a83afc	長さ4.6メートルの槍で、振るうには両手が要り、主に歩兵の隊列で使われる。
+polearm:& Throwing Axe~|desc	86adec24f4	投げるために釣り合いをとった、柄の短い手斧だ。散兵の昔ながらの武器だ。
+polearm:& Beaked Axe~|desc	93a4e904d9	細い斧の刃の反対側に、鎧を貫くためのカラスのくちばしがついている。
+polearm:& Broad Axe~|desc	fe5107fc18	手足も鎧も叩き切れる、簡素な片刃の戦斧だ。
+polearm:& Battle Axe~|desc	eb44e3bcba	両刃の斧だ。ドワーフの間でとても好まれている。
+polearm:& Lochaber Axe~|desc	a533697741	長い柄に、長く細い刃がついている。
+polearm:& Great Axe~|desc	8588added4	ドワーフの勇士が担ぐ巨大な両手用の戦斧で、誰が最も多くのオークの首を叩き割れるか競い合う。
+polearm:& Scythe~|desc	9aff66e602	この長柄武器の柄からは長い三日月形の刃が突き出しており、両手で振るって穀物か血を刈り取る。
+polearm:& Glaive~|desc	83df72ca2d	補強した長さ2.4メートルの木の柄の先に、突きにも斬りにも使える巨大な刃物の刃をつけたものだ。
+polearm:& Lance~|desc	b6b618c41a	主に馬上で使う、先の細くなった巨大な槍だ。
+polearm:& Scythe~ of Slicing|desc	84e7278b84	死神の武器で、長い刃はこれから流す血を待ちかねて、うなりを上げんばかりだ。
+polearm:& Lucerne Hammer~|desc	dba4a14663	長い柄の先に三叉か四叉の頭があり、その反対側に長いとげがついている。
+bow:& Sling~|desc	958388baab	石や弾をすさまじい速さで放てる、革と紐の輪だ。
+bow:& Short Bow~|desc	f9e312a495	狩人の昔ながらの武器で、この軽い弓はたやすく引ける。
+bow:& Long Bow~|desc	25baa9d5a6	人の背丈ほどもある長弓で、どれほど重い鎧でも矢で射抜ける。
+bow:& Light Crossbow~|desc	01eb70b579	木で作った機械仕掛けの弓で、弦を引いておくことで使い手の力を補う。
+bow:& Heavy Crossbow~|desc	6169450816	このアーバレストはあまりに強力なので金属で補強する必要があり、弦を引くには巻き上げ機が要る。
+arrow:& Arrow~|desc	8748794645	弓で射ることができる。
+arrow:& Seeker Arrow~|desc	8748794645	弓で射ることができる。
+arrow:& Mithril Arrow~|desc	8748794645	弓で射ることができる。
+bolt:& Bolt~|desc	7ea48a96c7	クロスボウで射ることができる。
+bolt:& Seeker Bolt~|desc	7ea48a96c7	クロスボウで射ることができる。
+bolt:& Mithril Bolt~|desc	7ea48a96c7	クロスボウで射ることができる。
+shot:& Rounded Pebble~|desc	77cfe4e1ef	スリングで撃つことも、投げることもできる。
+shot:& Iron Shot~|desc	77cfe4e1ef	スリングで撃つことも、投げることもできる。
+shot:& Mithril Shot~|desc	77cfe4e1ef	スリングで撃つことも、投げることもできる。
+digger:& Shovel~|desc	c6d7cd54c8	小ぶりで頑丈な鋤だ。
+digger:& Pick~|desc	15d2b1102f	長くわずかに曲がった頭を持つ重い採掘用の道具で、頭の両端はのみのような先になっている。
+digger:& Mattock~|desc	9297ac8501	広い横向きの刃と、その反対側の小さな縦向きの刃を持つ掘るための道具だ。ドワーフは戦の武器としても使う。
+boots:& Pair~ of Leather Sandals|desc	b39e7e52eb	柔らかい子牛革の紐と、なめした丈夫な革の底でできた、上の開いた履き物だ。
+boots:& Pair~ of Leather Boots|desc	3a1b0be647	しなやかな革でできたふくらはぎまでの長靴で、かかとからふくらはぎまで紐で締める。
+boots:& Pair~ of Iron Shod Boots|desc	81f3a3f6cc	鉄で補強した丈夫な革の長靴で、疲れる道のりを何キロも持ちこたえる。
+boots:& Pair~ of Steel Shod Boots|desc	97a4c81d3e	二重に裏打ちした革の長靴で、つま先とかかとを鋼で補強してある。
+boots:& Pair~ of Mithril Shod Boots|desc	9d9f76fd45	辛抱強いドワーフは知られている中で最も上等な履き物を作り、それを履いて疲れもせず果てしない道のりを行進する。
+boots:& Pair~ of Ethereal Slippers|desc	24da7a779d	上等なエルフの室内履きで、丈夫なのにまるで重さが無いようだ。
+helm:& Hard Leather Cap~|desc	355dcf5e3e	煮固めた革の、詰め物をした縁無し帽だ。
+helm:& Metal Cap~|desc	22746cac54	頭蓋を守る、鋼の鉢形の兜だ。
+helm:& Iron Helm~|desc	c2dfba5903	重い鉄の強固な兜で、頭をすっぽり覆う。
+helm:& Steel Helm~|desc	9864e867b3	この大兜は、頭と肩を鋼の板と鎖の垂れで覆う。
+crown:& Iron Crown~|desc	212e45d031	鉄のとげの冠をいただいた、飾り気の無い鉄の輪だ。暴君の象徴だ。
+crown:& Golden Crown~|desc	f3098c95d7	細いとげが上へ突き出した、優美な金の輪だ。王の額にこそふさわしく見える。
+crown:& Jewel Encrusted Crown~|desc	3837c1bd02	どっしりした金に、虹のような宝石や玉をちりばめ、手の込んだ飾りを施した冠だ。上級王にふさわしい。
+soft armor:& Robe~|desc	277a8b6ccb	首からかかとまで垂れる、厚手の毛織物かビロードの実用的な衣服だ。
+soft armor:Soft Leather Armour~|desc	6cf2f0a20c	しなやかな革の胴鎧に、より厚い革の上着を重ねたものだ。
+soft armor:Studded Leather Armour~|desc	d4b0fa9640	金属の鋲を打った、しなやかな革の胴鎧だ。
+soft armor:Hard Leather Armour~|desc	3c1a381e1e	煮固めた革の胴鎧と肩当てだ。
+soft armor:Leather Scale Mail~|desc	25d35a082d	硬くした革の厚いうろこを重ねて縫いつけた、上衣と腰鎧だ。
+hard armor:Metal Scale Mail~|desc	9761d18f5d	鋼のうろこを重ねて革で裏打ちした重い上衣に、揃いの腰鎧と袖がついたものだ。
+hard armor:Chain Mail~|desc	1ab59d7c79	鋼の輪を組み合わせた鎖かたびらの胴、脚、袖で、革の詰め物がたっぷりしてある。
+hard armor:Augmented Chain Mail~|desc	d5fbbccc23	鋼の輪を組み合わせた鎖かたびらの胴、脚、袖で、急所を狙いすましたように鎖をもう1枚重ねて補強し、全体を厚い詰め物の上に重ねてある。
+hard armor:Bar Chain Mail~|desc	2bc5583227	鋼の輪を組み合わせた鎖かたびらの胴、脚、袖で、肩のまわりを分割した鋼の板で補強し、全体を厚い詰め物の上に重ねてある。
+hard armor:Metal Brigandine Armour~|desc	559742ec74	厚い帆布の内張りに小さな金属の板を縫いつけ、その上を布でもう1枚覆った、硬い鎧だ。
+hard armor:Partial Plate Armour~|desc	9318c8fd9b	鎖の腰鎧と脚の上に、鋼の胴鎧と腕甲をつけたものだ。
+hard armor:Metal Lamellar Armour~|desc	1ab865a610	この珍しい鎧は、金属の板を紐で綴って重ねたもので、意外なほど軽い。
+hard armor:Full Plate Armour~|desc	53f87a07a2	丁寧に合わせた板の全身鎧で、関節は蝶番で鎖に裏打ちされ、下には薄い詰め物がある。
+hard armor:Ribbed Plate Armour~|desc	19661c7d02	補強の筋を入れた鋼の板でできた、精巧に合わせた金属の全身鎧だ。
+hard armor:Mithril Chain Mail~|desc	b6769fdd4d	細かい鎖でできたこの驚くべき鎧は、純銀でできているかのようにきらめく。
+hard armor:Mithril Plate Mail~|desc	9c834dabfc	伝説のドワーフの鍛冶がはるか昔に鍛えた、まことの銀のきらめく鎧だ。見つめると、この上なく白く輝く。
+hard armor:Adamantite Plate Mail~|desc	34b5dad184	ほとんど何も通さないアダマンタイトでできた、見事な鎧だ。
+cloak:& Cloak~|desc	b8be46842f	旅人の丈夫な外套だ。
+cloak:& Fur Cloak~|desc	ffb10cddd7	毛皮で作り、革で裏打ちした重いクロークだ。ぜいたく品だ。
+cloak:& Elven Cloak~|desc	f2be6b56cc	ガラズリムが不思議な絹のような布で作ったマントで、驚くほどまわりの色と形に溶け込む。
+cloak:& Ethereal Cloak~|desc	edf3b73709	この世のものでない、完全に透き通った全身を覆うマントで、あなたのまわりで虹色の模様を描いて折り重なり垂れる。重さはまったく無い。
+gloves:& Set~ of Leather Gloves|desc	1fd9b9a86e	革の手の守りで、武器を握るため手のひらが開いている。
+gloves:& Set~ of Gauntlets|desc	af04a3a427	手と手首を鋼の板ですっぽり覆う手袋だ。
+gloves:& Set~ of Mithril Gauntlets|desc	5f13ee972d	軽く輝くミスリルで作った籠手だ。
+gloves:& Set~ of Caestus|desc	15525c922e	素手の格闘のために作られた、いにしえの戦いの手袋だ。革紐を重ねたもので、血なまぐさく見えるとげで戦い向きに強めてある。
+gloves:& Set~ of Alchemist's Gloves|desc	916edd1912	錬金術師の元素の魔法のために作られた、守りのとても固い手袋だ。
+shield:& Wicker Shield~|desc	3c83ad8a55	細かく編んだ枝細工を、軽い円形の木の枠で囲んだものだ。
+shield:& Small Metal Shield~|desc	f314589381	金属の縁と中央の円盤で補強した、円い木の盾だ。
+shield:& Leather Shield~|desc	4a1532c8e5	木の細板を重ねて厚い革で覆った、大きな楕円形の盾だ。
+shield:& Large Metal Shield~|desc	fa18b11662	木を革で覆い、金属で縁取った楕円形の盾だ。大きな鉄の盾心が手をしっかり守る。
+shield:& Knight's Shield~|desc	11a319e112	角の丸い凧形の盾で、持ち手を胸からつま先まで覆い、紋章が描かれている。
+shield:& Mithril Shield~|desc	0ee28adb5f	ミスリルで作った、この上なく白い盾だ。
+ring:Damage|desc	cf5e419aae	ダメージ修正を高める。
+ring:Accuracy|desc	99d78bdea4	命中修正を高める。
+ring:Slaying|desc	97f9ea6a4d	命中修正とダメージ修正を高める。
+ring:Protection|desc	21411d2a39	アーマー・クラスを上げる。
+scroll:Aggravate Monster|msg	a7e76b1f4f	甲高いうなるような音がした。
+scroll:Trap Creation|msg	3011c18152	低い口笛のような音が聞こえた。
+potion:Life|msg	d02147e6e1	命が体の中を流れるのを感じた！
+potion:Salt Water|msg	dd3a815c07	薬を飲んで吐き気がした。
+wand:Light|vis-msg	db7d6ef44f	揺らめく青い光の線が現れた。
+rod:Light|vis-msg	db7d6ef44f	揺らめく青い光の線が現れた。
+dragon armor:Black Dragon Scale Mail~|desc	fd88332724	まったく黒いうろこの鎧で、どんな金属も木もこれには寄せつけない。
+dragon armor:Blue Dragon Scale Mail~|desc	79a407ead4	サファイアのように青いうろこの鎧で、着て動き回ると不気味な火花と光の輪を放つ。
+dragon armor:White Dragon Scale Mail~|desc	e69b347e6c	霜のような白で冷たく光るうろこの鎧だ。見ているだけでも背筋に震えが走る。
+dragon armor:Red Dragon Scale Mail~|desc	2b8848e690	これまでにともされたあらゆる火の赤をすべて集めたうろこの鎧だ。着ると、昔のやけどの傷跡がうずく。
+dragon armor:Green Dragon Scale Mail~|desc	8286ac40de	病んだような緑にぬらぬらと光るうろこの鎧で、中からは、これに触れて苦しみ抜いて死んだネズミの骨がこぼれ落ちる。
+dragon armor:Multi-Hued Dragon Scale Mail~|desc	d9b7faeeee	怒れる力で脈打つうろこの鎧だ。中に閉じ込められて果てしない戦を続ける元素を抑え込むには、あなたの持てる力のすべてが要る。
+dragon armor:Shining Dragon Scale Mail~|desc	6962bfaf90	光ののろしのように輝くうろこの鎧だが、同時に、光るものすべてから力を貪欲に吸い取って、飽くことを知らぬ闇へと変える。
+dragon armor:Law Dragon Scale Mail~|desc	ed3a6e61ec	いかめしい青と銀のうろこの鎧だ。触れるとごくかすかな震えを感じる。遠くで鳴り響く大勢のラッパや、遠くで感じる竜巻のようだ。
+dragon armor:Gold Dragon Scale Mail~|desc	0023d584c7	鏡のような金のうろこの鎧だ。着ても何も変わった音は聞こえないのに、耳障りな音のただ中にいるかのように耳が痛む。
+dragon armor:Chaos Dragon Scale Mail~|desc	9539a3f17e	見とれるうちに、思いつく限りのあらゆる色と形へと波打ちねじれていくうろこの鎧だ。
+dragon armor:Balance Dragon Scale Mail~|desc	15a5f8687e	うろこの鎧だ。ざっと見ただけでは特徴の無い灰色だが、よく見ると、アダマントの鎖で縛られたかのように抑え込まれた力で脈打つ、虹色の模様の中にさらに模様があるのが分かる。
+dragon armor:Power Dragon Scale Mail~|desc	0168f1e918	あらゆる色のうろこを持つ鎧で、まったく何にも縛られず、しかも分かちがたく混じり合い、完全に抑え込まれた、元素と霊の力の光輪に包まれている。

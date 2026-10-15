@@ -22,12 +22,13 @@
     python tools/frox/fc_protocol_driver.py spell     <workdir>
     python tools/frox/fc_protocol_driver.py spellfmt  <workdir>
     python tools/frox/fc_protocol_driver.py sfx       <workdir>
+    python tools/frox/fc_protocol_driver.py stall     <workdir>
 
 sub-command
   handshake … 握手・表・タイトルのミラー・キー進行（P6 の受け入れ）
   play      … スクリプトどおりキーを打ち、毎キーごとにミラーを出す（人が読む用）
   m0        … 受け入れ §9 の 2 の閉ループ（新規キャラ → 町 → セーブ →
-              再起動 → ロード）。**1 キーずつ**送る（MEMORY.md「ボットは閉ループで回す」）
+              再起動 → ロード）。**1 キーずつ**送る
   m05       … M0.5（設計 §14.2(c)）の閉ループ。doc UI の旗（FH-02）・札の読み取りと
               プロンプト（FH-01）・コマンドメニューのカーソル・icky の従来道
   shop      … **店の実地**（FH-13 の y/n・FH-14 の札の絞り込み・FH-15 の個数）。
@@ -679,7 +680,7 @@ def cmd_m05(work: Path) -> int:
         # `get_quantity()`＝**`(1-5): `**（`message.c:626` / `util.c:3246`）。
         # 綴りを片方しか見ておらず、しかも**行 0 だけ**を見ていたので、店では
         # `frame.numeric` が立たず、決定がカーソル層の選択肢まで流れて品の
-        # letter（`a`）を送っていた（利用者の実機報告 2026-08-24）。
+        # letter（`a`）を送っていた。
         #
         # **ここで見るのは `(1-N)` の側**——`msg_input_num` を出せる場面
         # （店・我が家・建物、または矢筒への出し入れ）へは新規キャラのボットが
@@ -730,6 +731,14 @@ def cmd_m05(work: Path) -> int:
     return checks.finish()
 
 
+def collect_projections(s: Session, start_index: int):
+    """frames[start_index:] の projections（魔法・投射物の効果）を平らに集める。
+
+    弾道（旧来の combat_fx の Bolt）は projections が受け持つ（2026-10-11）。
+    """
+    return [p for f in s.frames[start_index:] for p in (f.get("projections") or [])]
+
+
 def collect_fx(s: Session, start_index: int):
     """frames[start_index:] の combat_fx を平らに集める。
 
@@ -756,7 +765,7 @@ def drain_more(s: Session, rounds: int = 2) -> None:
     `message.c:331`）。コマンド待ちの ESC は無害で、開きかけのプロンプトも畳む
     ——盲打ちの列を組む前の**状態の均し**として使う。SPACE で流してはいけない:
     -more- 1 個ずつしか進まないうえ、-more- の中の `flush()` が後続の
-    連射キーを捨てる（`MEMORY.md`「ボットは閉ループで回す」の正体）。
+    連射キーを捨てる。
     """
     for _ in range(rounds):
         s.key(0x1B)
@@ -771,6 +780,11 @@ def wizard_begin(s: Session, cmd_char: str, confirm: bool) -> None:
     2 回目からは確認が出ない（noscore 済み）ので、余計なキーを打たない。
     """
     drain_more(s)
+    #: 直前の撃破でレベルが上がり、能力値の問いが開いたままだと `^A` から先が全部食われる（2026-10-10 の
+    #: frox-fx の落ち方 1・2。起動した秒の乱数で 4 回に 1〜2 回）。`^A x`（経験値の連打）の間は答えない——
+    #: 答えると倍加が全部効いてレベル 20 になり、orb を 1 巡で倒して弾道の検査が取れなくなる。
+    if cmd_char != "x":
+        answer_stat_prompts(s)
     s.key(0x01)  # ^A
     s.settle()
     if confirm:
@@ -814,24 +828,33 @@ def answer_stat_prompts(s: Session, cap: int = 12) -> None:
     キーが全部死ぬ**ので、検査は「唱えなかった」ように見えて落ちる。
     **画の字も見て、選択が開いていれば `a` を打つ。**
     """
+    clean = 0
     for _ in range(cap):
         f = s.frames[-1] if s.frames else {}
         keys = [c.get("key") for c in f.get("prompt", {}).get("choices", [])]
         if ord("y") in keys:
             s.key(ord("y"))
             s.settle(quiet_rounds=1, slice_s=0.4, cap_s=5.0)
+            clean = 0
             continue
         if f.get("menu_open"):
             s.key(ord("a"))
             s.settle(quiet_rounds=1, slice_s=0.4, cap_s=5.0)
+            clean = 0
             continue
         #! **画の字で見る保険。** 札に載らない巡があるので、ここで抜けない。
         text = " ".join(s.mirror())
         if ("make a choice" in text) or ("hich stat" in text) or ("Str)" in text):
             s.key(ord("a"))
             s.settle(quiet_rounds=1, slice_s=0.4, cap_s=5.0)
+            clean = 0
             continue
-        break
+        #! **1 度の空では抜けない**（2026-10-10 の実測）。レベルアップの直後は問いがまだ画に出ていない巡があり、
+        #! そこで抜けると次の `^A` が問いに食われる。少し待って **2 回続けて空**なら抜ける。
+        clean += 1
+        if clean >= 2:
+            break
+        s.settle(quiet_rounds=1, slice_s=0.5, cap_s=3.0)
 
 
 def boost_level(s: Session, rounds: int = 18) -> None:
@@ -1190,7 +1213,7 @@ def cmd_shop(work: Path, extra=()) -> int:
         # ---- FH-15: 店の数量入力が `frame.numeric` に載る --------------------
         # 品を選ぶと `msg_input_num()` が `Quantity (1 to N): ` を訊く
         # （`shop.c:2332`。**綴りも置き場も通常と違う**）。ここが載らないと
-        # 決定が選択肢まで流れて品の letter を送る（利用者の実機報告）。
+        # 決定が選択肢まで流れて品の letter を送る。
         # **2 個以上ある品を選ぶ。** 1 個だけの品は個数を訊かれない
         # （`shop.c:2332` の `maks > 1`）。在庫は毎回変わるので一覧から拾う。
         import re as _re
@@ -1234,7 +1257,7 @@ def cmd_shop(work: Path, extra=()) -> int:
         # 画面側の上下は `set_number` を送り、アダプタがキー列へ直す。
         # 以前は `KTRL('E')`＋退格で消していたが、**その綴りを受けるのは変愚だけ**
         # で、Frox では `bell()` → `flush()` が後続のキーを捨て、**欄が空**になった
-        # （利用者の実機報告「カーソル入力すると空白に」）。
+        # （気づいたこと「カーソル入力すると空白に」）。
         if got_numeric:
             before = (s.frames[-1] if s.frames else {}).get("numeric", {})
             want = min(int(before.get("max", 1)), int(before.get("value", 1)) + 1)
@@ -1246,7 +1269,7 @@ def cmd_shop(work: Path, extra=()) -> int:
                        "set_number rewrites the quantity (FH-16)",
                        json.dumps(after, ensure_ascii=False)[:120])
 
-        # ---- 利用者の手順そのもの: 数量 → 決定 → 購入可否 --------------------
+        # ---- 遊ぶ人の手順そのもの: 数量 → 決定 → 購入可否 --------------------
         # 決定は `confirm`（0x0D）。個数が `frame.numeric` に載っていれば
         # カーソル層が食って askfor へ渡り、次に `[y/n]` が出る。
         if got_numeric:
@@ -1313,8 +1336,26 @@ def cmd_fx(work: Path) -> int:
         checks.add(any("Look around" in r.get("text_utf8", "")
                        for r in f.get("bottom_row_runs", [])),
                    "wild guide flows into the bottom band")
+        # 確認画面（`do_cmd_world_map()`）は Term の写しに箱が無いので、
+        # `menu_over_map` を立てないと画面側が 3D を描かず真っ暗になる。
+        checks.add(bool(f.get("menu_open")) and bool(f.get("menu_over_map")),
+                   "wild overview keeps the 3D map: menu_over_map is set",
+                   f"menu_open={f.get('menu_open')!r} menu_over_map={f.get('menu_over_map')!r}")
+        # `*` の見回しの最中も確認画面のまま（旗が落ちない）。
+        s.key(ord("*"))
+        s.settle(quiet_rounds=2, slice_s=0.8, cap_s=20.0)
+        f = s.frames[-1] if s.frames else {}
+        checks.add(bool(f.get("menu_over_map")),
+                   "wild overview: menu_over_map stays set while looking (*)",
+                   repr(f.get("menu_over_map")))
+        s.key(27)
+        s.settle(quiet_rounds=2, slice_s=0.8, cap_s=20.0)
         s.key(ord(">"))
         s.settle(quiet_rounds=2, slice_s=0.8, cap_s=20.0)
+        f = s.frames[-1] if s.frames else {}
+        checks.add(not f.get("menu_open") and not f.get("menu_over_map"),
+                   "leaving the overview drops menu_open and menu_over_map",
+                   f"menu_open={f.get('menu_open')!r} menu_over_map={f.get('menu_over_map')!r}")
 
         enable_debug_opts(s, checks)
 
@@ -1380,7 +1421,7 @@ def cmd_fx(work: Path) -> int:
         # 1 体から 3 つ取る: 弾道（kind 2）・必中の魔法の矢の被弾（kind 0）・
         # 殴りの部分ダメージ（kind 1 で i < 1。35HP は一撃では落ちない）。
         #
-        # **呼び直しは 4 回まで。** 町は建物だらけで、orb が壁の向こうに湧くと
+        # **呼び直しは 8 回まで（もとは 4 回）。** 町は建物だらけで、orb が壁の向こうに湧くと
         # 視線も隣接も取れない（実測 2026-08-24: 落ちるときは必ずこの 3 件が
         # 共倒れした——orb の段そのものが成立していない）。orb は NEVER_MOVE
         # なので**こちらから近づけないなら永遠に取れない**。呼び直すのが唯一の手。
@@ -1390,16 +1431,20 @@ def cmd_fx(work: Path) -> int:
         got_part = False
         seen_orb = 0
         orb_tiles: list[int] = []
-        for _attempt in range(4):
+        #: 4 回では足りない回があった（2026-10-09 の実測: 4 回の間に orb が見えたのは 4 ターンだけで、
+        #: 弾道・被弾・部分ダメージの 3 件が共倒れした。4 回試して 1 回の割合）。8 回まで呼び直す。
+        for _attempt in range(8):
             wizard_summon_named(s, "912")
             last_pos = None
             stuck = 0
             for _ in range(14):
+                answer_stat_prompts(s, 8)  # orb を倒してレベルが上がった巡の問いを答える
                 f, cells = latest_cells(s)
                 if not f:
                     break
                 fx = collect_fx(s, mark)
-                got_bolt = got_bolt or any(e["kind"] == 2 for e in fx)
+                #! 弾道は projections（origin 1 = モンスター）が受け持つ。旧来の combat_fx の Bolt（kind 2）は積まない。
+                got_bolt = got_bolt or any(p.get("o") == 1 for p in collect_projections(s, mark))
                 got_part = got_part or any(
                     e["kind"] == 1 and 0 < e["intensity"] < 1.0 for e in fx)
                 if got_bolt and got_part:
@@ -1419,7 +1464,7 @@ def cmd_fx(work: Path) -> int:
             if got_bolt and got_part:
                 break
         fx = collect_fx(s, mark)
-        bolts = [e for e in fx if e["kind"] == 2]
+        bolts = [p for p in collect_projections(s, mark) if p.get("o") == 1]
         #! 落ちたときに「orb が見えていたか」を残す（見えていなければ harness の
         #! 都合であって FH-05 の実装の話ではない）。
         checks.add(bool(orb_tiles) and all(v > 0 for v in orb_tiles),
@@ -1427,8 +1472,10 @@ def cmd_fx(work: Path) -> int:
                    f"{sum(1 for v in orb_tiles if v > 0)}/{len(orb_tiles)} sightings"
                    + (f" -> {orb_tiles[0]}" if orb_tiles else ""))
         where = f"orb seen on {seen_orb} turn(s)"
-        checks.add(got_bolt, "monster missile pushes Bolt fx (FH-05)",
-                   f"{len(bolts)} bolt events, {where}")
+        checks.add(got_bolt, "monster missile pushes a projection (origin Monster) (FH-05)",
+                   f"{len(bolts)} projections, {where}")
+        checks.add(not [e for e in fx if e["kind"] == 2],
+                   "no legacy Bolt combat_fx (the projection carries the missile)", f"{len([e for e in fx if e['kind'] == 2])} events")
         checks.add(got_part, "melee pushes partial HitMonster fx (FH-05)", where)
         hits = [e for e in fx if e["kind"] == 0 and e["intensity"] > 0]
         checks.add(bool(hits), "missile damage pushes HitPlayer fx (FH-05)",
@@ -1445,6 +1492,7 @@ def cmd_fx(work: Path) -> int:
         mark_zap = len(s.frames)
         wizard_begin(s, "z", False)
         drain_more(s)  # Welcome to level の山を流す
+        answer_stat_prompts(s)  # 一掃の経験値でレベルが上がると、問いが開いたまま ^A w に進んでいた
         for key in "662266":
             s.key(ord(key))
             s.settle(quiet_rounds=1, slice_s=0.4, cap_s=6.0)
@@ -1466,13 +1514,22 @@ def cmd_fx(work: Path) -> int:
         # （`cave.c:4462`）——地形の並びに頼らずに済む。
         # **上の暗闇の対照検査（^A z）より後に置くこと**——先に照らすと
         # 「見えない撃破」が見える撃破になり、あちらの意味が消える。
-        wizard_begin(s, "w", False)
-        drain_more(s)
-        mm = (s.frames[-1] if s.frames else {}).get("minimap", {})
-        kinds = set()
-        if mm.get("kinds_b64"):
-            import base64
-            kinds = set(base64.b64decode(mm["kinds_b64"]))
+        import base64
+
+        def lit_kinds():
+            wizard_begin(s, "w", False)
+            drain_more(s)
+            mm = (s.frames[-1] if s.frames else {}).get("minimap", {})
+            return set(base64.b64decode(mm["kinds_b64"])) if mm.get("kinds_b64") else set()
+
+        kinds = lit_kinds()
+        #: 階の作りは乱数で、雪の床がミニマップの範囲に無い階がある（実測 2026-10-09: 同じ道具が通る回と
+        #: `kinds=[0,1,2,7]` で落ちる回があった）。**階を引き直して 3 回まで見る**——不具合なら 3 回とも出ない。
+        for _ in range(2):
+            if 13 in kinds:
+                break
+            wizard_jump(s, "38", "40")
+            kinds = lit_kinds()
         checks.add(13 in kinds, "snow floor reaches the minimap (FH-09)",
                    f"kinds={sorted(kinds)}")
 
@@ -3136,6 +3193,146 @@ def cmd_spellfmt(work: Path) -> int:
     return checks.finish()
 
 
+def _frame_prompt_keys(f):
+    return [c.get("key") for c in (f or {}).get("prompt", {}).get("choices", [])]
+
+
+def _stall_hp_run(work: Path, tag: str, extra_args):
+    """**スペースだけを受ける問い**（体力の警告）で、決定が届くこと（2026-10-09 の実機報告）。
+
+    原作は `*** LOW HITPOINT WARNING! ***` を `msg_prompt(…, " ", PROMPT_FORCE_CHOICE)` で待ち、
+    **スペース以外は全部捨てる**。以前はこの問いがフレームに出ず、キーボードの無い端末
+    （Android・ゲームパッド）ではスペースを送れないので、**戦闘中に操作を受け付けなくなった**
+    （2026-10-06 の配布物でも同じ）。見るのは 2 つ——
+      1. 問いの選択肢に **スペース（32）が載る**（決定がこれを送る）
+      2. それを送ると**コマンド待ちへ戻る**（フレームが進み続ける）
+    敵に殴らせて体力を削る。乱数なので、警告が出る前に死んだ回は「確かめられなかった」として落とす。
+    """
+    checks = Checks()
+    s = Session(work, tag, extra_args)
+    try:
+        kind, _ = s.hello()
+        checks.add(kind == "hello_ack", "hello -> hello_ack", f"got {kind}")
+        s.ui_state(cursor_mode=True, lang="ja" if "--lang=ja" in extra_args else "en")
+        s.settle()
+        birth_and_flush(s, checks)
+        enable_debug_opts(s, checks)
+        wizard_jump(s, "1", "2", confirm=True)
+        for r in ("55", "55", "53", "54"):
+            wizard_summon_named(s, r)
+        found = False
+        stalled = False
+        shown_without_key = False
+        for _ in range(80):
+            f = s.frames[-1] if s.frames else {}
+            keys = _frame_prompt_keys(f)
+            text = f.get("prompt", {}).get("text_utf8", "")
+            if 32 in keys:
+                found = True
+                break
+            #! 警告の文は出たのに、問いにスペースの選択肢が無い（文が箱の幅で割れたときに起きた）。乱数で警告が
+            #! 出なかった回とは別の失敗なので、ここで止めて引き直さない（関門の筋書きが間欠的に落ちて判明 2026-10-09）。
+            recent = " ".join(m.get("text_utf8", "") for m in (f.get("messages") or [])[-2:])
+            if not keys and ("LOW HITPOINT" in recent or "体力が危ない" in recent):
+                shown_without_key = True
+                break
+            if f.get("awaiting_command") is not True and not keys:
+                if presentation_more(text):
+                    s.key(0x20)
+                    s.settle(quiet_rounds=1, slice_s=0.4, cap_s=6.0)
+                    continue
+                if f.get("menu_open"):
+                    answer_stat_prompts(s, 4)
+                    continue
+            s.key(ord("s"))
+            s.settle(quiet_rounds=1, slice_s=0.4, cap_s=6.0)
+            if (s.frames[-1].get("hud", {}).get("hp", 1) <= 0):
+                break
+        f_end = s.frames[-1] if s.frames else {}
+        checks.add(found, "low-hitpoint warning offers the Space key",
+                   "" if found else (
+                       "警告は出たが問いにスペースが無い prompt=%r msgs=%r" % (f_end.get("prompt"), [m.get("text_utf8") for m in (f_end.get("messages") or [])[-2:]])
+                       if shown_without_key else
+                       "警告が出なかった hp=%r awaiting=%r prompt=%r" % (f_end.get("hud", {}).get("hp"), f_end.get("awaiting_command"), f_end.get("prompt"))))
+        if found:
+            before = len(s.frames)
+            s.key(32)
+            s.settle(quiet_rounds=2, slice_s=0.6, cap_s=15.0)
+            f = s.frames[-1]
+            checks.add(len(s.frames) > before and 32 not in _frame_prompt_keys(f),
+                       "Space answers the warning and the game goes on",
+                       f"frames {before}->{len(s.frames)} keys={_frame_prompt_keys(f)}")
+    finally:
+        s.quit_and_wait() if s.proc.poll() is None else None
+        s.close()
+    return checks
+
+
+def presentation_more(text: str) -> bool:
+    t = text.rstrip()
+    return t.endswith("-more-") or t.endswith("-続く-") or t.endswith("［続く］")
+
+
+def _stall_overview_run(work: Path, tag: str, extra_args):
+    """**広域の地図の確認画面から移動に入れる**こと（2026-10-09 の実機報告「移動ができなかった」）。
+
+    地表で `<` を押すと確認画面になり、方向キーを押すと広域の移動に入る。画面側のカーソル層は、
+    画面の行から読んだ選択肢（`[*/x/l] …` と `[>/<] …`）があると十字キー・矢印キーを**選択肢の選び直しに食う**
+    ので、方向がコアへ届かなかった。**アダプタは選択肢を 1 つも渡さない**こと（`menu_choices` が空）と、
+    問いが `LB/RB:` の帯（見回すだけ）であること、方向（`6`）で確認画面を出て移動に入れることを見る。
+    """
+    checks = Checks()
+    s = Session(work, tag, extra_args)
+    try:
+        kind, _ = s.hello()
+        checks.add(kind == "hello_ack", "hello -> hello_ack", f"got {kind}")
+        s.ui_state(cursor_mode=True, lang="ja" if "--lang=ja" in extra_args else "en")
+        s.settle()
+        birth_and_flush(s, checks)
+        s.key(ord("<"))
+        s.settle(quiet_rounds=2, slice_s=0.8, cap_s=20.0)
+        f = s.frames[-1]
+        checks.add(bool(f.get("menu_open")) and bool(f.get("menu_over_map")), "overview is open over the map",
+                   f"menu_open={f.get('menu_open')!r} over={f.get('menu_over_map')!r}")
+        checks.add(not f.get("menu_choices"), "overview hands no screen-line choices to the UI (D-pad must reach the core)",
+                   repr(f.get("menu_choices"))[:120])
+        footer = f.get("prompt", {}).get("footer_utf8", "")
+        checks.add(ord("*") in _frame_prompt_keys(f) and ("LB/RB" in footer),
+                   "overview prompt is the LB/RB band (Look only)", repr(footer)[:80])
+        s.key(ord("6"))
+        s.settle(quiet_rounds=2, slice_s=0.8, cap_s=20.0)
+        f = s.frames[-1]
+        checks.add(not f.get("menu_open") and not f.get("menu_over_map"), "a direction leaves the overview (travel starts)",
+                   f"menu_open={f.get('menu_open')!r} over={f.get('menu_over_map')!r}")
+    finally:
+        s.quit_and_wait() if s.proc.poll() is None else None
+        s.close()
+    return checks
+
+
+def cmd_stall(work: Path) -> int:
+    """**操作を受け付けなくなる 2 つの穴**の再発防止（2026-10-09 の実機報告。Android）。
+    スペースだけを受ける問い（体力の警告）と、広域の地図の確認画面の十字キー。英語と日本語で見る。
+    """
+    checks = Checks()
+    for lang, extra in (("en", ()), ("ja", ("--lang=ja",))):
+        for name, fn in (("overview", _stall_overview_run), ("hpwarn", _stall_hp_run)):
+            print(f"--- {name} ({lang}) ---")
+            c = fn(work, f"stall_{name}_{lang}", extra)
+            #! 体力の警告は乱数（警告が出る前に死ぬ回がある）。出なかった回だけ 3 回まで引き直す。
+            for _ in range(2):
+                if name != "hpwarn" or all(ok for ok, _, _ in c.rows):
+                    break
+                #! 引き直すのは『警告が出なかった』ときだけ。『警告は出たが問いにスペースが無い』は本物の失敗。
+                if any((not ok) and detail.startswith("警告は出たが") for ok, _, detail in c.rows):
+                    break
+                print("  （警告が出なかったので引き直す）")
+                c = fn(work, f"stall_{name}_{lang}", extra)
+            for ok, label, detail in c.rows:
+                checks.add(ok, f"[{lang}] {label}", detail)
+    return checks.finish()
+
+
 def main() -> int:
     if len(sys.argv) < 3:
         print(__doc__)
@@ -3175,6 +3372,8 @@ def main() -> int:
         return cmd_spell(work)
     if cmd == "spellfmt":
         return cmd_spellfmt(work)
+    if cmd == "stall":
+        return cmd_stall(work)
     if cmd == "fx":
         return cmd_fx(work)
     if cmd == "sfx":

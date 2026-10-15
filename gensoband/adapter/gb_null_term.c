@@ -2,7 +2,7 @@
  * @file gb_null_term.c
  * @brief 旧 z-term のヘッドレスドライバ（画を持たない Term を 1 枚立てる）。
  *
- * 基準は / §3.2。
+ * / §3.2。
  *
  * ## なぜ要るのか
  * **Term が 1 枚も無いと `init_angband()` は落ちる。** あちらは進捗を
@@ -45,7 +45,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/*! 立てた Term の実体。1 枚しか立てない（設計 §3.2 の「主 Term は 80x27 固定」）。 */
+/*! 立てた Term の実体。1 枚しか立てない。主 Term は作成画面の行27も含む80x28。 */
 static term gb_term_body;
 static int gb_term_ready = 0;
 
@@ -76,6 +76,27 @@ static void gb_present(void)
 }
 
 /*!
+ * @brief 誕生の最初の画面（難易度の選択）が出ているか。
+ * @details 原作 `birth.c` が `put_str("難易度を選択してください：", 10, 10)`（英語層では "Choose the difficulty:"）を描いて
+ * キーを待つ。**行 10 の桁 10 の字**で見分ける。字は CP932 のバイトで直に書く（ソースの文字コードに依らない）。
+ * 難易度を選ぶと行 10 以降は消されるので、「よろしいですか」の確認や次の画面では偽になる。
+ */
+static int gb_birth_first_screen(void)
+{
+    static const char ja[] = "\x93\xef\x88\xd5\x93\x78\x82\xf0\x91\x49\x91\xf0\x82\xb5\x82\xc4\x82\xad\x82\xbe\x82\xb3\x82\xa2";
+    static const char en[] = "Choose the difficulty";
+    char cells[256];
+
+    if (character_generated) {
+        return 0;
+    }
+    if (gb_term_row(10, cells, NULL, (int)sizeof(cells)) < 0) {
+        return 0;
+    }
+    return (strncmp(cells + 10, ja, sizeof(ja) - 1) == 0) || (strncmp(cells + 10, en, sizeof(en) - 1) == 0);
+}
+
+/*!
  * @brief 受信キューにあるだけキーを Term へ積む。
  * @return 積んだ個数
  *
@@ -92,6 +113,10 @@ static int gb_drain_keys_into_term(void)
     }
 
     while ((key = gb_hooks.next_key()) > 0) {
+        /* 誕生の最初の画面での取消は、原作が捨てて待ち続けるので、ここで拾ってタイトルへ戻る（修-61）。 */
+        if ((key == ESCAPE) && gb_birth_first_screen()) {
+            (void)gb_cancel_birth_to_title(); /* 戻らない。跳び先が無いときだけ素通し */
+        }
         (void)Term_keypress(key);
         pushed++;
         /* 待ち行列の容量（term_init の第 4 引数）を超えて押し込まない。 */
@@ -306,6 +331,20 @@ int gb_term_size(int *cols, int *rows)
     return GB_OK;
 }
 
+int gb_term_resize_rows(int rows)
+{
+    term *previous;
+    errr result;
+    if (!gb_term_ready) return GB_ERR_STATE;
+    if ((rows < 24) || (rows > 80)) return GB_ERR_ARG;
+    if ((int)gb_term_body.hgt == rows) return GB_OK;
+    previous = Term;
+    Term_activate(&gb_term_body);
+    result = Term_resize((int)gb_term_body.wid, rows);
+    if (previous != &gb_term_body) Term_activate(previous);
+    return result ? GB_ERR_TERM : GB_OK;
+}
+
 int gb_term_row(int y, char *text, unsigned char *attr, int cap)
 {
     const term_win *win;
@@ -412,6 +451,7 @@ unsigned long long gb_change_digest(void)
      * ので、**日本語を打とうとした瞬間に手詰まりになる**（実測して踏んだ）。
      */
     GB_MIX(gb_text_input_active() ? 1 : 0);
+    GB_MIX(gb_awaiting_command() ? 1 : 0);
 
     /*
      * **サブウィンドウの割り当て世代も混ぜる**（M1 / R1）。`=`→`w` を閉じた直後は
@@ -436,6 +476,13 @@ unsigned long long gb_change_digest(void)
      * こちらは汲んだ直後に 0 へ戻るので、数だと「積んで汲んだ」が同じ値に見える。
      */
     GB_MIX_INT(gb_sound_total());
+
+    /*
+     * **状態の旗の組も混ぜる**。`prt_status` が組み直した旗は
+     * Term の最下段の字が変わるので普通は digest が動くが、字が溢れて短縮されたり、同じ字のまま
+     * 別の状態へ替わる場面でも、アイコンは必ず追いつかせる。
+     */
+    GB_MIX_INT(gb_status_stamp());
 
     if (character_generated) {
         GB_MIX_INT(py);

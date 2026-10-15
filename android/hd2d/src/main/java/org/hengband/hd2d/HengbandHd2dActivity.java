@@ -17,6 +17,18 @@ public class HengbandHd2dActivity extends SDLActivity {
     private static final int CORE_SOURCE_ZIP = 4401;
     private static native void coreSourceZipSelected(String path, String displayName);
 
+    /**
+     * プロセスを起こし直す（ネイティブから呼ぶ。2026-10-07。AH-09）。
+     * 別のプロセスの {@link RestartActivity} を開き、そちらがこのプロセスを終わらせて本体を開き直す。
+     */
+    public void restartProcess() {
+        runOnUiThread(() -> {
+            final android.content.Intent intent = new android.content.Intent(this, RestartActivity.class);
+            intent.putExtra(RestartActivity.EXTRA_MAIN_PID, android.os.Process.myPid());
+            startActivity(intent);
+        });
+    }
+
     public String getCoreCompilerDirectory() {
         return getApplicationInfo().nativeLibraryDir;
     }
@@ -86,5 +98,26 @@ public class HengbandHd2dActivity extends SDLActivity {
         super.onCreate(savedInstanceState);
         // ローグライクは「考えている時間」が長い。放っておくと画面が消える。
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    /**
+     * ゲームが終わって活動を閉じるときは、プロセスごと終わらせる（2026-10-07。AH-09）。
+     *
+     * <p>SDL はゲーム（main）が終わると活動を閉じるだけで、プロセスは残す。Android は残ったプロセスを
+     * 次の起動で使い回し、同じプロセスで main をもう一度呼ぶ。ゲームコアの .so は開いたままで
+     * 大域の状態が前回のまま残っているので、2 度目は握手の前に止まった（気づいたこと
+     * 「Frox をセーブして終了したあと、再開すると hello_ack を読めませんでしたで起動できない」）。
+     * 1 プロセスでコアは 1 回だけ、という前提へ戻す。
+     *
+     * <p>super.onDestroy() はゲームのスレッドの終わりを待ってから返る（SDLActivity）ので、
+     * ここではセーブも済んでいる。向きなどの変化で作り直すとき（閉じるのではない）は終わらせない。
+     */
+    @Override
+    protected void onDestroy() {
+        final boolean finishing = isFinishing();
+        super.onDestroy();
+        if (finishing) {
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }
     }
 }

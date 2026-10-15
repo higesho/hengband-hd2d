@@ -22,6 +22,7 @@
 #include "app/app_clock.h"
 #include "ui/game_hud.h"
 #include "ui/combat_fx_view.h"
+#include "render/attack_fx_view.h" //!< `AttackFxView`
 #include "render/term_colors.h"
 #include "frame/frame_codec.h"
 #include "frame/sound_event.h"
@@ -77,7 +78,7 @@ ArenaWatch apply_arena_watch(const GameFrame &frame, bool force, bool first_pers
  * `sub_panel_kinds` の 4 つ。**表を足したらここにも足すこと。**
  */
 void take_core_tables(CoreLink &link, TileCatalog &tile_catalog,
-    std::vector<PadCommand> &pad_commands, PadMacroFlags &pad_macros,
+    std::vector<PadCommand> &pad_commands, std::string &pad_keymap, PadMacroFlags &pad_macros,
     Hd2dSettings &settings, std::vector<SubPanelKindChoice> &sub_panel_kind_choices);
 
 /*!
@@ -95,7 +96,7 @@ void place_vr_hud_panel(bool vr_frame_ready, xr::Session &xr, const xr::Frame &v
  *
  */
 void take_new_frame(CoreLink &link, GameFrame &frame, std::size_t &frame_bytes,
-    HudState &hud_state, CombatFxView &combat_fx, Hd2dSettings &settings,
+    HudState &hud_state, CombatFxView &combat_fx, AttackFxView &attack_fx, Hd2dSettings &settings,
     bool &sub_kinds_synced, const std::vector<SubPanelKindChoice> &sub_panel_kind_choices,
     const int (&sent_sub_kinds)[kUiSubPanels],
     Uint64 perf_freq, double &ms_decode);

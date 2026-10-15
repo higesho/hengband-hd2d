@@ -67,6 +67,8 @@ enum class MinimapKind : uint8_t {
     /*! @} */
 };
 
+enum class MinimapMarker : uint8_t { None=0,Treasure=1,Item=2,Monster=3,Trap=4 };
+
 struct MinimapSnapshot {
     int width{}; //!< フロアの格子幅。0 なら未充填（描画しない）
     int height{};
@@ -74,7 +76,13 @@ struct MinimapSnapshot {
     int player_gy{-1};
     //! width * height 個。添字は y * width + x。
     std::vector<uint8_t> kinds;
+    // Known entities are separate from terrain: detection must not reveal floor geometry.
+    std::vector<uint8_t> markers;
 
+    MinimapMarker marker_at(int x,int y) const {
+        if(markers.empty()||markers.size()!=kinds.size()||x<0||y<0||x>=width||y>=height)return MinimapMarker::None;
+        return static_cast<MinimapMarker>(markers[static_cast<size_t>(y)*static_cast<size_t>(width)+static_cast<size_t>(x)]);
+    }
     bool valid() const
     {
         return this->width > 0 && this->height > 0 &&

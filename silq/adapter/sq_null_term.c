@@ -29,6 +29,7 @@
 
 #include "angband.h"
 
+#include "sq_lang_c.h"
 #include "sq_shim.h"
 
 #include <stdio.h>
@@ -44,6 +45,36 @@ static int sq_hooks_ready = 0;
 
 /*! 待ちの空回り 1 周の長さ（ミリ秒）。変愚の `sdl_null_term.cpp` と同じ 10ms。 */
 #define SQ_IDLE_SLICE_MS 10
+
+/*!
+ * タイトル（`initial_menu()`）がキーを待っている間だけ真（判-17）。
+ * 原作のタイトルは取消（Esc）を受け付けず、`d) Quit` は `d`・`Q`・`q` だけで選べる。
+ * 画面の取消（パッドの B・Esc）は Esc として届くので、この間だけ `d`（やめる）へ読み替える。
+ */
+static int sq_title_menu_active = 0;
+
+void sq_title_menu_set_active(int active)
+{
+    sq_title_menu_active = active ? 1 : 0;
+}
+
+int sq_title_menu_map_key(int key)
+{
+    if (sq_title_menu_active && key == ESCAPE) {
+        return 'd';
+    }
+    return key;
+}
+
+void sq_term_selftest_clear(void)
+{
+    (void)Term_clear();
+}
+
+void sq_term_selftest_put(int x, int y, int attr, const char *text)
+{
+    (void)Term_putstr(x, y, -1, (byte)attr, text);
+}
 
 void sq_set_host_hooks(const sq_host_hooks *hooks)
 {
@@ -81,7 +112,7 @@ static int sq_drain_keys_into_term(void)
     }
 
     while ((key = sq_hooks.next_key()) > 0) {
-        (void)Term_keypress(key);
+        (void)Term_keypress(sq_title_menu_map_key(key));
         pushed++;
         /* 待ち行列の容量（term_init の第 4 引数）を超えて押し込まない。 */
         if (pushed >= 256) {
@@ -300,6 +331,117 @@ int sq_term_size(int *cols, int *rows)
     return SQ_OK;
 }
 
+int sq_term_resize_rows(int rows)
+{
+    term *previous;
+    errr result;
+    if (!sq_term_ready) return SQ_ERR_STATE;
+    if ((rows < 24) || (rows > 80)) return SQ_ERR_ARG;
+    if ((int)sq_term_body.hgt == rows) return SQ_OK;
+    previous = Term;
+    Term_activate(&sq_term_body);
+    result = Term_resize((int)sq_term_body.wid, rows);
+    if (previous != &sq_term_body) Term_activate(previous);
+    return result ? SQ_ERR_TERM : SQ_OK;
+}
+
+/*!
+ * @brief 行の末尾の `[y/n]` の `[` が、直前の 2 バイト文字の後ろ半分に食われていたら、その前半を空白にする。
+ * @details `get_check()` は `strnfmt(buf, 78, "%.70s[y/n] ", prompt)` で問いを **70 バイト**で切る
+ * （原作は 1 バイトの字しか考えていない）。CP932 の 2 バイト文字（日本語の名前のフォルダを含む
+ * 「既にある C:\...\日本語フォルダ...」・長い訳文）の途中で切れると、前半のバイトに `[`（0x5B。後ろ半分として
+ * 有効な範囲）が組み合わさって 1 字（例: `ゼ`）に化け、行の末尾が `ゼy/n]` になる。すると `[y/n]` を探す
+ * `parse_prompt_line()` が外れて、はい／いいえの選択肢が画面に出ない（2026-10-07。日本語のフォルダで再現）。
+ * 割れた前半は字ではないので空白に直す。桁（セルの位置）は 1 つも動かない。
+ */
+static void sq_repair_split_yn_tail(char *text, int n)
+{
+    int end = n - 1;
+    int x = 0;
+    int bracket;
+
+    while ((end >= 0) && ((text[end] == ' ') || (text[end] == 0))) {
+        end--;
+    }
+    if ((end < 5) || (text[end] != ']') || (text[end - 1] != 'n') || (text[end - 2] != '/') || (text[end - 3] != 'y')) {
+        return;
+    }
+    bracket = end - 4;
+    if (text[bracket] != '[') {
+        return;
+    }
+    /* 先頭から 2 バイト文字の対を数えて、`[` が対の後ろ半分に当たるか見る。 */
+    while (x < bracket) {
+        const unsigned char c = (unsigned char)text[x];
+        if ((((c >= 0x81) && (c <= 0x9F)) || ((c >= 0xE0) && (c <= 0xFC))) && ((x + 1) < n)) {
+            x += 2;
+        } else {
+            x++;
+        }
+    }
+    if (x == (bracket + 1)) {
+        text[bracket - 1] = ' ';
+    }
+}
+
+/*!
+ * @brief 能力値の行（行 3〜6）で、一時的な上昇の印 `*` が見出しの後半を潰していたら、見出しを戻す。
+ *
+ * @details 原作の `prt_stat()`（`xtra1.c`）は一時的な上昇のとき `put_str("*", ROW_STAT + stat, 3)` と、
+ * 見出し `Str ` の 4 桁目（空白）へ印を書く。日本語の見出し（`腕力` ほか。いずれも CP932 で 4 バイト）は
+ * 4 桁目が 2 バイト文字の後半なので、印がそこを潰して前半だけが残る（`腕・` に化ける。F-silq-10 の (b)）。
+ * 見出しは原作と同じ訳（`sq_tr()`）から引き直し、印は 1 桁右（5 桁目。そこは見出しの後の空白）へ移す。
+ * 行が見出しの前半と一致しないとき（全画面の別画面など）は何もしない。
+ */
+static void sq_repair_stat_marker(int y, char *text, int n)
+{
+    static const char *const kStatNames[4] = { "Str ", "Dex ", "Con ", "Gra " };
+    const char *label;
+
+    if ((y < 3) || (y > 6) || (n < 6) || (text[3] != '*')) {
+        return;
+    }
+    label = sq_tr(kStatNames[y - 3]);
+    if (!label || (strlen(label) != 4) || !sq_is_sjis_lead((unsigned char)label[2]) || !sq_is_sjis_trail((unsigned char)label[3])
+        || (text[2] != label[2]) || (text[4] != ' ')) {
+        return;
+    }
+    text[3] = label[3];
+    text[4] = '*';
+}
+
+/*!
+ * @brief 行の中の、対を失った 2 バイト文字のバイトを空白に直す（F-silq-10 の (a)）。
+ *
+ * @details 原作の Term は 1 バイト 1 桁で書くだけで、2 バイト文字の片方だけを上書きしても気にしない。
+ * 左の状態列は 13 桁（`COL_MAP`）で、歌の名前（`prt_song()`）は先頭から書かれる。
+ * 日本語の名前（`エルベレスの歌` は CP932 で 14 バイト）は 14 桁目（地図の側）へはみ出し、
+ * 歌をやめると、13 桁ぶんの空白で消した後に最後の 1 字の後半（`歌` は 0x89 0xCC）が 14 桁目に残る。
+ * それを `row_to_text()` が UTF-8 の字として運ぶと、画面側で U+FFFD になる。
+ * 左から対を数え、後続バイトの無い先行バイト・先行バイトの無い 0x80 以上のバイトを空白にする。
+ * 訳文に半角カナは無い（確認済み）ので、単独の 0xA1〜0xDF は対を失った後半と見てよい。
+ * 桁（セルの位置）は 1 つも動かない。英語の画（2 バイト文字が混じらない）には掛けない。
+ */
+static void sq_repair_orphan_bytes(char *text, int n)
+{
+    int x = 0;
+
+    while (x < n) {
+        const unsigned char c = (unsigned char)text[x];
+
+        if (sq_is_sjis_lead(c)) {
+            if (((x + 1) < n) && sq_is_sjis_trail((unsigned char)text[x + 1])) {
+                x += 2;
+                continue;
+            }
+            text[x] = ' ';
+        } else if (c >= 0x80) {
+            text[x] = ' ';
+        }
+        x++;
+    }
+}
+
 int sq_term_row(int y, char *text, unsigned char *attr, int cap)
 {
     const term_win *win;
@@ -340,6 +482,11 @@ int sq_term_row(int y, char *text, unsigned char *attr, int cap)
         }
     }
     text[n] = '\0';
+    if (sq_cp932_text() != 0) {
+        sq_repair_stat_marker(y, text, n);
+        sq_repair_orphan_bytes(text, n);
+    }
+    sq_repair_split_yn_tail(text, n);
 
     return n;
 }
@@ -462,6 +609,10 @@ unsigned long long sq_change_digest(void)
         SQ_MIX_INT(p_ptr->csp);
         SQ_MIX_INT(p_ptr->depth);
         SQ_MIX(p_ptr->is_dead ? 1 : 0);
+        /* 光の半径（符号つき。暗黒側は負）。画面が読む光の種類・照らされたマスの材料。 */
+        SQ_MIX_INT(p_ptr->cur_light);
+        /* 状態のアイコンの材料（一時的な状態の段階・歌・装備の既知の旗。`sq_read_status()`）。 */
+        SQ_MIX_INT(sq_status_stamp());
     }
 
 #undef SQ_MIX_INT

@@ -6,6 +6,9 @@
  * 振る舞いが変わっていないことは `python tools/hd2d_verify/golden.py --check` で見る。
  */
 #include "app/checks/check_support.h"
+#include <string_view>
+#include <iterator>
+#include <nlohmann/json.hpp>
 
 #include "app/app_support.h"
 #include "render/gl_core.h"
@@ -94,7 +97,7 @@ void load_styles_for_check(const AppOptions &options)
 }
 
 /*!
- * @brief `lib/edit/towns/*.txt` の実データからフレームを 1 枚組む（P10 第 2 期）。
+ * @brief `lib/edit/towns/*.jsonc`（変愚 3.0.2.5 から。旧 `*.txt` も読める）の実データからフレームを 1 枚組む（P10 第 2 期）。
  *
  * @details 引き継ぎ §4.2.3 の申し送り:「**実物の町を検査へ通す絵はまだ無い。罠 64 と
  * 同じ形なので、第 2 期では実データの町を読んで組み立てる検査を先に用意すること**」。
@@ -113,6 +116,41 @@ void load_styles_for_check(const AppOptions &options)
  * @param[out] err 読めなかった理由。
  * @return 組めたか。
  */
+std::vector<std::string> load_town_map_rows(const std::string &path)
+{
+    std::vector<std::string> rows;
+    std::ifstream ifs(path, std::ios::binary);
+    if (!ifs) {
+        return rows;
+    }
+    const std::string text((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    if ((path.size() >= 6) && (path.compare(path.size() - 6, 6, ".jsonc") == 0)) {
+        const auto town = nlohmann::json::parse(text, nullptr, false, true, true);
+        if (!town.is_discarded() && town.contains("mapVariants") && town["mapVariants"].is_array() && !town["mapVariants"].empty()) {
+            for (const auto &row : town["mapVariants"][0].value("rows", nlohmann::json::array())) {
+                rows.push_back(row.get<std::string>());
+            }
+        }
+        return rows;
+    }
+    std::size_t start = 0;
+    while (start <= text.size()) {
+        std::size_t end = text.find('\n', start);
+        std::string line = text.substr(start, (end == std::string::npos) ? std::string::npos : (end - start));
+        while (!line.empty() && (line.back() == '\r')) {
+            line.pop_back();
+        }
+        if (line.rfind("D:", 0) == 0) {
+            rows.push_back(line.substr(2));
+        }
+        if (end == std::string::npos) {
+            break;
+        }
+        start = end + 1;
+    }
+    return rows;
+}
+
 bool load_town_frame(const std::string &path, const PrefabLibrary &library, GameFrame &frame, std::string &err)
 {
     std::vector<std::string> rows;
@@ -133,7 +171,57 @@ bool load_town_frame(const std::string &path, const PrefabLibrary &library, Game
      * 先に既定を読み、町の側は `emplace` で**上書きしない**（最初の 1 つが勝つ）ので、
      * 町の `F:` 行のほうを先に読む。
      */
+    /*
+     * 変愚 3.0.2.5 から町の定義は `.jsonc` になった（`towns/*.jsonc` と `TownPreferences.jsonc`）。
+     * 中身は旧 `.txt` の並びをそのまま移したもので、`F:` 行が `featureRules`（条件 `?:` は `when`）、
+     * `D:` 行が `mapVariants[].rows`、既定の表が `legend`。読む規則（最初の 1 つが既定・全部の意味も集める）は同じ。
+     * 旧 `.txt`（短愚の町など）も下の分岐で読めるまま残す。
+     */
+    const auto ends_with = [](const std::string &s, std::string_view suffix) {
+        return (s.size() >= suffix.size()) && (s.compare(s.size() - suffix.size(), suffix.size(), suffix) == 0);
+    };
+    if (ends_with(path, ".jsonc")) {
+        const auto read_json = [](const std::string &file, nlohmann::json &out) {
+            std::ifstream ifs(file, std::ios::binary);
+            if (!ifs) {
+                return false;
+            }
+            const std::string text((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+            out = nlohmann::json::parse(text, nullptr, false, true, true);
+            return !out.is_discarded();
+        };
+        nlohmann::json town;
+        if (!read_json(path, town)) {
+            err = "町のデータを開けません: " + path;
+            return false;
+        }
+        if (town.contains("mapVariants") && town["mapVariants"].is_array() && !town["mapVariants"].empty()) {
+            for (const auto &row : town["mapVariants"][0].value("rows", nlohmann::json::array())) {
+                rows.push_back(row.get<std::string>());
+            }
+        }
+        const auto add_rule = [&glyph_key, &glyph_all](const std::string &symbol, const nlohmann::json &definition) {
+            if (symbol.size() != 1 || !definition.is_object() || !definition.contains("terrain") || !definition["terrain"].is_string()) {
+                return;
+            }
+            const auto key = definition["terrain"].get<std::string>();
+            glyph_key.emplace(symbol[0], key); //!< emplace なので**最初の 1 つだけ**が残る
+            glyph_all[symbol[0]].push_back(key);
+        };
+        for (const auto &rule : town.value("featureRules", nlohmann::json::array())) {
+            add_rule(rule.value("symbol", std::string()), rule.value("definition", nlohmann::json::object()));
+        }
+        nlohmann::json prefs;
+        if (read_json("lib/edit/TownPreferences.jsonc", prefs) && prefs.contains("legend") && prefs["legend"].is_object()) {
+            for (const auto &[symbol, definition] : prefs["legend"].items()) {
+                add_rule(symbol, definition);
+            }
+        }
+    }
     for (const std::string &file : { path, std::string("lib/edit/TownPreferences.txt") }) {
+        if (ends_with(path, ".jsonc")) {
+            break;
+        }
         std::FILE *fp = std::fopen(file.c_str(), "rb");
         if (fp == nullptr) {
             if (file == path) {
@@ -296,6 +384,58 @@ bool load_town_frame(const std::string &path, const PrefabLibrary &library, Game
     frame.cam_y = frame.player_gy;
     frame.minimap.player_gx = frame.player_gx;
     frame.minimap.player_gy = frame.player_gy;
+    return true;
+}
+
+void embed_town_frame(GameFrame &frame, int origin_x, int origin_y, int canvas_w, int canvas_h)
+{
+    const int w = frame.minimap.width;
+    const int h = frame.minimap.height;
+    if ((w <= 0) || (h <= 0)) {
+        return;
+    }
+    const int cw = (canvas_w > 0) ? std::max(canvas_w, w + origin_x) : (w + origin_x);
+    const int ch = (canvas_h > 0) ? std::max(canvas_h, h + origin_y) : (h + origin_y);
+    std::vector<std::uint8_t> kinds(static_cast<std::size_t>(cw) * static_cast<std::size_t>(ch),
+        static_cast<std::uint8_t>(MinimapKind::Unknown));
+    for (int y = 0; y < h; ++y) {
+        for (int x = 0; x < w; ++x) {
+            kinds[(static_cast<std::size_t>(y + origin_y) * static_cast<std::size_t>(cw)) + static_cast<std::size_t>(x + origin_x)]
+                = frame.minimap.kinds[(static_cast<std::size_t>(y) * static_cast<std::size_t>(w)) + static_cast<std::size_t>(x)];
+        }
+    }
+    frame.minimap.kinds.swap(kinds);
+    frame.minimap.markers.clear();
+    frame.minimap.width = cw;
+    frame.minimap.height = ch;
+    frame.minimap.player_gx += origin_x;
+    frame.minimap.player_gy += origin_y;
+    for (MapCellView &cell : frame.cells) {
+        cell.gx = static_cast<std::int16_t>(cell.gx + origin_x);
+        cell.gy = static_cast<std::int16_t>(cell.gy + origin_y);
+    }
+    frame.player_gx += origin_x;
+    frame.player_gy += origin_y;
+    frame.cam_x += origin_x;
+    frame.cam_y += origin_y;
+    frame.floor.town_origin_x = origin_x;
+    frame.floor.town_origin_y = origin_y;
+}
+
+bool read_origin_env(const char *name, int &origin_x, int &origin_y)
+{
+    const char *const raw = std::getenv(name);
+    if ((raw == nullptr) || (raw[0] == '\0')) {
+        return false;
+    }
+    int x = 0;
+    int y = 0;
+    if (std::sscanf(raw, "%d,%d", &x, &y) != 2) {
+        std::fprintf(stderr, "[hd2d] %s=%s を読めません（`66,22` の形）\n", name, raw);
+        return false;
+    }
+    origin_x = x;
+    origin_y = y;
     return true;
 }
 

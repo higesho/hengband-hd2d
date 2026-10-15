@@ -4,11 +4,51 @@
  */
 #include "world/slab_library.h"
 
+#include "assets/tile_catalog.h"
+
 #include <SDL2/SDL_image.h>
 
+#include <cstddef>
 #include <cstdio>
+#include <algorithm>
+#include <limits>
+
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#endif
 
 namespace hd2d {
+
+void SlabLibrary::set_declared_dir(const std::string &dir)
+{
+#ifdef _WIN32
+    /*
+     * UTF-8 → UTF-16 → ANSI（CP_ACP）。UTF-8 として読めないとき（古いコアが ANSI のまま送ってきたとき）は
+     * そのまま持つ——従来どおりの動きで、ASCII だけのパスはどちらでも同じバイト列になる。
+     */
+    if (!dir.empty()) {
+        const int wide_len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, dir.data(), static_cast<int>(dir.size()), nullptr, 0);
+        if (wide_len > 0) {
+            std::wstring wide(static_cast<std::size_t>(wide_len), L'\0');
+            MultiByteToWideChar(CP_UTF8, 0, dir.data(), static_cast<int>(dir.size()), wide.data(), wide_len);
+            const int ansi_len = WideCharToMultiByte(CP_ACP, 0, wide.data(), wide_len, nullptr, 0, nullptr, nullptr);
+            if (ansi_len > 0) {
+                std::string ansi(static_cast<std::size_t>(ansi_len), '\0');
+                WideCharToMultiByte(CP_ACP, 0, wide.data(), wide_len, ansi.data(), ansi_len, nullptr, nullptr);
+                this->declared_dir_ = ansi;
+                return;
+            }
+        }
+    }
+#endif
+    this->declared_dir_ = dir;
+}
 
 std::string slab_name_from_path(const std::string &tile_path)
 {
@@ -41,6 +81,13 @@ void SlabLibrary::shutdown(VoxelRenderer *renderer)
     this->missing_ = 0;
     this->last_error_.clear();
     IMG_Quit();
+}
+
+int SlabLibrary::acquire_item(const TileCatalog &catalog, std::uint16_t item_id, VoxelRenderer &renderer)
+{
+    const std::uint16_t tile = catalog.find_item_tile(item_id);
+    const TileEntry *const entry = (tile != 0) ? catalog.find(tile) : nullptr;
+    return (entry == nullptr) ? -1 : this->acquire(tile, entry->path, renderer);
 }
 
 int SlabLibrary::acquire(std::uint16_t tile_index, const std::string &tile_path, VoxelRenderer &renderer)
@@ -87,6 +134,13 @@ int SlabLibrary::acquire(std::uint16_t tile_index, const std::string &tile_path,
             this->declared_dir_.c_str(), this->dir_.c_str());
         return -1;
     }
+    entry.minimum={1e9f,1e9f,1e9f};entry.maximum={-1e9f,-1e9f,-1e9f};
+    for(const auto &part:entry.prefab.parts) {
+        const auto &model=entry.prefab.vox.models[part.model_index];const float scale=1.f/entry.prefab.voxels_per_cell;
+        entry.minimum.x=std::min(entry.minimum.x,part.offset[0]*scale);entry.maximum.x=std::max(entry.maximum.x,(part.offset[0]+model.size[0])*scale);
+        entry.minimum.y=std::min(entry.minimum.y,part.offset[1]*scale);entry.maximum.y=std::max(entry.maximum.y,(part.offset[1]+model.size[1])*scale);
+        entry.minimum.z=std::min(entry.minimum.z,part.offset[2]*scale);entry.maximum.z=std::max(entry.maximum.z,(part.offset[2]+model.size[2])*scale);
+    }
     if (!renderer.upload(entry.prefab, entry.gpu, err)) {
         this->index_.emplace(tile_index, -1);
         ++this->missing_;
@@ -119,6 +173,85 @@ int SlabLibrary::acquire(std::uint16_t tile_index, const std::string &tile_path,
     this->entries_.push_back(std::move(entry));
     this->index_.emplace(tile_index, id);
     return id;
+}
+
+bool SlabLibrary::front_pixels(const std::string &tile_path, int &width, int &height, std::vector<std::uint8_t> &rgba) const
+{
+    const std::string name = slab_name_from_path(tile_path);
+    if (name.empty()) {
+        return false;
+    }
+    Prefab prefab;
+    std::string err;
+    bool loaded = false;
+    if (!this->declared_dir_.empty()) {
+        loaded = load_prefab(this->declared_dir_, name, prefab, err);
+    }
+    if (!loaded) {
+        loaded = load_prefab(this->dir_, name, prefab, err);
+    }
+    if (!loaded) {
+        return false;
+    }
+    const int side = std::max(1, prefab.voxels_per_cell);
+    // 足元（z = 0）から板の頭まで。
+    int top = 0;
+    for (const auto &part : prefab.parts) {
+        const auto &model = prefab.vox.models[static_cast<std::size_t>(part.model_index)];
+        top = std::max(top, static_cast<int>(part.offset[2]) + model.size[2]);
+    }
+    top = std::min(top, side);
+    if (top <= 0) {
+        return false;
+    }
+    std::vector<int> front_y(static_cast<std::size_t>(side) * static_cast<std::size_t>(top), -1);
+    rgba.assign(static_cast<std::size_t>(side) * static_cast<std::size_t>(top) * 4u, 0);
+    bool any = false;
+    int highest = -1; //!< 色の付いたボクセルがある最も高い z（モデルの寸法には空の段が含まれることがある）
+    for (const auto &part : prefab.parts) {
+        const auto &model = prefab.vox.models[static_cast<std::size_t>(part.model_index)];
+        const int ox = static_cast<int>(part.offset[0]);
+        const int oy = static_cast<int>(part.offset[1]);
+        const int oz = static_cast<int>(part.offset[2]);
+        for (int z = 0; z < model.size[2]; ++z) {
+            const int gz = oz + z;
+            if ((gz < 0) || (gz >= top)) {
+                continue;
+            }
+            for (int x = 0; x < model.size[0]; ++x) {
+                const int gx = ox + x;
+                if ((gx < 0) || (gx >= side)) {
+                    continue;
+                }
+                for (int y = model.size[1] - 1; y >= 0; --y) { // +y が絵の面（カメラ側）。最も手前を採る
+                    const std::uint8_t index = model.at(x, y, z);
+                    if (index == 0) {
+                        continue;
+                    }
+                    const std::size_t pixel = (static_cast<std::size_t>(top - 1 - gz) * static_cast<std::size_t>(side)) + static_cast<std::size_t>(gx);
+                    if (front_y[pixel] < oy + y) {
+                        front_y[pixel] = oy + y;
+                        rgba[(pixel * 4u) + 0u] = prefab.vox.palette[index][0];
+                        rgba[(pixel * 4u) + 1u] = prefab.vox.palette[index][1];
+                        rgba[(pixel * 4u) + 2u] = prefab.vox.palette[index][2];
+                        rgba[(pixel * 4u) + 3u] = 255;
+                        any = true;
+                        highest = std::max(highest, gz);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    if (!any) {
+        return false;
+    }
+    // 先頭（頭の側）の空の行を落とす。
+    const std::size_t drop_rows = static_cast<std::size_t>(top - 1 - highest);
+    rgba.erase(rgba.begin(), rgba.begin() + static_cast<std::ptrdiff_t>(drop_rows * static_cast<std::size_t>(side) * 4u));
+    width = side;
+    height = highest + 1;
+    return true;
 }
 
 } // namespace hd2d

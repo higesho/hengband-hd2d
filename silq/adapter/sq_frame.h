@@ -52,11 +52,31 @@ void set_camera_follow_player(bool follow);
 void set_tile_manifest(const TileManifest *manifest);
 
 /*!
+ * @brief 溜まっている魔法・矢の効果があるか（`host_present()` の「画面が変わっていない」の判定を飛ばすのに使う）。
+ * @details 記録は汲まれるまで残るので、組まないと届かない。命令待ち（動きの終わり）なら開いている 1 発も数える。
+ */
+bool attack_fx_ready();
+
+/*!
  * @brief いまのコアの状態を 1 フレームに写す。
  * @param frame_id 通し番号（呼び手が増やす。v1 §6.1 で常に出る唯一の数）
  * @details 呼んでよいのは**ゲームスレッド**だけ（`sq_shim.h` の読み口はどれも
  * 素の大域変数を読む）。
  */
 GameFrame capture_frame(unsigned long long frame_id);
+
+/*!
+ * @brief 状態のアイコンの自己検査（`SilCore.exe --selftest`。キャラクター不要）。
+ * @param err 最初に外れた 1 件の説明（外れが無ければ触らない）
+ * @param checked 画面側の表と突き合わせた鍵の数（環境変数 `HENGBAND_STATUS_ICON_TABLE` に
+ * `hd2d/ui/status_icon_table.inc` の絶対パスがあるときだけ数える。無ければ 0）
+ * @return 外れた件数
+ * @details 材料（`sq_status_state`）を合成して、(1) 送る鍵が全部画面側の表にある (2) 常時の効果の表が
+ * 旗の桁を欠けなく覆う (3) 状態ごとに期待の鍵・種類が出る、を見る。
+ */
+int status_selftest(char *err, int cap, int *checked);
+
+//! 常時の効果の表の行数（`--selftest` の報告用）。
+int status_perm_row_count();
 
 } // namespace sq

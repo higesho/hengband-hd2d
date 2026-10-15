@@ -17,7 +17,7 @@ namespace hd2d {
  * @brief `run()` の戻り値のうち、**「コア選択からやり直す」**を表すもの（2026-08-23）。
  *
  * @details 「ゲーム終了後、コアの起動画面に遷移させて」と決めた。
- * コアが**自分から**終わった（利用者が遊びを終えた）ときだけこれを返す。
+ * コアが**自分から**終わった（遊ぶ人が遊びを終えた）ときだけこれを返す。
  * 窓の × で終わらせたとき（`quit_request` を送ったとき）や、コアが落ちたときは返さない
  * ——どちらも「やり直したい」ではない。
  *
@@ -93,6 +93,35 @@ struct AppOptions {
      * 他の `--*-check` と同じ立ち位置。
      */
     bool core_select_check{ false };
+    /*!
+     * @brief 系譜図の画面だけを出して確かめる（`--lineage-check`）。**窓もコアも要らない。**
+     * @details `assets/ui/lineage.json` を読み、並べ方（`layout_lineage`）まで通して
+     * 個数・段数・大きさを stderr へ出す。他の `--*-check` と同じ立ち位置。
+     */
+    bool lineage_check{ false };
+    /*!
+     * @brief 系譜図の画面を直接開いて撮る（`--lineage-shot=<path.bmp>`）。
+     * @details 窓が立ち上がった後、コア選択より先にこの画面を開いて数フレーム描いてから
+     * `save_framebuffer_bmp` で書き出す。撮ったら戻る（コアは起こさない）。
+     */
+    std::string lineage_shot_path;
+    /*!
+     * @brief 系譜図の画面を撮らずに開いたままにする（`--lineage-view`）。録画（`HD2D_RECORD`）用。
+     * @details コアは起こさない。窓を閉じるか `HD2D_RECORD_SECONDS` で終わる。
+     */
+    bool lineage_view{ false };
+    /*!
+     * @brief `lineage.json` の代わりに読む場所（`--lineage-data=`）。**検査・撮影の専用。**
+     * @details 設計の判断：概要・リンクなど、まだ本物のデータに無い項目を、2〜3 件だけ
+     * 足した仮のコピーで試すための手段。空なら本物を読む。
+     */
+    std::string lineage_data_path;
+    /*!
+     * @brief 系譜図を開いたときに選んでおく項目のコア鍵（`--lineage-initial=`）。
+     * @details 空なら前回のコア（`hd2d.cfg` の `last_core`）から決める。**検査・撮影の専用**
+     * ——特定の項目（変愚蛮怒など）を選んだ状態を毎回同じに撮るための手段。
+     */
+    std::string lineage_initial_key;
 #if !defined(_WIN32)
     //! コアスレッドの入口（`CoreLinkOptions::core_thread_main` へそのまま渡す。
     //! Android の入口 `hd2d_entry_android.cpp` が差す）。
@@ -128,6 +157,16 @@ struct AppOptions {
      * 見直しにもそのまま使える（P10 の「AI が作る → 人が見て指摘 → AI が直す」）。
      */
     std::string prefab_name;
+    // Static GLB development tools. Empty paths preserve the existing display.
+    std::string model_check_path;
+    std::string model_view_path;
+    std::string model_player_path;
+    std::string model_wall_path;
+    std::string model_floor_path;
+    bool model_terrain_check{ false };
+    bool model_terrain_all{ false };
+    std::string model_terrain_pack;
+    float model_test_ambient{ -1.f };
     //! 窓を出さずにメッシュ化だけして三角形の数を出す（`--prefab-check=<名前>`）。
     bool prefab_check_only{ false };
     /*!
@@ -429,7 +468,7 @@ struct AppOptions {
     /*!
      * @name 「起動引数で明示されたか」（P8）
      * @details `hd2d.cfg`（機能メニューが覚える設定）より**起動引数のほうが強い**。
-     * 既定値と「利用者が既定値と同じ値を打った」は区別できないので、打たれたことを
+     * 既定値と「遊ぶ人が既定値と同じ値を打った」は区別できないので、打たれたことを
      * こちらで覚える。ここが偽の項目だけ cfg で埋める。
      * @{
      */
@@ -452,6 +491,20 @@ struct AppOptions {
      * 合成フレームの中身が実際に画素になることを見る。
      */
     bool ui_check{ false };
+    /*!
+     * @brief HP/MP の玉とバフ・デバフのアイコンの検査（`--status-hud-check=出力.png`）。
+     * @details 合成のフレームで 2560x1080 と 1280x720 の 2 通りを描いて画像に書き出し、
+     * 配置の規則（左右・重なり・画面の中）を数で確かめて PASS/FAIL を出す。**コアは起こさない。**
+     * 空なら走らない。
+     */
+    std::string status_hud_check_path;
+    /*!
+     * @brief 光の届く範囲の検査（`--light-range-check=出力の頭`）。
+     * @details 暗い通路と明るい部屋の合成フレームを、光源の種類（0〜4）・場なし・切り替えの途中で描いて
+     * `出力の頭_<シーン>_<種類>.png` に書き出し、明るさと色味を数えて PASS/FAIL を出す。**コアは起こさない。**
+     * 空なら走らない。引数の読み取りは `hd2d::run()` が `forwarded_args` から拾う。
+     */
+    std::string light_range_check_path;
     /*!
      * @brief `--ui-check` で 3D の矩形を N 画素だけ広げる（`--grow-scene=N`）。
      * @details **検査の検査**（設計書 §14-4）。広げれば必ずどれかのパネルと重なるはずで、

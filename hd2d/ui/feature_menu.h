@@ -1,15 +1,15 @@
-/*!
+﻿/*!
  * @file feature_menu.h
  * @brief 機能メニュー（P8）— F10 で開く、ゲームの外の設定。
  *
  * ## 何を入れて、何を入れないか
- * 2026-08-08 に決めたは「**HD2D 版に要るものだけ**」。
- * 廃止した2D画面の機能メニューには、この実行体に**存在しない**ものが並んでいる
+ * 決めたこと（2026-08-08）は「**HD2D 版に要るものだけ**」。
+ * 旧2D画面 の機能メニューには、この実行体に**存在しない**ものが並んでいる
  * （SDL2 / HD2D の経路切替・液晶表現・Android のバーチャルパッド・タイルの倍率）。
  * 器だけ残して並べると「押しても何も起きない項目」になるので、入れない。
  *
  * ## 階層にする理由
- * 項目が 30 を超え、**低い窓では下が見切れた**（2026-08-08）。
+ * 項目が 30 を超え、**低い窓では下が見切れた**（遊ぶ人・2026-08-08）。
  * 1 枚に詰めるのをやめ、**分類を選んでから中へ入る**形にした。
  * どの分類も 1 画面に収まるので、窓の高さに関係なく最後の項目まで届く。
  *
@@ -53,11 +53,11 @@
  * 置くと、開いて → を押しただけで言語が変わる——いちばん触ってほしくない項目が
  * いちばん触りやすい所に来る。読めない人は ↑ 1 回（先頭へ回り込む）で届く。
  *
- * **「終了」はもう無い**（2026-08-11 に決めた「HD2D 用メニューの終了は削除して。
+ * **「終了」はもう無い**（決めたこと 2026-08-11「HD2D 用メニューの終了は削除して。
  * 通常の終了のみで終わらせる」）。終わらせる道はコアの通常の終了（^X ほか）だけにする。
  * ゲームを保存せずに窓ごと畳む口がメニューに並んでいると、通常の終了と取り違える。
  *
- * ## 割り当ての画面（2026-08-11 に決めた）
+ * ## 割り当ての画面
  * 「キーごとに操作を割り当てるのではなく、**操作ごとにキーを割り当てる**形に」。
  * 前は「キー割り当て（F1〜F12）」と「パッド（ボタン → コマンド）」の 2 枚だったものを、
  * **1 枚の表**にまとめてある。
@@ -81,8 +81,11 @@
  * ゲームの中で歩く動作になってはいけない。
  */
 #pragma once
+#include "app/ui_probe.h"
+#include "ui/menu_tabs.h"
 
 #include "ui/hd2d_settings.h"
+#include "ui/menu_header.h"
 #include "ui/ui_layout.h"
 
 #include <cstdint>
@@ -113,13 +116,19 @@ enum class MenuNav {
     Right,
     Confirm,
     Cancel,
+    PreviousTab,
+    NextTab,
+    Categories,
+    PreviousPane,
+    NextPane,
+    TogglePane,
 };
 
 class FeatureMenu {
 public:
     bool is_open() const { return this->open_; }
     /*!
-     * @brief コマンドの一覧を出しているか（2026-08-29 に決めた
+     * @brief コマンドの一覧を出しているか（決めたこと 2026-08-29
      * 「コマンドメニュー背景にコアのマップが表示される。消して」）。
      * @details ここだけ**遊んでいる最中に開く**画なので、後ろの地図が透けると
      * 命令の名札と地の絵が重なって読みにくい。呼び手（`hd2d_app.cpp`）が
@@ -127,8 +136,12 @@ public:
      * 世界を見ながら値をいじる画なので、地図が見えているほうがよい。
      */
     bool showing_commands() const { return this->open_ && (this->page_ == Page::Commands); }
+    bool showing_bindings() const {return open_&&page_==Page::Binds;}
     void open(const Hd2dSettings &settings);
     void close();
+    bool handle_native_key(int key,Hd2dSettings &settings);
+    bool click_tab_header(int x,int y,Hd2dSettings &settings);
+    bool click_row(int x,int y,Hd2dSettings &settings);
 
     /*!
      * @brief キーを処理する。**開いている間は常に食う**（コアへ流さない）。
@@ -140,7 +153,7 @@ public:
      * @name 割り当ての変更モード
      *
      * @details 決定で入り、次に押したキー／ボタンがそのマスの割り当てになる。
-     * **ESC は「取消」ではなく「割り当てを消す」**（2026-08-11 に決めた）。
+     * **ESC は「取消」ではなく「割り当てを消す」**。
      * 降りる道は「割り当てた」「消した」「15 秒経った」の 3 つで、
      * ESC が消去に取られているぶんを時間で補っている。
      * @{
@@ -177,11 +190,36 @@ public:
     {
         const int id = this->command_requested_;
         this->command_requested_ = 0;
+        this->command_requested_present_ = false;
         return id;
+    }
+    bool take_pending_command_request(int &id)
+    {
+        const bool present = command_requested_present_ || command_requested_ > 0;
+        id = command_requested_;
+        command_requested_ = 0;
+        command_requested_present_ = false;
+        return present;
     }
 
     //! **コマンドの画面を開いた状態で**開く（`kActionCommandMenu`）。
     void open_commands(const Hd2dSettings &settings);
+    void open_command_tab(int index,const Hd2dSettings &settings);
+    /*!
+     * @brief 開いているコマンドメニューで、目当てのタブへ**一度で**移る（見出しを押したとき。2026-10-07）。
+     * @details 途中のタブの処理（持ち物一覧を開く要求・Rogue の「設定」のコマンド）は走らせず、
+     * 着いたタブの処理だけを 1 回走らせる。範囲の外や今のタブなら何もしない。
+     */
+    void jump_to_command_tab(int target);
+    void scroll_at(int x,int y,int direction,Hd2dSettings &settings);
+    bool take_inventory_request(){const bool requested=inventory_requested_;inventory_requested_=false;return requested;}
+    bool showing_command_tabs() const { return showing_commands() && command_tabs_enabled_; }
+    bool tab_navigation_active() const { return open_ && command_tabs_enabled_ && (page_==Page::Commands || features_from_tab_); }
+    void open_features(const Hd2dSettings &settings);
+
+    int command_tab_index() const { return command_tabs_.index(); }
+    std::vector<std::string> command_tab_labels() const;
+
 
     /*!
      * @brief いま並んでいる行の名札（`--ui-check` 用）。
@@ -206,7 +244,7 @@ public:
 
     /*!
      * @brief **VR の入切**を要求されたか。**読むと下りる**（1 回きり）。
-     * @details 2026-08-14 に決めた「ゲーム内から VR モードを起動できないか？」。
+     * @details 決めたこと（2026-08-14）「ゲーム内から VR モードを起動できないか？」。
      * メニューは OpenXR のセッションを知らないので、要求だけ立てて `hd2d_app.cpp` に
      * 立てさせる／畳ませる（`VirtualPad` の配置編集と同じ作り）。
      */
@@ -239,7 +277,7 @@ public:
 
     /*!
      * @brief いま画面が縦向きか（`hd2d_app.cpp` が毎フレーム渡す。`h > w`）。
-     * @details 「画面の作り」と「ボタン配置」は**縦横で別々**（2026-08-12 に決めた）。
+     * @details 「画面の作り」と「ボタン配置」は**縦横で別々**。
      * メニューは**いま向いている側だけ**を触る——見えている画面と違う側を書き換えると、
      * 「変えたのに何も起きない」になる。
      */
@@ -248,7 +286,7 @@ public:
      * @brief **いま VR で動いているか**（`hd2d_app.cpp` が毎フレーム渡す）。
      * @details 「VR を始める／やめる」の表示と、値の説明の出し分けに使う。
      * **入口の「VR」は Windows なら常に並べる**——ゲーム内から始められるように
-     * なった以上、平らな画面のときこそ入口が要る（2026-08-14 に決めた）。
+     * なった以上、平らな画面のときこそ入口が要る。
      */
     void set_vr_available(bool on) { this->vr_available_ = on; }
 
@@ -259,19 +297,41 @@ public:
      */
     void set_pad_state(const std::vector<PadCommand> &commands, bool connected, const std::string &name)
     {
+        if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
         this->pad_commands_ = commands;
+        refresh_command_tabs();
         this->pad_connected_ = connected;
         this->pad_name_ = name;
+    }
+
+    /*!
+     * @brief パッドに割り当てられるコマンドの一覧だけを渡し、コマンドのタブ（分類・持ち物一覧・機能）を組み直す。
+     * @details `set_pad_state()` はメニューを開く直前にしか呼ばれないので、メニューを 1 度も開いていないと
+     * `command_tab_labels()` が空のままになる。キーボードの `i`・`e` で持ち物の窓を開くときは、その分類の
+     * タブをここから借りる。先にここで組んでおかないと、窓のタブが「持ち物一覧」の 1 つだけになり、
+     * 肩ボタン（RB・LB）や Tab で分類を移れない（frox-5 の C13。メニューを開く前に `i` を押した場合）。
+     */
+    void set_pad_commands(const std::vector<PadCommand> &commands)
+    {
+        if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
+        this->pad_commands_ = commands;
+        refresh_command_tabs();
     }
 
     //! 描く。**`paint` を `text` より先に流すのは呼び出し側。**
     void draw(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const Hd2dSettings &settings) const;
 
     /*!
+     * @brief いまの画面が占める矩形。
+     * @details **`draw()` と同じ所から作る**（描いたパネルと検査が見るパネルを食い違わせない。
+     * 必守制約 3 の親戚）。「操作の割り当てが地図の枠に収まっているか」を
+     * `--ui-check` が画素ではなくこの矩形で確かめられるようにするための手段である。
+     */
+    /*!
      * @brief 字がパネルからはみ出していないか調べる。**収まっていれば空文字**。
      * @details `text.draw()` は入り切らない字を**黙って積まない**ので、溢れても
      * 落ちず、絵として切れるだけになる（英語にしたら `Full-screen 3D (Landsca` で
-     * 途切れた。実機で見た様子 2026-08-15）。人が見るまで気づけないので、
+     * 途切れた。遊ぶ人の画面 2026-08-15）。人が見るまで気づけないので、
      * 検査から突けるようにここへ出す。**いま選ばれている言語で**測る。
      */
     std::string overflow_report(TextOverlay &text, const UiLayout &layout, const Hd2dSettings &settings) const;
@@ -304,10 +364,6 @@ public:
      * @details 幅を桁数で書くと言語を変えた途端に溢れる（`text_overlay.h` の注記）。
      * 実測できるときは実測する。割り当ての一覧（`Page::Binds`）は中身ではなく
      * **地図の枠**で決まるので、どちらでも同じ矩形が出る。
-     *
-     * **`draw()` と同じ所から作る**（描いたパネルと検査が見るパネルを食い違わせない。
-     * 必守制約 3 の親戚）。「操作の割り当てが地図の枠に収まっているか」を
-     * `--ui-check` が画素ではなくこの矩形で確かめられるようにするための手段である。
      */
     RectPx panel_rect(const UiLayout &layout, TextOverlay *text = nullptr,
         const Hd2dSettings *settings = nullptr) const;
@@ -330,6 +386,7 @@ public:
     std::vector<BindRow> bind_rows() const;
 
 private:
+    void draw_logical(UiPaint &,TextOverlay &,const UiLayout &,const Hd2dSettings &) const;
     /*!
      * @brief 分類（＝画面）。`Root` が入口。
      * @note **`Root` にも値の項目がある**（言語。`root_items()`）。入口は節の一覧だけ、
@@ -338,7 +395,7 @@ private:
     enum class Page {
         Root,
         /*!
-         * @brief **コマンド**（2026-08-22 に決めた）。コアの命令の一覧を並べて**実行する**。
+         * @brief **コマンド**。コアの命令の一覧を並べて**実行する**。
          *
          * @details ここだけ**設定ではなく操作**である。入口の先頭に置くのは、
          * 触りだけの機体では**ここが全命令への唯一の API**だからである（SH-25 / SH-32）。
@@ -369,7 +426,7 @@ private:
         FirstPerson,
         SubPanels,
         /*!
-         * @brief **音**（2026-08-21 に決めた）。音楽・効果音の入切と音量。
+         * @brief **音**。音楽・効果音の入切と音量。
          * @details **コアが `audio` を申告したときだけ**入口に並ぶ（`root_pages()`。
          * `set_core_supports_audio()`）——音を持たないコア（Sil-Q）で並べても、
          * 触った値の行き先が無い。「どこに置くか／どう描くか／どこから見るか」の
@@ -378,23 +435,23 @@ private:
         Sound,
         Binds,
         /*!
-         * @brief バーチャルパッド（2026-08-12 に決めた）。**入口に並ぶのは Android だけ**
+         * @brief バーチャルパッド。**入口に並ぶのは Android だけ**
          * （`root_pages()`。この実行体に無いものは並べない——Windows は cfg でだけ入る）。
          */
         VirtualPad,
         //! バーチャルパッド ＞ ボタン表示設定（14 個の入切）。親は `VirtualPad`。
         VpadButtons,
         /*!
-         * @brief 画面 ＞ **ミニマップ**（2026-08-19 に決めた）。親は `Screen`。
+         * @brief 画面 ＞ **ミニマップ**。親は `Screen`。
          * @details 入口には並べない（`root_pages()` に入れない）——ミニマップは画面の一部で、
          * 分類としては `Screen` の下である。項目が 5 つあるので節にした
          * （`feature_menu.h` の「項目 1 つの節は作らない」の逆側の判断）。
          */
         Minimap,
-        //! ゲーム進行。
+        //! ゲーム進行（リアルタイム）。
         Realtime,
         /*!
-         * @brief VR（2026-08-14 に決めた
+         * @brief VR（決めたこと 2026-08-14
          * 「VR モードの設定メニューが欲しい」）。
          * @details 2026-08-19 の組み替えで、**ここに残るのはジオラマと板だけ**になった
          * （一人称の設定は `FirstPerson` へ移した）。
@@ -407,6 +464,7 @@ private:
     /*!
      * @brief 入口に並べる節。**この実行体・このコアに無いものは並べない。**
      * @note `Realtime` はコアが `realtime` を申告したときだけ並ぶ
+     * （`set_core_supports_realtime`）。
      */
     static std::vector<Page> root_pages();
 
@@ -426,21 +484,24 @@ private:
         Language,
 
         /* ---------------------------------------------------------- 画面 */
+        ModernMode,
+        ModernTheme,
+        ModernFontSize,
         WindowMode,
         Layout,
         MainPanelItem, //!< メインパネルの中身（3D ／ 2D アスキー。§6）
         AsciiPanelSize, //!< 　└ 地図の字の大きさ。上が 2D のときだけ効く
         /*!
-         * @brief **状態列の位置**。
+         * @brief **状態列の位置**（決めたこと F2）。
          * @details `自動 / 左 / 右`。自動はコアの申告（変愚・短愚・幻想・Sil-Q は左、
          * Frox は右）に従い、左右を選んだら人の選択が勝つ。**5 本すべてのコアで効く**。
          */
         StatusColSideItem,
         Subs,
-        MinimapEnter, //!< ミニマップの詳細へ（決定でサブ画面。2026-08-19 に決めた）
+        MinimapEnter, //!< ミニマップの詳細へ（決定でサブ画面。決めたこと 2026-08-19）
 
         /*!
-         * @name 画面 ＞ ミニマップ（`Page::Minimap`）。2026-08-19 に決めた
+         * @name 画面 ＞ ミニマップ（`Page::Minimap`）。決めたこと 2026-08-19
          * @details 並びがそのまま画面の並び。指示の順（位置・サイズ・縮尺・濃度・方向表示）に揃える。
          * @{
          */
@@ -453,24 +514,25 @@ private:
 
         /* ------------------------------------------------------ 絵づくり */
         /*!
-         * @brief **画調**。
+         * @brief **画調**（標準／TRON）。
          * @details この節の先頭に置く。以下 2 つはその子で、TRON のときだけ効く。
          */
         SceneLookItem,
-        TronSky, //!< 　├ TRON のときの空（真っ黒／時刻に応じる。2026-08-19 に決めた）
+        TronSky, //!< 　├ TRON のときの空（真っ黒／時刻に応じる。決めたこと 2026-08-19）
         TronFaceGlyph, //!< 　└ ブロックの面の記号
         /*!
-         * @brief **面の汚し**（`hd2d/render/surface_wear.h`。2026-08-23 に決めた）。
+         * @brief **面の汚し**（`hd2d/render/surface_wear.h`。決めたこと 2026-08-23）。
          * @details 画調の子ではない——**標準でも TRON でも効く**ので、画調の下に並べつつ
          * 値の欄に「TRON のときだけ」とは書かない。
          */
         SurfaceWear,
         /*!
-         * @brief **木の葉**（`hd2d/render/leaf_detail.h`。2026-08-23 に決めた）。
+         * @brief **木の葉**（`hd2d/render/leaf_detail.h`。決めたこと 2026-08-23）。
          * @details 葉の面にだけ効く。汚しの隣に置く（どちらも面の描き込みの軸）。
          */
         LeafDetail,
-        EntityStyleItem, //!< 実体の表現
+        EntityStyleItem, //!< 実体の表現（板／アスキー）
+        EntitySlabFacing, //!< ボクセル板の向き（ワールド基準／画面に正対）
         EntityGlyphSize, //!< 　└ 実体の字の大きさ。上がアスキーのときだけ効く
         /*!
          * @brief **タイルが無い実体を字で描く**（
@@ -479,7 +541,7 @@ private:
          */
         GlyphFallback,
         Backdrops,
-        DungeonLight, //!< 空間の明るさ（**環境光の倍率**。2026-08-15 に決めた）
+        DungeonLight, //!< 空間の明るさ（**環境光の倍率**。決めたこと 2026-08-15）
         EffectsEnter, //!< 効果へ（決定でサブ画面。2026-08-19）
 
         /*!
@@ -494,7 +556,7 @@ private:
         PostBloom,
         PostGrade,
         PostVignette,
-        PostVignetteStrength, //!< 　└ ビネットの強さ（2026-08-23 に決めた。0 〜 0.9）
+        PostVignetteStrength, //!< 　└ ビネットの強さ（0 〜 0.9）
         PostSepia, //!< セピア調（0 〜 1。LUT へ焼く）
         PostHdr, //!< HDR 風（影が開き・白飛びが戻り・色が締まる。**表示機の HDR 出力ではない**）
         PostExposure, //!< 露出（トーンマップの係数。既定 1.25 ＝ 従来）
@@ -511,7 +573,7 @@ private:
          * @name 一人称（`Page::FirstPerson`）。2026-08-19 に 3 つの節から集めた
          * @{
          */
-        FpsVerticalLook, //!< 上下視点（2026-08-11 に決めた）
+        FpsVerticalLook, //!< 上下視点
         FpsWallUpper, //!< ダンジョンの壁 2 段目（同 2026-08-11）
         FpsCeiling, //!< ダンジョンの天井（同）
         FpsSlabTurn, //!< 板の向き（自由／8 方向。同 2026-08-15）
@@ -539,7 +601,7 @@ private:
         VrPanelBottom,
 
         /*!
-         * @name サブパネル（`Page::SubPanels`）。枚数は2026-08-19 に決めた
+         * @name サブパネル（`Page::SubPanels`）。枚数は決めたこと 2026-08-19
          * @details 下段 2〜4 枚・右列 1〜3 枚。**行は枚数で増減させない**——
          * いま効かない行は値の欄で「下段 4 枚のときだけ」と言う（`TronSky` と同じ流儀）。
          * 出し入れすると、枚数を変えた瞬間に下の行がずれてカーソルの居場所が飛ぶ。
@@ -563,19 +625,19 @@ private:
         /*! @} */
 
         /*!
-         * @name 音（`Page::Sound`）。2026-08-21 に決めた
+         * @name 音（`Page::Sound`）。決めたこと 2026-08-21
          * @details 並びは指示のとおり「音楽 → 音楽の音量 → 効果音 → 効果音の音量」。
          * 音量の行は**その上の入切の子**なので、入切のすぐ下に置く。
          * @{
          */
-        BgmModeItem, //!< BGM に何を流すか
+        BgmModeItem, //!< BGM に何を流すか（音楽／環境音／切）
         MusicVolume,
         SoundEnabled,
         SoundVolume,
         /*! @} */
 
         /* ------------------------------------------ バーチャルパッド */
-        VpadShow, //!< バーチャルパッド表示（2026-08-12 に決めた。既定は入）
+        VpadShow, //!< バーチャルパッド表示（既定は入）
         VpadOpacity, //!< 表示濃度（同 2026-08-12。25%〜200%）
         VpadButtonsEnter, //!< ボタン表示設定へ（決定でサブ画面へ入る）
         VpadLayoutEdit, //!< ボタン配置（決定で編集画面を要求する。開くのは `hd2d_app.cpp`）
@@ -602,6 +664,7 @@ private:
         RealtimeSpeed,
         DamageFlash, //!< 被弾の全面フラッシュ（属性で色が変わる）
         DamageShake, //!< 被弾の画面の揺れ（酔う人向けに別々）
+        FxScreenShake, //!< 攻撃の効果（ボルト・ボール・ブレスなど）が起こす画面の揺れ（酔う人向け。被弾の揺れとは別）
         RealtimePrompt, //!< 小窓（持ち物・足元）の裏でも世界を進めるか
         RealtimeSelfSpan, //!< 速さの振れ幅（はみ出た分は世界の拍へ）
 
@@ -610,7 +673,7 @@ private:
          * @details 一人称の 3 つは `FirstPerson` へ移した（2026-08-19）。ここはジオラマと板だけ。
          * @{
          */
-        VrEnter, //!< **VR を始める／やめる**（2026-08-14 に決めた）
+        VrEnter, //!< **VR を始める／やめる**
         VrTileM, //!< ジオラマの拡大率（1 マスのメートル数）
         VrTableHeight, //!< ジオラマの視点高さ（天板の高さ。自動＝頭の高さから）
         VrPanelSize, //!< 板の字の大きさ（1 桁の見込み角）
@@ -686,18 +749,19 @@ private:
     /*!
      * @brief 一覧の 1 行。**分類の行**か、**小分類の行**か、実行できる命令か、いまは出せない命令。
      *
-     * @details **変愚の通常メニューと同じで階層になっている**（2026-08-22 に決めた
+     * @details **変愚の通常メニューと同じで階層になっている**（決めたこと 2026-08-22
      * 「コマンドメニューは変愚のメニューのように各グループ毎に階層化して」）。
      * 1 段目は分類（`group` が入る）、2 段目はその分類の命令（`id` が入る）。
      * 63 件を 1 枚に並べると送りっぱなしになって、どこに何があるか覚えられない。
      *
-     * **2026-08-23 に 3 段目を足した**（こう決めた——「行動メニューをグループ化し
+     * **2026-08-23 に 3 段目を足した**（決めたこと「行動メニューをグループ化し
      * もう 1 階層深くして」）。分類の中で `subgroup_utf8` が届いている命令は、
      * その名前の行（`subgroup` が入る）へ束ねて、潜った先に並べる。
      * 段の数は**コアが決める**：小分類を送らない分類は今までどおり 2 段のままである。
      */
     struct CommandRow {
         int id{ 0 }; //!< コアの命令の `id`。分類・小分類の行は 0
+        std::vector<int> keys;
         std::string label;
         //! 分類の行なら、その分類名（`group_utf8`）。空なら分類の行ではない。
         std::string group;
@@ -777,9 +841,28 @@ private:
      * @details 送りの持ち方は `Binds` と同じ（`draw()` だけが窓の高さを知っている）。
      * @{
      */
+    bool command_tabs_enabled_{ false };
+    bool command_categories_{ false };
+    MenuTabs command_tabs_;
+    void refresh_command_tabs();
+    void enter_command_tabs();
+    void handle_command_tabs(MenuNav nav, Hd2dSettings &settings);
+    void restore_feature_tab();
+    void draw_command_tab_header(UiPaint &paint, TextOverlay &text, const UiLayout &layout, const RectPx &box, int &top_y) const;
+    bool features_from_tab_{false};
+    Page feature_resume_page_{Page::Commands};
+    int feature_resume_cursor_{0},feature_root_cursor_{0};
     mutable int command_scroll_{ 0 };
     mutable int command_visible_rows_{ 1 };
     int command_requested_{ 0 };
+    bool command_requested_present_{ false };
+    bool inventory_requested_{false};
+    bool command_details_focus_{false};
+    mutable int command_details_scroll_{0};
+    mutable RectPx command_details_rect_;
+    bool settings_details_focus_{false},settings_editing_{false};
+    mutable int settings_details_scroll_{0};
+    mutable RectPx settings_details_rect_,settings_minus_,settings_plus_;
     /*!
      * @brief いま開いている分類。**空なら分類の一覧を出している**（2 段のどちらか）。
      * @details 番号ではなく**名前**で持つ。コアの一覧は言語や版で並びが動くので、
@@ -800,10 +883,19 @@ private:
      *
      * @details 取消で行く先がこれで変わる。直に開いたなら**パネルごと閉じる**——
      * 入口（機能メニュー）へ落とすと、コマンドを取り消しただけなのに
-     * **設定の画面が立ち上がったように見える**（2026-08-23 に気づいた）。
+     * **設定の画面が立ち上がったように見える**。
      * 機能メニューから潜って来たときだけ入口へ戻す。
      */
     bool commands_direct_{ false };
+    std::vector<int> command_key_prefix_;
+    mutable float painted_scale_{1.f};
+    mutable int page_scroll_{0};
+    mutable std::vector<std::pair<RectPx,int>> painted_rows_;
+    //! `painted_rows_` と同じ並びの行（検査用の問い合わせ。`app/ui_probe.h`）。
+    mutable std::vector<ProbeItem> painted_items_;
+    mutable MenuHeaderLayout header_layout_;
+    mutable int header_first_{0};
+    mutable int paint_theme_{-1}; //!< Drawing only; never changes menu state or hit testing.
     /*! @} */
 
     bool vpad_edit_requested_{ false };
@@ -820,7 +912,7 @@ private:
     std::uint32_t wait_since_ms_{ 0 };
     std::uint32_t wait_now_ms_{ 0 }; //!< `update()` が入れる「いま」。残り秒の表示に使う
     /*!
-     * @brief 変更モードで**受け取ったのに割り当てなかった**押しの説明（2026-08-14 に気づいた）。
+     * @brief 変更モードで**受け取ったのに割り当てなかった**押しの説明。
      *
      * @details 「割り当てで同時押しが入らない」の相談は、**押しが届いていない**のか
      * **届いたのに捨てた**のかで原因がまったく違うのに、画面には何も出ていなかった
@@ -831,7 +923,7 @@ private:
     std::string wait_note_;
 };
 
-//! 変更モードを降りるまでの未入力時間（ミリ秒）。「15 秒未入力でキャンセル」と決めた。
+//! 変更モードを降りるまでの未入力時間（ミリ秒）。決めたこと「15 秒未入力でキャンセル」。
 inline constexpr std::uint32_t kBindWaitTimeoutMs = 15000;
 
 /*!

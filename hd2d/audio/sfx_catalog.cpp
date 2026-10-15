@@ -86,6 +86,12 @@ std::string SfxCatalog::path_for(const std::string &name, std::uint32_t pick) co
     if (file.find(':') != std::string::npos) {
         return file;
     }
+    //! `assets/` で始まるなら**リポジトリ直下からの相対**とみなす（`dir` を経由しない）。
+    //! Rogue 系の素材（`assets/audio/sfx_rogue/`）は既定の `dir`（`lib/xtra/sound`）の
+    //! 外に置くための最小の分岐——既存の行の意味（`dir` からの相対）は変えない。
+    if ((file.rfind("assets/", 0) == 0) || (file.rfind("assets\\", 0) == 0)) {
+        return file;
+    }
     const std::string sep
         = (this->dir_.empty() || (this->dir_.back() == '/') || (this->dir_.back() == '\\')) ? "" : "/";
     return this->dir_ + sep + file;

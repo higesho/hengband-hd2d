@@ -52,7 +52,8 @@ bool is_optional(const std::string &name)
 /*!
  * @name glDrawBuffer（単数）の穴埋め
  * @details ES に単数形は無い（複数形 `glDrawBuffers` だけ）。使い手は
- * `shadow_map.cpp` の `glDrawBuffer(GL_NONE)`（深度だけの FBO 宣言）1 か所なので、
+ * `shadow_map.cpp` と `post_process.cpp`（深度の写し）の `glDrawBuffer(GL_NONE)`
+ * （深度だけの FBO 宣言）だけなので、
  * 同義の複数形へ流すシムを立てる。
  * @{ */
 using PFN_glDrawBuffers = void(HD2D_GLAPI *)(GLsizei n, const GLenum *bufs);

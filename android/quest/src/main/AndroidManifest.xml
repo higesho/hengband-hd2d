@@ -48,5 +48,14 @@
                 <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
             </intent-filter>
         </activity>
+        <!-- プロセスを起こし直すための、画面を持たない活動（2026-10-07。AH-09）。**別のプロセス**で動き、
+             元のプロセスを終わらせてから本体を開き直す（RestartActivity.java の註）。 -->
+        <activity
+            android:name="org.hengband.hd2d.RestartActivity"
+            android:process=":restart"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 </manifest>

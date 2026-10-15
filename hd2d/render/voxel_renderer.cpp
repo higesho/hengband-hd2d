@@ -44,6 +44,7 @@ layout(location = 8) in float a_instance_yaw;    // z 軸まわりの向き（0 
  * フラグメントが読む。標準では使われないので、ドライバが最適化で落とす。
  */
 layout(location = 9) in vec4 a_edge;
+layout(location = 10) in float a_instance_pitch; // x 軸まわり。0 = 従来、非0 = screen-aligned slab
 uniform mat4 u_view_projection;
 uniform mat4 u_model;          // 動き（剛体）× 静的な配置。CPU 側で合成済み
 uniform vec3 u_wind_vector;    // xy = 風向 × 振幅（マス）, z = 未使用
@@ -65,13 +66,31 @@ void main()
      * 0 のときは sin/cos が 0/1 で恒等になるので、地形は 1 命令ぶんしか払わない。
      */
     vec3 spun = local.xyz;
-    if (a_instance_yaw != 0.0) {
+    if (a_instance_pitch != 0.0) {
+        /*
+         * screen-aligned の実体だけは、拡大してから板全体を回す。
+         * 先に回してから非等方拡大すると、板の基底そのものが歪んで画面平面と平行でなくなる。
+         * 回転中心は足元の中央。x/y はプレハブ中心、z は床面に固定する。
+         */
+        vec3 scaled = local.xyz * a_instance_scale;
+        vec3 pivot = vec3(0.5 * a_instance_scale.x, 0.5 * a_instance_scale.y, 0.0);
+        vec3 rel = scaled - pivot;
+        float cp = cos(a_instance_pitch);
+        float sp = sin(a_instance_pitch);
+        rel.yz = vec2((rel.y * cp) - (rel.z * sp), (rel.y * sp) + (rel.z * cp));
+        if (a_instance_yaw != 0.0) {
+            float cs = cos(a_instance_yaw);
+            float sn = sin(a_instance_yaw);
+            rel.xy = vec2((rel.x * cs) - (rel.y * sn), (rel.x * sn) + (rel.y * cs));
+        }
+        spun = rel + pivot;
+    } else if (a_instance_yaw != 0.0) {
         float cs = cos(a_instance_yaw);
         float sn = sin(a_instance_yaw);
         vec2 rel = local.xy - vec2(0.5, 0.5);
         spun.xy = vec2((rel.x * cs) - (rel.y * sn), (rel.x * sn) + (rel.y * cs)) + vec2(0.5, 0.5);
     }
-    vec3 world = (spun * a_instance_scale) + a_instance_offset;
+    vec3 world = ((a_instance_pitch != 0.0) ? spun : (spun * a_instance_scale)) + a_instance_offset;
 
     /*
      * 風（設計書 §8.1）。**位相を世界座標から作る**ので、隣の草と揃って波として渡る。
@@ -101,14 +120,30 @@ void main()
     // u_model は一様な縮小しか含まないが、インスタンスの拡大率は軸ごとに違いうる。
     // 軸に沿った拡大の法線は「拡大率で割る」（逆転置行列の対角成分）。
     vec3 spun_normal = mat3(u_model) * a_normal;
-    if (a_instance_yaw != 0.0) {
+    if (a_instance_pitch != 0.0) {
+        /* 位置と同じ「拡大の逆転置 → pitch → yaw」。最後に fragment 側で正規化する。 */
+        spun_normal /= a_instance_scale;
+        float cp = cos(a_instance_pitch);
+        float sp = sin(a_instance_pitch);
+        spun_normal.yz = vec2((spun_normal.y * cp) - (spun_normal.z * sp),
+            (spun_normal.y * sp) + (spun_normal.z * cp));
+        if (a_instance_yaw != 0.0) {
+            float cs = cos(a_instance_yaw);
+            float sn = sin(a_instance_yaw);
+            spun_normal.xy = vec2((spun_normal.x * cs) - (spun_normal.y * sn),
+                (spun_normal.x * sn) + (spun_normal.y * cs));
+        }
+        v_normal = spun_normal;
+    } else if (a_instance_yaw != 0.0) {
         //! **法線も同じだけ回す。**忘れると、回した板だけ光の当たり方が元の向きのまま残る。
         float cs = cos(a_instance_yaw);
         float sn = sin(a_instance_yaw);
         spun_normal.xy = vec2((spun_normal.x * cs) - (spun_normal.y * sn),
             (spun_normal.x * sn) + (spun_normal.y * cs));
+        v_normal = spun_normal / a_instance_scale;
+    } else {
+        v_normal = spun_normal / a_instance_scale;
     }
-    v_normal = spun_normal / a_instance_scale;
     v_uv = a_uv;
     v_tint = a_instance_tint;
     v_world = world;
@@ -308,6 +343,11 @@ void main()
      */
     vec3 direct = u_key_color * ndl * shadow;
     vec3 indirect = (hd2d_ambient(n) + hd2d_point_lights(v_world, n, 0.10)) * ao;
+    /*
+     * **光の届く範囲**。プレイヤの光源に照らされているマスを
+     * 一段明るくする。場が無ければ（`u_lit_tint.a` が 0）`direct + indirect` のまま＝従来と同じ。
+     */
+    vec3 total_light = hd2d_lit_range_surface(direct + indirect, v_world, n, ao);
 
     /*
      * **画調**。標準では `u_look_enabled` が 0 で
@@ -322,7 +362,7 @@ void main()
          * （`hd2d_look_profile`）。格子は控えめ（`u_look_grid_gain`）にして形の線を前へ出す。
          */
         float line = max(hd2d_look_grid(v_world, n) * u_look_grid_gain, hd2d_look_edge(v_edge));
-        vec3 lit = direct + indirect;
+        vec3 lit = total_light;
         vec3 tron = hd2d_look_apply(base, lit, v_emissive, line);
         //! 面の真ん中に浮かぶマスの記号（最初に決めたこと。§18.2-4）。**足すだけ**なので線を消さない。
         tron += hd2d_look_face_glyph(v_world, n, lit);
@@ -334,7 +374,7 @@ void main()
      * **線形の HDR をそのまま書く。**トーンマップは合成の 1 か所（P7。`lighting.cpp` の注記）。
      * 自発光は AO も影も掛けずに足す（自分で光っているものに遮蔽は関係ない）。
      */
-    o_color = vec4((base * (direct + indirect)) + v_emissive, 1.0);
+    o_color = vec4((base * total_light) + v_emissive, 1.0);
 }
 )";
 
@@ -557,6 +597,9 @@ bool VoxelRenderer::upload_meshed(const Prefab &prefab, const PrefabMesh &meshed
         //! 向き（2026-08-15）。**8 番**。0〜7 は上で埋まっている。
         glVertexAttribPointer(8, 1, GL_FLOAT, GL_FALSE, sizeof(InstanceData), reinterpret_cast<const void *>(offsetof(InstanceData, yaw)));
         glVertexAttribDivisor(8, 1);
+        //! screen-aligned slab の pitch。**10 番**（9 番は頂点側の edge）。
+        glVertexAttribPointer(10, 1, GL_FLOAT, GL_FALSE, sizeof(InstanceData), reinterpret_cast<const void *>(offsetof(InstanceData, pitch)));
+        glVertexAttribDivisor(10, 1);
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -824,6 +867,8 @@ void VoxelRenderer::draw(const GpuPrefab &prefab, const Mat4 *part_motions, std:
         glDisableVertexAttribArray(4);
         glDisableVertexAttribArray(5);
         glDisableVertexAttribArray(7);
+        glDisableVertexAttribArray(8);
+        glDisableVertexAttribArray(10);
         glVertexAttrib3f(3, 0.f, 0.f, 0.f);
         glVertexAttrib3f(4, 1.f, 1.f, 1.f);
         glVertexAttrib3f(5, 1.f, 1.f, 1.f);
@@ -864,6 +909,7 @@ void VoxelRenderer::draw_instanced(GpuPrefab &prefab, const InstanceData *instan
         glEnableVertexAttribArray(5);
         glEnableVertexAttribArray(7);
         glEnableVertexAttribArray(8);
+        glEnableVertexAttribArray(10);
         glDrawElementsInstanced(GL_TRIANGLES, part.index_count, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(count));
     }
 
@@ -897,6 +943,8 @@ void VoxelRenderer::draw_depth_single(const GpuPrefab &prefab, const Mat4 &light
         glDisableVertexAttribArray(4);
         glDisableVertexAttribArray(5);
         glDisableVertexAttribArray(7);
+        glDisableVertexAttribArray(8);
+        glDisableVertexAttribArray(10);
         glVertexAttrib3f(3, 0.f, 0.f, 0.f);
         glVertexAttrib3f(4, 1.f, 1.f, 1.f);
         glVertexAttrib3f(5, 1.f, 1.f, 1.f);
@@ -948,6 +996,7 @@ void VoxelRenderer::draw_instanced_depth(GpuPrefab &prefab, const Mat4 &light_vi
         glEnableVertexAttribArray(5);
         glEnableVertexAttribArray(7);
         glEnableVertexAttribArray(8);
+        glEnableVertexAttribArray(10);
         glDrawElementsInstanced(GL_TRIANGLES, part.index_count, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(count));
     }
 

@@ -28,11 +28,11 @@
 
 <color:G>[<color:o>b/p/g</color>] 買う  [<color:o>s/d</color>] 売る  [<color:o>x</color>] 調べる  [<color:o>?</color>] ヘルプ  [<color:o>q/Esc</color>] 出る</color>
 <color:G>[<color:o>R</color>] 取り置き  [<color:o>S</color>] 品揃えを入れ替え  [<color:o>B</color>] 全部買う</color>
-<color:G>[<color:o>Space/PgDn</color>] 次の頁  [<color:o>-/PgUp</color>] 前の頁  <color:w>[</color><color:o>U</color><color:w>] 不要なアイテムを隠す (<color:y>N</color>)</color>
+<color:G>[<color:o>Space/PgDn</color>] 次の頁  [<color:o>-/PgUp</color>] 前の頁  <color:w>[</color><color:o>U</color><color:w>] 隠したアイテムを再表示 (<color:y>N</color>)</color>
 </indent></style>
 使えるコマンドは画面の下に出ている。目当てのコマンドを選び、あとは出てくる指示に従えばよい。品揃えが 1 頁に収まらないときは <color:keypress>Page Up</color> と <color:keypress>Page Down</color> で送る。
 
-<color:keypress>u</color> か <color:keypress>U</color> を押すと、モガミネーターの規則で「不要」と分類したアイテムを隠すかどうかを切り替えられる。隠している間は下の帯のその項目が赤くなり、<color:keypress>不要なアイテムも出す</color> と読める。帯には隠れている行の数（積み重ねごとに 1 行）が出て、店の品揃えが変わるたびに数え直される。モガミネーターを使わない設定にしていると、<color:keypress>u</color> はまずそれを有効にする手順を教えてくれる。
+店のアイテムを 1 つずつ隠すには <color:keypress>H</color> を押し、隠したいアイテムの文字（a、b、…）を選ぶ。隠したアイテムは一覧に出なくなる。隠したアイテムは、<color:keypress>u</color> か <color:keypress>U</color> を押すとまとめて表示に戻せる。下の帯の 「隠したアイテムを再表示」の横には、隠れているアイテムの数が出る。隠したアイテムがないときに押すと、その旨のメッセージが出る。
 
 店主の手持ちの金には限りがあり、売ったアイテムにはその範囲までしか払ってもらえない。いくら持っているかは画面上部の店の種類の隣に出ている。
 
@@ -44,7 +44,8 @@
 <color:keypress>B</color>         店の品揃えをまとめて買い占める
 <color:keypress>S</color>         金を払って品揃えを入れ替えてもらう
 <color:keypress>R</color>         あとで買うために店のアイテムを取り置く
-<color:keypress>u U</color>       不要なアイテムを一覧から隠すかどうかを切り替える
+<color:keypress>H</color>         選んだアイテムを一覧から隠す
+<color:keypress>u U</color>       隠したアイテムをすべて再表示する
 <color:keypress>q Esc</color>     店を出る
 
 <color:G>そのほかのコマンド</color>

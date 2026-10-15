@@ -117,7 +117,7 @@ const char *vpad_orient_name(int orient);
 /*!
  * @brief バーチャルパッドの設定（`hd2d.cfg` に残る側）。
  * @details 実行時の状態（どの指がどのボタンを掴んでいるか）は `VirtualPad` が持ち、
- * ここには**利用者が変えられるもの**だけを置く。
+ * ここには**遊ぶ人が変えられるもの**だけを置く。
  */
 struct VirtualPadSettings {
     /*!
@@ -193,6 +193,15 @@ public:
     bool on_event(const SDL_Event &event, VirtualPadSettings &settings, const RectPx &area,
         int window_w, int window_h);
 
+    /*!
+     * @brief この点がボタンの「すぐ近く」か（見えているボタンの当たりを少し広げた範囲。ボタンの上も含む）。
+     * @param area `on_event` と同じ、パッドを置ける範囲。
+     * @details 地図のタップ（AH-58）が、パッドを押し損ねた指を拾わないための問い。ボタンの上に触れた指は
+     * `on_event()` がすでに食っているので、ここへ来るのは外れた指だけで、その足元のマスへ移動しないよう
+     * 近くの指もタップにしない。パッドを出していない（`settings.show` が偽）ときは、どこも近くではない。
+     */
+    bool near_control(float x, float y, const VirtualPadSettings &settings, const RectPx &area) const;
+
     //! 押し 1 回ぶんを取り出す。無ければ false（`GamePad::take_pressed` と同じ口）。
     bool take_pressed(PadPress &out);
     //! いま押されている修飾（L1 / R1 を指で押さえている間）。
@@ -211,6 +220,12 @@ public:
 
     //! 掴んでいる指・押している状態を全部忘れる（焦点を失ったとき）。
     void forget_hold();
+
+    /*!
+     * @brief **スティックの握りだけ**忘れる（`GamePad::forget_direction_hold` と同じ理由）。
+     * @details LS/RS を掴んでいる指と連続移動・傾きを捨てる。押している最中の L1/R1 と取り出し待ちの押しは残す。
+     */
+    void forget_direction_hold();
 
     /*! @name 配置の編集画面（メニューの「ボタン配置」から開く） @{ */
     bool editor_open() const { return this->editor_open_; }
@@ -239,9 +254,11 @@ public:
      * @details **本体の flush の後に積んで、もう一度 flush してもらう**（いちばん上に
      * 出すため。`UiPaint::flush` は流したら空になるので、同じ物を 2 度は流さない）。
      */
-    void draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPadSettings &settings, const RectPx &area) const;
+    void draw_editor(UiPaint &paint, TextOverlay &text, const VirtualPadSettings &settings, const RectPx &area,int theme=-1,int font_level=0) const;
 
 private:
+    mutable float editor_menu_scale_{1.f};
+    void draw_editor_logical(UiPaint &,TextOverlay &,const VirtualPadSettings &,const RectPx &,int) const;
     //! 実マウスを指として扱うときの番号（Android の実指は 0 起点の非負なので衝突しない）。
     static constexpr std::int64_t kMouseFinger = -0x4D6F7573; // 'Mous'
 

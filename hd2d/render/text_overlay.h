@@ -27,6 +27,8 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <memory>
+#include <algorithm>
 
 //! `SDL_ttf.h` をこのヘッダへ持ち込まないための前方宣言（実体は `struct TTF_Font`）。
 struct TTF_Font;
@@ -52,8 +54,11 @@ public:
     void shutdown();
 
     //! 半角 1 文字ぶんのマス目（全角はこの 2 倍）。
-    int cell_w() const { return this->cell_w_; }
-    int cell_h() const { return this->cell_h_; }
+    int cell_w() const { return scaled_font_?std::max(1,int(scaled_font_->cell_w_/layout_scale_+.5f)):cell_w_; }
+    int cell_h() const { return scaled_font_?std::max(1,int(scaled_font_->cell_h_/layout_scale_+.5f)):cell_h_; }
+    void set_layout_scale(float scale);
+    float layout_scale() const {return layout_scale_;}
+    int raster_font_px() const{return scaled_font_?scaled_font_->font_px_:font_px_;}
 
     //! このフレームの積み上げを空にする。画面の実寸を渡す（正射影の分母になる）。
     void begin(int screen_w, int screen_h);
@@ -70,6 +75,32 @@ public:
     //! 描かずに幅（画素）だけ測る。
     int measure(std::string_view utf8);
     /*!
+     * @name 字の大きさだけを変えて描く・測る（座標と幅は画素のまま）
+     * @details `set_layout_scale()` は**座標系ごと**拡大する（メニュー用。1 未満は使えない）。
+     * こちらは座標系を変えず、**字だけ**を `scale` 倍（0.3〜3）にする。名札の字を大きくする・
+     * 名前をアイコンの幅へ縮める、といった部分的な調整のためのもの。
+     * 字の大きさは整数の画素（`字の高さ x scale` を丸めた値）で決まり、同じ画素の字は
+     * 1 つのフォントを使い回す。**`layout_scale` が 1 のときだけ**効く（それ以外は
+     * 普通の大きさで描く）。縮めた字・拡大した字は、普通の字より**後に**流れる。
+     * @{
+     */
+    int draw_sized(int x, int y, std::string_view utf8, const TextColor &color, float scale, int max_width = 0);
+    /*!
+     * @brief `draw_sized` の、横位置が小数・横方向を `[clip_x0, clip_x1]` で切る版。
+     * @details 流れるアイコンの名前に使う（等速で流すので、画素の端数も出す。端で出入りする字は
+     * 字の途中で切る）。切るのは字の板（四角）で、`u` 座標も同じ割合で詰める。
+     * `layout_scale` が 1 でないとき（メニューの倍率の中）は、切らずに整数の位置で描く。
+     */
+    int draw_sized_clipped(float x, int y, std::string_view utf8, const TextColor &color, float scale, int max_width,
+        float clip_x0, float clip_x1);
+    int measure_sized(std::string_view utf8, float scale);
+    int cell_h_sized(float scale);
+    //! `scale` が実際に使う字の高さ（画素）。縮める限界を画素で比べたいときに使う。
+    int sized_px(float scale) const;
+    //! 基準の字の高さ（`layout_scale` が 1 のときの `init()` の値）。
+    int base_px() const { return font_px_; }
+    /*! @} */
+    /*!
      * @brief `max_width` に収まる**先頭のバイト数**を返す（折り返しの切れ目）。
      * @return 収まるバイト数。0 なら 1 文字も入らない（呼ぶ側は輪を止めること）。
      * @details `draw()` の切り方と**同じ規則**（字の右端で切る）である。折り返しを
@@ -81,6 +112,24 @@ public:
     void flush();
 
 private:
+    //! 問い合わせの記録（`app/ui_probe.h`）を伴わない本体。`draw()` がこれを呼んで、描いた分だけを記録する。
+    int draw_raw(int x, int y, std::string_view utf8, const TextColor &color, int max_width);
+    //! `draw_raw()` が実際に描いたバイト数・幅（画素）。切れたときは `utf8.size()` より小さい。
+    std::size_t last_consumed_{ 0 };
+    int last_width_{ 0 };
+    //! 問い合わせ用：直前の描画で数えた、字形の無い字（四角で出る）・置き換え文字の数と、幅の上限で切れたか。
+    int last_missing_{ 0 };
+    int last_replacement_{ 0 };
+    bool last_clipped_{ false };
+    int draw_clipped_impl(float x, int y, std::string_view utf8, const TextColor &color, int max_width, float clip_x0,
+        float clip_x1);
+    void flush_base();
+    //! `draw_sized` 系が使うフォント。普通の大きさ（または `layout_scale` が 1 でない）なら自分自身。
+    TextOverlay *sized_font(float scale);
+    float layout_scale_{1.f};
+    int font_px_{16};
+    TextOverlay *scaled_font_{nullptr};
+    std::unordered_map<int,std::unique_ptr<TextOverlay>> scaled_fonts_;
     struct Glyph {
         float u0{};
         float v0{};
@@ -89,6 +138,7 @@ private:
         int w{};
         int h{};
         bool drawable{ false }; //!< 空白・焼けなかった字は false（マスだけ進める）
+        bool missing{ false }; //!< フォントに字形が無い（四角で出る／焼けなかった）。空白・制御文字は偽
     };
 
     struct Vertex {
@@ -103,7 +153,7 @@ private:
     };
 
     //! アトラスの一辺。R8 なので 1024×1024 で 1MB。
-    static constexpr int kAtlasSide = 1024;
+    int atlas_side_{1024}; // Larger fonts retain enough room for Japanese glyphs.
 
     const Glyph *glyph_for(std::uint32_t codepoint);
     //! UTF-8 を 1 符号位置ずつ取り出す。壊れたバイトは U+FFFD 扱いで 1 バイト進める。

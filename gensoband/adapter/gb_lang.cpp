@@ -63,6 +63,13 @@ std::unordered_map<std::string, std::string> g_file_map;
 //! 英訳したヘルプの置き場を使っているか（E7）。使うならヘルプ名は引き替えない。
 bool g_en_help = false;
 
+/*!
+ * @brief 回数の印（` <x2>`）付きのメッセージの訳の置き場（返す `const char *` の寿命のため）。
+ * @details 鍵は印の付いた原文そのもの。`lang_init()` から終了まで消さない
+ * （`g_file_map` と同じ寿命の取り方）。
+ */
+std::unordered_map<std::string, std::string> g_counted;
+
 /* ============================================================== 原本を読む道具 */
 
 /*!
@@ -352,6 +359,7 @@ LangLoadReport lang_init(const std::string &lang, const std::string &lang_dir,
     g_silent.clear();
     g_missing.clear();
     g_file_map.clear();
+    g_counted.clear();
     g_report_path = report_path;
     g_lib_dir = lib_dir;
     rep.enabled = g_enabled;
@@ -462,6 +470,44 @@ static const char *gb_lookup(const char *s, int record)
     if (found != g_catalog.end()) {
         return found->second.c_str();
     }
+
+    /*
+     * **同じメッセージが続いたときの回数の印**（` <x2>`）。原作の `message_add()`
+     * （`util.c`）は、直前と同じ文を記録すると `"%s <x%d>"` で組み直して履歴へ積む。
+     * 積むのは**訳す前の日本語**（`msg_print()` の素の文言はフックを通らずに届く）なので、
+     * 行まるごとを鍵にすると 2 回目から鍵に合わず、日本語へ戻っていた
+     * （^F を 2 回で `典型的な町のようだ。 <x2>`）。印を外して本文だけ引き、付け直す。
+     * 履歴の読み口（`gb_frame.cpp` の `gb_tr(buf)`）と ^P の画（フック #1）の両方がここを通る。
+     */
+    {
+        const std::size_t open = key.rfind(" <x");
+        if ((open != std::string::npos) && (open > 0) && (key.size() >= open + 5) && (key.back() == '>')) {
+            bool digits = true;
+            for (std::size_t i = open + 3; i + 1 < key.size(); ++i) {
+                if ((key[i] < '0') || (key[i] > '9')) {
+                    digits = false;
+                    break;
+                }
+            }
+            if (digits) {
+                const std::string body = key.substr(0, open);
+                const auto body_found = g_catalog.find(body);
+                if (body_found != g_catalog.end()) {
+                    auto &slot = g_counted[key];
+                    if (slot.empty()) {
+                        slot = body_found->second + key.substr(open);
+                    }
+                    return slot.c_str();
+                }
+                //! 本文が引けなければ、未訳一覧へは**本文を**積む（回数ごとに別の鍵を並べない）。
+                if ((record != 0) && (g_silent.find(body) == g_silent.end())) {
+                    g_missing.insert(body);
+                }
+                return s;
+            }
+        }
+    }
+
     if ((record != 0) && (g_silent.find(key) == g_silent.end())) {
         g_missing.insert(key);
     }

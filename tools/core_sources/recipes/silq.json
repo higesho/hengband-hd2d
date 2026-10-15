@@ -490,6 +490,10 @@
       "encoding": "utf8",
       "text": "sq_tr("
     },
+    "243fd3491153a76950ce076029d973263ec1b09981cadc21bf217271dbda9fce": {
+      "encoding": "utf8",
+      "text": " //SQ: site #23 - one character, not one byte"
+    },
     "24f2db9159b7e9dc1bde8c8c8d4fbac93b338fe711b3f37b15d1a296694b6099": {
       "encoding": "utf8",
       "text": "sq_is_text_byte(c)) //SQ: site #8 - lib-ja/edit is CP932; "
@@ -513,6 +517,10 @@
     "36960c03ff3b153bc662b4d52c6daf45420edb986c9cb081e0486937b2be52e5": {
       "encoding": "utf8",
       "text": "            /*\n             * SQ: site #19 (A1-4) - accept CP932 two-byte characters.\n             *\n             * isprint() is locale dependent and rejects 0x80+, so a japanese\n             * character used to fall into bell() - and bell() calls flush(), which\n             * throws the rest of the queue away, so the second byte went too.\n             *\n             * The trailing byte is read right here instead of going round the loop,\n             * for the same reason: anything that bells in between would eat it.\n             *\n             * inkey_base is required.  Without it the byte goes through macro and\n             * keymap processing and comes back as something else - measured on\n             * 2026-08-22, a trailing 0x8E came back as 0xA6, so the two characters\n             * that were typed turned into one wrong one.\n             *\n             * Both bytes must fit, so that the buffer never ends mid-character.\n             */\n            if (sq_is_sjis_lead((unsigned char)ch)) //SQ:\n            { //SQ:\n                char trail; //SQ:\n                inkey_base = TRUE; //SQ:\n                trail = inkey(); //SQ:\n                if (((k + 2) <= (len - 1)) && sq_is_sjis_trail((unsigned char)trail)) //SQ:\n                { //SQ:\n                    buf[k++] = ch; //SQ:\n                    buf[k++] = trail; //SQ:\n                } //SQ:\n                else //SQ:\n                { //SQ:\n                    "
+    },
+    "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068": {
+      "encoding": "utf8",
+      "text": " "
     },
     "372ca8a08e6dd5d298aa1575b9d291d4a1dcebaba2a875b87d926113f94f3284": {
       "encoding": "utf8",
@@ -554,9 +562,17 @@
       "encoding": "utf8",
       "text": " //SQ: site #11 - morale is appended after this"
     },
+    "53f85d869e1bd849996eddff85992635d3f111281820d9c49bffd99b5d310287": {
+      "encoding": "utf8",
+      "text": "            if (sq_is_sjis_lead((unsigned char)ch)) //SQ: site #23\n            { //SQ:\n                char trail; //SQ:\n                inkey_base = TRUE; //SQ: see askfor_aux(): without it the byte is macro-mapped\n                trail = inkey(); //SQ:\n                if (((k + 2) <= (len - 1)) && sq_is_sjis_trail((unsigned char)trail)) //SQ:\n                { //SQ:\n                    buf[k++] = ch; //SQ:\n                    buf[k++] = trail; //SQ:\n                } //SQ:\n                else //SQ:\n                { //SQ:\n                    "
+    },
     "593fc97894140623096ca9db7154422d4044cddbfc95ad40daa785f9b9342cfa": {
       "encoding": "utf8",
       "text": "        {\n"
+    },
+    "5a8c02d70f15e488ce11ec7809e0a7d4f7e3f5e718870ea4af528d2d9f79c50d": {
+      "encoding": "utf8",
+      "text": "\n    /*\n     * SQ: W1 - raise the flag so that the IME shows what is being typed and the\n     * soft keyboard comes up on Android.\n     *\n     * SQ: site #23 (2026-10-12, play test 1 fix 57) - the name takes japanese now.\n     * It used to stay ASCII (design 12.5, question A-2, option c) because\n     * process_player_name() in files.c turned every byte that is not a letter or\n     * a digit into '_', so every japanese name became \"________\" and two\n     * characters would write over one save file.  That is closed on the other\n     * side: process_player_name() asks the adapter for an ASCII save name when\n     * the name has a 0x80+ byte (site #24).  The two-byte handling below is the\n     * same as askfor_aux() (sites #19/#20).\n     */\n    sq_text_input_set(1); //SQ: W1\n"
     },
     "612dfc1787352ab021ff64ae58dd50d6a6d6fd5915711074745f972ed759075e": {
       "encoding": "utf8",
@@ -626,9 +642,17 @@
       "encoding": "utf8",
       "text": " eats it"
     },
+    "a2fd2ac344cfb92868dee833b0353a6175635de7c07acaeb589ba7f1b98af5ae": {
+      "encoding": "utf8",
+      "text": "    { //SQ: site #25 - the dump's file name must not carry the japanese name (ASCII save name instead)\n        char sq_dump_name[32]; //SQ:\n        strnfmt(sheet, sizeof(sheet), \"%s-%s\", //SQ:\n            sq_save_base_name(op_ptr->full_name, sq_dump_name, (int)sizeof(sq_dump_name)) //SQ:\n                ? sq_dump_name : op_ptr->full_name, curr_time); //SQ:\n    } //SQ:\n"
+    },
     "a3bb0976fa8076ccb5fa83b358c377476537ea772c08c8f0a1c8533f92b629e4": {
       "encoding": "utf8",
       "text": " //SQ: site #16 - text_out() writes byte by byte, so #1/#2 never see the whole fragment"
+    },
+    "a516f069f456ac25242ca667721889fe11785a61c65cc3298657656914f2e077": {
+      "encoding": "utf8",
+      "text": "= (size_t)sq_last_char_bytes(buf, (int)k)"
     },
     "a6191bcc22923bde37ae617fc39ca7c5c651c0c009c09c482d76cb745234ac63": {
       "encoding": "utf8",
@@ -649,10 +673,6 @@
     "b78ae60f2aabf61c748d4c6c64aa921e04ad3bda537f8292fdf5a3b91d7d0f8b": {
       "encoding": "utf8",
       "text": "(sq_lang_enabled() ? 0 : "
-    },
-    "b960ffbee806c382f767e3f91f10a536b9cad70bef94c91dc8cd3763c72da677": {
-      "encoding": "utf8",
-      "text": "\n    /*\n     * SQ: W1 - raise the flag so that the IME shows what is being typed and the\n     * soft keyboard comes up on Android.\n     *\n     * SQ: (A1-4) the name deliberately stays ASCII - the player decided so on\n     * 2026-08-22 (design 12.5, question A-2, option c).  process_player_name() in\n     * files.c turns every byte that is not a letter or a digit into '_' and then\n     * cuts the result to 8 characters on Windows, so every japanese name would\n     * become \"________\" and two different characters would silently write over\n     * each other's save file.  The isprint() below is what holds it back;\n     * askfor_aux() - inscriptions, notes, searches - does take japanese.\n     */\n    sq_text_input_set(1); //SQ: W1\n"
     },
     "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee": {
       "encoding": "utf8",
@@ -689,6 +709,10 @@
     "da3bb522d7f9d08077ead6bc6f66cdc4280c2f2f192406ceea2c4c54f3eacd69": {
       "encoding": "utf8",
       "text": "\n    n = sq_clip(s, n); //SQ: never cut a 2-byte char in half\n"
+    },
+    "e0333c6b102f805774ee5d2749d82e42327ac899c5e4f53b0ff95f3f99912964": {
+      "encoding": "utf8",
+      "text": "    /*\n     * SQ: site #24 - a name with a japanese (0x80+) byte would collapse to\n     * \"________\" below and two characters would share one save file.  The\n     * adapter builds an ASCII save name from the whole name instead (\"P\" + 7\n     * letters or digits from a hash); it returns 0 for a plain ASCII name, which\n     * keeps the loop below exactly as it was.\n     */\n    if (sq_save_base_name(op_ptr->full_name, op_ptr->base_name, (int)sizeof(op_ptr->base_name))) //SQ:\n    { //SQ:\n        i = (int)strlen(op_ptr->base_name); //SQ:\n    } //SQ:\n    else //SQ:\n"
     },
     "e2db8f26dd8b30baf6316819078533d4310ae15934bb103ce9312845f7971e2a": {
       "encoding": "utf8",
@@ -927,7 +951,7 @@
       "newline": "crlf"
     },
     "files.c": {
-      "sha256": "d2362c595f86db9da29795dad91392e06a6df669a93e01856ea0087d44d64188",
+      "sha256": "7b2488da1c29ecaaf6e3048ec744901754daa0d4001088dee8b22db8b1296e09",
       "operations": [
         [
           "copy",
@@ -1195,7 +1219,17 @@
           "copy",
           "i00033",
           79350,
-          18110
+          951
+        ],
+        [
+          "add",
+          "e0333c6b102f805774ee5d2749d82e42327ac899c5e4f53b0ff95f3f99912964"
+        ],
+        [
+          "copy",
+          "i00033",
+          80301,
+          17159
         ],
         [
           "add",
@@ -1451,7 +1485,17 @@
           "copy",
           "i00033",
           99342,
-          51137
+          24576
+        ],
+        [
+          "add",
+          "a2fd2ac344cfb92868dee833b0353a6175635de7c07acaeb589ba7f1b98af5ae"
+        ],
+        [
+          "copy",
+          "i00033",
+          123992,
+          26487
         ]
       ],
       "newline": "crlf"
@@ -1995,7 +2039,7 @@
       "newline": "crlf"
     },
     "util.c": {
-      "sha256": "e857fb4d9ef8458724dfbed0927d1b24a40d4c5d0676315fce138b898318c612",
+      "sha256": "d902cb2ee3b6f9b72faf5b8a6308e6037c55831fb148fd1c6c3b53fc02df0c18",
       "operations": [
         [
           "copy",
@@ -2317,13 +2361,83 @@
         ],
         [
           "add",
-          "b960ffbee806c382f767e3f91f10a536b9cad70bef94c91dc8cd3763c72da677"
+          "5a8c02d70f15e488ce11ec7809e0a7d4f7e3f5e718870ea4af528d2d9f79c50d"
         ],
         [
           "copy",
           "i00072",
           79162,
-          1887
+          896
+        ],
+        [
+          "add",
+          "243fd3491153a76950ce076029d973263ec1b09981cadc21bf217271dbda9fce"
+        ],
+        [
+          "copy",
+          "i00072",
+          80058,
+          18
+        ],
+        [
+          "add",
+          "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068"
+        ],
+        [
+          "copy",
+          "i00072",
+          80076,
+          1
+        ],
+        [
+          "add",
+          "a516f069f456ac25242ca667721889fe11785a61c65cc3298657656914f2e077"
+        ],
+        [
+          "copy",
+          "i00072",
+          80078,
+          1
+        ],
+        [
+          "add",
+          "293faab7067bda1e5025cf67e417d5ffe638880899c3d0ec231fbd6541d90084"
+        ],
+        [
+          "copy",
+          "i00072",
+          80079,
+          274
+        ],
+        [
+          "add",
+          "53f85d869e1bd849996eddff85992635d3f111281820d9c49bffd99b5d310287"
+        ],
+        [
+          "copy",
+          "i00072",
+          78604,
+          26
+        ],
+        [
+          "add",
+          "f7ed59eee3ae5ce6e2b16687ce88075b128d60dac2adbae3701622a88c2a6ae1"
+        ],
+        [
+          "copy",
+          "i00072",
+          78447,
+          50
+        ],
+        [
+          "add",
+          "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        ],
+        [
+          "copy",
+          "i00072",
+          80416,
+          633
         ],
         [
           "add",

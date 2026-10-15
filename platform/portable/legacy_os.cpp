@@ -310,6 +310,24 @@ std::string data_dir()
     return base;
 }
 
+std::string path_to_utf8(const std::string &native_path)
+{
+#if defined(_WIN32)
+    if (native_path.empty()) return native_path;
+    const int wide_len = MultiByteToWideChar(CP_ACP, 0, native_path.data(), static_cast<int>(native_path.size()), nullptr, 0);
+    if (wide_len <= 0) return native_path;
+    std::wstring wide(static_cast<std::size_t>(wide_len), L'\0');
+    MultiByteToWideChar(CP_ACP, 0, native_path.data(), static_cast<int>(native_path.size()), wide.data(), wide_len);
+    const int utf8_len = WideCharToMultiByte(CP_UTF8, 0, wide.data(), wide_len, nullptr, 0, nullptr, nullptr);
+    if (utf8_len <= 0) return native_path;
+    std::string utf8(static_cast<std::size_t>(utf8_len), '\0');
+    WideCharToMultiByte(CP_UTF8, 0, wide.data(), wide_len, utf8.data(), utf8_len, nullptr, nullptr);
+    return utf8;
+#else
+    return native_path;
+#endif
+}
+
 } // namespace portable
 
 // ----------------------------------------------------------------- C からの API

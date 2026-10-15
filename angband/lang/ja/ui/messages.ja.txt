@@ -1,0 +1,7817 @@
+# Angband 4.2 日本語カタログ（画面の字）
+#
+# 読むのは AngbandCore.exe の an::lang_init
+# （angband/adapter/an_lang.cpp）。この原本は UTF-8 で、コアの中も UTF-8（CP932 への変換は無い）。
+#
+# ------------------------------------------------------------------ 書き方（Frox と同じ）
+#
+#   E:  英語の原文（= 鍵）。1 バイトでも違えば別物なので、**正規化しない**
+#   J:  訳文
+#   #   註記
+#
+#   札（どれも別の表。混ぜない）:
+#     E:  一般。3 か所で引く——書式（vstrnfmt() の頭。フック #2）・Term へ書く字を丸ごと
+#         （Term_addstr() の頭。末尾の空白を除いて一致したら元の桁まで空白で埋める。フック #1）・
+#         アダプタ自身の字（an::ui_text()）・問いの字（get_item()/get_check() の pmt。フック #13 #15）
+#     A:  `%s` に裸で入る語（equip の部位名・`Wielding`・`When eaten, it ` ほか。フック #3）
+#     R:  組み上がった行の中の句（`my_strcat()` で継ぐ見出し。フック #14）
+#     V:  組む前の英語の句（怪物のメッセージの述語・打撃の型・動詞。an_tr_v()/an_tr_pred()。P2 のフック #19〜#21）
+#     T:  「見る」（l）の 1 行の説明の句（怪物の状態 `unhurt` `asleep` ほか・地形の冠詞の句。
+#         an_look_health()/an_look_feature()。AH-59。読むのは an_targeting.c の an_look_describe_grid() だけ）
+#     H:  死因のうち怪物でないもの（`starvation` `poison` ほか。`take_hit()` の最後の引数）。**訳文の頭に `{H}` を
+#         書いた書式**（墓の `by %s.`・殿堂の `Killed by %s ...`）の引数だけ引く（ほかの `%s` へは効かない）。
+#         罠の名（`a pit`）と殿堂の記録で 31 バイトに切れた句はアダプタが引く（death_cause_ja()。AH-60）
+#
+# 1 件は E:（または A:/R:）と J: の 2 行。行頭・行末の空白は `\s`、改行は `\n` と書く。
+#
+# ------------------------------------------------------------------ 決まり
+#
+# - **変換指定（%d %s %c …）の並びは英日で一致していること。** 食い違う訳は読み込みで弾かれる。
+#   引数を出したくないときは精度 0（`%.0s`）で読み捨てる（複数形の `s` など）。
+# - **`[y/n]` を含む鍵は訳文にも `[y/n]` を残す**（アダプタが「はい／いいえ」の桁を取る。設計 §8）。
+# - **アダプタが画面を見分ける目印の文言は、目印そのもの（E:）の訳が画面に出る訳文の中に同じ字で
+#   入るときだけ訳す**（an_main.cpp の starts_with_marker()/contains_marker() は英語と E: の訳の両方を
+#   見る）。2026-09-27（§20）に `Command: `・`New `・`Key:`・`Map sector`・`Direction?`・誕生の脚注を
+#   この形で訳した。`-more-`・`Repeat: %d` は訳さない。訳すときは an_main.cpp の selftest の目印の表にも足す。
+# - 訳に曖昧幅の字（…・×・○・★ ほか）を使わない（全角 2 桁の判定を W/F だけで行うため。an_wide.c）。
+# - 引けなかった鍵は英語のまま出る（制約 5）。
+#
+# 範囲（2026-09-27）: 新 UI のメニューの窓に載る字——コマンドの名前と分類・アダプタの字・
+# アイテムを選ぶ問いと見出し・装備の部位・名前の飾り・無視のメニュー・アイテムの文脈メニュー・
+# 確認と数量・アイテムを調べる窓の骨組み。
+# 2026-09-27 に P2（メッセージ。末尾の「P2: メッセージ」の節）を足した。gamedata の説明文（P3）は lib-ja。
+
+# ================================================================== コマンドの分類（cmds_all[]。ui-game.c）
+
+E:Items
+J:アイテム
+
+E:Action commands
+J:行動
+
+E:Manage items
+J:アイテムの管理
+
+E:Information
+J:情報
+
+E:Utility
+J:ユーティリティ
+
+E:Hidden
+J:その他
+
+# ================================================================== コマンドの名前（cmds_all[] の desc）
+
+E:Inscribe an object
+J:銘を刻む
+
+E:Uninscribe an object
+J:銘を消す
+
+E:Wear/wield an item
+J:装備する
+
+E:Take off/unwield an item
+J:装備を外す
+
+E:Examine an item
+J:アイテムを調べる
+
+E:Drop an item
+J:アイテムを置く
+
+E:Fire your missile weapon
+J:射撃する
+
+E:Use a staff
+J:杖を使う
+
+E:Aim a wand
+J:魔法棒を向ける
+
+E:Zap a rod
+J:ロッドを振る
+
+E:Activate an object
+J:アイテムを始動する
+
+E:Eat some food
+J:食べる
+
+E:Quaff a potion
+J:薬を飲む
+
+E:Read a scroll
+J:巻物を読む
+
+E:Fuel your light source
+J:光源に燃料を補給する
+
+E:Use an item
+J:アイテムを使う
+
+E:Disarm a trap or chest
+J:罠を解除する
+
+E:Rest for a while
+J:休憩する
+
+E:Look around
+J:周りを見る
+
+E:Target monster or location
+J:ターゲットを指定する
+
+E:Target closest monster
+J:最も近いモンスターを狙う
+
+E:Dig a tunnel
+J:トンネルを掘る
+
+E:Go up staircase
+J:階段を上る
+
+E:Go down staircase
+J:階段を下りる
+
+E:Open a door or a chest
+J:ドアか箱を開ける
+
+E:Close a door
+J:ドアを閉める
+
+E:Fire at nearest target
+J:最も近い目標を射撃する
+
+E:Throw an item
+J:アイテムを投げる
+
+E:Walk into a trap
+J:罠に踏み込む
+
+E:Display equipment listing
+J:装備の一覧
+
+E:Display inventory listing
+J:持ち物の一覧
+
+E:Display quiver listing
+J:矢筒の一覧
+
+E:Pick up objects
+J:アイテムを拾う
+
+E:Ignore an item
+J:アイテムを無視する
+
+E:Browse a book
+J:本を読む
+
+E:Gain new spells
+J:呪文を学ぶ
+
+E:View abilities
+J:能力を見る
+
+E:Cast a spell
+J:呪文を唱える
+
+E:Full dungeon map
+J:ダンジョンの全体図
+
+E:Toggle ignoring of items
+J:無視したアイテムの表示を切り替える
+
+E:Display visible item list
+J:見えるアイテムの一覧
+
+E:Display visible monster list
+J:見えるモンスターの一覧
+
+E:Locate player on map
+J:地図で自分の位置を探す
+
+E:Help
+J:ヘルプ
+
+E:Identify symbol
+J:記号を調べる
+
+E:Character description
+J:キャラクター情報
+
+E:Check knowledge
+J:知識を確認する
+
+E:Repeat level feeling
+J:階の雰囲気をもう一度見る
+
+E:Show previous message
+J:直前のメッセージを見る
+
+E:Show previous messages
+J:メッセージ履歴を見る
+
+E:Interact with options
+J:オプションを設定する
+
+E:Save and don't quit
+J:セーブする
+
+E:Save and quit
+J:セーブして終了する
+
+E:Retire character and quit
+J:引退して終了する
+
+E:Redraw the screen
+J:画面を描き直す
+
+E:Take notes
+J:メモを取る
+
+E:Version info
+J:バージョン情報
+
+E:Load a single pref line
+J:設定の行を 1 つ読む
+
+E:Toggle windows
+J:ウィンドウを切り替える
+
+E:Alter a grid
+J:マスに手を加える
+
+E:Steal from a monster
+J:モンスターから盗む
+
+E:Walk
+J:歩く
+
+E:Start running
+J:走る
+
+E:Start exploring
+J:探索を始める
+
+E:Stand still
+J:その場にとどまる
+
+E:Set repeat count
+J:繰り返し回数を指定
+
+E:Center map
+J:地図を中央に合わせる
+
+E:Toggle wizard mode
+J:ウィザードモードを切り替える
+
+E:Repeat previous command
+J:前のコマンドを繰り返す
+
+E:Do autopickup
+J:自動で拾う
+
+E:Debug mode commands
+J:デバッグのコマンド
+
+E:Borg commands
+J:Borg のコマンド
+
+# ================================================================== アダプタの字（an_main.cpp の ui_text()）
+
+E:Stash
+J:預ける
+
+# AH-60: ヘルプの目次の操作の一覧（`%`。`Goto File:` の問いは別の字）
+E:Go to file
+J:ファイルへ移動
+
+E:Sell
+J:売る
+
+E:Exit
+J:出る
+
+E:Switch source (Inventory / Equipment)
+J:持ち物・装備を切り替える
+
+E:Floor items
+J:床のアイテム
+
+E:Quiver
+J:矢筒
+
+E:Inspect
+J:調べる
+
+E:Equipment
+J:装備
+
+E:Inventory
+J:持ち物
+
+E:Continue
+J:続ける
+
+E:Start over
+J:最初からやり直す
+
+E:Step back
+J:1 つ戻る
+
+E:Accept
+J:決定
+
+E:Edit history
+J:生い立ちを編集する
+
+E:Use as is
+J:このまま使う
+
+E:Redo
+J:作り直す
+
+E:Change name/history
+J:名前と生い立ちを変える
+
+E:Stay changed
+J:変身を続ける
+
+E:Change back and act
+J:元に戻って行動する
+
+E:Return to normal only
+J:元に戻るだけ
+
+E:Reroll
+J:振り直す
+
+E:Previous roll
+J:前の結果に戻す
+
+E:Confirm (@)
+J:確定 (@)
+
+E:Cancel (Esc)
+J:取り消す (Esc)
+
+E:Forum text
+J:フォーラム用の文字
+
+E:Recall (r)
+J:思い出 (r)
+
+E:Close (Esc)
+J:閉じる (Esc)
+
+E:Rest for how long?
+J:どれだけ休憩しますか？
+
+E:Rest as needed (&)
+J:必要なだけ休憩する (&)
+
+E:Rest until HP and SP are full (*)
+J:HP と SP が全回復するまで休憩する (*)
+
+E:Rest until HP or SP is full (!)
+J:HP か SP のどちらかが満ちるまで休憩する (!)
+
+E:Set the number of turns
+J:ターン数を指定する
+
+E:Rest turns (1-9999):
+J:休憩するターン数 (1-9999):
+
+E:Yes
+J:はい
+
+E:No
+J:いいえ
+
+E:Enter/A: continue
+J:Enter/A: 続ける
+
+# ================================================================== アイテムを選ぶ問い（get_item() の pmt。フック #13）
+
+E:Activate which item?\s
+J:どれを始動しますか？\s
+
+E:Aim which wand?\s
+J:どの魔法棒を向けますか？\s
+
+E:Browse which book?\s
+J:どの本を読みますか？\s
+
+E:Compare with which item?\s
+J:どれと比べますか？\s
+
+E:Drop which item?\s
+J:どれを置きますか？\s
+
+E:Drop which item?
+J:どれを置きますか？
+
+E:Eat which food?\s
+J:どれを食べますか？\s
+
+E:Examine which item?\s
+J:どれを調べますか？\s
+
+E:Examine which item?
+J:どれを調べますか？
+
+E:Examine which item? (ESC to cancel, Enter to select)
+J:どれを調べますか？ (ESC で取り消し、Enter で選ぶ)
+
+E:Fire which ammunition?
+J:どの矢弾を撃ちますか？
+
+E:Get which item? (Esc to cancel, Enter to select)
+J:どれを拾いますか？ (Esc で取り消し、Enter で選ぶ)
+
+E:Get which item?
+J:どれを拾いますか？
+
+E:Ignore which item?\s
+J:どれを無視しますか？\s
+
+E:Inscribe which item?
+J:どれに銘を刻みますか？
+
+E:Uninscribe which item?
+J:どれの銘を消しますか？
+
+E:Purchase which item? (ESC to cancel, Enter to select)
+J:どれを買いますか？ (ESC で取り消し、Enter で選ぶ)
+
+E:Quaff which potion?\s
+J:どの薬を飲みますか？\s
+
+E:Read which scroll?\s
+J:どの巻物を読みますか？\s
+
+E:Sell which item?\s
+J:どれを売りますか？\s
+
+E:Study which book?\s
+J:どの本から学びますか？\s
+
+E:Take off or unwield which item?
+J:どれを外しますか？
+
+E:Throw which item?
+J:どれを投げますか？
+
+E:Use which item?\s
+J:どれを使いますか？\s
+
+E:Use which staff?\s
+J:どの杖を使いますか？\s
+
+E:Wear or wield which item?
+J:どれを装備しますか？
+
+E:Zap which rod?\s
+J:どのロッドを振りますか？\s
+
+E:Replace which ring?\s
+J:どちらの指輪と取り替えますか？\s
+
+E:Identify which item?\s
+J:どれを調べますか？\s
+
+E:Enchant which item?\s
+J:どれを強化しますか？\s
+
+E:Recharge which item?\s
+J:どれに魔力を充填しますか？\s
+
+E:Uncurse which item?\s
+J:どれの呪いを解きますか？\s
+
+E:Brand which kind of ammunition?\s
+J:どの矢弾に属性を付けますか？\s
+
+E:Brand which bolts?\s
+J:どのボルトに属性を付けますか？\s
+
+E:Drain charges from which item?\s
+J:どれから魔力を吸い取りますか？\s
+
+E:Make arrows from which staff?\s
+J:どの杖から矢を作りますか？\s
+
+E:Give which item?\s
+J:どれを渡しますか？\s
+
+E:Select Item:
+J:アイテムを選ぶ:
+
+E:You have nothing to examine.
+J:調べられるアイテムが無い。
+
+E:You have nothing to ignore.
+J:無視できるアイテムが無い。
+
+# ------------------------------------------------------------------ 選ぶ窓の見出し（menu_header()。ui-object.c）
+# `(Inven: a-d, / for Equip, ESC)` は書式（`Inven:`）と `my_strcat()` の句で組まれる。
+# 画面側は見出しの `:` の前後を札と中身に分けて出すので、半角の `:` は残す。
+
+# 札 `Inven:` `Equip:` `Quiver:` `Floor:` は**変愚の同じ問いの綴り**（変愚 `floor-item-getter.cpp` の
+# `持ち物:` `装備品:` `床上:`。矢筒は変愚に無いので `矢筒:`）。画面側と共用の持ち物メニュー
+# （presentation/bridge/native_inventory_menu.h の angband_select()）が見出しの「(Inven:」
+# 「(持ち物:」ほかの綴りでいまの一覧を見分け、持ち物の命令の対象のアイテムを選ぶ。
+# **ここの綴りを変えるときは画面側の表も一緒に直す**（遊ぶ人の了承を得た画面側の例外。
+# 設計 §16.1。2026-09-27）。句（/ で装備品 ほか）は画面側は見ない。
+
+E:Inven:
+J:持ち物:
+
+E:Equip:
+J:装備品:
+
+E:Quiver:
+J:矢筒:
+
+E:Floor:
+J:床上:
+
+E:Throwing items:
+J:投げるアイテム:
+
+R:\s/ for Equip,
+J:\s/ で装備品,
+
+R:\s/ for Inven,
+J:\s/ で持ち物,
+
+R:\s| for Quiver,
+J:\s| で矢筒,
+
+R:\s- for floor,
+J:\s- で床上,
+
+# 選ぶ窓の切り替えの行（item_menu() の menu_dynamic_add_label()）
+E:Floor
+J:床
+
+E:Escape
+J:取り消す
+
+E:In quiver
+J:矢筒の中
+
+E:in Quiver: %d missile%s
+J:矢筒: %d 本%.0s
+
+E:in Quiver: %d missile%s\n
+J:矢筒: %d 本%.0s\n
+
+E:Burden %d.%d lb (%d.%d lb %s)\s
+J:所持重量 %d.%d kg (%d.%d kg %s)\s
+
+A:overweight
+J:超過
+
+A:remaining
+J:余裕
+
+E:Slot %-9d:\s
+J:スロット %-9d:\s
+
+# ================================================================== 装備の部位（list-equip-slots.h・body.txt）
+# 変愚の装備一覧の札（打撃用・射撃用・右手指・左手指・首・光源・体・身体の周り・腕・頭・手・足）に揃える。
+# `Wielding` などは `"%s%*s"` の `%s` に入るので A:。`On %s` は書式なので E:。
+
+# 装備の一覧の札。`utf8_strlen()` で桁を数える前に丸ごと引く（フック #13。ui-object.c の
+# `an_tr(equip_mention())`）ので E:。
+E:Wielding
+J:打撃用
+
+E:Shooting
+J:射撃用
+
+E:Light source
+J:光源
+
+E:just lifting
+J:持ち上げているだけ
+
+E:just holding
+J:持っているだけ
+
+E:On %s
+J:%s
+
+E:Around %s
+J:%s
+
+A:right hand
+J:右手指
+
+A:left hand
+J:左手指
+
+A:neck
+J:首
+
+A:body
+J:体
+
+A:back
+J:身体の周り
+
+A:arm
+J:腕
+
+A:head
+J:頭
+
+A:hands
+J:手
+
+A:feet
+J:足
+
+# ================================================================== 名前の飾り（obj-desc.c。名前そのものは names/*.ja.tsv）
+
+E:(nothing)
+J:(なし)
+
+E:an unknown item
+J:未知のアイテム
+
+E:unknown item
+J:未知のアイテム
+
+E:\s(%d turns)
+J:\s(%dターン)
+
+E:\s(%d charge%s)
+J:\s(残り%d回%.0s)
+
+E:\s(%d charging)
+J:\s(%d本充填中)
+
+E:\s(charging)
+J:\s(充填中)
+
+E:\s{unseen}
+J:\s{未見}
+
+E:\s{cursed}
+J:\s{呪い}
+
+E:\s{ignore}
+J:\s{無視}
+
+E:%d gold pieces worth of %s%s
+J:%dゴールド分の%s%s
+
+A:empty
+J:空
+
+A:tried
+J:試用済
+
+A:cursed
+J:呪い
+
+A:ignore
+J:無視
+
+# お金の名（`%d gold pieces worth of %s` の `%s`。変愚の既訳。names/object.ja.tsv の gold: と同じ）
+A:copper
+J:銅塊
+
+A:silver
+J:銀塊
+
+A:garnets
+J:ガーネット
+
+A:gold
+J:金塊
+
+A:opals
+J:オパール
+
+A:sapphires
+J:サファイア
+
+A:rubies
+J:ルビー
+
+A:diamonds
+J:ダイヤモンド
+
+A:emeralds
+J:エメラルド
+
+A:mithril
+J:ミスリル
+
+A:adamantite
+J:アダマンタイト
+
+# ================================================================== 無視のメニュー（textui_cmd_ignore_menu()。ui-object.c）
+
+E:This item only
+J:このアイテムだけ
+
+E:Unignore this item
+J:このアイテムの無視をやめる
+
+E:All %s
+J:%sをすべて
+
+E:Unignore all %s
+J:%sをすべて無視しない
+
+E:(Enter to select, ESC) Ignore:
+J:(Enter で選ぶ、ESC で取り消し) 無視:
+
+# ================================================================== アイテムの文脈メニュー（ui-context.c）
+
+E:(Enter to select, ESC) Command for %s:
+J:(Enter で選ぶ、ESC で取り消し) %sをどうする:
+
+E:(Enter to select, ESC) Command:
+J:(Enter で選ぶ、ESC で取り消し) コマンド:
+
+E:Browse
+J:読む
+
+E:Study
+J:学ぶ
+
+E:Cast
+J:唱える
+
+E:Aim
+J:向ける
+
+E:Zap
+J:振る
+
+E:Use
+J:使う
+
+E:Read
+J:読む
+
+E:Quaff
+J:飲む
+
+E:Eat
+J:食べる
+
+E:Activate
+J:始動する
+
+E:Fire
+J:撃つ
+
+E:Refill
+J:補給する
+
+E:Take off
+J:外す
+
+E:Equip
+J:装備する
+
+E:Drop
+J:置く
+
+E:Drop All
+J:全部置く
+
+E:Pick up
+J:拾う
+
+E:Throw
+J:投げる
+
+E:Inscribe
+J:銘を刻む
+
+E:Uninscribe
+J:銘を消す
+
+E:Ignore
+J:無視する
+
+E:Unignore
+J:無視をやめる
+
+E:Knowledge
+J:知識
+
+E:Show Map
+J:地図を見る
+
+E:^Show Messages
+J:^メッセージを見る
+
+E:Show Monster List
+J:モンスターの一覧
+
+E:Show Object List
+J:アイテムの一覧
+
+E:Toggle Ignored
+J:無視の表示を切り替える
+
+E:Options
+J:オプション
+
+E:Commands
+J:コマンド
+
+E:Look
+J:見る
+
+E:Rest
+J:休憩
+
+E:Character
+J:キャラクター
+
+E:Other
+J:その他
+
+E:Go Up
+J:上る
+
+E:Go Down
+J:下りる
+
+E:Explore
+J:探索する
+
+# ================================================================== 確認・数量（ui-input.c）
+# `[y/n]` は書式（`%.70s[y/n] `）の側にあり訳さない（設計 §8）。問いの字だけを訳す（フック #15）。
+
+E:Quantity (0-%d, *=all):\s
+J:数量 (0-%d, *=すべて):\s
+
+E:Are you sure?\s
+J:よろしいですか？\s
+
+E:Replace existing file?\s
+J:既にあるファイルを置き換えますか？\s
+
+E:Confirm writing to %s?\s
+J:%s へ書き出しますか？\s
+
+E:File name:\s
+J:ファイル名:\s
+
+E:[Press any key to continue]
+J:[何かキーを押してください]
+
+E:Direction or <click> (Escape to cancel)?\s
+J:方向か<クリック> (Escape で取り消し)？\s
+
+E:Inscribe with what?\s
+J:何と刻みますか？\s
+
+E:Inscribing %s.
+J:%sに銘を刻む。
+
+E:Set to random name
+J:でたらめな名前にする
+
+E:Clear name
+J:名前を消す
+
+# ------------------------------------------------------------------ 銘の `!` による確認（ui-object.c・obj-util.c の verify_object()）
+# 「Really 〈動詞〉 〈アイテム〉? [y/n]」を「本当に〈動詞〉: 〈アイテム〉？ [y/n]」にする（語順を変えられないため）。
+
+E:Really %s
+J:本当に%s
+
+E:%s %s?\s
+J:%s: %s？\s
+
+A:do that with
+J:それを使う
+
+A:activate
+J:始動する
+
+A:aim
+J:向ける
+
+A:drop
+J:置く
+
+A:eat
+J:食べる
+
+A:fire
+J:撃つ
+
+A:inscribe
+J:銘を刻む
+
+A:quaff
+J:飲む
+
+A:read
+J:読む
+
+A:refuel with
+J:燃料にする
+
+A:sell
+J:売る
+
+A:stash
+J:預ける
+
+A:study
+J:学ぶ
+
+A:take off
+J:外す
+
+A:throw
+J:投げる
+
+A:un-inscribe
+J:銘を消す
+
+A:use
+J:使う
+
+A:wear or wield
+J:装備する
+
+A:zap
+J:振る
+
+A:cast
+J:唱える
+
+E:Really take off %s?\s
+J:本当に%sを外しますか？\s
+
+E:Attempt it anyway?\s
+J:それでも試しますか？\s
+
+# ------------------------------------------------------------------ 属性の並び（obj-info.c の info_out_list()）
+# 「〈見出し〉〈属性〉, 〈属性〉.」を「〈見出し〉〈属性〉、〈属性〉。」にする。`, ` は読み物の
+# 区切りとして全部「、」にする（名前の修正値 `<+1, +2>` も「<+1、+2>」になる）。
+
+E:,\s
+J:、
+
+E:Can be destroyed by\s
+J:壊れる属性:\s
+
+E:Provides immunity to\s
+J:免疫:\s
+
+E:Provides resistance to\s
+J:耐性:\s
+
+E:Makes you vulnerable to\s
+J:弱点:\s
+
+E:Provides protection from\s
+J:防ぐもの:\s
+
+E:Cannot be harmed by\s
+J:傷まない属性:\s
+
+E:Sustains\s
+J:維持:\s
+
+# 属性の名（projection.txt の name。変愚の既訳）
+M:acid
+J:酸
+
+M:lightning
+J:電撃
+
+M:fire
+J:火炎
+
+M:cold
+J:冷気
+
+M:poison
+J:毒
+
+M:light
+J:閃光
+
+M:dark
+J:暗黒
+
+M:sound
+J:轟音
+
+M:shards
+J:破片
+
+M:nexus
+J:因果混乱
+
+M:nether
+J:地獄
+
+M:chaos
+J:カオス
+
+M:disenchantment
+J:劣化
+
+M:water
+J:水
+
+M:ice
+J:氷
+
+M:gravity
+J:重力
+
+M:inertia
+J:遅鈍
+
+M:force
+J:フォース
+
+M:time
+J:時間逆転
+
+M:plasma
+J:プラズマ
+
+M:meteors
+J:隕石
+
+M:magic missiles
+J:マジック・ミサイル
+
+M:mana
+J:魔力
+
+M:holy power
+J:聖なる力
+
+M:arrows
+J:矢
+
+E:Save "screen dump"
+J:画面を保存する
+
+# ================================================================== 読み物の窓（ui-output.c）
+
+E:(Press any key to continue.)
+J:(何かキーを押すと続きます。)
+
+E:(Up/down or ESCAPE to exit.)
+J:(上下で動かす。ESCAPE で閉じる。)
+
+# ================================================================== アイテムを調べる窓（obj-info.c・list-origins.h・effects-info.c）
+# 説明文の本体（gamedata の desc:）は P3（英語のまま）。ここは窓の骨組みと、
+# 最初の持ち物（食料・狂戦士化の薬・帰還の詔・松明・ダガー・軟革よろい）で出る文。
+
+E:Found lying on the floor %s
+J:%s床に落ちていた。
+
+E:Taken from a chest found %s
+J:%s見つけた箱から取り出した。
+
+E:Found lying on the floor of a special room %s
+J:%s特別な部屋の床に落ちていた。
+
+E:Found lying on the floor in a pit %s
+J:%sピットの床に落ちていた。
+
+E:Found lying on the floor in a vault %s
+J:%s宝物庫の床に落ちていた。
+
+E:Found lying on the floor of a labyrinth %s
+J:%s迷宮の床に落ちていた。
+
+E:Found lying on the floor of a cavern %s
+J:%s洞窟の床に落ちていた。
+
+E:Found under some rubble %s
+J:%s瓦礫の下から見つけた。
+
+E:Dropped by %s %s
+J:%sが%s落とした。
+
+E:Conjured forth by magic %s
+J:%s魔法で呼び出した。
+
+E:Bought from a store
+J:店で買った。
+
+E:An inheritance from your family
+J:家族から受け継いだ物。
+
+# 引数の無い由来は `textblock_append(tb, "%s", desc)` で出る（書式が英語のまま）ので A: にも置く。
+A:An inheritance from your family
+J:家族から受け継いだ物。
+
+A:Bought from a store
+J:店で買った。
+
+A:Created by debug option
+J:デバッグで作った。
+
+E:Created by debug option
+J:デバッグで作った。
+
+E:Dropped by an unknown monster %s
+J:%s未知のモンスターが落とした。
+
+E:at %d feet (level %d)
+J:%dメートル (%d階) で
+
+A:in town
+J:町で
+
+E:It can be eaten.\n
+J:食べられる。\n
+
+E:It can be drunk.\n
+J:飲める。\n
+
+E:It can be read.\n
+J:読める。\n
+
+E:It can be aimed.\n
+J:向けて使える。\n
+
+E:It can be activated.\n
+J:始動できる。\n
+
+A:When activated, it\s
+J:始動すると、
+
+A:When aimed, it\s
+J:向けて使うと、
+
+A:When eaten, it\s
+J:食べると、
+
+A:When quaffed, it\s
+J:飲むと、
+
+A:When read, it\s
+J:読むと、
+
+E:When activated, it\s
+J:始動すると、
+
+E:.\n
+J:。\n
+
+E:\sand\s
+J:、
+
+E:Your chance of success is %d.%d%%\n
+J:成功率は %d.%d%%\n
+
+E:Takes\s
+J:再充填に\s
+
+E:\sto\s
+J:\s〜\s
+
+E:\sturns to recharge
+J:\sターンかかる
+
+E:\sat your current speed
+J:\s(今の速さで)
+
+E:Combat info:\n
+J:戦闘の情報:\n
+
+E:You are too weak to use this weapon.\n
+J:この武器を扱うには力が足りない。\n
+
+E:%d.%d\s
+J:%d.%d\s
+
+E:blow%s/round.\n
+J:回/ターンの攻撃%.0s。\n
+
+E:With +%d STR and +%d DEX you would get %d.%d blows\n
+J:腕力 +%d・器用さ +%d で %d.%d 回の攻撃になる\n
+
+E:With +%d STR and +%d DEX you would attack a bit faster\n
+J:腕力 +%d・器用さ +%d で少し速く攻撃できる\n
+
+E:Average damage/round:\s
+J:1 ターンの平均ダメージ:\s
+
+E:Average thrown damage:\s
+J:投げたときの平均ダメージ:\s
+
+E:\svs. others
+J:\s(ほかの相手)
+
+E:This weapon may benefit from one or more off-weapon brands or slays.\n
+J:この武器は、武器以外による属性やスレイの効果を受けうる。\n
+
+E:It can be thrown at creatures with damaging effect.\n
+J:投げてモンスターにダメージを与えられる。\n
+
+E:When fired, hits targets up to\s
+J:撃つと、最大\s
+
+E:\sfeet away.\n
+J:\sメートル先の目標に当たる。\n
+
+E:\schance of breaking upon contact.\n
+J:\sの確率で当たると壊れる。\n
+
+E:Intensity\s
+J:明るさ\s
+
+E:\slight.
+J:\sの光。
+
+E:\s\sNo fuel required.
+J:\s\s燃料は要らない。
+
+E:\s\sRefills other lanterns up to %d turns of fuel.
+J:\s\sほかのランタンに最大 %d ターン分の燃料を補給できる。
+
+E:\s\sCannot be refueled.
+J:\s\s燃料を補給できない。
+
+E:\nYou can read this book.\n
+J:\nこの本は読める。\n
+
+E:\n\nYou do not know what this is.\n
+J:\n\nこれが何なのか分からない。\n
+
+E:You do not know the full extent of this item's powers.\n
+J:このアイテムの力のすべては分かっていない。\n
+
+E:\n\nThis item does not seem to possess any special abilities.
+J:\n\nこのアイテムには特別な力は無いようだ。
+
+E:It provides one random higher resistance.\s\s
+J:ランダムな上位耐性を 1 つ持つ。\s\s
+
+E:It provides one random sustain.\s\s
+J:ランダムな能力の維持を 1 つ持つ。\s\s
+
+E:It provides one random ability.\s\s
+J:ランダムな能力を 1 つ持つ。\s\s
+
+E:It provides one random ability or base resistance.\s\s
+J:ランダムな能力か基本の耐性を 1 つ持つ。\s\s
+
+E:It burns forever without fuel.\s\s
+J:燃料無しで永遠に燃え続ける。\s\s
+
+# ------------------------------------------------------------------ 効果の説明（list-effects.h の desc。effects-info.c が書式として渡す）
+
+E:%s for %s turns (%s percent)
+J:%s (%s ターン分、%s パーセント)
+
+A:feeds you
+J:栄養になる
+
+A:leaves you nourished
+J:満腹になる
+
+A:uses enough food value
+J:その分の栄養を使う
+
+E:heals %s hitpoints%s
+J:体力を %s 回復する%s
+
+E:\s(or %d%%, whichever is greater)
+J:\s(%d%% のほうが多ければそちら)
+
+E:cures %s
+J:%sを治す
+
+E:extends %s for %s turns
+J:%sを %s ターン延ばす
+
+E:extends %s for %s turns (unresistable)
+J:%sを %s ターン延ばす (抵抗できない)
+
+E:returns you from the dungeon or takes you to the dungeon after a short delay
+J:少し経ってから、ダンジョンから地上へ戻るか、ダンジョンへ移る
+
+E:teleports you up to five dungeon levels lower than the lowest point you have reached so far
+J:これまでで最も深い階より最大 5 階深くへテレポートする
+
+# 一時的な効果の名（player_timed.txt の desc。`cures %s` ほかの `%s`）
+A:haste
+J:加速
+
+A:slowness
+J:減速
+
+A:blindness
+J:盲目
+
+A:paralysis
+J:麻痺
+
+A:confusion
+J:混乱
+
+A:fear
+J:恐怖
+
+A:hallucination
+J:幻覚
+
+A:poisoning
+J:毒
+
+A:wounds
+J:切り傷
+
+A:stunning
+J:朦朧
+
+A:nourishment
+J:栄養
+
+A:protection from evil
+J:対邪悪結界
+
+A:invulnerability
+J:無敵
+
+A:heroism
+J:ヒーロー気分
+
+A:berserk rage
+J:狂戦士化
+
+A:mystic shield
+J:魔法の盾
+
+A:see invisible
+J:透明視
+
+A:enhanced infravision
+J:赤外線視力の強化
+
+A:acid resistance
+J:酸への耐性
+
+A:electricity resistance
+J:電撃への耐性
+
+A:fire resistance
+J:火炎への耐性
+
+A:cold resistance
+J:冷気への耐性
+
+A:poison resistance
+J:毒への耐性
+
+A:confusion resistance
+J:混乱への耐性
+
+A:amnesia
+J:記憶喪失
+
+A:telepathy
+J:テレパシー
+
+A:stone skin
+J:石肌
+
+A:terror
+J:恐慌
+
+A:sprinting
+J:疾走
+
+A:fearlessness
+J:大胆さ
+
+
+# ================================================================== P2: メッセージ（設計 §16。2026-09-27）
+# 範囲: 原作のソースの msg()/msgt() の書式（`an_scan_src_en.py --messages` が数える）・怪物の
+# メッセージの表（list-mon-message.h）・痛み（pain.txt）と怪物の打撃（blow_methods.txt の act:）の文・
+# プレイヤーの打撃と射撃の動詞。gamedata の他の文（呪文・状態の変化・罠・効果）は P3。
+#
+# 札 V:（P2 で足した）は「組む前の英語の句」。an_tr_v() で引く（mon-msg.c・mon-blows.c・player-attack.c）。
+# 述語の訳は頭に「は」「が」「に」を付けて主語へ継ぐ（主語の後ろの空白は an_msg_tidy() が詰める）。
+# 訳文の頭の `{M}` は「この書式の引数は M: を先に引く」の印（`fire` を「撃つ」でなく「火炎」に）。
+# 文末の `.` `!` は訳に書かなくてよい——全角の直後の `.` `!` `?` は an_msg_tidy() が「。」「！」「？」にする。
+
+# ------------------------------------------------------------------ cave-square.c / cmd-cave.c（移動・階段・扉・掘る・罠・雰囲気）
+
+E:The decoy is destroyed!
+J:おとりが壊された！
+
+E:You feel a pile of rubble blocking your way.
+J:瓦礫の山が行く手をふさいでいるようだ。
+
+E:I see no down staircase here.
+J:ここには下り階段が見当たらない。
+
+E:You feel a door blocking your way.
+J:ドアが行く手をふさいでいるようだ。
+
+E:You feel a wall blocking your way.
+J:壁が行く手をふさいでいるようだ。
+
+E:There is a pile of rubble blocking your way.
+J:瓦礫の山が行く手をふさいでいる。
+
+E:There is a door blocking your way.
+J:ドアが行く手をふさいでいる。
+
+E:There is a wall blocking your way.
+J:壁が行く手をふさいでいる。
+
+E:The dungeon does not appear to extend deeper
+J:ダンジョンはこれより深くは続いていないようだ
+
+E:You are too afraid to attack %s!
+J:恐怖のあまり%sを攻撃できない！
+
+E:There is a pile of rubble in the way!
+J:瓦礫の山が邪魔をしている！
+
+E:There is a wall in the way!
+J:壁が邪魔をしている！
+
+E:You clear the web.
+J:クモの巣を払いのけた。
+
+E:You enter a maze of down staircases.
+J:下り階段の迷路に入った。
+
+E:You cannot explore while confused.
+J:混乱していて探索できない。
+
+E:Something is here.
+J:ここに何かがある。
+
+E:No known path to downstairs.
+J:下り階段への道が分からない。
+
+E:No known path to upstairs.
+J:上り階段への道が分からない。
+
+E:You see nothing there.
+J:そこには何も見当たらない。
+
+E:No apparent path for exploration.
+J:探索できそうな道が見当たらない。
+
+E:You see nothing there to open.
+J:そこには開けられるものが無い。
+
+E:There is a scream and the door slams shut!
+J:悲鳴が上がり、ドアがバタンと閉まった！
+
+E:Looks like a typical town.
+J:ありふれた町のようだ。
+
+E:You feel that %s
+J:%s
+
+E:No target monster selected!
+J:目標の怪物が選ばれていない！
+
+E:This monster has no spells!
+J:この怪物は呪文を持っていない！
+
+E:%s drops %s.
+J:%sは%sを落とした。
+
+E:The monster can not move.
+J:その怪物は動けない。
+
+E:You have picked the lock.
+J:鍵を開けた。
+
+E:%s slams against the door.
+J:%sがドアに体当たりした。
+
+E:%s fiddles with the lock.
+J:%sが鍵をいじっている。
+
+E:You hear a door burst open!
+J:ドアが勢いよく開く音がした！
+
+E:The way is blocked.
+J:道がふさがれている。
+
+E:Valid commands: move, stand still, 'd'rop, 'm'agic, or 'r'elease.
+J:使えるコマンド: 移動・その場で待つ・'d' 落とす・'m' 魔法・'r' 解放。
+
+E:You failed to pick the lock.
+J:鍵を開けられなかった。
+
+E:There is a monster in the way!
+J:怪物が邪魔をしている！
+
+E:You see nothing there to close.
+J:そこには閉められるものが無い。
+
+E:You're standing in that doorway.
+J:その戸口に立っている。
+
+E:The door appears to be broken.
+J:ドアは壊れているようだ。
+
+E:This seems to be permanent rock.
+J:これは永久岩のようだ。
+
+E:You see nothing there to tunnel.
+J:そこには掘れるものが無い。
+
+E:You have removed the rubble %s.
+J:%s瓦礫を取り除いた。
+
+E:You have found something!
+J:何かを見つけた！
+
+E:You have found something digging %s!
+J:%s掘っていて何かを見つけた！
+
+E:You have finished the tunnel %s.
+J:%sトンネルを掘り終えた。
+
+E:You dig in the rubble %s.
+J:%s瓦礫を掘っている。
+
+E:You tunnel into the %s %s.
+J:%s%sを掘っている。
+
+E:You dig in the rubble %s with little effect.
+J:%s瓦礫を掘ったが、ほとんど効果が無い。
+
+E:You chip away futilely %s at the %s.
+J:%s%sを削ったが、歯が立たない。
+
+E:I see no up staircase here.
+J:ここには上り階段が見当たらない。
+
+E:You see nothing there to disarm.
+J:そこには解除できるものが無い。
+
+E:Nothing happens!
+J:何も起こらなかった！
+
+E:You lock the door.
+J:ドアに鍵をかけた。
+
+E:You failed to lock the door.
+J:ドアに鍵をかけられなかった。
+
+E:You can't go up from here!
+J:ここからは上れない！
+
+E:You have disarmed the %s.
+J:%sを解除した。
+
+E:You failed to disarm the %s.
+J:%sの解除に失敗した。
+
+E:You set off the %s!
+J:%sを作動させてしまった！
+
+E:You enter a maze of up staircases.
+J:上り階段の迷路に入った。
+
+E:You spin around.
+J:その場でくるりと回った。
+
+# ------------------------------------------------------------------ 雰囲気（cmd-cave.c の mon_feeling_text / obj_feeling_text。`%s` に句で入る）
+
+E:You are still uncertain about this place
+J:この場所のことはまだよく分からない
+
+E:Omens of death haunt this place
+J:死の予兆がこの場所に満ちている
+
+E:This place seems murderous
+J:この場所は殺気に満ちている
+
+E:This place seems terribly dangerous
+J:この場所はひどく危険なようだ
+
+E:You feel anxious about this place
+J:この場所には不安を覚える
+
+E:You feel nervous about this place
+J:この場所には落ち着かないものを感じる
+
+E:This place does not seem too risky
+J:この場所はそれほど危険ではなさそうだ
+
+E:This place seems reasonably safe
+J:この場所はまずまず安全そうだ
+
+E:This seems a tame, sheltered place
+J:ここはおとなしく守られた場所のようだ
+
+E:This seems a quiet, peaceful place
+J:ここは静かで平和な場所のようだ
+
+E:Looks like any other level.
+J:ほかの階と変わらないようだ。
+
+E:you sense an item of wondrous power!
+J:驚くべき力を持ったアイテムの気配がする！
+
+E:there are superb treasures here.
+J:ここにはすばらしい宝がある。
+
+E:there are excellent treasures here.
+J:ここには極上の宝がある。
+
+E:there are very good treasures here.
+J:ここにはとても良い宝がある。
+
+E:there are good treasures here.
+J:ここには良い宝がある。
+
+E:there may be something worthwhile here.
+J:ここには何か価値のある物があるかもしれない。
+
+E:there may not be much interesting here.
+J:ここにはあまり面白い物は無さそうだ。
+
+E:there aren't many treasures here.
+J:ここには宝はあまり無さそうだ。
+
+E:there are only scraps of junk here.
+J:ここにはガラクタしか無さそうだ。
+
+E:there is naught but cobwebs here.
+J:ここにはクモの巣しか無さそうだ。
+
+E:, yet
+J:が、
+
+E:, and
+J:。そして
+
+# ------------------------------------------------------------------ 掘る道具（cmd-cave.c の with_clause）
+
+A:with your hands
+J:素手で
+
+A:with your weapon
+J:武器で
+
+A:with your swap digger
+J:持ち替えた掘削道具で
+
+# ------------------------------------------------------------------ cmd-obj.c（アイテムを使う）
+
+E:You fuel your lamp.
+J:ランプに燃料を補給した。
+
+E:Your lamp is full.
+J:ランプの燃料は満タンだ。
+
+E:You are not wielding a light.
+J:光源を装備していない。
+
+E:Your light cannot be refilled.
+J:この光源には燃料を補給できない。
+
+E:You do not have enough mana to %s this %s.
+J:この%.0s%sを使うにはマナが足りない。
+
+E:You cannot learn any %ss in that book.
+J:その本から学べる%sは無い。
+
+E:Inscription removed.
+J:銘を消した。
+
+E:You cannot remove the %s you are %s.
+J:%s%.0sは外せない。
+
+E:%s %s (%c).
+J:%.0s%s (%c) を外した。
+
+E:Hmmm, it seems to be stuck.
+J:うーん、どうやら外れないようだ。
+
+E:You activate it.
+J:それを発動した。
+
+E:You see %s.
+J:%sがある。
+
+E:You have %s (1st %c).
+J:%s (最初は %c) を持っている。
+
+E:You have %s (%c).
+J:%s (%c) を持っている。
+
+E:That staff has no charges.
+J:その杖にはもう充填が残っていない。
+
+E:That wand has no charges.
+J:その魔法棒にはもう充填が残っていない。
+
+E:The %s has no charges left.
+J:%sにはもう充填が残っていない。
+
+E:That rod is still charging.
+J:そのロッドはまだ充填中だ。
+
+E:That item is still charging.
+J:そのアイテムはまだ充填中だ。
+
+E:You failed to %s properly.
+J:うまく%sことができなかった。
+
+E:Equip the item to use it.
+J:使うには装備する必要がある。
+
+E:The item cannot be used at the moment
+J:そのアイテムは今は使えない
+
+A:zap the rod
+J:ロッドを振る
+
+A:use the wand
+J:魔法棒を使う
+
+A:use the staff
+J:杖を使う
+
+A:wand
+J:魔法棒
+
+A:staff
+J:杖
+
+A:spell
+J:呪文
+
+A:prayer
+J:祈り
+
+A:verse
+J:詩歌
+
+A:ritual
+J:儀式
+
+A:spells
+J:呪文
+
+A:prayers
+J:祈り
+
+A:verses
+J:詩歌
+
+A:rituals
+J:儀式
+
+A:You were wielding
+J:装備していた
+
+A:You were holding
+J:持っていた
+
+A:You were wearing
+J:身に着けていた
+
+A:wielding
+J:装備している
+
+A:wearing
+J:身に着けている
+
+# ------------------------------------------------------------------ obj-gear.c の fmt（書式が変数。走査の目には映らない）
+
+E:You are wielding %s (%c).
+J:%s (%c) を装備している。
+
+E:You are shooting with %s (%c).
+J:%s (%c) を射撃に使っている。
+
+E:Your light source is %s (%c).
+J:光源は%s (%c) だ。
+
+E:You are wearing %s (%c).
+J:%s (%c) を身に着けている。
+
+# ------------------------------------------------------------------ effect-handler-attack.c
+
+E:Light shoots in all directions!
+J:光があらゆる方向に放たれた！
+
+E:The ground shakes for a moment.
+J:一瞬、地面が揺れた。
+
+E:There is a searing blast of light!
+J:焼けつくような閃光が走った！
+
+E:Darkness seems to crush you!
+J:暗闇が押し潰してくるようだ！
+
+E:The ground shakes! The ceiling caves in!
+J:地面が揺れた！天井が崩れ落ちた！
+
+E:The cave ceiling collapses on you!
+J:洞窟の天井が崩れ落ちてきた！
+
+E:The cave floor twists in an unnatural way!
+J:洞窟の床が不自然にねじれた！
+
+E:The cave quakes!
+J:洞窟が揺れた！
+
+E:You are pummeled with debris!
+J:瓦礫が降り注いだ！
+
+E:You are severely crushed!%s
+J:ひどく押し潰された！%s
+
+E:You draw power from the %s. (%d)
+J:%sから力を吸い取った。 (%d)
+
+E:You draw power from the %s.
+J:%sから力を吸い取った。
+
+E:No monster selected!
+J:怪物が選ばれていない！
+
+E:Not enough room next to %s!
+J:%sの隣に空きが無い！
+
+E:You bite %s. (%d)
+J:%sに噛みついた。 (%d)
+
+E:You bite %s.
+J:%sに噛みついた。
+
+E:This spell must target a monster.
+J:この呪文は怪物を目標にしなければならない。
+
+E:The way is barred.
+J:道がふさがれている。
+
+E:You are already in single combat!
+J:すでに一騎打ちの最中だ！
+
+E:%s resists!
+J:%sは抵抗した！
+
+E:Target too far away (%d).
+J:目標が遠すぎる (%d)。
+
+E:You must attack a monster.
+J:怪物を攻撃しなければならない。
+
+E:You feel a surge of power!
+J:力がみなぎってきた！
+
+E:You feel a little better.
+J:少し気分が良くなった。
+
+E:You feel better.
+J:気分が良くなった。
+
+E:You feel much better.
+J:ずっと気分が良くなった。
+
+E:You feel very good.
+J:とても気分が良い。
+
+E:%s looks REALLY healthy!
+J:%sはすっかり元気になったようだ！
+
+E:%s sounds REALLY healthy!
+J:%sはすっかり元気になったようだ！
+
+E:%s looks healthier.
+J:%sは少し元気になったようだ。
+
+E:%s sounds healthier.
+J:%sは少し元気になったようだ。
+
+E:%s recovers %s courage.
+J:%s%.0sは勇気を取り戻した。
+
+E:You take %d damage.
+J:%dのダメージを受けた。
+
+E:You breathe %s.
+J:{M}%sのブレスを吐いた。
+
+# ------------------------------------------------------------------ effect-handler-general.c
+
+E:%s appears healthier.
+J:%sは元気になったようだ。
+
+E:You feel your head clear.
+J:頭がはっきりした。
+
+E:You feel your head clear somewhat.
+J:頭が少しはっきりした。
+
+E:Nothing happens.
+J:何も起こらなかった。
+
+E:The air about you becomes charged...
+J:周りの空気が張りつめた...
+
+E:A tension leaves the air around you...
+J:周りの空気から緊張が消えた...
+
+E:The air around you starts to swirl...
+J:周りの空気が渦を巻き始めた...
+
+E:You sense a malevolent presence blocking passage to the levels below.
+J:下の階への道をふさぐ邪悪な気配を感じる。
+
+E:The world changes!
+J:世界が変わった！
+
+E:Images form in your mind!
+J:心に映像が浮かんだ！
+
+E:You sense the presence of traps!
+J:トラップの存在を感じとった！
+
+E:You sense no traps.
+J:トラップの気配は無い。
+
+E:You sense the presence of doors!
+J:ドアの存在を感じとった！
+
+E:You sense no doors.
+J:ドアの気配は無い。
+
+E:You sense the presence of stairs!
+J:階段の存在を感じとった！
+
+E:You sense no stairs.
+J:階段の気配は無い。
+
+E:You sense the presence of buried treasure!
+J:埋もれた財宝の存在を感じとった！
+
+E:You sense no buried treasure.
+J:埋もれた財宝の気配は無い。
+
+E:You sense the presence of gold!
+J:金の存在を感じとった！
+
+E:You sense no gold.
+J:金の気配は無い。
+
+E:You detect the presence of gold!
+J:金の存在を察知した！
+
+E:You detect no gold.
+J:金は見つからなかった。
+
+E:You sense the presence of objects!
+J:アイテムの存在を感じとった！
+
+E:You sense no objects.
+J:アイテムの気配は無い。
+
+E:You detect the presence of objects!
+J:アイテムの存在を察知した！
+
+E:You detect no objects.
+J:アイテムは見つからなかった。
+
+E:You sense life!
+J:生命の存在を感じとった！
+
+E:You sense no life.
+J:生命の気配は無い。
+
+E:You sense the presence of monsters!
+J:怪物の存在を感じとった！
+
+E:You sense no monsters.
+J:怪物の気配は無い。
+
+E:You sense the presence of invisible creatures!
+J:透明な生き物の存在を感じとった！
+
+E:You sense no invisible creatures.
+J:透明な生き物の気配は無い。
+
+E:These monsters could provide good sport.
+J:この怪物たちは良い獲物になりそうだ。
+
+E:You smell no fear in the air.
+J:恐怖の匂いはしない。
+
+E:You sense the presence of evil creatures!
+J:邪悪な生き物の存在を感じとった！
+
+E:You sense no evil creatures.
+J:邪悪な生き物の気配は無い。
+
+E:You sense the presence of spirits!
+J:霊の存在を感じとった！
+
+E:You sense no spirits.
+J:霊の気配は無い。
+
+E:There is no empty floor here.
+J:ここには空いた床が無い。
+
+E:The spell fails; your %s is now fragile.
+J:呪文は失敗し、%sは壊れやすくなった。
+
+E:Your %s (%c) resist%s disenchantment!
+J:%s (%c) は劣化に抵抗した！%.0s
+
+E:Your %s (%c) %s disenchanted!
+J:%s (%c) %.0sが劣化した！
+
+E:The recharge backfires!
+J:充填が逆流した！
+
+E:There is a bright flash of light.
+J:まばゆい閃光が走った。
+
+E:You hear a sudden stirring in the distance!
+J:遠くで突然何かがうごめく音がした！
+
+E:But nothing comes.
+J:しかし何も現れなかった。
+
+E:The removal fails.
+J:解呪に失敗した。
+
+E:You hear %s appear nearby.
+J:近くに%sが現れる音がした。
+
+A:many things
+J:たくさんの何か
+
+A:something
+J:何か
+
+E:Probing...
+J:調査中...
+
+E:%s has %d hit point%s.
+J:%sのHPは%dだ。%.0s
+
+E:That's all.
+J:以上だ。
+
+E:Teleportation forbidden!
+J:テレポートは禁じられている！
+
+E:You resist the effect!
+J:効果に抵抗した！
+
+E:You rise up through the ceiling.
+J:天井を突き抜けて上昇した。
+
+E:You sink through the floor.
+J:床を突き抜けて沈んでいった。
+
+E:An image of your surroundings forms in your mind...
+J:周囲の様子が心に浮かんだ...
+
+E:A great blackness rolls through the dungeon...
+J:巨大な暗黒がダンジョンを覆っていった...
+
+E:You are surrounded by a white light.
+J:白い光に包まれた。
+
+E:Darkness surrounds %s.
+J:暗闇が%sを包んだ。
+
+E:Darkness surrounds the decoy.
+J:暗闇がおとりを包んだ。
+
+E:Darkness surrounds you.
+J:暗闇に包まれた。
+
+E:A %s tries to %s, but your %s resists the effects!
+J:%sが%s。しかし%sはその効果に抵抗した！
+
+A:terrible black aura
+J:恐ろしい黒いオーラ
+
+A:surround your armor
+J:鎧を包もうとした
+
+E:A terrible black aura blasts your %s!
+J:恐ろしい黒いオーラが%sを襲った！
+
+E:That %s had no useable energy
+J:その%sには使えるエネルギーが無かった
+
+E:Your mana was already at its maximum.  %s not drained.
+J:マナは既に最大だ。%sは吸収されなかった。
+
+A:Staff
+J:杖
+
+A:Wand
+J:魔法棒
+
+E:You assume the shape of a %s!
+J:%sの姿になった！
+
+E:Your gear merges into your body.
+J:装備が体に溶け込んだ。
+
+E:%s resists your command!
+J:%sはあなたの命令に抵抗した！
+
+E:You are surrounded by a malignant aura.
+J:悪意のあるオーラに包まれた。
+
+E:You are surrounded by a powerful aura.
+J:力強いオーラに包まれた。
+
+E:%s %s glow%s brightly!
+J:%.0s%sは明るく輝いた！%.0s
+
+E:The enchantment failed.
+J:強化に失敗した。
+
+E:The %s %s surrounded with an aura of %s.
+J:{M}%s%.0sは%sのオーラに包まれた。
+
+E:The branding failed.
+J:属性付与に失敗した。
+
+E:You vomit!
+J:嘔吐した！
+
+E:It's crunchy.
+J:歯ごたえがある。
+
+E:It nearly breaks your tooth!
+J:歯が折れそうになった！
+
+E:You can only deploy one decoy at a time.
+J:おとりは一度に 1 つしか置けない。
+
+E:There is no clear floor on which to cast the spell.
+J:呪文をかけられる空いた床が無い。
+
+E:You feel less %s.
+J:もう%sない。
+
+E:You feel very %s for a moment, but the feeling passes.
+J:一瞬ひどく%sなった気がしたが、元に戻った。
+
+E:You feel very %s.%s
+J:ひどく%sなった気がする。%s
+
+E:You feel very %s.
+J:ひどく%sなった気がする。
+
+E:You feel very %s!
+J:とても%sなった！
+
+E:You feel your life energies returning.
+J:生命力が戻ってきた。
+
+E:You feel more experienced.
+J:経験が増えた気がする。
+
+E:Your light dims.
+J:光源が暗くなった。
+
+E:The draining fails.
+J:吸収に失敗した。
+
+A:strong
+J:強く
+
+A:weak
+J:弱く
+
+A:smart
+J:賢く
+
+A:stupid
+J:愚かしく
+
+A:wise
+J:思慮深く
+
+A:naive
+J:思慮が浅く
+
+A:dextrous
+J:器用に
+
+A:clumsy
+J:ぎこちなく
+
+A:healthy
+J:健康に
+
+A:sickly
+J:体が弱く
+
+# ------------------------------------------------------------------ 変身（shape.txt の名）
+
+A:fox
+J:狐
+
+A:Pukel-man
+J:プーケル人
+
+A:bear
+J:熊
+
+A:eagle
+J:鷲
+
+A:bat
+J:コウモリ
+
+A:warg
+J:ワーグ
+
+A:vampire
+J:吸血鬼
+
+A:werewolf
+J:人狼
+
+A:normal
+J:普通
+
+# ------------------------------------------------------------------ game-world.c
+
+E:Your %s have recharged.
+J:%sの充填が完了した。
+
+E:One of your %s has recharged.
+J:%sの 1 つの充填が完了した。
+
+E:The %s has recharged.
+J:%sの充填が完了した。
+
+E:Your %s has recharged.
+J:%sの充填が完了した。
+
+E:The sun has risen.
+J:日が昇った。
+
+E:The sun has fallen.
+J:日が沈んだ。
+
+E:The Black Breath sickens you.
+J:黒の息が体を蝕む。
+
+E:The Black Breath saps your strength.
+J:黒の息が力を奪う。
+
+E:The Black Breath dims your life force.
+J:黒の息が生命力を弱める。
+
+E:You faint from the lack of food.
+J:空腹で気を失った。
+
+E:You feel yourself yanked upwards!
+J:上へ引っぱり上げられた！
+
+E:You feel yourself yanked downwards!
+J:下へ引きずり下ろされた！
+
+E:The floor opens beneath you!
+J:足元の床が開いた！
+
+E:You are thrown back in an explosion!
+J:爆発で吹き飛ばされた！
+
+# ------------------------------------------------------------------ mon-attack.c / mon-blows.c / mon-move.c / mon-util.c（怪物の行動・盗み・倒した）
+
+E:%s tries to cast a spell, but fails.
+J:%sは呪文を唱えようとしたが失敗した。
+
+E:%s is repelled.
+J:%sは撃退された。
+
+E:%s misses you.
+J:%sの攻撃は外れた。
+
+E:%s misses %s.
+J:%sの%sへの攻撃は外れた。
+
+E:%s tries to steal %s %s, but fails.
+J:%sは%.0s%sを盗もうとしたが失敗した。
+
+E:%s %s (%c) was stolen!
+J:%.0s%s (%c) が盗まれた！
+
+E:You are covered in acid!
+J:酸を浴びせられた！
+
+E:You are struck by electricity!
+J:電撃を浴びせられた！
+
+E:You are enveloped in flames!
+J:炎に包まれた！
+
+E:You are covered with frost!
+J:冷気に覆われた！
+
+E:You keep hold of your life force!
+J:生命力を守りきった！
+
+E:You feel your life slipping away!
+J:生命力が抜け落ちていく！
+
+E:You feel your life draining away!
+J:生命力が吸い取られていく！
+
+E:Energy drains from your pack!
+J:荷物からエネルギーが吸い取られた！
+
+E:You quickly protect your money pouch!
+J:素早く財布を守った！
+
+E:Nothing was stolen.
+J:何も盗まれなかった。
+
+E:Your purse feels lighter.
+J:財布が軽くなった気がする。
+
+E:%d coins were stolen!
+J:金貨を %d 枚盗まれた！
+
+E:All of your coins were stolen!
+J:金貨をすべて盗まれた！
+
+E:You grab hold of your backpack!
+J:背負い袋をしっかりつかんだ！
+
+E:Your %s (%c) was eaten!
+J:%s (%c) を食べられてしまった！
+
+E:One of your %s (%c) was eaten!
+J:%s (%c) を 1 つ食べられてしまった！
+
+E:The rune of protection is broken!
+J:守りのルーンが破られた！
+
+E:%s tries to pick up %s, but fails.
+J:%sは%sを拾おうとしたが失敗した。
+
+E:%s picks up %s.
+J:%sは%sを拾った。
+
+E:%s crushes %s.
+J:%sは%sを踏み潰した。
+
+E:%s wakes up.
+J:%sは目を覚ました。
+
+E:%s%s (average %d)
+J:%s%s (平均 %d)
+
+E:You have killed %s.
+J:%sを殺した。
+
+E:You have destroyed %s.
+J:%sを破壊した。
+
+E:You have slain %s.
+J:%sを倒した。
+
+E:You can find nothing to steal from %s.
+J:%sから盗めるものは何も無い。
+
+E:You steal %d gold pieces worth of treasure.
+J:金貨 %d 枚分の財宝を盗んだ。
+
+E:You drop %s.
+J:%sを落とした。
+
+E:You fail to steal %s from %s.
+J:%sを%sから盗み損ねた。
+
+E:%s cries out in anger!
+J:%sは怒りの叫び声を上げた！
+
+E:You vanish into the shadows!
+J:影の中に姿を消した！
+
+E:%s tries to steal something from %s, but fails.
+J:%sは%sから何かを盗もうとしたが失敗した。
+
+E:%s steals something from %s!
+J:%sは%sから何かを盗んだ！
+
+E:The %s was really a monster!
+J:%sは実は怪物だった！
+
+# ------------------------------------------------------------------ obj-chest.c / obj-curse.c / obj-gear.c / obj-ignore.c / obj-knowledge.c / obj-pile.c
+
+E:I don't see any traps.
+J:トラップは見当たらない。
+
+E:The chest is not trapped.
+J:その箱にトラップは仕掛けられていない。
+
+E:You have disarmed the chest.
+J:箱のトラップを解除した。
+
+E:You failed to disarm the chest.
+J:箱のトラップの解除に失敗した。
+
+E:You set off a trap!
+J:トラップを作動させてしまった！
+
+E:The %s curse is removed!
+J:%sの呪いが解けた！
+
+E:Oops! It feels deathly cold!
+J:しまった！ぞっとするほど冷たい！
+
+E:You drop %s (%c).
+J:%s (%c) を落とした。
+
+E:You combine some items in your pack.
+J:荷物の中のアイテムをまとめた。
+
+E:Your pack overflows!
+J:荷物があふれた！
+
+E:You no longer have %s.
+J:もう%sを持っていない。
+
+E:Your %s is unaffected!
+J:%sは影響を受けなかった！
+
+E:Your %s is damaged!
+J:%sが損傷した！
+
+E:You no longer have the %s (%c).
+J:もう%s (%c) を持っていない。
+
+E:You have %d charge%s remaining.
+J:あと %d 回分の充填が残っている。%.0s
+
+E:Mushrooms for breakfast!
+J:朝食はキノコだ！
+
+E:You autoinscribe %s.
+J:%sに自動で銘を刻んだ。
+
+E:On the ground: %s.
+J:足元に%sがある。
+
+E:You have learned the rune of %s.
+J:%sのルーンを覚えた。
+
+E:You feel stronger!
+J:強くなった気がする！
+
+E:You feel weaker!
+J:弱くなった気がする！
+
+E:You feel smarter!
+J:賢くなった気がする！
+
+E:You feel more stupid!
+J:愚かになった気がする！
+
+E:You feel wiser!
+J:思慮深くなった気がする！
+
+E:You feel more naive!
+J:思慮が浅くなった気がする！
+
+E:You feel more dextrous!
+J:器用になった気がする！
+
+E:You feel clumsier!
+J:ぎこちなくなった気がする！
+
+E:You feel healthier!
+J:健康になった気がする！
+
+E:You feel sicklier!
+J:体が弱くなった気がする！
+
+E:You feel stealthier.
+J:隠密に長けた気がする。
+
+E:You feel noisier.
+J:騒がしくなった気がする。
+
+E:You feel strangely quick.
+J:妙に素早くなった気がする。
+
+E:You feel strangely sluggish.
+J:妙に鈍くなった気がする。
+
+E:Your weapon tingles in your hands.
+J:武器が手の中でうずいた。
+
+E:Your weapon aches in your hands.
+J:武器が手の中でうずき痛んだ。
+
+E:Your missile weapon tingles in your hands.
+J:射撃武器が手の中でうずいた。
+
+E:Your missile weapon aches in your hands.
+J:射撃武器が手の中でうずき痛んだ。
+
+E:Your eyes tingle.
+J:目がうずいた。
+
+E:It glows!
+J:それは光った！
+
+E:Your %s glows.
+J:%sが光った。
+
+E:The %s %s.
+J:%sは%s。
+
+A:breaks
+J:壊れた
+
+A:break
+J:壊れた
+
+A:disappears
+J:消えた
+
+A:disappear
+J:消えた
+
+E:You feel something roll beneath your feet.
+J:足元に何かが転がってきた。
+
+E:There %s %d charge%s remaining.
+J:%.0sあと %d 回分の充填が残っている。%.0s
+
+# ------------------------------------------------------------------ player-attack.c
+
+E:The %s finds a mark.
+J:%sは命中した。
+
+E:You have nothing to fire with.
+J:射撃に使う武器が無い。
+
+E:That item is not within your reach.
+J:そのアイテムには手が届かない。
+
+E:That ammo cannot be fired by your current weapon.
+J:今の武器ではその弾を撃てない。
+
+E:You have no ammunition in the quiver to fire.
+J:矢筒に撃つ弾が無い。
+
+E:You miss %s.
+J:%sへの攻撃は外れた。
+
+E:You feel strange...
+J:妙な気分だ...
+
+E:You feel something give way!
+J:何かが外れた気がする！
+
+E:You get in a shield bash! (%d)
+J:盾で強打した！ (%d)
+
+E:You get in a shield bash!
+J:盾で強打した！
+
+E:WHAMM!
+J:ドカッ！
+
+E:You stumble!
+J:よろめいた！
+# `ja:` の 2 本は日本語のときだけ使う書式（prepare_sources.py の #21）。引数は英語の書式から
+# 入れ替えてある（相手 → 動詞）。動詞は V: で引いてから渡る。
+
+E:ja:You %s %s%s. %s
+J:%sを%s%s。%s
+
+E:ja:Your %s %s %s%s. %s
+J:%sは%sに%s%s。%s
+
+# ------------------------------------------------------------------ player-calcs.c / player-quest.c / player-spell.c / player-util.c / player.c
+
+E:You re-arrange your quiver.
+J:矢筒の中を並べ直した。
+
+E:You re-arrange your pack.
+J:荷物を並べ直した。
+
+E:You have forgotten the %s of %s.
+J:%.0s%sを忘れてしまった。
+
+E:You have remembered the %s of %s.
+J:%.0s%sを思い出した。
+
+E:You can learn %d more %s.
+J:あと %d 個の%sを学べる。
+
+E:You have trouble wielding such a heavy bow.
+J:こんなに重い弓を扱うのは難しい。
+
+E:You have no trouble wielding your bow.
+J:弓を難なく扱えるようになった。
+
+E:You feel relieved to put down your heavy bow.
+J:重い弓を下ろしてほっとした。
+
+E:You have trouble wielding such a heavy weapon.
+J:こんなに重い武器を扱うのは難しい。
+
+E:You have no trouble wielding your weapon.
+J:武器を難なく扱えるようになった。
+
+E:You feel relieved to put down your heavy weapon.
+J:重い武器を下ろしてほっとした。
+
+E:You feel attuned to your weapon.
+J:武器が手になじんだ。
+
+E:You feel less attuned to your weapon.
+J:武器が手になじまなくなった。
+
+E:The weight of your armor reduces your maximum SP.
+J:鎧の重さで最大 SP が減った。
+
+E:Your maximum SP is no longer reduced by armor weight.
+J:鎧の重さで最大 SP が減ることはもう無い。
+
+E:A magical staircase appears...
+J:魔法の階段が現れた...
+
+E:*** CONGRATULATIONS ***
+J:*** おめでとう ***
+
+E:You have won the game!
+J:ゲームに勝利した！
+
+E:You may retire (key is shift-q) when you are ready.
+J:準備ができたら引退できる (Shift+Q キー)。
+
+E:You have learned the %s of %s.
+J:%.0s%sを学んだ。
+
+E:You can learn %d more %s%s.
+J:あと %d 個の%sを学べる。%.0s
+
+E:You failed to concentrate hard enough!
+J:十分に集中できなかった！
+
+E:You cannot do this while in %s form.
+J:%sの姿のままではできない。
+
+E:You resume your usual shape.
+J:元の姿に戻った。
+
+E:You cannot pray or produce magics.
+J:祈ることも魔法を使うこともできない。
+
+E:You cannot see!
+J:目が見えない！
+
+E:You are too confused!
+J:混乱していてできない！
+
+E:You cannot learn any new %s!
+J:新しい%sは学べない！
+
+E:You can't see anything.
+J:何も見えない。
+
+E:You have no light to read by.
+J:読むための明かりが無い。
+
+E:You are too confused to read!
+J:混乱していて読めない！
+
+E:You can't remember how to read!
+J:読み方を思い出せない！
+
+E:Your light cannot be refuelled.
+J:この光源には燃料を補給できない。
+
+E:You are too confused.
+J:混乱しすぎている。
+
+E:You are confused.
+J:混乱している。
+
+E:You must choose a level you have previously visited.
+J:以前に訪れた階を選ばなければならない。
+
+E:You have found a secret door.
+J:隠しドアを見つけた。
+
+E:You have discovered a trap on the chest!
+J:箱に仕掛けられたトラップを見つけた！
+
+E:Your lust for blood keeps you alive!
+J:血への渇望が命をつなぎとめた！
+
+E:So great was his prowess and skill in warfare, the Elves said:\s
+J:その武勇と戦いの技はあまりに優れていたので、エルフたちはこう言った:\s
+
+E:'The Mormegil cannot be slain, save by mischance.'
+J:「モルメギルは不運によらずしては討たれぬ」
+
+E:You die.
+J:あなたは死んだ。
+
+E:*** LOW HITPOINT WARNING! ***
+J:*** HP 低下警告！ ***
+
+E:Your light has gone out!
+J:明かりが消えてしまった！
+
+E:Your light is growing faint.
+J:明かりが薄れてきている。
+
+E:You angrily lash out at a nearby foe!
+J:怒りにまかせて近くの敵に打ちかかった！
+
+E:You have damaged your health!
+J:体を壊してしまった！
+
+E:You faint from the effort!
+J:無理がたたって気を失った！
+
+E:Wounds appear on your body!
+J:体に傷が現れた！
+
+E:You feel suddenly lethargic.
+J:急に体がだるくなった。
+
+E:You cry out in sudden pain!%s
+J:突然の痛みに叫び声を上げた！%s
+
+E:Welcome to level %d.
+J:レベル %d にようこそ。
+
+E:You feel some of your energies returning.
+J:生命力が少し戻ってきた。
+
+# ------------------------------------------------------------------ project-feat.c / project-mon.c / project-obj.c / project-player.c
+
+E:The rubble turns into mud!
+J:瓦礫が泥になった！
+
+E:There was something buried in the rubble!
+J:瓦礫の中に何かが埋まっていた！
+
+E:The door turns into mud!
+J:ドアが泥になった！
+
+E:The vein turns into mud!
+J:鉱脈が泥になった！
+
+E:The wall turns into mud!
+J:壁が泥になった！
+
+E:There is a bright flash of light!
+J:まばゆい閃光が走った！
+
+E:The trap seizes up.
+J:トラップは動かなくなった。
+
+E:Click!
+J:カチッ！
+
+E:You come to rest next to a wall.
+J:壁のそばで止まった。
+
+E:You are thrown into molten lava!
+J:溶岩の中に投げ込まれた！
+
+E:%sour %s (%c) %s %s!
+J:%.0s%s (%c) %.0sが%s！
+
+A:damaged
+J:損傷した
+
+A:destroyed
+J:壊れた
+
+E:The %s %s unaffected!
+J:%s%.0sは影響を受けなかった！
+
+E:The %s %s!
+J:%sは%s！
+
+A:melts
+J:溶けた
+
+A:melt
+J:溶けた
+
+A:is destroyed
+J:壊れた
+
+A:are destroyed
+J:壊れた
+
+A:burns up
+J:燃え尽きた
+
+A:burn up
+J:燃え尽きた
+
+A:shatters
+J:砕け散った
+
+A:shatter
+J:砕け散った
+
+E:You're not as %s as you used to be...
+J:以前ほど%sない気がする...
+
+A:bright
+J:賢く
+
+A:agile
+J:素早く
+
+A:hale
+J:丈夫で
+
+E:The intense heat saps you.
+J:激しい熱で体力を奪われた。
+
+E:Your eyes fill with smoke!
+J:目に煙が入った！
+
+E:You are assailed by poisonous fumes!
+J:有毒な煙に襲われた！
+
+E:The cold seeps into your bones.
+J:冷気が骨までしみた。
+
+E:The cold withers your life force!
+J:冷気が生命力を枯らす！
+
+E:The venom stings your skin!
+J:毒が肌を刺す！
+
+E:The stench sickens you.
+J:悪臭で気分が悪くなった。
+
+E:You are dazzled!
+J:目がくらんだ！
+
+E:The darkness steals your life force!
+J:暗闇が生命力を奪う！
+
+E:You feel unsure of yourself in the darkness.
+J:暗闇の中で自信が揺らいだ。
+
+E:Darkness penetrates your mind!
+J:暗闇が心に染み込んだ！
+
+E:The noise disorients you.
+J:騒音で方向が分からなくなった。
+
+E:You avoid the effect!
+J:効果を避けた！
+
+E:You feel your life force draining away!
+J:生命力が吸い取られていく！
+
+E:Your mind is dulled.
+J:頭の働きが鈍った。
+
+E:Your energy is sapped!
+J:気力を奪われた！
+
+E:Gravity warps around you.
+J:周りの重力がゆがんだ。
+
+E:You're not as powerful as you used to be...
+J:以前ほど力が無い気がする...
+
+E:You are hit by %s!
+J:{M}%sで攻撃された！
+
+A:something sharp
+J:何か鋭いもの
+
+A:something strange
+J:何か奇妙なもの
+
+A:something cold
+J:何か冷たいもの
+
+A:something hard
+J:何か硬いもの
+
+A:noise
+J:騒音
+
+E:You take an extra %d damage.
+J:さらに %d のダメージを受けた。
+
+# ------------------------------------------------------------------ score.c / store.c / target.c / trap.c
+
+E:Score not registered for cheaters.
+J:チートをしたのでスコアは記録されない。
+
+E:Score not registered for wizards.
+J:ウィザードモードなのでスコアは記録されない。
+
+E:Score not registered for borgs.
+J:ボーグなのでスコアは記録されない。
+
+E:Score not registered due to interruption.
+J:中断したのでスコアは記録されない。
+
+E:Score not registered due to retiring.
+J:引退したのでスコアは記録されない。
+
+E:You cannot purchase items when not in a store.
+J:店の中でなければ購入できない。
+
+E:You cannot buy that item because it's not in the store.
+J:そのアイテムは店に無いので買えない。
+
+E:You cannot carry that many items.
+J:そんなに多くのアイテムは持てない。
+
+E:You cannot afford that purchase.
+J:それを買うお金が無い。
+
+E:You bought %s for %d gold.
+J:%sを金貨 %d 枚で購入した。
+
+E:The shopkeeper retires.
+J:店主が引退した。
+
+E:The shopkeeper brings out some new stock.
+J:店主が新しい品物を並べた。
+
+E:You are not currently at home.
+J:今は家にいない。
+
+E:You cannot retrieve that item because it's not in the home.
+J:そのアイテムは家に無いので取り出せない。
+
+E:You cannot sell items when not in a store.
+J:店の中でなければ売却できない。
+
+E:I do not wish to purchase this item.
+J:その品は買い取れませんな。
+
+E:I have not the room in my store to keep it.
+J:店にはそれを置く場所がありません。
+
+E:You had %s (%c).
+J:%s (%c) を持っていた。
+
+E:You sold %s (%c) for %d gold.
+J:%s (%c) を金貨 %d 枚で売却した。
+
+E:You are not in your home.
+J:家にいない。
+
+E:Your home is full.
+J:家はいっぱいだ。
+
+E:No Available Target.
+J:目標にできるものが無い。
+
+E:%s is targeted.
+J:%sを目標に定めた。
+
+E:You have found a trap.
+J:トラップを見つけた。
+
+E:You have found %d traps.
+J:トラップを %d 個見つけた。
+
+E:You have disabled the %s.
+J:%sを無力化した。
+
+# ------------------------------------------------------------------ ui-*.c
+
+E:Target Selected.
+J:目標を定めた。
+
+E:Character dump successful.
+J:キャラクターの記録を保存した。
+
+E:Character dump failed!
+J:キャラクターの記録を保存できなかった！
+
+E:You invoke wizard mode and cheat death.
+J:ウィザードモードを使って死を免れた。
+
+E:You %s %s.
+J:%s%sだ。
+
+A:see
+J:足元にあるのは
+
+A:feel
+J:足元に感じるのは
+
+A:have no room for
+J:持ちきれないのは
+
+E:lore save failed!
+J:思い出の保存に失敗した！
+
+E:death save failed!
+J:死亡時の保存に失敗した！
+
+E:Cancelled.
+J:取り消した。
+
+E:You have nothing in your inventory.
+J:持ち物は何も無い。
+
+E:You are not wielding or wearing anything.
+J:何も装備していない。
+
+E:You have nothing in your quiver.
+J:矢筒には何も無い。
+
+E:Loaded '%s'.
+J:'%s' を読み込んだ。
+
+E:Visual attr/char tables reset.
+J:表示の色と文字の表を元に戻した。
+
+E:Saved %s.
+J:%sを保存した。
+
+E:You are not allowed to change your name!
+J:名前は変えられない！
+
+E:You cannot browse that.
+J:それは読めない。
+
+E:You see no store here.
+J:ここには店が無い。
+
+E:You do not have enough gold for this item.
+J:このアイテムを買うお金が足りない。
+
+E:Target Aborted.
+J:目標を取りやめた。
+
+# ------------------------------------------------------------------ 怪物のメッセージの主語（an_mon_subject_ja()）
+
+V:It
+J:何か
+
+V:\smonsters
+J:体の何か
+
+V:\sof\s
+J:体の\s
+
+V:\s(offscreen)
+J:(画面外)
+
+# ------------------------------------------------------------------ 怪物のメッセージの述語（list-mon-message.h。頭の「は」で主語へ継ぐ。body[60] に収まる長さ）
+
+V:[is|are] hurt.
+J:は傷ついた。
+
+V:die[s].
+J:は死んだ。
+
+V:[is|are] destroyed.
+J:は破壊された。
+
+V:resist[s] a lot.
+J:はかなり抵抗した。
+
+V:[is|are] hit hard.
+J:はひどい痛手を受けた。
+
+V:resist[s].
+J:は抵抗した。
+
+V:[is|are] immune.
+J:には効かない。
+
+V:resist[s] somewhat.
+J:はいくらか抵抗した。
+
+V:[is|are] unaffected!
+J:には効果が無かった！
+
+V:spawn[s]!
+J:は増殖した！
+
+V:look[s] healthier.
+J:は元気になったようだ。
+
+V:fall[s] asleep!
+J:は眠り込んだ！
+
+V:wake[s] up.
+J:は目を覚ました。
+
+V:cringe[s] from the light!
+J:は光にたじろいだ！
+
+V:shrivel[s] away in the light!
+J:は光の中でしなびて消えた！
+
+V:lose[s] some skin!
+J:は皮膚がただれた！
+
+V:dissolve[s]!
+J:は溶けてしまった！
+
+V:catch[es] fire!
+J:は火に包まれた！
+
+V:[is|are] badly frozen.
+J:はひどく凍りついた。
+
+V:shudder[s].
+J:は身震いした。
+
+V:change[s]!
+J:は変化した！
+
+V:disappear[s]!
+J:は消え去った！
+
+V:[is|are] even more stunned.
+J:はさらに朦朧とした。
+
+V:[is|are] stunned.
+J:は朦朧とした。
+
+V:[is|are] no longer stunned.
+J:は朦朧状態から立ち直った。
+
+V:look[s] more confused.
+J:はさらに混乱したようだ。
+
+V:look[s] confused.
+J:は混乱したようだ。
+
+V:[is|are] no longer confused.
+J:は混乱から立ち直った。
+
+V:look[s] more slowed.
+J:はさらに遅くなったようだ。
+
+V:look[s] slowed.
+J:は遅くなったようだ。
+
+V:speed[s] up.
+J:は速さを取り戻した。
+
+V:look[s] even faster!
+J:はさらに速くなったようだ！
+
+V:start[s] moving faster.
+J:は素早く動き始めた。
+
+V:slow[s] down.
+J:は遅くなった。
+
+V:look[s] more terrified!
+J:はさらにおびえたようだ！
+
+V:flee[s] in terror!
+J:は恐怖して逃げ出した！
+
+V:[is|are] no longer afraid.
+J:は恐怖から立ち直った。
+
+V:[is|are] frozen to the spot!
+J:はその場に釘付けになった！
+
+V:can move again.
+J:は再び動けるようになった。
+
+V:seem[s] less magical!
+J:は魔力が弱まったようだ！
+
+V:seem[s] magical again.
+J:は魔力を取り戻したようだ。
+
+V:falls under your spell!
+J:はあなたの術中に落ちた！
+
+V:is no longer under your control.
+J:はもうあなたの支配下にない。
+
+V:shimmers for a moment.
+J:は一瞬揺らめいた。
+
+V:You hear [a|several] scream[|s] of agony!
+J:苦悶の叫び声が聞こえた！
+
+V:disintegrate[s]!
+J:は崩れ去った！
+
+V:freeze[s] and shatter[s]!
+J:は凍りついて砕け散った！
+
+V:lose[s] some mana!
+J:は魔力を失った！
+
+V:look[s] briefly puzzled.
+J:は一瞬とまどったようだ。
+
+V:maintain[s] the same shape.
+J:は姿を変えなかった。
+
+V:[is|are] unharmed.
+J:は無傷だ。
+
+V:appear[s]!
+J:が現れた！
+
+V:There is a puff of smoke!
+J:煙がぱっと上がった！
+
+V:[is|are] embedded in rock!
+J:は岩に埋もれた！
+
+V:wail[s] out in pain!
+J:は痛みに泣き叫んだ！
+
+# ------------------------------------------------------------------ 痛みの述語（pain.txt。gamedata の文だが、画へ出す所で V: を引く。設計 §16.3）
+
+V:barely notice[s].
+J:はほとんど気にしていない。
+
+V:bellow[s] in rage.
+J:は怒りの咆哮を上げた。
+
+V:chirp[s] feebly.
+J:は弱々しくさえずった。
+
+V:clatter[s].
+J:はカタカタと鳴った。
+
+V:cr[ies|y] out feebly.
+J:は弱々しく叫んだ。
+
+V:cr[ies|y] out in pain.
+J:は痛みに叫び声を上げた。
+
+V:crumple[s].
+J:はくずおれた。
+
+V:drone[s] angrily.
+J:は怒ったようにうなった。
+
+V:flap[s] angrily.
+J:は怒って羽ばたいた。
+
+V:flinch[es].
+J:はひるんだ。
+
+V:flutter[s] about.
+J:はばたばたと飛び回った。
+
+V:groan[s].
+J:はうめいた。
+
+V:growl[s] angrily.
+J:は怒ってうなった。
+
+V:grunt[s] with pain.
+J:は痛みにうなった。
+
+V:grunt[s].
+J:はうなった。
+
+V:hesitate[s].
+J:はためらった。
+
+V:hiss[es] furiously.
+J:は猛烈にシューッと音を立てた。
+
+V:hiss[es] in agony.
+J:は苦悶してシューッと音を立てた。
+
+V:hiss[es] in pain.
+J:は痛みにシューッと音を立てた。
+
+V:hiss[es].
+J:はシューッと音を立てた。
+
+V:howl[s] in agony.
+J:は苦悶の遠吠えを上げた。
+
+V:howl[s] in pain.
+J:は痛みに遠吠えを上げた。
+
+V:ignore[s] the attack.
+J:は攻撃を気にもとめない。
+
+V:jeer[s] in pain.
+J:は痛みにあざけりの声を上げた。
+
+V:jerk[s] feebly.
+J:は弱々しく引きつった。
+
+V:jerk[s] in agony.
+J:は苦悶して引きつった。
+
+V:jerk[s] in pain.
+J:は痛みに引きつった。
+
+V:jerk[s] limply.
+J:はぐったりと引きつった。
+
+V:jerk[s].
+J:は引きつった。
+
+V:laugh[s] off the attack.
+J:は攻撃を笑い飛ばした。
+
+V:mewl[s] in pain.
+J:は痛みに鳴き声を上げた。
+
+V:mewl[s] pitifully.
+J:は哀れっぽく鳴いた。
+
+V:moan[s].
+J:はうめいた。
+
+V:quiver[s] in pain.
+J:は痛みに震えた。
+
+V:rattle[s].
+J:はガラガラと鳴った。
+
+V:rear[s] up in anger.
+J:は怒って立ち上がった。
+
+V:scowl[s].
+J:は顔をしかめた。
+
+V:scream[s] in agony.
+J:は苦悶の悲鳴を上げた。
+
+V:scream[s] in fury.
+J:は激怒して叫んだ。
+
+V:scream[s] in pain.
+J:は痛みに悲鳴を上げた。
+
+V:scuttle[s] about.
+J:はあちこち走り回った。
+
+V:shake[s].
+J:は震えた。
+
+V:shriek[s] in agony.
+J:は苦悶の金切り声を上げた。
+
+V:shriek[s] in pain.
+J:は痛みに金切り声を上げた。
+
+V:shrug[s] off the attack.
+J:は攻撃を受け流した。
+
+V:snarl[s] with pain.
+J:は痛みに歯をむいた。
+
+V:snarl[s].
+J:は歯をむいた。
+
+V:sneer[s].
+J:はせせら笑った。
+
+V:spin[s] fiercely.
+J:は激しく回転した。
+
+V:spin[s] slowly.
+J:はゆっくり回転した。
+
+V:squawk[s] with pain.
+J:は痛みにギャアと鳴いた。
+
+V:squeal[s] in pain.
+J:は痛みにキーキー鳴いた。
+
+V:squelch[es].
+J:はグシャリと音を立てた。
+
+V:stagger[s].
+J:はよろめいた。
+
+V:swirl[s] about.
+J:は渦を巻いた。
+
+V:swirl[s] weakly.
+J:は弱々しく渦を巻いた。
+
+V:twist[s] around.
+J:は身をよじった。
+
+V:twist[s] limply.
+J:はぐったりと身をよじった。
+
+V:twitch[es] in pain.
+J:は痛みにぴくぴくと震えた。
+
+V:twitter[s] in agony.
+J:は苦悶してさえずった。
+
+V:wince[s].
+J:は顔をゆがめた。
+
+V:writhe[s] about.
+J:はのたうち回った。
+
+V:writhe[s] in agony.
+J:は苦悶してのたうち回った。
+
+V:yelp[s] feebly.
+J:は弱々しくキャンと鳴いた。
+
+V:yelp[s] in pain.
+J:は痛みにキャンと鳴いた。
+
+# ------------------------------------------------------------------ 怪物の打撃（blow_methods.txt の act:。頭の「は」で怪物の名へ継ぐ。{target} ほかの印は残す）
+
+V:hits {target}
+J:は{target}を殴った
+
+V:touches {target}
+J:は{target}に触れた
+
+V:punches {target}
+J:は{target}を殴りつけた
+
+V:kicks {target}
+J:は{target}を蹴った
+
+V:claws {target}
+J:は{target}を引っかいた
+
+V:bites {target}
+J:は{target}に噛みついた
+
+V:stings {target}
+J:は{target}を刺した
+
+V:butts {target}
+J:は{target}に頭突きした
+
+V:crushes {target}
+J:は{target}に体当たりした
+
+V:engulfs {target}
+J:は{target}を飲み込んだ
+
+V:crawls on {target}
+J:は{target}の上を這い回った
+
+V:drools on {target}
+J:は{target}によだれを垂らした
+
+V:spits on {target}
+J:は{target}につばを吐いた
+
+V:gazes at {target}
+J:は{target}をにらんだ
+
+V:wails at {target}
+J:は{target}に向かって泣き叫んだ
+
+V:releases spores at {target}
+J:は{target}に胞子を放った
+
+V:begs {target} for money
+J:は{target}に金をせがんだ
+
+V:insults {target}!
+J:は{target}を侮辱した！
+
+V:insults {oftarget} mother!
+J:は{oftarget}母親を侮辱した！
+
+V:gives {target} the finger!
+J:は{target}に中指を立てた！
+
+V:humiliates {target}!
+J:は{target}に恥をかかせた！
+
+V:defiles {target}!
+J:は{target}を汚した！
+
+V:dances around {target}!
+J:は{target}の周りで踊った！
+
+V:makes obscene gestures!
+J:は下品な身振りをした！
+
+V:moons {target}!!!
+J:は{target}に尻を見せた！！！
+
+V:wants his mushrooms back
+J:はキノコを返せと言っている
+
+V:tells {target} to get off his land
+J:は{target}に自分の土地から出て行けと言った
+
+V:looks for his dogs
+J:は犬たちを探している
+
+V:says 'Did you kill my Fang?'
+J:は「わしのファングを殺したのはお前か？」と言った
+
+V:asks 'Do you want to buy any mushrooms?'
+J:は「キノコを買わんかね？」とたずねた
+
+V:seems sad about something
+J:は何か悲しんでいるようだ
+
+V:asks if {target} {has} seen his dogs
+J:は{target}に犬を見なかったかとたずねた
+
+V:mumbles something about mushrooms
+J:はキノコについて何かぶつぶつ言っている
+
+V:you
+J:あなた
+
+V:your
+J:あなたの
+
+V:has
+J:
+
+V:have
+J:
+
+# ------------------------------------------------------------------ プレイヤーの打撃の動詞（player-attack.c の verb。「〈相手〉を〈動詞〉」。#21）
+
+V:hit
+J:攻撃した
+
+V:punch
+J:殴った
+
+V:fail to harm
+J:傷つけられなかった
+
+V:smite
+J:強打した
+
+V:fiercely smite
+J:猛烈に強打した
+
+V:burn
+J:焼いた
+
+V:chill
+J:凍えさせた
+
+V:corrode
+J:腐食させた
+
+V:dissolve
+J:溶かした
+
+V:freeze
+J:凍らせた
+
+V:poison
+J:毒で蝕んだ
+
+V:shock
+J:感電させた
+
+V:sicken
+J:病で蝕んだ
+
+V:singe
+J:焦がした
+
+V:zap
+J:痺れさせた
+
+V:bite
+J:噛んだ
+
+V:claw
+J:引っかいた
+
+V:crush
+J:押し潰した
+
+V:thump
+J:叩いた
+
+V:strike
+J:打った
+
+V:cuff
+J:はたいた
+
+V:clout
+J:殴りつけた
+
+V:swipe
+J:薙ぎ払った
+
+V:slash
+J:切り裂いた
+
+V:peck
+J:つついた
+
+V:tear
+J:引き裂いた
+
+V:scratch
+J:ひっかいた
+
+# ------------------------------------------------------------------ 射撃・投擲の動詞（「〈弾〉は〈相手〉に〈動詞〉」。#21）
+
+V:hits
+J:命中した
+
+V:fails to harm
+J:命中したが傷つけられなかった
+
+V:pierces
+J:突き刺さった
+
+V:deeply pierces
+J:深々と突き刺さった
+
+V:burns
+J:命中して焼いた
+
+V:chills
+J:命中して凍えさせた
+
+V:corrodes
+J:命中して腐食させた
+
+V:dissolves
+J:命中して溶かした
+
+V:freezes
+J:命中して凍らせた
+
+V:poisons
+J:命中して毒で蝕んだ
+
+V:shocks
+J:命中して感電させた
+
+V:sickens
+J:命中して病で蝕んだ
+
+V:singes
+J:命中して焦がした
+
+V:zaps
+J:命中して痺れさせた
+
+# ------------------------------------------------------------------ 問いと失敗の文（get_item()・cmd_get_item()・get_check() の中の字。失敗の文は msg("%s", str) で出る）
+
+E:Are you sure you want to descend?\s
+J:本当に降りますか?\s
+
+E:Are you sure you want to use the borg commands?\s
+J:本当にボーグのコマンドを使いますか?\s
+
+E:Are you sure you want to enter wizard mode?\s
+J:本当にウィザードモードに入りますか?\s
+
+E:Note:\s
+J:メモ:\s
+
+E:Refuel with with fuel source?\s
+J:どの燃料で補給しますか?\s
+
+E:You have nothing you can refuel with.
+J:補給に使える燃料を持っていない。
+
+E:You cannot learn any new spells from the books you have.
+J:持っている本からは新しい呪文を学べない。
+
+E:You have nothing you can uninscribe.
+J:銘を消せるアイテムを持っていない。
+
+E:You have nothing to inscribe.
+J:銘を刻めるアイテムを持っていない。
+
+E:You have nothing to take off or unwield.
+J:外せる装備が無い。
+
+E:You have nothing to wear or wield.
+J:装備できるアイテムを持っていない。
+
+E:You have nothing to drop.
+J:落とせるアイテムを持っていない。
+
+E:You have no scrolls to read.
+J:読める巻物を持っていない。
+
+E:You have no staves to use.
+J:使える杖を持っていない。
+
+E:You have no wands to aim.
+J:向けられる魔法棒を持っていない。
+
+E:You have no rods to zap.
+J:振れるロッドを持っていない。
+
+E:You have no items to activate.
+J:発動できるアイテムを持っていない。
+
+E:You have no food to eat.
+J:食べられる物を持っていない。
+
+E:You have no potions from which to quaff.
+J:飲める薬を持っていない。
+
+E:You have no items to use.
+J:使えるアイテムを持っていない。
+
+E:Set recall depth to current depth?\s
+J:帰還の深さを今の階にしますか?\s
+
+E:Word of Recall is already active.  Do you want to cancel it?\s
+J:帰還の詔はもう発動しています。取り消しますか?\s
+
+E:Choose a monster race (by symbol) to banish:\s
+J:追放する怪物の種類を記号で選んでください:\s
+
+E:Are you sure you want to use the debug commands?\s
+J:本当にデバッグのコマンドを使いますか?\s
+
+E:You have no suitable ammunition to fire.
+J:撃てる弾を持っていない。
+
+E:You have nothing to throw.
+J:投げられるアイテムを持っていない。
+
+E:Die?\s
+J:死にますか?\s
+
+E:Do you want to retire?\s
+J:引退しますか?\s
+
+E:Do you really want to retire?
+J:本当に引退しますか?
+
+E:Include monster list?\s
+J:怪物の一覧も含めますか?\s
+
+E:Start a new game?\s
+J:新しいゲームを始めますか?\s
+
+E:Do you want to quit?\s
+J:終了しますか?\s
+
+E:Saving failed.  Try again?\s
+J:保存に失敗しました。もう一度試しますか?\s
+
+E:A panic save exists.  Use it?\s
+J:緊急保存のデータがあります。使いますか?\s
+
+E:You have no books that you can read.
+J:読める本を持っていない。
+
+E:Successfully created a spoiler file.
+J:スポイラーのファイルを作った。
+
+# ------------------------------------------------------------------ 会心の一撃の文（player-attack.c の melee_hit_types / ranged_hit_types。`%s` に句で入る）
+
+E:It was a good hit!
+J:うまく当たった！
+
+E:It was a great hit!
+J:見事に当たった！
+
+E:It was a superb hit!
+J:会心の一撃だ！
+
+E:It was a *GREAT* hit!
+J:*見事な会心の一撃* だ！
+
+E:It was a *SUPERB* hit!
+J:*最高の会心の一撃* だ！
+
+# ------------------------------------------------------------------ 金を拾った（cmd-pickup.c。#23 の `ja:` の書式）
+
+E:ja:You have found %ld gold pieces worth of %s.
+J:金貨 %ld 枚分の%sを見つけた。
+
+A:treasures
+J:財宝
+
+# ------------------------------------------------------------------ 呼び出しの引数で渡る文（msg("%s", str) で出る）
+# `Please wait...` は訳さない（画面側 presentation/bridge/modern_content.h が英語の綴りで待ちの画を見分ける）。
+
+E:You resist the effects!
+J:効果に抵抗した！
+
+E:Type '?' for help.
+J:'?' でヘルプを表示します。
+
+E:A gruesome software bug LEAPS out at you!
+J:おぞましいソフトウェアのバグが飛びかかってきた！
+
+# ------------------------------------------------------------------ 状態の変化（player_timed.txt の grade: の文。print_custom_message() が組む前の型を引く。#25）
+# `{kind}` は武器の種類の名で置き換わる印。`{s}` `{is}` は英語の数の一致なので訳では落とす。
+
+E:You feel yourself moving faster!
+J:素早くなった気がする！
+
+E:You feel yourself moving slower!
+J:体の動きが遅くなった気がする！
+
+E:You are blind.
+J:目が見えなくなった。
+
+E:You are paralysed!
+J:体が麻痺した！
+
+E:You are confused!
+J:混乱した！
+
+E:You are terrified!
+J:恐怖に襲われた！
+
+E:You feel drugged!
+J:薬に酔ったような気分だ！
+
+E:You are poisoned!
+J:毒に侵された！
+
+E:You have been given a graze.
+J:かすり傷を負った。
+
+E:You have been given a light cut.
+J:軽い切り傷を負った。
+
+E:You have been given a bad cut.
+J:ひどい切り傷を負った。
+
+E:You have been given a nasty cut.
+J:大変な切り傷を負った。
+
+E:You have been given a severe cut.
+J:重大な切り傷を負った。
+
+E:You have been given a deep gash.
+J:ひどい深手を負った。
+
+E:You have been given a mortal wound.
+J:致命傷を負った。
+
+E:You have been stunned.
+J:意識がもうろうとした。
+
+E:You have been heavily stunned.
+J:意識がひどくもうろうとした。
+
+E:You have been knocked out.
+J:気を失った。
+
+E:You are starving!!
+J:飢え死にしそうだ！！
+
+E:You are still faint.
+J:まだ空腹で気が遠くなっている。
+
+E:You are getting faint from hunger!
+J:空腹で気が遠くなってきた！
+
+E:You are still weak.
+J:まだ空腹で弱っている。
+
+E:You are getting weak from hunger!
+J:空腹で体が弱ってきた！
+
+E:You are still hungry.
+J:まだ空腹だ。
+
+E:You are getting hungry.
+J:お腹が空いてきた。
+
+E:You are no longer hungry.
+J:空腹ではなくなった。
+
+E:You are no longer full.
+J:満腹ではなくなった。
+
+E:You are full!
+J:満腹だ！
+
+E:You feel safe from evil!
+J:邪悪から守られている気がする！
+
+E:You feel invulnerable!
+J:無敵になった気がする！
+
+E:You feel like a hero!
+J:英雄になった気分だ！
+
+E:You feel like a killing machine!
+J:殺戮機械になった気分だ！
+
+E:A mystic shield forms around your body!
+J:体の周りに神秘の盾ができた！
+
+E:You feel righteous!
+J:正義の心が湧いてきた！
+
+E:Your eyes feel very sensitive!
+J:目がとても鋭くなった！
+
+E:Your eyes begin to tingle!
+J:目がうずき始めた！
+
+E:You feel resistant to acid!
+J:酸への耐性がついた！
+
+E:You feel resistant to electricity!
+J:電撃への耐性がついた！
+
+E:You feel resistant to fire!
+J:火炎への耐性がついた！
+
+E:You feel resistant to cold!
+J:冷気への耐性がついた！
+
+E:You feel resistant to poison!
+J:毒への耐性がついた！
+
+E:You feel resistant to confusion!
+J:混乱への耐性がついた！
+
+E:You feel your memories fade.
+J:記憶が薄れていく。
+
+E:Your mind expands.
+J:意識が広がった。
+
+E:Your skin turns to stone.
+J:肌が石に変わった。
+
+E:You feel the need to run away and fast!
+J:今すぐ一目散に逃げ出したくなった！
+
+E:You start sprinting.
+J:全力で走り始めた。
+
+E:You feel bold.
+J:大胆な気分になった。
+
+E:Your body starts to scramble...
+J:体がばらばらになり始めた...
+
+E:You feel safe from traps.
+J:トラップから守られている気がする。
+
+E:You feel your mind accelerate.
+J:思考が加速した。
+
+E:Your {kind} start{s} to drip with acid!
+J:{kind}から酸が滴り始めた！
+
+E:Sparks gather around your {kind}!
+J:{kind}の周りに火花が集まった！
+
+E:Flames surround your {kind}!
+J:{kind}が炎に包まれた！
+
+E:Your {kind} {is} covered in frost!
+J:{kind}が霜に覆われた！
+
+E:Your {kind} drip{s} with poison!
+J:{kind}から毒が滴っている！
+
+E:Your hands begin to glow!
+J:手が光り始めた！
+
+E:Your {kind} {is} imbued with holy force!
+J:{kind}に聖なる力が宿った！
+
+E:Your {kind} become{s} a bane of demons!
+J:{kind}が悪魔を滅ぼす力を帯びた！
+
+E:Your can drain life from your victims!
+J:敵から生命力を吸い取れるようになった！
+
+E:Your metabolism speeds up!
+J:新陳代謝が速くなった！
+
+E:You focus on your target.
+J:目標に意識を集中した。
+
+E:You tense up ready to escape!
+J:いつでも逃げられるよう身構えた！
+
+E:You begin covering your tracks.
+J:足跡を消し始めた。
+
+E:You prepare to shoot powerfully!
+J:力を込めて撃つ準備をした！
+
+E:You start aggravating your enemies!
+J:敵を怒らせ始めた！
+
+E:A red mist descends over your eyes!
+J:目の前が赤くかすんだ！
+
+E:Your thirst for blood increases!
+J:血への渇きが強まった！
+
+E:Your thirst for blood is insatiable!
+J:血への渇きがおさまらない！
+
+E:You are overcome by the Black Breath.
+J:黒の息に打ちのめされた。
+
+E:You feel silent!
+J:静かになった気がする！
+
+E:Your limbs fill with energy!
+J:手足に力がみなぎった！
+
+# ================================================================== P4: 画面
+# 左の状態列・下の状態行・サブパネル・人物表・店・オプション・知識・文脈メニュー・呪文の一覧・死亡の画面。
+# F: は an_frame_label()（ui-display.c・ui-player.c の put_str()/c_put_str() を包む。桁は英語の欄に合わせる。
+# tools/angband/an_width_check.py が数える）。人物表の能力の欄の札は F:ui_entry:<name>:<label|label5>。
+
+# ---- 左の状態列（ui-display.c。F:。札の桁は英語の欄に合わせる。値は英語と同じ桁から書かれる）
+F:STR:
+J:腕力 :
+
+F:INT:
+J:知能 :
+
+F:WIS:
+J:賢さ :
+
+F:DEX:
+J:器用 :
+
+F:CON:
+J:耐久 :
+
+F:Str:
+J:腕力x:
+
+F:Int:
+J:知能x:
+
+F:Wis:
+J:賢さx:
+
+F:Dex:
+J:器用x:
+
+F:Con:
+J:耐久x:
+
+F:LEVEL
+J:レベル
+
+F:Level
+J:レベル
+
+F:NXT
+J:次
+
+F:Nxt
+J:次
+
+F:EXP
+J:経験
+
+F:Exp
+J:経験
+
+F:AU
+J:金
+
+F:Cur AC
+J:装甲
+
+F:Town
+J:町
+
+F:***WINNER***
+J:***勝利者***
+
+# ---- 下の状態行（F: と書式の E:。欄の桁は an_status_advance() が書いた桁まで進める）
+F:Recall
+J:帰還
+
+F:Descent
+J:降下
+
+F:DTrap
+J:罠感知
+
+F:Unignoring
+J:無視解除
+
+F:LF:
+J:雰囲気:
+
+F:Rest
+J:休憩
+
+E:Light %d\s
+J:明るさ%d\s
+
+E:Moves +%d\s
+J:移動 +%d\s
+
+E:Moves -%d\s
+J:移動 -%d\s
+
+E:Study (%d)
+J:学習 (%d)
+
+E:Rep. %3d00
+J:反復 %3d00
+
+E:Repeat %3d
+J:反復 %3d
+
+E:%s (%+d)
+J:%s (%+d)
+
+E:%s (%d.%dx)
+J:%s (%d.%dx)
+
+A:Fast
+J:加速
+
+A:Slow
+J:減速
+
+E:%d' (L%d)
+J:%dm (%d階)
+
+# 時限効果の段階の名（player_timed.txt の grade。原作は名で段階を比べるので gamedata では訳さない）
+F:Afraid
+J:恐怖
+
+F:Amnesiac
+J:健忘
+
+F:AttAcid
+J:酸撃
+
+F:AttCold
+J:冷撃
+
+F:AttConf
+J:混乱撃
+
+F:AttDemon
+J:対悪魔撃
+
+F:AttElec
+J:電撃
+
+F:AttEvil
+J:対邪悪撃
+
+F:AttFire
+J:火撃
+
+F:AttPois
+J:毒撃
+
+F:AttVamp
+J:吸血撃
+
+F:Graze
+J:かすり傷
+
+F:Light Cut
+J:軽い傷
+
+F:Bad Cut
+J:ひどい傷
+
+F:Nasty Cut
+J:大変な傷
+
+F:Severe Cut
+J:重大な傷
+
+F:Deep Gash
+J:ひどい深手
+
+F:Mortal Wound
+J:致命傷
+
+F:Berserk
+J:狂戦士
+
+F:Blind
+J:盲目
+
+F:BlkBrth
+J:黒の息
+
+F:Bloodlust
+J:血の渇望
+
+F:Blssd
+J:祝福
+
+F:Bold
+J:大胆
+
+F:Cmd
+J:支配
+
+F:Confused
+J:混乱
+
+F:Starving
+J:餓死寸前
+
+F:Faint
+J:失神寸前
+
+F:Weak
+J:衰弱
+
+F:Hungry
+J:空腹
+
+F:Fed
+J:平常
+
+F:Full
+J:満腹
+
+F:FastCast
+J:高速詠唱
+
+F:FrAct
+J:耐麻痺
+
+F:Halluc
+J:幻覚
+
+F:Haste
+J:加速
+
+F:Heal
+J:回復
+
+F:Stun
+J:朦朧
+
+F:Heavy Stun
+J:ひどく朦朧
+
+F:Knocked Out
+J:気絶
+
+F:Hero
+J:ヒーロー
+
+F:HitRun
+J:一撃離脱
+
+F:Infra
+J:赤外線
+
+F:Invuln
+J:無敵
+
+F:NoTrack
+J:追跡不能
+
+F:PShot
+J:強射
+
+F:Paralyzed!
+J:麻痺！
+
+F:Poisoned
+J:毒
+
+F:ProtEvil
+J:対邪悪結界
+
+F:RAcid
+J:耐酸
+
+F:RCold
+J:耐冷
+
+F:RConf
+J:耐混乱
+
+F:RElec
+J:耐電
+
+F:RFire
+J:耐火
+
+F:RPois
+J:耐毒
+
+F:SInvis
+J:透明視
+
+F:Scrambled
+J:能力混乱
+
+F:Shield
+J:盾
+
+F:Slow
+J:減速
+
+F:Sprint
+J:疾走
+
+F:Stealth
+J:隠密
+
+F:Stone
+J:石肌
+
+F:Taunt
+J:挑発
+
+F:Terror
+J:恐慌
+
+F:TrapSafe
+J:罠無効
+
+# ---- サブパネル（アダプタ an_map_shim.c・an_frame.cpp）。装備の部位（body.txt の slot）と視界の敵の数
+F:weapon
+J:武器
+
+F:shooting
+J:射撃
+
+F:left hand
+J:左手指
+
+F:right hand
+J:右手指
+
+F:neck
+J:首
+
+F:light
+J:光源
+
+F:body
+J:体
+
+F:back
+J:背中
+
+F:arm
+J:腕
+
+F:head
+J:頭
+
+F:hands
+J:手
+
+F:feet
+J:足
+
+F:%s x%d
+J:%s %d体
+
+E:(empty)
+J:（なし）
+
+E:(none)
+J:（なし）
+
+E:Your hallucinations are too wild to see things clearly.
+J:幻覚がひどくて、はっきりと見えない。
+
+# ---- 人物表（ui-player.c。札は F:。欄の幅は桁で数える）
+F:Name
+J:名前
+
+F:Race
+J:種族
+
+F:Class
+J:職業
+
+F:Title
+J:称号
+
+F:Cur Exp
+J:経験値
+
+F:Max Exp
+J:最大経験
+
+F:Adv Exp
+J:次のLv
+
+F:Gold
+J:所持金
+
+# ---- 単位（設計 §19.3）。値の換算は prepare_sources.py の an_u_*()。書式は単位の綴りだけを替える
+# （欄の幅は英語と同じ）。英語の起動では引かれない。
+E:%.1f lb
+J:%.1f kg
+
+E:%d.%d lb
+J:%d.%d kg
+
+E:%d ft
+J:%dm
+
+E:%4d.%1d lb
+J:%4d.%1d kg
+
+E:%3d.%d lb
+J:%3d.%d kg
+
+F:Burden
+J:重量
+
+F:Overweight
+J:重量超過
+
+F:Max Depth
+J:最深階
+
+F:Armor
+J:装甲
+
+F:Melee
+J:近接
+
+F:To-hit
+J:命中
+
+F:Blows
+J:攻撃回数
+
+F:Shoot to-dam
+J:射撃威力
+
+F:Shots
+J:射撃回数
+
+F:Saving Throw
+J:魔法防御
+
+F:Disarm - phys.
+J:解除(物理)
+
+F:Disarm - magic
+J:解除(魔法)
+
+F:Magic Devices
+J:魔法道具
+
+F:Searching
+J:探索
+
+F:Infravision
+J:赤外線視力
+
+F:Speed
+J:速度
+
+F:Age
+J:年齢
+
+F:Height
+J:身長
+
+F:Weight
+J:体重
+
+F:Turns used:
+J:経過ターン:
+
+F:Game
+J:ゲーム
+
+F:Standard
+J:標準
+
+F:Resting
+J:休憩
+
+F:Self
+J:基本
+
+F:RB
+J:種
+
+F:CB
+J:職
+
+F:EB
+J:装
+
+F:Best
+J:最大
+
+E:Very Bad
+J:最低
+
+E:Bad
+J:悪い
+
+E:Poor
+J:劣る
+
+E:Fair
+J:普通
+
+E:Good
+J:良い
+
+E:Very Good
+J:大変良い
+
+E:Excellent
+J:卓越
+
+E:Superb
+J:超越
+
+E:Heroic
+J:英雄的
+
+E:Legendary
+J:伝説的
+
+E:Normal
+J:通常
+
+E:Town
+J:町
+
+E:***WINNER***
+J:***勝利者***
+
+E:['c' to change name, 'f' to file, 'h' to change mode, or ESC]
+J:['c' 名前の変更 'f' ファイルへ書き出し 'h' 表示の切り替え ESC 戻る]
+
+# 能力の欄の札（ui_entry.txt。鍵は ui_entry:<name>:<label|label5>。label5 は 5 桁まで＝全角 2 字まで。
+# label5 の無い項目は label から切って作るので label も 2 字まで。label2 は英語のまま＝J8）
+F:ui_entry:resist_ui_compact_0<ACID>:label
+J:耐酸
+
+F:ui_entry:resist_ui_compact_0<ELEC>:label
+J:耐電
+
+F:ui_entry:resist_ui_compact_0<FIRE>:label
+J:耐火
+
+F:ui_entry:resist_ui_compact_0<COLD>:label
+J:耐冷
+
+F:ui_entry:resist_ui_compact_0<POIS>:label
+J:耐毒
+
+F:ui_entry:resist_ui_compact_0<POIS>:label5
+J:耐毒
+
+F:ui_entry:resist_ui_compact_0<LIGHT>:label
+J:耐閃
+
+F:ui_entry:resist_ui_compact_0<DARK>:label
+J:耐暗
+
+F:ui_entry:resist_ui_compact_0<SOUND>:label
+J:耐音
+
+F:ui_entry:resist_ui_compact_0<SHARD>:label
+J:耐片
+
+F:ui_entry:resist_ui_compact_0<NEXUS>:label
+J:耐因
+
+F:ui_entry:resist_ui_compact_0<NETHER>:label
+J:耐獄
+
+F:ui_entry:resist_ui_compact_0<NETHER>:label5
+J:耐獄
+
+F:ui_entry:resist_ui_compact_0<CHAOS>:label
+J:耐沌
+
+F:ui_entry:resist_ui_compact_0<DISEN>:label
+J:耐劣
+
+F:ui_entry:pfear_ui_compact_0:label
+J:恐怖への耐性
+
+F:ui_entry:pfear_ui_compact_0:label5
+J:耐恐
+
+F:ui_entry:pblind_ui_compact_0:label
+J:盲目への耐性
+
+F:ui_entry:pblind_ui_compact_0:label5
+J:耐盲
+
+F:ui_entry:pconf_ui_compact_0:label
+J:混乱への耐性
+
+F:ui_entry:pconf_ui_compact_0:label5
+J:耐混
+
+F:ui_entry:pstun_ui_compact_0:label
+J:朦朧への耐性
+
+F:ui_entry:pstun_ui_compact_0:label5
+J:耐朦
+
+F:ui_entry:holdlife_ui_compact_0:label
+J:経験値の維持
+
+F:ui_entry:holdlife_ui_compact_0:label5
+J:維持
+
+F:ui_entry:regen_ui_compact_0:label
+J:再生
+
+F:ui_entry:see_invis_ui_compact_0:label
+J:透明視
+
+F:ui_entry:see_invis_ui_compact_0:label5
+J:透視
+
+F:ui_entry:free_action_ui_compact_0:label
+J:麻痺知らず
+
+F:ui_entry:free_action_ui_compact_0:label5
+J:耐麻
+
+F:ui_entry:feather_falling_ui_compact_0:label
+J:浮遊
+
+F:ui_entry:feather_falling_ui_compact_0:label5
+J:浮遊
+
+F:ui_entry:slow_digestion_ui_compact_0:label
+J:遅消化
+
+F:ui_entry:slow_digestion_ui_compact_0:label5
+J:遅消
+
+F:ui_entry:trap_immunity_ui_compact_0:label
+J:罠無効
+
+F:ui_entry:trap_immunity_ui_compact_0:label5
+J:罠無
+
+F:ui_entry:bless_ui_compact_0:label
+J:祝福
+
+F:ui_entry:imphp_ui_compact_0:label
+J:体力回復の阻害
+
+F:ui_entry:imphp_ui_compact_0:label5
+J:HP阻
+
+F:ui_entry:impsp_ui_compact_0:label
+J:魔力回復の阻害
+
+F:ui_entry:impsp_ui_compact_0:label5
+J:SP阻
+
+F:ui_entry:fear_ui_compact_0:label
+J:恐怖
+
+F:ui_entry:aggravate_ui_compact_0:label
+J:反感
+
+F:ui_entry:aggravate_ui_compact_0:label5
+J:反感
+
+F:ui_entry:noteleport_ui_compact_0:label
+J:テレポート不可
+
+F:ui_entry:noteleport_ui_compact_0:label5
+J:反テ
+
+F:ui_entry:drainxp_ui_compact_0:label
+J:経験値の吸収
+
+F:ui_entry:drainxp_ui_compact_0:label5
+J:経吸
+
+F:ui_entry:sticky_ui_compact_0:label
+J:外せない呪い
+
+F:ui_entry:sticky_ui_compact_0:label5
+J:呪縛
+
+F:ui_entry:fragile_ui_compact_0:label
+J:壊れやすい
+
+F:ui_entry:fragile_ui_compact_0:label5
+J:脆弱
+
+F:ui_entry:stealth_ui_compact_0:label
+J:隠密
+
+F:ui_entry:stealth_ui_compact_0:label5
+J:隠密
+
+F:ui_entry:search_ui_compact_0:label
+J:探索
+
+F:ui_entry:search_ui_compact_0:label5
+J:探索
+
+F:ui_entry:infravision_ui_compact_0:label
+J:赤外
+
+F:ui_entry:tunneling_ui_compact_0:label
+J:掘削
+
+F:ui_entry:tunneling_ui_compact_0:label5
+J:掘削
+
+F:ui_entry:speed_ui_compact_0:label
+J:速度
+
+F:ui_entry:blows_ui_compact_0:label
+J:攻撃回数
+
+F:ui_entry:blows_ui_compact_0:label5
+J:攻撃
+
+F:ui_entry:shots_ui_compact_0:label
+J:射撃回数
+
+F:ui_entry:shots_ui_compact_0:label5
+J:射撃
+
+F:ui_entry:shooting_power_ui_compact_0:label
+J:射撃の倍率
+
+F:ui_entry:shooting_power_ui_compact_0:label5
+J:射倍
+
+F:ui_entry:light_ui_compact_0:label
+J:光源
+
+F:ui_entry:damage_reduction_ui_compact_0:label
+J:被害の軽減
+
+F:ui_entry:damage_reduction_ui_compact_0:label5
+J:軽減
+
+F:ui_entry:movement_speed_ui_compact_0:label
+J:移動速度
+
+F:ui_entry:movement_speed_ui_compact_0:label5
+J:移動
+
+# ---- 店（ui-store.c・store.c）。店主の口上・見出し・問い
+E:%s nods to you.
+J:%sはあなたにうなずいた。
+
+E:%s says hello.
+J:%sが挨拶した。
+
+E:%s: "See anything you like, adventurer?"
+J:%s「冒険者さん、何か気に入った物はあるかね？」
+
+E:%s: "How may I help you, %s?"
+J:%s「%sさん、何にいたしましょう？」
+
+E:%s: "Welcome back, %s."
+J:%s「%sさん、またのお越しを歓迎しますよ。」
+
+E:%s: "A pleasure to see you again, %s."
+J:%s「%sさん、またお会いできてうれしいです。」
+
+E:%s: "How may I be of assistance, good %s?"
+J:%s「%s殿、何かお役に立てることは？」
+
+E:%s: "You do honour to my humble store, noble %s."
+J:%s「高貴なる%s様、むさくるしい店へようこそ。」
+
+E:%s: "I and my family are entirely at your service, %s."
+J:%s「%s様、私ども一家はあなたのためなら何でもいたします。」
+
+E:valued customer
+J:お得意様
+
+E:"%s"
+J:「%s」
+
+E:Your Home
+J:我が家
+
+E:Home Inventory
+J:我が家の持ち物
+
+E:Store Inventory
+J:店の品揃え
+
+E:Weight
+J:重さ
+
+E:Price
+J:値段
+
+E:%s (%ld)
+J:%s (%ld)
+
+E:\sexamines
+J::調べる
+
+E:\s(or\s
+J:\s(
+
+E:\spicks up
+J::取る
+
+E:\spurchases
+J::買う
+
+E:\san item.\s
+J:\s\s
+
+E:\sgives an item to the store in return for its identification. Some wands and staves will also be recharged.\s
+J::アイテムを渡して鑑定してもらう（魔法棒と杖は充填もされる）\s\s
+
+E:\sdrops
+J::置く
+
+E:\ssells
+J::売る
+
+E:\san item from your inventory.\s
+J:\s\s
+
+E:\sinspects an item from your inventory.\s
+J::持ち物を調べる\s\s
+
+E:\sexits the building.
+J::建物を出る
+
+E:\sexits this screen.
+J::この画面を閉じる
+
+E:Press '?' for help.
+J:'?' でヘルプ
+
+E:Gold Remaining: %9ld
+J:所持金: %9ld
+
+E:You have nothing that I want.\s
+J:あなたの持ち物に、うちで引き取れる物はありませんね。
+
+E:Price: %ld
+J:値段: %ld
+
+E:%s %s? [ESC, any other key to accept]
+J:%s: %s? [ESC で中止、他のキーで決定]
+
+A:Give
+J:渡す
+
+A:Sell
+J:売る
+
+E:%s how many%s? (max %d)\s
+J:%sする数%s? (最大 %d)\s
+
+A:Take
+J:取り出し
+
+A:Buy
+J:購入
+
+E:\s(you have %d)
+J:（%d個所持）
+
+E:Buy %s?%s %s
+J:%sを買いますか?%s %s
+
+E:\s(Can't use!)
+J:\s(使えない！)
+
+E:[ESC, any other key to accept]
+J:[ESC で中止、他のキーで決定]
+
+E:Inspect inventory
+J:持ち物を調べる
+
+E:Examine
+J:調べる
+
+E:Take
+J:取り出す
+
+E:Buy
+J:買う
+
+E:Take one
+J:1 つ取り出す
+
+E:Buy one
+J:1 つ買う
+
+E:Arrgghh!
+J:ぐあああっ！
+
+E:You bastard!
+J:この野郎！
+
+E:You hear someone sobbing...
+J:誰かがすすり泣く声が聞こえる……
+
+E:The shopkeeper howls in agony!
+J:店主は苦痛のあまりうめいた！
+
+E:The shopkeeper wails in anguish!
+J:店主は悲嘆の声をあげた！
+
+E:The shopkeeper beats his head against the counter.
+J:店主はカウンターに頭を打ちつけた。
+
+E:Damn!
+J:くそっ！
+
+E:You fiend!
+J:この悪党め！
+
+E:The shopkeeper curses at you.
+J:店主はあなたをののしった。
+
+E:The shopkeeper glares at you.
+J:店主はあなたをにらみつけた。
+
+E:Okay.
+J:わかりました。
+
+E:Fine.
+J:結構です。
+
+E:Accepted!
+J:承知しました！
+
+E:Agreed!
+J:それで手を打ちましょう！
+
+E:Done!
+J:毎度あり！
+
+E:Taken!
+J:買い取りました！
+
+E:Cool!
+J:いいねえ！
+
+E:You've made my day!
+J:今日はいい日だ！
+
+E:The shopkeeper sniggers.
+J:店主はくすくす笑った。
+
+E:The shopkeeper giggles.
+J:店主は忍び笑いをした。
+
+E:The shopkeeper laughs loudly.
+J:店主は大声で笑った。
+
+E:Yipee!
+J:やったあ！
+
+E:I think I'll retire!
+J:これで引退できそうだ！
+
+E:The shopkeeper jumps for joy.
+J:店主は跳び上がって喜んだ。
+
+E:The shopkeeper smiles gleefully.
+J:店主はうれしそうに笑った。
+
+E:Wow.  I'm going to name my new villa in your honour.
+J:すごい。今度の別荘にはあなたの名前をつけますよ。
+
+# ---- オプション（ui-options.c・list-options.h）
+E:Options Menu
+J:オプション
+
+E:User interface options
+J:ユーザーインターフェースのオプション
+
+E:Birth (difficulty) options
+J:誕生時（難易度）のオプション
+
+E:Cheat options
+J:いかさまのオプション
+
+E:Subwindow setup
+J:サブウインドウの設定
+
+E:Item ignoring setup
+J:アイテムの無視の設定
+
+E:Auto-inscription setup
+J:自動の銘の設定
+
+E:Set base delay factor
+J:基本の遅延の設定
+
+E:Set hitpoint warning
+J:ヒットポイントの警告の設定
+
+E:Set movement delay
+J:移動の遅延の設定
+
+E:Set sidebar mode
+J:サイドバーの表示の設定
+
+E:Save subwindow setup to pref file
+J:サブウインドウの設定を設定ファイルに保存
+
+E:Save autoinscriptions to pref file
+J:自動の銘を設定ファイルに保存
+
+E:Save char screen options to pref file
+J:人物表のオプションを設定ファイルに保存
+
+E:Load a user pref file
+J:ユーザー設定ファイルを読み込む
+
+E:Edit keymaps (advanced)
+J:キーマップの編集（上級）
+
+E:Edit colours (advanced)
+J:色の編集（上級）
+
+E:Save visuals (advanced)
+J:表示の保存（上級）
+
+E:Birth options
+J:誕生時のオプション
+
+E:Set option (y/n/t), select with movement keys or index
+J:オプションの設定 (y/n/t)。移動キーか記号で選ぶ
+
+E:You can only modify these options at character birth.
+J:これらのオプションはキャラクターの誕生時にしか変えられない。
+
+E:Set option (y/n/t), 's' to save, 'r' to restore, 'x' to reset
+J:オプションの設定 (y/n/t)。's' 保存 'r' 復元 'x' 初期化
+
+E:: %s  (%s)
+J:: %s  (%s)
+
+A:yes
+J:はい
+
+A:no\s
+J:いいえ
+
+E:Save as default %s options
+J:%sのオプションを既定として保存
+
+E:Restore from saved defaults
+J:保存した既定から復元
+
+E:Reset to factory defaults
+J:出荷時の既定に戻す
+
+E:Successfully saved.  Press any key to continue.
+J:保存した。何かキーを押すと続ける。
+
+E:Save failed.  Press any key to continue.
+J:保存できなかった。何かキーを押すと続ける。
+
+E:Restore failed.  Press any key to continue.
+J:復元できなかった。何かキーを押すと続ける。
+
+E:Window flags (<dir> to move, 't'/Enter to toggle, or ESC)
+J:ウインドウの表示 (<方向> で移動、't'/Enter で切り替え、ESC で戻る)
+
+E:(Unused option)
+J:（未使用）
+
+E:Ego item ignore menu
+J:エゴアイテムの無視
+
+E:Quality ignore menu
+J:品質による無視
+
+E:Quality ignoring options
+J:品質による無視の設定
+
+E:Ego ignoring options
+J:エゴによる無視の設定
+
+E:Autoinscription setup
+J:自動の銘の設定
+
+E:Ignore the following %s:
+J:次の%sを無視する:
+
+E:Staffs
+J:杖
+
+E:Wands
+J:魔法棒
+
+E:Rods
+J:ロッド
+
+E:Scrolls
+J:巻物
+
+E:Potions
+J:薬
+
+E:Rings
+J:指輪
+
+E:Amulets
+J:アミュレット
+
+E:Mushrooms
+J:キノコ
+
+E:Magic books
+J:魔法書
+
+E:Prayer books
+J:祈祷書
+
+E:Nature books
+J:自然の書
+
+E:Shadow books
+J:影の書
+
+E:Mystery books
+J:神秘の書
+
+E:Lights
+J:光源
+
+E:Flasks of oil
+J:油つぼ
+
+E:Money
+J:お金
+
+E:To edit visuals, use the knowledge menu
+J:表示を編集するには知識のメニューを使う
+
+E:Save monster attr/chars
+J:モンスターの色と文字を保存
+
+E:Save object attr/chars
+J:アイテムの色と文字を保存
+
+E:Save feature attr/chars
+J:地形の色と文字を保存
+
+E:Save flavor attr/chars
+J:未鑑定の見た目の色と文字を保存
+
+E:Reset visuals
+J:表示を初期化
+
+E:Dump keymaps
+J:キーマップを書き出す
+
+E:Save keymaps to file
+J:キーマップをファイルに保存
+
+E:Query a keymap
+J:キーマップを調べる
+
+E:Create a keymap
+J:キーマップを作る
+
+E:Remove a keymap
+J:キーマップを消す
+
+E:Dump colors
+J:色を書き出す
+
+E:Modify colors
+J:色を変える
+
+E:Dump window settings
+J:ウインドウの設定を書き出す
+
+E:Dump autoinscriptions
+J:自動の銘を書き出す
+
+E:Dump char screen options
+J:人物表のオプションを書き出す
+
+E:Current mode: %s
+J:現在の表示: %s
+
+E:ESC: go back, other: cycle
+J:ESC: 戻る　それ以外: 切り替え
+
+A:Left
+J:左
+
+A:Top
+J:上
+
+A:None
+J:なし
+
+# list-options.h の説明（45 桁に左寄せで詰める。桁は原作が utf8_strlen() で数える）
+E:Use the roguelike command keyset
+J:ローグライクのキー配置を使う
+
+E:Use autoexplore commands
+J:自動探索のコマンドを使う
+
+E:Use sound
+J:効果音を使う
+
+E:Show damage player deals to monsters
+J:モンスターに与えたダメージを表示する
+
+E:Use old target by default
+J:前回の目標を既定で使う
+
+E:Always pickup items
+J:アイテムを常に拾う
+
+E:Always pickup items matching inventory
+J:持ち物と同じアイテムは常に拾う
+
+E:Show flavors in object descriptions
+J:アイテムの名前に見た目を表示する
+
+E:Highlight target with cursor
+J:目標をカーソルで強調する
+
+E:Highlight player with cursor between turns
+J:ターンの間はプレイヤーをカーソルで強調する
+
+E:Disturb whenever viewable monster moves
+J:見えるモンスターが動いたら中断する
+
+E:Show walls as solid blocks
+J:壁を塗りつぶして表示する
+
+E:Show walls with shaded background
+J:壁の背景に陰をつける
+
+E:Color: Illuminate torchlight in yellow
+J:色: 松明の明かりを黄色で表示する
+
+E:Color: Shimmer multi-colored things
+J:色: 多色のものをきらめかせる
+
+E:Center map continuously
+J:常にマップを中央に置く
+
+E:Color: Show unique monsters in purple
+J:色: ユニークモンスターを紫で表示する
+
+E:Automatically clear '-more-' prompts
+J:'-more-' を自動で送る
+
+E:Color: Player color indicates % hit points
+J:色: プレイヤーの色で体力の割合 (% hp) を示す
+
+E:Allow mouse clicks to move the player
+J:マウスのクリックで移動する
+
+E:Notify on object recharge
+J:アイテムの充填が終わったら知らせる
+
+E:Show effective speed as multiplier
+J:実効速度を倍率で表示する
+
+E:Cheat: Peek into monster creation
+J:いかさま: モンスターの生成を覗く
+
+E:Score: Peek into monster creation
+J:得点: モンスターの生成を覗く
+
+E:Cheat: Peek into dungeon creation
+J:いかさま: ダンジョンの生成を覗く
+
+E:Score: Peek into dungeon creation
+J:得点: ダンジョンの生成を覗く
+
+E:Cheat: Peek into something else
+J:いかさま: その他を覗く
+
+E:Score: Peek into something else
+J:得点: その他を覗く
+
+E:Cheat: Allow player to avoid death
+J:いかさま: 死を避けられる
+
+E:Score: Allow player to avoid death
+J:得点: 死を避けられる
+
+E:Generate a new, random artifact set
+J:ランダムなアーティファクトを新しく作る
+
+E:Generate connected stairs
+J:階段をつなげて生成する
+
+E:Force player descent (never make up stairs)
+J:下りのみ（上り階段を作らない）
+
+E:Word of Recall has no effect
+J:帰還の詔が効かない
+
+E:Restrict creation of artifacts
+J:アーティファクトを生成しない
+
+E:Stack objects on the floor
+J:床のアイテムを積み重ねる
+
+E:Lose artifacts when leaving level
+J:階を離れるとアーティファクトを失う
+
+E:Show level feelings
+J:階の雰囲気を表示する
+
+E:Increase gold drops but disable selling
+J:売却できない代わりに落ちるお金を増やす
+
+E:Start with a kit of useful gear
+J:役に立つ装備一式を持って始める
+
+E:Monsters learn from their mistakes
+J:モンスターが失敗から学ぶ
+
+E:Know all runes on birth
+J:誕生時にすべてのルーンを知っている
+
+E:Know all flavors on birth
+J:誕生時にすべての見た目を知っている
+
+E:Persistent levels (experimental)
+J:階を保存する（試験的）
+
+E:To-damage is a percentage of dice (experimental)
+J:ダメージ修正をダイスの割合にする（試験的）
+
+# ---- 知識（ui-knowledge.c）
+E:Display current knowledge
+J:知識を見る
+
+E:Display object knowledge
+J:アイテムの知識
+
+E:Display rune knowledge
+J:ルーンの知識
+
+E:Display artifact knowledge
+J:アーティファクトの知識
+
+E:Display ego item knowledge
+J:エゴアイテムの知識
+
+E:Display monster knowledge
+J:モンスターの知識
+
+E:Display feature knowledge
+J:地形の知識
+
+E:Display trap knowledge
+J:罠の知識
+
+E:Display shapechange effects
+J:変身の効果
+
+E:Display hall of fame
+J:殿堂
+
+E:Display character history
+J:キャラクターの経歴
+
+E:Display equippable comparison
+J:装備できるアイテムの比較
+
+E:Display %s'%s contents%s
+J:%sの品揃え%.0s%s
+
+E:Display store %d's contents%s
+J:店 %d の品揃え%s
+
+E:Knowledge - %s
+J:知識 - %s
+
+E:Group
+J:分類
+
+E:Name
+J:名前
+
+E:<dir>%s%s%s, ESC
+J:<方向>%s%s%s、ESC
+
+E:, 'c' to copy
+J:、'c' 写す
+
+E:, 'c', 'p' to paste
+J:、'c' 'p' 貼る
+
+E:, ENTER to accept
+J:、ENTER 決定
+
+E:, 'i' to insert, ENTER to accept
+J:、'i' 挿入、ENTER 決定
+
+E:, 'v' for visuals
+J:、'v' 表示
+
+E:, 'r' to recall
+J:、'r' 思い出
+
+E:, 's' to toggle ignore, 'r'ecall, '{'
+J:、's' 無視の切り替え、'r' 思い出、'{' 銘
+
+E:, 's' to toggle ignore, 'r'ecall, '{', '}'
+J:、's' 無視の切り替え、'r' 思い出、'{' 銘、'}' 銘を消す
+
+E:, 'r'ecall, '{'
+J:、'r' 思い出、'{' 銘
+
+E:, 'r'ecall, '{', '}'
+J:、'r' 思い出、'{' 銘、'}' 銘を消す
+
+E:, 't/T' for lighting (lit)
+J:、't/T' 明るさ（明るい）
+
+E:, 't/T' for lighting (torch)
+J:、't/T' 明るさ（松明）
+
+E:, 't/T' for lighting (LOS)
+J:、't/T' 明るさ（視界）
+
+E:, 't/T' for lighting (dark)
+J:、't/T' 明るさ（暗い）
+
+E:, 't' to cycle lighting
+J:、't' 明るさの切り替え
+
+E:No %s known.
+J:%sはまだ知らない。
+
+E:%d known uniques, %d slain.
+J:既知のユニーク %d 体、うち %d 体を倒した。
+
+E:Creatures slain: %d/%d (in group/in total)
+J:倒した数: %d/%d（分類の中／全体）
+
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sSym  Kills
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s記号 倒した数
+
+E:Ignore  Inscribed          Sym
+J:無視    銘                 記号
+
+E:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\sSym
+J:\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s記号
+
+E:monsters
+J:モンスター
+
+E:known objects
+J:既知のアイテム
+
+E:ego items
+J:エゴアイテム
+
+E:artifacts
+J:アーティファクト
+
+E:artifacts (seed %08lx)
+J:アーティファクト（種 %08lx）
+
+E:features
+J:地形
+
+E:traps
+J:罠
+
+E:runes (%d unknown)
+J:ルーン（未知 %d）
+
+E:Inscribed
+J:銘
+
+E:Inscribe with:\s
+J:銘:\s
+
+E:Ring
+J:指輪
+
+E:Amulet
+J:アミュレット
+
+E:Potion
+J:薬
+
+E:Scroll
+J:巻物
+
+E:Rod
+J:ロッド
+
+E:Mushroom
+J:キノコ
+
+E:Priest Book
+J:祈祷書
+
+E:Magic Book
+J:魔法書
+
+E:Nature Book
+J:自然の書
+
+E:Shadow Book
+J:影の書
+
+E:Mystery Book
+J:神秘の書
+
+E:Light
+J:光源
+
+E:Flask
+J:油つぼ
+
+E:Sword
+J:刀剣
+
+E:Polearm
+J:長柄武器
+
+E:Hafted Weapon
+J:鈍器
+
+E:Bow
+J:弓
+
+E:Ammunition
+J:矢弾
+
+E:Shield
+J:盾
+
+E:Crown
+J:冠
+
+E:Helm
+J:兜
+
+E:Gloves
+J:籠手
+
+E:Boots
+J:靴
+
+E:Cloak
+J:クローク
+
+E:Dragon Scale Mail
+J:ドラゴン・スケイル・メイル
+
+E:Hard Armor
+J:硬い鎧
+
+E:Soft Armor
+J:柔らかい鎧
+
+E:Digger
+J:掘削道具
+
+E:Combat
+J:戦闘
+
+E:Modifiers
+J:修正
+
+E:Resists
+J:耐性
+
+E:Brands
+J:属性攻撃
+
+E:Slays
+J:スレイ
+
+E:Curses
+J:呪い
+
+E:Floors
+J:床
+
+E:Doors
+J:扉
+
+E:Stairs
+J:階段
+
+E:Walls
+J:壁
+
+E:Streamers
+J:鉱脈
+
+E:Obstructions
+J:障害物
+
+E:Stores
+J:店
+
+E:Runes
+J:ルーン
+
+E:Locks
+J:鍵
+
+E:Traps
+J:罠
+
+E:***Unclassified***
+J:***未分類***
+
+E:Knowledge - shapes
+J:知識 - 変身
+
+E:<dir>, 'r' to recall, ESC
+J:<方向>、'r' 思い出、ESC
+
+E:Message recall (%d-%d of %d), offset %d
+J:メッセージ履歴 (%d-%d / %d)、位置 %d
+
+E:[Movement keys to navigate, '-' for next, '=' to find]
+J:[移動キーで移動、'-' 次、'=' 検索]
+
+E:[Movement keys to navigate, '=' to find, or ESCAPE to exit]
+J:[移動キーで移動、'=' 検索、ESC で戻る]
+
+E:Find:\s
+J:検索:\s
+
+E:Enter character to be identified
+J:識別する文字を入力
+
+E:Enter character to be identified, or control+[ANU]:\s
+J:識別する文字を入力（Ctrl+A/N/U で一覧）:\s
+
+E:Full monster list.
+J:全モンスターの一覧。
+
+E:Unique monster list.
+J:ユニークモンスターの一覧。
+
+E:Non-unique monster list.
+J:ユニーク以外のモンスターの一覧。
+
+E:Recall details? (y/k/n):\s
+J:詳しく思い出しますか? (y/k/n):\s
+
+E:\s[(r)ecall, ESC]
+J:\s[(r) 思い出、ESC]
+
+E:%s - Unknown Symbol.
+J:%s - 未知の記号。
+
+E:? - Unknown Symbol.
+J:? - 未知の記号。
+
+E:Choose colour:
+J:色を選ぶ:
+
+E:(up to 5 hex digits):
+J:(16 進数 5 桁まで):
+
+E:Message recall (
+J:メッセージ履歴 (
+
+# ---- マスの文脈メニュー（ui-context.c）
+E:(Inventory) Burden %d.%d lb (%d.%d lb %s). Item for command:\s
+J:(持ち物) 重量 %d.%d kg (%d.%d kg %s)。コマンドの対象:\s
+
+E:^Center Map
+J:^マップを中央へ
+
+E:Look At
+J:見る
+
+E:Recall Info
+J:思い出
+
+E:Use Item On
+J:アイテムを使う
+
+E:Cast On
+J:呪文を唱える
+
+E:Attack
+J:攻撃する
+
+E:Alter
+J:変える
+
+E:Disarm Chest
+J:箱の罠を解除する
+
+E:Open Chest
+J:箱を開ける
+
+E:Open Disarmed Chest
+J:解除した箱を開ける
+
+E:Steal
+J:盗む
+
+E:Disarm
+J:罠を解除する
+
+E:Jump Onto
+J:飛び乗る
+
+E:Close
+J:閉じる
+
+E:Open
+J:開ける
+
+E:Lock
+J:鍵をかける
+
+E:Tunnel
+J:掘る
+
+E:Walk Towards
+J:そちらへ歩く
+
+E:Pathfind To
+J:そこまで移動する
+
+E:Run Towards
+J:そちらへ走る
+
+E:Fire On
+J:射撃する
+
+E:Throw To
+J:投げる
+
+E:(Enter to select command, ESC to cancel) You see something strange:
+J:(Enter でコマンドを選ぶ、ESC で中止) 何か奇妙なものが見える:
+
+E:(Enter to select command, ESC to cancel) You see %s:
+J:(Enter でコマンドを選ぶ、ESC で中止) %sが見える:
+
+# 1 つ目の %s は地形の冠詞（`a ` `an ` `the entrance to the ` ほか。原作 `square_apparent_look_prefix()`）。
+# 日本語には要らず、英語のまま出ると「an 開けた床が見える」になるので精度 0 で読み捨てる（AH-57）。
+E:(Enter to select command, ESC to cancel) You see %s%s:
+J:(Enter でコマンドを選ぶ、ESC で中止) %.0s%sが見える:
+
+E:Item Management
+J:アイテムの管理
+
+E:Info
+J:情報
+
+E:Util
+J:ユーティリティ
+
+E:Misc
+J:その他
+
+E:Item
+J:アイテム
+
+E:Action
+J:行動
+
+# ---- 呪文の一覧（ui-spell.c）
+E:(illegible)
+J:(判読不能)
+
+E:\sforgotten
+J:\s忘却
+
+E:\suntried
+J:\s未経験
+
+E:\sunknown
+J:\s未知
+
+E:\sdifficult
+J:\s難しい
+
+E:Name                             Lv Mana Fail Info
+J:名前                             Lv MP   失率 情報
+
+E:%s which %s? ('?' to toggle description)
+J:%s: どの%s? ('?' で説明の切り替え)
+
+E:Browsing %ss. ('?' to toggle description)
+J:%sの一覧。('?' で説明の切り替え)
+
+E:%s which book?
+J:%s: どの本?
+
+E:\s\sInflicts an average of
+J:\s\s平均
+
+E:\sdamage.
+J:のダメージを与える。
+
+# ---- 死亡・引退（ui-death.c）
+E:Retiring
+J:引退
+
+E:Magnificent
+J:偉大なる
+
+E:Level: %d
+J:レベル: %d
+
+E:Exp: %d
+J:経験: %d
+
+E:AU: %d
+J:金: %d
+
+E:Retired on Level %d
+J:%d 階で引退
+
+E:Killed on Level %d
+J:%d 階で死亡
+
+E:by %s.
+J:{H}%sに殺された。
+
+E:on %-.24s
+J:%-.24s
+
+E:All Hail the Mighty Champion!
+J:偉大なる勝利者に栄光あれ！
+
+E:Hit any key to see more information:\s
+J:何かキーを押すと詳しい情報を見る:\s
+
+# セーブして終わったあとの案内（ui-game.c の `prt("Press Return (or Escape).", 0, 40)`。書式を通らず Term へ直に来る）。
+E:Press Return (or Escape).
+J:Enter か Esc を押してください。
+
+# 足元に 2 種類以上あるときの見出し（ui-display.c の see_floor_items() の `prt(format("You %s: ", p), 0, 0)`）。
+# `%s` は 1 語の `see` と、句の `have no room for the following objects`・`feel something on the floor`。
+# 1 個のときの `You %s %s.` の `see`（A:see）と同じ訳を使う。
+E:You %s:\s
+J:%s:\s
+
+A:have no room for the following objects
+J:持ちきれない足元のアイテムは
+
+A:feel something on the floor
+J:足元に感じるのは
+
+E:You are using: -more-
+J:装備している: -more-
+
+E:You are carrying: -more-
+J:持っている: -more-
+
+E:Your quiver holds: -more-
+J:矢筒の中: -more-
+
+E:Your home contains (page %d): -more-
+J:我が家の中 (%d ページ): -more-
+
+E:Messages
+J:メッセージ
+
+E:File dump
+J:ファイルに書き出す
+
+E:View scores
+J:スコアを見る
+
+E:Examine items
+J:アイテムを調べる
+
+E:History
+J:経歴
+
+E:Spoilers
+J:スポイラー
+
+E:New Game
+J:新しいゲーム
+
+E:Quit
+J:終わる
+
+# ---- 視界の一覧（ui-mon-list.c・ui-obj-list.c）
+E:You can see
+J:視界内
+
+E:You are aware of
+J:感知している
+
+E:%s no monsters.\n
+J:%sモンスターはいない。\n
+
+E:%s no objects.\n
+J:%sアイテムは無い。\n
+
+E:\s(asleep)
+J:\s(眠っている)
+
+E:\s(%d asleep)
+J:\s(%d体は眠っている)
+
+E:%6s...and %d others.\n
+J:%6s……ほか %d。\n
+
+E:Press 'x' to turn OFF 'sort by exp'
+J:'x' で「経験値の順」を止める
+
+E:Press 'x' to turn ON 'sort by exp'
+J:'x' で「経験値の順」にする
+
+E:%s %d %smonster%s%s\n
+J:%s %d体の%sモンスター%.0s%s\n
+
+E:%s %d %sobject%s%s\n
+J:%s %d個の%sアイテム%.0s%s\n
+
+E:other\s
+J:その他の
+
+A:recite
+J:唱える
+
+A:chant
+J:詠む
+
+A:perform
+J:執り行う
+
+
+# P4 の追補（知識の分類の残り・人物表の攻撃回数）
+
+E:Wand
+J:魔法棒
+
+E:Staff
+J:杖
+
+E:Food
+J:食料
+
+E:%d.%d/turn
+J:%d.%d回/ターン
+
+
+E:alive
+J:生存
+
+E:\sdead
+J:死亡
+
+E:%s to a pref file
+J:%sを設定ファイルへ
+
+E:File:\s
+J:ファイル:\s
+
+E:Failed to save %s.
+J:%sを保存できなかった。
+
+E:Confirm loading %s?\s
+J:%sを読み込みますか?\s
+
+E:Failed to load '%s'!
+J:'%s' を読み込めなかった！
+
+
+# ================================================================== P5: ゲーム内ヘルプ（ui-help.c の show_file）
+# 見出し [%s, %s, Line %d-%d/%d] の書式は訳さない（画面側 modern_content.h の modern_document_info() が
+# 「Line」の前までを見出しの名として切り出す）。中に入る「Help file '%s'」だけ訳す。
+# 下の札は「ESC」の綴りを残す（画面側が文書の下の札を「ESC」で見分ける）。
+E:Help file '%s'
+J:ヘルプ「%s」
+
+E:[Press a Letter, or ESC to exit.]
+J:[英字で選ぶ・ESC で戻る]
+
+E:[Press ESC to exit.]
+J:[ESC で戻る]
+
+E:[Press Space to advance, or ESC to exit.]
+J:[スペースで次へ・ESC で戻る]
+
+E:Show:\s
+J:強調する文字:\s
+
+E:Find:\s
+J:検索:\s
+
+E:Goto Line:\s
+J:移動する行:\s
+
+E:Goto File:\s
+J:開くファイル:\s
+
+E:Cannot open '%s'.
+J:'%s' を開けない。
+
+# ================================================================== §20: モンスターの思い出・誕生・履歴ほか
+# 札 L: はアダプタ（angband/adapter/an_lore_ja.c）が日本語の語順で組み直す文の句。鍵は原作の英語に似せた
+#   字で、アダプタの外では引かない。句の頭と末尾の空白は `\s` で書く。
+# 札 Q: は無視のメニューの「All 〈品質〉 〈種類〉」の品質と種類の名（ui-object.c。§20 の置換）。
+# 札 P: は誕生の画面の能力の名（player_property.txt の name）と魔法の領域の名（realm.txt の name）。
+
+# ---- モンスターの思い出（mon-lore.c の lore_append_*() を an_lore_ja.c が組み直す）
+L:It
+J:それ
+
+L:He
+J:彼
+
+L:She
+J:彼女
+
+L:,\s
+J:、
+
+L:.\s\s
+J:。
+
+L:\s(
+J:（
+
+L:\stimes in\s
+J:回に
+
+L:\stime)
+J:回）
+
+L:\s(about\s
+J:（約
+
+L:%s has slain %d of your ancestors
+J:%sはあなたの先祖を%d人殺している
+
+L:, but you have taken revenge!\s\s
+J:が、あなたは仇を討った！
+
+L:, who remain unavenged.\s\s
+J:が、その仇はまだ討たれていない。
+
+L:You have slain this foe.\s\s
+J:あなたはこの敵を倒した。
+
+L:%d of your ancestors have been killed by this creature,\s
+J:このモンスターにあなたの先祖が%d人殺されている。
+
+L:and you have exterminated at least %d of the creatures.\s\s
+J:あなたはこのモンスターを少なくとも%d体倒した。
+
+L:and your ancestors have exterminated at least %d of the creatures.\s\s
+J:あなたの先祖はこのモンスターを少なくとも%d体倒した。
+
+L:and %s is not ever known to have been defeated.\s\s
+J:%sが倒されたという記録は無い。
+
+L:You have killed at least %d of these creatures.\s\s
+J:あなたはこのモンスターを少なくとも%d体倒した。
+
+L:Your ancestors have killed at least %d of these creatures.\s\s
+J:あなたの先祖はこのモンスターを少なくとも%d体倒した。
+
+L:No battles to the death are recalled.\s\s
+J:このモンスターと死闘を交えた記憶は無い。
+
+# 種類の形容と名詞（list-mon-race-flags.h の RFT_RACE_A / RFT_RACE_N）
+L:This
+J:この
+
+L:natural
+J:自然界の
+
+L:evil
+J:邪悪な
+
+L:undead
+J:アンデッドの
+
+L:nonliving
+J:無生物の
+
+L:metal
+J:金属の
+
+L:orc
+J:オーク
+
+L:troll
+J:トロル
+
+L:giant
+J:巨人
+
+L:dragon
+J:ドラゴン
+
+L:demon
+J:悪魔
+
+L:creature
+J:モンスター
+
+# 出現の場所と動き方。深さはメートル（§19.3。an_u_ft()）
+L:\slives in the town
+J:は町に住み
+
+L:\sis found\s
+J:は
+
+L:\sis normally found\s
+J:は通常
+
+L:at depths of\s
+J:地下
+
+L:\sfeet (level\s
+J:m（
+
+L:\slevel)
+J:階）に出現し
+
+L:, and moves
+J:、
+
+L:\sextremely erratically
+J:極めて不規則に
+
+L:\ssomewhat erratically
+J:やや不規則に
+
+L:\sa bit erratically
+J:少し不規則に
+
+L:, and
+J:、
+
+L:incredibly quickly
+J:信じ難いほど素早く
+
+L:very quickly
+J:非常に素早く
+
+L:quickly
+J:素早く
+
+L:fairly quickly
+J:やや素早く
+
+L:at normal speed
+J:普通の速さで
+
+L:slowly
+J:ゆっくりと
+
+L:very slowly
+J:非常にゆっくりと
+
+L:incredibly slowly
+J:信じ難いほどゆっくりと
+
+L:at\s
+J:通常の
+
+L:%sx
+J:%s倍
+
+L:\snormal speed (
+J:の速さ（
+
+L:the same as you
+J:あなたと同じ
+
+L:your speed x
+J:あなたの
+
+L:)\s
+J:）で
+
+L:\smoves
+J:動く
+
+L:, but\s
+J:が、
+
+L:does not deign to chase intruders
+J:侵入者を追いかけはしない
+
+# 体力・AC・命中率
+L:%s has a life rating of\s
+J:%sの体力は
+
+L:%s has an average life rating of\s
+J:%sの平均体力は
+
+L:, and an armor rating of\s
+J:、アーマークラスは
+
+L:You have a\s
+J:（見えていれば）接近戦でこのモンスターに攻撃が当たる確率は
+
+L:\spercent chance to hit such a creature in melee (if you can see it).\s\s
+J:％だ。
+
+# 経験値
+L:A kill of this creature for a level %d character is worth\s
+J:このモンスターを倒すと、レベル%dのキャラクターは
+
+L:%s points
+J:%sポイント
+
+L:\sof experience.\s\s
+J:の経験値を得る。
+
+# 持ち物
+L:%s may carry\s
+J:%sは
+
+L:a single\s
+J:1つの
+
+L:one or two\s
+J:1つか2つの
+
+L:up to\s
+J:最大
+
+L:%d of\s
+J:%d個の
+
+L:exceptional\s
+J:特別な
+
+L:good\s
+J:上質な
+
+L:errors
+J:（誤り）
+
+L:objects
+J:アイテム
+
+L:treasures
+J:財宝
+
+L:objects or treasures
+J:アイテムか財宝
+
+L:\sand\s
+J:と、
+
+L:specific items
+J:特定のアイテム
+
+L:\sin its possession.\s\s
+J:を持っていることがある。
+
+# 能力・耐性（list-mon-race-flags.h の RFT_ALTER / RFT_DET / RFT_VULN / RFT_RES / RFT_PROT）
+L:%s can:\s
+J:%sは次のことができる:\s
+
+L:%s is:\s
+J:%sは次の性質を持つ:\s
+
+L:open doors
+J:ドアを開ける
+
+L:bash down doors
+J:ドアを打ち破る
+
+L:pass through walls
+J:壁をすり抜ける
+
+L:bore through walls
+J:壁を掘り進む
+
+L:smash walls
+J:壁を打ち砕く
+
+L:push past weaker monsters
+J:弱いモンスターを押しのける
+
+L:destroy weaker monsters
+J:弱いモンスターを倒して進む
+
+L:pick up objects
+J:アイテムを拾う
+
+L:destroy objects
+J:アイテムを壊す
+
+L:clear webs
+J:クモの巣を払う
+
+L:pass through webs
+J:クモの巣を通り抜ける
+
+L:invisible
+J:透明
+
+L:cold blooded
+J:冷血
+
+L:not detected by telepathy
+J:テレパシーで感知されない
+
+L:rarely detected by telepathy
+J:テレパシーでめったに感知されない
+
+L:%s disguises itself as something else.\s\s
+J:%sは別の何かに化けている。
+
+L:%s breeds explosively.\s\s
+J:%sは爆発的に増殖する。
+
+L:%s regenerates quickly.\s\s
+J:%sは素早く体力を回復する。
+
+L:%s illuminates its surroundings.\s\s
+J:%sは周りを照らしている。
+
+L:%s is illuminated.\s\s
+J:%sは光っている。
+
+L:%s is darkened.\s\s
+J:%sは暗い。
+
+L:%s shrouds its surroundings in darkness.\s\s
+J:%sは周りを闇で包んでいる。
+
+L:%s is hurt by\s
+J:%sは
+
+L:\s(hurt by).\s\s
+J:に弱い。
+
+L:%s resists\s
+J:%sは
+
+L:\s(resists).\s\s
+J:への耐性を持つ。
+
+L:%s does not resist\s
+J:%sは
+
+L:\s(does not resist).\s\s
+J:への耐性を持たない。
+
+L:%s cannot be\s
+J:%sは
+
+L:\s(cannot be).\s\s
+J:の状態にならない。
+
+L:bright light
+J:強い光
+
+L:rock remover
+J:岩石溶解
+
+L:fire
+J:火炎
+
+L:cold
+J:冷気
+
+L:acid
+J:酸
+
+L:lightning
+J:電撃
+
+L:poison
+J:毒
+
+L:nether
+J:地獄
+
+L:water
+J:水
+
+L:plasma
+J:プラズマ
+
+L:nexus
+J:因果混乱
+
+L:disenchantment
+J:劣化
+
+L:frightened
+J:恐怖
+
+L:stunned
+J:朦朧
+
+L:confused
+J:混乱
+
+L:slept
+J:睡眠
+
+L:held
+J:麻痺
+
+L:slowed
+J:減速
+
+# 気付きやすさ（mon-lore.c の lore_describe_awareness() と同じ区切り）。気付く距離はメートル
+L:%s %s intruders.\s\s
+J:%sは%s。
+
+L:prefers to ignore
+J:侵入者を無視しがちだ
+
+L:pays very little attention to
+J:侵入者にほとんど注意を払わない
+
+L:pays little attention to
+J:侵入者にあまり注意を払わない
+
+L:tends to overlook
+J:侵入者を見過ごしがちだ
+
+L:takes quite a while to see
+J:侵入者に気付くまでにかなり時間がかかる
+
+L:takes a while to see
+J:侵入者に気付くまでに時間がかかる
+
+L:is fairly observant of
+J:侵入者にかなり気を配っている
+
+L:is observant of
+J:侵入者に気を配っている
+
+L:is very observant of
+J:侵入者に非常に気を配っている
+
+L:is vigilant for
+J:侵入者を警戒している
+
+L:is ever vigilant for
+J:侵入者を常に警戒している
+
+L:%s may notice them from\s
+J:%sは
+
+L:\sfeet away.\s\s
+J:m先の侵入者にも気付くことがある。
+
+# 仲間
+L:%s may appear with other monsters
+J:%sは他のモンスターと一緒に現れることがあり
+
+L:\sand hunts in packs
+J:、群れで狩りをする
+
+# 呪文とブレス（呪文の説明は lib-ja の monster_spell.txt の lore:）
+L:%s may use:\s
+J:%sは次の攻撃をすることがある:\s
+
+L:; and may\s
+J:。また、
+
+L:%s may\s
+J:%sは
+
+L:breathe
+J:ブレス
+
+L:\s(breath):\s
+J:を吐くことがある:\s
+
+L:intelligently\s
+J:賢く
+
+L:cast spells
+J:呪文
+
+L:\s(spells):\s
+J:を唱えることがある:\s
+
+# 打撃（型と効果の説明は lib-ja の blow_methods.txt・blow_effects.txt の desc:）
+L:%s has no physical attacks.\s\s
+J:%sは物理的な攻撃方法を持たない。
+
+L:Nothing is known about %s attack.\s\s
+J:%sの攻撃については何も分からない。
+
+L:%s can attack:\s
+J:%sの攻撃:\s
+
+L:hit\s
+J:命中率
+
+L:\spercent)
+J:％）
+
+L:On each of its turns it averages\s
+J:1ターンあたり平均
+
+L:at least\s
+J:少なくとも
+
+L:\sdamage.\s\s
+J:のダメージを与える。
+
+# 思い出の最後（ui-mon-lore.c）
+E:You know everything about this monster.
+J:このモンスターについてはすべて知っている。
+
+E:You feel an intense desire to kill this monster...\s\s
+J:このモンスターを倒したいという強い欲求を感じる。
+
+# アイテムの由来（obj-info.c。記録の無い怪物）
+L:monster lost to history
+J:由来の分からないモンスター
+
+# ---- 変身の説明（ui-knowledge.c の shape_lore() を an_lore_ja.c が組み直す）
+L:\nLike all shapes, the equipment at the time of the shapechange sets the base attributes, including damage per blow, number of blows and resistances.  While changed, items in your pack or on the floor (except for pickup or eating) are inaccessible.  To switch back to your normal shape, cast a spell or use an item command other than eat (drop, for instance).\n
+J:\nどの姿でも、変身したときの装備が基本の値（1回の打撃のダメージ・攻撃回数・耐性など）を決める。変身している間は、ザックの中や床のアイテムは使えない（拾うことと食べることは除く）。元の姿に戻るには、呪文を唱えるか、食べる以外のアイテムのコマンド（落とすなど）を使う。\n
+
+L:Adds:\s
+J:次の修正を得る:\s
+
+L:%+d to AC
+J:AC%+d
+
+L:%+d to hit
+J:命中%+d
+
+L:%+d to damage
+J:ダメージ%+d
+
+L:%s %+d
+J:%s%+d
+
+L:physical disarming
+J:解除(物理)
+
+L:magical disarming
+J:解除(魔法)
+
+L:magic devices
+J:魔法道具
+
+L:saving throws
+J:魔法防御
+
+L:searching
+J:探索
+
+L:melee to hit
+J:近接の命中
+
+L:shooting to hit
+J:射撃の命中
+
+L:throwing to hit
+J:投擲の命中
+
+L:digging
+J:掘削
+
+L:unknown skill
+J:不明な技能
+
+L:Makes you vulnerable to:\s
+J:次の属性に弱くなる:\s
+
+L:Makes you resistant to:\s
+J:次の属性への耐性を得る:\s
+
+L:Makes you immune to:\s
+J:次の属性への免疫を得る:\s
+
+L:Provides protection from:\s
+J:次のものから守られる:\s
+
+L:Sustains:\s
+J:次の能力値が維持される:\s
+
+L:.\n
+J:。\n
+
+L:.
+J:。
+
+# 変身の説明の修正値の名（object_property.txt の type:mod/stat の name。an_lore_ja.c の an_shape_word() が L: を先に引く）
+L:strength
+J:腕力
+
+L:intelligence
+J:知能
+
+L:wisdom
+J:賢さ
+
+L:dexterity
+J:器用さ
+
+L:constitution
+J:耐久力
+
+L:stealth
+J:隠密
+
+L:searching skill
+J:探索
+
+L:infravision
+J:赤外線視力
+
+L:tunneling
+J:掘削
+
+L:speed
+J:スピード
+
+L:damage reduction
+J:ダメージ軽減
+
+L:extra blows
+J:追加攻撃
+
+L:shooting speed
+J:射撃速度
+
+L:shooting power
+J:射撃威力
+
+L:extra moves
+J:追加移動
+
+L:light
+J:光源
+
+L:Changing into the shape\s
+J:変身すると、
+
+L:The %s spell, %s, from %s triggers the shapechange.
+J:%sの呪文「%s」（%s）で変身する。
+
+# ---- 視界の一覧の方角（ui-mon-list.c・ui-obj-list.c）
+L:N
+J:北
+
+L:S
+J:南
+
+L:W
+J:西
+
+L:E
+J:東
+
+# ---- 無視のメニューの「All 〈品質〉 〈種類〉」（ui-object.c。品質と種類は Q:）
+E:All %s %s
+J:%s%sすべて
+
+Q:bad
+J:粗悪な
+
+Q:average
+J:並以下の
+
+Q:good
+J:上質以下の
+
+Q:non-artifact
+J:アーティファクト以外の
+
+Q:Sharp Melee Weapons
+J:刃のある近接武器
+
+Q:Blunt Melee Weapons
+J:鈍器
+
+Q:Great Weapons
+J:大型武器
+
+Q:Slings
+J:スリング
+
+Q:Bows
+J:弓
+
+Q:Crossbows
+J:クロスボウ
+
+Q:Shots and Pebbles
+J:弾と小石
+
+Q:Arrows
+J:矢
+
+Q:Bolts
+J:ボルト
+
+Q:Robes
+J:ローブ
+
+Q:Body Armor
+J:体の鎧
+
+Q:Basic Dragon Scale Mail
+J:基本のドラゴン・スケイル・メイル
+
+Q:Multi-Hued Dragon Scale Mail
+J:万色のドラゴン・スケイル・メイル
+
+Q:High Dragon Scale Mail
+J:上位のドラゴン・スケイル・メイル
+
+Q:Balance Dragon Scale Mail
+J:バランス・ドラゴン・スケイル・メイル
+
+Q:Power Dragon Scale Mail
+J:パワー・ドラゴン・スケイル・メイル
+
+Q:Cloaks
+J:クローク
+
+Q:Elven Cloaks
+J:エルフのクローク
+
+Q:Shields
+J:盾
+
+Q:Headgear
+J:兜
+
+Q:Handgear
+J:籠手
+
+Q:Footgear
+J:靴
+
+Q:Diggers
+J:掘削道具
+
+Q:Rings
+J:指輪
+
+Q:Amulets
+J:アミュレット
+
+Q:Lights
+J:光源
+
+# ---- 知識のモンスターの分類（ui_knowledge.txt の monster-category。ui-knowledge.c が an_tr() で引く）
+# 名は names/monster_base.ja.tsv と lang/ja/help/symbols.ja.txt の凡例にそろえた。
+E:Uniques
+J:ユニーク
+
+E:Ainur
+J:アイヌア
+
+E:Ants
+J:アリ
+
+E:Bats
+J:コウモリ
+
+E:Birds
+J:鳥
+
+E:Canines
+J:犬
+
+E:Centipede
+J:ムカデ
+
+E:Demons
+J:悪魔
+
+E:Dragons
+J:ドラゴン
+
+E:Elementals/Vortices
+J:エレメンタル／ボルテックス
+
+E:Eyes/Beholders
+J:浮遊する目／ビホルダー
+
+E:Felines
+J:猫
+
+E:Ghosts
+J:ゴースト
+
+E:Giants/Ogres
+J:巨人／オーガ
+
+E:Golems
+J:ゴーレム
+
+E:Harpies/Hybrids
+J:ハーピー／合成怪物
+
+E:Hominids (Elves, Dwarves)
+J:ヒューマノイド（エルフ・ドワーフ）
+
+E:Hydras
+J:ヒドラ
+
+E:Icky Things
+J:べとべとしたもの
+
+E:Insects
+J:昆虫
+
+E:Jellies
+J:ゼリー
+
+E:Killer Beetles
+J:キラー・ビートル
+
+E:Kobolds
+J:コボルド
+
+E:Lichs
+J:リッチ
+
+E:Men
+J:人間
+
+E:Mimics
+J:ミミック
+
+E:Molds
+J:モルド
+
+E:Mushroom Patches
+J:キノコ
+
+E:Nagas
+J:ナーガ
+
+E:Orcs
+J:オーク
+
+E:Quadrupeds
+J:四足獣
+
+E:Quylthulgs
+J:クイルスルグ
+
+E:Reptiles/Amphibians
+J:爬虫類／両生類
+
+E:Rodents
+J:ネズミ
+
+E:Scorpions/Spiders
+J:サソリ／クモ
+
+E:Skeletons/Drujs
+J:スケルトン／ドルジ
+
+E:Snakes
+J:ヘビ
+
+E:Trees/Ents
+J:木／エント
+
+E:Trolls
+J:トロル
+
+E:Vampires
+J:バンパイア
+
+E:Wights/Wraiths
+J:ワイト／レイス
+
+E:Worms/Worm Masses
+J:ワーム／ワームの群れ
+
+E:Xorns/Xarens
+J:ゾーン／ザレン
+
+E:Yeeks
+J:イーク
+
+E:Yeti
+J:イエティ
+
+E:Zephyr Hounds
+J:ゼファーハウンド
+
+E:Zombies
+J:ゾンビ
+
+# 知識のアイテムの一覧で「試した」印（ui-knowledge.c）
+E:\s{tried}
+J:\s{試用済}
+
+# ---- 誕生の画面（ui-birth.c）。画面を見分ける目印（an_main.cpp の starts_with_marker() ほか）は
+# E: の訳でも効く。脚注の 'r' 'Enter' 'ESC' ほかの綴りは残す（画面側が脚注の 'X' を読む）。
+E:['Y': use as is; 'N': redo; 'C': change name/history; '=': set birth options]
+J:['Y': そのまま使う; 'N': 作り直す; 'C': 名前と生い立ちを変える; '=': 誕生時のオプション]
+
+E:New character based on previous one:
+J:前のキャラクターを元にした新しいキャラクター:
+
+E:Hit/Shoot/Throw: %+d/%+d/%+d\n
+J:近接/射撃/投擲: %+d/%+d/%+d\n
+
+E:Hit die: %2d   XP mod: %d%%\n
+J:ヒットダイス: %2d   経験値修正: %d%%\n
+
+E:Disarm: %+3d/%+3d   Devices: %+3d\n
+J:解除: %+3d/%+3d   魔法道具: %+3d\n
+
+E:Save:   %+3d   Stealth: %+3d\n
+J:魔法防御: %+3d   隠密: %+3d\n
+
+E:Infravision:  %d ft\n
+J:赤外線視力: %dm\n
+
+E:Digging:      %+d\n
+J:掘削:       %+d\n
+
+E:Search:       %+d
+J:探索:       %+d
+
+A:Str:\s
+J:腕力:\s
+
+A:Int:\s
+J:知能:\s
+
+A:Wis:\s
+J:賢さ:\s
+
+A:Dex:\s
+J:器用:\s
+
+A:Con:\s
+J:耐久:\s
+
+E:\nLearns %s magic
+J:\n%sの魔法を習得する
+
+P:arcane
+J:秘術
+
+P:divine
+J:神聖
+
+P:nature
+J:自然
+
+P:shadow
+J:死霊術
+
+E:Show birth options
+J:誕生時のオプションを見る
+
+E:Select one at random
+J:ランダムに1つ選ぶ
+
+E:Finish with random choices
+J:残りをランダムに選んで終える
+
+E:Point-based
+J:ポイント制
+
+E:Standard roller
+J:標準のロール
+
+E:Race affects stats and skills, and may confer resistances and abilities.
+J:種族は能力値と技能に影響し、耐性や能力を与えることもある。
+
+E:Class affects stats, skills, and other character traits.
+J:職業は能力値・技能ほか、キャラクターの特徴に影響する。
+
+E:Choose how to generate your intrinsic stats. Point-based is recommended.
+J:生まれつきの能力値の決め方を選ぶ。ポイント制がおすすめ。
+
+E:{light blue}Please select your character traits from the menus below:{/}\n\nUse the {light green}movement keys{/} to scroll the menu, {light green}Enter{/} to select the current menu item, '{light green}*{/}' for a random menu item, '{light green}@{/}' to finish the character with random selections, '{light green}ESC{/}' to step back through the birth process, '{light green}={/}' for the birth options, '{light green}?{/}' for help, or '{light green}Ctrl-X{/}' to quit.
+J:{light blue}下のメニューからキャラクターの特徴を選んでください:{/}\n\n{light green}移動キー{/}でメニューを動かし、{light green}Enter{/}で選ぶ。'{light green}*{/}'でランダムに選ぶ、'{light green}@{/}'で残りをランダムに選んで終える、'{light green}ESC{/}'で1つ前へ戻る、'{light green}={/}'で誕生時のオプション、'{light green}?{/}'でヘルプ、'{light green}Ctrl-X{/}'で終了。
+
+E:['r' to reroll
+J:['r' で振り直す
+
+E:'r' to reroll
+J:'r' で振り直す
+
+E:, 'p' for previous roll
+J:、'p' で前の値に戻す
+
+E:'p' for previous roll
+J:'p' で前の値に戻す
+
+E:\sor 'Enter' to accept]
+J:、'Enter' で決定]
+
+E:Retrieve previous
+J:前の値に戻す
+
+E:Cost
+J:コスト
+
+E:Total Cost: %2d/%2d
+J:合計コスト: %2d/%2d
+
+E:[up/down to move, left/right to modify, 'r' to reset, 'Enter' to accept]
+J:[上下で移動、左右で増減、'r' でやり直す、'Enter' で決定]
+
+E:Reset
+J:やり直す
+
+E:A savefile for that name exists.  Overwrite it?\s
+J:その名前のセーブファイルがある。上書きする?\s
+
+E:Accept character history? [y/n]
+J:この生い立ちでよい? [y/n]
+
+E:['ESC' to step back, 'S' to start over, or any other key to continue]
+J:['ESC' で1つ前へ、'S' で最初から、ほかのキーで続ける]
+
+P:Rock
+J:岩の体
+
+P:Mushroom Lore
+J:キノコの知識
+
+P:Device Lore
+J:魔法道具の知識
+
+P:Miner
+J:鉱夫
+
+P:Extra Shots
+J:追加射撃
+
+P:Relentless [30]
+J:不屈 [30]
+
+P:Blessed Fighter
+J:祝福された戦士
+
+P:Full Spellcaster
+J:完全な呪文使い
+
+P:Extra Spell Beaming
+J:呪文のビーム化
+
+P:Spell Choice
+J:呪文の選択
+
+P:No Magic
+J:魔法を使えない
+
+P:Charms
+J:まじない
+
+P:Unlight
+J:闇の力
+
+P:Pickpocketing
+J:スリ
+
+P:Shield Bash
+J:盾打ち
+
+P:Evil
+J:邪悪
+
+P:Combat Regeneration
+J:戦闘による回復
+
+P:Sustain Strength
+J:腕力維持
+
+P:Sustain Intelligence
+J:知能維持
+
+P:Sustain Wisdom
+J:賢さ維持
+
+P:Sustain Dexterity
+J:器用さ維持
+
+P:Sustain Constitution
+J:耐久力維持
+
+P:Fear Immunity
+J:恐怖への免疫
+
+P:Blindness Immunity
+J:盲目への免疫
+
+P:Confusion Immunity
+J:混乱への免疫
+
+P:Stun Immunity
+J:朦朧への免疫
+
+P:Slow Digestion
+J:遅消化
+
+P:Feather Falling
+J:浮遊
+
+P:Regeneration
+J:急回復
+
+P:Telepathy
+J:テレパシー
+
+P:See Invisible
+J:透明視
+
+P:Free Action
+J:麻痺知らず
+
+P:Hold Life
+J:生命力維持
+
+P:Earthquakes
+J:地震
+
+P:Slow Regeneration
+J:回復の遅れ
+
+P:Slow Mana Regeneration
+J:魔力回復の遅れ
+
+P:Constant Fear
+J:常に恐怖
+
+P:Teleport Ban
+J:テレポート不可
+
+P:Aggravate
+J:反感
+
+P:Experience Drain
+J:経験値吸収
+
+P:Trap Immune
+J:罠への免疫
+
+P:Resistance
+J:耐性
+
+P:Immunity
+J:免疫
+
+P:Vulnerability
+J:弱点
+
+# ---- 履歴の画面（ui-history.c）。深さはメートル（§20 の置換で an_u_ft()）
+E:[Player history]
+J:[キャラクターの履歴]
+
+E:      Turn   Depth  Note
+J:    ターン    深さ  出来事
+
+E:%10ld%7d'  %s
+J:%10ld%7dm  %s
+
+E:[Arrow keys scroll, p/PgUp for previous page, n/PgDn for next page, ESC to exit.]
+J:[矢印キーで動かす、p/PgUp で前のページ、n/PgDn で次のページ、ESC で戻る]
+
+# ---- オプションの数値の欄（ui-options.c）。an_main.cpp は行 20 が「Command: 」、行 21 が「New 」で
+# 始まることで見分ける——下の 2 つの目印の訳が、画面に出る訳文の頭と同じ字であること。
+E:Command:\s
+J:コマンド:\s
+
+E:New\s
+J:新しい
+
+E:Command: Base Delay Factor
+J:コマンド: 基本の遅延
+
+E:New base delay factor (0-255):\s
+J:新しい基本の遅延 (0-255):\s
+
+E:Current base delay factor: %d msec
+J:今の基本の遅延: %d ミリ秒
+
+E:Command: Sidebar Mode
+J:コマンド: サイドバーの表示
+
+E:Command: Hitpoint Warning
+J:コマンド: HP の警告
+
+E:New hitpoint warning (0-9):\s
+J:新しい HP の警告 (0-9):\s
+
+E:Current hitpoint warning: %d (%d%%)
+J:今の HP の警告: %d (%d%%)
+
+E:Command: Movement Delay Factor
+J:コマンド: 移動の遅延
+
+E:New movement delay:\s
+J:新しい移動の遅延:\s
+
+E:Current movement delay: %d (%d msec)
+J:今の移動の遅延: %d (%d ミリ秒)
+
+E:Command: Load a user pref file
+J:コマンド: ユーザー設定ファイルを読み込む
+
+E:Command: Modify colors
+J:コマンド: 色を変える
+
+# ---- キーマップ（ui-options.c）。an_main.cpp は行 14 が「Key:」で始まることで見分ける
+E:Key:
+J:キー:
+
+E:No keymap with that trigger.  Press any key to continue.
+J:そのキーのキーマップは無い。何かキーを押すと続ける。
+
+E:Found:\s
+J:見つけた:\s
+
+E:Press any key to continue.
+J:何かキーを押すと続ける。
+
+E:The '=' key is reserved.
+J:'=' のキーは使えない。
+
+E:Action: %s
+J:動作: %s
+
+E:\s\sPress '=' when finished.
+J:\s\s終わったら '=' を押す。
+
+E:\s\sUse 'CTRL-u' to reset.
+J:\s\s'CTRL-u' でやり直す。
+
+E:(Maximum keymap length is %d keys.)
+J:(キーマップは最大 %d キーまで)
+
+E:Keep this keymap?\s
+J:このキーマップを残す?\s
+
+E:To use in other sessions, save the keymaps to a file.  Press a key to continue.
+J:次回以降も使うには、キーマップをファイルに保存する。何かキーを押すと続ける。
+
+E:Removed.
+J:消した。
+
+E:No keymap to remove!
+J:消すキーマップが無い！
+
+E:Current action (if any) shown below:
+J:今の動作（あれば）を下に出す:
+
+# ---- 地図の区画（ui-knowledge.c の do_cmd_locate()）。an_main.cpp と an_map_shim.c は行 0 が
+# 「Map sector」で始まり「Direction?」を含むことで見分ける——下の 2 つの目印の訳が、訳文に同じ字で入ること。
+E:Map sector
+J:マップの区画
+
+E:Direction?
+J:方向?
+
+E:Map sector [%d,%d], which is%s your sector.  Direction?
+J:マップの区画 [%d,%d]（あなたの区画%s）。方向?
+
+E:Map sector [%d(%02d),%d(%02d)], which is%s your sector.  Direction?
+J:マップの区画 [%d(%02d),%d(%02d)]（あなたの区画%s）。方向?
+
+E:%s%s of
+J:の%s%s
+
+E:\snorth
+J:北
+
+E:\ssouth
+J:南
+
+E:\swest
+J:西
+
+E:\seast
+J:東
+
+# 効果の説明（list-effects.h の DAMAGE。変身の説明で出る）
+E:does %s damage to the player
+J:プレイヤーに%sのダメージを与える
+
+E:Repeat count (0-9999):
+J:繰り返す回数 (0-9999):
+
+E:Choose the command to repeat
+J:繰り返すコマンドを選んでください
+
+E:Find:
+J:検索:
+
+E:Goto Line:
+J:行へ移動:
+
+E:Goto File:
+J:ファイルへ移動:
+
+E:Show:
+J:強調表示:
+
+# AH-52: 誕生の種族・職業・ロールの選択の操作（原作の `*` `@` `=`）
+E:Select one at random
+J:ランダムに決める
+
+E:Finish with random choices
+J:残りをランダムで決めて完成する
+
+E:Birth options
+J:誕生時のオプション
+
+# AH-54: 見る・狙うの追加操作（原作 target_set_interactive() の < > x p m g k）
+E:Nearest up staircase
+J:最寄りの上り階段へ
+
+E:Nearest down staircase
+J:最寄りの下り階段へ
+
+E:Nearest unexplored grid
+J:最寄りの未知のマスへ
+
+E:Cursor to yourself
+J:自分のマスへ
+
+E:Nearest interesting grid
+J:最寄りの見どころへ
+
+E:Walk to the cursor
+J:そのマスへ歩いて行く
+
+E:Ignore the item here
+J:ここのアイテムを無視する
+
+E:There is no known up staircase.
+J:知っている上り階段がありません。
+
+E:There is no known down staircase.
+J:知っている下り階段がありません。
+
+E:There is no unexplored grid to go to.
+J:行ける未知のマスがありません。
+
+E:There is nothing of interest.
+J:見どころがありません。
+
+E:Choose a grid other than your own.
+J:自分以外のマスを選んでください。
+
+E:There is no item to ignore here.
+J:無視できるアイテムがここにありません。
+
+# AH-55: 履歴・殿堂のページ送りと、モンスター一覧の並べ替え
+E:Sort by experience
+J:経験値の順に並べる
+
+E:Sort in the standard order
+J:標準の順に戻す
+
+# AH-59: 栄誉の殿堂（ui-score.c の display_scores_aux()。死亡メニューの v・知識の「殿堂」）
+# 見出しと脚注は原作が 80 桁の中央に置く位置（桁 30・21・6・9）へ書くので、訳文の頭の空白（\s）で中央へ寄せる。
+# 脚注の綴りは an_main.cpp の fill_history_and_score_paging() が目印にしている（contains_marker() が
+# E: の訳を見るので、訳文がそのまま Term に出ていれば日本語でもページ送りの手が出る）。
+E:%s Hall of Fame
+J:\s%s 栄誉の殿堂
+
+E:%s Hall of Fame (from position %d)
+J:\s\s\s\s\s%s 栄誉の殿堂（%d位から）
+
+E:[Press ESC to exit, up for prior page, any other key for next page.]
+J:\s\s\s\s\s\s[ESC で戻る・上矢印で前のページ・ほかのキーで次のページ]
+
+E:[Press ESC to exit, any other key to page forward till done.]
+J:\s\s\s\s\s\s\s\s[ESC で戻る・ほかのキーで最後まで次のページ]
+
+# 1 件 3 行。2 行目の「死因」は、生きているキャラの予想の行（`nobody (yet!)`）にも合う形にした。
+# 引数の並びは英語と同じ（変換指定の並びを英日で照合するため。名前・死因・階の順）。
+E:%3d.%9s  %s the %s %s, level %d
+J:%3d.%9s  %s（%sの%s）レベル%d
+
+E:\s(Max %d)
+J:（最大%d）
+
+E:Killed by %s in the town
+J:{H}死因: %s（町）
+
+E:Killed by %s on dungeon level %d
+J:{H}死因: %s（%d階）
+
+E:(User %s, Date %s, Gold %s, Turn %s).
+J:（ユーザー %s、日付 %s、所持金 %s、ターン %s）。
+
+A:nobody (yet!)
+J:まだ無し
+
+A:TODAY
+J:今日
+
+# AH-60: 死因のうち怪物でないもの。`take_hit()` の最後の引数（player-util.c・game-world.c ほか）で、
+# 記録（scores.raw の how[32]）へは英語の字のまま書かれる。上の 3 つの書式（`{H}`）の引数だけ、この表で引く
+# （ほかの `%s` へは効かない）。31 バイトで切れた長い句と、罠の名（`a pit` の冠詞を落として名前の表 trap）は
+# アダプタが引く（an_lang.cpp の death_cause_ja()）。
+# 訳語の出どころは変愚（毒・空腹・致命傷・地震・毒針・「〜の呪文を唱えた疲労」の枠）。
+# 変愚に無い語（over-exertion・Failed uncursing・stat drain・yourself・a bug）は英語のまま。
+H:poison
+J:毒
+
+H:starvation
+J:空腹
+
+H:a fatal wound
+J:致命傷
+
+H:an earthquake
+J:地震
+
+H:the strain of casting Banishment
+J:消滅の呪文を唱えた疲労
+
+H:the strain of casting Mass Banishment
+J:周辺消滅の呪文を唱えた疲労
+
+# ゲームデータ（gamedata）が持つ死因。日本語で遊ぶと lib-ja（P3）の訳が死因になる。英語で遊んで記録された
+# 死因を日本語で見るときも同じ字にそろえる。
+H:a poison needle
+J:毒針
+
+H:an exploding chest
+J:爆発した箱
+
+H:burning to a cinder in lava
+J:溶岩で燃え尽きて
+
+H:shadow shifting
+J:影移し
+
+H:self sacrifice
+J:自己犠牲
+
+H:performing a curse
+J:呪いをかけること
+
+H:taking bat form
+J:コウモリの姿をとること
+
+H:taking warg form
+J:ワーグの姿をとること
+
+H:taking vampire form
+J:吸血鬼の姿をとること
+
+H:taking werewolf form
+J:人狼の姿をとること
+
+# 大往生は変愚の枠が無い（変愚は英語の "ripe" のまま）ので、Frox の訳を借りた。
+H:Ripe Old Age
+J:大往生
+
+# AH-59: 「見る」（l）の 1 行の説明（an_targeting.c の an_look_describe_grid()）
+E:a pile of %d objects
+J:%d個のアイテムの山
+
+# 怪物の行 `名前 (状態)` の状態の句（target.c の look_mon_desc()。「, 」で句を並べ、日本語では「、」でつなぎ直す）。
+# 傷の程度は変愚の同じ表示（monster-entity.cpp の build_damage_description()）の語。状態の語は
+# 怪物のメッセージ（V:）と思い出（L:）の語に合わせた。
+T:unhurt
+J:無傷
+
+T:undamaged
+J:無ダメージ
+
+T:somewhat wounded
+J:軽傷
+
+T:somewhat damaged
+J:小ダメージ
+
+T:wounded
+J:負傷
+
+T:damaged
+J:中ダメージ
+
+T:badly wounded
+J:重傷
+
+T:badly damaged
+J:大ダメージ
+
+T:almost dead
+J:半死半生
+
+T:almost destroyed
+J:倒れかけ
+
+T:asleep
+J:睡眠中
+
+T:held
+J:麻痺中
+
+T:disenchanted
+J:魔力低下中
+
+T:confused
+J:混乱中
+
+T:afraid
+J:恐怖中
+
+T:stunned
+J:朦朧状態
+
+T:slowed
+J:減速中
+
+T:hasted
+J:加速中
+
+# 地形の冠詞の句（terrain.txt の look-prefix）。鍵は「句 + %s」。ほかの冠詞（a・an・some）は日本語では落とす。
+T:the entrance to the %s
+J:%sの入口
+
+# ================================================================== AH-60: 引退の確認・デバッグのコマンドの問い・セーブ中の表示
+
+# 引退（Q）の最後の確認（ui-command.c の textui_cmd_retire()。prt() で行 0 へ直に出す）。変愚の自殺の確認と同じ文。
+# 画面側の共用の判定 analyze_command_prompt()（presentation/bridge/prompt_semantics.h）は、行に「'@'」と「確認」の
+# 両方があれば「'@' を打って確認する」画面と見分けるので、訳文にも両方を残す（変愚・短愚の日本語と同じ判定）。
+E:Please verify RETIRING THIS CHARACTER by typing the '@' sign:
+J:確認のため '@' を押して下さい。
+
+# 階を移るときの自動保存（ui-game.c の save_game()。prt() で行 0 へ直に出す）。変愚の同じ 3 文。
+E:Saving game...
+J:ゲームをセーブしています...
+
+E:Saving game... done.
+J:ゲームをセーブしています... 終了
+
+E:Saving game... failed!
+J:ゲームをセーブしています... 失敗！
+
+# デバッグのコマンド（Ctrl-A。ui-game.c の cmd_hidden[]）。「デバッグのコマンド」は既存の語（`Debug mode commands`）。
+# 変愚のデバッグの問いは英語のままなので、文は新しく書いた（語は既存のカタログから）。
+# get_com() の問い（`Debug Command:` ほか）は端末の行へ直に出るので、鍵は末尾の空白を落とした形。
+E:That is not a valid debug command.
+J:正しいデバッグのコマンドではありません。
+
+E:Jump to level (0-%d):\s
+J:移動先の階 (0-%d):\s
+
+E:Choose cave profile?\s
+J:ダンジョンの生成方式を選びますか?\s
+
+E:Acquire great objects?\s
+J:すばらしいアイテムを手に入れますか?\s
+
+E:How many great objects?\s
+J:すばらしいアイテムを何個?\s
+
+E:How many good objects?\s
+J:良いアイテムを何個?\s
+
+E:Create which object (0-%d)?\s
+J:どのアイテムを作りますか (0-%d)?\s
+
+E:Create which artifact (1-%d)?\s
+J:どのアーティファクトを作りますか (1-%d)?\s
+
+E:Create instant artifacts?\s
+J:その場でアーティファクトを作りますか?\s
+
+E:Create all items of which tval (1-%d)?\s
+J:どの種別 (tval 1-%d) のアイテムをすべて作りますか?\s
+
+E:Create all artifacts of which tval (1-%d)?\s
+J:どの種別 (tval 1-%d) のアーティファクトをすべて作りますか?\s
+
+E:Quantity (1-%d):\s
+J:数量 (1-%d):\s
+
+E:Enter ego item:\s
+J:エゴアイテムを入力:\s
+
+E:Enter new artifact:\s
+J:新しいアーティファクトを入力:\s
+
+E:Enter new %s setting:\s
+J:新しい%sの値を入力:\s
+
+E:Enter curse name or index:\s
+J:呪いの名前か番号を入力:\s
+
+E:Enter curse power (0 removes):\s
+J:呪いの強さを入力 (0 で解く):\s
+
+E:Couldn't proceed.  Stop playing with item and lose all changes?\s
+J:続けられません。アイテムをいじるのをやめて、すべての変更を失いますか?\s
+
+E:Learn object kinds up to level (0-100)?\s
+J:何レベルまでのアイテムの種類を覚えますか (0-100)?\s
+
+E:Create which trap?\s
+J:どの罠を作りますか?\s
+
+E:Summon which monster?\s
+J:どの怪物を召喚しますか?\s
+
+E:How many monsters?\s
+J:怪物を何体?\s
+
+E:Which monster?\s
+J:どの怪物ですか?\s
+
+E:Teleport range?\s
+J:テレポートの距離は?\s
+
+E:Zap within what distance?\s
+J:何マス以内を消し去りますか?\s
+
+E:Depth for treasure (0-%d):\s
+J:宝の深さ (0-%d):\s
+
+E:Experience:\s
+J:経験値:\s
+
+E:Gold:\s
+J:所持金:\s
+
+E:Gain how much experience?\s
+J:経験値をいくつ得ますか?\s
+
+E:Edit which stat (name or 0-%d):\s
+J:どの能力値を変えますか (名前か 0-%d):\s
+
+E:Do which effect:\s
+J:どの効果を起こしますか:\s
+
+E:Enter damage dice (eg 1+2d6M2):\s
+J:ダメージのダイスを入力 (例 1+2d6M2):\s
+
+E:Enter name or number for effect subtype:\s
+J:効果の副種別の名前か番号を入力:\s
+
+E:Enter second parameter (radius):\s
+J:2 番目の引数 (半径) を入力:\s
+
+E:Enter third parameter (other):\s
+J:3 番目の引数 (その他) を入力:\s
+
+E:Enter y parameter:\s
+J:y の引数を入力:\s
+
+E:Enter x parameter:\s
+J:x の引数を入力:\s
+
+E:Number of simulations:\s
+J:試行の回数:\s
+
+E:Number of simulations per depth:\s
+J:深さごとの試行の回数:\s
+
+E:Stop if disconnected level found?\s
+J:つながっていない階が見つかったら止めますか?\s
+
+E:Type of Sim: Diving (1) or Clearing (2)\s
+J:試行の種類: 潜る (1) か 掃討する (2)\s
+
+E:Regen randarts (warning SLOW)?\s
+J:ランダムなアーティファクトを作り直しますか (かなり遅い)?\s
+
+E:Pit type (1-3):\s
+J:ピットの種類 (1-3):\s
+
+E:Minimum depth:\s
+J:最小の深さ:\s
+
+E:Maximum depth:\s
+J:最大の深さ:\s
+
+E:Title for map:\s
+J:地図の題名:\s
+
+E:Really quit without saving?\s
+J:保存せずに本当に終了しますか?\s
+
+E:Debug Command:
+J:デバッグのコマンド:
+
+E:Debug Command Feature Query:
+J:デバッグのコマンド 地形の問い合わせ:
+
+E:Debug Command Query [grasvwdftniolx]:
+J:デバッグのコマンド 問い合わせ [grasvwdftniolx]:
+
+E:Depth %d:\s
+J:深さ %d:\s
+
+# ================================================================== AH-61: タイトル（セーブの選択）・名前の問い・待ち表示
+
+# セーブの選択（ui-game.c の select_savefile()。Angband を起動するたびに最初に出る画面。上の 3 行は prt() で直に出す）。
+# 1 行目と 2 行目は続けて 1 文（「…選ぶか、終了してください（…）（終了は…）」）になるように訳した。
+E:Select the save to use (movement keys and enter or mouse) or quit
+J:使うセーブを選ぶか、終了してください（移動キーと Enter、またはマウス）
+
+E:(escape or second mouse button).
+J:（終了は Esc、またはマウスの 2 番目のボタン）。
+
+E:The previously selected savefile was unusable.
+J:前に選んだセーブは使えませんでした。
+
+# 「新しく始める」は変愚蛮怒のタイトルの「N) 新しく始める」と同じ語。
+E:New game
+J:新しく始める
+
+# 既存のセーブの行（format() で組むので書式の鍵）。2 つ目の `%s` は、セーブに英語で保存されている説明
+# （`名前, L1 Human Warrior, at DL0`。原作の wr_description()）で、ここでは訳せない。
+E:Use %s: %s
+J:%s を使う: %s
+
+E:Use %s
+J:%s を使う
+
+# 誕生の名前の問い（ui-input.c の get_character_name()。prt() で直に出す）。窓の題は画面側が「〈この文〉の入力」と
+# 組む（presentation/bridge/modern_content.h）ので、名詞の形にした。
+E:Enter a name for your character (* for a random name):
+J:キャラクターの名前（* でランダムな名前）:
+
+# 地図・一覧を組む間の表示（ui-display.c・ui-map.c。prt() で直に出す）。変愚蛮怒の同じ文（cmd-map.cpp・game-play.cpp）。
+E:Please wait...
+J:お待ち下さい...
+
+# AH-62: 誕生の名前入力の `*`（ランダムな名前）の操作。文字入力の段の「操作」に出す（アダプタの an_declared_menu_actions()）。
+E:Random name
+J:ランダムな名前

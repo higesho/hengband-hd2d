@@ -40,6 +40,7 @@ extern "C" {
 #define GB_ERR_QUIT (-4) /* コアが quit() を踏んだ */
 #define GB_ERR_CORE (-5) /* コアが core() を踏んだ */
 #define GB_ERR_STATE (-6) /* 手順違い（Term 無しで起動列を呼んだ等） */
+#define GB_BIRTH_CANCEL 1 /* `gb_run_game()` の戻り値：誕生の最初の画面（難易度）で取消された。タイトルへ戻る（修-61） */
 
 /*!
  * @brief コアの名。プロトコル v1 の握手で使う `core_name`（P2）。
@@ -76,6 +77,9 @@ void gb_term_remove(void);
  * @return GB_OK / GB_ERR_STATE
  */
 int gb_term_size(int *cols, int *rows);
+
+/*! @brief 主 Term の行数を新UIの文書表示領域へ合わせる。 */
+int gb_term_resize_rows(int rows);
 
 /*!
  * @brief Term の 1 行を写す（画面ミラーの読み口。P2 の `term_mirror` の中核）。
@@ -167,6 +171,13 @@ int gb_character_generated(void);
 int gb_screen_flags(void);
 
 /*!
+ * @brief 画面の退避の深さ（`character_icky`。`screen_save()` が増やし `screen_load()` が減らす計数器）。
+ * @details 見る・狙うの最中に `r`（モンスターの思い出）が画面を重ねている間を、見るの帯を作る側が見分けるために使う
+ * （`presentation/bridge/look_screen_cover.h`）。
+ */
+int gb_screen_depth(void);
+
+/*!
  * @brief 「前と変わったか」を安く判るための digest（設計の P2 申し送り 6）。
  *
  * @details `capture_frame()` は待ちの間も 10ms ごとに回る。地図が入ると 1 回の
@@ -215,6 +226,7 @@ int gb_rogue_like_commands(void);
 #define GB_FEAT_RUBBLE 0x1000u /*!< `FF_HURT_ROCK`（44）かつ壁でも扉でもない（＝瓦礫） */
 #define GB_FEAT_ROOM 0x2000u /*!< `CAVE_ROOM` */
 #define GB_FEAT_GLOWING 0x4000u /*!< `CAVE_GLOW` かつ `CAVE_MNDK` でない */
+#define GB_FEAT_SHAFT 0x8000u /* FF_SHAFT (101): moves two levels */
 /*! @} */
 
 /*!
@@ -232,7 +244,21 @@ typedef struct gb_map_cell {
     unsigned short monster_id; /*!< `m_ptr->ap_r_idx`。**`ml` のときだけ**。0 = 居ない／見えない */
     unsigned short monster_slot; /*!< `m_idx`（個体の通し番号）。条件は `monster_id` と同じ */
     unsigned short object_id; /*!< 先頭の `OM_FOUND` オブジェクトの `k_idx`。0 = 無い */
+    /*!
+     * @brief 正体の分からないアイテムの分類（1..8）。0 = 対象外（識別済み・8 分類の外）。
+     * @details。番号は
+     * `presentation::UnawareItemCategory` と同じ並び（1=薬 2=巻物 3=指輪 4=アミュレット
+     * 5=ワンド 6=杖 7=ロッド 8=キノコ）。プロトコル v1 の外形は変えない
+     * （コア内部の `gb_shim.c → gb_frame.cpp` の受け渡しにだけ足した値）。
+     */
+    unsigned char object_unaware_category;
     unsigned char light_level; /*!< 0 = 記憶のみ / 1 = 視界内だが無灯 / 2 = いま照明あり */
+    /*!
+     * プレイヤの光源で照らされているマス（`CAVE_LITE`）なら 1。明るい部屋（`CAVE_GLOW`）や
+     * モンスターの光（`CAVE_MNLT`）は含めない。`gb_frame.cpp` が `lighting.player_lit` のビット列にする
+     *
+     */
+    unsigned char lit_by_player;
     unsigned char fg_color; /*!< `map_info` の `a & 0x0F` */
     unsigned char bg_color; /*!< `map_info` の `ta & 0x0F`（地形層） */
     char ascii; /*!< `map_info` の `c`（SJIS のバイト 1 つ。全角の片割れも来うる） */
@@ -248,12 +274,24 @@ int gb_floor_size(int *width, int *height);
 int gb_player_pos(int *x, int *y);
 
 /*!
+ * @brief 位置の確認（`L`。原作の `do_cmd_locate()`）の最中か（修-64）。
+ * @return 最中なら 1（`*cx`/`*cy` に見ている区画の中心のマス）。そうでなければ 0。
+ * @details 行 0 の「Map sector」（日本語は「マップ位置」）で見分ける。原作は変えない。
+ */
+int gb_locate_panel_center(int *cx, int *cy);
+
+/*!
  * @brief @ の**クラスと種族**（`p_ptr->pclass` / `p_ptr->prace`）。
  * @return GB_OK / GB_ERR_STATE（誕生前）
  * @details プレイヤの絵をクラス別にするために要る。
  * 階が無くても答えられる（`character_dungeon` を見ない）ので、誕生直後でも引ける。
  */
 int gb_player_kind(int *pclass, int *prace);
+
+/*! @brief Character-creation race score multiplier (percent), or -1. */
+int gb_birth_race_score_mult(int race_index);
+const char *gb_birth_race_title(int race_index);
+int gb_birth_race_score_mult_named(const char *title);
 
 /*!
  * @brief 視界の矩形を読む。
@@ -307,10 +345,61 @@ typedef struct gb_floor_info {
     int day_minute; /*!< 0〜1439。`extract_day_hour_min()` の 時*60+分 */
     int daytime; /*!< `is_daytime()` */
     int light_radius; /*!< `p_ptr->cur_lite` */
+    /*!
+     * 光源の種類（`LightingState::light_kind`）。0 = 光が無い、1 = 松明、2 = ランタン（魔法のランタン・行灯を含む）、
+     * 3 = アーティファクトの光源、4 = それ以外（光源の枠が空・燃料切れでも残る、種族・クラス・装備の光）。
+     */
+    int light_kind;
 } gb_floor_info;
 
 /*! @brief 階の素性と光。@return GB_OK（失敗しない。ゲーム前は 0 詰め） */
 int gb_read_floor_info(gb_floor_info *out);
+
+/*!
+ * @brief 光源の種類の判定（`gb_floor_info::light_kind`）を、作った物で全数照合する。
+ * @param err 最初に外れた組み合わせの名前を入れる（失敗が無ければ空）
+ * @param cap `err` の容量
+ * @return 外れた組み合わせの数（0 なら全部合っている）
+ * @details キャラクターは要らない。`--selftest` から呼ぶ（`lib` が読めていれば足りる）。
+ */
+int gb_light_selftest(char *err, int cap);
+
+/* ============================================ 状態のアイコン（`GameFrame::status_effects`） */
+
+/*! @brief 状態のアイコン 1 個ぶん。`key` は `hd2d/ui/status_icon_table.inc` にある名前。 */
+typedef struct gb_status_effect {
+    char key[40];
+    char label[64]; /*!< アイコンの下の名前。CP932（英語なら ASCII） */
+    char amount[16]; /*!< アイコンの上の効果量（`+10` など）。無ければ空 */
+    int kind; /*!< 0 良い・1 悪い・2 待っている・3 特殊・4 常時の良い・5 常時の悪い（`StatusEffectKind`） */
+} gb_status_effect;
+
+/*! 1 回に返す最大数（状態の旗 121 + 常時の効果 約 100 + 速さ・朦朧・切り傷・空腹）。 */
+#define GB_STATUS_MAX 320
+
+/*!
+ * @brief いまの状態を並べて返す（速さ → 状態の旗 → 朦朧・切り傷・空腹 → 常時の効果）。
+ * @return 件数。キャラクターがいなければ 0
+ * @details 一時的な状態の旗は `prt_status()` が最後に組んだもの（`tools/targeting/overlay.py` の 1 行が
+ * `gb_status_record()` へ渡す）。常時の効果は鑑定済みの旗だけ。
+ */
+int gb_read_status_effects(gb_status_effect *out, int cap);
+
+/*! @brief `prt_status()` から呼ばれる記録の関数（overlay.py が足す 1 行の呼び先）。`bar < 0` は組み直しの始まり。 */
+void gb_status_record(int bar, const char *label, int attr);
+
+/*! @brief 旗の組が変わったら変わる値（`gb_change_digest` に混ぜる）。 */
+unsigned long gb_status_stamp(void);
+
+/*! @brief 状態のアイコンの表の自己検査（キャラクター不要）。@return 外れた件数 */
+int gb_status_selftest(char *err, int cap, int *checked);
+
+/*! @brief 表を読む関数（検査用）。`BAR_*` の数・鍵・種類。 */
+int gb_status_bar_table_count(void);
+const char *gb_status_bar_table_key(int bar, int *kind);
+/*! @brief 常時の効果の表を読む関数（検査用）。 */
+int gb_status_perm_row_count(void);
+const char *gb_status_perm_row_key(int row, int *kind, const char **imm_key);
 
 /* ============================================ 周囲の地形の内訳（環境音の層） */
 
@@ -628,6 +717,19 @@ int gb_fx_pending_count(void);
 int gb_fx_take(gb_fx_event *out, int cap);
 /*! @} */
 
+/*!
+ * @name 魔法・投射物の効果の入口（実装は gb_frame.cpp。`gb_shim.c` の `gb_fx_note_*` が呼ぶ）
+ * @details 共通の記録の置き場（`presentation/bridge/named_attack_fx.h`）へ積む。`attr` は原作の属性のコア名（`GF_` を除いた小文字。
+ * 見た目の名前への変換は C++ 側）。整数の並びは `presentation/bridge/named_attack_fx_glue.h` の冒頭。
+ * @{
+ */
+void gb_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y, int impact_x,
+    int flags, const int *path, int path_n, const int *area, int area_n);
+void gb_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x);
+void gb_named_fx_missile_hit(void);
+void gb_named_fx_missile_returns(void);
+/*! @} */
+
 /* ==================================================================== 効果音 */
 
 /*
@@ -939,6 +1041,17 @@ int gb_bootstrap(const char *lib_dir);
 int gb_run_game(int new_game);
 
 /*!
+ * @brief 誕生の最初の画面（難易度の選択）で取消されたとき、`play_game()` を抜けてタイトルへ戻る。
+ * @return 戻らない（`gb_run_game()` が `GB_BIRTH_CANCEL` を返す）。跳び先が無いときだけ 0 で戻る（`--selftest` など）
+ *
+ * @details 原作の誕生の最初の画面（`birth.c` の難易度）は ESC を捨てて待ち続け、戻る道が無い（`S`＝やり直し・`Q`＝終了だけ）。
+ * 設計は「最初の画面で取消すとタイトルへ戻る」（決めたこと 2026-10-12・計画の判-2）なので、アダプタが
+ * ESC を拾って進行の段を抜け、呼び出し側（`gb_main.cpp`）がタイトルとセーブ選択を出し直す。コアのプロセスは終わらない。
+ * ゲームのルール・原作のコードは変えない。難易度の画面かどうかは Term の行 10（`gb_null_term.c` の `gb_birth_first_screen`）で見分ける。
+ */
+int gb_cancel_birth_to_title(void);
+
+/*!
  * @brief 直近の失敗の説明（コアの `quit()` / `core()` に渡された文字列）。
  * @return 静的な buffer。失敗していなければ空文字列
  *
@@ -960,6 +1073,8 @@ const char *gb_last_error(void);
  * `p_ptr` / `cave` を読むことになる。
  */
 void gb_shutdown_and_quit(void);
+
+int gb_awaiting_command(void);
 
 #ifdef __cplusplus
 }

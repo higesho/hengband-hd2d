@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Android ボクセル HD2D 版（android/hd2d/）へ入れるアセット一式を組み立てる。
 
+正本は ` ` §4。出力先は ``android/build-assets-hd2d``
 （Gradle の ``assets.srcDirs`` に足してある）。リポジトリには入れない生成物。
 
 旧 SDL2 UI 版（``tools/build_android_assets.py``）との違い
@@ -12,15 +13,14 @@
 ============================ ======== ==================================================
 ``lib/``（音声込み）          する     旧版と同じ（コアは stdio。音声は CfgReader が
                                        実ファイルの存在を見る＝A-T12）。
-``tilework/sfc/*.png``       **する** 旧版は「IMG_Load が assets から読める」ので
-                                       展開しなかったが、**hd2d はコアの asset_manifest
-                                       の root と合成した絶対パスで読む**
-                                       （``hd2d/assets/tile_catalog.h``）。絶対パスは
-                                       assets へ落ちないので実ファイルが要る。
+``tilework`` と ``xtra/graf`` **しない** 配布版にはタイル画像を入れない。店・所持品・
+                                       品物選択ではUIがボクセル板を直接描く。
 ``assets/voxel/``            **する** プレハブ（.vox）と対応表（.jsonc）。
                                        ``std::ifstream`` で読む（``prefab_library``）。
 ``assets/ui/``               しない   ``IMG_Load`` に**相対パス**で渡る（``ui_image.h`` /
                                        ``floor_cutin.h``）ので APK の assets から読める。
+``assets/fx/``               しない   攻撃の視覚効果の絵の板。``IMG_Load`` に相対パスで渡る
+                                       （``fx_parts.cpp`` の ``fx_sprite_set_dir``）。
 ``assets/fonts/``            しない   ``TTF_OpenFont``（＝``SDL_RWFromFile``）に相対パスで
                                        渡る。``text_overlay.cpp`` の候補 1 位
                                        ``assets/fonts/placeholder_mono.ttf`` として
@@ -32,26 +32,20 @@
 
 使い方::
 
-    python tools/build_android_hd2d_assets.py                 # 既定（タイル 128px）
-    python tools/build_android_hd2d_assets.py --skip-tiles    # タイル据え置きで再実行を速く
+    python tools/build_android_hd2d_assets.py
 """
 
 from __future__ import annotations
 
 import argparse
-import concurrent.futures
 import hashlib
 import os
 import shutil
+import subprocess
 import sys
 import pathlib
 import urllib.request
 from pathlib import Path
-
-try:
-    from PIL import Image
-except ImportError:  # pragma: no cover
-    sys.exit("Pillow が要ります: python -m pip install Pillow")
 
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "android" / "build-assets-hd2d"
@@ -64,11 +58,12 @@ OLD_FONT_DIR = REPO / "android" / "build-assets" / "fonts"
 # （`playrec-*.txt` ・ `playrecord-*.txt` ・ `picktype.prf` ・ `dump.txt`）。
 # 名前の前置きで弾く形（`LIB_SKIP_PREFIXES`）は `playrecord-` しか知らず、
 # いまの版が書くのは `playrec-` なので**素通りしていた**——`playrec-1000.Shisy.txt`
-# のような**ユーザー名入りの記録が APK に入っていた**（2026-08-24 に実物を確認）。
+# のような**遊ぶ人の名前入りの記録が APK に入っていた**（2026-08-24 に実物を確認）。
 # ディレクトリ自体は `android_asset_installer.cpp` が無条件に作る。
 LIB_SKIP_NAMES = {"Makefile.am", "Makefile.in", "Makefile", "delete.me", "desktop.ini", ".gitkeep"}
 LIB_SKIP_DIRS = {"save", "apex", "bone", "data", "user"}
 LIB_SKIP_PREFIXES = ("playrecord-",)
+LIB_SKIP_SUBDIRS = {("xtra", "graf")}
 
 FONT_NAME = "NotoSansMonoCJKjp-Regular.otf"
 FONT_URL = (
@@ -93,6 +88,23 @@ def copy_if_changed(src: Path, dst: Path) -> None:
     shutil.copy2(src, dst)
 
 
+def copy_rogue_legacy_licenses() -> list[Path]:
+    """Bundle the exact license texts for the two restored Rogue cores."""
+    upstream = REPO.parent / "roguelike-cores" / "upstream"
+    copied: list[Path] = []
+    for core, name in (
+        ("rogue36", "Rogue36-LICENSE.txt"),
+        ("rogue54", "Rogue54-LICENSE.txt"),
+    ):
+        src = upstream / core / "LICENSE.TXT"
+        if not src.is_file():
+            raise FileNotFoundError(src)
+        dst = OUT / "assets" / "licenses" / name
+        copy_if_changed(src, dst)
+        copied.append(dst)
+    return copied
+
+
 # --------------------------------------------------------------------- lib/
 
 
@@ -113,56 +125,10 @@ def collect_lib_files() -> list[tuple[Path, Path]]:
             continue
         if len(parts) >= 2 and parts[1] in LIB_SKIP_DIRS:
             continue
+        if len(parts) >= 3 and (parts[1], parts[2]) in LIB_SKIP_SUBDIRS:
+            continue
         out.append((src, rel))
     return out
-
-
-# ----------------------------------------------------------------- tilework
-
-
-def scale_one(job: tuple[Path, Path, int]) -> tuple[Path, bool, str]:
-    src, dst, max_side = job
-    try:
-        with Image.open(src) as image:
-            image = image.convert("RGBA")
-            width, height = image.size
-            if max(width, height) > max_side:
-                scale = max_side / float(max(width, height))
-                size = (max(1, round(width * scale)), max(1, round(height * scale)))
-                # LANCZOS 固定。NEAREST で縮めるとドット絵の細部が飛ぶ
-                # （PIXELART_QWEN_METHOD の縮小規則と同じ）。
-                image = image.resize(size, Image.LANCZOS)
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            image.save(dst, format="PNG", optimize=True)
-        return (src, True, "")
-    except Exception as exc:  # noqa: BLE001 - 1 枚の失敗で全体を止めない
-        return (src, False, str(exc))
-
-
-def build_tiles(max_side: int, jobs: int) -> list[Path]:
-    src_dir = REPO / "tilework" / "sfc"
-    dst_dir = OUT / "tilework" / "sfc"
-    if not src_dir.is_dir():
-        sys.exit(f"タイルがありません: {src_dir}")
-
-    sources = sorted(src_dir.glob("*.png"))
-    log(f"タイル {len(sources)} 枚を最大 {max_side}px へ縮小します（{jobs} 並列）")
-    dst_dir.mkdir(parents=True, exist_ok=True)
-
-    work = [(src, dst_dir / src.name, max_side) for src in sources]
-    done = 0
-    failed = 0
-    with concurrent.futures.ProcessPoolExecutor(max_workers=jobs) as pool:
-        for _src, ok, err in pool.map(scale_one, work, chunksize=16):
-            done += 1
-            if not ok:
-                failed += 1
-                log(f"  !! 失敗: {_src.name}: {err}")
-            if done % 500 == 0:
-                log(f"  {done}/{len(work)}")
-    if failed:
-        sys.exit(f"タイルの縮小に {failed} 件失敗しました。中断します。")
-    return [dst_dir / src.name for src in sources]
 
 
 # --------------------------------------------------------------- assets/
@@ -213,30 +179,24 @@ GENERATED_TREES = {
 }
 
 LEGACY_TREES = (
- # --- 幻想蛮怒
+    # --- 幻想蛮怒
     "gensoband/lib",
     "gensoband/lib-en",          # 作成した英語 edit / file / help（EN E0・E4・E7。生成物）
     "gensoband/lang/en",         # 訳文カタログ（gb_lang が実行時に読む）
-    "gensoband/tilework/64",     # mapping.csv の `tile` 行が指す先
-    "gensoband/tilework/ascii",  # gb_manifest.cpp の kAsciiDir
     "gensoband/assets/slab",     # hello_ack.asset_roots.slab
     # --- Sil-Q
     "silq/lib",
     "silq/lib-ja",               # 焼いた日本語 edit とマニュアル（M1 P6）
     "silq/lib-en",               # 作成した英語マニュアル（追補 ③。2026-08-23）
     "silq/lang/ja",              # 訳文カタログ（sq_lang）
-    "silq/tilework/128",         # sq_main.cpp の add_entities が並べる先
     "silq/assets/slab",
- # --- FroxComposband
- # **M2 で実体の絵が入った**。`asset_roots.slab` は
-    # `frox/assets/slab` を申告するので、板と 64px の絵をここへ並べる。
-    # **変愚から流用する 1,531 枚は写さない**——目録が `tilework/sfc/…` を指していて、
-    # 板は既定の置き場（`assets/voxel/slab`）で当たるからである。
+    # --- FroxComposband
+    # `asset_roots.slab` が申告するボクセル板だけを入れる。元の64px画像と
+    # 変愚から流用する画像は配布しない。
     # 地形の立体はプレハブ側なので、ここには要らない。
     "frox/lib",
     "frox/lib-ja",               # 作成した日本語 edit（M1 J3。生成物）
     "frox/lang/ja",              # 訳文カタログ（fc_lang が実行時に読む）
-    "frox/tilework/64",          # Frox 固有の絵 496 枚（実体 473 ＋ 地形 23）
     "frox/assets/slab",          # 実体の板 473 枚（fc_main の asset_roots.slab）
 )
 
@@ -246,6 +206,7 @@ LEGACY_FILES = (
     "silq/tilework/terrain_map.csv",
     "frox/tilework/terrain_map.csv",
     "frox/tilework/mapping.csv",
+    "rogue2/mesg",
 )
 
 #: ``<コア>/lib`` の下で写さないもの。
@@ -262,7 +223,7 @@ LEGACY_FILES = (
 #:   （`gb_audio.c` が空実装。`gensoband/adapter/gb_audio.c` の註）。鳴らせるように
 #:   なったらここを外す。
 LEGACY_LIB_SKIP_DIRS = {"save", "apex", "bone", "data", "user"}
-LEGACY_LIB_SKIP_SUBDIRS = {("xtra", "music"), ("xtra", "sound")}
+LEGACY_LIB_SKIP_SUBDIRS = {("xtra", "music"), ("xtra", "sound"), ("xtra", "graf")}
 
 #: **Frox の日本語側の作り直しの印は入れない**（`frox/lib-ja/edit/help_upd.txt`）。
 #: コアは起動時にこの印の版を見て、実行体と一致していたら `generate_spoilers()` を
@@ -355,13 +316,8 @@ def fetch_font() -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    # hd2d の実効表示辺（cell_px）は 64〜128px なので、128px に縮めても見た目は保たれる。
-    parser.add_argument("--tile-size", type=int, default=128,
-                        help="タイル 1 枚の最大辺（px）。既定 128（配布一式と同じ）")
-    parser.add_argument("--skip-tiles", action="store_true",
-                        help="タイルの縮小を飛ばす（既に作ってあるとき）")
-    parser.add_argument("--jobs", type=int, default=min(16, (os.cpu_count() or 4)),
-                        help="縮小の並列数")
+    parser.add_argument("--without-rogue-licenses", action="store_true",
+                        help="UI/import-only asset bundle; do not require the packaged Rogue upstream trees")
     args = parser.parse_args()
 
     OUT.mkdir(parents=True, exist_ok=True)
@@ -375,17 +331,28 @@ def main() -> int:
         copy_if_changed(src, dst)
         extract_entries.append((rel.as_posix(), dst.stat().st_size))
 
-    # ---- tilework/sfc（縮小して、展開する）
-    if args.skip_tiles:
-        log("タイルの縮小は飛ばしました（--skip-tiles）")
-        tile_files = sorted((OUT / "tilework" / "sfc").glob("*.png"))
-        if not tile_files:
-            sys.exit("--skip-tiles ですが縮小済みタイルがありません。一度は通常実行が要ります。")
-    else:
-        tile_files = build_tiles(args.tile_size, args.jobs)
-    for dst in tile_files:
-        rel = dst.relative_to(OUT)
-        extract_entries.append((rel.as_posix(), dst.stat().st_size))
+    # ---- tilework/tile_mapping.csv（木の外にある 1 枚もの。画像は入れないが、この 1 枚は要る）
+    # `an_manifest.cpp`（`angband/adapter/an_main.cpp` の `tile_mapping_csv_path()`）が
+    # 実行時に `<exe_dir>/tilework/tile_mapping.csv` を読み、P/R/K/F の名前を変愚の
+    # 地形番号へ名寄せする。ほかのコアは同じ表を `presentation/bridge/official_tile_table.h`
+    # として**組み込み時に焼き込む**ので実行時にこの CSV を読まないが、Angband だけは
+    # 実行時パースを選んでいる（設計 §6.2）。この 1 枚を積み忘れると `TileMapping::load()`
+    # が失敗し、Angband の実体（プレイヤー・モンスター・アイテム）が軒並み ASCII の字へ
+    # 落ちる（板 GPU 資源自体は既定の置き場 `assets/voxel/slab` に在るのに、名前を
+    # 索引できず引けない）。中身は CSV（テキスト）で画像ではないので、直後のタイル画像
+    # 除外（`tilework/sfc` 等）とはぶつからない。
+    tile_mapping_src = REPO / "tilework" / "tile_mapping.csv"
+    if not tile_mapping_src.is_file():
+        sys.exit(f"tilework/tile_mapping.csv がありません: {tile_mapping_src}")
+    tile_mapping_dst = OUT / "tilework" / "tile_mapping.csv"
+    copy_if_changed(tile_mapping_src, tile_mapping_dst)
+    extract_entries.append((tile_mapping_dst.relative_to(OUT).as_posix(), tile_mapping_dst.stat().st_size))
+
+    # ---- タイル画像は配布しない。以前の生成物が残っていても素材束から除く。
+    for relative in ("tilework/sfc","gensoband/tilework/64","gensoband/tilework/ascii","silq/tilework/128","frox/tilework/64",
+                     "lib/xtra/graf","gensoband/lib/xtra/graf","silq/lib/xtra/graf","frox/lib/xtra/graf"):
+        stale=OUT/relative
+        if stale.exists():shutil.rmtree(stale)
 
     # ---- assets/voxel（そのまま写して、展開する）
     voxel_files = copy_tree_verbatim("assets/voxel")
@@ -400,6 +367,32 @@ def main() -> int:
     lang_files = copy_tree_verbatim("assets/lang")
     log(f"assets/lang から {len(lang_files)} ファイル")
     for dst in lang_files:
+        rel = dst.relative_to(OUT)
+        extract_entries.append((rel.as_posix(), dst.stat().st_size))
+
+    # ---- assets/audio（写して、展開する。 の 3 番）
+    # 画面側の音（`hd2d/audio/`）は目録（`sfx.jsonc` / `ambience.jsonc`）を std::ifstream で、
+    # wav を `SDL_LoadWAV` で**作業ディレクトリからの相対パス**で読む。Android では
+    # 起動時に内部ストレージへ chdir してから展開するので、voxel と同じく実ファイルにする。
+    # 効果音の本体は `sfx.jsonc` の `dir`＝`lib/xtra/sound`（上の lib/ に入っている）と
+    # `assets/audio/sfx_rogue/`。ベッドと層は `assets/audio/bed/`（追跡外。在れば入れる）。
+    # `assets/audio/ai/` は生成 AI の候補置き場で、実行時に読まないので入れない。
+    audio_files = []
+    for name in ("ambience.jsonc", "sfx.jsonc"):
+        src = REPO / "assets" / "audio" / name
+        if not src.is_file():
+            sys.exit(f"assets/audio/{name} がありません: {src}")
+        dst = OUT / "assets" / "audio" / name
+        copy_if_changed(src, dst)
+        audio_files.append(dst)
+    audio_files += copy_tree_verbatim("assets/audio/sfx_rogue")
+    if (REPO / "assets" / "audio" / "bed").is_dir():
+        audio_files += copy_tree_verbatim("assets/audio/bed")
+    else:
+        log("assets/audio/bed が無い（環境音のベッドと層は鳴らない。tools/gen_audio_assets.py で作る）")
+    audio_bytes = sum(dst.stat().st_size for dst in audio_files)
+    log(f"assets/audio から {len(audio_files)} ファイル / {audio_bytes / 1024 / 1024:.1f}MB")
+    for dst in audio_files:
         rel = dst.relative_to(OUT)
         extract_entries.append((rel.as_posix(), dst.stat().st_size))
 
@@ -422,17 +415,92 @@ def main() -> int:
         rel = dst.relative_to(OUT)
         extract_entries.append((rel.as_posix(), dst.stat().st_size))
 
+    # ---- angband/lib（そのまま写して、展開する）
+    # Angband 4.2.6。`angband_lib_dir` は
+    # `<exe_dir>/angband/lib` を読む。`hd2d/town.txt`（手描きの町。A5）はこの木の中に
+    # 在るので、写せば一緒に入る。`angband/{save,user,panic,scores,archive}`（木の外。
+    # `angband_data_dir()` の置き場）は開発中のセーブそのものなので**入れない**
+    # （旧 C コアの `save`/`user` 除外と同じ理由）。
+    # 原作のデータ（gamedata など）はリポジトリに無い。写していなければ止める。
+    if not (REPO / "angband/lib/gamedata").is_dir():
+        sys.exit("angband/lib/gamedata がありません。先に python tools/core_sources/prepare_original_data.py を実行してください")
+    angband_lib_files = copy_tree_verbatim("angband/lib")
+    log(f"angband/lib から {len(angband_lib_files)} ファイル")
+    for dst in angband_lib_files:
+        rel = dst.relative_to(OUT)
+        extract_entries.append((rel.as_posix(), dst.stat().st_size))
+
+    # ---- angband/lang/ja と angband/lib-ja（日本語）
+    # 訳のカタログ・名前の表と、説明の行だけ日本語にした gamedata の写し。lib-ja は作成物で
+    # 追跡しないので、ここで作り直す（an_bootstrap.c が日本語のときだけ <lib>/../lib-ja/gamedata を読む）。
+    subprocess.run([sys.executable, str(REPO / "tools" / "angband" / "an_build_ja_gamedata.py"), "build"],
+                   cwd=str(REPO), check=True)
+    # ゲーム内ヘルプの訳（lib-ja/help。設計 §18。ui-help.c が日本語のときだけ先に探す）
+    subprocess.run([sys.executable, str(REPO / "tools" / "angband" / "an_build_ja_help.py"), "build"],
+                   cwd=str(REPO), check=True)
+    for angband_ja_root in ("angband/lang/ja", "angband/lib-ja"):
+        angband_ja_files = copy_tree_verbatim(angband_ja_root)
+        log(f"{angband_ja_root} から {len(angband_ja_files)} ファイル")
+        for dst in angband_ja_files:
+            rel = dst.relative_to(OUT)
+            extract_entries.append((rel.as_posix(), dst.stat().st_size))
+
+    # ---- angband/assets/slab（そのまま写して、展開する）
+    # `hello_ack.asset_roots.slab`（M2）が申告するボクセル板。変愚から流用できない
+    # Angband 固有の実体だけが入っている。
+    angband_slab_files = copy_tree_verbatim("angband/assets/slab")
+    log(f"angband/assets/slab から {len(angband_slab_files)} ファイル")
+    for dst in angband_slab_files:
+        rel = dst.relative_to(OUT)
+        extract_entries.append((rel.as_posix(), dst.stat().st_size))
+
+    # ---- angband/tilework/mapping.csv（木の外にある 1 枚もの。無いと絵が 1 枚も出ない）
+    angband_mapping_src = REPO / "angband" / "tilework" / "mapping.csv"
+    if not angband_mapping_src.is_file():
+        sys.exit(f"angband/tilework/mapping.csv がありません: {angband_mapping_src}")
+    angband_mapping_dst = OUT / "angband" / "tilework" / "mapping.csv"
+    copy_if_changed(angband_mapping_src, angband_mapping_dst)
+    extract_entries.append((angband_mapping_dst.relative_to(OUT).as_posix(), angband_mapping_dst.stat().st_size))
+
+    # ---- umoria/data と umoria/hd2d（写して、展開する）
+    # Umoria 5.7。`um_main.cpp` の `configure_paths` は `<exe_dir>/umoria/data`、
+    # `um_town.cpp` の `load_map()` は `<exe_dir>/umoria/hd2d/town.txt` を読む。`umoria/data` は原作の文章で
+    # 追跡していないので、固定した原作のコミットから作り直す。セーブとスコア（`data_dir()/umoria/`）は入れない。
+    subprocess.run([sys.executable, str(REPO / "tools" / "umoria" / "build_windows.py"), "--data-only"],
+                   cwd=REPO, check=True)
+    for umoria_root in ("umoria/data", "umoria/hd2d", "umoria/lang"):
+        umoria_files = copy_tree_verbatim(umoria_root)
+        log(f"{umoria_root} から {len(umoria_files)} ファイル")
+        for dst in umoria_files:
+            rel = dst.relative_to(OUT)
+            extract_entries.append((rel.as_posix(), dst.stat().st_size))
+
     # ---- assets/ui（そのまま写す。展開しない＝APK の assets から IMG_Load）
     ui_files = copy_tree_verbatim("assets/ui")
     log(f"assets/ui から {len(ui_files)} ファイル（展開しない）")
+
+    # ---- assets/fx（そのまま写す。展開しない＝APK の assets から IMG_Load）
+    # 攻撃の視覚効果の絵の板（どくろなど。`hd2d/render/fx_styles/fx_parts.cpp` の
+    # `fx_sprite_set_dir("assets/fx")` が相対パスで読む）。無いと絵の板は何も出さない（落ちない）。
+    fx_files = copy_tree_verbatim("assets/fx")
+    log(f"assets/fx から {len(fx_files)} ファイル（展開しない）")
 
     # ---- assets/fonts（同梱のみ。TTF_OpenFont が assets から読む）
     fetch_font()
 
     # ---- 第三者ライセンス表記
-    notices = REPO / "THIRD-PARTY-NOTICES.txt"
-    if notices.exists():
-        copy_if_changed(notices, OUT / "THIRD-PARTY-NOTICES.txt")
+    for name in ("LICENSE", "README.md", "readme_angband", "THIRD-PARTY-NOTICES.txt"):
+        notices = REPO / name
+        if notices.is_file():
+            copy_if_changed(notices, OUT / name)
+    # OpenAL Soft（LGPL-2.1。libopenal.so として同梱する）の本文。
+    openal_copying = REPO / "third_party" / "android" / "openal-soft" / "COPYING"
+    if not openal_copying.is_file():
+        sys.exit(f"OpenAL Soft の COPYING がありません（tools/fetch_android_deps.ps1 を先に）: {openal_copying}")
+    copy_if_changed(openal_copying, OUT / "assets" / "licenses" / "OpenAL-Soft-COPYING.txt")
+    if not args.without_rogue_licenses:
+        rogue_license_files = copy_rogue_legacy_licenses()
+        log(f"Rogue 3.6 / 5.4 license files: {len(rogue_license_files)}")
 
     # 同梱コンパイラーのヘッダー・パッチ・接続 SDK。実行ファイルは jniLibs へ別途配置する。
     import_kit = REPO / "android/core-import-kit"
@@ -446,6 +514,15 @@ def main() -> int:
         target = OUT / "core-import" / source.relative_to(import_kit)
         copy_if_changed(source, target)
         extract_entries.append((target.relative_to(OUT).as_posix(), target.stat().st_size))
+
+    image_suffixes={".png",".bmp",".jpg",".jpeg",".webp"}
+    forbidden=[]
+    for path in OUT.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in image_suffixes:continue
+        parts=path.relative_to(OUT).parts
+        if "tilework" in parts or parts[:2]==("assets","tiles") or any(parts[i:i+3]==("lib","xtra","graf") for i in range(max(0,len(parts)-2))):
+            forbidden.append(path)
+    if forbidden:raise RuntimeError(f"Tile image entered Android assets: {forbidden[0]}")
 
     # ---- assets.manifest（旧版と同じ形式。installer は同じコード）
     digest = hashlib.sha256()
@@ -470,7 +547,7 @@ def main() -> int:
     log(f"展開対象: {len(extract_entries)} ファイル / {extract_total / 1024 / 1024:.1f}MB")
     log(f"アセット合計: {total / 1024 / 1024:.1f}MB  ({OUT})")
     log("※ この APK はサイドロード用の大きさ（Google Play の 200MB には収まらない）。"
-        "提出するときは音声の別配信などの削り方を決めること")
+        "提出するときは音声の別配信などの削り方を決めること（ANDROID_HD2D_PORT.md §6）")
     return 0
 
 

@@ -280,7 +280,7 @@ E:[Initializing arrays... (wilderness)]
 J:[配列を初期化しています... (荒野)]
 
 E:[Initializing user pref files...]
-J:[利用者の設定ファイルを読んでいます...]
+J:[遊ぶ人の設定ファイルを読んでいます...]
 
 E:[Initializing values... (misc)]
 J:[値を初期化しています... (雑多)]
@@ -2869,6 +2869,24 @@ J:本当に%sを<color:R>%d</color>ゴールドで売りますか？ <color:y>[y
 E:You gave %s.
 J:%sを譲った。
 
+# 呪文の一覧の熟練度の欄（spells3.c・spells.c の //FC: proficiency abbreviation）。原作は exp_level_str の先頭 4 バイトに
+# `]` を足した略字。訳は変愚の熟練度（初心者・入門者・熟練者・エキスパート・達人）の頭の字にそろえる。CP932 で 4 バイトに収まる。
+# 遊ぶ人に届いた報告の調査で見つけた（2026-10-06。日本語の画面で [Un] と英語のままだった）。
+E:[Un]
+J:[初]
+
+E:[Be]
+J:[入]
+
+E:[Sk]
+J:[熟]
+
+E:[Ex]
+J:[エ]
+
+E:[Ma]
+J:[達]
+
 E:You sold %s for <color:R>%d</color> gold.
 J:%sを<color:R>%d</color>ゴールドで売った。
 
@@ -2895,6 +2913,24 @@ J:<color:B>(%d / %d 頁)</color>\n
 
 E:Cancelled
 J:取り消した
+
+E:<color:y>Hide which item <color:w>(<color:keypress>Esc</color> to cancel)</color>?</color>
+J:<color:y>どのアイテムを隠しますか <color:w>(<color:keypress>Esc</color>で取消)</color>?</color>
+
+E:%s is already hidden.
+J:%sはすでに隠されています。
+
+E:Hidden %s. Use Show Hidden Items to restore it.
+J:%sを隠しました。「隠したアイテムを再表示」で戻せます。
+
+E:Restored %d hidden store item%s.
+J:隠していた店の商品を%d件再表示しました。%.0s
+
+E:There are no hidden store items.
+J:隠している店の商品はありません。
+
+E:<color:w>[</color><color:o>U</color><color:w>] Show Hidden Items</color> <color:y>(%d)</color>
+J:<color:w>[</color><color:o>U</color><color:w>] 隠したアイテムを再表示</color> <color:y>(%d)</color>
 
 E:<color:U>%s</color> brings out some new stock.
 J:<color:U>%s</color>が新しいアイテムを出してきた。
@@ -4433,6 +4469,18 @@ J:設定を直に打つ(")
 
 E:Run(.)
 J:走る(.)
+
+E:Repeat last command(n/X)
+J:直前のコマンド繰り返し(n/X)
+
+E:Record command(")
+J:打鍵を記録する(")
+
+E:Playback recorded command(')
+J:記録した打鍵を流す(')
+
+E:Set repeat count(0)
+J:繰り返し回数を指定(0)
 
 # >>> ここから下は fc_build_ja_frame.py が書く（手で直さない）>>>
 #
@@ -12219,6 +12267,113 @@ J:近くにやり残したことは無い！
 
 E:You don't see a <color:g>%s</color> nearby.
 J:近くに<color:g>%s</color>は見当たらない。
+
+
+# ---------------------------------------------------------------- bldg.c / cmd2.c: 画へ出る 1 行の形で書く札
+# （名前だけの鍵では当たらない。`fc_lookup()` は完全一致だけを引くため）
+
+# --- 宿屋の「他の町へ跳ぶ」の行き先（`bldg.c` の `sprintf(buf,"%c) %-20s", I2A(i-1), town_name(i))`）
+# 町の名前だけの鍵（`E:Telmora`）は一般に在るが、画へ出るのは `b) Telmora` + 空白で 23 桁の 1 行なので当たらない。
+# 末尾の空白まで鍵に含める（行頭・行末の空白は `\s` で書く）。訳は日本語の幅（2 バイト＝2 桁）で 23 桁になるよう空白を足す。
+E:a) Outpost\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:a) 辺境の地\s\s\s\s\s\s\s\s\s\s\s\s
+E:b) Telmora\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:b) テルモラ\s\s\s\s\s\s\s\s\s\s\s\s
+E:c) Morivant\s\s\s\s\s\s\s\s\s\s\s\s
+J:c) モリバント\s\s\s\s\s\s\s\s\s\s
+E:d) Angwil\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:d) アングウィル\s\s\s\s\s\s\s\s
+E:e) Anambar\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:e) アナンバール\s\s\s\s\s\s\s\s
+E:f) Thalos\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:f) サロス\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+E:g) Zul\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+J:g) ズル\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s\s
+
+# --- 移動コマンド（`` ` ``）の行き先の一覧（`cmd2.c` の `journey_choose_list()`）
+# 行き先がマップにあれば、記号（1 文字）と名前を別々に描く（名前の側は ` 名前`。先頭に空白）。
+# 無ければ `記号 名前` の 1 行で描く。どちらも名前だけの鍵（`S:General Store`）には当たらないので、描く形のまま書く。
+# 「Home」だけは幅をそろえるために末尾へ空白が 1 つ付く。訳語は上の `S:` と同じ（看板・入口の地形の名と合わせる）。
+E:\sGeneral Store
+J:\s雑貨屋
+E:\sArmoury
+J:\s防具屋
+E:\sWeapon Smiths
+J:\s武器専門店
+E:\sTemple
+J:\s寺院
+E:\sAlchemy Shop
+J:\s錬金術の店
+E:\sMagic Shop
+J:\s魔法の店
+E:\sBlack Market
+J:\sブラックマーケット
+E:\sHome\s
+J:\s我が家\s
+E:\sBookstore
+J:\s書店
+E:\sMushroom Store
+J:\sキノコ屋
+E:\sMuseum
+J:\s博物館
+E:\sHealer
+J:\s治療師
+E:\sTrump Tower
+J:\sトランプの塔
+E:\sInn
+J:\s宿屋
+E:\sCasino
+J:\sカジノ
+E:\sReforging
+J:\s再鍛造
+E:\sQuest Target
+J:\sクエストの目標
+E:\sStairs Down
+J:\s下り階段
+E:\sStairs Up
+J:\s上り階段
+E:\sQuest Exit
+J:\sクエストの出口
+E:1 General Store
+J:1 雑貨屋
+E:2 Armoury
+J:2 防具屋
+E:3 Weapon Smiths
+J:3 武器専門店
+E:4 Temple
+J:4 寺院
+E:5 Alchemy Shop
+J:5 錬金術の店
+E:6 Magic Shop
+J:6 魔法の店
+E:7 Black Market
+J:7 ブラックマーケット
+E:8 Home\s
+J:8 我が家\s
+E:9 Bookstore
+J:9 書店
+E:0 Mushroom Store
+J:0 キノコ屋
+E:M Museum
+J:M 博物館
+E:+ Healer
+J:+ 治療師
+E:+ Trump Tower
+J:+ トランプの塔
+E:+ Inn
+J:+ 宿屋
+E:+ Casino
+J:+ カジノ
+E:+ Reforging
+J:+ 再鍛造
+E:+ Quest Target
+J:+ クエストの目標
+E:> Stairs Down
+J:> 下り階段
+E:< Stairs Up
+J:< 上り階段
+E:< Quest Exit
+J:< クエストの出口
 
 
 # ---------------------------------------------------------------- cmd2.c: わざと訳さない
@@ -26575,16 +26730,16 @@ E:skills, acquired over a very long resurrecting career, is willing to intervene
 J:どうやら手を貸してくれるようだ。
 
 E:Press [r] to be reconstructed elsewhere by the Resurrection Machine.
-J:[r] を押すと、蘇生機械が別の場所であなたを組み直す。
+J:      [r] を押すと、蘇生機械が別の場所であなたを組み直す。
 
 E:Press [d/y] to view or dump the current screen. You'll return to this screen
-J:[d/y] を押すといまの画面を見るか書き出せる。終わればこの画面に
+J:      [d/y] を押すと、いまの画面を見るか書き出せる。終わればこの画面に
 
 E:afterwards.
 J:戻る。
 
 E:Press [n] to decline its help and continue dying.
-J:[n] を押すと助けを断り、そのまま死ぬ。
+J:      [n] を押すと助けを断り、そのまま死ぬ。
 
 E:If you'd like to view the screen and optionally create a screen dump, press
 J:画面を見たり、スクリーンショットを書き出したりしたければ、いま
@@ -26593,13 +26748,13 @@ E:[d] now. You'll automatically return to this dialog afterwards.
 J:[d] を押すこと。終わればこの問いかけに自動で戻る。
 
 E:Toggle silent deaths mode with [s]:\s
-J:[s] で静かな死に方の切り替え:\s
+J:静かな死に方の切り替え         [s]:\s
 
 E:Toggle quick restart mode with [q]:\s
-J:[q] で素早い再開の切り替え:\s
+J:素早い再開の切り替え           [q]:\s
 
 E:To continue to the next death screen, press [n].
-J:次の死の画面へ進むには [n] を押す。
+J:ここで死を受け入れ、次の死の画面へ進むには、[n] を押す。
 
 E:Still in denial? Or can't bear to leave without checking out that one last
 J:まだ認められないか。それとも、何のために死んだのか最後の戦利品を
@@ -26611,7 +26766,7 @@ E:one last time, for shuffling you off this mortal coil?
 J:もう一度だけ殴りたいか。
 
 E:In that case, press [w] now, to cheat death and resurrect in wizard mode, but
-J:それなら [w] を押せ。死を欺いてウィザードモードで甦れる。ただし
+J:それなら、いまここで[w] を押せ。死を欺いてウィザードモードで甦れる。ただし
 
 E:know that of course it makes you a stinky cheater and no score will be saved.
 J:もちろん卑怯者になり、スコアは記録されない。
@@ -35710,6 +35865,9 @@ E:Sustain %s
 J:%s維持
 
 # --- 色の名（`color_names[]`。設定の画の色いじり）
+E:Dark
+J:黒
+
 E:Slate
 J:青灰色
 
@@ -37155,6 +37313,79 @@ E:[Wolf]
 J:[狼]
 E:[Bear]
 J:[熊]
+
+# --- 化けた姿の札（`xtra1.c` の `sprintf(buf, "[%.10s]", race_ptr->name)`。状態欄の右 12 桁に入る）
+# 鍵は **`%.10s` で切った後の綴り**（`[Shadow-Fai]`）。訳は札の幅（括弧を除いて 10 バイト＝全角 5 字）に収めた略称。
+# 12 桁に収まらない 8 種は略称（スナガ・影フェア・マインド・半トロル・サイクロプ・ニーベル・闇エルフ・アンバー族）。
+# `[Human]` は既にある（ワーウルフ・ビヨルン族の札と共用）。
+E:[Snotling]
+J:[スナガ]
+E:[Yeek]
+J:[イーク]
+E:[Kobold]
+J:[コボルド]
+E:[Imp]
+J:[インプ]
+E:[Skeleton]
+J:[骸骨]
+E:[Gnome]
+J:[ノーム]
+E:[Ent]
+J:[エント]
+E:[Dwarf]
+J:[ドワーフ]
+E:[Shadow-Fai]
+J:[影フェア]
+E:[Mindflayer]
+J:[マインド]
+E:[Barbarian]
+J:[野蛮人]
+E:[Half-Troll]
+J:[半トロル]
+E:[Beastman]
+J:[獣人]
+E:[Hobbit]
+J:[ホビット]
+E:[Cyclops]
+J:[サイクロプ]
+E:[Ogre]
+J:[オーガ]
+E:[Half-Giant]
+J:[半巨人]
+E:[Nibelung]
+J:[ニーベル]
+E:[Dark-Elf]
+J:[闇エルフ]
+E:[Zombie]
+J:[ゾンビ]
+E:[Golem]
+J:[ゴーレム]
+E:[Sprite]
+J:[妖精]
+E:[Tonberry]
+J:[トンベリ]
+E:[Balrog]
+J:[バルログ]
+E:[Kutar]
+J:[クター]
+E:[Dunadan]
+J:[ドゥナダン]
+E:[Klackon]
+J:[クラッコン]
+E:[High-Elf]
+J:[ハイエルフ]
+E:[Amberite]
+J:[アンバー族]
+E:[Demigod]
+J:[デミゴッド]
+E:[Archon]
+J:[アルコン]
+E:[Vampire]
+J:[吸血鬼]
+E:[Half-Titan]
+J:[半タイタン]
+E:[Spectre]
+J:[幽霊]
 E:Study (%d)
 J:学習 (%d)
 E:Energy:%-3dK
@@ -45907,4 +46138,3 @@ J:
 
 E:Spells.csv
 J:
-

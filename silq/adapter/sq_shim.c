@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file sq_shim.c
  * @brief Sil-Q コアの読み口（C 側）。**Sil-Q のヘッダを見てよい TU** の 1 つ。
  *
@@ -12,8 +12,11 @@
 
 #include "sq_lang_c.h"
 #include "sq_shim.h"
+#include "sq_unaware_category.h"
+#include "bridge/unaware_item_categories.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 const char *sq_core_name(void)
@@ -220,6 +223,9 @@ static unsigned short sq_feature_bits(int y, int x)
     if ((feat >= FEAT_LESS) && (feat <= FEAT_MORE_SHAFT)) {
         bits |= SQ_FEAT_STAIRS;
     }
+    if ((feat == FEAT_LESS_SHAFT) || (feat == FEAT_MORE_SHAFT)) {
+        bits |= SQ_FEAT_SHAFT;
+    }
     if (feat == FEAT_RUBBLE) {
         bits |= SQ_FEAT_RUBBLE;
     }
@@ -257,6 +263,31 @@ static unsigned short sq_feature_bits(int y, int x)
     }
 
     return bits;
+}
+
+/*!
+ * @brief プレイヤの光で照らされた（暗黒側なら暗くされた）マスか。`sq_map_cell::player_lit`。
+ * @details 原作の `update_view()`（`cave.c`）の式の写しで、読むだけ（状態は変えない）。
+ * 原作はプレイヤの光だけを分ける印を持たない（`cave_light` は部屋の明かり・敵や物の光との合計）。
+ * - 光（`cur_light > 0`）：`CAVE_VIEW`・`CAVE_SEEN`・`distance(@, マス) <= cur_light`
+ * - 暗黒側（`cur_light < 0`）：`CAVE_VIEW`・`distance(@, マス) <= -cur_light`（光でも視認でもなく、暗くされた範囲）
+ */
+static unsigned char sq_player_lit(int y, int x)
+{
+    const int light = p_ptr->cur_light;
+    const int radius = (light < 0) ? -light : light;
+    const u16b info = cave_info[y][x];
+
+    if ((light == 0) || !(info & (CAVE_VIEW))) {
+        return 0;
+    }
+    if (distance(p_ptr->py, p_ptr->px, y, x) > radius) {
+        return 0;
+    }
+    if ((light > 0) && !(info & (CAVE_SEEN))) {
+        return 0;
+    }
+    return 1;
 }
 
 /*! @brief 明るさ。2 = いま照らされている / 1 = 見えているが無灯 / 0 = 記憶のみ。 */
@@ -352,7 +383,119 @@ int sq_panel_view(int *x, int *y, int *w, int *h)
     return SQ_OK;
 }
 
-int sq_read_map(int x0, int y0, int w, int h, sq_map_cell *out, int cap)
+/*!
+ * @brief 正体の分からないアイテムの分類を返す。0 = 対象外。
+ * @details。
+ * 「正体そのものが分からない」の判定は `k_info[].flavor != 0`（未鑑定名の有無。
+ * 変愚の `is_apparent()` に当たる）と `k_info[].aware`（鑑定済みか）。
+ * Sil-Q には巻物・ワンド・ロッドの tval が無い（角笛 `TV_HORN` が代わり）ので、
+ * 実際に出るのは 1（薬）・3（指輪）・4（アミュレット）・6（杖）の 4 つだけ。
+ * 角笛・薬草（`TV_FOOD` の sval 0〜9）は 8 分類の外なので 0 のまま返す
+ * （契約 §3 の決定により代表を当てない。決めたこと待ちではない）。
+ * 番号は `unaware_item_categories.h`（C からも読める）と
+ * `presentation::UnawareItemCategory`（`unaware_item_tiles.h`）の 2 つに `static_assert`
+ * で突き合わせてある。**`sq_native_look.c` と共有する**（宣言は `sq_unaware_category.h`）
+ * ——同じ判定を 2 か所に書かない（契約 §4）。
+ */
+unsigned char sq_unaware_category(const object_type *o_ptr)
+{
+    object_kind *k_ptr;
+    if (!o_ptr->k_idx) {
+        return 0;
+    }
+    k_ptr = &k_info[o_ptr->k_idx];
+    if (!k_ptr->flavor || k_ptr->aware) {
+        return 0; /* 未鑑定名が無い（武器・防具の類）か、すでに鑑定済み */
+    }
+    switch (k_ptr->tval) {
+    case TV_POTION:
+        return UNAWARE_CATEGORY_POTION;
+    case TV_RING:
+        return UNAWARE_CATEGORY_RING;
+    case TV_AMULET:
+        return UNAWARE_CATEGORY_AMULET;
+    case TV_STAFF:
+        return UNAWARE_CATEGORY_STAFF;
+    default:
+        return 0; /* TV_HORN（角笛）・TV_FOOD の薬草は 8 分類の外 */
+    }
+}
+
+/*
+ * 画面を作るための呼び出しで、ゲーム本体の乱数を進めない。
+ * 確かめたこと: この版（`silq/src/cave.c`）の `map_info()`（943 行付近）は、幻覚のとき
+ * `m_ptr->image_r_idx`（出現時に決まる値）を読むだけで、乱数を引かない。乱数を引く
+ * `image_random()` / `image_monster()` / `image_object()` と `image_count` は `map_info_default()`
+ * （`files.c` のダンプ用）だけが使う。つまり今の `sq_read_map()` / `sq_read_overlay()`
+ * （`lite_spot()` も中で `map_info()` を呼ぶだけ）は乱数を進めない。
+ * それでも、原作の更新で `map_info()` が乱数を引くようになっても、画面を送る頻度（経過時間）で
+ * ゲームの乱数の列が変わらないよう、呼び出しの前に状態を丸ごと退避し、終わったら戻す
+ * （`sq_targeting.inl` の `_sq_target_rng_save` と同じ内訳。Angband の AH-23 と同じ考え方）。
+ */
+typedef struct sq_rng_snapshot {
+    bool quick;
+    u32b value;
+    u16b place;
+    u32b state[RAND_DEG];
+} sq_rng_snapshot;
+
+static void sq_rng_save(sq_rng_snapshot *snap)
+{
+    snap->quick = Rand_quick;
+    snap->value = Rand_value;
+    snap->place = Rand_place;
+    memcpy(snap->state, Rand_state, sizeof(snap->state));
+}
+
+static void sq_rng_restore(const sq_rng_snapshot *snap)
+{
+    Rand_quick = snap->quick;
+    Rand_value = snap->value;
+    Rand_place = snap->place;
+    memcpy(Rand_state, snap->state, sizeof(snap->state));
+}
+
+/*
+ * 検査用（環境変数が無ければ何もしない）。`HD2D_TEST_RNG=1` で、呼び出しの間に乱数の状態が
+ * どう動いたか（inside）と戻した後（kept）の要約値を標準エラーへ出す。`HD2D_TEST_RNG=nofix` は
+ * 戻さない（この直しの前の動きを再現する）。`HD2D_TEST_FORCE_IMAGE=1` は毎回幻覚にする。
+ */
+static unsigned sq_rng_digest(void)
+{
+    unsigned h = 2166136261u;
+    int i;
+
+    h = (h ^ (unsigned)Rand_quick) * 16777619u;
+    h = (h ^ (unsigned)Rand_value) * 16777619u;
+    h = (h ^ (unsigned)Rand_place) * 16777619u;
+    for (i = 0; i < RAND_DEG; i++) {
+        h = (h ^ (unsigned)Rand_state[i]) * 16777619u;
+    }
+    return h;
+}
+
+static void sq_test_force_image(void)
+{
+    if (getenv("HD2D_TEST_FORCE_IMAGE") != NULL) {
+        p_ptr->image = 1000;
+    }
+}
+
+static void sq_rng_finish(const sq_rng_snapshot *snap, const char *name)
+{
+    const char *mode = getenv("HD2D_TEST_RNG");
+    const int report = (mode != NULL) && (mode[0] != '\0');
+    const unsigned inside = report ? sq_rng_digest() : 0;
+
+    if (!(report && (strcmp(mode, "nofix") == 0))) {
+        sq_rng_restore(snap);
+    }
+    if (report) {
+        fprintf(stderr, "[hd2d-rng] %s inside=%08x kept=%08x\n", name, inside, sq_rng_digest());
+    }
+}
+
+static int sq_read_map_raw(int x0, int y0, int w, int h, sq_map_cell *out, int cap)
 {
     int y;
     int x;
@@ -398,6 +541,7 @@ int sq_read_map(int x0, int y0, int w, int h, sq_map_cell *out, int cap)
             cell->terrain_id = (unsigned short)f_info[cave_feat[y][x]].mimic;
             cell->feature_flags = sq_feature_bits(y, x);
             cell->light_level = sq_light_level(y, x);
+            cell->player_lit = sq_player_lit(y, x);
 
             /* 敵。**視認しているときだけ**（`ml`）。位置を漏らさない。 */
             m_idx = cave_m_idx[y][x];
@@ -420,6 +564,7 @@ int sq_read_map(int x0, int y0, int w, int h, sq_map_cell *out, int cap)
                 for (o_ptr = get_first_object(y, x); o_ptr; o_ptr = get_next_object(o_ptr)) {
                     if (o_ptr->marked) {
                         cell->object_id = (unsigned short)o_ptr->k_idx;
+                        cell->object_unaware_category = sq_unaware_category(o_ptr);
                         break;
                     }
                 }
@@ -430,7 +575,7 @@ int sq_read_map(int x0, int y0, int w, int h, sq_map_cell *out, int cap)
     return n;
 }
 
-int sq_read_overlay(const sq_map_cell *cells, int count, sq_overlay_cell *out, int cap)
+static int sq_read_overlay_raw(const sq_map_cell *cells, int count, sq_overlay_cell *out, int cap)
 {
     int i;
     int n = 0;
@@ -556,6 +701,30 @@ int sq_read_overlay(const sq_map_cell *cells, int count, sq_overlay_cell *out, i
      * （上限は呼び手が渡す `cap` ＝ 視界のマス数がそのまま効く）。
      */
     return n;
+}
+
+int sq_read_map(int x0, int y0, int w, int h, sq_map_cell *out, int cap)
+{
+    sq_rng_snapshot snap;
+    int result;
+
+    sq_rng_save(&snap);
+    sq_test_force_image();
+    result = sq_read_map_raw(x0, y0, w, h, out, cap);
+    sq_rng_finish(&snap, "sq_read_map");
+    return result;
+}
+
+int sq_read_overlay(const sq_map_cell *cells, int count, sq_overlay_cell *out, int cap)
+{
+    sq_rng_snapshot snap;
+    int result;
+
+    sq_rng_save(&snap);
+    sq_test_force_image();
+    result = sq_read_overlay_raw(cells, count, out, cap);
+    sq_rng_finish(&snap, "sq_read_overlay");
+    return result;
 }
 
 int sq_read_alerts(sq_alert_cell *out, int cap)
@@ -738,6 +907,52 @@ int sq_read_surroundings(sq_surroundings *out)
     return SQ_OK;
 }
 
+/*!
+ * @brief プレイヤの光源の種類（`SQ_LIGHT_*`）。原作の `calc_torch()`（`xtra1.c`）と同じ見方をする読むだけの関数。
+ * @details 光源の枠（`INVEN_LITE`）の物を見る。燃料の切れた松明・ランタンは光らない（`cur_light` に足されない）ので、
+ * ほかの光（`TR2_LIGHT`・内なる光・木々の歌・鍛冶）が残っていれば「それ以外」にする。
+ * `cur_light < 0`（暗黒の装備）は暗黒側で、光源の枠の物によらない。
+ */
+static int sq_player_light_kind(void)
+{
+    const object_type *o_ptr;
+
+    if (!character_generated) {
+        return SQ_LIGHT_NONE;
+    }
+    if (p_ptr->cur_light < 0) {
+        return SQ_LIGHT_DARK;
+    }
+    if (p_ptr->cur_light == 0) {
+        return SQ_LIGHT_NONE;
+    }
+
+    o_ptr = &inventory[INVEN_LITE];
+    if (!o_ptr->k_idx || (o_ptr->tval != TV_LIGHT)) {
+        return SQ_LIGHT_OTHER;
+    }
+    switch (o_ptr->sval) {
+    case SV_LIGHT_LESSER_JEWEL:
+    case SV_LIGHT_FEANORIAN:
+    case SV_LIGHT_SILMARIL:
+        return SQ_LIGHT_ARTEFACT; /* 燃料の要らない光 */
+    case SV_LIGHT_TORCH:
+    case SV_LIGHT_MALLORN:
+        if (o_ptr->timeout > 0) {
+            return o_ptr->name1 ? SQ_LIGHT_ARTEFACT : SQ_LIGHT_TORCH;
+        }
+        return SQ_LIGHT_OTHER;
+    case SV_LIGHT_LANTERN:
+        if (o_ptr->timeout > 0) {
+            return o_ptr->name1 ? SQ_LIGHT_ARTEFACT : SQ_LIGHT_LANTERN;
+        }
+        return SQ_LIGHT_OTHER;
+    default:
+        break;
+    }
+    return o_ptr->name1 ? SQ_LIGHT_ARTEFACT : SQ_LIGHT_OTHER;
+}
+
 int sq_read_floor_info(sq_floor_info *out)
 {
     if (!out) {
@@ -758,6 +973,7 @@ int sq_read_floor_info(sq_floor_info *out)
 
     out->dun_level = p_ptr->depth;
     out->light_radius = p_ptr->cur_light;
+    out->light_kind = sq_player_light_kind();
 
     /* 訳し方は `sq_hud_data()` の `depth_text` と同じ（上の註記）。字面を割らない。 */
     if (p_ptr->depth <= 0) {
@@ -767,6 +983,418 @@ int sq_read_floor_info(sq_floor_info *out)
     }
 
     return SQ_OK;
+}
+
+/* ==================================================================== 状態のアイコン */
+
+/*!
+ * @brief 歌の名前を写す（`xtra1.c` の `prt_song()` と同じ引き方。`b_name` の字）。
+ * @return 歌の番号（`SNG_*`）。歌っていなければ -1（`name` は空）
+ */
+static int sq_status_song(int song, char *name, size_t cap)
+{
+    name[0] = '\0';
+    if ((song == SNG_NOTHING) || (song < 0) || (song >= SNG_WOVEN_THEMES)) {
+        return -1;
+    }
+    my_strcpy(name, b_name + (&b_info[ability_index(S_SNG, song)])->name, cap);
+    return song;
+}
+
+/*! @brief 既知の旗 1 つぶんの対応（C 画面の Flags のページの行）。 */
+typedef struct sq_perm_row {
+    int word; /*!< 1 = 旗の第 1 語（TR1）／ 2 = 第 2 語（TR2） */
+    unsigned long flag;
+    int bit; /*!< `SQ_PERM_*` */
+} sq_perm_row;
+
+static const sq_perm_row sq_perm_rows[] = {
+    { 2, TR2_SUST_STR, SQ_PERM_SUST_STR },
+    { 2, TR2_SUST_DEX, SQ_PERM_SUST_DEX },
+    { 2, TR2_SUST_CON, SQ_PERM_SUST_CON },
+    { 2, TR2_SUST_GRA, SQ_PERM_SUST_GRA },
+    { 2, TR2_RES_COLD, SQ_PERM_RES_COLD },
+    { 2, TR2_RES_FIRE, SQ_PERM_RES_FIRE },
+    { 2, TR2_RES_ELEC, SQ_PERM_RES_ELEC },
+    { 2, TR2_RES_POIS, SQ_PERM_RES_POIS },
+    { 2, TR2_RES_FEAR, SQ_PERM_RES_FEAR },
+    { 2, TR2_RES_BLIND, SQ_PERM_RES_BLIND },
+    { 2, TR2_RES_CONFU, SQ_PERM_RES_CONFU },
+    { 2, TR2_RES_STUN, SQ_PERM_RES_STUN },
+    { 2, TR2_SLOW_DIGEST, SQ_PERM_SLOW_DIGEST },
+    { 2, TR2_LIGHT, SQ_PERM_LIGHT },
+    { 2, TR2_REGEN, SQ_PERM_REGEN },
+    { 2, TR2_SEE_INVIS, SQ_PERM_SEE_INVIS },
+    { 2, TR2_FREE_ACT, SQ_PERM_FREE_ACT },
+    { 1, TR1_SLAY_ORC, SQ_PERM_SLAY_ORC },
+    { 1, TR1_SLAY_TROLL, SQ_PERM_SLAY_TROLL },
+    { 1, TR1_SLAY_WOLF, SQ_PERM_SLAY_WOLF },
+    { 1, TR1_SLAY_SPIDER, SQ_PERM_SLAY_SPIDER },
+    { 1, TR1_SLAY_UNDEAD, SQ_PERM_SLAY_UNDEAD },
+    { 1, TR1_SLAY_RAUKO, SQ_PERM_SLAY_RAUKO },
+    { 1, TR1_SLAY_DRAGON, SQ_PERM_SLAY_DRAGON },
+};
+
+/*! @brief 技能の修正の旗（pval で正負が決まる）と、立てる桁。 */
+static const sq_perm_row sq_skill_rows[] = {
+    { 1, TR1_MEL, SQ_PERM_SKILL_MEL },
+    { 1, TR1_ARC, SQ_PERM_SKILL_ARC },
+    { 1, TR1_STL, SQ_PERM_SKILL_STL },
+    { 1, TR1_PER, SQ_PERM_SKILL_PER },
+    { 1, TR1_WIL, SQ_PERM_SKILL_WIL },
+};
+
+/*!
+ * @brief 装備の既知の旗を足し合わせる。C 画面の Flags のページ（`display_player_flag_info()`）と同じ
+ * `object_flags_known()` を、同じ装備の枠（`INVEN_WIELD` から `INVEN_TOTAL` の手前）で見る。
+ */
+static unsigned int sq_status_perm_mask(void)
+{
+    unsigned int mask = 0;
+    int skill_net[sizeof(sq_skill_rows) / sizeof(sq_skill_rows[0])];
+    size_t r;
+    int i;
+
+    memset(skill_net, 0, sizeof(skill_net));
+    for (i = INVEN_WIELD; i < INVEN_TOTAL; ++i) {
+        const object_type *o_ptr = &inventory[i];
+        u32b f1 = 0, f2 = 0, f3 = 0;
+
+        if (!o_ptr->k_idx) {
+            continue;
+        }
+        object_flags_known(o_ptr, &f1, &f2, &f3);
+        for (r = 0; r < sizeof(sq_perm_rows) / sizeof(sq_perm_rows[0]); ++r) {
+            const u32b word = (sq_perm_rows[r].word == 1) ? f1 : f2;
+
+            if (word & sq_perm_rows[r].flag) {
+                mask |= 1u << sq_perm_rows[r].bit;
+            }
+        }
+        for (r = 0; r < sizeof(sq_skill_rows) / sizeof(sq_skill_rows[0]); ++r) {
+            if (f1 & sq_skill_rows[r].flag) {
+                skill_net[r] += o_ptr->pval;
+            }
+        }
+    }
+    for (r = 0; r < sizeof(sq_skill_rows) / sizeof(sq_skill_rows[0]); ++r) {
+        if (skill_net[r] > 0) {
+            mask |= 1u << sq_skill_rows[r].bit;
+        }
+    }
+    return mask;
+}
+
+int sq_read_status(sq_status_state *out)
+{
+    if (!out) {
+        return SQ_ERR_ARG;
+    }
+    memset(out, 0, sizeof(*out));
+    out->song1 = -1;
+    out->song2 = -1;
+    if (!character_generated || !p_ptr) {
+        return SQ_OK;
+    }
+    out->in_game = 1;
+
+    /* 速さ：`prt_speed()` と同じ（`pspeed` が 2 より大きければ加速、小さければ減速）。 */
+    if (p_ptr->pspeed > 2) {
+        out->speed_stage = 1;
+    } else if (p_ptr->pspeed < 2) {
+        out->speed_stage = -1;
+    }
+    out->blind = p_ptr->blind;
+    out->confused = p_ptr->confused;
+    out->afraid = p_ptr->afraid;
+    out->poisoned = p_ptr->poisoned;
+    /* 切り傷：`prt_cut()` の段（100 以上は致命傷）。 */
+    if (p_ptr->cut >= 100) {
+        out->cut_stage = 2;
+    } else if (p_ptr->cut > 0) {
+        out->cut_stage = 1;
+    }
+    /* 朦朧：`prt_stun()` の段。 */
+    if (p_ptr->stun > 100) {
+        out->stun_stage = 3;
+    } else if (p_ptr->stun > 50) {
+        out->stun_stage = 2;
+    } else if (p_ptr->stun > 0) {
+        out->stun_stage = 1;
+    }
+    /*
+     * 空腹：`prt_hunger()` の段。**満腹は `PY_FOOD_MAX` 以上だけ**（変愚の「食過ぎ」と同じ扱い。
+     * `PY_FOOD_FULL` 以上は食べすぎではなく普通の範囲なので出さない）。
+     */
+    if (p_ptr->food < PY_FOOD_STARVE) {
+        out->hunger_stage = 3;
+    } else if (p_ptr->food < PY_FOOD_WEAK) {
+        out->hunger_stage = 2;
+    } else if (p_ptr->food < PY_FOOD_ALERT) {
+        out->hunger_stage = 1;
+    } else if (p_ptr->food >= PY_FOOD_MAX) {
+        out->hunger_stage = 4;
+    }
+    out->entranced = p_ptr->entranced;
+    out->stealth_mode = p_ptr->stealth_mode;
+    out->image = p_ptr->image;
+    out->tmp_stat[0] = p_ptr->tmp_str;
+    out->tmp_stat[1] = p_ptr->tmp_dex;
+    out->tmp_stat[2] = p_ptr->tmp_con;
+    out->tmp_stat[3] = p_ptr->tmp_gra;
+    out->tim_invis = p_ptr->tim_invis;
+    out->oppose_fire = p_ptr->oppose_fire;
+    out->oppose_cold = p_ptr->oppose_cold;
+    out->oppose_pois = p_ptr->oppose_pois;
+    out->tmp_per = p_ptr->tmp_per;
+    out->rage = p_ptr->rage;
+    out->darkened = p_ptr->darkened;
+    out->smithing = p_ptr->smithing;
+    out->fletching = p_ptr->fletching;
+    out->song1 = sq_status_song(p_ptr->song1, out->song1_name, sizeof(out->song1_name));
+    out->song2 = sq_status_song(p_ptr->song2, out->song2_name, sizeof(out->song2_name));
+    out->perm_mask = sq_status_perm_mask();
+    return SQ_OK;
+}
+
+unsigned long sq_status_stamp(void)
+{
+    unsigned long h = 14695981UL;
+    sq_status_state st;
+
+#define SQ_STAMP(V) (h = (h * 16777619UL) ^ (unsigned long)(V))
+    (void)sq_read_status(&st);
+    SQ_STAMP(st.in_game);
+    SQ_STAMP(st.speed_stage + 2);
+    SQ_STAMP(st.blind > 0);
+    SQ_STAMP(st.confused > 0);
+    SQ_STAMP(st.afraid > 0);
+    SQ_STAMP(st.poisoned > 0);
+    SQ_STAMP(st.cut_stage);
+    SQ_STAMP(st.stun_stage);
+    SQ_STAMP(st.hunger_stage);
+    SQ_STAMP(st.entranced > 0);
+    SQ_STAMP(st.stealth_mode);
+    SQ_STAMP(st.image > 0);
+    SQ_STAMP((st.tmp_stat[0] > 0) | ((st.tmp_stat[1] > 0) << 1) | ((st.tmp_stat[2] > 0) << 2) | ((st.tmp_stat[3] > 0) << 3));
+    SQ_STAMP(st.tim_invis > 0);
+    SQ_STAMP(st.oppose_fire > 0);
+    SQ_STAMP(st.oppose_cold > 0);
+    SQ_STAMP(st.oppose_pois > 0);
+    SQ_STAMP(st.tmp_per > 0);
+    SQ_STAMP(st.rage > 0);
+    SQ_STAMP(st.darkened > 0);
+    SQ_STAMP(st.smithing > 0);
+    SQ_STAMP(st.fletching > 0);
+    SQ_STAMP(st.song1 + 1);
+    SQ_STAMP(st.song2 + 1);
+    SQ_STAMP(st.perm_mask);
+#undef SQ_STAMP
+    return h;
+}
+
+/* ==================================================================== 魔法・投射物の効果（projections / missiles） */
+
+/*
+ * `GameFrame::projections`（ボルト・ボール・ビーム・ブレス・視界内の全員）と `GameFrame::missiles`（矢・投擲）の材料
+ * （決めたこと 2026-10-11）。
+ *
+ * 原作の `project()` などに足した**観測の呼び出し 1 行**（`tools/targeting/attack_fx_overlay.py`。記録するだけで遊びの結果は
+ * 変えない）がここを呼ぶ。ここは原作の型（`GF_xxx`・`PROJECT_xxx`・物）を読んで、属性のコア名・形・範囲・経路・旗の整数に直し、
+ * 共通の記録の置き場（`presentation/bridge/named_attack_fx.h`）へ `sq_named_fx_*`（sq_frame.cpp）経由で積む。
+ * 属性のコア名から見た目の名前への変換は C++ 側（`attack_fx_core_attr_aliases.h` の `silq_look_name`）。
+ */
+#include "sq_fx_names.inc"
+
+/*! `presentation/frame/attack_fx.h` の `ProjectionShape` / `AttackFxOrigin` / `ProjectionFxFlag` / `MissileKind` と同じ並び。 */
+enum { SQ_FXS_BOLT = 0, SQ_FXS_BEAM = 1, SQ_FXS_BALL = 2, SQ_FXS_BREATH = 3, SQ_FXS_JUMP = 4 };
+enum { SQ_FXO_PLAYER = 0, SQ_FXO_MONSTER = 1, SQ_FXO_OTHER = 2 };
+enum { SQ_FXF_HIDDEN = 1, SQ_FXF_BLIND = 2, SQ_FXF_REFLECTED = 4, SQ_FXF_ALL_IN_SIGHT = 8 };
+enum { SQ_FXM_ARROW = 0, SQ_FXM_THROWN = 3 };
+
+/*! 1 件に積むマスの上限（`named_attack_fx.h` の `kNamedMaxCells` と同じ）。 */
+#define SQ_FX_CELLS 512
+
+static const char *sq_fx_gf_name(int typ)
+{
+    size_t i;
+
+    if (typ <= 0) {
+        return "";
+    }
+    for (i = 0; i < sizeof(sq_fx_gf_names) / sizeof(sq_fx_gf_names[0]); i++) {
+        if (sq_fx_gf_names[i].typ == typ) {
+            return sq_fx_gf_names[i].name;
+        }
+    }
+    return "";
+}
+
+/*!
+ * 投射 1 回（`project()`。範囲 `gy/gx/gd` が決まった直後）。形の決め方：弧（`PROJECT_ARC`）→ ブレス／`PROJECT_BEAM` → ビーム／
+ * 経路が無い（飛び先指定か、始点＝着弾点）→ 直接／爆発（`PROJECT_BOOM`）で半径があればボール／それ以外はボルト。
+ * 原作は `PROJECT_JUMP` を処理の頭で外して始点を飛び先に書き換えるので、「経路が無い」ことで直接を見分ける。
+ */
+void sq_fx_note_projection(int who, int rad, int y0, int x0, int y1, int x1, int y2, int x2, u32b flg, int typ, int blind,
+    const u16b *path_g, int path_n, int grids, const byte *gy, const byte *gx, const byte *gd)
+{
+    static int path[SQ_FX_CELLS * 2];
+    static int area[SQ_FX_CELLS * 3];
+    int shape;
+    int flags = 0;
+    int pn = 0;
+    int an = 0;
+    int i;
+    int impact_y = y2;
+    int impact_x = x2;
+    const int hidden = (flg & PROJECT_HIDE) ? 1 : 0;
+    const int origin = (who < 0) ? SQ_FXO_PLAYER : ((who > 0) ? SQ_FXO_MONSTER : SQ_FXO_OTHER);
+
+    /* 視界内の全マスへ 1 つずつ隠して当てる地形の魔法（罠・扉の探知や破壊）は、1 回ごとの絵を出さない（数百件になる）。 */
+    if (hidden && (path_n <= 0) && (rad == 0) && !(flg & (PROJECT_KILL | PROJECT_PLAY | PROJECT_ARC | PROJECT_BEAM))) {
+        return;
+    }
+
+    if (flg & PROJECT_ARC) {
+        shape = SQ_FXS_BREATH;
+    } else if (flg & PROJECT_BEAM) {
+        shape = SQ_FXS_BEAM;
+    } else if (path_n <= 0) {
+        shape = SQ_FXS_JUMP;
+    } else if ((flg & PROJECT_BOOM) && (rad > 0)) {
+        shape = SQ_FXS_BALL;
+    } else {
+        shape = SQ_FXS_BOLT;
+    }
+
+    /* 経路：始点の次のマスから着弾点まで（ボルト・ボールは爆発の中心で切る。ビームは全部）。弧は原作が経路を取らないので中心線を引く。 */
+    if (shape == SQ_FXS_BREATH) {
+        u16b line[64];
+        int ty = y1;
+        int tx = x1;
+        int n;
+
+        if ((y0 != y1) || (x0 != x1)) {
+            n = project_path(line, (rad > 0) ? rad : 1, y0, x0, &ty, &tx, PROJECT_THRU);
+            for (i = 0; (i < n) && (pn < SQ_FX_CELLS); i++) {
+                path[pn * 2] = GRID_Y(line[i]);
+                path[pn * 2 + 1] = GRID_X(line[i]);
+                pn++;
+            }
+            if (pn > 0) {
+                impact_y = path[(pn - 1) * 2];
+                impact_x = path[(pn - 1) * 2 + 1];
+            }
+        }
+    } else if (shape != SQ_FXS_JUMP) {
+        for (i = 0; (i < path_n) && (pn < SQ_FX_CELLS); i++) {
+            const int py_ = GRID_Y(path_g[i]);
+            const int px_ = GRID_X(path_g[i]);
+
+            path[pn * 2] = py_;
+            path[pn * 2 + 1] = px_;
+            pn++;
+            if ((shape != SQ_FXS_BEAM) && (py_ == y2) && (px_ == x2)) {
+                break;
+            }
+        }
+        if ((shape == SQ_FXS_BEAM) && (pn > 0)) {
+            impact_y = path[(pn - 1) * 2];
+            impact_x = path[(pn - 1) * 2 + 1];
+        }
+    }
+
+    /* 範囲：プレイヤの視界内のマスだけ（隠す投射は全部）。距離は原作の `gd`（爆発の中心から。ビームは 0）。 */
+    for (i = 0; (i < grids) && (an < SQ_FX_CELLS); i++) {
+        if (!hidden && !player_has_los_bold(gy[i], gx[i])) {
+            continue;
+        }
+        area[an * 3] = (shape == SQ_FXS_BEAM) ? 0 : gd[i];
+        area[an * 3 + 1] = gy[i];
+        area[an * 3 + 2] = gx[i];
+        an++;
+    }
+
+    if (hidden) {
+        flags |= SQ_FXF_HIDDEN;
+    }
+    if (blind) {
+        flags |= SQ_FXF_BLIND;
+    }
+    /* 視界内の全員（`project_los()`）：プレイヤが飛び先指定・当てる・隠す、で半径 0 */
+    if ((origin == SQ_FXO_PLAYER) && (shape == SQ_FXS_JUMP) && (rad == 0) && ((flg & ~PROJECT_SILENT) == (PROJECT_KILL | PROJECT_HIDE))) {
+        flags |= SQ_FXF_ALL_IN_SIGHT;
+    }
+
+    sq_named_fx_projection(origin, shape, sq_fx_gf_name(typ), rad, (shape == SQ_FXS_JUMP) ? y2 : y0, (shape == SQ_FXS_JUMP) ? x2 : x0,
+        impact_y, impact_x, flags, path, pn, area, an);
+}
+
+/*! 飛ばした物の基本アイテムの番号。名前を知らない物（正体の分からないアイテム）は正体を漏らさないので 0。 */
+static int sq_fx_item_id(const object_type *o_ptr)
+{
+    if (!o_ptr || !o_ptr->k_idx) {
+        return 0;
+    }
+    if (sq_unaware_category(o_ptr) != 0) {
+        return 0;
+    }
+    return o_ptr->k_idx;
+}
+
+/*! 矢の属性：**識別済みのものだけ**（原作より情報を増やさない）。矢・弓の識別済みの旗（`object_flags_known`）から決める。 */
+static const char *sq_fx_known_brand(const object_type *ammo, const object_type *launcher)
+{
+    u32b a1, a2, a3;
+    u32b l1, l2, l3;
+
+    object_flags_known(ammo, &a1, &a2, &a3);
+    object_flags_known(launcher, &l1, &l2, &l3);
+    (void)a2;
+    (void)a3;
+    (void)l2;
+    (void)l3;
+    if ((a1 | l1) & TR1_BRAND_FIRE) {
+        return "fire";
+    }
+    if ((a1 | l1) & TR1_BRAND_COLD) {
+        return "cold";
+    }
+    if ((a1 | l1) & TR1_BRAND_ELEC) {
+        return "elec";
+    }
+    if ((a1 | l1) & TR1_BRAND_POIS) {
+        return "pois";
+    }
+    return "";
+}
+
+/*! 射撃 1 歩（`do_cmd_fire()`）。`i == 0` が 1 発の始まり。盲目のときは記録しない（原作も見えないマスの動きは描かない）。 */
+void sq_fx_shot(int i, int y, int x, const object_type *ammo, const object_type *launcher)
+{
+    if (p_ptr->blind || !ammo) {
+        return;
+    }
+    sq_named_fx_missile_step((i <= 0) ? 1 : 0, SQ_FXM_ARROW, sq_fx_item_id(ammo), (i <= 0) ? sq_fx_known_brand(ammo, launcher) : "",
+        p_ptr->py, p_ptr->px, y, x);
+}
+
+/*! 投擲 1 歩（`do_cmd_throw()`）。 */
+void sq_fx_throw(int i, int y, int x, const object_type *obj)
+{
+    if (p_ptr->blind || !obj) {
+        return;
+    }
+    sq_named_fx_missile_step((i <= 0) ? 1 : 0, SQ_FXM_THROWN, sq_fx_item_id(obj), "", p_ptr->py, p_ptr->px, y, x);
+}
+
+/*! 射撃・投擲が相手に当たった。 */
+void sq_fx_hit(void)
+{
+    if (p_ptr->blind) {
+        return;
+    }
+    sq_named_fx_missile_hit();
 }
 
 /* ==================================================================== 効果音 */
@@ -875,6 +1503,36 @@ int sq_text_input_active(void)
     return sq_text_input_flag;
 }
 
+int sq_player_internal_name(char *out, int cap)
+{
+    if (!out || cap <= 0 || !op_ptr) return SQ_ERR_ARG;
+    my_strcpy(out, op_ptr->full_name, (size_t)cap);
+    return SQ_OK;
+}
+
+int sq_current_save_id(char *out, int cap)
+{
+    const char *leaf;
+    const char *p;
+    if (!out || cap <= 0) return SQ_ERR_ARG;
+    out[0] = 0;
+    if (!savefile[0]) return SQ_OK;
+    leaf = savefile;
+    for (p = savefile; *p; ++p) if (*p == '/' || *p == '\\') leaf = p + 1;
+    my_strcpy(out, leaf, (size_t)cap);
+    return SQ_OK;
+}
+
+int sq_current_save_exists(void)
+{
+    FILE *fp;
+    if (!savefile[0]) return 0;
+    fp = fopen(savefile, "rb");
+    if (!fp) return 0;
+    fclose(fp);
+    return 1;
+}
+
 int sq_digest_flag_check(char *report, int cap)
 {
     unsigned long long before;
@@ -957,6 +1615,21 @@ int sq_digest_flag_check(char *report, int cap)
 
     character_generated = (bool)saved_generated;
     return failed;
+}
+
+int sq_keymap_mode(void)
+{
+    /* `util.c` の `request_command()` と同じ並び（`defines.h` の KEYMAP_MODE_*）。 */
+    if (!hjkl_movement && !angband_keyset) return KEYMAP_MODE_SIL;
+    if (hjkl_movement && !angband_keyset) return KEYMAP_MODE_SIL_HJKL;
+    if (!hjkl_movement && angband_keyset) return KEYMAP_MODE_ANGBAND;
+    return KEYMAP_MODE_ANGBAND_HJKL;
+}
+
+const char *sq_keymap_action(int mode, int key)
+{
+    if ((mode < 0) || (mode >= KEYMAP_MODES) || (key < 0) || (key > 255)) return NULL;
+    return keymap_act[mode][key];
 }
 
 int sq_awaiting_command(void)

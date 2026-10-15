@@ -4,6 +4,7 @@
  */
 #include "world/floor_meaning.h"
 
+#include "frame/cell_feature_bits.h"
 #include "frame/minimap_snapshot.h"
 
 #include <algorithm>
@@ -78,6 +79,15 @@ bool FloorMeaning::mountain_at(int x, int y) const
     return (index < this->mountains.size()) && (this->mountains[index] != 0u);
 }
 
+bool FloorMeaning::shaft_at(int x, int y) const
+{
+    if ((x < 0) || (y < 0) || (x >= this->width) || (y >= this->height)) {
+        return false;
+    }
+    const auto index = (static_cast<std::size_t>(y) * static_cast<std::size_t>(this->width)) + static_cast<std::size_t>(x);
+    return (index < this->shafts.size()) && (this->shafts[index] != 0u);
+}
+
 bool same_floor(const FloorIdentity &a, const FloorIdentity &b)
 {
     return (a.dungeon_id == b.dungeon_id) && (a.dun_level == b.dun_level)
@@ -121,10 +131,33 @@ bool rebuild_floor_meaning(const GameFrame &frame, FloorMeaning &out)
         hash ^= canon;
         hash *= 1099511628211ull;
     }
-    // 作り直すのは「別のフロアになった」「既知が増えた」「既知のまま中身が変わった」とき。
+    /*
+     * 坑道かどうかはミニマップでは通常階段と同じ `Stairs` なので、間近の `cells` が届いて
+     * 初めて判明する。ここを指紋へ混ぜないと、既知数もミニマップも変わらず再構築されない。
+     * 階段セルだけを混ぜるので、敵やアイテムの移動では指紋は揺れない。
+     */
+    for (const auto &cell : frame.cells) {
+        if ((cell.feature_flags & CELL_FEAT_KNOWN) == 0u || (cell.feature_flags & CELL_FEAT_STAIRS) == 0u) {
+            continue;
+        }
+        hash ^= static_cast<std::uint16_t>(cell.gx);
+        hash *= 1099511628211ull;
+        hash ^= static_cast<std::uint16_t>(cell.gy);
+        hash *= 1099511628211ull;
+        hash ^= ((cell.feature_flags & CELL_FEAT_SHAFT) != 0u) ? 1u : 0u;
+        hash *= 1099511628211ull;
+    }
+    // 作り直すのは「別のフロアになった」「既知が増えた」「既知のまま中身が変わった」「町の窓がずれた」とき。
     const bool same = same_floor(out.identity, frame.floor) && (out.width == minimap.width)
         && (out.height == minimap.height);
-    if (same && (known == out.known_cells) && (hash == out.content_hash)) {
+    /*
+     * **町の原点の差**（新 − 旧。Frox の荒野の窓のずれ。ほかのコアは常に 0）。同じ町の同じマスは、
+     * 原点の差だけフレームの座標で動く。覚えていた階段・山・坑道は、その分だけ動かして引き継ぐ
+     * ——動かさないと、窓の外へ出た山が別のマスに残って岩山の幻になる。
+     */
+    const int origin_dx = frame.floor.town_origin_x - out.identity.town_origin_x;
+    const int origin_dy = frame.floor.town_origin_y - out.identity.town_origin_y;
+    if (same && (known == out.known_cells) && (hash == out.content_hash) && (origin_dx == 0) && (origin_dy == 0)) {
         return false;
     }
 
@@ -150,6 +183,7 @@ bool rebuild_floor_meaning(const GameFrame &frame, FloorMeaning &out)
         for (std::size_t i = 0; i < count; ++i) {
             was_stairs[i] = (static_cast<CellRole>(out.roles[i]) == CellRole::Stairs) ? 1u : 0u;
         }
+        shift_grid(was_stairs, w, h, origin_dx, origin_dy);
     }
     /*
      * **山も覚えておく**（2026-08-12。階段と同じ理由）。山のマスに飛ぶ敵が載ると
@@ -160,6 +194,12 @@ bool rebuild_floor_meaning(const GameFrame &frame, FloorMeaning &out)
     std::vector<std::uint8_t> was_mountain;
     if (same && (out.mountains.size() == count)) {
         was_mountain = out.mountains;
+        shift_grid(was_mountain, w, h, origin_dx, origin_dy);
+    }
+    std::vector<std::uint8_t> was_shafts;
+    if (same && (out.shafts.size() == count)) {
+        was_shafts = out.shafts;
+        shift_grid(was_shafts, w, h, origin_dx, origin_dy);
     }
     out.width = w;
     out.height = h;
@@ -170,6 +210,7 @@ bool rebuild_floor_meaning(const GameFrame &frame, FloorMeaning &out)
     out.marks.assign(count, 0);
     out.wall_depth.assign(count, 0);
     out.mountains.assign(count, 0);
+    out.shafts.assign(count, 0);
     out.room_cells = 0;
     out.corridor_cells = 0;
     out.structural_cells = 0;
@@ -200,6 +241,7 @@ bool rebuild_floor_meaning(const GameFrame &frame, FloorMeaning &out)
             out.wall_depth[at(x, y)] = open_at(x, y) ? 0 : kFar;
         }
     }
+
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             if (out.wall_depth[at(x, y)] == 0) {
@@ -308,6 +350,31 @@ bool rebuild_floor_meaning(const GameFrame &frame, FloorMeaning &out)
             continue;
         }
         out.roles[i] = static_cast<std::uint8_t>(CellRole::Stairs);
+    }
+
+    // 一度判明した坑道は、同じフロアで詳細セルが視界外へ出ても色を忘れない。
+    for (std::size_t i = 0; i < was_shafts.size(); ++i) {
+        if ((was_shafts[i] != 0u) && (static_cast<CellRole>(out.roles[i]) == CellRole::Stairs)) {
+            out.shafts[i] = 1u;
+        }
+    }
+
+    /*
+     * ミニマップは「その瞬間に何が見えているか」を優先するので、階段上の @ / 敵 / アイテムで
+     * `Stairs` が潰れる。RogueClone2 では @ が階段に乗った瞬間にこれが起き、3D階段が消えていた。
+     * 地形の意味は `cells[].feature_flags` が正本なので、役割判定が終わった**最後**に既知階段を戻す。
+     * 同時に坑道（2階層移動）の印も記録する。
+     */
+    for (const auto &cell : frame.cells) {
+        if ((cell.gx < 0) || (cell.gy < 0) || (cell.gx >= w) || (cell.gy >= h)) {
+            continue;
+        }
+        if ((cell.feature_flags & CELL_FEAT_KNOWN) == 0u || (cell.feature_flags & CELL_FEAT_STAIRS) == 0u) {
+            continue;
+        }
+        const std::size_t index = at(cell.gx, cell.gy);
+        out.roles[index] = static_cast<std::uint8_t>(CellRole::Stairs);
+        out.shafts[index] = ((cell.feature_flags & CELL_FEAT_SHAFT) != 0u) ? 1u : 0u;
     }
 
     /*

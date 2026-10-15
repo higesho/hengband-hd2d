@@ -307,6 +307,14 @@ public:
     //! 画面用の FBO を結んで消す。**以降の 3D はここへ描かれる。**
     void begin_scene(float clear_r, float clear_g, float clear_b);
     /*!
+     * @brief いまの深度を写しに取る／写しから戻す（2026-09-23）。
+     * @details 実体を層の順（オブジェクト → アイテム → モンスター → キャラクター）に描くために使う。
+     * 地形まで描いたところで写しを取り、層を 1 つ描くたびに戻すと、次の層は地形にだけ隠れて、
+     * 前の層の実体には隠れない（＝後の層が必ず上に出る）。画面用の FBO を結んだまま返る。
+     */
+    void save_scene_depth();
+    void restore_scene_depth();
+    /*!
      * @brief 出す先のフレームバッファへ戻す（まだ何も出さない）。
      * @param viewport_x,viewport_y 出す先の矩形の原点。**GL の約束どおり左下が原点**である
      *   （UI の矩形は左上原点なので、渡す前に `screen_h - rect.y - rect.h` へ直すこと）。
@@ -365,6 +373,8 @@ private:
     gl::GLuint scene_fbo_{ 0 };
     gl::GLuint scene_color_{ 0 };
     gl::GLuint scene_depth_{ 0 };
+    gl::GLuint saved_depth_{ 0 }; //!< `save_scene_depth` の写し（`scene_depth_` と同じ形式）
+    gl::GLuint saved_fbo_{ 0 };
 
     //! ブルームの段（[0] が半分の大きさ、以降は半分ずつ）。
     std::vector<Rt> bloom_;

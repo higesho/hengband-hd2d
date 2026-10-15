@@ -704,8 +704,6 @@ frox/lib-ja/
 frox/lib/data-ja/
 
 # ---- 作業中の一時ファイル（2026-09-06 に整理）----
-# Claude Code のセッションのデータ（1.8GB・5,669 本ある）。絶対に追跡しない。
-.claude/
 # 調べ物の途中の出力
 scratch_*
 scratch_old/
@@ -738,3 +736,41 @@ SS/
 /tools/hd2d_verify/playthrough/
 /assets/audio/se/
 /lib/xtra/
+# ------------------------------------------------------- Angband コア（AngbandCore）
+# 原作のデータの写し（angband/lib/{gamedata,customize,screens,help}）は追跡しない。
+# tools/core_sources/prepare_original_data.py が固定版の原作から写す（angband/UPSTREAM.md）。
+# 追跡するのは自前の angband/lib/hd2d/town.txt と angband/lib/user/.gitkeep だけ。
+/angband/lib/gamedata/
+/angband/lib/customize/
+/angband/lib/screens/
+/angband/lib/help/
+# RogueClone2 の日本語のメッセージ表。原作の mesg_J を同じスクリプトで写す。
+/rogue2/mesg
+# 実行時に生まれるものも外す。
+/AngbandCore.exe
+/AngbandCore.pdb
+# セーブ・遊ぶ人設定は angband/lib/ の中ではなく portable::data_dir/angband/
+# （設計 §2。ほかの Angband 系コアと違い lib/ の外）。開発機では data_dir() が
+# リポジトリ直下へ落ちるため、angband/save/ と angband/user/ がそこに生まれる。
+angband/save/
+angband/user/
+angband/scores/
+angband/panic/
+angband/archive/
+# 日本語の説明文を差し込んだ gamedata の写し（tools/angband/an_build_ja_gamedata.py が作る）。
+angband/lib-ja/
+# angband/lib/user は空の目印だけを追跡する（実際の遊ぶ人設定は上の angband/user/）。
+angband/lib/user/*
+!angband/lib/user/.gitkeep
+# タイルの作業の派生物（frox/gensoband と同じ扱い。sfc・64・mapping.csv・tile_todo.csv だけ追跡する）。
+# _prev は後処理前の生成絵、_sheets・_speck_audit・_verify* は見直し用の画像、tile_review.html は見直しのページ。
+angband/tilework/_*/
+angband/tilework/_*.png
+angband/tilework/tile_review.html
+
+# Built outside the tree by tools/core_sources/generate_modern_*.py (contain original text)
+/presentation/bridge/*.generated.h
+
+# Umoria の実行時データ。原作の data/ から tools/umoria/build_windows.py が作る
+/umoria/data/
+/UmoriaCore.exe

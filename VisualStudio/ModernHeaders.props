@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  原作から作る生成ヘッダ（リポジトリの外に出す）。
+    presentation/bridge/modern_item_details.generated.h  … 原作 identification.cpp から（コアだけ）
+    presentation/bridge/modern_artifact_lore.generated.h … 定義ファイルと自作の英訳から（画面側の検査も使う）
+  出力先は <HengbandCoreSourceRoot>-generated。`presentation` をインクルードパスへ足すので
+  `#include "bridge/modern_item_details.generated.h"` はそのまま解決する。
+  コアのプロジェクトは CoreSources.props の後に、HengbandHd2d は単独で読む。
+  コアは HengbandModernItemDetails=true を先に定義して原作からの生成も走らせる。
+  短愚蛮怒は HengbandCoreVariant=tangband を先に定義する。原作は再構成先の tangband/src、定義ファイルは tangband/lib/edit から作り、
+  出力は <HengbandGeneratedRoot>/tangband/presentation に分ける（変愚の版上げで短愚を変えないため）。
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <HengbandCoreSourceRoot Condition="'$(HengbandCoreSourceRoot)' == '' And '$(HENGBAND_CORE_SOURCE_ROOT)' != ''">$(HENGBAND_CORE_SOURCE_ROOT)</HengbandCoreSourceRoot>
+    <HengbandCoreSourceRoot Condition="'$(HengbandCoreSourceRoot)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\roguelike-cores\build-sources'))</HengbandCoreSourceRoot>
+    <HengbandPython Condition="'$(HengbandPython)' == ''">python</HengbandPython>
+    <HengbandGeneratedRoot Condition="'$(HengbandGeneratedRoot)' == '' And '$(HENGBAND_CORE_GENERATED_ROOT)' != ''">$(HENGBAND_CORE_GENERATED_ROOT)</HengbandGeneratedRoot>
+    <HengbandGeneratedRoot Condition="'$(HengbandGeneratedRoot)' == ''">$(HengbandCoreSourceRoot)-generated</HengbandGeneratedRoot>
+    <HengbandCoreVariant Condition="'$(HengbandCoreVariant)' == ''">hengband</HengbandCoreVariant>
+    <HengbandGeneratedVariantRoot Condition="'$(HengbandCoreVariant)' == 'tangband'">$(HengbandGeneratedRoot)\tangband</HengbandGeneratedVariantRoot>
+    <HengbandGeneratedVariantRoot Condition="'$(HengbandGeneratedVariantRoot)' == ''">$(HengbandGeneratedRoot)</HengbandGeneratedVariantRoot>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(HengbandGeneratedVariantRoot)\presentation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Target Name="GenerateModernArtifactLoreHeader" BeforeTargets="PrepareForBuild">
+    <Exec Command="&quot;$(HengbandPython)&quot; &quot;$(MSBuildThisFileDirectory)..\tools\core_sources\generate_modern_artifact_lore.py&quot; --source-root &quot;$(HengbandCoreSourceRoot)&quot; --output-root &quot;$(HengbandGeneratedRoot)&quot; --variant $(HengbandCoreVariant)" />
+    <Error Condition="!Exists('$(HengbandGeneratedVariantRoot)\presentation\bridge\modern_artifact_lore.generated.h')"
+           Text="Generated header was not created: $(HengbandGeneratedVariantRoot)\presentation\bridge\modern_artifact_lore.generated.h" />
+  </Target>
+  <Target Name="GenerateModernItemDetailsHeader" BeforeTargets="PrepareForBuild" DependsOnTargets="RequirePreparedCoreSources" Condition="'$(HengbandModernItemDetails)' == 'true'">
+    <Exec Command="&quot;$(HengbandPython)&quot; &quot;$(MSBuildThisFileDirectory)..\tools\core_sources\generate_modern_item_details.py&quot; --source-root &quot;$(HengbandCoreSourceRoot)&quot; --output-root &quot;$(HengbandGeneratedRoot)&quot; --variant $(HengbandCoreVariant)" />
+    <Error Condition="!Exists('$(HengbandGeneratedVariantRoot)\presentation\bridge\modern_item_details.generated.h')"
+           Text="Generated header was not created: $(HengbandGeneratedVariantRoot)\presentation\bridge\modern_item_details.generated.h" />
+  </Target>
+</Project>

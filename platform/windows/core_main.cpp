@@ -58,6 +58,7 @@
 #include "locale/text-encoding.h" //!< --text-check（文字幅の層の自己検査）
 
 #include "frame/frame_codec.h"
+#include "bridge/native_targeting_runtime.h"
 #include "frame/pad_command_table.h"
 #include "frame/protocol_messages.h"
 #include "frame/protocol_transport.h"
@@ -69,13 +70,18 @@
 #include "bootstrap/sdl_game_bootstrap.h"
 #include "bridge/asset_manifest_builder.h"
 #include "bridge/input_event_adapter.h"
+#include "bridge/modern_store.h"
+#include <variant>
 #include "bridge/pad_command_bridge.h" //!< register_pad_command_table()（言語切替で名札を組み直す）
 #include "bridge/presentation_bridge.h"
 #include "term/sdl_sub_window_terms.h"
+#include "term/sdl_null_term.h"
 
 #include "cmd-io/macro-util.h" //!< `macro_patterns`（マクロのトリガー。v1 §8.4）
 #include "game-option/input-options.h"
 #include "game-option/runtime-arguments.h"
+#include "io/input-key-acceptor.h" //!< `inkey_flag`（最上位のコマンド待ちの印。Term の高さを変えてよい時の判定）
+#include "core/stuff-handler.h" //!< `handle_stuff()`（言語切替の描き直しをキー待ちの間に済ませる）
 #include "io/signal-handlers.h"
 #include "locale/language-switcher.h"
 #include "save/save.h"
@@ -254,7 +260,7 @@ std::atomic<int> g_exit_code{ 0 };
 
 //! 受信キュー（`keys`）と最新値スロット（`ui_state`）。
 std::mutex g_inbox_mutex;
-std::deque<int> g_key_queue;
+std::deque<std::variant<int,presentation::InputEventWire>> g_key_queue;
 presentation::UiStateMessage g_ui_state;
 bool g_ui_state_present = false;
 
@@ -330,11 +336,12 @@ void receive_loop()
                 std::fprintf(stderr, "[core] bad \"input_event\": %s\n", err.c_str());
                 continue;
             }
-            std::vector<int> keys;
-            presentation::append_input_event_keys(message, keys);
             std::lock_guard<std::mutex> lock(g_inbox_mutex);
-            for (const int key : keys) {
-                g_key_queue.push_back(key);
+            for(const auto &event:message.events) {
+                if(event.e=="ui_action") {g_key_queue.push_back(event);continue;}
+                presentation::InputEventsMessage one;one.events.push_back(event);
+                std::vector<int> keys;presentation::append_input_event_keys(one,keys);
+                for(int key:keys)g_key_queue.push_back(key);
             }
             continue;
         }
@@ -456,15 +463,15 @@ void install_quit_hook_once()
  */
 std::atomic<bool> g_panic_saving{ false };
 
-[[noreturn]] void emergency_save_and_exit(const char *why)
+[[noreturn]] void emergency_save_and_exit(const char *why,bool requested=false)
 {
     if (g_panic_saving.exchange(true)) {
         // 到達しない（呼び出し口は全部 `check_ui_alive` を通り、そこで弾かれる）。
         // 万一の再入で**セーブの途中を壊さない**ための最後の砦。
         std::_Exit(1);
     }
-    std::fprintf(stderr, "[core] the ui is gone (%s); panic save\n", why);
-    g_exit_code.store(1);
+    std::fprintf(stderr, requested?"[core] close requested (%s); saving and exiting\n":"[core] the ui is gone (%s); panic save\n",why);
+    g_exit_code.store(requested?0:1);
 
     const auto &world = AngbandWorld::get_instance();
     if (!world.character_generated || world.character_saved) {
@@ -477,11 +484,12 @@ std::atomic<bool> g_panic_saving{ false };
     floor.forget_mon_lite();
 
     AngbandSystem::get_instance().set_panic_save(true);
-    p_ptr->died_from = _("(緊急セーブ)", "(panic save)");
+    p_ptr->died_from = requested?_("(セーブ)","(saved)"):_("(緊急セーブ)", "(panic save)");
     signals_ignore_tstp();
 
     const bool saved = save_player(p_ptr, SaveType::CLOSE_GAME);
-    std::fprintf(stderr, "[core] panic save %s\n", saved ? "succeeded" : "FAILED");
+    std::fprintf(stderr, "[core] shutdown save %s\n", saved ? "succeeded" : "FAILED");
+    if(!saved){g_exit_code.store(1);if(requested)send_fatal("Could not save the game while closing. The previous save has been retained.");}
     quit("");
 
     // quit() は必ず std::exit する。到達しないが [[noreturn]] を満たすため。
@@ -536,6 +544,74 @@ int map_style_index_from(int graf_px, const std::string &graf_tag)
     return -1;
 }
 
+//! 画面が望む Term の高さ（行数）。0 は未指定。コアのスレッドだけが読み書きする。`apply_wanted_term_rows()` が安全な間にだけ反映する。
+int g_wanted_term_rows = 0;
+
+//! 言語が変わって、全面の描き直しがまだ済んでいない。コアのスレッドだけが読み書きする。`apply_pending_language_redraw()` が下ろす。
+bool g_language_redraw_pending = false;
+
+/*!
+ * @brief Term の高さを変えてよい時か。
+ * @param character_dungeon `AngbandWorld::character_dungeon`。階が載るまでは `resize_map()` が何もしない。
+ * @param awaiting_command `inkey_flag`。`request_command()` が最上位のコマンドを待っている間だけ真。
+ * @param icky_depth `AngbandWorld::character_icky_depth`。店・建物・全画面の一覧の間は 0 でない。
+ * @details Term の高さを変えると、原作の `term_resize()` が `resize_hook`（`resize_map()`）を呼ぶ。
+ * `resize_map()` は `PR_WIPE`（`msg_erase()` と `term_clear()`）を含む再描画を立てて `handle_stuff()` するので、
+ * 地図の上で問い（個数・はい/いいえ・文字入力）が出ている最中に高さが変わると、Term の行 0 の問いが消える。
+ * Android では、問いで `text_input_active` が立つとソフトキーボードが出て窓の使える高さが縮み、画面が送る
+ * `main_term_rows` が変わる（Frox で再現して直した件と同じ。気づいたこと 2026-10-11）。
+ * 店・建物は `StoreScreen` が入る時の Term の高さで行の位置を決めて持つので、その最中に変えると位置が食い違う。
+ * `inkey_flag` が店のコマンド待ちでも真になる（`request_command()` を店が呼ぶ）ため、`icky_depth` も見て店を外す。
+ * 反映できなかった分は覚えておき、次の呼び出しで再び試す（`resize_main_term_rows()` は同じ高さなら何もしない）。
+ */
+bool term_resize_allowed(bool character_dungeon, bool awaiting_command, int icky_depth)
+{
+    return !character_dungeon || (awaiting_command && (icky_depth == 0));
+}
+
+void apply_wanted_term_rows()
+{
+    if (g_wanted_term_rows <= 0) {
+        return;
+    }
+    const auto &world = AngbandWorld::get_instance();
+    if (!term_resize_allowed(world.character_dungeon, inkey_flag, static_cast<int>(world.character_icky_depth))) {
+        return;
+    }
+    (void)presentation::resize_main_term_rows(g_wanted_term_rows);
+}
+
+/*!
+ * @brief 言語が変わったあとの描き直しを、コマンド待ちの間に実行する（修-22）。
+ *
+ * @details `apply_ui_state()` は再描画の旗を立てるだけで、旗を処理する `handle_stuff()` は
+ * 次のキーを受けてコマンドを実行したあとにしか呼ばれない。そのため、遊ぶ人が言語を替えて
+ * 何も押さずにいる間は、左の状態の列が前の言語のまま残っていた。
+ * 呼ぶのは `pump_input`（`SdlNullTerm::on_event` のキー待ちの繰り返しの中）だけ。
+ * `term_fresh` の最中に呼ばれる `before_capture` からは呼ばない（`handle_stuff()` が
+ * `term_fresh` の中へ入り込んで再入になる）。
+ * 呼んでよい時は `term_resize_allowed()` と同じ（最上位のコマンド待ちで、店・建物・全画面の一覧でない時）。
+ * 問い・-続く-・店の最中は呼べないので旗を残し、コマンド待ちに戻った時に描く。
+ * 階が載る前（タイトル・誕生）は各画面が自分で描くので、旗だけ下ろす。
+ */
+void apply_pending_language_redraw()
+{
+    if (!g_language_redraw_pending) {
+        return;
+    }
+    const auto &world = AngbandWorld::get_instance();
+    if (!world.character_dungeon) {
+        g_language_redraw_pending = false;
+        return;
+    }
+    if (!term_resize_allowed(world.character_dungeon, inkey_flag, static_cast<int>(world.character_icky_depth))) {
+        return;
+    }
+    g_language_redraw_pending = false;
+    handle_stuff(p_ptr);
+    term_fresh();
+}
+
 /*!
  * @brief 最新の `ui_state` を自プロセスへ流し込む（計画 §4）。
  *
@@ -578,6 +654,8 @@ void apply_ui_state(presentation::Bridge &bridge)
             auto &rfu = RedrawingFlagsUpdater::get_instance();
             rfu.fill_up_sub_flags();
             rfu.set_flags(EnumClassFlagGroup<MainWindowRedrawingFlag>(EnumRange(MainWindowRedrawingFlag::TITLE, MainWindowRedrawingFlag::MAX)));
+            //! 旗を立てただけではキー待ちの間に消費されない。`apply_pending_language_redraw()` が待ち中に描き直す（修-22）。
+            g_language_redraw_pending = true;
         }
     }
 
@@ -613,6 +691,11 @@ void apply_ui_state(presentation::Bridge &bridge)
      * コアの `sound()` はあれが偽だと `Term_xtra` すら呼ばず、書き留める機会ごと消える。
      */
     presentation::set_sound_events_wanted(state.sound_events);
+    presentation::set_modern_store_enabled(state.modern_ui);
+    presentation::set_modern_store_language(state.lang);
+    presentation::configure_native_targeting(state.modern_ui&&state.targeting_ui,state.lang);
+    if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
+    apply_wanted_term_rows();
 
     const int sound_volume = clamp_int(state.sound_volume_index, 0, SdlUiOptions::kVolumeLevels - 1);
     const int music_volume = clamp_int(state.music_volume_index, 0, SdlUiOptions::kVolumeLevels - 1);
@@ -1042,14 +1125,37 @@ int hengband_core_protocol_main(presentation::TransportHandle in, presentation::
     };
 
     // pump_input: 受信キューを非待機で吸い上げる（v1 §5）。
-    seam.pump_input = [](KeyQueue &out) {
+    seam.pump_input = [&bridge](KeyQueue &out) {
+        if(presentation::native_targeting().take_disabled_wake()) {out.push_back(27);return;}
         pump_win_messages();
         check_ui_alive("pump_input");
+        apply_pending_language_redraw();
+        // Save on the game thread at the input boundary, before taking the inbox lock.
+        if(g_quit_requested.load()&&!g_panic_saving.load())emergency_save_and_exit("quit_request",true);
         std::lock_guard<std::mutex> lock(g_inbox_mutex);
         while (!g_key_queue.empty()) {
-            out.push_back(g_key_queue.front());
+            bool dispatched_action=false;
+            if(const auto *key=std::get_if<int>(&g_key_queue.front())) out.push_back(*key);
+            else {
+                (void)bridge.capture(p_ptr);
+                std::vector<int> translated;
+                const auto &event=std::get<presentation::InputEventWire>(g_key_queue.front());
+                if(!presentation::native_targeting().input(event,translated))presentation::modern_store_input(event,translated);
+                for(int translated_key:translated)out.push_back(translated_key);
+                dispatched_action=!translated.empty();
+            }
             g_key_queue.pop_front();
+            // Validate the next structured action after the game consumes this
+            // one. Two confirmations in one packet must not share old state.
+            if(dispatched_action)break;
         }
+    };
+
+    seam.discard_input = []() {
+        std::lock_guard<std::mutex> lock(g_inbox_mutex);
+        for(const auto &queued:g_key_queue)if(const auto *event=std::get_if<presentation::InputEventWire>(&queued))
+            presentation::modern_store_reject_queued_request(event->request_id);
+        g_key_queue.clear();
     };
 
     // delay_ms: プロセス内 sleep（プロトコルには現れない。v1 §5）＋ MCI 通知の掃き出し。
@@ -1064,10 +1170,10 @@ int hengband_core_protocol_main(presentation::TransportHandle in, presentation::
         }
     };
 
-    // quit_requested: 現行と同じく ESC 化される（挙動保存。v1 §5）。
+    // Explicit close requests are handled by pump_input; do not turn them into endless Escape keys.
     seam.quit_requested = []() {
         check_ui_alive("quit_requested");
-        return g_quit_requested.load();
+        return false;
     };
 
     /*
@@ -1230,6 +1336,37 @@ int main(int argc, char **argv)
             std::fprintf(stderr, "[core] text-check: %s%s%s\n", ok ? "PASS" : "FAIL",
                 ok ? "" : " - ", report.c_str());
             return ok ? 0 : 1;
+        }
+        /*
+         * Term の高さを変えてよい時の判定（`term_resize_allowed`）の自己検査。
+         * 問いの最中に高さを変えると、原作の `resize_map()` が行 0 の問いを消す（Android の個数の問い）。
+         * パイプもゲームも要らない。
+         */
+        if (opt == "--term-resize-check") {
+            int bad = 0;
+            const auto expect = [&](bool ok, const char *what) {
+                if (!ok) {
+                    ++bad;
+                    std::fprintf(stderr, "[core] term-resize-check: FAIL - %s\n", what);
+                }
+            };
+            expect(term_resize_allowed(false, false, 1), "no dungeon yet (title/birth): resize now");
+            expect(term_resize_allowed(true, true, 0), "dungeon, waiting for a command: resize now");
+            expect(!term_resize_allowed(true, false, 0), "dungeon, inside a prompt (quantity/yes-no/string): defer");
+            expect(!term_resize_allowed(true, false, 1), "dungeon, inside a menu/list: defer");
+            expect(!term_resize_allowed(true, true, 1), "dungeon, store command wait (inkey_flag is true but icky): defer");
+            std::fprintf(stderr, "[core] term-resize-check: %s\n", (bad == 0) ? "PASS" : "FAIL");
+            return (bad == 0) ? 0 : 1;
+        }
+        /*
+         * 選択肢の抽出・帯の組み立ての自己検査（`presentation::run_menu_choice_smoke()`）。
+         * 画面の文字列を合成して食わせるだけなので、パイプもゲームも要らない。
+         * 見る（l）の帯に名前を残す例（調-13）もここで走る。件数と落ちた行は標準エラーに出る。
+         */
+        if (opt == "--selftest") {
+            const int failed = presentation::run_menu_choice_smoke();
+            std::fprintf(stderr, "[core] selftest: menu choice smoke: %s\n", (failed == 0) ? "PASS" : "FAIL");
+            return (failed == 0) ? 0 : 1;
         }
         args.emplace_back(opt);
         if (opt == kUiProtocolArg) {

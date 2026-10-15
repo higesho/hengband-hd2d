@@ -28,6 +28,7 @@
 
 #include "frame/game_frame.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -79,6 +80,12 @@ struct FloorMeaning {
      * `was_stairs` がある）。山は動かないので、一度«山»と読めたマスは山でよい。
      */
     std::vector<std::uint8_t> mountains;
+    /*!
+     * @brief その階段が**2階層移動する坑道（shaft）**か。
+     * @details `roles` が `Stairs` のマスでだけ意味を持つ。`GameFrame::cells` の
+     * `CELL_FEAT_SHAFT` から作り、通常階段との色分けに使う。
+     */
+    std::vector<std::uint8_t> shafts;
 
     //! 画面と記録に出す内訳。
     int room_cells{ 0 };
@@ -101,10 +108,45 @@ struct FloorMeaning {
     std::uint8_t mark_at(int x, int y) const;
     //! そのマスは山か（範囲外は偽）。
     bool mountain_at(int x, int y) const;
+    bool shaft_at(int x, int y) const;
 };
 
-//! 同じフロアか（識別子の一致）。
+//! 同じフロアか（識別子の一致）。**町の原点（`town_origin_x`/`y`）は見ない**——窓がずれても同じ町。
 bool same_floor(const FloorIdentity &a, const FloorIdentity &b);
+
+/*!
+ * @brief 格子の中身を (sx, sy) だけ動かす。空いたマスは 0 で埋め、はみ出したものは捨てる。
+ *
+ * @details **町の原点が変わったとき**（Frox の荒野の窓がずれたとき。`FloorIdentity::town_origin_x`）、
+ * 前のフレームの座標で覚えていたもの（階段・山・地形の記憶・岩山の記憶）を、新しい座標へ移すのに使う。
+ * 町の座標 ＝ フレームの座標 − 原点なので、同じ町のマスは原点の差（新 − 旧）だけフレームの座標で動く。
+ * 動かさないと、窓の外へ出たものが別のマスに残る（岩山の幻）。
+ * 原点が変わらないとき（sx = sy = 0。ほかの全コアは常にそう）は何もしない。
+ */
+template <typename T>
+void shift_grid(std::vector<T> &grid, int width, int height, int sx, int sy)
+{
+    if (((sx == 0) && (sy == 0)) || (width <= 0) || (height <= 0)
+        || (grid.size() != (static_cast<std::size_t>(width) * static_cast<std::size_t>(height)))) {
+        return;
+    }
+    std::vector<T> moved(grid.size(), T{});
+    for (int y = 0; y < height; ++y) {
+        const int ny = y + sy;
+        if ((ny < 0) || (ny >= height)) {
+            continue;
+        }
+        for (int x = 0; x < width; ++x) {
+            const int nx = x + sx;
+            if ((nx < 0) || (nx >= width)) {
+                continue;
+            }
+            moved[(static_cast<std::size_t>(ny) * static_cast<std::size_t>(width)) + static_cast<std::size_t>(nx)]
+                = grid[(static_cast<std::size_t>(y) * static_cast<std::size_t>(width)) + static_cast<std::size_t>(x)];
+        }
+    }
+    grid.swap(moved);
+}
 
 /*!
  * @brief 必要なら作り直す。

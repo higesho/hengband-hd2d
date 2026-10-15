@@ -3,29 +3,50 @@
  * @brief Bridge::capture 実装（map_info・terrain_id・公式タイル索引・Sub2/3/5 / PHASE4）
  */
 #include "bridge/presentation_bridge.h"
+#include "bridge/input_event_adapter.h"
+#include "bridge/paged_list_keys.h"
+#include "bridge/prompt_semantics.h"
+#include "bridge/look_screen_cover.h"
+#include "bridge/symbol_prompt.h"
+#include "term/term_capture_state.h"
+#include "bridge/modern_store.h"
+#include "bridge/native_targeting_runtime.h"
 #include "bootstrap/sdl_game_bootstrap.h"
 #include "bridge/official_tile_table.h"
 #ifdef TANGBAND
 #include "bridge/official_tile_table_tang.h"
 #endif
+#include "bridge/attack_fx_attr_names.h"
+#include "bridge/attack_fx_recorder.h"
 #include "bridge/tile_index_table.h"
+#include "bridge/unaware_item_lookup.h"
 #include "audio/sound_event_queue.h"
 #include "frame/cell_feature_bits.h"
 
 #include "core/asking-player.h"
 #include "core/combat-feedback.h"
+#include "effect/effect-characteristics.h"
+#include "object/tval-types.h"
 #include "core/realtime-clock.h"
 #include "core/visuals-reseter.h"
 #include "flavor/flavor-describer.h"
 #include "game-option/special-options.h"
+#ifdef TANGBAND
+#include "game-option/birth-options.h" //!< `doomsday`（短愚の終末のカウントダウン。玉の太陽へ送る）
+#endif
 #include "io/read-pref-file.h"
+#include "io/screen-util.h" //!< get_screen_size（位置の確認の区画の大きさ）
+#include "window/main-window-util.h" //!< panel_row_min・panel_col_min（位置の確認で見ている区画）
 #include "system/angband-system.h"
 #include "system/system-variables.h"
 #include "frame/sdl_ui_options.h"
+#include "frame/message_more.h"
 #include "term/sdl_sub_window_terms.h"
 #include "game-option/input-options.h"
 #include "game-option/runtime-arguments.h"
 #include "io/input-key-requester.h"
+#include "io/input-key-acceptor.h"
+#include "io/macro-configurations-store.h"
 #include "flavor/object-flavor-types.h"
 #include "floor/floor-util.h" //!< ボクセル HD2D P10: `map_name()`（カットイン演出の地名）
 #include "inventory/inventory-slot-types.h"
@@ -33,6 +54,7 @@
 #include "locale/language-switcher.h"
 #include "monster/monster-describer.h"
 #include "monster/monster-description-types.h"
+#include "monster/monster-flag-types.h"
 #include "system/enums/terrain/terrain-characteristics.h"
 #include "system/enums/terrain/terrain-tag.h"
 #include "system/floor/floor-info.h"
@@ -46,6 +68,34 @@
 #include "system/monrace/monrace-list.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
+#include "sv-definition/sv-lite-types.h" //!< 光源の種類（松明・ランタンの見分け。光の届く範囲）
+#include "bridge/hengband_source_version.h"
+#if !HB_HENGBAND_SOURCE_3025
+#include "timed-effect/player-hallucination.h" //!< 3.0.2.5 で timed-effect/timed-effect.h へまとめられた
+#endif
+#include "timed-effect/timed-effects.h"
+#if HB_HENGBAND_SOURCE_3025
+#include "player/digestion-processor.h" //!< PY_FOOD_*（`print_hunger` と同じしきい値）
+#include "system/gamevalue.h" //!< STANDARD_SPEED
+#include "window/main-window-stat-poster.h" //!< collect_status_bar_flags（下部の状態表示と同じ判定）
+#include "object-enchant/tr-types.h" //!< 常時の効果（キャラクター情報の耐性・能力の表と同じ旗）
+#include "player/permanent-resistances.h"
+#include "player/race-resistances.h"
+#include "player/temporary-resistances.h"
+#include "view/display-characteristic.h" //!< get_equipment_curse_mark
+#else
+// 短愚（3.0.2.4）。`collect_status_bar_flags` と `get_equipment_curse_mark` が無い。旗と呪いの印は、原作の
+// `print_status()` と `process_cursed_equipment_characteristics()` を `tools/targeting/overlay.py` が足した呼び出しで
+// 受け取る（下の `hb_status_flags_record`・`hb_equipment_curse_flags`）。原作の判定はここへ写さない。
+#include "player/digestion-processor.h" //!< PY_FOOD_*
+#include "system/gamevalue.h" //!< STANDARD_SPEED
+#include "object-enchant/tr-types.h"
+#include "player/permanent-resistances.h"
+#include "player/race-resistances.h"
+#include "player/temporary-resistances.h"
+#include "view/status-bars-table.h" //!< BAR_*・MAX_STAT_BARS
+#include <bitset>
+#endif
 #include "util/enum-converter.h"
 #include "util/point-2d.h"
 #include "view/display-map.h"
@@ -58,11 +108,41 @@
 #include <tl/optional.hpp>
 
 #include <algorithm>
+#include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
+
+#if !HB_HENGBAND_SOURCE_3025
+/*!
+ * @name 短愚（3.0.2.4）の状態のアイコンの受け口
+ * @details 原作の `print_status()`（`window/main-window-stat-poster.cpp`）が組む旗の配列 `bar_flags` を、
+ * `tools/targeting/overlay.py` が足した 1 行がここへ渡す。変愚（3.0.2.5）の `collect_status_bar_flags` と
+ * 同じ添字（`BAR_*`）。記録するだけで、旗にも画面にも乱数にも触れない。
+ * 旗は原作が下部の状態表示を描き直すたびに更新される（原作の画面と同じ）。
+ * 常時の効果の「呪い」は、`display-characteristic.cpp` の末尾に足した `hb_equipment_curse_flags` が、
+ * 原作の（static な）`process_cursed_equipment_characteristics` を呼んで返す。
+ * @{
+ */
+namespace {
+std::array<BIT_FLAGS, 3> g_tang_status_bar_flags{}; //!< `print_status()` の `bar_flags[3]`
+} // namespace
+
+void hb_status_flags_record(const BIT_FLAGS *flags, int count)
+{
+    for (size_t i = 0; i < g_tang_status_bar_flags.size(); ++i) {
+        g_tang_status_bar_flags[i] = (static_cast<int>(i) < count) ? flags[i] : 0;
+    }
+}
+
+void hb_equipment_curse_flags(PlayerType *player_ptr, bool *has_res, bool *has_imm); //!< overlay.py が足す（原作側）
+/*! @} */
+#endif
 
 namespace presentation {
 
@@ -119,6 +199,8 @@ void fill_hud(HudSnapshot &hud, const PlayerType *player)
     hud.hp_max = player->mhp;
     hud.sp = player->csp;
     hud.sp_max = player->msp;
+    hud.hp_label = "HP"; //!< 玉の名札。空だと画面の既定（SP）が出るので、変愚・短愚は HP / MP と送る（UTF-8）
+    hud.sp_label = "MP";
     hud.gold = static_cast<int>(player->au);
     hud.level = player->lev;
     hud.depth = (player->current_floor_ptr != nullptr)
@@ -130,6 +212,26 @@ void fill_hud(HudSnapshot &hud, const PlayerType *player)
         hud.hp, hud.hp_max, hud.sp, hud.sp_max, hud.level);
     hud.status_line = status;
 }
+
+#ifdef TANGBAND
+/*!
+ * @brief 終末までの残り日数を `hud.doomsday_days_left` へ書く（短愚蛮怒だけ。2026-10-11）。
+ * @details 原作の `WorldTurnProcessor::process_world`（`world/world-turn-processor.cpp`）が日の変わり目に出す
+ * 「終末まで 残り N日」と同じ値（`15 - 日`）。15 日目以降は 0（終末のサーペントが現れる）。
+ * 誕生時オプション `doomsday` が無効なら -1（日数なし）のまま。読むだけで、コアの状態は変えない。
+ */
+void fill_doomsday(HudSnapshot &hud)
+{
+    hud.doomsday_days_left = -1;
+    const auto &world = AngbandWorld::get_instance();
+    if (!doomsday || !world.character_generated) {
+        return;
+    }
+    int day = 0;
+    std::tie(day, std::ignore, std::ignore) = world.extract_date_time(InnerGameData::get_instance().get_start_race());
+    hud.doomsday_days_left = (day < 15) ? (15 - day) : 0;
+}
+#endif
 
 void fill_messages(GameFrame &frame)
 {
@@ -162,6 +264,579 @@ std::string to_utf8_line(const std::string &sys)
     }
     return sys;
 }
+
+/*!
+ * @name バフ・デバフのアイコン
+ * @details 範囲は原作の最下段と同じ。`stat_bars`（`view/status-bars-table.cpp`）の旗に、
+ * 速さ・朦朧・切り傷・空腹（`print_speed`・`print_stun`・`print_cut`・`print_hunger`）を足したもの。
+ * 3.0.2.4（短愚）には `collect_status_bar_flags` が無いので、原作の `print_status` が組む旗を受け取って使う
+ * （`tools/targeting/overlay.py` が足す 1 行。2026-10-11）。
+ * @{
+ */
+struct StatusBarEntry {
+    int bar; //!< `bar_definition_type`（番号の決め打ちにせず列挙子で書く）
+    const char *key; //!< 画面側の表（`hd2d/ui/status_icon_table.inc`）と同じ綴り
+    const char *ja; //!< 名前（日本語。UTF-8）
+    const char *en; //!< 名前（英語）
+    StatusEffectKind kind;
+};
+
+//! `BAR_*` の番号の小さい順に並べる（フレームの並びがそのまま原作の表の順になる）。
+const StatusBarEntry kStatusBarTable[] = {
+    { BAR_TSUYOSHI, "tsuyoshi", "つよし", "Tsuyoshi", StatusEffectKind::Special },
+    { BAR_HALLUCINATION, "hallucination", "幻覚", "Hallucination", StatusEffectKind::Bad },
+    { BAR_BLINDNESS, "blind", "盲目", "Blind", StatusEffectKind::Bad },
+    { BAR_PARALYZE, "paralyzed", "麻痺", "Paralyzed", StatusEffectKind::Bad },
+    { BAR_CONFUSE, "confused", "混乱", "Confused", StatusEffectKind::Bad },
+    { BAR_POISONED, "poisoned", "毒", "Poisoned", StatusEffectKind::Bad },
+    { BAR_AFRAID, "afraid", "恐怖", "Afraid", StatusEffectKind::Bad },
+    { BAR_LEVITATE, "levitate", "浮遊", "Levitation", StatusEffectKind::Good },
+    { BAR_REFLECTION, "reflect", "反射", "Reflection", StatusEffectKind::Good },
+    { BAR_PASSWALL, "passwall", "壁抜け", "Pass Wall", StatusEffectKind::Good },
+    { BAR_WRAITH, "wraith", "幽体化", "Wraith Form", StatusEffectKind::Good },
+    { BAR_PROTEVIL, "protevil", "対邪悪結界", "Prot. from Evil", StatusEffectKind::Good },
+    { BAR_KAWARIMI, "kawarimi", "変わり身", "Kawarimi", StatusEffectKind::Good },
+    { BAR_MAGICDEFENSE, "magicdef", "魔法の鎧", "Magic Armor", StatusEffectKind::Good },
+    { BAR_EXPAND, "expand", "横伸び", "Expand", StatusEffectKind::Bad },
+    { BAR_STONESKIN, "stoneskin", "石肌", "Stone Skin", StatusEffectKind::Good },
+    { BAR_MULTISHADOW, "multishadow", "影分身", "Multi-Shadow", StatusEffectKind::Good },
+    { BAR_REGMAGIC, "resmagic", "魔法防御", "Resist Magic", StatusEffectKind::Good },
+    { BAR_ULTIMATE, "ultimate", "究極の耐性", "Ultimate Resist", StatusEffectKind::Good },
+    { BAR_INVULN, "invuln", "無敵", "Invulnerable", StatusEffectKind::Good },
+    { BAR_IMMACID, "imm_acid", "酸免疫", "Immune Acid", StatusEffectKind::Good },
+    { BAR_RESACID, "res_acid", "耐酸", "Resist Acid", StatusEffectKind::Good },
+    { BAR_IMMELEC, "imm_elec", "電免疫", "Immune Elec", StatusEffectKind::Good },
+    { BAR_RESELEC, "res_elec", "耐電", "Resist Elec", StatusEffectKind::Good },
+    { BAR_IMMFIRE, "imm_fire", "火免疫", "Immune Fire", StatusEffectKind::Good },
+    { BAR_RESFIRE, "res_fire", "耐火", "Resist Fire", StatusEffectKind::Good },
+    { BAR_IMMCOLD, "imm_cold", "冷免疫", "Immune Cold", StatusEffectKind::Good },
+    { BAR_RESCOLD, "res_cold", "耐冷", "Resist Cold", StatusEffectKind::Good },
+    { BAR_RESPOIS, "res_pois", "耐毒", "Resist Poison", StatusEffectKind::Good },
+    { BAR_RESNETH, "res_neth", "耐地獄", "Resist Nether", StatusEffectKind::Good },
+    { BAR_RESTIME, "res_time", "耐時間", "Resist Time", StatusEffectKind::Good },
+    { BAR_DUSTROBE, "dustrobe", "破片のオーラ", "Shard Aura", StatusEffectKind::Good },
+    { BAR_SHFIRE, "sh_fire", "火炎のオーラ", "Fire Aura", StatusEffectKind::Good },
+    { BAR_TOUKI, "touki", "闘気", "Force Aura", StatusEffectKind::Good },
+    { BAR_SHHOLY, "sh_holy", "聖なるオーラ", "Holy Aura", StatusEffectKind::Good },
+    { BAR_EYEEYE, "eyeeye", "目には目を", "Eye for an Eye", StatusEffectKind::Good },
+    { BAR_BLESSED, "blessed", "祝福", "Blessed", StatusEffectKind::Good },
+    { BAR_HEROISM, "hero", "士気高揚", "Heroism", StatusEffectKind::Good },
+    { BAR_BERSERK, "berserk", "狂戦士化", "Berserk", StatusEffectKind::Good },
+    { BAR_ATTKFIRE, "attk_fire", "焼棄スレイ", "Fire Brand", StatusEffectKind::Good },
+    { BAR_ATTKCOLD, "attk_cold", "冷凍スレイ", "Cold Brand", StatusEffectKind::Good },
+    { BAR_ATTKELEC, "attk_elec", "電撃スレイ", "Elec Brand", StatusEffectKind::Good },
+    { BAR_ATTKACID, "attk_acid", "溶解スレイ", "Acid Brand", StatusEffectKind::Good },
+    { BAR_ATTKPOIS, "attk_pois", "毒殺スレイ", "Poison Brand", StatusEffectKind::Good },
+    { BAR_ATTKCONF, "attk_conf", "混乱打撃", "Confusing Touch", StatusEffectKind::Good },
+    { BAR_SENSEUNSEEN, "senseunseen", "透明視", "See Invisible", StatusEffectKind::Good },
+    { BAR_TELEPATHY, "telepathy", "テレパシー", "Telepathy", StatusEffectKind::Good },
+    { BAR_REGENERATION, "regeneration", "急回復", "Regeneration", StatusEffectKind::Good },
+    { BAR_INFRAVISION, "infravision", "赤外線視力", "Infravision", StatusEffectKind::Good },
+    { BAR_STEALTH, "stealth", "隠密", "Stealth", StatusEffectKind::Good },
+    { BAR_SUPERSTEALTH, "superstealth", "超隠密", "Super Stealth", StatusEffectKind::Good },
+    { BAR_RECALL, "recall", "帰還待ち", "Recall", StatusEffectKind::Waiting },
+    { BAR_ALTER, "alter", "現実変容待ち", "Alter Reality", StatusEffectKind::Waiting },
+    { BAR_SHCOLD, "sh_cold", "冷気のオーラ", "Cold Aura", StatusEffectKind::Good },
+    { BAR_SHELEC, "sh_elec", "電撃のオーラ", "Elec Aura", StatusEffectKind::Good },
+    { BAR_SHSHADOW, "sh_shadow", "影のオーラ", "Shadow Aura", StatusEffectKind::Good },
+    { BAR_MIGHT, "might", "腕力強化", "Might", StatusEffectKind::Good },
+    { BAR_BUILD, "buildup", "肉体強化", "Build Up", StatusEffectKind::Good },
+    { BAR_ANTIMULTI, "antimulti", "反増殖", "Anti-Multiply", StatusEffectKind::Good },
+    { BAR_ANTITELE, "antitele", "反テレポート", "Anti-Teleport", StatusEffectKind::Good },
+    { BAR_ANTIMAGIC, "antimagic", "反魔法", "Anti-Magic", StatusEffectKind::Good },
+    { BAR_PATIENCE, "patience", "我慢", "Patience", StatusEffectKind::Good },
+    { BAR_REVENGE, "revenge", "宣告", "Revenge", StatusEffectKind::Good },
+    { BAR_RUNESWORD, "runesword", "魔剣化", "Rune Sword", StatusEffectKind::Good },
+    { BAR_VAMPILIC, "vampiric", "吸血打撃", "Vampiric", StatusEffectKind::Good },
+    { BAR_CURE, "cure", "回復", "Cure", StatusEffectKind::Good },
+    { BAR_ESP_EVIL, "esp_evil", "邪悪感知", "Sense Evil", StatusEffectKind::Good },
+    { BAR_NIGHTSIGHT, "nightsight", "暗視", "Night Sight", StatusEffectKind::Good },
+    { BAR_RESLITE, "res_lite", "耐光", "Resist Light", StatusEffectKind::Good },
+    { BAR_RESDARK, "res_dark", "耐暗", "Resist Dark", StatusEffectKind::Good },
+    { BAR_RESFEAR, "res_fear", "耐恐怖", "Resist Fear", StatusEffectKind::Good },
+    { BAR_EMISSION, "emission", "発光", "Emission", StatusEffectKind::Good },
+    { BAR_EXORCISM, "exorcism", "浄化", "Exorcism", StatusEffectKind::Good },
+    { BAR_IMMDARK, "imm_dark", "暗黒免疫", "Immune Dark", StatusEffectKind::Good },
+};
+
+static_assert(BAR_IMMDARK < MAX_STAT_BARS, "stat_bars の長さが足りない");
+
+#if !HB_HENGBAND_SOURCE_3025
+using StatusBarFlags = std::bitset<MAX_STAT_BARS>;
+
+/*!
+ * @brief 短愚（3.0.2.4）の `print_status` が最後に組んだ旗を、`BAR_*` の添字の旗にして返す。
+ * @details 判定そのものは原作の `print_status()` がする（旗の配列を `hb_status_flags_record` が受け取る）。
+ */
+StatusBarFlags bridge_collect_status_bar_flags(PlayerType *)
+{
+    StatusBarFlags bar_flags;
+    for (size_t bar = 0; bar < MAX_STAT_BARS; ++bar) {
+        if ((g_tang_status_bar_flags[bar / 32] & (static_cast<BIT_FLAGS>(1) << (bar % 32))) != 0) {
+            bar_flags.set(bar);
+        }
+    }
+    return bar_flags;
+}
+#else
+StatusBarFlags bridge_collect_status_bar_flags(PlayerType *player_ptr)
+{
+    return collect_status_bar_flags(player_ptr);
+}
+#endif
+
+const StatusBarEntry *find_status_bar_entry(int bar)
+{
+    static const auto index = [] {
+        std::array<const StatusBarEntry *, MAX_STAT_BARS> a{};
+        for (const auto &e : kStatusBarTable) {
+            if (e.bar >= 0 && e.bar < MAX_STAT_BARS) {
+                a[static_cast<size_t>(e.bar)] = &e;
+            }
+        }
+        return a;
+    }();
+    return (bar >= 0 && bar < MAX_STAT_BARS) ? index[static_cast<size_t>(bar)] : nullptr;
+}
+
+//! 原作は欄の幅に合わせて末尾へ空白を足している（`"やや朦朧    "`）。アイコンの下には要らない。
+std::string status_label_utf8(std::string_view sys)
+{
+    while (!sys.empty() && sys.back() == ' ') {
+        sys.remove_suffix(1);
+    }
+    return to_utf8_line(std::string(sys));
+}
+
+void add_status_effect(GameFrame &frame, const char *key, std::string label_utf8, std::string amount_utf8,
+    StatusEffectKind kind)
+{
+    StatusEffectView v{};
+    v.key = key;
+    v.label_utf8 = std::move(label_utf8);
+    v.amount_utf8 = std::move(amount_utf8);
+    v.kind = kind;
+    frame.status_effects.push_back(std::move(v));
+}
+
+/*!
+ * @name 常時の効果（装備・種族・職業による耐性と能力。`StatusEffectKind::Permanent` / `PermanentBad`）
+ * @details 範囲と取り方は**原作のキャラクター情報（`C` コマンド）の耐性・能力の表と同じ**
+ * （`view/display-characteristic.cpp`）。表は画面の行の順（ページ 1 → 2 → 3、ページ内は左の列から）。
+ * 原作の `process_one_characteristic` は static で呼べないので、同じ式をここへ写した
+ * （原作ソースは書き換えない）。違いは次の 1 点だけ——**一時的な効果（`tim_player_flags`・
+ * `tim_player_imm`。画面の `#` の印）は載せない**（それは玉の横の別の欄）。
+ * 画面で `+`（耐性）・`*`（免疫）・`-`（耐性と弱点）の印が付く行を 1 件ずつ載せる。弱点だけ（`v`）は載せない。
+ * @{
+ */
+enum class PermanentRowMode : uint8_t {
+    Normal, //!< 装備 12 枠 + @
+    Weapon, //!< 武器の枠（利手・逆手・射撃）+ @（`DP_WP`）
+    Curse, //!< 装備の呪い（`DP_CURSE`。@ の欄は無い）
+    Light, //!< 永遠光源（`DP_LITE`）
+};
+
+struct PermanentRow {
+    tr_type flag;
+    PermanentRowMode mode;
+    const char *key;
+    const char *ja;
+    const char *en;
+    StatusEffectKind kind;
+    const char *imm_key; //!< 免疫の印（`*`）のときの名前。無ければ nullptr（`key` のまま）
+    const char *imm_ja;
+    const char *imm_en;
+};
+
+#define HB_PR(flag, key, ja, en) { flag, PermanentRowMode::Normal, key, ja, en, StatusEffectKind::Permanent, nullptr, nullptr, nullptr }
+#define HB_PR_BAD(flag, key, ja, en) { flag, PermanentRowMode::Normal, key, ja, en, StatusEffectKind::PermanentBad, nullptr, nullptr, nullptr }
+#define HB_PR_IMM(flag, key, ja, en, ikey, ija, ien) { flag, PermanentRowMode::Normal, key, ja, en, StatusEffectKind::Permanent, ikey, ija, ien }
+#define HB_PR_WP(flag, key, ja, en) { flag, PermanentRowMode::Weapon, key, ja, en, StatusEffectKind::Permanent, nullptr, nullptr, nullptr }
+
+const PermanentRow kPermanentRows[] = {
+    // ---- ページ 1（`display_player_flag_info_1`）----
+    HB_PR_IMM(TR_RES_ACID, "res_acid", "耐酸", "Resist Acid", "imm_acid", "酸免疫", "Immune Acid"),
+    HB_PR_IMM(TR_RES_ELEC, "res_elec", "耐電撃", "Resist Elec", "imm_elec", "電撃免疫", "Immune Elec"),
+    HB_PR_IMM(TR_RES_FIRE, "res_fire", "耐火炎", "Resist Fire", "imm_fire", "火炎免疫", "Immune Fire"),
+    HB_PR_IMM(TR_RES_COLD, "res_cold", "耐冷気", "Resist Cold", "imm_cold", "冷気免疫", "Immune Cold"),
+    HB_PR(TR_RES_POIS, "res_pois", "耐毒", "Resist Poison"),
+    HB_PR(TR_RES_LITE, "res_lite", "耐閃光", "Resist Light"),
+    HB_PR_IMM(TR_RES_DARK, "res_dark", "耐暗黒", "Resist Dark", "imm_dark", "暗黒免疫", "Immune Dark"),
+    HB_PR(TR_RES_SHARDS, "res_shard", "耐破片", "Resist Shards"),
+    HB_PR(TR_RES_BLIND, "res_blind", "耐盲目", "Resist Blind"),
+    HB_PR(TR_RES_CONF, "res_conf", "耐混乱", "Resist Conf"),
+    HB_PR(TR_RES_SOUND, "res_sound", "耐轟音", "Resist Sound"),
+    HB_PR(TR_RES_NETHER, "res_neth", "耐地獄", "Resist Nether"),
+    HB_PR(TR_RES_NEXUS, "res_nexus", "耐因果混乱", "Resist Nexus"),
+    HB_PR(TR_RES_CHAOS, "res_chaos", "耐カオス", "Resist Chaos"),
+    HB_PR(TR_RES_DISEN, "res_disen", "耐劣化", "Resist Disen"),
+    HB_PR(TR_RES_TIME, "res_time", "耐時間逆転", "Resist Time"),
+    HB_PR(TR_RES_WATER, "res_water", "耐水", "Resist Water"),
+    HB_PR(TR_RES_FEAR, "res_fear", "耐恐怖", "Resist Fear"),
+    HB_PR(TR_RES_CURSE, "res_curse", "耐呪力", "Resist Curse"),
+    HB_PR(TR_SPEED, "haste", "加速", "Speed"),
+    HB_PR(TR_FREE_ACT, "free_act", "耐麻痺", "Free Action"),
+    HB_PR(TR_SEE_INVIS, "senseunseen", "透明体視認", "See Invisible"),
+    HB_PR(TR_HOLD_EXP, "hold_exp", "経験値保持", "Hold Exp"),
+    HB_PR(TR_WARNING, "warning", "警告", "Warning"),
+    HB_PR(TR_SLOW_DIGEST, "slow_digest", "遅消化", "Slow Digest"),
+    HB_PR(TR_REGEN, "regeneration", "急回復", "Regeneration"),
+    HB_PR(TR_LEVITATION, "levitate", "浮遊", "Levitation"),
+    HB_PR(TR_REFLECT, "reflect", "反射", "Reflection"),
+    { TR_FLAG_MAX, PermanentRowMode::Curse, "cursed", "呪い", "Cursed", StatusEffectKind::PermanentBad, nullptr, nullptr, nullptr },
+    // ---- ページ 2（`display_player_flag_info_2`）：スレイ → 感知 → その他 ----
+    HB_PR_WP(TR_SLAY_EVIL, "slay_evil", "邪悪倍打", "Slay Evil"),
+    HB_PR_WP(TR_SLAY_GOOD, "slay_good", "善良倍打", "Slay Good"),
+    HB_PR_WP(TR_SLAY_UNDEAD, "slay_undead", "不死倍打", "Slay Undead"),
+    HB_PR_WP(TR_SLAY_DEMON, "slay_demon", "デーモン倍打", "Slay Demon"),
+    HB_PR_WP(TR_SLAY_DRAGON, "slay_dragon", "ドラゴン倍打", "Slay Dragon"),
+    HB_PR_WP(TR_SLAY_HUMAN, "slay_human", "人間倍打", "Slay Human"),
+    HB_PR_WP(TR_SLAY_ANIMAL, "slay_animal", "動物倍打", "Slay Animal"),
+    HB_PR_WP(TR_SLAY_ORC, "slay_orc", "オーク倍打", "Slay Orc"),
+    HB_PR_WP(TR_SLAY_TROLL, "slay_troll", "トロル倍打", "Slay Troll"),
+    HB_PR_WP(TR_SLAY_GIANT, "slay_giant", "巨人倍打", "Slay Giant"),
+    HB_PR(TR_TELEPATHY, "telepathy", "テレパシー", "Telepathy"),
+    HB_PR(TR_ESP_EVIL, "esp_evil", "邪悪の感知", "Sense Evil"),
+    HB_PR(TR_ESP_NONLIVING, "esp_nonliving", "無生物の感知", "Sense Nonliving"),
+    HB_PR(TR_ESP_GOOD, "esp_good", "善良の感知", "Sense Good"),
+    HB_PR(TR_ESP_UNDEAD, "esp_undead", "不死の感知", "Sense Undead"),
+    HB_PR(TR_ESP_DEMON, "esp_demon", "デーモンの感知", "Sense Demons"),
+    HB_PR(TR_ESP_DRAGON, "esp_dragon", "ドラゴンの感知", "Sense Dragons"),
+    HB_PR(TR_ESP_HUMAN, "esp_human", "人間の感知", "Sense Humans"),
+    HB_PR(TR_ESP_ANIMAL, "esp_animal", "動物の感知", "Sense Animals"),
+    HB_PR(TR_ESP_ORC, "esp_orc", "オークの感知", "Sense Orcs"),
+    HB_PR(TR_ESP_TROLL, "esp_troll", "トロルの感知", "Sense Trolls"),
+    HB_PR(TR_ESP_GIANT, "esp_giant", "巨人の感知", "Sense Giants"),
+    HB_PR(TR_ESP_UNIQUE, "esp_unique", "ユニークの感知", "Sense Uniques"),
+    HB_PR(TR_BLOWS, "blows", "追加攻撃", "Extra Blows"),
+    HB_PR(TR_TUNNEL, "tunnel", "採掘", "Tunneling"),
+    HB_PR(TR_INFRA, "infravision", "赤外線視力", "Infravision"),
+    HB_PR(TR_MAGIC_MASTERY, "magic_mastery", "魔法道具支配", "Magic Mastery"),
+    HB_PR(TR_STEALTH, "stealth", "隠密", "Stealth"),
+    HB_PR(TR_SEARCH, "search", "探索", "Searching"),
+    HB_PR(TR_XTRA_SHOTS, "xtra_shots", "追加射撃", "Extra Shots"),
+    HB_PR(TR_THROW, "throw", "投擲", "Throwing"),
+    HB_PR(TR_BLESSED, "blessed", "祝福", "Blessed"),
+    { TR_LITE_1, PermanentRowMode::Light, "lite", "永遠光源", "Perm Light", StatusEffectKind::Permanent, nullptr, nullptr, nullptr },
+    HB_PR(TR_DEC_MANA, "dec_mana", "消費魔力減少", "Economic Mana"),
+    HB_PR(TR_EASY_SPELL, "easy_spell", "魔法難度減少", "Easy Spell"),
+    HB_PR(TR_ACTIVATE, "activate", "発動", "Activation"),
+    HB_PR_BAD(TR_NO_MAGIC, "no_magic", "反魔法", "Anti-Magic"),
+    // ---- ページ 3（`display_player_flag_info_3`）：ブランド → 維持・オーラ → 呪い ----
+    HB_PR_WP(TR_BRAND_ACID, "attk_acid", "溶解", "Acid Brand"),
+    HB_PR_WP(TR_BRAND_ELEC, "attk_elec", "電撃", "Elec Brand"),
+    HB_PR_WP(TR_BRAND_FIRE, "attk_fire", "焼棄", "Fire Brand"),
+    HB_PR_WP(TR_BRAND_COLD, "attk_cold", "凍結", "Cold Brand"),
+    HB_PR_WP(TR_BRAND_POIS, "attk_pois", "毒殺", "Poison Brand"),
+    HB_PR_WP(TR_VORPAL, "vorpal", "切れ味", "Sharpness"),
+    HB_PR_WP(TR_IMPACT, "impact", "強撃", "Impact"),
+    HB_PR_WP(TR_EARTHQUAKE, "earthquake", "地震", "Quake"),
+    HB_PR_WP(TR_VAMPIRIC, "vampiric", "吸血", "Vampiric"),
+    HB_PR_WP(TR_CHAOTIC, "chaotic", "カオス効果", "Chaotic"),
+    HB_PR_WP(TR_BRAND_MAGIC, "brand_magic", "魔術効果", "Magic Brand"),
+    HB_PR_WP(TR_FORCE_WEAPON, "force_weapon", "理力", "Force Weapon"),
+    HB_PR_WP(TR_RIDING, "riding", "乗馬", "For Riding"),
+    HB_PR_WP(TR_SUPPORTIVE, "supportive", "補助", "Supportive"),
+    HB_PR(TR_SUST_STR, "sust_str", "腕力維持", "Sust Str"),
+    HB_PR(TR_SUST_INT, "sust_int", "知力維持", "Sust Int"),
+    HB_PR(TR_SUST_WIS, "sust_wis", "賢さ維持", "Sust Wis"),
+    HB_PR(TR_SUST_DEX, "sust_dex", "器用維持", "Sust Dex"),
+    HB_PR(TR_SUST_CON, "sust_con", "耐久力維持", "Sust Con"),
+    HB_PR(TR_SUST_CHR, "sust_chr", "魅力維持", "Sust Chr"),
+    HB_PR(TR_SH_FIRE, "sh_fire", "火炎のオーラ", "Fire Aura"),
+    HB_PR(TR_SH_ELEC, "sh_elec", "電撃のオーラ", "Elec Aura"),
+    HB_PR(TR_SH_COLD, "sh_cold", "冷気のオーラ", "Cold Aura"),
+    HB_PR(TR_INVULN_ARROW, "invuln_arrow", "射撃無効", "Invuln Arrow"),
+    HB_PR_BAD(TR_SELF_FIRE, "self_fire", "自傷火炎", "Self Fire"),
+    HB_PR_BAD(TR_SELF_ELEC, "self_elec", "自傷電気", "Self Elec"),
+    HB_PR_BAD(TR_SELF_COLD, "self_cold", "自傷冷気", "Self Cold"),
+    HB_PR_BAD(TR_TY_CURSE, "ty_curse", "太古の怨念", "TY Curse"),
+    HB_PR_BAD(TR_AGGRAVATE, "aggravate", "反感", "Aggravate"),
+    HB_PR_BAD(TR_ADD_L_CURSE, "add_l_curse", "弱い呪い増殖", "Add Curse"),
+    HB_PR_BAD(TR_ADD_H_CURSE, "add_h_curse", "強い呪い増殖", "Add Heavy Curse"),
+    HB_PR_BAD(TR_PERSISTENT_CURSE, "persistent_curse", "執拗呪詛", "Persistent Curse"),
+    HB_PR_BAD(TR_DRAIN_EXP, "drain_exp", "経験値減少", "Drain Exp"),
+    HB_PR_BAD(TR_DRAIN_HP, "drain_hp", "体力吸収", "Drain HP"),
+    HB_PR_BAD(TR_DRAIN_MANA, "drain_mana", "魔力吸収", "Drain Mana"),
+    HB_PR_BAD(TR_NO_TELE, "no_tele", "反テレポート", "No Teleport"),
+    HB_PR_BAD(TR_DOWN_SAVING, "down_saving", "魔法防御半減", "Vuln. Magic"),
+    HB_PR_BAD(TR_FAST_DIGEST, "fast_digest", "速消化", "Fast Digest"),
+    HB_PR_BAD(TR_SLOW_REGEN, "slow_regen", "回復力低下", "Slow Regen"),
+    HB_PR_BAD(TR_COWARDICE, "cowardice", "恐怖発生", "Cowardice"),
+    HB_PR_BAD(TR_HARD_SPELL, "hard_spell", "魔法難度増加", "Difficult Spell"),
+    HB_PR_BAD(TR_LOW_MELEE, "low_melee", "打撃力低下", "Low Melee"),
+    HB_PR_BAD(TR_LOW_AC, "low_ac", "AC低下", "Low AC"),
+    HB_PR_BAD(TR_BERS_RAGE, "bers_rage", "狂戦士化（呪い）", "Berserk Rage"),
+};
+
+#undef HB_PR
+#undef HB_PR_BAD
+#undef HB_PR_IMM
+#undef HB_PR_WP
+
+//! `process_one_characteristic` の `has_res` / `has_imm`（一時的な効果の `has_tim` は使わない）。
+struct PermanentMarks {
+    bool res = false;
+    bool imm = false;
+};
+
+/*!
+ * @brief 装備の呪いの行（`DP_CURSE`）の印。'*'（永遠の呪い）が `imm`、'+'（呪い）が `res`。
+ * @details 変愚（3.0.2.5）は原作の `get_equipment_curse_mark`、短愚（3.0.2.4）は原作の
+ * `process_cursed_equipment_characteristics` に任せる。
+ */
+PermanentMarks bridge_equipment_curse_marks(PlayerType *player)
+{
+    PermanentMarks marks;
+#if HB_HENGBAND_SOURCE_3025
+    for (const auto wield_slot : INVEN_WIELDING_SLOTS) {
+        const auto &item = player->inventory[static_cast<size_t>(wield_slot)];
+        if (!item) {
+            continue;
+        }
+        const auto mark = get_equipment_curse_mark(*item);
+        if (mark == '*') {
+            marks.imm = true;
+        } else if (mark == '+') {
+            marks.res = true;
+        }
+    }
+#else
+    hb_equipment_curse_flags(player, &marks.res, &marks.imm);
+#endif
+    return marks;
+}
+
+//! 原作の `flag_to_greater_flag`（耐性 → 免疫、スレイ → 皆殺し）。該当しなければ TR_FLAG_MAX。
+tr_type permanent_greater_flag(tr_type flag)
+{
+    switch (flag) {
+    case TR_RES_ACID:
+        return TR_IM_ACID;
+    case TR_RES_COLD:
+        return TR_IM_COLD;
+    case TR_RES_ELEC:
+        return TR_IM_ELEC;
+    case TR_RES_FIRE:
+        return TR_IM_FIRE;
+    case TR_RES_DARK:
+        return TR_IM_DARK;
+    case TR_RES_LITE:
+        return TR_IM_LITE;
+    case TR_SLAY_EVIL:
+        return TR_KILL_EVIL;
+    case TR_SLAY_GOOD:
+        return TR_KILL_GOOD;
+    case TR_SLAY_HUMAN:
+        return TR_KILL_HUMAN;
+    case TR_SLAY_ANIMAL:
+        return TR_KILL_ANIMAL;
+    case TR_SLAY_DRAGON:
+        return TR_KILL_DRAGON;
+    case TR_SLAY_ORC:
+        return TR_KILL_ORC;
+    case TR_SLAY_TROLL:
+        return TR_KILL_TROLL;
+    case TR_SLAY_GIANT:
+        return TR_KILL_GIANT;
+    case TR_SLAY_DEMON:
+        return TR_KILL_DEMON;
+    case TR_SLAY_UNDEAD:
+        return TR_KILL_UNDEAD;
+    default:
+        return TR_FLAG_MAX;
+    }
+}
+
+//! 原作の `lite_flags`。
+constexpr std::array<tr_type, 6> kPermanentLiteFlags = { TR_LITE_1, TR_LITE_2, TR_LITE_3, TR_LITE_M1, TR_LITE_M2, TR_LITE_M3 };
+
+//! 1 回の集計で使う、プレイヤーの旗と装備の鑑定済みの旗（行ごとに作り直さない）。
+struct PermanentContext {
+    PlayerType *player = nullptr;
+    TrFlags player_flags{};
+    TrFlags tim_flags{};
+    TrFlags player_imm{};
+    TrFlags tim_player_imm{};
+    std::array<TrFlags, INVEN_TOTAL> known{}; //!< 装備の枠（INVEN_MAIN_HAND 以降）の `get_flags_known`
+};
+
+//! 装備の枠（武器の行は利手・逆手・射撃、ほかは INVEN_FEET まで）を回す。
+template <typename F>
+void for_each_permanent_slot(PermanentRowMode mode, F &&f)
+{
+    if (mode == PermanentRowMode::Weapon) {
+        for (const auto slot : INVEN_WEAPON_SLOTS) {
+            f(static_cast<int>(slot));
+        }
+    } else {
+        for (const auto wield_slot : INVEN_WIELDING_SLOTS) {
+            f(static_cast<int>(wield_slot));
+        }
+    }
+}
+
+PermanentMarks evaluate_permanent_row(const PermanentContext &ctx, const PermanentRow &row)
+{
+    PermanentMarks marks;
+    if (row.mode == PermanentRowMode::Curse) {
+        // `process_cursed_equipment_characteristics`：'*' = 永遠の呪い、'+' = 呪い。@ の欄は無い。
+        return bridge_equipment_curse_marks(ctx.player);
+    }
+
+    if (row.mode == PermanentRowMode::Light) {
+        // `process_light_equipment_characteristics`
+        for_each_permanent_slot(row.mode, [&](int slot) {
+            for (const auto lite : kPermanentLiteFlags) {
+                if (ctx.known[static_cast<size_t>(slot)].has(lite)) {
+                    marks.res = true;
+                    break;
+                }
+            }
+        });
+        for (const auto lite : kPermanentLiteFlags) {
+            if (ctx.tim_flags.has(lite)) {
+                return marks; // '#'（一時的）
+            }
+            if (ctx.player_flags.has(lite)) {
+                marks.res = true;
+                return marks;
+            }
+        }
+        return marks; // `tim_emission` は一時的
+    }
+
+    // `process_inventory_characteristic`
+    const auto greater = permanent_greater_flag(row.flag);
+    for_each_permanent_slot(row.mode, [&](int slot) {
+        const auto &flags = ctx.known[static_cast<size_t>(slot)];
+        if (greater != TR_FLAG_MAX && flags.has(greater)) {
+            marks.imm = true; // '*'
+            return;
+        }
+        if (flags.has(row.flag)) {
+            marks.res = true; // '+'（弱点つきの '-' も耐性側の印として数える）
+        }
+    });
+
+    // @ の欄。原作の順序（免疫 → 一時 → 常時）をそのまま保つ。一時的な効果が先に当たれば常時の欄は出ない。
+    if (ctx.tim_player_imm.has(row.flag)) {
+        return marks; // 原作は '*' と出すが、一時的な免疫なので載せない
+    }
+    if (ctx.player_imm.has(row.flag)) {
+        marks.imm = true;
+    } else if (ctx.tim_flags.has(row.flag)) {
+        // '#'（一時的）
+    } else if (ctx.player_flags.has(row.flag)) {
+        marks.res = true;
+    }
+    return marks;
+}
+
+/*!
+ * @brief 常時の効果を `frame.status_effects` の最後へ足す。
+ */
+void fill_permanent_effects(GameFrame &frame, PlayerType *player)
+{
+    PermanentContext ctx;
+    ctx.player = player;
+    ::player_flags(player, ctx.player_flags);
+    ::tim_player_flags(player, ctx.tim_flags);
+    ::player_immunity(player, ctx.player_imm);
+    ::tim_player_immunity(player, ctx.tim_player_imm);
+    for (const auto wield_slot : INVEN_WIELDING_SLOTS) {
+        const auto &item = player->inventory[static_cast<size_t>(wield_slot)];
+        if (item) {
+            ctx.known[static_cast<size_t>(wield_slot)] = item->get_flags_known();
+        }
+    }
+
+    for (const auto &row : kPermanentRows) {
+        const auto marks = evaluate_permanent_row(ctx, row);
+        if (!marks.res && !marks.imm) {
+            continue;
+        }
+        if (marks.imm && row.imm_key != nullptr) {
+            add_status_effect(frame, row.imm_key, _(row.imm_ja, row.imm_en), std::string(), row.kind);
+        } else {
+            add_status_effect(frame, row.key, _(row.ja, row.en), std::string(), row.kind);
+        }
+    }
+}
+/*! @} */
+
+/*!
+ * @brief かかっているバフ・デバフを `frame.status_effects` へ書く。
+ * @details 並びは (1) 速さ (2) `collect_status_bar_flags` の旗を `BAR_*` の小さい順 (3) 朦朧・切り傷・空腹。
+ * 名前の文字は、この翻訳単位の `_()` は UTF-8 の文字列、原作の関数（`get_expr`）が返す文字は
+ * システムの符号なので `to_utf8_line` を通す。
+ */
+void fill_status_effects(GameFrame &frame, PlayerType *player)
+{
+    frame.status_effects.clear();
+    if (!AngbandWorld::get_instance().character_generated || player->current_floor_ptr == nullptr) {
+        return;
+    }
+
+    // (1) 速さ。式は `describe_player_speed` と同じ（乗馬中は名前だけ「乗馬」に変わる）。
+    const int speed = player->pspeed - STANDARD_SPEED;
+    if (speed > 0) {
+        add_status_effect(frame, "haste", player->riding ? _("乗馬", "Ride") : _("加速", "Fast"),
+            "+" + std::to_string(speed), StatusEffectKind::Good);
+    } else if (speed < 0) {
+        add_status_effect(frame, "slow", player->riding ? _("乗馬", "Ride") : _("減速", "Slow"),
+            std::to_string(speed), StatusEffectKind::Bad);
+    }
+
+    // (2) 下部の状態表示の旗。
+    const auto flags = bridge_collect_status_bar_flags(player);
+    for (int bar = 0; bar < MAX_STAT_BARS; ++bar) {
+        if (!flags.test(static_cast<size_t>(bar))) {
+            continue;
+        }
+        if (const auto *e = find_status_bar_entry(bar)) {
+            add_status_effect(frame, e->key, _(e->ja, e->en), std::string(), e->kind);
+        }
+    }
+
+    // (3) 朦朧・切り傷・空腹（かかっているときだけ）。
+    const auto effects = player->effects();
+    const auto &stun = effects->stun();
+#if HB_HENGBAND_SOURCE_3025
+    const bool is_stunned_now = stun.is_active();
+#else
+    const bool is_stunned_now = stun.is_stunned();
+#endif
+    if (is_stunned_now) {
+        add_status_effect(frame, "stun", status_label_utf8(std::get<1>(stun.get_expr())), std::string(),
+            StatusEffectKind::Bad);
+    }
+    const auto &cut = effects->cut();
+#if HB_HENGBAND_SOURCE_3025
+    const bool is_cut_now = cut.is_active();
+#else
+    const bool is_cut_now = cut.is_cut();
+#endif
+    if (is_cut_now) {
+        add_status_effect(frame, "cut", status_label_utf8(std::get<1>(cut.get_expr())), std::string(),
+            StatusEffectKind::Bad);
+    }
+
+    // 空腹。`print_hunger` と同じしきい値・同じ字。悪いのは衰弱・空腹・食過ぎ（満腹と普通は出さない）。
+    if (!(AngbandWorld::get_instance().wizard && player->current_floor_ptr->inside_arena)) {
+        if (player->food < PY_FOOD_WEAK) {
+            add_status_effect(frame, "hungry", _("衰弱", "Weak"), std::string(), StatusEffectKind::Bad);
+        } else if (player->food < PY_FOOD_ALERT) {
+            add_status_effect(frame, "hungry", _("空腹", "Hungry"), std::string(), StatusEffectKind::Bad);
+        } else if (player->food >= PY_FOOD_MAX) {
+            add_status_effect(frame, "hungry", _("食過ぎ", "Gorged"), std::string(), StatusEffectKind::Bad);
+        }
+    }
+
+    // (4) 常時の効果（キャラクター情報の耐性・能力の表と同じ。一時的な効果のあとに足す）。
+    fill_permanent_effects(frame, player);
+}
+/*! @} */
 
 void fill_sub2_equipment(GameFrame &frame, PlayerType *player)
 {
@@ -263,6 +938,41 @@ void fill_sub5_inventory(GameFrame &frame, PlayerType *player)
     }
 }
 
+/*!
+ * @brief プレイヤの光源の種類（`LightingState::light_kind`）
+ * @return 0 = 光が無い、1 = 松明、2 = ランタン（フェアノールのランプを含む）、
+ * 3 = アーティファクトの光源、4 = それ以外（種族・変身・魔法など装備の光源によらない光）
+ * @details 原作の `update_lite_radius()` と同じ見方をする。光源の枠（`INVEN_LITE`）の物を見て、
+ * 松明・ランタンは燃料切れなら光らない（`cur_lite` に足されない）ので、その場合は
+ * 装備によらない光（`cur_lite` が残っていれば）として 4 にする。読むだけでコアの状態は変えない。
+ */
+uint8_t player_light_kind(const PlayerType *player)
+{
+    if (player->cur_lite <= 0) {
+        return 0;
+    }
+
+    const auto *item = player->inventory[INVEN_LITE].get();
+    if (item == nullptr || !item->is_valid() || item->bi_key.tval() != ItemKindType::LITE) {
+        return 4;
+    }
+    if (item->is_fixed_or_random_artifact()) {
+        return 3;
+    }
+
+    const auto light_sval = item->bi_key.sval();
+    if (light_sval == SV_LITE_TORCH) {
+        return (item->fuel > 0) ? 1 : 4;
+    }
+    if (light_sval == SV_LITE_LANTERN) {
+        return (item->fuel > 0) ? 2 : 4;
+    }
+    if (light_sval == SV_LITE_FEANOR) {
+        return 2;
+    }
+    return 3;
+}
+
 //! いま光源で照らされているか（松明・モンスター光・視界内の常時照明・地上昼間の太陽光・夜視）。
 //! 地下の CAVE_GLOW は視界内のみ満灯（遠い常時照明部屋を満灯のまま残さない）。
 bool feature_is_lit_now(PlayerType *player, const FloorType *floor, const Grid &grid)
@@ -344,6 +1054,7 @@ void fill_minimap(GameFrame &frame, PlayerType *player, const FloorType *floor)
     mm.height = floor->height;
     mm.kinds.assign(static_cast<size_t>(mm.width) * static_cast<size_t>(mm.height),
         static_cast<uint8_t>(MinimapKind::Unknown));
+    mm.markers.assign(mm.kinds.size(),0);
 
     for (int gy = 0; gy < mm.height; ++gy) {
         for (int gx = 0; gx < mm.width; ++gx) {
@@ -366,6 +1077,26 @@ void fill_minimap(GameFrame &frame, PlayerType *player, const FloorType *floor)
                 const auto &mon = floor->m_list[grid.m_idx];
                 monster_here = mon.is_valid() && mon.ml;
             }
+            MinimapMarker marker=MinimapMarker::None;
+            if(known) {
+                const auto &seen=grid.get_terrain(TerrainKind::MIMIC);
+                if(seen.flags.has(TerrainCharacteristics::TRAP))marker=MinimapMarker::Trap;
+                if(seen.flags.has(TerrainCharacteristics::HAS_GOLD))marker=MinimapMarker::Treasure;
+            }
+            bool found_gold=false,found_item=false;
+            for(const auto index:grid.o_idx_list) {
+                if(index<=0||static_cast<size_t>(index)>=floor->o_list.size())continue;
+                const auto &item=floor->o_list[index];
+                if(!item||!item->is_valid()||item->is_held_by_monster()||!item->marked.has(OmType::FOUND))continue;
+                if(item->bi_key.tval()==ItemKindType::GOLD)found_gold=true;else found_item=true;
+            }
+            if(found_gold)marker=MinimapMarker::Treasure;
+            if(found_item)marker=MinimapMarker::Item;
+            if(grid.m_idx>0&&static_cast<size_t>(grid.m_idx)<floor->m_list.size()) {
+                const auto &monster=floor->m_list[grid.m_idx];
+                if(monster.is_valid()&&(monster.ml||monster.mflag2.has(MonsterConstantFlagType::MARK)))marker=MinimapMarker::Monster;
+            }
+            mm.markers[static_cast<size_t>(gy)*mm.width+gx]=static_cast<uint8_t>(marker);
             if (!known && !monster_here) {
                 continue;
             }
@@ -401,6 +1132,7 @@ void fill_minimap(GameFrame &frame, PlayerType *player, const FloorType *floor)
         }
     }
 
+    if(std::none_of(mm.markers.begin(),mm.markers.end(),[](uint8_t m){return m!=0;}))mm.markers.clear();
     if (player != nullptr) {
         mm.player_gx = player->x;
         mm.player_gy = player->y;
@@ -576,6 +1308,9 @@ uint16_t translate_feature_flags(const TerrainType &terrain)
     if (terrain.flags.has(TerrainCharacteristics::STAIRS)) {
         bits |= CELL_FEAT_STAIRS;
     }
+    if (terrain.flags.has(TerrainCharacteristics::SHAFT)) {
+        bits |= CELL_FEAT_SHAFT;
+    }
     if (terrain.flags.has(TerrainCharacteristics::PERMANENT)) {
         bits |= CELL_FEAT_PERMANENT;
     }
@@ -623,6 +1358,7 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
     //   これは意図的で、下敷きの床を描くため。ただし素通りしたままだとモンスターが
     //   床で塗り潰されて不可視になるので、ui 側が monster_id != 0 かつ
     //   official_tile_kind(tile_index) != 'R' を検出して ASCII 記号を重ねる。
+    //   （不可視化の再発防止:  B-07）
     if (floor != nullptr && grid.m_idx > 0 &&
         grid.m_idx < static_cast<MONSTER_IDX>(floor->m_list.size())) {
         const auto &mon = floor->m_list[grid.m_idx];
@@ -652,7 +1388,7 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
             floor->o_list[static_cast<size_t>(o_idx)]) {
             const auto &item = *floor->o_list[static_cast<size_t>(o_idx)];
             if (item.is_valid()) {
-                if (const uint16_t ot = lookup_object_tile(static_cast<uint16_t>(item.bi_id))) {
+                if (const uint16_t ot = presentation::resolve_item_tile(item)) {
                     return ot;
                 }
             }
@@ -710,6 +1446,7 @@ std::unique_ptr<term_win> g_float_menu_baseline;
 
 void refresh_float_menu_baseline()
 {
+    term_capture_base(game_term);
     if (game_term == nullptr || game_term->scr == nullptr) {
         g_float_menu_baseline.reset();
         return;
@@ -1164,7 +1901,9 @@ void fill_menu_term_mirror(GameFrame &frame)
 
     // pre_game_menu（タイトル／birth／死亡）: Term 全面。
     // ゲーム中フロート: 基準との差分セルだけ（地図・左ステータスごみを落とす）。
-    const bool crop_to_content = !frame.pre_game_menu;
+    // Only overlays inherit cells from the saved screen. A logically cleared
+    // screen owns every cell, including characters equal to the background.
+    const bool crop_to_content = !frame.pre_game_menu && !term_capture_full_screen(game_term);
     int x0 = 0;
     int y0 = 0;
     int x1 = width - 1;
@@ -1199,7 +1938,25 @@ void fill_menu_term_mirror(GameFrame &frame)
          */
         std::vector<std::pair<size_t, uint8_t>> color_runs;
 
+        // 直前のセルが「本文として積んだ全角の左半分」か（右半分を空白にしないため）。
+        bool previous_wide_left_taken = false;
+
         for (int x = x0; x <= x1; ++x) {
+            /*
+             * 全角の右半分のセルは、左半分が本文として積んである（＝文字を丸ごと持っている）なら
+             * 未変化かどうかを問わず読み飛ばす。
+             * 直前に同じ行へ描いた別の全角の右半分と**同じ桁・同じ属性**に当たると、右半分だけが
+             * 「基準から変化していないセル」と判定されて空白が 1 つ積まれ、全角文字の間に
+             * 空白が入っていた（ウィザードモードの固定アーティファクト生成の候補一覧で、
+             * 種類の一覧の全角文字と桁の偶奇がそろった行が「★審 判 の 宝石」になった）。
+             */
+            if (previous_wide_left_taken) {
+                previous_wide_left_taken = false;
+                const uint8_t attr_here = term_what(x, y, DisplaySymbol()).color;
+                if (!is_graphic_tile_attr(attr_here) && ((attr_here & kAfKanji2) != 0)) {
+                    continue;
+                }
+            }
             // 外接矩形内でも未変化セルは空白（地図の噛み込み防止）。
             if (crop_to_content && !cell_is_float_menu_content(x, y)) {
                 sys_line.push_back(' ');
@@ -1209,6 +1966,11 @@ void fill_menu_term_mirror(GameFrame &frame)
             append_term_cell(sys_line, x, y, width, crop_to_content);
             if (sys_line.size() == before) {
                 continue; // 全角の 2 セル目（1 セル目でまとめて積んである）
+            }
+            previous_wide_left_taken = false;
+            if (x + 1 <= x1) {
+                const uint8_t next_attr = term_what(x + 1, y, DisplaySymbol()).color;
+                previous_wide_left_taken = !is_graphic_tile_attr(next_attr) && ((next_attr & kAfKanji2) != 0);
             }
             const DisplaySymbol ds = term_what(x, y, DisplaySymbol());
             const uint8_t color = ds.color & kAfKanjic;
@@ -1232,7 +1994,9 @@ void fill_menu_term_mirror(GameFrame &frame)
             yellow_end_sys = sys_line.size();
         }
 
-        while (!sys_line.empty() && sys_line.back() == ' ') {
+        const auto [input_x, input_y] = term_locate();
+        const bool editing_row = frame.text_input_active && y == input_y;
+        if (!editing_row) while (!sys_line.empty() && sys_line.back() == ' ') {
             sys_line.pop_back();
         }
 
@@ -1328,7 +2092,7 @@ void fill_menu_term_mirror(GameFrame &frame)
  * 1. この TU は `/execution-charset:utf-8` でコンパイルされる（vcxproj:947）。
  *    `_("スペース", "SPACE")` のような**リテラルは UTF-8** なので、SJIS の Term バイト列
  *    とは直接比較できない。
- * 2. 描画側（`draw_term_mirror`）が触るのは `text_utf8` なので、位置は
+ * 2. 描画側（`draw_term_mirror_lines`）が触るのは `text_utf8` なので、位置は
  *    UTF-8 バイト位置で渡さないとハイライトがずれる。
  * UTF-8 の多バイト列に 0x80 未満のバイトは現れないため、ASCII トークンの素朴な走査で誤らない。
  * @{
@@ -1369,7 +2133,12 @@ struct ChoiceTokenGroup {
 tl::optional<ChoiceTokenGroup> parse_choice_token(const std::string &text, size_t p)
 {
     static const std::string kEsc = "ESC";
-    static const std::string kSpaceWord = _("スペース", "SPACE");
+    /*
+     * 言語は実行時に切り替わる（`core_main.cpp` の `i18n::set_language`）。`_()` の結果を
+     * `static` に持つと、最初に呼ばれた言語のまま固まる（日本語で始めて英語へ替えると、
+     * 画面の字と照合できず選択肢が作られない）。以下、この関数と同じ理由で `static` を付けない。
+     */
+    const std::string kSpaceWord = _("スペース", "SPACE");
     /*
      * K-37: 日本語版でも `SPACE)` と**英字のまま**書く画面がある
      * （知識メニュー `cmd-io/cmd-knowledge.cpp:64`。店は `スペース)`）。
@@ -1420,12 +2189,35 @@ tl::optional<ChoiceTokenGroup> parse_choice_token(const std::string &text, size_
     return tl::nullopt;
 }
 
+/*!
+ * @brief `text` の `[from, to)` で、開いたまま閉じていない `(` があるか（括弧の中か）。
+ * @details 能力値の選択（`player-status.cpp` の `check_experience()`）は
+ * `a) 腕力 (現在値      8)` と並ぶ。括弧の中の `8)` を札と読んだり、空白 3 つで名札を切ったりすると、
+ * 枠が「腕力 (現在値」で切れる（2026-10-07。FroxComposband の FH-24 と同じ形の穴）。
+ */
+bool inside_open_paren(const std::string &text, size_t from, size_t to)
+{
+    int depth = 0;
+    for (size_t i = from; (i < to) && (i < text.size()); ++i) {
+        if (text[i] == '(') {
+            ++depth;
+        } else if ((text[i] == ')') && (depth > 0)) {
+            --depth;
+        }
+    }
+    return depth > 0;
+}
+
 //! 1 行分のトークンを読み、各トークンの表示範囲（次のトークン直前まで）も決める。
 std::vector<ChoiceTokenGroup> scan_choice_tokens(const std::string &text)
 {
     std::vector<ChoiceTokenGroup> groups;
     for (size_t p = 0; p < text.size(); ++p) {
         if (p != 0 && text[p - 1] != ' ') {
+            continue;
+        }
+        // 括弧の中の `8)` は札ではない（直前の札の頭から数えて、閉じていない `(` があれば読み飛ばす）。
+        if (!groups.empty() && inside_open_paren(text, groups.back().begin, p)) {
             continue;
         }
         if (auto g = parse_choice_token(text, p)) {
@@ -1446,7 +2238,15 @@ size_t choice_span_end(const std::string &text, const std::vector<ChoiceTokenGro
 {
     const size_t begin = groups[index].begin;
     size_t end = (index + 1 < groups.size()) ? groups[index + 1].begin : text.size();
-    const size_t gap = text.find("   ", begin);
+    size_t gap = text.find("   ", begin);
+    // 括弧の中の空白（`(現在値     17)`）では切らない。閉じ括弧の後ろから探し直す。
+    while (gap != std::string::npos && gap < end && inside_open_paren(text, begin, gap)) {
+        const size_t close = text.find(')', gap);
+        if (close == std::string::npos || close >= end) {
+            break;
+        }
+        gap = text.find("   ", close);
+    }
     if (gap != std::string::npos && gap < end) {
         end = gap;
     }
@@ -1523,7 +2323,7 @@ bool fill_core_cursor(GameFrame &frame)
     frame.menu_core_cursor = MenuChoice{ -1, 0, 0, 0, 0, 0 };
     frame.menu_core_cursors.clear();
 
-    static const std::string kCursorMark = _("》", "> ");
+    const std::string kCursorMark = _("》", "> "); //!< 言語が変わるので static にしない
     for (size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
         const std::string &text = frame.menu_term_lines[i].text_utf8;
         // サブメニューの箱は親メニューと**同じ行に重ねて**描かれるので、親の `》` と
@@ -1594,8 +2394,8 @@ MenuChoiceScreen classify_menu_screen(const GameFrame &frame, int &store_command
 {
     store_command_line = -1;
 
-    static const std::string kStoreCommandLabel = _("コマンド:", "You may:");
-    static const std::string kGoldLabel = _("手持ちのお金:", "Gold Remaining:");
+    const std::string kStoreCommandLabel = _("コマンド:", "You may:"); //!< 言語が変わるので static にしない
+    const std::string kGoldLabel = _("手持ちのお金:", "Gold Remaining:");
 
     bool has_esc_choice = false;
     bool has_gold = false;
@@ -1718,7 +2518,7 @@ bool fill_birth_cursor(GameFrame &frame)
      *
      * ロール確認は `collect_bracket_prompt_choices` が先に拾うのでここには来ない。
      */
-    static const char *const kSelectSignatures[] = {
+    const char *const kSelectSignatures[] = { //!< 言語が変わるので static にしない
         _("を選んで下さい", "Choose a"), // 性別・種族・職業・性格・魔法領域・元素領域
         _("で項目選択", "for Select"), // オートローラー（能力値／体格・地位）
     };
@@ -1848,7 +2648,7 @@ bool collect_bracket_prompt_choices(GameFrame &frame)
  */
 bool collect_stat_raise_choices(GameFrame &frame)
 {
-    static const std::string kPrompt = _("どの能力値を上げますか", "Which stat do you want to raise");
+    const std::string kPrompt = _("どの能力値を上げますか", "Which stat do you want to raise"); //!< 言語が変わるので static にしない
 
     size_t prompt_line = frame.menu_term_lines.size();
     for (size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
@@ -1859,6 +2659,18 @@ bool collect_stat_raise_choices(GameFrame &frame)
     }
     if (prompt_line >= frame.menu_term_lines.size()) {
         return false;
+    }
+
+    /*
+     * **選んだ後の `-続く-` を原作が待っている間は、選択肢を作らない**（2026-10-07）。
+     * 選ばなかった行は消えるが、選んだ行（`d) 器用 …`）と問いの行は `-続く-` の後ろに残る。
+     * そのまま選択肢にすると、決定のキーが `-続く-` ではなく `d` へ行く（原作は `-続く-` で
+     * Enter・スペース・ESC 以外を鳴らして捨てる）。画面が何かは分かったので `true` を返して打ち切る。
+     */
+    for (const TermMirrorLine &line : frame.menu_term_lines) {
+        if ((line.source_row == 0) && presentation::message_more_suffix(line.text_utf8)) {
+            return true;
+        }
     }
 
     for (size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
@@ -2042,7 +2854,7 @@ struct NamedMenuSpec {
  * @note 英語版では修行僧と侍の見出しが同じ `Choose Stance:` になる。挙動も同じなので
  * 先に当たった方（`monk_stance`）で処理して構わない。
  */
-const NamedMenuSpec kNamedMenus[] = {
+std::vector<NamedMenuSpec> named_menu_specs() { return {
     { "recall_dungeon", _("どのダンジョン", "Which dungeon do you"), kStylePlain, 1, 18, -1, 0 },
     { "tele_town", _("どこに行きますか", "Where do you want to go"), kStylePlain, 1, 18, -1, 0 },
     { "melee_arena", _("どれに賭けますか", "Which monster:"), kStylePlain, 1, 18, -1, 0 },
@@ -2069,10 +2881,10 @@ const NamedMenuSpec kNamedMenus[] = {
      * ほかの画面は下位のやり取りで `term_clear()` するので一覧ごと消え、
      * 見出しが見つからなくなる（＝この表に当たらない）。判定は要らない。
      */
-    { "macros", _("[ マクロの設定 ]", "Interact with Macros"), kStyleParen | kStylePlain, 3, 14, -1, 0, false, 16 },
-    { "visuals", _("[ 画面表示の設定 ]", "Interact with Visuals"), kStyleParen | kStylePlain, 2, 14, -1, 0, false, 17 },
-    { "colors", _("[ カラーの設定 ]", "Interact with Colors"), kStyleParen | kStylePlain, 3, 7, -1, 0, false, 10 },
-    { "diary", _("[ 記録の設定 ]", "[ Play Record ]"), kStyleParen | kStylePlain, 3, 10, -1, 0 },
+    { "macros", _("[ マクロの設定 ]", "Interact with Macros"), kStyleParen | kStylePlain, 3, 14, -1, 0, true, 16 },
+    { "visuals", _("[ 画面表示の設定 ]", "Interact with Visuals"), kStyleParen | kStylePlain, 2, 14, -1, 0, true, 17 },
+    { "colors", _("[ カラーの設定 ]", "Interact with Colors"), kStyleParen | kStylePlain, 3, 7, -1, 0, true, 10 },
+    { "diary", _("[ 記録の設定 ]", "[ Play Record ]"), kStyleParen | kStylePlain, 3, 10, -1, 0, true },
     /*
      * K-43: オプションの設定（最上位。`do_cmd_options`。`cmd-io/cmd-gameoption.cpp:444`）。
      * **ここだけはコアにカーソルを譲れない。** 各ページ（`do_cmd_options_aux`）は
@@ -2086,16 +2898,20 @@ const NamedMenuSpec kNamedMenus[] = {
      * `tolower` で照合し switch も大文字を持っているので、大文字のまま積んでよい。
      */
     { "option_root", _("[ オプションの設定 ]", "Game options"), kStyleParen | kStylePlain, 3, 19, -1, 0, true },
-};
+    { "elemental_brand", _("どの元素攻撃をしますか", "Choose a temporary elemental brand"), kStylePlain, 2, 6, -1, 0, true },
+    { "elemental_immunity", _("どの元素の免疫をつけますか", "Choose a temporary elemental immunity"), kStylePlain, 2, 5, -1, 0, true },
+}; }
 
 //! @brief 表に載っている画面なら選択肢を作る。
 bool collect_named_menu_choices(GameFrame &frame)
 {
-    for (const NamedMenuSpec &spec : kNamedMenus) {
+    for (const NamedMenuSpec &spec : named_menu_specs()) {
         const std::string signature = spec.signature;
         size_t signature_line = frame.menu_term_lines.size();
         for (size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
-            if (frame.menu_term_lines[i].text_utf8.find(signature) != std::string::npos) {
+            const auto compact=[](std::string value){value.erase(std::remove_if(value.begin(),value.end(),[](unsigned char c){return c==' '||c=='\t';}),value.end());return value;};
+            if (frame.menu_term_lines[i].text_utf8.find(signature) != std::string::npos
+                || compact(frame.menu_term_lines[i].text_utf8).find(compact(signature)) != std::string::npos) {
                 signature_line = i;
                 break;
             }
@@ -2126,7 +2942,7 @@ bool collect_named_menu_choices(GameFrame &frame)
         }
 
         /*
-         * プロンプト行は**本体の後ろ**に積む。画面側の選択カーソル（`hd2d/ui/ui_cursor.cpp`）の初期位置は
+         * プロンプト行は**本体の後ろ**に積む。`sync_menu_choice_cursor` の初期位置は
          * 先頭なので、先に積むと呪術の中断で「決定」が既定で `'l'`（全部中断）に乗る。
          */
         if (spec.extra_row >= 0) {
@@ -2171,7 +2987,7 @@ bool collect_named_menu_choices(GameFrame &frame)
  */
 bool collect_autopick_menu_choices(GameFrame &frame)
 {
-    static const std::string kCommandLabel = _("コマンド:", "Command:");
+    const std::string kCommandLabel = _("コマンド:", "Command:"); //!< 言語が変わるので static にしない
 
     if (frame.menu_term_lines.empty() || frame.menu_term_lines.front().source_row != 0) {
         return false;
@@ -2247,7 +3063,7 @@ bool collect_autopick_menu_choices(GameFrame &frame)
  */
 bool fill_option_cursor(GameFrame &frame)
 {
-    static const char *const kSignatures[] = {
+    const char *const kSignatures[] = { //!< 言語が変わるので static にしない
         _("リターンで次へ", "RET to advance"), // 自動セーブ・詐欺オプション
         _("リターン:次", "RET:next"), // 各オプションページ
     };
@@ -2301,6 +3117,7 @@ void fill_menu_choices(GameFrame &frame)
     if (!frame.menu_open || frame.menu_term_lines.empty()) {
         return;
     }
+    fill_paged_list_keys(frame);
     if (frame.pre_game_menu) {
         // K-24: ロール確認のような `['r' …]` 行が**最優先**。キャラクターシートに
         // 黄色が混ざっていても、こちらが出ている画面ではこちらが正しい。
@@ -2372,6 +3189,18 @@ void fill_menu_choices(GameFrame &frame)
 }
 
 /*!
+ * @brief K-20: Term 行 0 の `y/n` プロンプトを「はい／いいえ」の選択肢へ持ち上げる。
+ * @details `input_check_strict()`（`src/core/asking-player.cpp:220-286`）は
+ *   - 本文の後ろに `[y/n]` / `[Y/n]` / `[(O)k/(C)ancel]` を足して `prt(buf, 0, 0)` で行 0 へ出し
+ *   - `'y'`/`'n'`（または `'o'`/`'c'`）と ESC しか受け付けない（`'\r'` は `bell()`）
+ *   - `screen_save()` を**通らない**ので icky にならず、MenuOverlay にも Term ミラーにも出ない
+ * という作りなので、ここを拾わないと「はい」と答える手段がカーソルには無い。
+ *
+ * 判定は**行末が上記 3 種のいずれかに一致すること**だけに絞る。行 0 はメッセージ行でもあり、
+ * 緩めると通常のメッセージ表示中にキーを飲み込んでしまう（誤コマンドより性質が悪い）。
+ * 応答後にコアが `prt("", 0, 0)` で行 0 を消す（同 288 行）ので、居座りも起きない。
+ */
+/*!
  * @brief K-37: `[S]弾, [A]矢, [B]クロスボウの矢 :` 形式の 1 行コマンドプロンプトを選択肢へ。
  * @details 矢弾の作成（`create_ammo`＝`src/mind/mind-archer.cpp:92`）は
  * `screen_save()` を通らないので icky にならず、**Term ミラーにも MenuOverlay にも出ない**。
@@ -2438,18 +3267,6 @@ bool parse_bracket_command_prompt(const std::string &text, PromptBar &out)
     return true;
 }
 
-/*!
- * @brief K-20: Term 行 0 の `y/n` プロンプトを「はい／いいえ」の選択肢へ持ち上げる。
- * @details `input_check_strict()`（`src/core/asking-player.cpp:220-286`）は
- *   - 本文の後ろに `[y/n]` / `[Y/n]` / `[(O)k/(C)ancel]` を足して `prt(buf, 0, 0)` で行 0 へ出し
- *   - `'y'`/`'n'`（または `'o'`/`'c'`）と ESC しか受け付けない（`'\r'` は `bell()`）
- *   - `screen_save()` を**通らない**ので icky にならず、MenuOverlay にも Term ミラーにも出ない
- * という作りなので、ここを拾わないと「はい」と答える手段がカーソルには無い。
- *
- * 判定は**行末が上記 3 種のいずれかに一致すること**だけに絞る。行 0 はメッセージ行でもあり、
- * 緩めると通常のメッセージ表示中にキーを飲み込んでしまう（誤コマンドより性質が悪い）。
- * 応答後にコアが `prt("", 0, 0)` で行 0 を消す（同 288 行）ので、居座りも起きない。
- */
 bool parse_prompt_line(const std::string &raw, PromptBar &out)
 {
     out = PromptBar{};
@@ -2462,6 +3279,91 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
         return false;
     }
 
+    const auto command_prompt = analyze_command_prompt(text);
+    /* Look keeps the D-pad for moving the inspected grid.  Lift only the
+     * auxiliary one-key language into a labelled strip; LB/RB selects an
+     * action and A/Enter sends exactly that native key. */
+    if (command_prompt.kind == CommandPromptKind::Look) {
+        // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない
+        // （画面側は本文の窓を出す。`look_screen_cover.h`）。
+        if (look_screen_cover().covered(AngbandWorld::get_instance().character_icky_depth)) {
+            return false;
+        }
+        const auto add = [&](int key, const char *ja, const char *en) {
+            PromptChoice c{};c.key=key;c.label_utf8=_(ja,en);
+            if(!out.text_utf8.empty())out.text_utf8+="  ";
+            out.text_utf8+='[';c.begin=static_cast<int>(out.text_utf8.size());out.text_utf8+=c.label_utf8;c.len=static_cast<int>(c.label_utf8.size());out.text_utf8+=']';
+            out.choices.push_back(std::move(c));
+        };
+        out.text_utf8=_("見る: ","Look: ");
+        /*
+         * 見ている物の説明。行 0 の頭にある「<名前> <状態> [r,…]」（敵）や「<名前> [<情報>]」（アイテム・地形）の
+         * 最後の `[` より前を、帯の見出しのすぐ後ろへ残す（`target_set_interactive_aux()`。アイテムの名前にも
+         * `[4,+0]` のような `[` が付くので、最後の `[` を取る）。選択肢だけを出すと、何を見ているか帯のどこにも
+         * 出なかった（調-13）。続きの待ちの印（`-more-`／`-続く-`）は説明に含めない。手本は Sil-Q・Frox。
+         */
+        {
+            std::string subject;
+            if (const std::size_t open = text.rfind('['); open != std::string::npos) {
+                subject = text.substr(0, open);
+            }
+            const auto trim = [](std::string &s) {
+                while (!s.empty() && s.back() == ' ') {
+                    s.pop_back();
+                }
+                std::size_t i = 0;
+                while (i < s.size() && s[i] == ' ') {
+                    ++i;
+                }
+                s.erase(0, i);
+            };
+            trim(subject);
+            for (const char *const more : { "-more-", "-続く-" }) {
+                const std::string m(more);
+                if (subject.size() >= m.size() && subject.compare(subject.size() - m.size(), m.size(), m) == 0) {
+                    subject.erase(subject.size() - m.size());
+                    trim(subject);
+                }
+            }
+            out.text_utf8 += subject;
+        }
+        for (const int key : command_prompt.keys) {
+            switch (key) {
+            case '+': add(key,"次の注目地点","Next interesting"); break;
+            case '-': add(key,"前の注目地点","Previous interesting"); break;
+            case 'p': add(key,"自分の位置へ戻る","Recenter on player"); break;
+            case 'm': add(key,"近い注目地点へ","Nearest interesting"); break;
+            case 'o': add(key,"現在位置を自由に見る","Manual/current mode"); break;
+            case 'g': add(key,"ここを移動先にする","Set travel goal"); break;
+            case 't': add(key,"ここを対象にする","Select target"); break;
+            default: break;
+            }
+        }
+        out.footer_utf8=_("LB/RB: 操作を選ぶ  A/Enter: 実行  十字キー: カーソル移動", "LB/RB: select action  A/Enter: run  D-pad: move look cursor");
+        out.lightweight=true;
+        return !out.choices.empty();
+    }
+
+    /* Raw one-key confirmations which do not use the normal [y/n] helper. */
+    if (command_prompt.kind == CommandPromptKind::VerifyAt) {
+        out.text_utf8 = text;
+        out.choices.push_back({ _("確認 (@)", "Confirm (@)"), '@', 0, 0 });
+        out.choices.push_back({ _("取消 (Esc)", "Cancel (Esc)"), 27, 0, 0 });
+        return true;
+    }
+    if (command_prompt.kind == CommandPromptKind::VerifyYesNo) {
+        out.text_utf8 = text;
+        out.choices.push_back({ _("はい", "Yes"), 'y', 0, 0 });
+        out.choices.push_back({ _("いいえ", "No"), 27, 0, 0 });
+        return true;
+    }
+    if (command_prompt.kind == CommandPromptKind::Force) {
+        out.text_utf8 = text;
+        out.choices.push_back({ _("練気術", "Force"), 'w', 0, 0 });
+        out.choices.push_back({ _("取消", "Cancel"), 27, 0, 0 });
+        return true;
+    }
+
     /*
      * `yes_char` / `no_char` は**画面に出ている文字**。枠を重ねる位置をここから探し、
      * そのまま KeyQueue へ積むキーにもする。`input_check_strict` は大文字小文字の
@@ -2469,7 +3371,7 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
      * 各文字は接尾辞の中で 1 度しか出てこない（`(C)ancel` の小文字 `c` とは別字）。
      */
     /*
-     * **2 択とは限らない**（2026-08-10。こう気づいた——「アイテムを破壊するときの Y/N の
+     * **2 択とは限らない**（2026-08-10。気づいたこと「アイテムを破壊するときの Y/N の
      * 選択がコントローラーでできない」）。アイテム破壊は `[y/n/Auto]` の **3 択**で、
      * 2 択の表に載っていなかったので**プロンプトとして認識されず、パッドで答えられなかった**
      * （`cmd-destroy.cpp:53`。'y' / 'n' / 'A' と ESC を直に `inkey()` で読む）。
@@ -2492,7 +3394,8 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
         bool by_prefix;
         PromptOption options[4]; //!< `key == 0` で終端
     };
-    static const PromptPattern kPatterns[] = {
+    //! 札の字は言語ごとに違う。`static` にすると最初の言語のまま固まる（言語は実行時に切り替わる）。
+    const PromptPattern kPatterns[] = {
         { "[y/n]", false, { { _("はい", "Yes"), 'y' }, { _("いいえ", "No"), 'n' } } },
         { "[Y/n]", false, { { _("はい", "Yes"), 'Y' }, { _("いいえ", "No"), 'n' } } },
         //! クイックスタートの問い（`birth/quick-start.cpp:42`）。**行 0 ではない**（下の走査で拾う）。
@@ -2634,10 +3537,17 @@ bool parse_numeric_input_line(const std::string &raw, NumericInput &out)
 }
 
 //! Term 行 0 を読んで `parse_prompt_line` / `parse_numeric_input_line` へ渡す（実画面側の入口）。
+static void fill_row0_prompts_inner(GameFrame &frame);
 void fill_row0_prompts(GameFrame &frame)
+{
+    const LookScreenCover::Frame cover_frame(look_screen_cover()); // 見るの帯を作らなかったフレームで、重なりの基準を忘れる
+    fill_row0_prompts_inner(frame);
+}
+static void fill_row0_prompts_inner(GameFrame &frame)
 {
     frame.prompt = PromptBar{};
     frame.numeric = NumericInput{};
+    presentation::set_repeat_count_input_active(false);
     /*
      * K-24: birth 中も対象にする。`よろしいですか？[Y/n]`（職業・性格を選んだ後の確認）は
      * `input_check_strict` なので `'\r'` を撥ねる。**パッドでは「はい」と答えられなかった。**
@@ -2656,12 +3566,26 @@ void fill_row0_prompts(GameFrame &frame)
         append_term_cell(sys_line, x, 0, width, true);
     }
     const std::string row0 = to_utf8_line(sys_line);
+    /*
+     * 「繰り返し回数」の入力（`0` の後の `回数: 12`）。原作は `askfor` ではなく数字を
+     * 1 キーずつ読むので、文字入力にも数量の欄（`(1-9): `）にも当たらず、
+     * パッドとタッチでは回数を入れる手段が無かった。数量の欄と同じ枠（上下で増減・
+     * 左右で桁）を出し、`set_number` の展開だけ回数向けに替える（`input_event_adapter.h`）。
+     * 決定の Enter は原作どおり「コマンド: 」の問いへ進み、そこで選んだコマンドが回数ぶん走る。
+     */
+    if (presentation::fill_repeat_count_input(row0, frame.numeric)) {
+        return;
+    }
+    if (presentation::is_monster_symbol_prompt(row0)) {
+        presentation::expose_ascii_symbol_prompt(frame, row0);
+        return;
+    }
     bool is_prompt = parse_prompt_line(row0, frame.prompt);
     if (!is_prompt && !parse_numeric_input_line(row0, frame.numeric)) {
         /*
          * **行 0 に無いプロンプトもある。**クイックスタートの問いは `put_str(…, 14, 10)`
          * で 14 行目に出る（`birth/quick-start.cpp:42`）ので、行 0 だけを見ていると
-         * パッドで答えられない（2026-08-10 に気づいた「ほかのメニュー内でも同様に」）。
+         * パッドで答えられない（気づいたこと 2026-08-10「ほかのメニュー内でも同様に」）。
          *
          * **広げても誤爆しにくいのは、表が「画面に出る文字列そのもの」で引いているから**
          * である（`[y/N]` のような綴りは問い以外に出てこない）。緩い解釈にしていたら
@@ -2684,7 +3608,7 @@ void fill_row0_prompts(GameFrame &frame)
             }
         }
         /*
-         * **打っている行そのもの**（2026-08-15 に決めた「入力中の表示も欲しい」）。
+         * **打っている行そのもの**（決めたこと 2026-08-15「入力中の表示も欲しい」）。
          *
          * 銘の刻印・検索語のように、`askfor` が**地図の上で**行 0 だけを使う場面がある。
          * この間は icky が立たないので `menu_open` が偽 → ミラーは 1 行も開かず
@@ -2704,6 +3628,31 @@ void fill_row0_prompts(GameFrame &frame)
          */
         if (!is_prompt && frame.menu_term_lines.empty() && !row0_trimmed.empty()
             && frame.text_input_active) {
+            frame.prompt.text_utf8 = row0;
+            frame.prompt.line_index = -1; //!< ミラーには出ていない＝ ui が自分の帯へ出す
+            if(game_term&&game_term->scr)frame.menu_term_curs_col=int(game_term->scr->cx)-game_term->offset_x;
+            return;
+        }
+        /*
+         * **地図の上の `-続く-`**（気づいたこと 2026-09-25「変愚でアイテムを破壊したあと
+         * 持ち物が参照できなくなってフリーズした」）。
+         *
+         * `auto_more` が偽のとき、コアは `msg_flush()` の中で行 0 に `-続く-` を書いて
+         * キーを待つ。このとき icky は立たないのでミラーは開かず（`menu_open` 偽）、
+         * `y/n` でも数値でもないので **frame には待っている印が 1 つも無かった**。
+         * `message_more_pending()`（`frame/message_more.h`）はプロンプトか行 0 のミラーで
+         * `-more-` を見るので、変愚・短愚蛮怒ではメニューの外の `-続く-` を一度も
+         * 見分けられなかった。持ち物メニューから命令を送った後にこれが来ると、一覧は
+         * 消えたまま（`NativeInventoryMenu` が一覧の飾りのまま見せる仕組みを持っているのに
+         * 合図が来ない）、`inventory_open` はコマンド待ちでないので弾かれ続けた。
+         *
+         * 他のコア（Frox・Angband・Sil-Q・幻想蛮怒）のアダプタと同じく、行 0 を
+         * そのまま `prompt.text_utf8` へ渡す。選択肢は作らないので、カーソル層も
+         * `awaiting_command` の判定（`prompt.choices` を見る）も変わらない。
+         * コマンド待ち（`inkey_flag`）の間は出さない——古い行 0 を拾わないため。
+         */
+        if (!is_prompt && frame.menu_term_lines.empty() && !inkey_flag && !frame.text_input_active
+            && presentation::message_more_suffix(row0_trimmed)) {
             frame.prompt.text_utf8 = row0_trimmed;
             frame.prompt.line_index = -1; //!< ミラーには出ていない＝ ui が自分の帯へ出す
             return;
@@ -2866,6 +3815,106 @@ void fill_combat_fx(GameFrame &frame)
         fx.src_x = static_cast<int16_t>(event.src_x);
         fx.intensity = event.intensity;
         frame.combat_fx.push_back(fx);
+    }
+}
+
+/*!
+ * @brief 原作の `project()`・射撃・投擲の記録（`attack_fx_recorder.h`）を汲んで、フレームの
+ * `projections`・`missiles` へ載せる
+ * @details **汲んだら消える**。記録は番号のまま積まれているので、ここで名前・形・旗に直す。
+ * 変愚系の列挙（`AttributeType`・`PROJECT_*`・`ItemKindType`）を使うのでこのファイルに置く。
+ *
+ * ## 形の決め方
+ * ブレス（経路が取れて広がったもの）→ ビーム（`PROJECT_BEAM`）→ 直接（`PROJECT_JUMP`、または
+ * 始点と着弾点が同じで経路が無い）→ 半径があればボール、無ければボルト。`Touch` は使っていない
+ * （足元・周囲だけの魔法は、原作の `project()` では直接と見分けがつかない）。
+ *
+ * ## 反射・視界内の全員
+ * - 視界内の全員（`project_all_los`）：撃ったのがプレイヤで、旗がちょうど `JUMP|KILL|HIDE`、半径 0。
+ *   原作でこの組み合わせを使うのは `project_all_los` だけ。
+ * - 反射：直前の記録が反射可能（`PROJECT_REFLECTABLE`）で、効果範囲が 1 マス以下、そのマスから
+ *   モンスターが同じ属性を半径 0 で撃ち返した記録。原作は反射の再帰呼び出しを `project()`
+ *   の中から行うので、記録の並びで見分ける。
+ */
+void fill_attack_fx(GameFrame &frame, bool player_blind)
+{
+    std::vector<attack_fx::RawProjection> raw_projections;
+    std::vector<attack_fx::RawMissile> raw_missiles;
+    attack_fx::Recorder::instance().take(raw_projections, raw_missiles);
+    frame.projections.clear();
+    frame.missiles.clear();
+    //! 盲目のときは原作も矢弾・投げた物の動きを描かない（見えるマスだけ描く）ので、記録を捨てる。
+    if (player_blind) {
+        raw_missiles.clear();
+    }
+
+    constexpr uint32_t all_in_sight_flags = PROJECT_JUMP | PROJECT_KILL | PROJECT_HIDE;
+    for (size_t i = 0; i < raw_projections.size(); ++i) {
+        const auto &raw = raw_projections[i];
+        ProjectionFx fx;
+        fx.seq = raw.seq;
+        fx.origin = (raw.src_idx == 0) ? AttackFxOrigin::Player : (raw.src_idx > 0 ? AttackFxOrigin::Monster : AttackFxOrigin::Other);
+        if (raw.breath) {
+            fx.shape = ProjectionShape::Breath;
+        } else if ((raw.flags & PROJECT_BEAM) != 0) {
+            fx.shape = ProjectionShape::Beam;
+        } else if (((raw.flags & PROJECT_JUMP) != 0) || raw.path.empty()) {
+            fx.shape = ProjectionShape::Jump;
+        } else if (raw.rad > 0) {
+            fx.shape = ProjectionShape::Ball;
+        } else {
+            fx.shape = ProjectionShape::Bolt;
+        }
+        fx.attr = attack_fx::attribute_name(raw.attr_id);
+        fx.rad = static_cast<uint8_t>(raw.rad < 0 ? 0 : (raw.rad > 255 ? 255 : raw.rad));
+        fx.src_y = static_cast<int16_t>(raw.src_y);
+        fx.src_x = static_cast<int16_t>(raw.src_x);
+        fx.impact_y = static_cast<int16_t>(raw.impact_y);
+        fx.impact_x = static_cast<int16_t>(raw.impact_x);
+        fx.path = raw.path;
+        fx.area = raw.area;
+        if ((raw.flags & PROJECT_HIDE) != 0) {
+            fx.flags |= kProjHidden;
+        }
+        if (raw.blind) {
+            fx.flags |= kProjPlayerBlind;
+        }
+        if ((raw.src_idx == 0) && (raw.flags == all_in_sight_flags) && (raw.rad == 0)) {
+            fx.flags |= kProjAllInSight;
+        }
+        if (i > 0) {
+            const auto &prev = raw_projections[i - 1];
+            const uint32_t player_flag = PROJECT_PLAYER;
+            if (((prev.flags & PROJECT_REFLECTABLE) != 0) && (prev.area.size() <= 1) && (raw.src_idx > 0) && (raw.rad == 0) && (raw.attr_id == prev.attr_id) && (raw.src_y == prev.impact_y) && (raw.src_x == prev.impact_x) && ((raw.flags & ~player_flag) == (prev.flags & ~player_flag))) {
+                fx.flags |= kProjReflected;
+            }
+        }
+        frame.projections.push_back(std::move(fx));
+    }
+
+    for (const auto &raw : raw_missiles) {
+        MissileFx fx;
+        fx.seq = raw.seq;
+        fx.origin = AttackFxOrigin::Player;
+        if (raw.thrown) {
+            fx.kind = raw.boomerang ? MissileKind::Boomerang : MissileKind::Thrown;
+        } else if (raw.tval == static_cast<int>(ItemKindType::BOLT)) {
+            fx.kind = MissileKind::Bolt;
+        } else if (raw.tval == static_cast<int>(ItemKindType::SHOT)) {
+            fx.kind = MissileKind::Shot;
+        } else {
+            fx.kind = MissileKind::Arrow;
+        }
+        fx.item_id = static_cast<uint16_t>(raw.item_id < 0 ? 0 : raw.item_id);
+        if (raw.brand_id >= 0) {
+            fx.brand = attack_fx::attribute_name(raw.brand_id);
+        }
+        fx.src_y = static_cast<int16_t>(raw.src_y);
+        fx.src_x = static_cast<int16_t>(raw.src_x);
+        fx.path = raw.path;
+        fx.return_path = raw.return_path;
+        fx.hit = raw.hit;
+        frame.missiles.push_back(std::move(fx));
     }
 }
 
@@ -3049,6 +4098,8 @@ void suppress_meaningless_term_cursor(GameFrame &frame)
     if (frame.text_input_active) {
         return;
     }
+
+    if(frame.modern.kind=="dialog" && frame.modern.stage=="cursor" && frame.menu_core_cursor.key!=0)return;
 
     bool has_other_cursor = (frame.menu_core_cursor.line_index >= 0) ||
         !frame.menu_choices.empty() || !frame.prompt.choices.empty() || frame.numeric.active;
@@ -3271,8 +4322,84 @@ void Bridge::fill_teleport_fx(GameFrame &frame, PlayerType *player)
     frame.teleport_fx.burst = burst;
 }
 
+namespace {
+
+/*!
+ * @brief 位置の確認（`L`。原作の `do_cmd_locate()`）の最中なら、見ている区画の中心のマスを返す（修-64）。
+ * @details 原作はこの間 `panel_row_min`/`panel_col_min`（見ている区画）だけを動かし、`player_ptr->x/y`（自キャラ）は
+ * 動かさない。行 0 は「マップ位置 [..] ..  方向?」（英語は「Map sector [..] ..  Direction?」）を出して方向を待つので、
+ * この目印で見分ける（原作は 1 バイトも変えない。Angband・Sil-Q・Frox・幻想蛮怒のアダプタと同じ手）。
+ * 区画の大きさは `do_cmd_locate()` と同じ `get_screen_size()`。
+ * @return 最中なら true（`cx`/`cy` に区画の中心のマス）
+ */
+bool locate_panel_center(int &cx, int &cy)
+{
+    if (game_term == nullptr || game_term->scr == nullptr) {
+        return false;
+    }
+    const auto [width, height] = term_get_size();
+    if (width <= 0 || height <= 0) {
+        return false;
+    }
+    std::string sys_line;
+    for (int x = 0; x < (std::min)(width, 16); ++x) {
+        append_term_cell(sys_line, x, 0, width, true);
+    }
+    const std::string row0 = to_utf8_line(sys_line);
+    static const std::string_view kJa = "マップ位置";
+    static const std::string_view kEn = "Map sector";
+    if (row0.compare(0, kJa.size(), kJa) != 0 && row0.compare(0, kEn.size(), kEn) != 0) {
+        return false;
+    }
+    const auto [wid, hgt] = get_screen_size();
+    cx = static_cast<int>(panel_col_min) + (wid / 2);
+    cy = static_cast<int>(panel_row_min) + (hgt / 2);
+    return true;
+}
+
+} // namespace
+
 GameFrame Bridge::capture(PlayerType *player)
 {
+    /*
+     * 画面を作る間にゲーム本体の乱数を進めない。`map_info()`（幻覚・色が変わる
+     * モンスター）や `monster_desc()`（幻覚中の名前）は原作の乱数を引く。原作は
+     * ゲームの進行に沿った回数だけ引くが、ここは経過時間で回数が変わるので、
+     * 同じシード・同じ入力でも乱数の列が一致しなくなる。呼び出しの前に状態を
+     * 丸ごと退避し、抜けるときに戻す（Angband の AH-23 と同じ考え方）。
+     */
+    /*
+     * 検査用（環境変数が無ければ何もしない）。`HD2D_TEST_RNG=1` で、1 フレームを作る間に
+     * 乱数の状態がどう動いたか（inside）と、戻した後の状態（kept）の要約値を標準エラーへ出す。
+     * `HD2D_TEST_RNG=nofix` は戻さない（この直しの前の動きを再現する）。
+     * `HD2D_TEST_FORCE_IMAGE=1` は毎回幻覚にする（幻覚の状態を作る操作を省くため）。
+     */
+    struct RngRestorer {
+        xso::rng32 saved = AngbandSystem::get_instance().get_rng();
+        const char *test_mode = std::getenv("HD2D_TEST_RNG");
+        static uint32_t digest() {
+            std::array<uint32_t, xso::rng32::word_count()> words{};
+            AngbandSystem::get_instance().get_rng().get_state(words.begin());
+            uint32_t h = 2166136261u;
+            for (const auto w : words) {
+                h = (h ^ w) * 16777619u;
+            }
+            return h;
+        }
+        ~RngRestorer() {
+            const bool report = (test_mode != nullptr) && (*test_mode != '\0');
+            const uint32_t inside = report ? digest() : 0;
+            if (!(report && std::strcmp(test_mode, "nofix") == 0)) {
+                AngbandSystem::get_instance().set_rng(saved);
+            }
+            if (report) {
+                std::fprintf(stderr, "[hd2d-rng] inside=%08x kept=%08x\n", inside, digest());
+            }
+        }
+    } rng_restorer;
+    if (player != nullptr && std::getenv("HD2D_TEST_FORCE_IMAGE") != nullptr) {
+        player->effects()->hallucination().set(1000);
+    }
     GameFrame frame{};
     frame.frame_id = ++frame_counter_;
 
@@ -3281,6 +4408,10 @@ GameFrame Bridge::capture(PlayerType *player)
     }
 
     fill_hud(frame.hud, player);
+#ifdef TANGBAND
+    fill_doomsday(frame.hud); //!< 短愚だけが送る（変愚ほかは -1 のまま＝線に載らない）
+#endif
+    fill_status_effects(frame, player); //!<。短愚（3.0.2.4）は原作の `print_status` が組む旗を受け取る
     fill_messages(frame);
     frame.controller_hint = _("移動:十字/L  Select/F10:機能  A:決定  B:戻る",
         "Move: D-pad/L  Select/F10: features  A: select  B: back");
@@ -3293,13 +4424,16 @@ GameFrame Bridge::capture(PlayerType *player)
      * まだ映すものが無い**のだから、この間は常にミラーを開く。
      *
      * これを入れていないと、`init_angband` が `inkey()` で入力待ちに入ったとき
-     * 画面が真っ黒のまま固まり、**何を聞かれているのか利用者にも調査側にも分からない**
+     * 画面が真っ黒のまま固まり、**何を聞かれているのか遊ぶ人にも調査側にも分からない**
      * （Android のエミュレータで実際に踏んだ。原因はネイティブスタックを取るまで
      * 特定できなかった）。Windows でも同じ穴があり、こちらの方が素直な既定。
      */
     frame.menu_open = (AngbandWorld::get_instance().character_icky_depth > 0)
         || is_dead || !character_generated;
     frame.pre_game_menu = !character_generated || is_dead;
+    // 死亡・引退のあとの画面（題や phase を誕生と分ける。修-10）。
+    frame.game_over = character_generated && is_dead;
+    apply_native_targeting_frame(frame);
     // K-47: タイトル画の出し分け。コアから推測せず、オープニング側の宣言をそのまま流す。
     frame.title_screen = g_title_screen;
 
@@ -3327,6 +4461,11 @@ GameFrame Bridge::capture(PlayerType *player)
     }
 
     fill_combat_fx(frame);
+#if HB_HENGBAND_SOURCE_3025
+    fill_attack_fx(frame, player->effects()->blindness().is_active());
+#else
+    fill_attack_fx(frame, player->effects()->blindness().is_blind());
+#endif
     fill_sounds(frame);
     apply_cursor_mode();
     apply_bot_json_output();
@@ -3339,6 +4478,17 @@ GameFrame Bridge::capture(PlayerType *player)
     // K-20: 「コアがカーソルを持っているか」は画面上の `》` で見る（グローバル use_menu ではない）。
     fill_menu_choices(frame);
     fill_row0_prompts(frame);
+    // inkey_flag is true only while the core requests the next turn command.
+    // Shopping, nested menus, messages and text input must keep their own input.
+    frame.awaiting_command=modern_store_enabled() && inkey_flag && !frame.menu_open
+        && !frame.pre_game_menu && !frame.text_input_active && !frame.numeric.active && frame.prompt.choices.empty();
+    if(frame.awaiting_command && command_menu) {
+        const auto mode=rogue_like_commands?KeymapMode::ROGUE:KeymapMode::ORIGINAL;
+        for(const unsigned char key:std::string("xX"))
+            if(!keymap_actions_map.at(mode).at(key))frame.command_menu_keys+=static_cast<char>(key);
+    }
+    if(native_targeting().active())apply_native_targeting_frame(frame);
+    else capture_modern_store(frame, player);
     // K-39: 枠が位置を示している画面では Term カーソル（`_`）を出さない。
     suppress_meaningless_term_cursor(frame);
     dump_menu_term_mirror(frame);
@@ -3372,7 +4522,7 @@ GameFrame Bridge::capture(PlayerType *player)
          * 闘技場（設計書 §4.6 の観戦カメラの合図）。**カジノ闘技場（モンスター賭博）は
          * `inside_arena` を立てない**——`market/melee-arena.cpp:113` が立てるのは
          * `AngbandSystem::phase_out`（観戦状態）だけである。ここで拾わないと、
-         * 賭けた試合が画面の外で進む（2026-08-24 に気づいた。幻想蛮怒側は
+         * 賭けた試合が画面の外で進む（幻想蛮怒側は
          * `gb_shim.c` が `inside_arena ‖ inside_battle` で最初から畳んでいた）。
          */
         if (floor->inside_arena || AngbandSystem::get_instance().is_phase_out()) {
@@ -3397,7 +4547,7 @@ GameFrame Bridge::capture(PlayerType *player)
             ? static_cast<int>(AngbandWorld::get_instance().get_town_index())
             : 0;
         /*
-         * 場所の名前と広域マップの印（P10 のカットイン演出。2026-08-11 に決めた）。
+         * 場所の名前と広域マップの印（P10 のカットイン演出。決めたこと 2026-08-11）。
          *
          * `map_name()` は `src/floor/floor-util.cpp` にあるコアの関数で、
          * クエスト階・広域マップ・アリーナ・闘技場・町・ダンジョンの分岐を全部持っている。
@@ -3412,7 +4562,7 @@ GameFrame Bridge::capture(PlayerType *player)
          *   - `TownList::get_town()` … 範囲外で `std::out_of_range`
          * キャラクター作成中のフロアはどれも入っていないので、**毎フレーム投げる**。
          * 投げるとこの関数が途中で降り、**フレームが 1 枚も届かなくなる**ので、
-         * 画面が固まって「決定が効かない」に見える（2026-08-11 に気づいた:
+         * 画面が固まって「決定が効かない」に見える（気づいたこと 2026-08-11:
          * 「新規で開始する際、名前選択の手前で決定ができない。ESC で抜けて名前を入れると落ちる」）。
          *
          * 要るのは地図が出ている場面だけなので、**キャラクターが出来るまでは空のまま**にする。
@@ -3453,16 +4603,26 @@ GameFrame Bridge::capture(PlayerType *player)
         frame.lighting.day_minute = (hour * 60) + minute;
         frame.lighting.daytime = world.is_daytime();
         frame.lighting.light_radius = static_cast<int>(player->cur_lite);
+        //! 光の届く範囲。照らされたマスのビット列は下のマス走査で詰める。
+        frame.lighting.light_kind = player_light_kind(player);
     }
 
-    //! 周囲の地形の内訳。
+    //! 周囲の地形の内訳（環境音の層）。
     fill_surroundings(frame, player, floor);
 
     frame.view_w = view_cols_;
     frame.view_h = view_rows_;
 
-    int ox = px - view_cols_ / 2;
-    int oy = py - view_rows_ / 2;
+    int center_x = px;
+    int center_y = py;
+    /*
+     * 位置の確認（`L`）の最中は、見ている区画の中心へカメラを向ける（修-64。決めたこと 2026-10-12）。
+     * 原作は区画だけを動かし @ は動かさないので、追従のままでは十字キーを押しても 3D の絵が動かない。
+     * `GameFrame::camera_detached`（「コアが @ から離れた所を見ている」）を立てる。手本は Angband・Sil-Q・Frox・幻想蛮怒。
+     */
+    frame.camera_detached = locate_panel_center(center_x, center_y);
+    int ox = center_x - view_cols_ / 2;
+    int oy = center_y - view_rows_ / 2;
     /*
      * カメラ追従（HD2D）とフロア端での丸め（SDL2）の切替。
      *
@@ -3502,6 +4662,17 @@ GameFrame Bridge::capture(PlayerType *player)
     fill_minimap(frame, player, floor);
 
     frame.cells.reserve(static_cast<size_t>(view_cols_) * static_cast<size_t>(view_rows_));
+
+    /*
+     * プレイヤの光源で照らされているマスのビット列（`frame.cells` と同じ並び）。
+     * 光源の情報（`light_kind`）を送っているときだけ、cells の数ぶんの長さで用意する。
+     * 立てるのは原作が `update_lite()` で付ける `CAVE_LITE` のマスだけ（自前の距離・視線の計算はしない）。
+     */
+    const bool send_player_lit = (frame.lighting.light_kind != 0);
+    std::vector<uint8_t> player_lit;
+    if (send_player_lit) {
+        player_lit.assign((static_cast<size_t>(view_cols_) * static_cast<size_t>(view_rows_) + 7) / 8, 0);
+    }
 
     for (int vy = 0; vy < view_rows_; ++vy) {
         const int gy = oy + vy;
@@ -3552,6 +4723,12 @@ GameFrame Bridge::capture(PlayerType *player)
 
             const bool lit_now = feature_is_lit_now(player, floor, grid);
             const bool know_feature = feature_is_known(player, floor, grid);
+
+            if (send_player_lit && (grid.info & CAVE_LITE) != 0) {
+                // いま詰めようとしている cells の添字（この後で必ず 1 つ push_back する）
+                const size_t cell_index = frame.cells.size();
+                player_lit[cell_index / 8] = static_cast<uint8_t>(player_lit[cell_index / 8] | (1u << (cell_index % 8)));
+            }
 
             // 0=記憶のみ／1=視界内だが無灯／2=いま照明あり。
             // ※ CAVE_GLOW だけでは 2 にしない（遠い常時照明部屋が満灯のまま残る不具合の修正）。
@@ -3647,6 +4824,12 @@ GameFrame Bridge::capture(PlayerType *player)
             }
             frame.cells.push_back(cell);
         }
+    }
+
+    // cells の数ぶんに切り詰めて渡す（cells が空なら player_lit も空）
+    if (send_player_lit && !frame.cells.empty()) {
+        player_lit.resize((frame.cells.size() + 7) / 8);
+        frame.lighting.player_lit = std::move(player_lit);
     }
 
     return frame;
@@ -4081,6 +5264,7 @@ std::vector<TermMirrorLine> make_option_root_screen()
 namespace {
 //! コアの `askfor` に入っているか。`text_input_state_hook` が上げ下げする。
 bool g_core_text_input_active = false;
+int g_core_text_input_depth = 0;
 }
 
 void set_title_screen(bool active)
@@ -4090,7 +5274,10 @@ void set_title_screen(bool active)
 
 void install_text_input_hook()
 {
-    text_input_state_hook = [](bool active) { g_core_text_input_active = active; };
+    text_input_state_hook = [](bool active) {
+        if(active)++g_core_text_input_depth;else if(g_core_text_input_depth>0)--g_core_text_input_depth;
+        g_core_text_input_active=g_core_text_input_depth>0;
+    };
 }
 
 bool is_core_text_input_active()
@@ -4100,16 +5287,26 @@ bool is_core_text_input_active()
 
 int run_menu_choice_smoke()
 {
-    // SubSystem=Windows にコンソールは無い。pad_bind_smoke と同じくファイルへ残す。
-    FILE *log = std::fopen("docs/menu_choice_smoke.log", "w");
-    if (log == nullptr) {
-        log = std::fopen("menu_choice_smoke.log", "w");
-    }
+    // 全文は作業ディレクトリへ残す（件数と落ちた行は標準エラー）。
+    FILE *log = std::fopen("menu_choice_smoke.log", "w");
+    //! 検査した件数（PASS/FAIL の行を数える）。--selftest が件数を出すのに使う。
+    int checked_lines = 0;
     auto say = [&](const char *fmt, auto... args) {
         if (log != nullptr) {
             std::fprintf(log, fmt, args...);
             std::fputc('\n', log);
             std::fflush(log);
+        }
+        //! 件数を数え、落ちた行は標準エラーにも出す（--selftest はログのファイルを見に行かなくて済む）。
+        char line_buf[2048];
+        std::snprintf(line_buf, sizeof(line_buf), fmt, args...);
+        const bool is_pass = std::strstr(line_buf, " PASS ") != nullptr;
+        const bool is_fail = std::strstr(line_buf, "FAIL") != nullptr;
+        if (is_pass || is_fail) {
+            ++checked_lines;
+        }
+        if (is_fail) {
+            std::fprintf(stderr, "[core] menu-choice-smoke: %s\n", line_buf);
         }
     };
     say("# HENGBAND_SDL2_MENUCHOICE_SMOKE — K-16 選択肢抽出の自己検査");
@@ -4415,6 +5612,35 @@ int run_menu_choice_smoke()
             c.expect_keys, got.c_str(), spans.c_str(), c.line.c_str());
     }
 
+    // ---- 調-13: 見る（l）の帯に、見ている物の名前（行 0 の頭の説明）が残る。選択肢だけだと何を見ているか分からなかった。
+    {
+        struct LookCase {
+            const char *name;
+            std::string row;
+            std::string subject; //!< 帯の「見る: 」の直後に残るはずの説明（`-more-` は含まない）
+        };
+        const std::vector<LookCase> look_cases = {
+            { "look_monster", "a Filthy street urchin (Asleep) [r,/,+,-,p,q,o,<dir>]", "a Filthy street urchin (Asleep)" },
+            { "look_item_bracket", "You see a Soft Leather Armor [2,+0] [r,/,+,-,p,q,o,<dir>]", "You see a Soft Leather Armor [2,+0]" },
+            { "look_more_dropped", "a Cave spider -more- [r,/,+,-,p,q,o,<dir>]", "a Cave spider" },
+        };
+        for (const LookCase &c : look_cases) {
+            PromptBar look{};
+            const bool parsed = parse_prompt_line(c.row, look) && !look.choices.empty();
+            bool ok = false;
+            if (parsed) {
+                const std::size_t at = look.text_utf8.find(c.subject);
+                //! 説明の直後に最初の選択肢の `[` が来る（説明が選択肢の枠に食い込まない）。-more- は残らない。
+                ok = (at != std::string::npos) && (look.text_utf8.find("-more-") == std::string::npos)
+                    && (look.text_utf8.find('[', at + c.subject.size()) == static_cast<std::size_t>(look.choices.front().begin) - 1);
+            }
+            if (!ok) {
+                ++failed;
+            }
+            say("look:%-18s %s band=\"%s\"", c.name, ok ? "PASS" : "FAIL", look.text_utf8.c_str());
+        }
+    }
+
     // ---- K-22: 数値入力の判定（`asking-player.cpp:346,384` の書式そのまま）
     struct NumericCase {
         const char *name;
@@ -4643,6 +5869,7 @@ int run_menu_choice_smoke()
     if (log != nullptr) {
         std::fclose(log);
     }
+    std::fprintf(stderr, "[core] menu-choice-smoke: %d cases checked, %d failed\n", checked_lines, failed);
     return failed;
 }
 

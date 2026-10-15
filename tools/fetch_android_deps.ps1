@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Android 版のビルドに必要な SDL2 群を third_party/android に展開します。
+    Android 版のビルドに必要な SDL2 群と OpenAL Soft を third_party/android に展開します。
 
 .DESCRIPTION
     Android 版は SDL2・SDL2_image・SDL2_ttf・SDL2_mixer をソースから一緒にビルドします
@@ -35,7 +35,14 @@ $deps = @(
     @{ name = 'SDL2_ttf';   version = '2.24.0';  dir = 'SDL2_ttf-2.24.0';
        url  = 'https://github.com/libsdl-org/SDL_ttf/releases/download/release-2.24.0/SDL2_ttf-2.24.0.tar.gz' },
     @{ name = 'SDL2_mixer'; version = '2.8.0';   dir = 'SDL2_mixer-2.8.0';
-       url  = 'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.0/SDL2_mixer-2.8.0.tar.gz' }
+       url  = 'https://github.com/libsdl-org/SDL_mixer/releases/download/release-2.8.0/SDL2_mixer-2.8.0.tar.gz' },
+    # 画面側の音（hd2d/audio/audio_engine.cpp。 の 3 番）。
+    # 版と SHA-512 は Windows 版の vcpkg（ports/openal-soft/portfile.cmake）と同じ。
+    # LGPL なので libopenal.so（共有ライブラリ）として APK に入れる。
+    @{ name = 'openal-soft'; version = '1.25.1'; dir = 'openal-soft-1.25.1';
+       url  = 'https://github.com/kcat/openal-soft/archive/1.25.1.tar.gz';
+       sha512 = '47eccb317ed6040c549f2b51d2d45afcdcd03d56d8cb0ea9ef8a98d2c61c9629ffad39596cffa2ad848dd3b65a227a6591406dc483ebd3a3e03bb0a4d0f112b1';
+       vcpkgCache = 'C:\vcpkg\downloads\kcat-openal-soft-1.25.1.tar.gz' }
 )
 
 function Say($m) { Write-Host ("[fetch-android-deps] {0}" -f $m) }
@@ -50,10 +57,19 @@ foreach ($dep in $deps) {
     }
 
     $tgz = Join-Path $cache ("{0}-{1}.tar.gz" -f $dep.name, $dep.version)
+    if (-not (Test-Path $tgz) -and $dep.vcpkgCache -and (Test-Path $dep.vcpkgCache)) {
+        Say ("vcpkg の取得済みの物を写す: {0}" -f $dep.vcpkgCache)
+        Copy-Item $dep.vcpkgCache $tgz
+    }
     if (-not (Test-Path $tgz)) {
         Say ("取得: {0}" -f $dep.url)
         & curl.exe -L --fail --retry 3 --retry-delay 5 -o $tgz $dep.url
         if ($LASTEXITCODE -ne 0) { throw ("ダウンロードに失敗: {0}" -f $dep.url) }
+    }
+
+    if ($dep.sha512) {
+        $actual = (Get-FileHash $tgz -Algorithm SHA512).Hash.ToLowerInvariant()
+        if ($actual -ne $dep.sha512) { throw ("SHA-512 が合いません: {0}（{1}）" -f $tgz, $actual) }
     }
 
     Say ("展開: {0} {1}" -f $dep.name, $dep.version)

@@ -22,6 +22,7 @@
  * 全項目が「割り当て無し」に落ちていた（実機相当で踏んだ）。
  */
 #include "audio/sdl_win_audio.h"
+#include "audio/sound_event_queue.h"
 
 #include "frame/sdl_ui_options.h"
 
@@ -44,6 +45,7 @@
 #include "util/enum-converter.h"
 #include "world/world.h"
 
+#include <cstdlib>
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -411,8 +413,33 @@ void sdl_win_audio_apply_options()
 
 int sdl_win_audio_term_xtra(int n, int v)
 {
+    /*
+     * `HENGBAND_MUTE=1` なら曲も効果音も鳴らさない（検査用。決めたこと 2026-09-26
+     * 「テスト中の音がうるさいので BGM と効果音を OFF にしてテストして」）。
+     */
+    if ((n == TERM_XTRA_SOUND || n == TERM_XTRA_MUSIC_BASIC || n == TERM_XTRA_MUSIC_DUNGEON
+            || n == TERM_XTRA_MUSIC_QUEST || n == TERM_XTRA_MUSIC_TOWN || n == TERM_XTRA_MUSIC_MONSTER
+            || n == TERM_XTRA_SCENE)
+        && std::getenv("HENGBAND_MUTE") != nullptr && std::getenv("HENGBAND_MUTE")[0] != '0') {
+        return 0;
+    }
     switch (n) {
     case TERM_XTRA_SOUND: {
+        /*
+         * **画面側が鳴らすなら、ここでは鳴らさず書き留める**（`sdl_win_audio.cpp` と同じ。
+         * ）。Android の電話版は 2026-09-25 から画面側に
+         * OpenAL の装置があるので、変愚・短愚の効果音もこちらを通って HRTF で鳴る。
+         */
+        if (use_sound && presentation::sound_events_wanted()) {
+            const auto sk = i2enum<SoundKind>(v);
+            const auto it = sound_names.find(sk);
+            if (it != sound_names.end()) {
+                const int py = (p_ptr != nullptr) ? p_ptr->y : 0;
+                const int px = (p_ptr != nullptr) ? p_ptr->x : 0;
+                presentation::push_sound_event(it->second, py, px);
+            }
+            return 0;
+        }
         if (!use_sound || !g_mixer_open || !g_sound_cfg) {
             // 最初の 1 回だけ理由を残す（毎回出すとログが埋まる）。
             static bool reported = false;

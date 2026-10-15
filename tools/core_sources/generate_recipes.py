@@ -6,14 +6,27 @@ import json
 from pathlib import Path
 import subprocess
 import tarfile
-from reconstruction_recipe import build, materialize
+from reconstruction_recipe import build, materialize, safe_path
 from reconstruction import sha
 
 HERE=Path(__file__).resolve().parent
 
+def upstream_path(source):
+    """Folder of the upstream repository holding the sources ('src' unless the manifest says otherwise; '.' is the repository root)."""
+    value=source.get('upstream_path','src')
+    if value in ('','.'):return '.'
+    if not safe_path(value) :raise ValueError('Unsafe upstream_path')
+    return value
+
+def upstream_prefix(source):
+    """Prefix of the names returned by original_files ('src/', or '' for the repository root)."""
+    path=upstream_path(source)
+    return '' if path=='.' else path+'/'
+
 def original_files(upstream, source):
     repo=Path(upstream)/source['upstream_repo']
-    raw=subprocess.check_output(['git','-C',str(repo),'-c','safe.directory='+repo.as_posix(),'archive','--format=tar',source['commit'],'src'])
+    path=upstream_path(source)
+    raw=subprocess.check_output(['git','-C',str(repo),'-c','safe.directory='+repo.as_posix(),'archive','--format=tar',source['commit'],*([] if path=='.' else [path])])
     with tarfile.open(fileobj=io.BytesIO(raw)) as t:
         return {m.name:t.extractfile(m).read() for m in t if m.isfile()}
 
@@ -23,7 +36,8 @@ def generate(source,upstream,prepared):
     targets={name:(target_root/name).read_bytes() for name in source['files']}
     for name,data in targets.items():
         if sha(data)!=source['files'][name]['sha256']:raise ValueError('Unexpected baseline source: '+name)
-    preferred={name:('source','src/'+name) for name in targets}
+    prefix=upstream_prefix(source)
+    preferred={name:('source',prefix+name) for name in targets}
     recipe,report=build({'source':originals},targets,preferred)
     result=materialize(recipe,lambda archive,path: originals[path])
     if result!=targets:raise ValueError('Generated recipe differs from baseline')

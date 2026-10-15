@@ -172,7 +172,7 @@ void KeyBinds::parse(const std::string &line)
 KeyBinds default_key_binds()
 {
     KeyBinds binds;
-    //! 既存 UI と同じ綴り（F10 = 機能メニュー）。利用者の記憶がそのまま効く。
+    //! 既存 UI と同じ綴り（F10 = 機能メニュー）。遊ぶ人の記憶がそのまま効く。
     (void)binds.assign(kActionFeatureMenu, SDLK_F10, 0);
     (void)binds.assign(kActionLayoutCycle, SDLK_F9, 0);
     (void)binds.assign(kActionSubsToggle, SDLK_F8, 0);
@@ -182,6 +182,14 @@ KeyBinds default_key_binds()
     (void)binds.assign(kActionTurnRight, SDLK_F6, 0);
     //! メインパネルの 3D ／ 2D アスキー。
     (void)binds.assign(kActionMainPanelToggle, SDLK_F4, 0);
+    /*
+     * **コマンドメニューを開く既定はキーボードで F1**（決めたこと 2026-09-25。
+     * パッドは既定で Start が同じ役を持つ。`hd2d/ui/game_pad.cpp` の Start 行）。
+     * Enter / パッド A は決定の専任になったので、コマンドメニューへの入口を
+     * どこかへ残す必要があった。ほかの割り当て画面の項目と同じくここでも
+     * 変更できる（`ui_action_ids()` に元から入っている）。
+     */
+    (void)binds.assign(kActionCommandMenu, SDLK_F1, 0);
     return binds;
 }
 

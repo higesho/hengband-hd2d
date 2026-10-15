@@ -252,6 +252,7 @@ inline constexpr GLenum GL_DONT_CARE = 0x1100;
     X(void, DepthFunc, (GLenum func))                                                                                               \
     X(void, PixelStorei, (GLenum pname, GLint param))                                                                               \
     X(void, DepthMask, (GLboolean flag))                                                                                            \
+    X(void, ColorMask, (GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha))                                           \
     X(void, Finish, ())                                                                                                            \
     X(void, ReadPixels, (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels))                \
     /* --- テクスチャ --- */                                                                                                        \
@@ -259,6 +260,7 @@ inline constexpr GLenum GL_DONT_CARE = 0x1100;
     X(void, DeleteTextures, (GLsizei n, const GLuint *textures))                                                                    \
     X(void, BindTexture, (GLenum target, GLuint texture))                                                                           \
     X(void, ActiveTexture, (GLenum texture))                                                                                        \
+    X(void, GenerateMipmap, (GLenum target)) \
     X(void, TexImage2D, (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const void *pixels)) \
     X(void, TexSubImage2D, (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels)) \
     X(void, TexParameteri, (GLenum target, GLenum pname, GLint param))                                                              \

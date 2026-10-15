@@ -1,0 +1,149 @@
+# Umoria の画面の字の表のうち、手で書く行。原作の書式から抜けない形（アダプタが組む字・遊んで見つけた形）を書く。
+# 英語<TAB>日本語。書式は {1} {2} で英語の何番目の値かを書く。messages.ja.txt（作成物）と同じ鍵は書かない。
+%c) %s	{1}) {2}
+Choose a race (? for Help):	種族を選んでください（? でヘルプ）:
+[ press any key to continue ]	[ 何かキーを押してください ]
+# --- 1 文の中の言い回し（um_main.cpp の add_phrase_choice が選択肢の範囲に使う。文ごとの訳〈messages.ja.txt〉の中での位置を localize_frame が探す。文の訳と字を合わせること）。
+Hit space to re-roll	スペースで振り直し
+ESC to accept	ESC で能力値を確定
+ESC to abort	ESC で中止
+return to print on screen	リターンで画面に表示
+press any key to continue	何かキーを押してください
+# --- アダプタが組む名札（um_main.cpp。コマンドメニューの命令と分類・選択肢）。語は変愚のコマンドメニュー（cmd-menu-content-table.cpp）に合わせた。
+Action	行動
+Items	道具
+Magic	魔法
+Information	情報
+System	システム
+Rest	休息する
+Rest as needed	必要なだけ休息する
+Search	探す
+Search mode on/off	探索モードのON/OFF
+Look	周りを調べる
+Go up stairs	階段を上る
+Go down stairs	階段を下りる
+Run	走る
+Move without pickup	拾わずに移動する
+Open	開ける
+Close	閉じる
+Bash	体当たりする
+Jam a door	くさびを打つ
+Disarm a trap or chest	トラップ解除
+Tunnel	穴を掘る
+Read a scroll	読む
+Quaff a potion	飲む
+Use a staff	杖を使う
+Aim a wand	魔法棒で狙う
+Eat	食べる
+Fire or throw an item	撃つ・投げる
+Wear	装備する
+Wear or wield an item	装備する
+Take off an item	装備を外す
+Exchange weapons	武器を持ち替える
+Refuel a lamp	燃料を補給
+Drop an item	落とす
+Inscribe an item	銘を刻む
+Inventory list	アイテム一覧
+Equipment list	装備一覧
+Cast a spell	呪文を唱える
+Pray	祈る
+Browse a book	魔法書を読む
+Gain new spells	新しい呪文を覚える
+Full map	ダンジョンの全体図
+Locate	位置を確認
+Character status	ステータス
+Identify symbol	文字の説明
+Show previous messages	メッセージ履歴
+Scoreboard	スコア
+Set options	オプション
+Save and quit	セーブ&中断
+Help	ヘルプ
+Version info	バージョン情報
+Quit	引退する
+Equipment...	装備...
+Inventory...	持ち物...
+Cancel	キャンセル
+Show the list	一覧を見る
+Accept these characteristics	この能力値で決める
+Re-roll	振り直す
+Do not keep a record	記録を残さない
+Show the record on screen	記録を画面に出す
+Continue	続ける
+Yes	はい
+No	いいえ
+%s  (%d gp)	{1}  ({2} GP)
+# --- ラベルと数（原作 ui.cpp の printHeaderNumber ほか。"%s: %6d" で 1 回に書く）。ラベルの語は変愚の表示に合わせた。
+%s: %d	{1}: {2}
+LEV	レベル
+EXP	経験
+MANA	MP
+MHP	最大HP
+CHP	現在HP
+AC	AC
+GOLD	所持金
++ To Hit	+ 命中
++ To Damage	+ ダメージ
++ To AC	+ AC
+Total AC	総合AC
+Age	年齢
+Height	身長
+Weight	体重
+Social Class	社会的地位
+Level	レベル
+Experience	経験値
+Max Exp	最大経験値
+Exp to Adv.	次のレベルまで
+Gold	所持金
+Max Hit Points	最大HP
+Cur Hit Points	現在HP
+Max Mana	最大MP
+Cur Mana	現在MP
+Race	種族
+Class	職業
+Sex	性別
+Fighting	格闘
+Bows/Throw	射撃
+Saving Throw	魔法防御
+# --- 店（アダプタが画面の字から組む名札と、値段の問い）。
+Purchase	購入する
+Purchase an item	購入する
+Sell an item	売却する
+Browse store's inventory	品物の一覧を見る
+Exit from building	店を出る
+Asking : %d	言い値: {1}
+What do you offer? (Asking : %d)	いくら出しますか？ (言い値: {1})
+# --- タイトルとセーブの一覧（アダプタが書く説明。um_main.cpp の write_save_info）。
+%s, %s %s, level %d, %s	{1}、{2}の{3}、レベル {4}、{5}
+town	町
+%d ft	{1} フィート
+# --- 遊んで集めた未訳（2026-10-03。M1・M3 の道筋）。
+-more-	-続く-
+Agreed!	よし、決まりだ！
+AC  :	AC:
+%s. (%c)	{1} ({2})
+# --- 得点表の見出し（行と桁をそろえた。um_lang.cpp の translate_score_row）。
+Rank  Points Name              Sex Race       Class  Lvl Killed By	順位  得点   名前                性 種族       職業   Lv  死因
+# --- 2026-10-04 に足した（m6 の検査で訳の当たらなかった字を集めた。欄ごとに訳す手当て〈um_lang.cpp〉が欄の単位で引く）。
+MHP :	最大HP:
+CHP :	現在HP:
+MANA:	MP:
+GOLD:	所持金:
+%d%% unknown	{1}% 未習得
+%d%% untried	{1}% 未使用
+%d%% forgotten	{1}% 忘却
+: %s	: {1}
+%d [Fixed]	{1} [固定]
+What price do you ask? (Offer : %d)	いくらで売りますか？ (店の言い値: {1})
+Rest for how long? %s	どのくらい休みますか？ {1}
+Drop all %s?	{1}をすべて落としますか？
+Close the list	一覧を閉じる
+Died on Level :	死亡階層:
+%s : yes	{1} : はい
+%s : no	{1} : いいえ
+Set to yes: %s	「{1}」を はい にする
+Set to no: %s	「{1}」を いいえ にする
+Previous option	上の項目へ
+Next option	下の項目へ
+Done	終わる
+%s :	{1} :
+Died on Level : %d	死亡階層: {1}

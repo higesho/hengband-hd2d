@@ -12,6 +12,7 @@
  */
 #include "audio/audio_engine.h"
 
+#include <cstdlib>
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
@@ -158,6 +159,16 @@ bool AudioEngine::open(std::string *log)
     if (this->device_ != nullptr) {
         return true;
     }
+    /*
+     * `HENGBAND_MUTE=1` なら曲も効果音も鳴らさない（検査用。決めたこと 2026-09-26
+     * 「テスト中の音がうるさいので BGM と効果音を OFF にしてテストして」）。
+     */
+    if (const char *mute = std::getenv("HENGBAND_MUTE"); mute != nullptr && mute[0] != '0') {
+        if (log != nullptr) {
+            *log = "HENGBAND_MUTE のため音の装置を開きません";
+        }
+        return false;
+    }
     ALCdevice *device = alcOpenDevice(nullptr);
     if (device == nullptr) {
         if (log != nullptr) {
@@ -271,6 +282,9 @@ bool AudioEngine::play_sfx(const std::string &path, const ListenerOffset &at, fl
             return false;
         }
         this->sfx_cache_[path] = buffer;
+        //! 初めて読んだ音だけ 1 行残す（貯めに入った後は黙る）。Android では logcat で
+        //! 「名前から wav を引いて鳴らせた」ことを確かめる手段になる。
+        std::fprintf(stderr, "[hd2d][audio] 効果音を読みました: %s\n", path.c_str());
     }
     if (buffer == 0) {
         return false;

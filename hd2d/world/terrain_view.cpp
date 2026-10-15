@@ -1,3 +1,4 @@
+#include <cstring>
 /*!
  * @file terrain_view.cpp
  * @brief `terrain_view.h` の実装。
@@ -13,10 +14,44 @@
 #include <array>
 #include <cstdio>
 #include <cstdlib>
+#include <limits>
+#include <unordered_set>
 
 namespace hd2d {
 
 namespace {
+
+/*!
+ * @brief マスの座標から変種を 1 つ選ぶ（Angband の町の壁・屋根・柵。決めたこと 2026-09-24）。
+ * @details 共有の乱数列（`seed`）は消費しない——他の町の乱択がずれない。`salt` は用途ごとに
+ * 変えて、同じマスの壁と屋根と柵が同じ番号に揃わないようにする。
+ */
+int cell_variant(const std::vector<int> &set, int gx, int gy, int town_id, std::uint32_t salt)
+{
+    std::uint32_t h = (static_cast<std::uint32_t>(gx) * 73856093u) ^ (static_cast<std::uint32_t>(gy) * 19349663u)
+        ^ (static_cast<std::uint32_t>(town_id) * 83492791u) ^ salt;
+    h ^= h >> 13;
+    h *= 0x5bd1e995u;
+    h ^= h >> 15;
+    return set[static_cast<std::size_t>(h % static_cast<std::uint32_t>(set.size()))];
+}
+
+/*!
+ * @brief 負の値でも向きが揃う割り算と剰余（**負の側へ丸める**）。
+ * @details 町の座標（フレームの座標 − 町の原点。`FloorIdentity::town_origin_x`）は、窓の中で
+ * 町の地図の左にあたる所では負になる。C++ の `/` と `%` は 0 へ丸めるので、そのまま使うと
+ * 格子の周期が 0 をまたいで崩れる。原点が 0 のコア（ほか全部）は値が負にならず、結果は同じ。
+ */
+int floor_div(int value, int divisor)
+{
+    const int q = value / divisor;
+    return ((value % divisor) != 0 && ((value < 0) != (divisor < 0))) ? (q - 1) : q;
+}
+
+int floor_mod(int value, int divisor)
+{
+    return value - (floor_div(value, divisor) * divisor);
+}
 
 //! splitmix64。1 ワードを掻き混ぜる。
 std::uint64_t mix64(std::uint64_t z)
@@ -57,6 +92,8 @@ constexpr Rgb kStructuralWall{ 0.70f, 0.67f, 0.60f }; //!< 石積み
 constexpr Rgb kBedrock{ 0.44f, 0.41f, 0.37f }; //!< 岩盤
 constexpr Rgb kDoorway{ 0.52f, 0.36f, 0.22f };
 constexpr Rgb kStairs{ 0.78f, 0.70f, 0.35f };
+//! 2階層移動する坑道。通常階段の黄土色に対し、遠目でも判別できる青系にする。
+constexpr Rgb kShaftStairs{ 0.38f, 0.72f, 1.00f };
 constexpr Rgb kProp{ 0.46f, 0.43f, 0.38f };
 constexpr Rgb kPillar{ 0.74f, 0.71f, 0.64f };
 /*!
@@ -150,7 +187,23 @@ bool passage_runs_east_west(const FloorMeaning &meaning, int gx, int gy)
     };
     const bool ns_wall = walled(gx, gy - 1) && walled(gx, gy + 1);
     const bool ew_wall = walled(gx - 1, gy) && walled(gx + 1, gy);
-    return ns_wall && !ew_wall;
+    if (ns_wall || ew_wall) {
+        return ns_wall && !ew_wall;
+    }
+    /*
+     * 壁で決まらないとき（まだ行っていない部屋の扉。南北の壁が見えていない）は、
+     * 通路の来る側で決める（気づいたこと 2026-09-23「未到達の部屋に繋がる扉の向きが
+     * おかしい」）。東か西からだけ通れるマスが来ていれば東西に通る。部屋を見に行けば
+     * 南北に壁が見えて上の判定と同じ答えになるので、情報が増えても絵は化けない。
+     */
+    const auto open = [&meaning](int x, int y) {
+        const CellRole role = meaning.role_at(x, y);
+        return (role == CellRole::RoomFloor) || (role == CellRole::CorridorFloor)
+            || (role == CellRole::Doorway) || (role == CellRole::Stairs);
+    };
+    const bool ew_open = open(gx - 1, gy) || open(gx + 1, gy);
+    const bool ns_open = open(gx, gy - 1) || open(gx, gy + 1);
+    return ew_open && !ns_open;
 }
 
 float terrain_variance()
@@ -259,7 +312,16 @@ struct TownFeatureRuntime {
 
 std::uint64_t cell_seed(int gx, int gy, const FloorIdentity &floor)
 {
-    // 絶対格子座標とフロア識別子だけを混ぜる。**視界にも走査順にも依存させない。**
+    /*
+     * **町の座標へ直してから混ぜる**（気づいたこと 2026-10-10「歩く位置で町の意匠が変わる」）。
+     * Frox の荒野の窓は 66 桁・22 行ずつずれ、町の地図の左上がフレームの座標のどこかが歩くたびに
+     * 変わる（`FloorIdentity::town_origin_x`）。フレームの座標のまま混ぜると、同じ町の同じマスの
+     * 種が窓のずれで変わり、建物の色・草の小物・屋根の変種が入れ替わる。原点が 0 のコア（ほか全部）は
+     * 1 ビットも変わらない。
+     */
+    gx -= floor.town_origin_x;
+    gy -= floor.town_origin_y;
+    // 町の座標（原点が無ければ絶対格子座標）とフロア識別子だけを混ぜる。**視界にも走査順にも依存させない。**
     std::uint64_t h = mix64(static_cast<std::uint64_t>(static_cast<std::int64_t>(gx)) * 0x9E3779B97F4A7C15ull);
     h ^= mix64(static_cast<std::uint64_t>(static_cast<std::int64_t>(gy)) * 0xC2B2AE3D27D4EB4Full);
     /*
@@ -335,7 +397,7 @@ struct PropSet {
     std::vector<int> mat_structure[kCellRoleCount]; //!< 塞ぐもの（`StructuralWall` / `Bedrock`）
     /*! @} */
     /*!
-     * @brief **小物を撒いてよい地形 id**（利用者の決定 D7。2026-08-21）。空なら従来どおり。
+     * @brief **小物を撒いてよい地形 id**（2026-08-21）。空なら従来どおり。
      * @details 下の装飾層は**役割の既定で描いたマスにだけ**回している（地形の細別を持つ
      * マスに撒くと「溶岩の上に木箱が浮く」）。だが**草地と木と水しか無いダンジョン**では
      * それだと枠が 1 度も回らない——幻想蛮怒の無縁塚は細別が 99.4%、魔法の森深部は
@@ -347,9 +409,58 @@ struct PropSet {
     std::vector<int> prop_terrains;
 };
 
-PropSet resolve_terrain_props(const FloorMeaning &meaning, const PrefabLibrary *library, bool use_lib)
+PropSet resolve_terrain_props(const FloorMeaning &meaning, const PrefabLibrary *library, bool use_lib,
+    const PropSet *base = nullptr, int zone_style = 0)
 {
     PropSet props;
+    /*
+     * **区域の上書き**（Umoria の部屋の種類。2026-10-03）。`base`（＝その階の意匠を当てた後）から始め、
+     * `zone_style` の節が名指した所だけを差し替える。名指さない所は階の帯のまま残る。
+     */
+    if (use_lib && (base != nullptr)) {
+        props = *base;
+        const DungeonStyle &zstyle = dungeon_style_for(zone_style, meaning.identity.dun_level);
+        const auto zswap = [library](const char *name, int fallback) {
+            if (name == nullptr) {
+                return fallback;
+            }
+            if (name[0] == '\0') {
+                return -1;
+            }
+            const int index = library->find(name);
+            return (index >= 0) ? index : fallback;
+        };
+        props.dead_end_pile = zswap(zstyle.dead_end_pile, props.dead_end_pile);
+        for (int i = 0; i < 3; ++i) {
+            props.wall_side[i] = zswap(zstyle.wall_side[i], props.wall_side[i]);
+            props.room_floor[i] = zswap(zstyle.room_floor[i], props.room_floor[i]);
+        }
+        props.room_edge_pillar = zswap(zstyle.room_edge_pillar, props.room_edge_pillar);
+        props.fire_body = zswap(zstyle.fire_body, props.fire_body);
+        props.fire_flame = zswap(zstyle.fire_flame, props.fire_flame);
+        const auto zmaterial = [library](const char *stem, std::vector<int> &into) {
+            if (stem == nullptr) {
+                return;
+            }
+            std::vector<int> found;
+            for (int i = 1; i <= 10; ++i) {
+                char tail[8]{};
+                std::snprintf(tail, sizeof(tail), "_%02d", i);
+                const int index = library->find(std::string(stem) + tail);
+                if (index >= 0) {
+                    found.push_back(index);
+                }
+            }
+            if (!found.empty()) {
+                into = std::move(found);
+            }
+        };
+        zmaterial(zstyle.room_floor_stem, props.mat_ground[static_cast<std::size_t>(CellRole::RoomFloor)]);
+        zmaterial(zstyle.corridor_floor_stem, props.mat_ground[static_cast<std::size_t>(CellRole::CorridorFloor)]);
+        zmaterial(zstyle.wall_stem, props.mat_structure[static_cast<std::size_t>(CellRole::StructuralWall)]);
+        zmaterial(zstyle.bedrock_stem, props.mat_structure[static_cast<std::size_t>(CellRole::Bedrock)]);
+        return props;
+    }
     if (use_lib) {
         props.rubble = library->find("rubble_pile");
         props.bones = library->find("bones");
@@ -459,10 +570,164 @@ PropSet resolve_terrain_props(const FloorMeaning &meaning, const PrefabLibrary *
 }
 } // namespace
 
+
+namespace {
+// Buildings and functional shapes are deliberately excluded from generic block conversion.
+bool keep_terrain_prefab(const std::string &name)
+{
+    for(const char *prefix:{"house_","castle_","manor_","shrine_","temple_","shop_","roof_","bridge_","gate_"})
+        if(name.rfind(prefix,0)==0) return true;
+    for(const char *word:{"stairs","stair_","door","chasm","pit_","rune","trap"})
+        if(name.find(word)!=std::string::npos) return true;
+    return false;
+}
+bool natural_block(const std::string &name)
+{
+    for(const char *prefix:{"wall_","bedrock_","vein_","rock","rubble","boulder","mountain_","pillar_","stone_block"})
+        if(name.rfind(prefix,0)==0) return true;
+    return false;
+}
+bool rubble_block(const std::string &name)
+{
+    for(const char *prefix:{"rock","rubble","boulder"}) if(name.rfind(prefix,0)==0) return true;
+    return false;
+}
+int liquid_kind(const TerrainMemory *memory,int gx,int gy,const std::string &name={})
+{
+    const auto flags=memory?memory->flags_at(gx,gy):0;
+    if((flags&CELL_FEAT_LAVA)!=0 || name.find("lava")!=std::string::npos)
+        return static_cast<int>(TerrainModelKind::Lava);
+    if((flags&CELL_FEAT_WATER)!=0 || name.find("water")!=std::string::npos)
+        return static_cast<int>(TerrainModelKind::Water);
+    return -1;
+}
+void vary_terrain_models(TerrainView &out,const FloorIdentity &floor)
+{
+    const float variance=terrain_variance();
+    if(variance<=0.f) return;
+    const auto apply=[&](std::vector<ModelInstance> &instances,bool rotate,float amount) {
+        for(auto &instance:instances) {
+            const int x=static_cast<int>(std::floor(instance.position.x));
+            const int y=static_cast<int>(std::floor(instance.position.y));
+            std::uint64_t seed=cell_seed(x,y,floor)^0x616c6265646fULL;
+            const float common=next_range(seed,-1.f,1.f)*amount*variance*3.f;
+            const float warm=next_range(seed,-1.f,1.f)*amount*.35f*variance*3.f;
+            instance.tint={1.f+common+warm,1.f+common,1.f+common-warm};
+            if(rotate) instance.yaw+=static_cast<float>(mix64(seed)&3u)*1.57079632679f;
+        }
+    };
+    apply(out.model_walls,true,.085f);
+    apply(out.model_blocks,true,.085f);
+    apply(out.model_floors,true,.09f);
+    apply(out.model_ground,true,.09f);
+    apply(out.model_under_floors,true,.09f);
+    apply(out.model_parts[static_cast<std::size_t>(TerrainModelKind::Rubble)],true,.07f);
+    // Shore rails retain the direction selected by their neighboring liquid cells.
+    apply(out.model_parts[static_cast<std::size_t>(TerrainModelKind::Shore)],false,.085f);
+    // Water and lava stay continuous and retain their authored color.
+}
+
+void apply_global_terrain_models(TerrainView &out,const TerrainMemory *memory,
+    const PrefabLibrary *library,const TerrainModels &models)
+{
+    if(!models.replace_all) return;
+    const auto rubble=static_cast<std::size_t>(TerrainModelKind::Rubble);
+    auto add_ground=[&](const ModelInstance &inst,const std::string &name) {
+        const int kind=liquid_kind(memory,static_cast<int>(std::floor(inst.position.x)),
+            static_cast<int>(std::floor(inst.position.y)),name);
+        if(kind>=0) {
+            if(!models.parts[static_cast<std::size_t>(kind)]) return false;
+            ModelInstance liquid=inst;liquid.position.z=0.f;liquid.scale.z=1.f;
+            out.model_parts[static_cast<std::size_t>(kind)].push_back(liquid);
+            return true;
+        }
+        if(!models.floor) return false;
+        out.model_ground.push_back(inst);return true;
+    };
+    if(library && library->ready()) {
+        for(std::size_t i=0;i<out.lib.size();++i) {
+            const auto &entry=library->entry(static_cast<int>(i));
+            if(keep_terrain_prefab(entry.name)) continue;
+            const bool ground=entry.is_ground;
+            const bool rock=rubble_block(entry.name) && models.parts[rubble];
+            if(!ground && !rock && !(models.wall_height>0.f && natural_block(entry.name))) continue;
+            auto &bucket=out.lib[i];
+            bucket.erase(std::remove_if(bucket.begin(),bucket.end(),[&](const InstanceData &old) {
+                if(old.sx<=0 || old.sy<=0 || old.sz<=0) return false;
+                const float width=static_cast<float>(entry.cover_x1-entry.cover_x0+1);
+                const float depth=static_cast<float>(entry.cover_y1-entry.cover_y0+1);
+                ModelInstance inst;
+                inst.position={old.x+(static_cast<float>(entry.cover_x0)+width*.5f)*old.sx,
+                    old.y+(static_cast<float>(entry.cover_y0)+depth*.5f)*old.sy,old.z};
+                inst.scale={width*old.sx,depth*old.sy,old.sz};inst.yaw=old.yaw;
+                if(ground) {
+                    if(!add_ground(inst,entry.name)) return false;
+                } else if(rock) {
+                    inst.scale.z*=std::max(entry.top_z,.1f)/std::max(models.part_heights[rubble],.1f);
+                    out.model_parts[rubble].push_back(inst);
+                } else {
+                    inst.scale.z*=std::max(entry.top_z,.1f)/models.wall_height;
+                    out.model_blocks.push_back(inst);
+                }
+                --out.lib_instances;return true;
+            }),bucket.end());
+        }
+    }
+    out.slabs.erase(std::remove_if(out.slabs.begin(),out.slabs.end(),[&](const InstanceData &old) {
+        if(old.sx<=0 || old.sy<=0 || old.sz<=0) return false;
+        return add_ground(ModelInstance{{old.x+.5f*old.sx,old.y+.5f*old.sy,old.z},{old.sx,old.sy,old.sz},old.yaw},{});
+    }),out.slabs.end());
+    if(models.floor) {
+        for(const auto &old:out.under_slabs) out.model_under_floors.push_back({{old.x+.5f,old.y+.5f,old.z}});
+        out.under_slabs.clear();
+    }
+    if(models.wall_height>0.f) {
+        out.boxes.erase(std::remove_if(out.boxes.begin(),out.boxes.end(),[&](const InstanceData &old) {
+            if((old.r==0 && old.g==0 && old.b==0) || old.sx<=0 || old.sy<=0 || old.sz<=0) return false;
+            out.model_blocks.push_back({{old.x+.5f*old.sx,old.y+.5f*old.sy,old.z},
+                {old.sx,old.sy,old.sz/models.wall_height},old.yaw});return true;
+        }),out.boxes.end());
+    }
+    // Only shore edges receive a stone side. Adjacent liquid cells remain one open surface.
+    const auto shore=static_cast<std::size_t>(TerrainModelKind::Shore);
+    if(models.parts[shore]) {
+        for(const auto kind:{TerrainModelKind::Water,TerrainModelKind::Lava}) {
+            const auto index=static_cast<std::size_t>(kind);
+            const auto cell_key=[](int x,int y) {return (std::uint64_t(static_cast<std::uint32_t>(x))<<32)|static_cast<std::uint32_t>(y);};
+            std::unordered_set<std::uint64_t> cells;
+            for(const auto &surface:out.model_parts[index]) cells.insert(cell_key(static_cast<int>(std::floor(surface.position.x)),static_cast<int>(std::floor(surface.position.y))));
+            for(const auto &surface:out.model_parts[index]) {
+                const int gx=static_cast<int>(std::floor(surface.position.x));
+                const int gy=static_cast<int>(std::floor(surface.position.y));
+                const int directions[4][2]={{0,-1},{1,0},{0,1},{-1,0}};
+                for(int d=0;d<4;++d) {
+                    const int nx=gx+directions[d][0],ny=gy+directions[d][1];
+                    bool connected=liquid_kind(memory,nx,ny)==static_cast<int>(index);
+                    connected=connected || cells.contains(cell_key(nx,ny));
+                    if(!connected) out.model_parts[shore].push_back({surface.position,{1,1,1},static_cast<float>(d)*1.57079632679f});
+                }
+            }
+        }
+    }
+}
+} // namespace
+
+void apply_terrain_model_replacements(TerrainView &out,const TerrainMemory *memory,
+    const PrefabLibrary *library,const TerrainModels &models)
+{
+    apply_global_terrain_models(out,memory,library,models);
+}
+
 void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, TerrainView &out,
     const TerrainMemory *memory, const PrefabLibrary *library, const TownPlan *town, float night, float wall_inset,
-    bool black_unknown, PropLatch *latch, bool fps_wall_upper, bool fps_ceiling, bool blocks_only)
+    bool black_unknown, PropLatch *latch, bool fps_wall_upper, bool fps_ceiling, bool blocks_only,
+    const TerrainModels &models)
 {
+    out.model_walls.clear();
+    out.model_floors.clear();
+    out.model_under_floors.clear();
+    out.model_blocks.clear();out.model_ground.clear();
+    for(auto &parts:out.model_parts) parts.clear();
     out.slabs.clear();
     out.under_slabs.clear();
     out.boxes.clear();
@@ -528,7 +793,20 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
     struct TownSet {
         int wall[9]{};
         int roof[9]{};
+        /*!
+         * **マスごとの変種**（Angband の町。決めたこと 2026-09-24「屋根の穴も一定の間隔で
+         * 並んでいるため穴に見えない」）。`house_wall_<slice><接尾辞>_01..` があれば集め、
+         * マスの座標の種で 1 つ選ぶ。**無ければ空のままで `wall[]`/`roof[]` を使う**
+         * （他の町は 1 ボクセルも動かない）。
+         */
+        std::vector<int> wall_variants[9];
+        std::vector<int> roof_variants[9];
+        //! 半壊した店の崩れた側の壁と屋根（`house_wall_ruin_<slice><接尾辞>`。無ければ -1）。
+        int ruin_wall[9]{};
+        int ruin_roof[9]{};
         int fence[4]{}; //!< N / S / W / E（`TownFence` のビットと同じ並び）
+        //! 柵の変種（`fence_n<接尾辞>_01..`。Angband の町の壊れた柵。無ければ空で `fence[]`）。
+        std::vector<int> fence_variants[4];
         int parapet[4]{}; //!< 塀の上の胸壁。**外を向いた辺だけ**（同上の並び。無ければ -1）
         int fountain_pillar{ -1 };
         int fountain_jet{ -1 };
@@ -782,9 +1060,23 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         std::vector<TownFeatureRuntime> features; //!< 区画に属さない 1 点（町の節直下の `features`）
         /*! @} */
     } townset;
+    /*
+     * AH-29 の直し。以前はこの下の `if (use_town) { ... }` の中でしか
+     * `out.night_light` を書いていなかったので、町の外（`use_town` が偽）では
+     * この行そのものが実行されず、`out` が使い回しの場合に前の町の値が残る恐れが
+     * あった（既定値 1.f に頼った死んだ分岐）。ここで町の外の既定へ先に戻しておく。
+     */
+    out.night_light = 1.f;
     const bool use_town = use_lib && (town != nullptr) && town->valid();
     //! 町ごとの意匠。**地下では `town` が null** なので既定（辺境の地）を指す（罠 87）。
     const TownStyle &style = town_style_for(use_town ? town->identity.town_id : 0);
+    /*!
+     * 町の地図の左上がフレームの座標のどこか（Frox の荒野の窓のずれ。`FloorIdentity::town_origin_x`）。
+     * 意匠の表の座標（`zones`・`features`・`sites`・`brook`・街灯の格子）は**町の地図の座標**で書いてあるので、
+     * 使うときにこれを足す（フレームの座標 = 町の座標 + 原点）。原点が 0 のコアは従来どおり。
+     */
+    const int town_ox = meaning.identity.town_origin_x;
+    const int town_oy = meaning.identity.town_origin_y;
     //! 敷地ごとの目印（0 = 無し / 1 = 城 / 2 = `site_mark_prefab` の建物）。
     std::vector<std::uint8_t> site_mark;
     std::vector<int> site_mark_prefab;
@@ -799,6 +1091,9 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
     std::vector<int> yard_rank; //!< 添字 `gy*width+gx`。前庭のマスの「建物に近い順」。-1 = 対象外
     std::vector<std::array<int, 9>> site_wall_override; //!< `sites` の `wing` が指す壁（-1 = 既定）
     std::vector<std::array<int, 9>> site_roof_override;
+    //! 半壊した店（`yards` の `collapse`）。0 = 崩れない / 1 = 東 / 2 = 西 / 3 = 北 / 4 = 南。
+    std::vector<std::uint8_t> site_collapse_dir;
+    std::vector<float> site_collapse_ratio;
     std::vector<int> site_entrance_override; //!< -1 = 既定の玄関
     std::vector<std::uint8_t> site_wall_tint_has;
     std::vector<std::array<float, 3>> site_wall_tint_override;
@@ -945,6 +1240,20 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         for (int i = 0; i < 9; ++i) {
             townset.wall[i] = styled(std::string("house_wall_") + kSliceNames[i]);
             townset.roof[i] = styled(std::string("house_roof_") + kSliceNames[i]);
+            /*
+             * マスごとの変種と半壊の組（Angband の町）。**意匠つきの名前だけ**を見る
+             * ——基の名前に変種は無いので、接尾辞の無い町では必ず空/-1 になる。
+             */
+            townset.wall_variants[i].clear();
+            townset.roof_variants[i].clear();
+            townset.ruin_wall[i] = -1;
+            townset.ruin_roof[i] = -1;
+            if (style.suffix[0] != '\0') {
+                gather_into(std::string("house_wall_") + kSliceNames[i] + style.suffix, townset.wall_variants[i]);
+                gather_into(std::string("house_roof_") + kSliceNames[i] + style.suffix, townset.roof_variants[i]);
+                townset.ruin_wall[i] = library->find(std::string("house_wall_ruin_") + kSliceNames[i] + style.suffix);
+                townset.ruin_roof[i] = library->find(std::string("house_roof_ruin_") + kSliceNames[i] + style.suffix);
+            }
         }
         for (int i = 0; i < 9; ++i) {
             townset.castle_keep[i] = library->find(std::string("castle_keep_") + kSliceNames[i]);
@@ -961,6 +1270,11 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         static const char *const kParapetNames[4] = { "parapet_n", "parapet_s", "parapet_w", "parapet_e" };
         for (int i = 0; i < 4; ++i) {
             townset.fence[i] = styled(kFenceNames[i]);
+            //! 柵の変種（意匠つきの名前だけ。他の町は空のまま）。
+            townset.fence_variants[i].clear();
+            if (style.suffix[0] != '\0') {
+                gather_into(std::string(kFenceNames[i]) + style.suffix, townset.fence_variants[i]);
+            }
             /*
              * 胸壁は**その意匠が持っていれば載る**（モリバントだけ）。基の名前へは落とさない
              * ——辺境の地の丸太の塀に石の狭間が載ると、決着させた絵が変わってしまう。
@@ -992,6 +1306,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         }
         out.covered = !townset.cave_roof.empty();
         out.cave_min_z = (style.cave_min_z > 0.f) ? style.cave_min_z : 3.1f;
+        //! 夜の明るさ（Angband の町）。町の中でだけ表の値。地下は `use_town` が偽なので 1.0。
+        out.night_light = use_town ? style.night_light : 1.f;
         //! 山塊（2026-08-18 その3）。5 段を変種つきで集める（無い段は素通り＝積まれない）。
         //! base は岩屑の最低段——ノイズの低い所も含めて全マスに敷き、平らな天面を消す。
         //! peak はそびえる頂（同「思い切りがたらないぞ」——蓋の上 7.7 マスまで届く）。
@@ -1566,10 +1882,10 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                     }
                 };
                 for (int v = 0; (v + 1) < style.brook_point_count; ++v) {
-                    const int x0 = style.brook_points[v][0];
-                    const int y0 = style.brook_points[v][1];
-                    const int x1 = style.brook_points[v + 1][0];
-                    const int y1 = style.brook_points[v + 1][1];
+                    const int x0 = style.brook_points[v][0] + town_ox;
+                    const int y0 = style.brook_points[v][1] + town_oy;
+                    const int x1 = style.brook_points[v + 1][0] + town_ox;
+                    const int y1 = style.brook_points[v + 1][1] + town_oy;
                     if (x0 == x1) {
                         const int step = (y1 >= y0) ? 1 : -1;
                         for (int y = y0; y != (y1 + step); y += step) {
@@ -1653,10 +1969,10 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
          */
         for (const TownZone *zrow = style.zones; (zrow != nullptr) && (zrow->x1 >= zrow->x0); ++zrow) {
             ZoneRuntime zone{};
-            zone.x0 = zrow->x0;
-            zone.y0 = zrow->y0;
-            zone.x1 = zrow->x1;
-            zone.y1 = zrow->y1;
+            zone.x0 = zrow->x0 + town_ox;
+            zone.y0 = zrow->y0 + town_oy;
+            zone.x1 = zrow->x1 + town_ox;
+            zone.y1 = zrow->y1 + town_oy;
             zone.apply_to = zrow->apply_to;
             if ((zrow->ground != nullptr) && (zrow->ground[0] != '\0')) {
                 gather_into(zrow->ground, zone.ground);
@@ -1715,8 +2031,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                     continue;
                 }
                 ZoneFeatureRuntime zf{};
-                zf.at_x = frow->at_x;
-                zf.at_y = frow->at_y;
+                zf.at_x = frow->at_x + town_ox;
+                zf.at_y = frow->at_y + town_oy;
                 zf.prefab = idx;
                 zf.center = frow->center;
                 if ((frow->flame != nullptr) && (frow->flame[0] != '\0')) {
@@ -1737,8 +2053,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                 continue;
             }
             TownFeatureRuntime tf{};
-            tf.at_x = frow->at_x;
-            tf.at_y = frow->at_y;
+            tf.at_x = frow->at_x + town_ox;
+            tf.at_y = frow->at_y + town_oy;
             tf.prefab = idx;
             if ((frow->flame != nullptr) && (frow->flame[0] != '\0')) {
                 tf.flame = library->find(frow->flame);
@@ -1748,6 +2064,33 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
             tf.glow[2] = frow->glow[2];
             tf.always = frow->always;
             townset.features.push_back(tf);
+        }
+        /*
+         * 検算（町の原点。`FloorIdentity::town_origin_x`）。町の地図の座標で書いた意匠の表へ原点を足した結果
+         * （区画・目印の数と、目印の置き場）を、**町か原点が変わったときだけ**出す。原点が 0 のままの町
+         * （ほか全コア）では 1 行も出さない。ゲートの筋書き（`tools/gate/scenarios/frox_town.py`）が、
+         * 目印の座標が「表の座標 + 原点」になっていることをここから読む。
+         */
+        {
+            static int logged_town = 0;
+            static int logged_ox = 0;
+            static int logged_oy = 0;
+            const int tid = town->identity.town_id;
+            if ((tid != logged_town) || (town_ox != logged_ox) || (town_oy != logged_oy)) {
+                if ((town_ox != 0) || (town_oy != 0) || (logged_ox != 0) || (logged_oy != 0)) {
+                    std::string marks;
+                    for (const auto &tf : townset.features) {
+                        marks += " (" + std::to_string(tf.at_x) + "," + std::to_string(tf.at_y) + ")";
+                    }
+                    std::fprintf(stderr,
+                        "[hd2d] 町 %d: 意匠の座標の原点 (%d,%d)（区画 %zu・目印 %zu・小川 %d 点）目印の座標:%s\n", tid,
+                        town_ox, town_oy, townset.zones.size(), townset.features.size(),
+                        (style.brook_points != nullptr) ? style.brook_point_count : 0, marks.c_str());
+                }
+                logged_town = tid;
+                logged_ox = town_ox;
+                logged_oy = town_oy;
+            }
         }
         /*
          * 区画の幾何（対象のマス・外周の柵の辺）は**地形の細別（`memory`）に依らず**
@@ -1875,6 +2218,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         site_yard_active.assign(town->sites.size(), 0u);
         site_wall_override.assign(town->sites.size(), { -1, -1, -1, -1, -1, -1, -1, -1, -1 });
         site_roof_override.assign(town->sites.size(), { -1, -1, -1, -1, -1, -1, -1, -1, -1 });
+        site_collapse_dir.assign(town->sites.size(), 0u);
+        site_collapse_ratio.assign(town->sites.size(), 0.5f);
         site_entrance_override.assign(town->sites.size(), -1);
         site_wall_tint_has.assign(town->sites.size(), 0u);
         site_wall_tint_override.assign(town->sites.size(), { 1.f, 1.f, 1.f });
@@ -1935,13 +2280,20 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                     if (row->storeys > 0) {
                         site_storeys_override[i] = row->storeys;
                     }
+                    //! 半壊した店（`collapse`）。向きの綴りが違えば崩れない（黙って飛ばす）。
+                    if ((row->collapse != nullptr) && (row->collapse[0] != '\0')) {
+                        const std::string dir = row->collapse;
+                        site_collapse_dir[i] = (dir == "east") ? 1u : (dir == "west") ? 2u
+                            : (dir == "north") ? 3u : (dir == "south") ? 4u : 0u;
+                        site_collapse_ratio[i] = std::clamp(row->collapse_ratio, 0.f, 1.f);
+                    }
                     break;
                 }
             }
         }
         //! `sites`：入口の無い敷地をマスで名指す。
         for (const SitePlot *row = style.sites; (row != nullptr) && (row->at_x >= 0); ++row) {
-            const std::int16_t idx = town->site_at(row->at_x, row->at_y);
+            const std::int16_t idx = town->site_at(row->at_x + town_ox, row->at_y + town_oy);
             if ((idx < 0) || (static_cast<std::size_t>(idx) >= town->sites.size())) {
                 continue; //!< 座標が合わなければ黙って飛ばす
             }
@@ -2387,6 +2739,24 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
     }
 
     props = resolve_terrain_props(meaning, library, use_lib);
+    /*
+     * 区域（`FloorIdentity::zones`。Umoria の部屋の種類）。区域の中のマスだけ別の組を引く。
+     * 区域を送らないコアでは空で、`props_at` は常に `props` を返す。
+     */
+    std::vector<std::pair<FloorZone, PropSet>> zone_props;
+    if (use_lib && (meaning.identity.kind == static_cast<int>(FloorKind::Dungeon))) {
+        for (const FloorZone &zone : meaning.identity.zones) {
+            zone_props.emplace_back(zone, resolve_terrain_props(meaning, library, use_lib, &props, zone.style));
+        }
+    }
+    const auto props_at = [&](int x, int y) -> const PropSet & {
+        for (const auto &zp : zone_props) {
+            if ((x >= zp.first.x0) && (x <= zp.first.x1) && (y >= zp.first.y0) && (y <= zp.first.y1)) {
+                return zp.second;
+            }
+        }
+        return props;
+    };
 
     /*
      * ライブラリ素材のマスごとの色むら（2026-08-09 に決めた「ダンジョンブロック全てに
@@ -2406,6 +2776,18 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
         instance.r = rule.tint[0] * (1.f + common + warm);
         instance.g = rule.tint[1] * (1.f + common);
         instance.b = rule.tint[2] * (1.f + common - warm);
+    };
+    const auto tint_shaft_if_needed = [&meaning](InstanceData &instance, int gx, int gy) {
+        if (!meaning.shaft_at(gx, gy)) {
+            return;
+        }
+        /*
+         * 階段プレハブ自身の石色・陰影は残し、その上へ青系の識別色を掛ける。
+         * 形を変えないので、通常階段との違いは「2階層移動」という意味だけになる。
+         */
+        instance.r *= kShaftStairs.r;
+        instance.g *= kShaftStairs.g;
+        instance.b *= kShaftStairs.b;
     };
     /*!
      * 集合の**何枚目**を選ぶか。種は必ず 1 回進める（集合の大きさに依存させない）。
@@ -2442,6 +2824,34 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
             for (int cx = entry.cover_x0; cx <= entry.cover_x1; ++cx) {
                 note_occluder(base_x + cx, base_y + cy, top);
             }
+        }
+    };
+    /*!
+     * 飾り（柱・松明・瓦礫の山）の遮りは、**マスの中心まで覆っているマス**にだけ記録する
+     * （2026-09-23 気づいたこと「キャラに被るものが無いのに柱が透過している」）。
+     * 柱はマスの角へ寄せて置くので、ボクセルがかかったマスを全部記録すると、端がかかっただけの
+     * 隣のマスまで 1.7 マスの壁と同じ扱いになり、そこを通る視線でプレイヤが「隠れている」と
+     * 判定されて穴が開いていた。中心を覆うマスが無い細い物は、自分の中心のマスだけにする。
+     * 木の葉のように何マスにも張り出す物は中心を覆うので、従来どおり全部に入る。
+     */
+    auto note_prop_cover = [&note_occluder](const LibraryEntry &entry, const InstanceData &at, float top) {
+        const float x0 = at.x + (entry.cover_fx0 * at.sx);
+        const float x1 = at.x + (entry.cover_fx1 * at.sx);
+        const float y0 = at.y + (entry.cover_fy0 * at.sy);
+        const float y1 = at.y + (entry.cover_fy1 * at.sy);
+        bool any = false;
+        for (int gy = static_cast<int>(std::floor(y0)); gy <= static_cast<int>(std::floor(y1)); ++gy) {
+            for (int gx = static_cast<int>(std::floor(x0)); gx <= static_cast<int>(std::floor(x1)); ++gx) {
+                const float cx = static_cast<float>(gx) + 0.5f;
+                const float cy = static_cast<float>(gy) + 0.5f;
+                if ((cx >= x0) && (cx < x1) && (cy >= y0) && (cy < y1)) {
+                    note_occluder(gx, gy, top);
+                    any = true;
+                }
+            }
+        }
+        if (!any) {
+            note_occluder(static_cast<int>(std::floor((x0 + x1) * 0.5f)), static_cast<int>(std::floor((y0 + y1) * 0.5f)), top);
         }
     };
     /*!
@@ -2646,13 +3056,16 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
      * 8 マス（山の骨格）と 3 マス（肩の荒れ）の**2 オクターブを重ねる**——1 枚だけだと
      * なだらかな丘の連なりで、「ダイナミックな凹凸」（同 その3 の指摘）にならない。
      */
-    const auto mound_noise_at = [&meaning](int gx, int gy, int step, std::uint64_t salt) -> float {
-        const auto corner = [&meaning, step, salt](int cx, int cy) {
-            std::uint64_t s = cell_seed(cx * step, cy * step, meaning.identity) ^ salt;
+    const auto mound_noise_at = [&meaning, town_ox, town_oy](int gx, int gy, int step, std::uint64_t salt) -> float {
+        //! 格子は**町の座標**で切る（`cell_seed` へは原点を足して渡す。荒野の窓がずれても山の形が動かない）。
+        gx -= town_ox;
+        gy -= town_oy;
+        const auto corner = [&meaning, town_ox, town_oy, step, salt](int cx, int cy) {
+            std::uint64_t s = cell_seed((cx * step) + town_ox, (cy * step) + town_oy, meaning.identity) ^ salt;
             return next01(s);
         };
-        const int bx = gx / step;
-        const int by = gy / step;
+        const int bx = floor_div(gx, step);
+        const int by = floor_div(gy, step);
         const float tx = static_cast<float>(gx - (bx * step)) / static_cast<float>(step);
         const float ty = static_cast<float>(gy - (by * step)) / static_cast<float>(step);
         const float sx = tx * tx * (3.f - (2.f * tx));
@@ -2772,7 +3185,9 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                  * 数マスおきの緩い段丘になる。マスごとに独立に選んだ初版は、全面が市松の
                  * 砂利に見えた（実写で確認）。種は別に切る（下のマスの種の消費を乱さない）。
                  */
-                std::uint64_t lid_seed = cell_seed(gx & ~3, gy & ~3, meaning.identity) ^ 0x9e3779b97f4a7c15ull;
+                std::uint64_t lid_seed = cell_seed(((gx - town_ox) & ~3) + town_ox, ((gy - town_oy) & ~3) + town_oy,
+                                                   meaning.identity)
+                    ^ 0x9e3779b97f4a7c15ull;
                 static constexpr float kLidPlain[3] = { 1.f, 1.f, 1.f };
                 place_town(choose(townset.cave_roof, lid_seed), fx, fy, cave_roof_z, kLidPlain, 0.f);
                 /*
@@ -2924,8 +3339,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                          * 管が通る。3 行に 1 本・4 列に 1 本ほどで、市庭を何本もの管が横切る
                          * （「やけくそって程に」と決めた——初版の 5 行 / 6 列では疎かった）。
                          */
-                        const bool ew = ((mix64(static_cast<std::uint64_t>(gy) ^ 0xB1Eull) % 3ull) == 0ull);
-                        const bool ns = ((mix64(static_cast<std::uint64_t>(gx) ^ 0xC0DEull) % 4ull) == 0ull);
+                        const bool ew = ((mix64(static_cast<std::uint64_t>(gy - town_oy) ^ 0xB1Eull) % 3ull) == 0ull);
+                        const bool ns = ((mix64(static_cast<std::uint64_t>(gx - town_ox) ^ 0xC0DEull) % 4ull) == 0ull);
                         if (ew && ns && !townset.pipe_cross.empty()) {
                             const int pick = choose(townset.pipe_cross, pipe_seed);
                             place_town(pick, fx, fy, 0.f, kPipePlain, 0.f);
@@ -3088,7 +3503,12 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                     under.g *= 0.10f;
                     under.b *= 0.12f;
                 }
-                out.under_slabs.push_back(under);
+                if (models.replace_all && models.floor && !blocks_only && !use_town
+                    && meaning.identity.kind == static_cast<int>(FloorKind::Dungeon)) {
+                    out.model_under_floors.push_back({{under.x+0.5f,under.y+0.5f,under.z}});
+                } else {
+                    out.under_slabs.push_back(under);
+                }
             }
 
             /*
@@ -3368,6 +3788,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                      * コア固有の地形 id は表（town_styles.jsonc）が持ち、ここは id を
                      * 突き合わせて茎名の変種を置くだけ。id は間近で見たマスにしか無い
                      * （罠 40）ので、見るまでは塀の絵で立つ——16 マスの飾りなので許容。
+                     * 岩山のマスにも同じ表が効く（下の `case TownRole::Crag`）。
                      */
                     if ((town_role == TownRole::Rampart) && !townset.rampart_overrides.empty()
                         && (memory != nullptr)) {
@@ -3454,6 +3875,29 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                      * 麓 1.4 マスから峰 4.9 マスまで 4 段なので、谷から見ると**3〜4 マスかけて
                      * 壁がせり上がる**。1 マスで立ち上がると、材が岩でも塀に見える。
                      */
+                    /*
+                     * **岩山に読まれた氷壁の差し替え**（修-27）。紅魔館（町 4）の氷壁 16 マスは
+                     * 東の山と地続きなので、町の読み取りは山が主の塊として岩山に読み、塀には
+                     * ならない。塀のマスの差し替え（上の `case TownRole::Rampart`）と同じ表
+                     * （`rampart_overrides`）を、岩山のマスにも当てる。表を持つのは町 4 の
+                     * 意匠だけで、行は地形番号 240（幻想蛮怒の氷壁）の 1 行だけなので、
+                     * ほかの町・ほかのコアの岩山は変わらない。
+                     */
+                    if (!townset.rampart_overrides.empty() && (memory != nullptr)) {
+                        const std::uint16_t id = memory->id_at(gx, gy);
+                        int over_pick = -1;
+                        for (const auto &over : townset.rampart_overrides) {
+                            if ((id != 0) && (over.first == static_cast<int>(id))
+                                && !over.second.empty()) {
+                                over_pick = choose(over.second, seed);
+                                break;
+                            }
+                        }
+                        if (over_pick >= 0) {
+                            place_town(over_pick, fx, fy, -kFootingDepth, kPlain, top_of(over_pick));
+                            break;
+                        }
+                    }
                     const auto tier = std::min<std::size_t>(
                         static_cast<std::size_t>(town->slice_at(gx, gy)), 3);
                     const std::vector<int> &set = townset.crag[tier];
@@ -3789,9 +4233,14 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                         if ((bits & (1u << i)) == 0u) {
                             continue;
                         }
-                        const int rail = (castle && (townset.castle_wall[i] >= 0))
+                        int rail = (castle && (townset.castle_wall[i] >= 0))
                             ? townset.castle_wall[i]
                             : townset.fence[i];
+                        //! 柵の変種（Angband の町の壊れた柵）。マスの座標と辺の種で選ぶ（共有の乱数列は消費しない）。
+                        if (!castle && !townset.fence_variants[i].empty()) {
+                            rail = cell_variant(townset.fence_variants[i], gx - town_ox, gy - town_oy, town->identity.town_id,
+                                47u + static_cast<std::uint32_t>(i));
+                        }
                         place_town(rail, fx, fy, -kFootingDepth, kPlain,
                             castle ? top_of(rail) : 0.f);
                     }
@@ -3943,10 +4392,47 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                         = (sidx < site_wall_override.size()) && (site_wall_override[sidx][slice_at] >= 0);
                     const bool has_roof_override
                         = (sidx < site_roof_override.size()) && (site_roof_override[sidx][slice_at] >= 0);
-                    const int wall = has_wall_override ? site_wall_override[sidx][slice_at]
-                                                        : townset.wall[slice_at];
-                    const int roof = has_roof_override ? site_roof_override[sidx][slice_at]
-                                                        : townset.roof[slice_at];
+                    int wall = has_wall_override ? site_wall_override[sidx][slice_at]
+                                                  : townset.wall[slice_at];
+                    int roof = has_roof_override ? site_roof_override[sidx][slice_at]
+                                                  : townset.roof[slice_at];
+                    /*
+                     * **マスごとの変種**（Angband の町。決めたこと 2026-09-24）。変種が
+                     * あるときだけ、マスの座標から決める種で 1 つ選ぶ——共有の乱数列は
+                     * 消費しない（他の町の乱択がずれない）。同じスライスに同じ絵が並んで
+                     * 屋根の穴が模様になるのを避ける。
+                     */
+                    if (!has_wall_override && !townset.wall_variants[slice_at].empty()) {
+                        wall = cell_variant(townset.wall_variants[slice_at], gx - town_ox, gy - town_oy, town->identity.town_id, 11u);
+                    }
+                    if (!has_roof_override && !townset.roof_variants[slice_at].empty()) {
+                        roof = cell_variant(townset.roof_variants[slice_at], gx - town_ox, gy - town_oy, town->identity.town_id, 29u);
+                    }
+                    /*
+                     * **半壊した店**（`yards` の `collapse`）。建物の矩形の崩れた側のマスは
+                     * 半壊用の壁（低いぎざぎざの壁と床・瓦礫）と屋根（焦げた垂木だけ。無ければ
+                     * 屋根無し）に差し替え、1 階だけにする。表に無い町では `site_collapse_dir`
+                     * が全部 0 なので何も変わらない。
+                     */
+                    bool collapsed = false;
+                    if ((sidx < site_collapse_dir.size()) && (site_collapse_dir[sidx] != 0u) && site->has_house()) {
+                        const int w = site->house_x1 - site->house_x0 + 1;
+                        const int d = site->house_y1 - site->house_y0 + 1;
+                        const float ratio = site_collapse_ratio[sidx];
+                        switch (site_collapse_dir[sidx]) {
+                        case 1u: collapsed = gx > (site->house_x1 - static_cast<int>(std::lround(w * ratio))); break;
+                        case 2u: collapsed = gx < (site->house_x0 + static_cast<int>(std::lround(w * ratio))); break;
+                        case 3u: collapsed = gy < (site->house_y0 + static_cast<int>(std::lround(d * ratio))); break;
+                        case 4u: collapsed = gy > (site->house_y1 - static_cast<int>(std::lround(d * ratio))); break;
+                        default: break;
+                        }
+                        if (collapsed && (townset.ruin_wall[slice_at] >= 0)) {
+                            wall = townset.ruin_wall[slice_at];
+                            roof = townset.ruin_roof[slice_at]; //!< -1 なら屋根無し（place_town が黙って飛ばす）
+                        } else {
+                            collapsed = false; //!< 半壊の素材が無ければ崩さない
+                        }
+                    }
                     const int entrance_idx = ((sidx < site_entrance_override.size())
                                                   && (site_entrance_override[sidx] >= 0))
                         ? site_entrance_override[sidx]
@@ -3965,8 +4451,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                      * 突き合わせない。明示が無いときだけ `site->storeys`（敷地の乱択）と
                      * `min_storeys` の大きいほうを採る。0（既定）なら従来どおり。
                      */
-                    const int storeys = ((sidx < site_storeys_override.size())
-                                            && (site_storeys_override[sidx] > 0))
+                    const int storeys = collapsed ? 1
+                        : ((sidx < site_storeys_override.size()) && (site_storeys_override[sidx] > 0))
                         ? site_storeys_override[sidx]
                         : std::max(site->storeys, style.min_storeys);
                     const float wall_h = top_of(wall);
@@ -3993,7 +4479,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                             ++out.lib_instances;
                         }
                         //! 窓の灯り。**南に面した列だけ**（北面はその建物自身に隠れて見えない）。
-                        if ((night_eff > 0.02f) && (slice >= 6) && (townset.light >= 0)) {
+                        if ((night_eff > 0.02f) && (slice >= 6) && (townset.light >= 0) && !collapsed) {
                             const float glow = night_eff * 2.3f;
                             place_town(townset.light, fx, fy,
                                 (wall_h * static_cast<float>(storey)) + 0.40f, kPlain, 0.f, glow,
@@ -4023,7 +4509,29 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                      * 煙はプレハブでは描けない（半透明は雲の描き手だけ）ので、型の天面の
                      * 座標を蒸気の口として積む（河童のバザーの配管と同じ道）。
                      */
-                    if ((townset.roof_vent >= 0)
+                    /*
+                     * 半壊した店では、煙突のマスの**隣**が崩れていても立てない。崩れた側は屋根も壁の厚みも
+                     * 無いので、その隣に立つ煙突は宙に浮いて見えた（Umoria の魔法屋）。
+                     */
+                    const auto collapsed_at = [&](int cx, int cy) -> bool {
+                        if ((sidx >= site_collapse_dir.size()) || (site_collapse_dir[sidx] == 0u) || !site->has_house()) {
+                            return false;
+                        }
+                        const int w = site->house_x1 - site->house_x0 + 1;
+                        const int d = site->house_y1 - site->house_y0 + 1;
+                        const float ratio = site_collapse_ratio[sidx];
+                        switch (site_collapse_dir[sidx]) {
+                        case 1u: return cx > (site->house_x1 - static_cast<int>(std::lround(w * ratio)));
+                        case 2u: return cx < (site->house_x0 + static_cast<int>(std::lround(w * ratio)));
+                        case 3u: return cy < (site->house_y0 + static_cast<int>(std::lround(d * ratio)));
+                        case 4u: return cy > (site->house_y1 - static_cast<int>(std::lround(d * ratio)));
+                        default: return false;
+                        }
+                    };
+                    const bool vent_next_to_ruin = (townset.ruin_wall[slice_at] >= 0)
+                        && (collapsed_at(gx - 1, gy) || collapsed_at(gx + 1, gy)
+                            || collapsed_at(gx, gy - 1) || collapsed_at(gx, gy + 1));
+                    if ((townset.roof_vent >= 0) && !collapsed && !vent_next_to_ruin
                         && (gx == ((site->house_x0 + site->house_x1) / 2))
                         && (gy == ((site->house_y0 + site->house_y1) / 2))) {
                         const float crown = top + top_of(townset.roof_vent);
@@ -4292,7 +4800,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                                 ? style.manor_roof_scar_step
                                 : 12;
                             std::uint64_t scar_seed
-                                = cell_seed(gx & ~1, gy & ~1, meaning.identity) ^ 0x6a09e667f3bcc909ull;
+                                = cell_seed(((gx - town_ox) & ~1) + town_ox, ((gy - town_oy) & ~1) + town_oy, meaning.identity)
+                                ^ 0x6a09e667f3bcc909ull;
                             if ((scar_seed % static_cast<std::uint64_t>(step)) == 0) {
                                 piece = choose(townset.roof_scar, scar_seed);
                             }
@@ -4839,6 +5348,14 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                 }
 
                 if ((rule != nullptr) && (rule->any() || (town_ground >= 0))) {
+                    const bool model_ordinary = (plain_ground || models.replace_all) && !blocks_only && !fps_wall_upper
+                        && !fps_ceiling && !use_town
+                        && meaning.identity.kind == static_cast<int>(FloorKind::Dungeon);
+                    const bool model_wall = model_ordinary && models.wall_height > 0.f
+                        && (role == CellRole::StructuralWall || role == CellRole::Bedrock);
+                    const bool model_floor = model_ordinary && models.floor
+                        && (role == CellRole::RoomFloor || role == CellRole::CorridorFloor
+                            || (models.replace_all && (role == CellRole::Doorway || role == CellRole::Stairs)));
                     bool structure_placed = false;
                     bool object_placed = false;
                     /*
@@ -4850,15 +5367,16 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                      * だから洞窟の床を指定しても、その洞窟にある池や溶岩は池と溶岩のまま。
                      */
                     const std::size_t role_slot = static_cast<std::size_t>(role);
+                    const PropSet &mat_props = props_at(gx, gy); //!< 区域の中なら区域の組
                     const std::vector<int> *const styled_ground = (plain_ground
                                                                       && (role_slot < kCellRoleCount)
-                                                                      && !props.mat_ground[role_slot].empty())
-                        ? &props.mat_ground[role_slot]
+                                                                      && !mat_props.mat_ground[role_slot].empty())
+                        ? &mat_props.mat_ground[role_slot]
                         : nullptr;
                     const std::vector<int> *const styled_structure = (plain_ground
                                                                          && (role_slot < kCellRoleCount)
-                                                                         && !props.mat_structure[role_slot].empty())
-                        ? &props.mat_structure[role_slot]
+                                                                         && !mat_props.mat_structure[role_slot].empty())
+                        ? &mat_props.mat_structure[role_slot]
                         : nullptr;
                     /*
                      * **床ごと置き換える印**（`stairs_down`。デザイン5 その3——紅魔館の
@@ -4890,11 +5408,17 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                         ground.y = fy - entry.anchor_y;
                         ground.z = 0.f;
                         lib_tint(ground, *rule, seed, 0.09f);
+                        if (role == CellRole::Stairs) tint_shaft_if_needed(ground, gx, gy);
                         ground.er = rule->emissive[0];
                         ground.eg = rule->emissive[1];
                         ground.eb = rule->emissive[2];
-                        out.lib[static_cast<std::size_t>(pick)].push_back(ground);
-                        ++out.lib_instances;
+                        const bool liquid_ground=liquid_kind(memory,gx,gy,entry.name)>=0;
+                        if (model_floor && !liquid_ground && !keep_terrain_prefab(entry.name)) {
+                            out.model_floors.push_back({{fx + 0.5f, fy + 0.5f, 0.f}});
+                        } else {
+                            out.lib[static_cast<std::size_t>(pick)].push_back(ground);
+                            ++out.lib_instances;
+                        }
                         /*
                          * **湖の霧**（デザイン4・2026-08-18。紅魔館「霧の湖は高さ2ブロックの
                          * あたりに半透明にした雲をうかべよう」）。意匠が高さを持つ町で、
@@ -5117,9 +5641,14 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                             && ((role == CellRole::StructuralWall) || (role == CellRole::Bedrock))) {
                             apply_wall_inset(gx, gy, solid);
                         }
-                        out.lib[static_cast<std::size_t>(pick)].push_back(solid);
-                        ++out.lib_instances;
-                        note_cover(entry, solid, entry.top_z); //!< 視線を遮る（P10 レビュー 4・6）
+                        if (model_wall) {
+                            out.model_walls.push_back({{fx + 0.5f, fy + 0.5f, 0.f}});
+                            note_occluder(gx, gy, models.wall_height);
+                        } else {
+                            out.lib[static_cast<std::size_t>(pick)].push_back(solid);
+                            ++out.lib_instances;
+                            note_cover(entry, solid, entry.top_z);
+                        } //!< 視線を遮る（P10 レビュー 4・6）
                         structure_placed = true;
                         if ((role != CellRole::StructuralWall) && (role != CellRole::Bedrock)) {
                             // 床あつかいの役割に細別が壁を建てた（山など）。下敷きをここで足す。
@@ -5128,7 +5657,12 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                             under.y = fy;
                             under.z = 0.f;
                             tint(under, kUnderBedrock, seed, 0.05f); //!< 山・鉱脈なので岩の側
-                            out.under_slabs.push_back(under);
+                            if (models.replace_all && models.floor && !blocks_only && !use_town
+                                && meaning.identity.kind == static_cast<int>(FloorKind::Dungeon)) {
+                                out.model_under_floors.push_back({{under.x+0.5f,under.y+0.5f,under.z}});
+                            } else {
+                                out.under_slabs.push_back(under);
+                            }
                         }
                     }
                     //! 祠の入口に門（鳥居）を立てたマスでは、対応表の既定の物（石のアーチ）は
@@ -5229,6 +5763,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                         object.y = fy - entry.anchor_y + jy;
                         object.z = entry.is_ground ? 0.f : -kFootingDepth;
                         lib_tint(object, *rule, seed, 0.07f);
+                        if (role == CellRole::Stairs) tint_shaft_if_needed(object, gx, gy);
                         /*
                          * **その地形が光るなら、その地形が置くものも光る**（P10 第 3 期。
                          * 2026-08-10 に決めた の溶岩の泡）。泡は熔けた溶岩そのもので、
@@ -5324,6 +5859,26 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                     }
 
                     /*
+                     * 階段は装飾ではなく地形そのものなので、町用の掃き出しや差し替え条件で
+                     * object の一般処理から外れても消してはいけない。ミニマップで Stairs と
+                     * 判定できているマスには、役割の階段プレハブを必ず1つ置く。
+                     */
+                    if ((role == CellRole::Stairs) && !object_placed && !rule->object.empty()) {
+                        const int pick = choose(rule->object, seed);
+                        const LibraryEntry &entry = library->entry(pick);
+                        InstanceData object;
+                        object.x = fx - entry.anchor_x;
+                        object.y = fy - entry.anchor_y;
+                        object.z = entry.is_ground ? 0.f : -kFootingDepth;
+                        lib_tint(object, *rule, seed, 0.07f);
+                        tint_shaft_if_needed(object, gx, gy);
+                        out.lib[static_cast<std::size_t>(pick)].push_back(object);
+                        ++out.lib_instances;
+                        if (entry.top_z >= 0.5f) note_cover(entry, object, entry.top_z);
+                        object_placed = true;
+                    }
+
+                    /*
                      * ---- 装飾層（§9.2）。並びの意味（marks）から置く ----
                      * **役割の既定で描いたマスに限る。**地形の細別があるマス（溶岩・水・
                      * 草・店先など）に撒くと、溶岩の上に木箱が浮く（実際に出た）。
@@ -5336,6 +5891,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                      * 100% が細別。全フロア 14,000 マスの実測）。表が名指した地形だけ緩める。
                      * **確率も置き方も変えない**——変わるのは「どのマスで枠が回るか」だけ。
                      */
+                    const PropSet &cell_props = props_at(gx, gy); //!< 区域の中なら区域の小物
                     const bool styled_terrain = !props.prop_terrains.empty() && (memory != nullptr)
                         && (std::find(props.prop_terrains.begin(), props.prop_terrains.end(),
                                 static_cast<int>(memory->id_at(gx, gy)))
@@ -5431,7 +5987,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                              */
                             const float effective_top = entry.top_z * prop_scale;
                             if (effective_top >= 0.5f) {
-                                note_cover(entry, prop, effective_top);
+                                note_prop_cover(entry, prop, effective_top);
                             }
                             out.lib[static_cast<std::size_t>(prefab_index)].push_back(prop);
                             ++out.lib_instances;
@@ -5489,7 +6045,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                                 along_x = (i < 2); //!< 北か南が道＝通りは東西に走る
                             }
                             const int step = street_style.lamp_step;
-                            const bool on_grid = (step > 0) && (((along_x ? gx : gy) % step) == 0);
+                            const bool on_grid = (step > 0) && (floor_mod(along_x ? (gx - town_ox) : (gy - town_oy), step) == 0);
                             /*
                              * **街路樹を格子で等間隔に**（デザイン §9.6。テルモラの「秩序と
                              * 威厳」への作り直し）。`street_tree_step` が正なら、街灯の格子の
@@ -5499,7 +6055,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                              */
                             const int tree_step = street_style.street_tree_step;
                             const bool on_tree_grid = (tree_step > 0)
-                                && (((along_x ? gx : gy) % tree_step) == (tree_step / 2));
+                                && (floor_mod(along_x ? (gx - town_ox) : (gy - town_oy), tree_step) == (tree_step / 2));
                             if (by_path && on_grid && (townset.lamp_post >= 0)) {
                                 //! 街灯。**火は別体**（自発光はインスタンス単位＝罠 39）。
                                 place_town(townset.lamp_post, fx + corner_x, fy + corner_y,
@@ -5580,7 +6136,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                             if (which < grass_chance) {
                                 emit_prop(townset.tuft, 0.16f, 0.f, 0.f, 0.f);
                             } else if (which < (grass_chance + 0.06f)) {
-                                emit_prop(props.rubble, 0.16f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.rubble, 0.16f, 0.f, 0.f, 0.f);
                             }
                             /*
                              * 2 株目から。**`tuft_tries` が 1 なら 1 度も回らない**ので、
@@ -5616,30 +6172,30 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                                 emit_prop_at(choose(tp.variants, seed), tx, ty, 0.13f);
                             }
                         } else if ((mark & MARK_DEAD_END) != 0) {
-                            emit_prop(props.dead_end_pile, 0.10f, 0.f, 0.f, 0.f);
+                            emit_prop(cell_props.dead_end_pile, 0.10f, 0.f, 0.f, 0.f);
                             if (next01(seed) < 0.45f) {
                                 const bool glow = in_dungeon && (next01(seed) < 0.6f);
                                 if (glow) {
                                     // 光茸。ほのかな自発光（ブルームは掴まない程度）。
-                                    emit_prop(props.mushroom_glow, 0.16f, 0.12f, 0.34f, 0.26f);
+                                    emit_prop(cell_props.mushroom_glow, 0.16f, 0.12f, 0.34f, 0.26f);
                                 } else {
-                                    emit_prop(props.mushroom_brown, 0.16f, 0.f, 0.f, 0.f);
+                                    emit_prop(cell_props.mushroom_brown, 0.16f, 0.f, 0.f, 0.f);
                                 }
                             }
                         } else if (((mark & MARK_WALL_SIDE) != 0) && (role == CellRole::CorridorFloor)
                             && (next01(seed) < 0.30f)) {
                             const float which = next01(seed);
                             if (which < 0.40f) {
-                                emit_prop(props.wall_side[0], 0.15f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.wall_side[0], 0.15f, 0.f, 0.f, 0.f);
                             } else if (which < 0.70f) {
-                                emit_prop(props.wall_side[1], 0.15f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.wall_side[1], 0.15f, 0.f, 0.f, 0.f);
                             } else {
-                                emit_prop(props.wall_side[2], 0.15f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.wall_side[2], 0.15f, 0.f, 0.f, 0.f);
                             }
                         } else if ((mark & MARK_ROOM_EDGE) != 0) {
                             const float which = next01(seed);
                             if (which < 0.10f) {
-                                emit_prop(props.room_edge_pillar, 0.f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.room_edge_pillar, 0.f, 0.f, 0.f, 0.f);
                             } else if (which < 0.165f) {
                                 /*
                                  * 立ち松明。**明るいと確定した部屋にだけ置く**（決めたこと
@@ -5659,19 +6215,19 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                                 const std::uint16_t seen_flags = (memory != nullptr) ? memory->flags_at(gx, gy) : 0;
                                 const bool lit_room = ((seen_flags & CELL_FEAT_ROOM) != 0u)
                                     && ((seen_flags & CELL_FEAT_GLOWING) != 0u);
-                                if (lit_room || !props.fire_needs_lit) {
-                                    emit_prop(props.fire_body, 0.f, 0.f, 0.f, 0.f);
-                                    emit_prop(props.fire_flame, 0.f, 1.35f, 0.85f, 0.30f);
+                                if (lit_room || !cell_props.fire_needs_lit) {
+                                    emit_prop(cell_props.fire_body, 0.f, 0.f, 0.f, 0.f);
+                                    emit_prop(cell_props.fire_flame, 0.f, 1.35f, 0.85f, 0.30f);
                                 }
                             }
                         } else if ((role == CellRole::RoomFloor) && (next01(seed) < 0.045f)) {
                             const float which = next01(seed);
                             if (which < 0.40f) {
-                                emit_prop(props.room_floor[0], 0.20f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.room_floor[0], 0.20f, 0.f, 0.f, 0.f);
                             } else if (which < 0.75f) {
-                                emit_prop(props.room_floor[1], 0.20f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.room_floor[1], 0.20f, 0.f, 0.f, 0.f);
                             } else {
-                                emit_prop(props.room_floor[2], 0.20f, 0.f, 0.f, 0.f);
+                                emit_prop(cell_props.room_floor[2], 0.20f, 0.f, 0.f, 0.f);
                             }
                         }
                         /*
@@ -5754,7 +6310,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                 } else if (role == CellRole::Doorway) {
                     tint(slab, kDoorway, seed, 0.05f);
                 } else {
-                    tint(slab, kStairs, seed, 0.05f);
+                    tint(slab, meaning.shaft_at(gx, gy) ? kShaftStairs : kStairs, seed, 0.05f);
                 }
                 out.slabs.push_back(slab);
 
@@ -5767,7 +6323,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
                     box.sx = 0.5f;
                     box.sy = 0.5f;
                     box.sz = 0.28f + kFootingDepth;
-                    tint(box, kStairs, seed, 0.05f);
+                    tint(box, meaning.shaft_at(gx, gy) ? kShaftStairs : kStairs, seed, 0.05f);
                     out.boxes.push_back(box);
                     ++out.prop_count;
                     break;
@@ -5852,6 +6408,8 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
             emit_fps_layers(gx, gy, fx, fy, role); //!< 一人称の 2 段目と天井（ライブラリの経路と同じ約束）
         }
     }
+    if(!blocks_only) apply_terrain_model_replacements(out,memory,library,models);
+    vary_terrain_models(out,meaning.identity);
 }
 
 namespace {
@@ -5867,29 +6425,33 @@ bool ray_blocked(const TerrainView &view, const Vec3 &eye, float tx, float ty, f
     if (span < 0.001f) {
         return false; // 真上から見ている。遮るものは無い
     }
-    /*
-     * 0.25 マス刻みで歩く。マスの対角を突っ切る場合でも取りこぼさない細かさで、
-     * かつ視界（30 マス程度）でも 120 歩ほどにしかならない。
-     */
-    const int steps = static_cast<int>(span * 4.f);
-    int last_gx = -1;
-    int last_gy = -1;
-    for (int i = 1; i < steps; ++i) {
-        const float t = static_cast<float>(i) / static_cast<float>(steps);
-        const int gx = static_cast<int>(std::floor(eye.x + (dx * t)));
-        const int gy = static_cast<int>(std::floor(eye.y + (dy * t)));
-        if ((gx == last_gx) && (gy == last_gy)) {
-            continue;
+    // Traverse each cell interval, not only the first sample in that cell.
+    // A ray may enter above a wall and hit it before leaving the same cell.
+    int gx=static_cast<int>(std::floor(eye.x));
+    int gy=static_cast<int>(std::floor(eye.y));
+    const int camera_gx=gx, camera_gy=gy;
+    const int step_x=(dx>0.f)?1:((dx<0.f)?-1:0);
+    const int step_y=(dy>0.f)?1:((dy<0.f)?-1:0);
+    const float inf=std::numeric_limits<float>::infinity();
+    const float delta_x=step_x?std::abs(1.f/dx):inf;
+    const float delta_y=step_y?std::abs(1.f/dy):inf;
+    float next_x=step_x?((static_cast<float>(gx+(step_x>0?1:0))-eye.x)/dx):inf;
+    float next_y=step_y?((static_cast<float>(gy+(step_y>0?1:0))-eye.y)/dy):inf;
+    float enter=0.f;
+    const int limit=std::abs(player_gx-gx)+std::abs(player_gy-gy)+4;
+    for(int i=0;i<limit && enter<1.f;++i) {
+        const float leave=std::min({next_x,next_y,1.f});
+        if(leave>enter && !(gx==camera_gx && gy==camera_gy)
+            && !(gx==player_gx && gy==player_gy)) {
+            const float low_z=std::min(eye.z+dz*enter,eye.z+dz*leave);
+            if(view.occluder_at(gx,gy)>low_z) return true;
         }
-        last_gx = gx;
-        last_gy = gy;
-        if ((gx == player_gx) && (gy == player_gy)) {
-            continue; // プレイヤ自身のマス
-        }
-        const float ray_z = eye.z + (dz * t);
-        if (view.occluder_at(gx, gy) > ray_z) {
-            return true;
-        }
+        if(leave>=1.f) break;
+        const bool cross_x=next_x<=next_y;
+        const bool cross_y=next_y<=next_x;
+        if(cross_x) {gx+=step_x;next_x+=delta_x;}
+        if(cross_y) {gy+=step_y;next_y+=delta_y;}
+        enter=leave;
     }
     return false;
 }

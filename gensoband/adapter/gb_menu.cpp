@@ -1,6 +1,6 @@
-﻿/*!
+/*!
  * @file gb_menu.cpp
- * @brief カーソルとプロンプト。
+ * @brief カーソルとプロンプト（S2 の後半・S4）。
  *
  * 変愚の `presentation_bridge.cpp` にある同名の仕掛けを**幻想蛮怒の文言で建て直した**もの。
  * あちらの実装は共用できない（コアの `game_term` と `_()` を直に触る）が、
@@ -20,16 +20,22 @@
  * だから**画面に出る文字列そのもの**で引き、行末一致だけを見る。
  */
 #include "gb_menu.h"
+#include "bridge/input_event_adapter.h"
+#include "bridge/symbol_prompt.h"
+#include "bridge/look_screen_cover.h"
+#include "frame/message_more.h"
 
 #include "gb_lang_c.h" //GB: english layer #33 - the prompt-bar labels never reach Term, so #1 cannot see them
 #include "gb_shim.h"
 #include "gb_text.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
+#include <deque>
 
 namespace gb {
 
@@ -52,7 +58,7 @@ const std::string &cursor_mark()
 const std::string &utf8_of(const char *sjis, std::size_t len)
 {
     // 呼び出し側が静的な文字列しか渡さないので、道具箱は道ごとに 1 つで足りる。
-    static std::vector<std::pair<const char *, std::string>> cache;
+    static std::deque<std::pair<const char *, std::string>> cache;
     for (const auto &entry : cache) {
         if (entry.first == sjis) {
             return entry.second;
@@ -79,6 +85,59 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
     }
     if (text.empty()) {
         return false;
+    }
+
+    if ((text.find("<dir>") != std::string::npos || text.find(reinterpret_cast<const char *>(u8"q止")) != std::string::npos)
+        && text.find('p') != std::string::npos && (text.find('+') != std::string::npos || text.find('-') != std::string::npos)) {
+        // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない（`look_screen_cover.h`）。
+        if (presentation::look_screen_cover().covered(gb_screen_depth())) {
+            out = PromptBar{};
+            return false;
+        }
+        //! `gb_lang_enabled()` は**英語層が生きているとき**に真（`gb_lang_c.h`）。以前は向きが逆で、日本語の画面に英語の札が出ていた（2026-10-07）。
+        const bool ja=gb_lang_enabled()==0;
+        const auto add=[&](int key,const char *ja_label,const char *en_label){PromptChoice c{};c.key=key;c.label_utf8=ja?ja_label:en_label;if(!out.text_utf8.empty())out.text_utf8+="  ";out.text_utf8+='[';c.begin=static_cast<int>(out.text_utf8.size());out.text_utf8+=c.label_utf8;c.len=static_cast<int>(c.label_utf8.size());out.text_utf8+=']';out.choices.push_back(std::move(c));};
+        out.text_utf8=ja?reinterpret_cast<const char *>(u8"見る: "):"Look: ";
+        /*
+         * 見ている物の説明。行 0 の頭にある「<名前> <状態> [r,…]」（敵）や「<名前> [<情報>]」（アイテム・地形）の
+         * 最後の `[` より前を、帯の見出しのすぐ後ろへ残す（`target_set_aux()`。アイテムの名前にも `[4,+0]` が付くので最後を取る）。
+         * 選択肢だけを出すと、何を見ているか帯のどこにも出なかった（調-13）。続きの待ちの印（`-more-`／`-続く-`）は説明に含めない。
+         * 手本は Sil-Q・Frox。
+         */
+        {
+            std::string subject;
+            if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
+            const auto trim=[](std::string &s){while(!s.empty()&&s.back()==' ')s.pop_back();std::size_t i=0;while(i<s.size()&&s[i]==' ')++i;s.erase(0,i);};
+            trim(subject);
+            for(const char *const more:{"-more-",reinterpret_cast<const char *>(u8"-続く-")}){const std::string m(more);if(subject.size()>=m.size()&&subject.compare(subject.size()-m.size(),m.size(),m)==0){subject.erase(subject.size()-m.size());trim(subject);}}
+            out.text_utf8+=subject;
+        }
+        if(text.find('+')!=std::string::npos)add('+',reinterpret_cast<const char *>(u8"次の注目地点"),"Next interesting");
+        if(text.find('-')!=std::string::npos)add('-',reinterpret_cast<const char *>(u8"前の注目地点"),"Previous interesting");
+        add('p',reinterpret_cast<const char *>(u8"自分の位置へ戻る"),"Recenter on player");
+        if(text.find("m,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"m近"))!=std::string::npos)add('m',reinterpret_cast<const char *>(u8"近い注目地点へ"),"Nearest interesting");
+        if(text.find("o,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"o現"))!=std::string::npos)add('o',reinterpret_cast<const char *>(u8"現在位置を自由に見る"),"Manual/current mode");
+        if(text.find("t")!=std::string::npos)add('t',reinterpret_cast<const char *>(u8"ここを対象にする"),"Select target");
+        out.footer_utf8=ja?reinterpret_cast<const char *>(u8"LB/RB: 操作を選ぶ  A/Enter: 実行  十字キー: カーソル移動"):"LB/RB: select action  A/Enter: run  D-pad: move look cursor";
+        return !out.choices.empty();
+    }
+
+    if ((text.find("Please verify SUICIDE by typing the '@' sign") != std::string::npos)
+        || ((text.find("'@'") != std::string::npos) && (text.find(reinterpret_cast<const char *>(u8"確認")) != std::string::npos))) {
+        out.text_utf8 = text;
+        //! 札は日本語の画面では日本語（`gb_lang_enabled()` が真なら英語層）。
+        const bool en = (gb_lang_enabled() != 0);
+        out.choices.push_back({ en ? "Confirm (@)" : reinterpret_cast<const char *>(u8"確認 (@)"), '@', 0, 0 });
+        out.choices.push_back({ en ? "Cancel (Esc)" : reinterpret_cast<const char *>(u8"取消 (Esc)"), 27, 0, 0 });
+        return true;
+    }
+    if (text.find("w for the Force") != std::string::npos
+        || text.find(reinterpret_cast<const char *>(u8"'w'練気")) != std::string::npos) {
+        out.text_utf8 = text;
+        const bool en = (gb_lang_enabled() != 0);
+        out.choices.push_back({ en ? "Force" : reinterpret_cast<const char *>(u8"練気術"), 'w', 0, 0 });
+        out.choices.push_back({ en ? "Cancel" : reinterpret_cast<const char *>(u8"取消"), 27, 0, 0 });
+        return true;
     }
 
     /*!
@@ -391,6 +450,20 @@ bool parse_choice_token(const std::string &text, std::size_t p, ChoiceTokenGroup
     if ((text.compare(p, kSpaceAscii.size(), kSpaceAscii) == 0) && accept(kSpaceAscii.size(), ' ')) {
         return true;
     }
+    //! `a/u/U)`: Gensoband の browse 種別は 1 札に 3 個の同義キーを持つ。
+    if ((p + 4 < text.size()) && is_ascii_alnum(text[p]) && (text[p + 1] == '/')
+        && is_ascii_alnum(text[p + 2]) && (text[p + 3] == '/') && is_ascii_alnum(text[p + 4])) {
+        if ((text.compare(p + 5, 1, ")") == 0) && is_choice_token_terminator(text, p + 6)) {
+            out.key_spans.emplace_back(p, 1);
+            out.keys.push_back(static_cast<unsigned char>(text[p]));
+            out.key_spans.emplace_back(p + 2, 1);
+            out.keys.push_back(static_cast<unsigned char>(text[p + 2]));
+            out.key_spans.emplace_back(p + 4, 1);
+            out.keys.push_back(static_cast<unsigned char>(text[p + 4]));
+            return true;
+        }
+        return false;
+    }
     //! `i/e)` `w/t)`: 1 つの札に 2 コマンド。キーはそれぞれ独立に積める。
     if ((p + 2 < text.size()) && is_ascii_alnum(text[p]) && (text[p + 1] == '/')
         && is_ascii_alnum(text[p + 2])) {
@@ -409,11 +482,34 @@ bool parse_choice_token(const std::string &text, std::size_t p, ChoiceTokenGroup
     return false;
 }
 
+/*!
+ * @brief `text` の `[from, to)` で、開いたまま閉じていない `(` があるか（括弧の中か）。
+ * @details レベルアップの能力値の選択（`xtra2.c` の `check_experience()`）は
+ * `a) 腕力 (現在値     10)` と並ぶ。括弧の中の `8)` を札と読んだり、空白 3 つで名札を切ったりすると、
+ * 枠が「腕力 (現在値」で切れる（変愚の `presentation_bridge.cpp` と FroxComposband の FH-24 で直した形。2026-10-07）。
+ */
+static bool inside_open_paren(const std::string &text, std::size_t from, std::size_t to)
+{
+    int depth = 0;
+    for (std::size_t i = from; (i < to) && (i < text.size()); ++i) {
+        if (text[i] == '(') {
+            ++depth;
+        } else if ((text[i] == ')') && (depth > 0)) {
+            --depth;
+        }
+    }
+    return depth > 0;
+}
+
 std::vector<ChoiceTokenGroup> scan_choice_tokens(const std::string &text)
 {
     std::vector<ChoiceTokenGroup> groups;
     for (std::size_t p = 0; p < text.size(); ++p) {
         if ((p != 0) && (text[p - 1] != ' ')) {
+            continue;
+        }
+        //! 括弧の中の `8)` は札ではない（直前の札の頭から数えて、閉じていない `(` があれば読み飛ばす）。
+        if (!groups.empty() && inside_open_paren(text, groups.back().begin, p)) {
             continue;
         }
         ChoiceTokenGroup g;
@@ -435,7 +531,15 @@ std::size_t choice_span_end(
 {
     const std::size_t begin = groups[index].begin;
     std::size_t end = (index + 1 < groups.size()) ? groups[index + 1].begin : text.size();
-    const std::size_t gap = text.find("   ", begin);
+    std::size_t gap = text.find("   ", begin);
+    //! 括弧の中の空白（`(現在値     10)`）では切らない。閉じ括弧の後ろから探し直す。
+    while ((gap != std::string::npos) && (gap < end) && inside_open_paren(text, begin, gap)) {
+        const std::size_t close = text.find(')', gap);
+        if ((close == std::string::npos) || (close >= end)) {
+            break;
+        }
+        gap = text.find("   ", close);
+    }
     if ((gap != std::string::npos) && (gap < end)) {
         end = gap;
     }
@@ -535,6 +639,202 @@ bool parse_letter_range_prompt(const std::string &text, char &lo, char &hi)
     return false;
 }
 
+/*
+ * Legacy spell/power selectors sometimes keep the list hidden until `*`,
+ * Space or `?` is pressed.  They are not ordinary item prompts: the prompt
+ * advertises both a letter range and a list-toggle key, and the visible list
+ * is drawn as a stable vertical band of `a)` rows without a core cursor.
+ */
+bool is_raw_toggle_list_prompt(const std::string &text, char &lo, char &hi)
+{
+    if ((text.find('*') == std::string::npos) || (text.find("ESC") == std::string::npos)) {
+        return false;
+    }
+    if (!parse_letter_range_prompt(text, lo, hi)) {
+        return false;
+    }
+    return (lo >= 'a') && (lo <= 'z') && (hi >= lo) && (hi <= 'z');
+}
+
+bool collect_raw_toggle_list_choices(GameFrame &frame)
+{
+    const auto row0 = std::find_if(frame.menu_term_lines.begin(), frame.menu_term_lines.end(),
+        [](const auto &line) { return line.source_row == 0; });
+    if (row0 == frame.menu_term_lines.end()) {
+        return false;
+    }
+
+    char lo = 0;
+    char hi = 0;
+    if (!is_raw_toggle_list_prompt(row0->text_utf8, lo, hi)) {
+        return false;
+    }
+
+    struct Candidate {
+        std::size_t line_index{};
+        ChoiceTokenGroup group;
+        int column{};
+    };
+    std::vector<Candidate> candidates;
+    int anchor_column = -1;
+    for (std::size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
+        const auto &line = frame.menu_term_lines[i];
+        if ((line.source_row < 2) || (line.source_row > 22)) {
+            continue;
+        }
+        for (const auto &group : scan_choice_tokens(line.text_utf8)) {
+            if ((group.keys.size() != 1) || (group.keys.front() < lo) || (group.keys.front() > hi)) {
+                continue;
+            }
+            const int column = static_cast<int>(utf8_to_sjis(line.text_utf8.substr(0, group.begin)).size());
+            // Sniper draws at x=20 (`a)` at ~22); monster powers draw at x=16 (~18).
+            if ((column < 16) || (column > 24)) {
+                continue;
+            }
+            if (group.keys.front() == static_cast<unsigned char>(lo)) {
+                anchor_column = column;
+            }
+            candidates.push_back({ i, group, column });
+        }
+    }
+    if (anchor_column < 0) {
+        /* The raw selector starts with its list hidden.  At that stage the
+         * range prompt is already live, but none of the a..z rows exist yet;
+         * '*' is the only route that reveals them.  Expose that operation as
+         * a semantic choice instead of requiring a physical keyboard. */
+        MenuChoice show{};
+        show.line_index = static_cast<int>(std::distance(frame.menu_term_lines.begin(), row0));
+        show.key = '*';
+        show.key_len = 1;
+        show.label_utf8 = (gb_lang_enabled() != 0) ? "Show choices" : reinterpret_cast<const char *>(u8"一覧を見る");
+        show.description_utf8 = row0->text_utf8;
+        frame.menu_choices.push_back(std::move(show));
+        return true;
+    }
+
+    std::string description;
+    for (const auto &line : frame.menu_term_lines) {
+        description += line.text_utf8;
+        description += '\n';
+    }
+    for (const auto &candidate : candidates) {
+        if (candidate.column != anchor_column) {
+            continue;
+        }
+        const auto before = frame.menu_choices.size();
+        emit_choices_for_line(frame, candidate.line_index, { candidate.group });
+        for (std::size_t i = before; i < frame.menu_choices.size(); ++i) {
+            frame.menu_choices[i].description_utf8 = description;
+        }
+    }
+    return !frame.menu_choices.empty();
+}
+
+/* Auto-pick editor's Escape menu is a floating command box.  Unlike the
+ * editor itself it does not expose a core cursor: row 0 says `(a-x) Command:`
+ * and the box contains the matching `a) ...` rows.  Treat only that exact
+ * range-prefixed command prompt as a menu so ordinary prose/list screens do
+ * not become clickable by accident.  This also covers nested submenus because
+ * do_command_menu() uses the same grammar at every level. */
+bool collect_autopick_command_menu(GameFrame &frame)
+{
+    const auto row0 = std::find_if(frame.menu_term_lines.begin(), frame.menu_term_lines.end(),
+        [](const auto &line) { return line.source_row == 0; });
+    if (row0 == frame.menu_term_lines.end()) return false;
+    const std::string &prompt = row0->text_utf8;
+    if (prompt.find("Command:") == std::string::npos
+        && prompt.find(reinterpret_cast<const char *>(u8"コマンド:")) == std::string::npos) return false;
+    char lo = 0, hi = 0;
+    if (!parse_letter_range_prompt(prompt, lo, hi) || lo != 'a' || hi < lo || hi > 'z') return false;
+
+    unsigned char expected = static_cast<unsigned char>(lo);
+    std::string description;
+    for (const auto &line : frame.menu_term_lines) description += line.text_utf8 + "\n";
+    for (std::size_t i = 0; i < frame.menu_term_lines.size() && expected <= static_cast<unsigned char>(hi); ++i) {
+        for (const auto &group : scan_choice_tokens(frame.menu_term_lines[i].text_utf8)) {
+            if (group.keys.size() != 1 || group.keys.front() != expected) continue;
+            const auto before = frame.menu_choices.size();
+            emit_choices_for_line(frame, i, { group });
+            for (std::size_t j = before; j < frame.menu_choices.size(); ++j)
+                frame.menu_choices[j].description_utf8 = description;
+            ++expected;
+            break;
+        }
+    }
+    return expected > static_cast<unsigned char>(lo) && expected == static_cast<unsigned char>(hi) + 1;
+}
+
+bool collect_strict_unnamed_letter_list(GameFrame &frame)
+{
+    if (!frame.menu_core_cursors.empty() || frame.menu_core_cursor.line_index >= 0) {
+        return false;
+    }
+
+    int prompt_source_row = -1;
+    for (const auto &line : frame.menu_term_lines) {
+        if (line.text_utf8.find("ESC") != std::string::npos) {
+            prompt_source_row = line.source_row;
+            break;
+        }
+    }
+    if (prompt_source_row < 0) {
+        return false;
+    }
+
+    struct Candidate {
+        std::size_t line_index{};
+        ChoiceTokenGroup group;
+        int column{};
+    };
+    std::vector<Candidate> candidates;
+    for (std::size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
+        const auto &line = frame.menu_term_lines[i];
+        if ((line.source_row <= prompt_source_row) || (line.source_row > prompt_source_row + 22)) {
+            continue;
+        }
+        for (const auto &group : scan_choice_tokens(line.text_utf8)) {
+            if ((group.keys.size() != 1) || (group.keys.front() < 'a') || (group.keys.front() > 'z')) {
+                continue;
+            }
+            const int column = static_cast<int>(utf8_to_sjis(line.text_utf8.substr(0, group.begin)).size());
+            candidates.push_back({ i, group, column });
+        }
+    }
+    if (candidates.empty()) {
+        return false;
+    }
+
+    // Only accept a true vertical a,b,c... run at one terminal column.  This
+    // deliberately rejects prose containing an isolated `a)` token.
+    const int column = candidates.front().column;
+    unsigned char expected = 'a';
+    std::vector<Candidate> run;
+    for (const auto &candidate : candidates) {
+        if (candidate.column != column || candidate.group.keys.front() != expected) {
+            continue;
+        }
+        run.push_back(candidate);
+        ++expected;
+    }
+    if (run.empty() || run.front().group.keys.front() != 'a') {
+        return false;
+    }
+
+    std::string description;
+    for (const auto &line : frame.menu_term_lines) {
+        description += line.text_utf8;
+        description += '\n';
+    }
+    for (const auto &candidate : run) {
+        const auto before = frame.menu_choices.size();
+        emit_choices_for_line(frame, candidate.line_index, { candidate.group });
+        for (std::size_t i = before; i < frame.menu_choices.size(); ++i) {
+            frame.menu_choices[i].description_utf8 = description;
+        }
+    }
+    return !frame.menu_choices.empty();
+}
+
 /* ================================ 名指しの選択画面（その3 / c） */
 
 /*!
@@ -627,6 +927,10 @@ std::vector<ChoiceTokenGroup> scan_choice_tokens_styled(const std::string &text,
         if ((p != 0) && (text[p - 1] != ' ')) {
             continue;
         }
+        //! 括弧の中の `8)` は札ではない（`scan_choice_tokens` と同じ）。
+        if (!groups.empty() && inside_open_paren(text, groups.back().begin, p)) {
+            continue;
+        }
         ChoiceTokenGroup g;
         if (((styles & kStyleParen) != 0) && parse_paren_choice_token(text, p, g)) {
             groups.push_back(std::move(g));
@@ -646,7 +950,7 @@ std::vector<ChoiceTokenGroup> scan_choice_tokens_styled(const std::string &text,
 /*!
  * @name ヘルプの画（`files.c` の `show_file()`）
  *
- * @details 2026-08-29 に気づいた「ヘルプの目次等の選択肢でカーソル移動ができない」。
+ * @details 気づいたこと 2026-08-29「ヘルプの目次等の選択肢でカーソル移動ができない」。
  * 目次は `(a)幻想蛮怒とは？` の丸括弧書式だが、**`kNamedMenus` のどれとも噛み合わない**
  * ので選択肢が 1 件も積まれず、カーソルも枠も出ていなかった（実測で 0 件）。
  *
@@ -741,6 +1045,16 @@ struct NamedMenuSpec {
      * @details 下位のやり取りへ降りている印。上の @name の注記を見ること。
      */
     int prompt_row;
+    int prompt_row_last{-1};
+    int signature_row{-1};
+    int column_min{-1},column_max{-1};
+    /*!
+     * @brief 署名が**建物の主の名**など、一覧の無い最初の画面にも出る文言のとき真。
+     * @details 真なら、`row_min`〜`row_max` に札が 1 つも読めない画面は**この表の画面とは見なさず**、
+     * 次の判定（建物・店）へ回す。これが無いと、最初の画面でも署名が当たって `-1` を返し、
+     * 建物の選択肢が作られない（F-gensoband-09。賭け試合の最初の画面が決定で進まない）。
+     */
+    bool require_listed{false};
 };
 
 #define GB_SIG(s) (s), (sizeof(s) - 1)
@@ -776,6 +1090,44 @@ struct NamedMenuSpec {
  * 使えない。札は `[a](x  3.83) 名前` の第 3 の書式（`kStyleBracket`）。
  */
 const NamedMenuSpec kNamedMenus[] = {
+    // `choose_browse()` is a raw three-row selector.  Use its stable ASCII
+    // key band as the signature so both JP/EN cores expose the same choices.
+    { "browse_kind", GB_SIG("a/u/U)"), kStylePlain, 2, 4, 0, 0, 2, 16, 16 },
+    //! レベルアップの能力値の選択（`xtra2.c` の `check_experience()`。行 1 が問い・行 2〜7 が `a) 腕力 (現在値 …)`）。
+    { "stat_raise", GB_SIG("どの能力値を上げますか"), kStylePlain, 2, 7, 1, 1, 1, 20, 24 },
+    //! 英語層のとき（カタログは**行全体**の鍵で引くので、部分文字列の署名は訳せない。英語の原文で別に持つ）。
+    { "stat_raise_en", GB_SIG("Which stat do you want to raise"), kStylePlain, 2, 7, 1, 1, 1, 20, 24 },
+    { "elemental_brand", GB_SIG("どの元素攻撃をしますか"), kStylePlain, 2, 6, 1, 1, 1, 20, 24 },
+    { "elemental_immunity", GB_SIG("どの元素の免疫をつけますか"), kStylePlain, 2, 5, 1, 1, 1, 20, 24 },
+    { "monk_stance", GB_SIG("どの構えをとりますか"), kStylePlain, 2, 10, 1, 1, 1, 20, 22 },
+    { "samurai_stance", GB_SIG("どの型で構えますか"), kStylePlain, 2, 10, 1, 1, 1, 20, 22 },
+    { "card_power", GB_SIG("(スペース:次のページ ESC:キャンセル)"), kStylePlain, 4, 25, 4, 26, -1, 20, 20 },
+    { "marisa_present", GB_SIG("(a～h:プレゼントを選択 / n,スペース:次のページへ / ESC:キャンセル)"), kStylePlain, 8, 15, 8, 16, 6, 10, 10 },
+    { "wanted_target", GB_SIG("誰を狙いますか？(ESC:キャンセル)"), kStylePlain, 15, 17, 14, 17, 14, 5, 5 },
+    { "weapon_shape", GB_SIG("この柄をどんな武器にして欲しいのだ？"), kStylePlain, 2, 6, 2, 6, 0, 40, 40 },
+    { "marisa_magic_info", GB_SIG("「どの魔法について確認しよう？」(ESC:キャンセル)"), kStylePlain, 7, 20, 7, 20, 4, 18, 54 },
+    { "marisa_magic_carry", GB_SIG("「どの魔法を持って行こう？」"), kStylePlain, 7, 20, 7, 20, 4, 18, 54 },
+    { "marisa_magic_make", GB_SIG("「どの魔法を作ろう？」(ESC:キャンセル)"), kStylePlain, 7, 20, 7, 20, 4, 18, 54 },
+    { "marisa_magic_use", GB_SIG("「どの魔法を使おう？」(ESC:キャンセル)"), kStylePlain, 7, 20, 7, 20, 4, 18, 54 },
+    { "compound_drug", GB_SIG("素材にするものを3つまで選んで下さい:"), kStylePlain, 10, 14, 10, 17, 8, 10, 10 },
+    { "nightmare_diary", GB_SIG("累計評価点:"), kStylePlain, 9, 17, 19, 19, 19, 22, 22 },
+    { "cooking_order", GB_SIG("何を作ってもらいますか？(ESC:キャンセル)"), kStylePlain, 5, 23, 5, 23, 4, 20, 20 },
+    { "cooking_make", GB_SIG("何を作りますか？(ESC:キャンセル)"), kStylePlain, 5, 23, 5, 23, 4, 20, 20 },
+    { "chosen_trap", GB_SIG("どのトラップを配置しよう？"), kStylePlain, 3, 23, 3, 23, 2, 30, 30 },
+    { "prism_class", GB_SIG("誰と交代しますか？"), kStylePlain, 12, 14, 12, 14, 10, 10, 10 },
+    { "drug_recipe", GB_SIG("どの薬について確認しますか？」(ESC:キャンセル)"), kStylePlain, 7, 22, 7, 22, 4, 20, 20 },
+    { "hecatia_body", GB_SIG("どの体と交代しますか？"), kStylePlain, 12, 14, 12, 14, 10, 30, 30 },
+    { "hecatia_earth", GB_SIG("あなたの「地球」の体はどんな性格ですか？"), kStylePlain, 12, 23, 12, 23, 10, 25, 25 },
+    { "hecatia_moon", GB_SIG("あなたの「月」の体はどんな性格ですか？"), kStylePlain, 12, 23, 12, 23, 10, 25, 25 },
+    { "soldier_skill_info", GB_SIG("どの技能の説明を見ますか？(ESC:終了)"), kStylePlain, 4, 23, 4, 23, 2, 18, 18 },
+    { "soldier_skill_gain", GB_SIG("どの技能を習得しますか？(ESC:キャンセル)"), kStylePlain, 4, 23, 4, 23, 2, 18, 18 },
+    { "soldier_bullet_info", GB_SIG("どの銃弾の説明を見ますか？(ESC:キャンセル ?:確認を終える)"), kStylePlain, 5, 20, 5, 20, 2, 18, 50 },
+    { "soldier_bullet_use", GB_SIG("どの銃弾を使用しますか？(ESC:キャンセル ?:銃弾の効果を確認する)"), kStylePlain, 5, 20, 5, 20, 2, 18, 50 },
+    { "ariya_wall", GB_SIG("a) 普通の壁を永久壁にする"), kStylePlain, 10, 11, 12, 12, 10, 20, 20 },
+    { "nina_building", GB_SIG("どんな建物の蜃気楼を作りますか？(ESC:キャンセル)"), kStylePlain, 1, 25, 1, 25, -1, 25, 25 },
+    { "nina_monster", GB_SIG("誰のコピーを呼び出しますか？(ESC:キャンセル)"), kStylePlain, 1, 25, 1, 25, -1, 25, 25 },
+    { "chaos_effect", GB_SIG("起こしたい効果を記号で選択してください。"), kStylePlain, 3, 5, 5, 5, 0, 40, 40 },
+    { "reincarnation", GB_SIG("転生したい種族を記号で選択してください。"), kStylePlain, 15, 17, 17, 17, 0, 40, 40 },
     { "option_root", GB_SIG("[ オプションの設定 ]"), kStyleParen, 3, 19, 21 },
     { "macros", GB_SIG("[ マクロの設定 ]"), kStyleParen, 4, 13, 16 },
     { "visuals", GB_SIG("[ 画面表示の設定 ]"), kStyleParen, 3, 13, 15 },
@@ -785,13 +1137,27 @@ const NamedMenuSpec kNamedMenus[] = {
     { "knowledge", GB_SIG("現在の知識を確認する"), kStyleParen | kStylePlain, 6, 21, 20 },
     { "recall_dungeon", GB_SIG("どのダンジョン"), kStylePlain, 1, 19, 0 },
     { "tele_town", GB_SIG("どこに行きますか"), kStylePlain, 6, 19, 0 },
-    { "melee_arena", GB_SIG("雀斑の河童娘"), kStyleBracket, 4, 19, 0 },
+    { "melee_arena", GB_SIG("雀斑の河童娘"), kStyleBracket, 4, 19, 0, -1, -1, -1, -1, true },
+    /*
+     * 英語層の署名（2026-10-12 修-24）。上の日本語の署名は**部分文字列**で、訳の表の鍵は行全体なので
+     * `gb_tr()` では引けない（`stat_raise_en` と同じ事情）。訳は `lang/en/ui/*.txt`・`lang/en/edit/town.en.txt`
+     * の英語。形（行・桁）は日本語の同名の項目と同じ。日本語の画面に英語の署名は出ないので、日本語の動きは変わらない。
+     */
+    { "elemental_brand_en", GB_SIG("Choose a temporary elemental brand"), kStylePlain, 2, 6, 1, 1, 1, 20, 24 },
+    { "elemental_immunity_en", GB_SIG("Choose a temporary elemental immune"), kStylePlain, 2, 5, 1, 1, 1, 20, 24 },
+    //! 武術家の構え・剣術家の型は英語では同じ問い（`Choose Form:`）。形も同じ。
+    { "stance_en", GB_SIG("Choose Form:"), kStylePlain, 2, 10, 1, 1, 1, 20, 22 },
+    { "nightmare_diary_en", GB_SIG("Total rating:"), kStylePlain, 9, 17, 19, 19, 19, 22, 22 },
+    { "recall_dungeon_en", GB_SIG("Which dungeon do you"), kStylePlain, 1, 19, 0 },
+    { "tele_town_en", GB_SIG("Where do you go:"), kStylePlain, 6, 19, 0 },
+    //! 賭け試合の建物の主の名の英語（`lang/en/edit/town.en.txt` の `BE:` 行）。
+    { "melee_arena_en", GB_SIG("Freckled Kappa Girl"), kStyleBracket, 4, 19, 0, -1, -1, -1, -1, true },
 };
 
 #undef GB_SIG
 
 //! @brief 表に載っている画面なら選択肢を作る。@return 1 件でも積んだら true
-bool collect_named_menu_choices(GameFrame &frame)
+int collect_named_menu_choices(GameFrame &frame)
 {
     /*
      * **自由入力の間は作らない**（GU-11 で見つけた穴）。賭け試合は組を選ぶと
@@ -802,13 +1168,15 @@ bool collect_named_menu_choices(GameFrame &frame)
      * ほかの名指し画面の一覧の待ちはどれも `inkey()`（旗が立たない）なので巻き添えは無い。
      */
     if (frame.text_input_active) {
-        return false;
+        return -1;
     }
     for (const NamedMenuSpec &spec : kNamedMenus) {
         const std::string &signature = utf8_of(spec.signature, spec.signature_len);
+        const std::string translated=sjis_to_utf8(gb_tr(spec.signature));
         bool found = false;
         for (const auto &line : frame.menu_term_lines) {
-            if (line.text_utf8.find(signature) != std::string::npos) {
+            if(spec.signature_row>=0 && line.source_row!=spec.signature_row)continue;
+            if (line.text_utf8.find(signature) != std::string::npos || line.text_utf8.find(translated) != std::string::npos) {
                 found = true;
                 break;
             }
@@ -817,25 +1185,87 @@ bool collect_named_menu_choices(GameFrame &frame)
             continue;
         }
         /*
+         * 署名が建物の主の名のように最初の画面にも出る文言のときは、**札が 1 つも読めなければ
+         * この画面ではない**。最初の画面（`g) 話しかける` `ESC) 建物を出る`）を建物として扱わせる。
+         * 札が読めるのにカーソルが外れているとき（口数の問いなど、降りている間）は従来どおり下で `-1`。
+         */
+        if (spec.require_listed) {
+            bool listed = false;
+            for (const auto &line : frame.menu_term_lines) {
+                if ((line.source_row >= spec.row_min) && (line.source_row <= spec.row_max)
+                    && !scan_choice_tokens_styled(line.text_utf8, spec.styles).empty()) {
+                    listed = true;
+                    break;
+                }
+            }
+            if (!listed) {
+                continue;
+            }
+        }
+        /*
          * **一覧の待ちに居るときだけ**作る。降りている間に作ると、
          * もう効かない項目が選択肢のまま残る（上の @name の注記）。
          */
-        if (frame.menu_term_curs_row != spec.prompt_row) {
-            return false;
+        const int cursor_row=frame.menu_term_curs_row>=0 && frame.menu_term_curs_row<int(frame.menu_term_lines.size()) ? frame.menu_term_lines[frame.menu_term_curs_row].source_row : -1;
+        if (cursor_row < spec.prompt_row || cursor_row > (spec.prompt_row_last<0?spec.prompt_row:spec.prompt_row_last)) {
+            return -1;
         }
         for (std::size_t i = 0; i < frame.menu_term_lines.size(); ++i) {
             const int row = frame.menu_term_lines[i].source_row;
             if ((row < spec.row_min) || (row > spec.row_max)) {
                 continue;
             }
-            emit_choices_for_line(
-                frame, i, scan_choice_tokens_styled(frame.menu_term_lines[i].text_utf8, spec.styles));
+            const auto before=frame.menu_choices.size();
+            emit_choices_for_line(frame, i, scan_choice_tokens_styled(frame.menu_term_lines[i].text_utf8, spec.styles));
+            if(spec.column_min>=0)frame.menu_choices.erase(std::remove_if(frame.menu_choices.begin()+before,frame.menu_choices.end(),[&](const auto &choice){
+                const auto column=int(utf8_to_sjis(frame.menu_term_lines[i].text_utf8.substr(0,choice.span_begin)).size());
+                return column<spec.column_min||column>spec.column_max;
+            }),frame.menu_choices.end());
         }
-        return !frame.menu_choices.empty();
+        if(spec.column_min>=0){
+            std::string description;for(const auto &line:frame.menu_term_lines)description+=line.text_utf8+"\n";
+            for(auto &choice:frame.menu_choices)choice.description_utf8=description;
+            if(std::string(spec.tag)=="marisa_present"||std::string(spec.tag)=="card_power")frame.menu_page_next_key=' ';
+
+            /*
+             * Some named screens have a real command in the prompt/footer in
+             * addition to the lettered rows.  Treat that operation as a first-
+             * class choice instead of assuming that recognizing the list rows
+             * makes the whole child screen operable.
+             */
+            const std::string tag(spec.tag);
+            //! 札は日本語の画面では日本語（以前は英語固定だった。2026-10-07）。日本語は原作の文言に合わせた。
+            const bool aux_en=(gb_lang_enabled()!=0);
+            const auto add_aux_choice=[&](int key,const char *label,const char *label_ja,int source_row){
+                MenuChoice choice{};
+                choice.key=key;
+                choice.label_utf8=aux_en?label:label_ja;
+                choice.description_utf8=description;
+                for(std::size_t li=0;li<frame.menu_term_lines.size();++li) {
+                    if(frame.menu_term_lines[li].source_row==source_row){choice.line_index=int(li);break;}
+                }
+                frame.menu_choices.push_back(std::move(choice));
+            };
+            if(tag=="marisa_magic_carry") {
+                add_aux_choice('R',"Return all carried spells to home",reinterpret_cast<const char *>(u8"持った魔法を全て家に戻す"),5);
+            } else if(tag=="soldier_bullet_use") {
+                add_aux_choice('?',"Show bullet effects",reinterpret_cast<const char *>(u8"銃弾の効果を確認する"),2);
+            } else if(tag=="soldier_bullet_info") {
+                add_aux_choice('?',"Return to bullet selection",reinterpret_cast<const char *>(u8"確認を終える"),2);
+            }
+        }
+        return frame.menu_choices.empty()?-1:1;
     }
     return false;
 }
 /*! @} */
+
+//! 画面の種類の判定で英語の目印を見るか。**英語層が生きているとき**だけ（自己検査は `g_menu_english_for_test` で立てる）。
+bool g_menu_english_for_test = false;
+bool menu_english() { return g_menu_english_for_test || (gb_lang_enabled() != 0); }
+//! 店・建物の目印の英語の字（`gb_lang_enabled()` 真のときの `コマンド:`・`手持ちのお金:` の訳）。
+const std::string kCommandEn = "Command:";
+const std::string kGoldEn = "Gold Remaining:";
 
 //! 画面の種類。**判定順がそのまま優先順**（店は建物の目印を両方持っている）。
 enum class MenuScreen {
@@ -849,8 +1279,14 @@ MenuScreen classify_menu_screen(const GameFrame &frame, int &store_command_line)
 {
     static const char kCommandSjis[] = "コマンド:";
     static const char kGoldSjis[] = "手持ちのお金:";
-    const std::string &command_label = utf8_of(kCommandSjis, sizeof(kCommandSjis) - 1);
-    const std::string &gold_label = utf8_of(kGoldSjis, sizeof(kGoldSjis) - 1);
+    /*
+     * 英語層（`gb_lang_enabled()` が真）では、同じ行の訳が `Command:`・`Gold Remaining:` になる
+     * （`lang/en/ui/harvested.en.txt`）。**日本語の目印と同じ規則**（`Command:` で始まる行 ＋ `ESC)` の行、
+     * または `ESC)` の行 ＋ お金の行）で見る。日本語のときは英語の目印を見ない（動きを変えない）。
+     */
+    const bool english = menu_english();
+    const std::string &command_label = english ? kCommandEn : utf8_of(kCommandSjis, sizeof(kCommandSjis) - 1);
+    const std::string &gold_label = english ? kGoldEn : utf8_of(kGoldSjis, sizeof(kGoldSjis) - 1);
 
     store_command_line = -1;
     bool has_esc_choice = false;
@@ -922,10 +1358,49 @@ void collect_item_prompt_choices(GameFrame &frame)
 /*! @} */
 
 
+// Birth grids use yellow text, including the high bit on wide characters.
+// Only an active, known birth selection with a letter label owns this cursor.
+bool fill_birth_selection_cursor(GameFrame &frame)
+{
+    if(!frame.pre_game_menu || frame.text_input_active)return false;
+    static const char *const headings[]={
+        reinterpret_cast<const char*>(u8"難易度を選択してください"),
+        reinterpret_cast<const char*>(u8"あなたは・・・"),
+        reinterpret_cast<const char*>(u8"あなたの登場作品を選んでください"),
+        reinterpret_cast<const char*>(u8"灰字は未実装 ESCで作品選択へ戻る"),
+        reinterpret_cast<const char*>(u8"を選んで下さい"),
+        // 英語層（`lang/en/ui/messages.en.txt` の訳。誕生の窓の見出し）。
+        "Choose the difficulty", "You are...", "Choose the work you come from",
+        "Grey is not implemented",
+        "Choose a", "Select difficulty", "Select your difficulty"};
+    bool selection=false;
+    for(const auto &line:frame.menu_term_lines)for(const char *heading:headings)
+        if(line.text_utf8.find(heading)!=std::string::npos)selection=true;
+    if(!selection)return false;
+    for(size_t i=0;i<frame.menu_term_lines.size();++i) {
+        const auto &line=frame.menu_term_lines[i];
+        for(size_t j=0;j<line.color_spans.size();++j) {
+            const auto &span=line.color_spans[j];
+            if((span.color&15)!=11 || span.begin<0 || span.len<=0)continue;
+            const size_t begin=size_t(span.begin);
+            if(begin+2>line.text_utf8.size())continue;
+            const char key=line.text_utf8[begin];
+            if(!((key>='a'&&key<='z')||(key>='A'&&key<='Z'))||line.text_utf8[begin+1]!=')')continue;
+            int end=span.begin+span.len;
+            for(size_t next=j+1;next<line.color_spans.size();++next){const auto &part=line.color_spans[next];if(part.begin!=end||(part.color&15)!=11)break;end+=part.len;}
+            if(size_t(end)>line.text_utf8.size())continue;
+            frame.menu_core_cursor={int(i),int(begin),end-int(begin),0,0,0};
+            frame.menu_core_cursors.assign(1,frame.menu_core_cursor);frame.menu_choices.clear();return true;
+        }
+    }
+    return false;
+}
+
 bool fill_core_cursor(GameFrame &frame)
 {
     frame.menu_core_cursor = MenuChoice{ -1, 0, 0, 0, 0, 0 };
     frame.menu_core_cursors.clear();
+    if(fill_birth_selection_cursor(frame))return true;
 
     const std::string &mark = cursor_mark();
     if (mark.empty()) {
@@ -991,12 +1466,52 @@ bool fill_core_cursor(GameFrame &frame)
     return !frame.menu_core_cursors.empty();
 }
 
+static void fill_row0_prompt_inner(GameFrame &frame);
 void fill_row0_prompt(GameFrame &frame)
+{
+    const presentation::LookScreenCover::Frame cover_frame(presentation::look_screen_cover()); // 見るの帯を作らなかったフレームで基準を忘れる
+    fill_row0_prompt_inner(frame);
+}
+static void fill_row0_prompt_inner(GameFrame &frame)
 {
     frame.prompt = PromptBar{};
     frame.numeric = NumericInput{};
 
     const std::string row0 = term_row_utf8(0);
+    /*
+     * 「繰り返し回数」（`0` の後の `回数: 12`／英語層では `Count: 12`）。数字を 1 キーずつ
+     * 読む入力なので他の問いに当たらない。変愚と同じ枠を出す（`input_event_adapter.h`）。
+     */
+    if (presentation::fill_repeat_count_input(row0, frame.numeric)) {
+        return;
+    }
+    char raw_list_lo = 0;
+    char raw_list_hi = 0;
+    if (is_raw_toggle_list_prompt(row0, raw_list_lo, raw_list_hi)) {
+        // If the list is visible, fill_store_menu_choices() has already built
+        // the concrete rows.  If it is hidden, expose the original list toggle
+        // so touch/controller users can reveal the selectable rows first.
+        //
+        // **コアのカーソル（`》`）が見つかっていれば、一覧はもう出ている**（`use_menu` の呪文の一覧。
+        // `fill_core_cursor()` はこの関数より先に呼ばれる。gb_frame.cpp）。ここで `*` を選択肢に足すと、
+        // 窓が「選択肢の段」になってカーソルの一覧として扱われず、`*` は一覧の表示を切り替えるだけなので
+        // パッドやマウスでは先へ進めなかった（呪文を覚える G。遊ぶ人に届いた報告 2026-10-06）。
+        // 変愚と同じく、カーソルの段のまま決定で選ばせる。
+        if (frame.menu_choices.empty() && frame.menu_core_cursors.empty()) {
+            frame.menu_open = true;
+            MenuChoice choice{};
+            choice.line_index = -1;
+            choice.key = '*';
+            choice.label_utf8 = (gb_lang_enabled() != 0) ? "Show choices" : reinterpret_cast<const char *>(u8"一覧を見る");
+            choice.description_utf8 = row0;
+            frame.menu_choices.push_back(std::move(choice));
+        }
+        return;
+    }
+    if (presentation::is_monster_symbol_prompt(row0)) {
+        presentation::expose_ascii_symbol_prompt(frame, row0);
+        return;
+    }
     if (parse_prompt_line(row0, frame.prompt)) {
         /*
          * ミラーが開いている場面では、同じ行がミラーの何行目かを教える
@@ -1026,6 +1541,19 @@ void fill_row0_prompt(GameFrame &frame)
     std::string trimmed = row0;
     while (!trimmed.empty() && (trimmed.back() == ' ')) {
         trimmed.pop_back();
+    }
+
+    /*
+     * **地図の上の `-続く-`**（変愚の `fill_row0_prompts()` と同じ直し。2026-09-25）。
+     * `auto_more` が偽のとき、コアは `msg_flush()` で行 0 に `-続く-` を書いてキーを待つ。
+     * メニューの外ではミラーが開かないので、ここで渡さないと frame に待っている印が
+     * 1 つも無く、持ち物メニューから命令を送った後に一覧が消えたまま止まって見える。
+     * 選択肢は作らない（帯へ出すだけ）。
+     */
+    if (frame.menu_term_lines.empty() && !frame.text_input_active && presentation::message_more_suffix(trimmed)) {
+        frame.prompt.text_utf8 = trimmed;
+        frame.prompt.line_index = -1;
+        return;
     }
 
     /*
@@ -1067,7 +1595,8 @@ void fill_row0_prompt(GameFrame &frame)
     if (!frame.text_input_active || !frame.menu_term_lines.empty() || trimmed.empty()) {
         return;
     }
-    frame.prompt.text_utf8 = trimmed;
+    frame.prompt.text_utf8 = row0;
+    int cx=0,cy=0;if(gb_term_cursor(&cx,&cy,nullptr)==GB_OK)frame.menu_term_curs_col=cx;
     frame.prompt.line_index = -1; //!< ミラーには出ていない＝画面が自分の帯へ出す
 }
 
@@ -1082,10 +1611,16 @@ bool fill_store_menu_choices(GameFrame &frame)
     }
     /*
      * **ヘルプがいちばん先。**丸括弧の項目は名指しの表とも店・建物の見分けとも
-     * 噛み合わないので、ここで見ないと 1 件も積まれない（2026-08-29 に気づいた）。
+     * 噛み合わないので、ここで見ないと 1 件も積まれない。
      */
     if (fill_help_menu(frame)) {
         return !frame.menu_choices.empty();
+    }
+    if (collect_autopick_command_menu(frame)) {
+        return true;
+    }
+    if (collect_raw_toggle_list_choices(frame)) {
+        return true;
     }
     /*
      * **名指しの画面を先に見る**（その3 / c）。設定や知識には店・建物の手掛かりが無いので
@@ -1093,11 +1628,20 @@ bool fill_store_menu_choices(GameFrame &frame)
      * ` ESC) 抜ける` と `コマンド:` の両方を持っていて **`Store` と誤判定される**。
      * 後回しにすると項目が 1 つも選べないまま「ページ送りだけ選べる画面」になる（実測）。
      */
-    if (collect_named_menu_choices(frame)) {
+    int store_command_line = -1;
+    if(classify_menu_screen(frame,store_command_line)==MenuScreen::ItemPrompt){collect_item_prompt_choices(frame);return !frame.menu_choices.empty();}
+    const int named=collect_named_menu_choices(frame);
+    if(named!=0)return named>0;
+
+    // Last-resort semantic list support for live Gensoband class-power screens
+    // which have no core cursor and no stable named signature.  Keep this after
+    // all named screens and before generic Store/Building parsing.
+    int unnamed_command_line = -1;
+    if (classify_menu_screen(frame, unnamed_command_line) == MenuScreen::None
+        && collect_strict_unnamed_letter_list(frame)) {
         return true;
     }
 
-    int store_command_line = -1;
     switch (classify_menu_screen(frame, store_command_line)) {
     case MenuScreen::ItemPrompt:
         collect_item_prompt_choices(frame);
@@ -1126,6 +1670,276 @@ bool fill_store_menu_choices(GameFrame &frame)
         break;
     }
     return !frame.menu_choices.empty();
+}
+
+int menu_semantics_selftest()
+{
+    int failed = 0;
+    const auto check = [&](bool ok, const char *what) {
+        if (ok) return;
+        std::fprintf(stderr, "[gensoband] menu selftest FAIL: %s\n", what);
+        ++failed;
+    };
+    const auto add_line = [](GameFrame &frame, int row, std::string text) {
+        TermMirrorLine line;
+        line.source_row = row;
+        line.text_utf8 = std::move(text);
+        frame.menu_term_lines.push_back(std::move(line));
+    };
+    const auto has_key = [](const GameFrame &frame, int key) {
+        return std::any_of(frame.menu_choices.begin(), frame.menu_choices.end(),
+            [key](const MenuChoice &choice) { return choice.key == key; });
+    };
+    const auto prompt_has_key = [](const PromptBar &prompt, int key) {
+        return std::any_of(prompt.choices.begin(), prompt.choices.end(),
+            [key](const PromptChoice &choice) { return choice.key == key; });
+    };
+
+    {
+        GameFrame frame;
+        frame.menu_open = true;
+        add_line(frame, 0, "(a-c, *=List, ESC) Select");
+        check(collect_raw_toggle_list_choices(frame), "raw toggle hidden stage recognized");
+        check(has_key(frame, '*'), "raw toggle hidden stage exposes list key");
+    }
+
+    {
+        GameFrame frame;
+        frame.menu_open = true;
+        add_line(frame, 0, "(a-c, *=List, ESC) Select");
+        add_line(frame, 2, std::string(18, ' ') + "a) First");
+        add_line(frame, 3, std::string(18, ' ') + "b) Second");
+        add_line(frame, 4, std::string(18, ' ') + "c) Third");
+        check(collect_raw_toggle_list_choices(frame), "raw toggle list recognized");
+        check(has_key(frame, 'a') && has_key(frame, 'b') && has_key(frame, 'c'),
+            "raw toggle list choices");
+    }
+    {
+        GameFrame frame;
+        frame.menu_open = true;
+        add_line(frame, 0, "(a-c) Command:");
+        add_line(frame, 3, "    a) First");
+        add_line(frame, 4, "    b) Second");
+        add_line(frame, 5, "    c) Third");
+        check(collect_autopick_command_menu(frame), "auto-pick command box recognized");
+        check(has_key(frame, 'a') && has_key(frame, 'b') && has_key(frame, 'c'),
+            "auto-pick command choices");
+
+        /* Nested Auto-pick command menus use the identical grammar but may
+         * expose a shorter range.  Exercise a second level explicitly. */
+        GameFrame nested;
+        nested.menu_open = true;
+        add_line(nested, 0, "(a-b) Command:");
+        add_line(nested, 3, "    a) Nested first");
+        add_line(nested, 4, "    b) Nested second");
+        check(collect_autopick_command_menu(nested), "nested auto-pick command box recognized");
+        check(has_key(nested, 'a') && has_key(nested, 'b'), "nested auto-pick command choices");
+    }
+    {
+        PromptBar prompt;
+        check(parse_prompt_line("Please verify SUICIDE by typing the '@' sign", prompt), "Genso raw verification recognized");
+        check(prompt_has_key(prompt, '@') && prompt_has_key(prompt, 27), "Genso raw verification controls");
+        check(parse_prompt_line("Choose discipline, w for the Force", prompt), "Genso Force prompt recognized");
+        check(prompt_has_key(prompt, 'w') && prompt_has_key(prompt, 27), "Genso Force controls");
+        check(parse_prompt_line("Look q,t,p,m,+,-,<dir>", prompt), "Genso Look prompt recognized");
+        for (const int key : std::array<int, 5>{'+','-','p','m','t'}) {
+            check(prompt_has_key(prompt, key), "Genso Look auxiliary controls");
+        }
+        // 調-13：見る（l）の帯に、見ている物の名前（行 0 の頭の説明）が残る。`-more-` は残らず、説明の直後に最初の選択肢の `[` が来る。
+        struct LookCase { const char *name; const char *row; const char *subject; };
+        int look_ok = 0;
+        for (const LookCase &lc : std::array<LookCase, 3>{{
+                 {"look_monster", "a Filthy street urchin (Asleep) [r,/,+,-,p,q,o,<dir>]", "a Filthy street urchin (Asleep)"},
+                 {"look_item_bracket", "You see a Soft Leather Armor [2,+0] [r,/,+,-,p,q,o,<dir>]", "You see a Soft Leather Armor [2,+0]"},
+                 {"look_more_dropped", "a Cave spider -more- [r,/,+,-,p,q,o,<dir>]", "a Cave spider"}}}) {
+            PromptBar look;
+            bool ok = parse_prompt_line(lc.row, look) && !look.choices.empty();
+            if (ok) {
+                const std::size_t at = look.text_utf8.find(lc.subject);
+                ok = (at != std::string::npos) && (look.text_utf8.find("-more-") == std::string::npos)
+                    && (look.text_utf8.find('[', at + std::strlen(lc.subject)) == static_cast<std::size_t>(look.choices.front().begin) - 1);
+            }
+            if (!ok) std::fprintf(stderr, "[gensoband] menu selftest look case %s band=\"%s\"\n", lc.name, look.text_utf8.c_str());
+            check(ok, "Genso Look band keeps the name of what is looked at");
+            if (ok) ++look_ok;
+        }
+        std::fprintf(stderr, "[gensoband] menu selftest: look band name %d/3 ok\n", look_ok);
+    }
+    {
+        GameFrame frame;
+        frame.menu_open = true;
+        frame.menu_core_cursor = MenuChoice{-1, 0, 0, 0, 0, 0};
+        add_line(frame, 0, "Choose power (ESC to cancel)");
+        add_line(frame, 2, "          a) First");
+        add_line(frame, 3, "          b) Second");
+        add_line(frame, 4, "          c) Third");
+        check(collect_strict_unnamed_letter_list(frame), "unnamed vertical list recognized");
+        check(has_key(frame, 'a') && has_key(frame, 'b') && has_key(frame, 'c'),
+            "unnamed vertical list choices");
+    }
+    {
+        GameFrame frame;
+        frame.menu_open = true;
+        add_line(frame, 0, "Select information");
+        frame.menu_term_curs_row = 0;
+        add_line(frame, 2, std::string(16, ' ') + "a/u/U) race powers");
+        add_line(frame, 3, std::string(16, ' ') + "b/m/M) magic");
+        add_line(frame, 4, std::string(16, ' ') + "c/j/J) class powers");
+        check(collect_named_menu_choices(frame) > 0, "browse selector recognized");
+        for (const int key : {'a','u','U','b','m','M','c','j','J'})
+            check(has_key(frame, key), "browse selector aliases");
+    }
+    {
+        //! F-gensoband-09：賭け試合の建物の最初の画面は、主の名が出ていても一覧ではなく建物として扱う。
+        const auto melee = std::find_if(std::begin(kNamedMenus), std::end(kNamedMenus),
+            [](const NamedMenuSpec &spec) { return std::string(spec.tag) == "melee_arena"; });
+        check(melee != std::end(kNamedMenus), "melee arena spec exists");
+        if (melee != std::end(kNamedMenus)) {
+            const std::string master = utf8_of(melee->signature, melee->signature_len);
+            const auto bldg_lines = [&](GameFrame &frame) {
+                frame.menu_open = true;
+                add_line(frame, 2, master);
+                add_line(frame, 5, std::string(reinterpret_cast<const char *>(u8"手持ちのお金:   1000")));
+                add_line(frame, 21, std::string(reinterpret_cast<const char *>(u8"g) 話しかける")));
+                add_line(frame, 23, std::string(reinterpret_cast<const char *>(u8"ESC) 建物を出る")));
+            };
+            GameFrame first;
+            bldg_lines(first);
+            first.menu_term_curs_row = 3;
+            check(collect_named_menu_choices(first) == 0, "melee arena first screen is not a named list");
+            check(fill_store_menu_choices(first) && has_key(first, 'g'), "melee arena first screen offers g");
+
+            GameFrame list;
+            bldg_lines(list);
+            add_line(list, 6, std::string(reinterpret_cast<const char *>(u8"[a](x  3.83) リリーホワイト")));
+            add_line(list, 7, std::string(reinterpret_cast<const char *>(u8"[b](x  1.20) 藍")));
+            add_line(list, 0, std::string(reinterpret_cast<const char *>(u8"どれに賭ける?")));
+            list.menu_term_curs_row = static_cast<int>(list.menu_term_lines.size()) - 1;
+            check(collect_named_menu_choices(list) > 0 && has_key(list, 'a') && has_key(list, 'b'),
+                "melee arena list keeps its choices");
+
+            GameFrame descended;
+            bldg_lines(descended);
+            add_line(descended, 6, std::string(reinterpret_cast<const char *>(u8"[a](x  3.83) リリーホワイト")));
+            descended.menu_term_curs_row = 4; // 札の行（行 6）にカーソルが居る＝行 0 の一覧の待ちではない（降りている）
+            check(collect_named_menu_choices(descended) < 0, "melee arena descended stays blocked");
+            GameFrame typing;
+            bldg_lines(typing);
+            add_line(typing, 6, std::string(reinterpret_cast<const char *>(u8"[a](x  3.83) リリーホワイト")));
+            typing.text_input_active = true;
+            check(collect_named_menu_choices(typing) < 0, "melee arena quantity input keeps [b] out of choices");
+        }
+    }
+    {
+        //! 修-24：英語層の目印（店・建物・誕生の見出し・名指しの画面）。日本語のときは英語の目印を見ないことも確かめる。
+        const auto english_store_lines = [&](GameFrame &frame) {
+            frame.menu_open = true;
+            add_line(frame, 6, "a) Rations of Food");
+            add_line(frame, 20, "Command:");
+            add_line(frame, 21, "p) Purchase an item   s) Sell an item");
+            add_line(frame, 22, "ESC) Exit building");
+        };
+        GameFrame ja_screen;
+        english_store_lines(ja_screen);
+        check(!g_menu_english_for_test, "english marker flag starts off");
+        int command_line = -1;
+        check(classify_menu_screen(ja_screen, command_line) == MenuScreen::None,
+            "english store text is not a store while the japanese layer is on");
+
+        g_menu_english_for_test = true;
+        GameFrame store;
+        english_store_lines(store);
+        check(classify_menu_screen(store, command_line) == MenuScreen::Store && command_line == 1,
+            "english store screen is a store");
+        check(fill_store_menu_choices(store) && has_key(store, 'p') && has_key(store, 's'),
+            "english store screen offers its commands");
+
+        GameFrame building;
+        building.menu_open = true;
+        add_line(building, 5, "Gold Remaining: 1000");
+        add_line(building, 21, "g) Talk");
+        add_line(building, 23, "ESC) Exit building");
+        check(classify_menu_screen(building, command_line) == MenuScreen::Building, "english building screen is a building");
+        check(fill_store_menu_choices(building) && has_key(building, 'g'), "english building screen offers g");
+
+        //! 英語の別の画面（コマンド行だけ・ESC の行だけ）は店と見なさない。
+        GameFrame only_command;
+        only_command.menu_open = true;
+        add_line(only_command, 20, "Command: Load a user pref file");
+        check(classify_menu_screen(only_command, command_line) == MenuScreen::None, "english command line alone is not a store");
+        GameFrame only_esc;
+        only_esc.menu_open = true;
+        add_line(only_esc, 22, "ESC) Exit menu");
+        check(classify_menu_screen(only_esc, command_line) == MenuScreen::None, "english ESC line alone is not a store");
+
+        //! 誕生の見出し（難易度・出自・作品）。黄色の `a)` の枠がコアのカーソルになる。
+        for (const char *heading : { "Choose the difficulty:", "You are...", "Choose the work you come from. (*: random)" }) {
+            GameFrame birth;
+            birth.pre_game_menu = true;
+            add_line(birth, 3, heading);
+            add_line(birth, 5, "a)EASY");
+            birth.menu_term_lines.back().color_spans.push_back(TermColorSpan{ 0, 6, 11 });
+            check(fill_birth_selection_cursor(birth) && birth.menu_core_cursor.line_index >= 0, heading);
+        }
+        GameFrame birth_other;
+        birth_other.pre_game_menu = true;
+        add_line(birth_other, 3, "Enter your name");
+        add_line(birth_other, 5, "a)EASY");
+        birth_other.menu_term_lines.back().color_spans.push_back(TermColorSpan{ 0, 6, 11 });
+        check(!fill_birth_selection_cursor(birth_other), "unrelated english text is not a birth heading");
+
+        //! 英語の名指しの画面（形は日本語の同名の項目と同じ）。
+        for (const NamedMenuSpec &spec : kNamedMenus) {
+            const std::string tag(spec.tag);
+            if (tag.size() < 3 || tag.compare(tag.size() - 3, 3, "_en") != 0 || tag == "stat_raise_en" || tag == "melee_arena_en") continue;
+            GameFrame named;
+            named.menu_open = true;
+            const int sig_row = spec.signature_row >= 0 ? spec.signature_row : spec.prompt_row;
+            add_line(named, sig_row, utf8_of(spec.signature, spec.signature_len));
+            const std::size_t sig_index = named.menu_term_lines.size() - 1;
+            add_line(named, spec.row_min, std::string(static_cast<std::size_t>((std::max)(0, spec.column_min)), ' ') + "a) entry");
+            named.menu_term_curs_row = static_cast<int>(sig_index);
+            check(collect_named_menu_choices(named) > 0 && has_key(named, 'a'), tag.c_str());
+        }
+        {
+            GameFrame arena;
+            arena.menu_open = true;
+            add_line(arena, 2, "Freckled Kappa Girl");
+            add_line(arena, 6, "[a](x  3.83) Lily White");
+            add_line(arena, 0, "Who do you bet on?");
+            arena.menu_term_curs_row = static_cast<int>(arena.menu_term_lines.size()) - 1;
+            check(collect_named_menu_choices(arena) > 0 && has_key(arena, 'a'), "english melee arena list");
+            GameFrame arena_first;
+            arena_first.menu_open = true;
+            add_line(arena_first, 2, "Freckled Kappa Girl");
+            add_line(arena_first, 5, "Gold Remaining: 1000");
+            add_line(arena_first, 21, "g) Talk");
+            add_line(arena_first, 23, "ESC) Exit building");
+            arena_first.menu_term_curs_row = 3;
+            check(collect_named_menu_choices(arena_first) == 0, "english melee arena first screen is not a named list");
+            check(fill_store_menu_choices(arena_first) && has_key(arena_first, 'g'), "english melee arena first screen offers g");
+        }
+        g_menu_english_for_test = false;
+    }
+    const auto named_aux = [&](const char *tag, int wanted_key) {
+        const auto it = std::find_if(std::begin(kNamedMenus), std::end(kNamedMenus),
+            [tag](const NamedMenuSpec &spec) { return std::string(spec.tag) == tag; });
+        check(it != std::end(kNamedMenus), "named auxiliary spec exists");
+        if (it == std::end(kNamedMenus)) return;
+        GameFrame frame;
+        frame.menu_open = true;
+        add_line(frame, it->signature_row, utf8_of(it->signature, it->signature_len));
+        const int prompt_row = it->prompt_row;
+        add_line(frame, prompt_row, std::string(static_cast<std::size_t>((std::max)(0, it->column_min)), ' ') + "a) entry");
+        frame.menu_term_curs_row = static_cast<int>(frame.menu_term_lines.size()) - 1;
+        check(collect_named_menu_choices(frame) > 0, tag);
+        check(has_key(frame, wanted_key), tag);
+    };
+    named_aux("marisa_magic_carry", 'R');
+    named_aux("soldier_bullet_use", '?');
+    named_aux("soldier_bullet_info", '?');
+
+    return failed;
 }
 
 } // namespace gb

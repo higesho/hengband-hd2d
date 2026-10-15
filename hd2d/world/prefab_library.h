@@ -123,6 +123,15 @@ struct LibraryEntry {
     int cover_x1{ 0 };
     int cover_y0{ 0 };
     int cover_y1{ 0 };
+    /*!
+     * 同じ広がりをマスへ丸めずに持つ（マス単位の小数。終端は含まない）。
+     * 細い飾り（柱）が隣のマスの端にかかっただけで、そのマス全体を「視線を遮る」に
+     * しないために使う（2026-09-23 気づいたこと「キャラに被るものが無いのに柱が透過する」）。
+     */
+    float cover_fx0{ 0.f };
+    float cover_fx1{ 0.f };
+    float cover_fy0{ 0.f };
+    float cover_fy1{ 0.f };
     /*! @} */
     bool has_motion{ false }; //!< 剛体の動きを持つか（行列が要るか）
     bool is_ground{ false }; //!< 天面が z<=0.05（カットアウェイも沈み込みも掛けない）

@@ -57,6 +57,8 @@ static int fc_game_armed = 0;
 static int fc_game_kind = 0;
 /*! `play_game()` に入ったか。`main-win.c` の `game_in_progress` に当たる。 */
 static int fc_game_in_progress = 0;
+/*! 誕生の最初の画面で取消のキーを積んだか（`fc_birth_cancel_mark`）。真のまま `quit(NULL)` を踏んだら取消として扱う。 */
+static int fc_birth_cancel_pending = 0;
 /*! 強制保存の再入よけ。セーブの途中で 2 度目を走らせない。 */
 static int fc_shutting_down = 0;
 
@@ -90,6 +92,21 @@ static void fc_plog_aux(cptr str)
  */
 static void fc_quit_aux(cptr str)
 {
+    if (fc_game_armed && fc_birth_cancel_pending && !character_generated && !(str && str[0])) {
+        /*
+         * 誕生の最初の画面で取消された（修-61・判-2：タイトルへ戻る）。原作の `player_birth()` は
+         * `py_birth()` が `UI_CANCEL` を返すと `quit(NULL)` を呼ぶ。`py_birth()` は自分の後始末
+         * （`Term_load()`・`doc_free()`）を済ませて返っているので、ここでは進行の段を抜けるだけでよい。
+         */
+        fprintf(stderr, "[frox] birth cancelled at the first screen; back to the title\n");
+        fflush(stderr);
+
+        fc_birth_cancel_pending = 0;
+        fc_game_armed = 0;
+        fc_game_kind = FC_BIRTH_CANCEL;
+        longjmp(fc_game_buf, 1);
+    }
+
     if (fc_game_armed) {
         /*
          * 遊び終えた（`play_game()` の末尾 → `close_game()` → `quit(NULL)`、
@@ -210,16 +227,17 @@ static int fc_sibling_dir(const char *lib_dir, const char *name, char *out, size
 }
 
 /*!
- * @brief 日本語なら `edit` / `data` / `help` を日本語のものへ向ける（設計 §2・§3.3）。
+ * @brief 日本語なら `edit` / `data` / `file` / `help` を日本語のものへ向ける（設計 §2・§3.3）。
  *
  * @details **`init_file_paths()` の後・`fc_validate_lib_dirs()` の前**に呼ぶ。
- * 差し替えるのは 3 つだけで、`file` `pref` `save` `apex` `bone` `user` は英語のまま
- * ——訳すのは実体データ（`edit`）とヘルプだけだからである。
+ * 差し替えるのは 4 つで、`pref` `save` `apex` `bone` `user` は英語のまま。
+ * `file` は英語ツリーの完全な写しのうち `rumors.txt` だけを日本語にした生成物である。
  *
  * | 元 | 日本語 | 無いとき |
  * |---|---|---|
  * | `<lib>/edit` | `<lib-ja>/edit` | **英語のまま**（制約 4）。`data` も動かさない |
  * | `<lib>/data` | `<lib>/data-ja` | `edit` を差し替えたときだけ。無ければ作られる |
+ * | `<lib>/file` | `<lib-ja>/file` | **英語のまま**。完全な写しが無い限り差し替えない |
  * | `<lib>/help` | `<lib-ja>/help` | **英語のまま**。空の入れ物を作らない |
  *
  * `edit` を差し替えたのに `data` を据え置くと、**英語で作った `*.raw` がそのまま
@@ -263,6 +281,15 @@ static int fc_apply_lang_dirs(const char *lib_dir, const char *lang)
         fprintf(stderr, "[frox] japanese edit = %s\n", ANGBAND_DIR_EDIT);
     } else {
         fprintf(stderr, "[frox] %s not built yet; entity names stay english\n", buf);
+    }
+
+    strcpy(buf, base);
+    strcat(buf, PATH_SEP);
+    strcat(buf, "file");
+    if (fc_dir_exists(buf)) {
+        z_string_free(ANGBAND_DIR_FILE);
+        ANGBAND_DIR_FILE = z_string_make(buf);
+        fprintf(stderr, "[frox] japanese file data = %s\n", ANGBAND_DIR_FILE);
     }
 
     strcpy(buf, base);
@@ -327,6 +354,36 @@ static int fc_validate_lib_dirs(void)
 
     return 1;
 }
+
+#if defined(HENGBAND_DESKTOP_LINUX)
+// The Linux launcher supplies a separate data root for the current user.
+// Initialize the original Unix identity fields before any permission check.
+static void fc_linux_user_paths(const char *root)
+{
+    char path[1024];
+    player_uid = getuid();
+    player_euid = geteuid();
+    player_egid = getegid();
+    snprintf(path, sizeof(path), "%s%suser", root, suffix(root, "/") ? "" : "/");
+    z_string_free(ANGBAND_DIR_USER);
+    ANGBAND_DIR_USER = z_string_make(path);
+    snprintf(path, sizeof(path), "%s%ssave", root, suffix(root, "/") ? "" : "/");
+    z_string_free(ANGBAND_DIR_SAVE);
+    ANGBAND_DIR_SAVE = z_string_make(path);
+    snprintf(path, sizeof(path), "%s%sapex", root, suffix(root, "/") ? "" : "/");
+    z_string_free(ANGBAND_DIR_APEX);
+    ANGBAND_DIR_APEX = z_string_make(path);
+    snprintf(path, sizeof(path), "%s%sbone", root, suffix(root, "/") ? "" : "/");
+    z_string_free(ANGBAND_DIR_BONE);
+    ANGBAND_DIR_BONE = z_string_make(path);
+    snprintf(path, sizeof(path), "%s%sdata", root, suffix(root, "/") ? "" : "/");
+    z_string_free(ANGBAND_DIR_DATA);
+    ANGBAND_DIR_DATA = z_string_make(path);
+    snprintf(path, sizeof(path), "%s%sscript", root, suffix(root, "/") ? "" : "/");
+    z_string_free(ANGBAND_DIR_SCRIPT);
+    ANGBAND_DIR_SCRIPT = z_string_make(path);
+}
+#endif
 
 int fc_bootstrap(const char *lib_dir, const char *lang)
 {
@@ -404,6 +461,9 @@ int fc_bootstrap(const char *lib_dir, const char *lang)
      * **buffer は書き換えられる。** `init_file_paths()` は tail に部分名を継ぎ足す。
      */
     init_file_paths(path, path, path);
+#if defined(HENGBAND_DESKTOP_LINUX)
+    fc_linux_user_paths(lib_dir);
+#endif
 
     /* 日本語なら edit / data / help を差し替える（設計 §3.3）。**作るのは下の validate**。 */
     fc_apply_lang_dirs(lib_dir, lang);
@@ -492,8 +552,13 @@ static void fc_resume_write(void)
 {
     char path[1024];
     FILE *fp;
+    const char *slot = savefile_base;
+#if defined(HENGBAND_DESKTOP_LINUX)
+    const char *separator = strrchr(savefile, '/');
+    slot = separator ? separator + 1 : savefile;
+#endif
 
-    if (!savefile_base[0]) {
+    if (!slot[0]) {
         return;
     }
     if (!fc_resume_path(path, sizeof(path))) {
@@ -505,9 +570,9 @@ static void fc_resume_write(void)
         fflush(stderr);
         return;
     }
-    fprintf(fp, "%s\n", savefile_base);
+    fprintf(fp, "%s\n", slot);
     fclose(fp);
-    fprintf(stderr, "[frox] resume mark -> %s\n", savefile_base);
+    fprintf(stderr, "[frox] resume mark -> %s\n", slot);
     fflush(stderr);
 }
 
@@ -545,7 +610,11 @@ int fc_resume_take(char *name, size_t max)
         return 0;
     }
     /* 道の区切りと `.` は受けない（枠の名はディレクトリを含まず、一覧に出る名である）。 */
+#if defined(HENGBAND_DESKTOP_LINUX)
+    if (strpbrk(name, "\\/:") != 0 || !strcmp(name,".") || !strcmp(name,"..")) {
+#else
     if (strpbrk(name, "\\/:.") != 0) {
+#endif
         fprintf(stderr, "[frox] the resume mark is not a save slot: %s\n", name);
         fflush(stderr);
         return 0;
@@ -570,6 +639,7 @@ int fc_run_game(int new_game)
 {
     fc_game_kind = 0;
     fc_shutting_down = 0;
+    fc_birth_cancel_pending = 0;
 
     if (setjmp(fc_game_buf) != 0) {
         /*
@@ -578,6 +648,19 @@ int fc_run_game(int new_game)
          */
         fc_game_armed = 0;
         fc_game_in_progress = 0;
+        fc_birth_cancel_pending = 0;
+        if (fc_game_kind == FC_BIRTH_CANCEL) {
+            /*
+             * 誕生の途中で抜けたので、次の `play_game()` に持ち越すと困る旗を戻す。
+             * `play_game()` は先頭で `character_icky = TRUE` を立てて入り、`player_birth()` は
+             * `birth_hack = TRUE` を立てたまま `quit()` を踏む（`birth_hack` が残ると、既存のセーブを
+             * 読んだあとも種族・性格の計算が「誕生中」の分岐に入る）。
+             */
+            character_icky = FALSE;
+            character_xtra = FALSE;
+            birth_hack = FALSE;
+            creating_savefile = FALSE;
+        }
         return fc_game_kind ? fc_game_kind : FC_OK;
     }
 
@@ -594,6 +677,11 @@ int fc_run_game(int new_game)
     fc_game_armed = 0;
     fc_game_in_progress = 0;
     return FC_OK;
+}
+
+void fc_birth_cancel_mark(void)
+{
+    fc_birth_cancel_pending = 1;
 }
 
 void fc_shutdown_and_quit(void)

@@ -1,0 +1,258 @@
+# class.ja.tsv — class.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+Warrior/?|title	d61745abe3	新参兵
+Warrior/?|title#2	e443046c7d	兵士
+Warrior/?|title#3	b39501ca19	剣士
+Warrior/?|title#4	3313709bbf	荒武者
+Warrior/?|title#5	4146a98801	古参兵
+Warrior/?|title#6	4547b53f6d	仕手
+Warrior/?|title#7	4eb62798a3	突撃兵
+Warrior/?|title#8	7881bf71d2	闘士
+Warrior/?|title#9	17f5d4f0fb	英雄
+Warrior/?|title#10	46b4a42ed2	君主
+Mage/?|title	16ca44702a	見習い
+Mage/?|title#2	e22cccd20b	徒弟
+Mage/?|title#3	7958c81db9	奇術師
+Mage/?|title#4	aba6b498bf	幻術師
+Mage/?|title#5	29fcb20c3a	呪術師
+Mage/?|title#6	81800bd2ab	召霊師
+Mage/?|title#7	b6322c49b8	召魔師
+Mage/?|title#8	063f342393	魔術師
+Mage/?|title#9	d638731822	魔道師
+Mage/?|title#10	36acf75e6a	大魔道師
+Mage/Magic Missile|desc	9a665122af	必ず目標に当たり、耐性で防げないダメージを与える魔法の矢を放つ。ときどき代わりにビームが出て、通り道のモンスターすべてを傷つける。ビームになる確率はキャラクターのレベルとともに上がる。
+Mage/Light Room|desc	b2845630ee	プレイヤーから2マス以内のすべてのマスを明るくし、効果範囲の光に弱いモンスターすべてを傷つける。部屋の中にいれば、部屋全体も明るくなる。
+Mage/Find Traps, Doors & Stairs|desc	1fbbfb7054	すぐ近くの範囲のトラップ、ドア、階段をすべて感知する。
+Mage/Phase Door|desc	93b154fde3	最大10マス離れた所へランダムにテレポートする。
+Mage/Electric Arc|desc	a649b231bd	放電を起こし、通り道のモンスターを傷つけ、弱いアイテムを壊す。効果の長さはプレイヤーのレベルとともに伸びる。
+Mage/Detect Monsters|desc	4c5262d34f	すぐ近くの範囲の透明でないモンスターをすべて、1ターンの間だけ感知する。
+Mage/Fire Ball|desc	b7d844b09a	半径2の火炎のボールを放つ。
+Mage/Recharging|desc	05d175a779	ひとまとまりの魔法棒か杖に充填を足す。成功率と増える充填の数はあなたのレベルとともに増え、魔法棒や杖のレベルと充填の数とともに減る。充填に失敗すると、ひとまとまりのうち魔法棒か杖が1本壊れる。
+Mage/Identify Rune|desc	b20f2eda9a	アイテムの未知のルーンを1つ明らかにする。
+Mage/Treasure Detection|desc	13e54eb878	すぐ近くの範囲の金貨を感知し、アイテムの気配を感じ取る。
+Mage/Frost Bolt|desc	40d5812087	必ず目標に当たる冷気のボルトを放つ。ときどき代わりにビームが出て、通り道のモンスターすべてを傷つける。ビームになる確率はキャラクターのレベルとともに上がる。
+Mage/Reveal Monsters|desc	ef72fc1d60	すぐ近くの範囲のモンスターをすべて、1ターンの間だけ感知する。
+Mage/Acid Spray|desc	effd7ee05d	60度の円錐状に酸を噴きつけ、10マス先までのモンスターすべてに当てる。
+Mage/Disable Traps, Destroy Doors|desc	fbad9cca15	あなたから半径1マス以内のトラップを解除し、ドアを壊す。
+Mage/Teleport Self|desc	add737fa3c	今いる階の中でランダムにテレポートする。
+Mage/Teleport Other|desc	a61d686924	通り道の最初のモンスターをテレポートさせて遠ざけるボルトを放つ。テレポートの距離はプレイヤーのレベルとともに伸びる。
+Mage/Resistance|desc	4f6a58d499	20+1d20ターンの間、酸、冷気、火炎、電撃への耐性を得る。
+Mage/Tap Magical Energy|desc	5d58dda2c5	魔法棒か杖の力をマナに変える。吸い出すと、プレイヤーは少しの間朦朧とする。
+Mage/Mana Channel|desc	381d088cf2	5+1d5ターンの間、呪文を唱える速さを33%上げる。
+Mage/Door Creation|desc	d359e67078	あなたのすぐ隣の何も無い床すべてにドアを作る。ドアは閉じているが、鍵はかかっていない。
+Mage/Mana Bolt|desc	9a665122af	必ず目標に当たり、耐性で防げないダメージを与える魔法の矢を放つ。ときどき代わりにビームが出て、通り道のモンスターすべてを傷つける。ビームになる確率はキャラクターのレベルとともに上がる。
+Mage/Teleport Level|desc	52a3aeb24c	1階上か1階下（どちらかはランダム）へテレポートする。「強制的に下る」オプションが立っていると、この呪文は効かないことがある。
+Mage/Detection|desc	4e361d34e1	すぐ近くの範囲のトラップ、ドア、階段、財宝、アイテム、モンスターをすべて感知する。
+Mage/Dimension Door|desc	5f5740a876	選んだマス（かその近く）へテレポートする。
+Mage/Thrust Away|desc	efd75136ab	射程の短いフォースのビームを放つ。
+Mage/Shock Wave|desc	e551383c9e	半径2の轟音のボールを放つ。轟音のダメージを与えるほか、効果範囲のモンスターそれぞれを朦朧とさせることがある。
+Mage/Explosion|desc	dccf009c67	半径2の破片のボールを放ち、効果範囲のあらゆる物を吹き飛ばす。
+Mage/Banishment|desc	60f0c843fd	選んだ記号で表されるモンスターを階からすべて消し去る。ユニーク・モンスターには効かない。消したモンスター1体ごとに1d4のダメージを受ける。
+Mage/Mass Banishment|desc	e94e937260	あなたから20マス以内のモンスターをすべて消し去る。ユニーク・モンスターには効かない。消したモンスター1体ごとに1d3のダメージを受ける。
+Mage/Mana Storm|desc	743a19da30	半径3のマナのボールを放ち、効果範囲のモンスターそれぞれに耐性で防げないダメージを与える。
+Druid/?|title	ae36a27aaa	さすらい人
+Druid/?|title#2	bea3fa8603	調教師
+Druid/?|title#3	dea0290b29	育む者
+Druid/?|title#4	fe0cbb56f8	庭師
+Druid/?|title#5	4d0689fb33	森の番人
+Druid/?|title#6	817b79b0af	創造者
+Druid/?|title#7	d455bbfc0d	大地の守護者
+Druid/?|title#8	f0767a083c	風乗り
+Druid/?|title#9	7d17024aed	嵐を操る者
+Druid/?|title#10	84aa5ba257	大神秘家
+Druid/Detect Life|desc	6bb8c23012	すぐ近くの範囲の生きたモンスターをすべて、1ターンの間だけ感知する。
+Druid/Fox Form|desc	3adbf1cf08	すばやく忍び足のうまいキツネの姿に変わる。姿を変えている間はアイテムを使えない。
+Druid/Remove Hunger|desc	ab17bb1c33	魔法で、ほどよく満腹にする（満腹しすぎにはならない）。
+Druid/Stinking Cloud|desc	7a271ade26	半径2の毒のボールを放つ。
+Druid/Confuse Monster|desc	86e905a83c	モンスター1体を混乱させる。動物にはよりよく効く。
+Druid/Slow Monster|desc	e77956ad78	モンスターの動きを遅くする。動物にはよりよく効く。
+Druid/Cure Poison|desc	7d1cdf24c2	毒を消す。
+Druid/Resist Poison|desc	a33b213e5b	20+1d20ターンの間、毒への耐性を得る。
+Druid/Turn Stone to Mud|desc	a98fc76220	最初に当たった壁の一区画を壊すビームを放つ（永久壁は壊せない）。ビームに巻き込まれた、岩石溶解に弱いモンスターはそれぞれ20+1d30のダメージを受ける。
+Druid/Sense Surroundings|desc	631d0cf0cd	近くの地形を地図にする。
+Druid/Lightning Strike|desc	a88e9317f8	目標を上から稲妻で打ち、続いて雷鳴がとどろく。方向を狙ったとき、または目標が視界の中の通り抜けられるマスでないときは、プレイヤーが目標になる。
+Druid/Earth Rising|desc	f4479fd1ad	大地から一直線に破片を噴き上げ、アイテムとモンスターを打つ。線の長さはプレイヤーのレベルとともに伸びる。
+Druid/Trance|desc	11a9409c37	隣にいる耐性の無いモンスターすべてを、レベルに応じたターン数だけ金縛りにする。動物はより長く夢うつつになる。
+Druid/Mass Sleep|desc	18c56fed61	視界の中のモンスターそれぞれを眠らせようとする。眠りに耐性のあるモンスターには効かない。
+Druid/Become Pukel-man|desc	a3ff3207db	ドルーエダインの像の姿になる。動きは遅いが、傷つきにくい。
+Druid/Eagle's Flight|desc	0539459ae5	マンウェの大鷲の1羽の姿になる。
+Druid/Bear Form|desc	b1cbf53e1e	山の大きなクマの姿になり、強大な前足で敵をなぎ払えるようになる。
+Druid/Tremor|desc	49a3668481	狙った所に半径4マスの地震を起こす。地震は効果範囲のいくつかのマスで、プレイヤーを傷つけ、モンスターにダメージを与え、アイテムを壊すことがある。アーティファクトはこの呪文では壊れない。町で使っても効かない。
+Druid/Haste Self|desc	06fb72a3d3	レベルに応じた時間、あなたを加速する（スピード+10）。
+Druid/Revitalize|desc	2acfcfadc5	すべての能力値と経験値を最大まで回復する。
+Druid/Rapid Regeneration|desc	164f78a99e	続く5+1d3ターンの間（または空腹になるまで）、消化を速めてヒットポイントの回復を増やす。
+Druid/Herbal Curing|desc	8d8bf2f294	切り傷、毒、朦朧、黒の息吹をすべて治し、十分に腹を満たす。
+Druid/Meteor Swarm|desc	cf4bd3901c	3 個か4個の隕石の群れを放つ。隕石は壁かモンスターに当たるか、目標の場所に着くまで飛び続ける。隕石は半径1のボールとして爆発し、効果範囲のモンスターそれぞれに耐性で防げないダメージを与える。目標の場所への道をふさいでいたモンスターがこれで死ぬと、次の隕石は先へ進んで別の目標を探すことがある。
+Druid/Rift|desc	6c29d72793	通り道のモンスターそれぞれを傷つけ、テレポートさせて遠ざけることもある重力のビームを放つ。
+Druid/Ice Storm|desc	ccd0fced2e	視界の中のモンスターすべてを、上から降る氷の板で打つ。
+Druid/Volcanic Eruption|desc	e2cfc364cf	プレイヤーのまわりに半径5の火炎のボールを起こし、続いて半径5の地震を起こす。
+Druid/River of Lightning|desc	756b41120e	プレイヤーから長く細い円錐状にプラズマを噴き出す。
+Priest/?|title	a0d6d714df	信者
+Priest/?|title#2	662068db9a	侍僧
+Priest/?|title#3	a35f7511fa	帰依者
+Priest/?|title#4	e544545554	熟練僧
+Priest/?|title#5	abe161db9b	伝道者
+Priest/?|title#6	b45c5249d5	牧師
+Priest/?|title#7	71cc6a267b	長老
+Priest/?|title#8	d5c01c5480	預言者
+Priest/?|title#9	c773f3d0a8	総主教
+Priest/?|title#10	fa708e98c9	聖人
+Priest/Call Light|desc	09e796a9ba	レベルに応じた範囲のすべてのマスを明るくし、効果範囲の光に弱いモンスターすべてを傷つける。部屋の中にいれば、部屋全体も明るくなる。
+Priest/Detect Evil|desc	4a663255b6	すぐ近くの範囲の邪悪なモンスターをすべて、1ターンの間だけ感知する。
+Priest/Minor Healing|desc	51b24c2ded	レベルに応じた量か割合のヒットポイントを回復し、切り傷と朦朧を20ぶん治す。
+Priest/Bless|desc	c82b868ddc	あなたを祝福し、レベルに応じたターン数の間、ACに+5、命中に+10の修正を与える。
+Priest/Sense Invisible|desc	bb6fde1a9c	24+1d24ターンの間、透明なモンスターが見えるようになる。
+Priest/Heroism|desc	ee4318deb9	10のダメージを治し、恐怖を取り除く。キャラクターのレベルが20以上なら、レベルに応じた時間、ヒーロー気分（恐怖への耐性と命中+12の修正）にもなる。
+Priest/Orb of Draining|desc	5c864038c8	半径2か半径3のボールを放ち、効果範囲のモンスターそれぞれに耐性で防げないダメージを与える。邪悪なモンスターは2倍のダメージを受ける。広いほうの効果範囲にはキャラクターのレベル30で届く。
+Priest/Spear of Light|desc	b8f8e0f58a	通り道のマスそれぞれを明るくし、光に弱いモンスターそれぞれを傷つけるビームを放つ。
+Priest/Dispel Undead|desc	4421e6fdcf	視界の中のアンデッドのモンスターそれぞれに、耐性で防げないダメージを与える。
+Priest/Dispel Evil|desc	8c3958bebd	視界の中の邪悪なモンスターそれぞれに、耐性で防げないダメージを与える。
+Priest/Protection from Evil|desc	fcd803b510	レベルに応じた時間、邪悪から身を守る。邪悪なモンスターの近接攻撃はどれも、そのモンスターのレベルがあなたのキャラクターのレベルより高くない限り、はね返されることがある。
+Priest/Remove Curse|desc	fa2c973430	アイテムから呪いを1つ取り除こうとする。キャラクターのレベルが高いほどよく効く。
+Priest/Portal|desc	3dca6782c2	短い距離をランダムにテレポートする。
+Priest/Remembrance|desc	f727e82058	経験値が最大値より下がっていれば、最大まで戻す。
+Priest/Word of Recall|desc	3f1f409d97	ダンジョンから町へ、または町からダンジョンで訪れた最も深い階へテレポートする。帰還の効果はすぐには起こらず、14+1d20ターン遅れる。その間にもう一度帰還の祈りを唱えれば取り消せる。「階段と帰還の使用を制限する」オプションが立っていると、モルゴスが死んでいない限り、この祈りは効かない。
+Priest/Healing|desc	8cfe3164e1	2000のダメージを回復し、朦朧、切り傷、毒、記憶喪失をすべて治す。
+Priest/Restoration|desc	f09ee0a97e	最大値より下がっている能力値をすべて最大まで戻す。
+Priest/Clairvoyance|desc	af3cba8a1b	今いるダンジョンの階全体を明るくし、地図にし、すべてのアイテムの気配を感じ取る。
+Priest/Enchant Weapon|desc	aaa7d42aa6	武器の命中修正とダメージ修正を上げようとする。
+Priest/Enchant Armour|desc	925c200da4	防具のアーマー・クラスの修正を上げようとする。
+Priest/Smite Evil|desc	23e841897b	しばらくの間、近接攻撃が邪悪な生き物に特に効くようになる。
+Priest/Glyph of Warding|desc	0723ca3d86	足もとに守りのルーンを刻む。召喚されたモンスターはルーンの上には現れない。あなたがルーンの上に立っている間に、モンスターがルーンの上へ動こうとしたり近接攻撃しようとしたりすると、先にルーンを破らなければならない。レベルの高いモンスターほどルーンを破りやすい。ルーンは、モンスターが破るか、あなたがその階を離れるまでそこに残る。
+Priest/Demon Bane|desc	3b431181f5	しばらくの間、近接攻撃が悪魔にとても強く効くようになる。
+Priest/Banish Evil|desc	a44a1ddbea	視界の中の邪悪なモンスターそれぞれをテレポートさせて遠ざける。
+Priest/Word of Destruction|desc	058ef59ad4	あなたのまわり半径15マスの円の中をすべて破壊する。効果範囲のモンスター、アイテム、地形は、階段と永久壁を除いてすべて壊れる。盲目か閃光への耐性が無ければ、10+1d10ターンの間盲目にもなる。町で唱えても効かない。
+Priest/Holy Word|desc	d37587c680	視界の中の邪悪なモンスターそれぞれに耐性で防げないダメージを与え、1000のダメージを回復し、朦朧をすべて治し、切り傷をすべて癒やし、毒を消し、恐怖を取り除く。
+Priest/Spear of Oromë|desc	e434e4e0fa	邪悪な生き物に余分のダメージを与える、聖なる魔法のビームを放つ。
+Priest/Light of Manwë|desc	52b229b3b2	半径4の強い閃光のボールを放ち、続いて範囲全体を光で満たして、光に弱い生き物それぞれに100のダメージを与える。
+Necromancer/?|title	662068db9a	見習い
+Necromancer/?|title#2	7d3261b788	呪い師
+Necromancer/?|title#3	3049170822	闇の学徒
+Necromancer/?|title#4	fd4e819182	入門者
+Necromancer/?|title#5	ccbf4822f9	奴隷使い
+Necromancer/?|title#6	19e9d2245f	召喚師
+Necromancer/?|title#7	a36a5ffa6e	支配者
+Necromancer/?|title#8	79056c7ae5	指揮者
+Necromancer/?|title#9	8cd194c56e	闇の主
+Necromancer/?|title#10	4b53dc034a	夜の王
+Necromancer/Nether Bolt|desc	761b057d1a	地獄の魔法のボルトを放つ。
+Necromancer/Sense Invisible|desc	bb6fde1a9c	24+1d24ターンの間、透明なモンスターが見えるようになる。
+Necromancer/Create Darkness|desc	e79a52a07b	レベルに応じた範囲のすべてのマスを暗くする。部屋の中にいれば、部屋全体も暗くなる。
+Necromancer/Bat Form|desc	31431e4b6a	弱いが感覚のとても鋭いコウモリの姿に変わる。姿を変えている間はアイテムを使えない。
+Necromancer/Read Minds|desc	7a5e02be4b	すぐ近くの範囲の、魂を持つモンスターをすべて感知し、そのまわりの一帯を地図にする。一帯の広さはキャラクターのレベルとともに増す。
+Necromancer/Tap Unlife|desc	a88e8471f6	いちばん近いアンデッドのモンスターを狙ってダメージを与え、プレイヤーのマナを得る。
+Necromancer/Crush|desc	f7f7e93b42	視界の中の、ヒットポイントがプレイヤーのレベルの4倍より少ないモンスターを即座に殺し、プレイヤーも傷つく。ほかのモンスターは傷つかない。
+Necromancer/Sleep Evil|desc	98161a4e09	視界の中の邪悪なモンスターそれぞれを眠らせようとする。混乱に耐性のあるモンスターには効かない。
+Necromancer/Shadow Shift|effect-msg	306a0b93dd	影移し
+Necromancer/Shadow Shift|desc	e237e54469	魂を短い距離だけずらし、引きずられる体が傷つく。
+Necromancer/Disenchant|desc	a6f5390a2b	傷を負わせ、呪文を使うモンスターが呪文を唱えるのに失敗しやすくなるボルトを放つ。
+Necromancer/Frighten|desc	80b7453f97	レベルに応じた時間、モンスター1体を怖がらせようとする。恐怖に耐性のあるモンスターには効かない。
+Necromancer/Vampire Strike|desc	ef68897180	いちばん近い生きたモンスターのもとへテレポートし、レベルに応じた量のヒットポイントを吸い取って、プレイヤーを回復させ、腹を満たす。
+Necromancer/Dispel Life|desc	768b39ec89	視界の中の生きたモンスターそれぞれに、耐性で防げないダメージを与える。
+Necromancer/Dark Spear|desc	57d14d2300	暗黒のビームを放つ。
+Necromancer/Warg Form|desc	5ef27328ee	ワーグの姿に変わり、ヒットポイントをいくらか引き換えに、一時的に狂戦士の力を得る。
+Necromancer/Banish Spirits|desc	a071d0ce7d	視界の中の、魂を持つモンスターそれぞれをテレポートさせて遠ざける。
+Necromancer/Annihilate|desc	1f742b2ab7	アンデッド、エレメンタル、ゴーレム、ボルテックスのどれでもないモンスター1体に、プレイヤーのレベルの4倍のダメージを与える。
+Necromancer/Grond's Blow|desc	56a60c608e	あなたのまわり半径15マスの円の中をすべて破壊する。効果範囲のモンスター、アイテム、地形は、階段と永久壁を除いてすべて壊れる。盲目か暗黒への耐性が無ければ、10+1d10ターンの間盲目にもなる。町で行っても効かない。
+Necromancer/Unleash Chaos|desc	4cb4d8966a	選んだ方向へ混沌のビーム、弧、ボールのどれかを放ち、範囲のものをすべて起こし、視界の中のものすべてを怖がらせようとする。
+Necromancer/Fume of Mordor|desc	e909c2436d	今いるダンジョンの階全体を暗くし、地図にし、すべてのアイテムを感知する。
+Necromancer/Storm of Darkness|desc	1ef494b69d	半径4の暗黒のボールを呼び起こす。
+Necromancer/Power Sacrifice|effect-msg	51c1ca9bfe	自己犠牲
+Necromancer/Power Sacrifice|desc	47c6b5dedc	ヒットポイント50をマナ50に換える。
+Necromancer/Zone of Unmagic|desc	da02a8b2c7	半径4以内のプレイヤーとモンスターに及ぶ、劣化の領域を作り出す。
+Necromancer/Vampire Form|desc	e835743455	今のヒットポイントの半分と引き換えに吸血鬼の姿になり、いちばん近い生きたモンスターのもとへテレポートして、レベルに応じた量のヒットポイントを吸い取り、あなたを回復させ、腹を満たす。変身した直後のしばらくの間は、噛みつき攻撃で生きたモンスターからヒットポイントを奪える。
+Necromancer/Curse|effect-msg	b206d96f68	呪いをかけること
+Necromancer/Curse|desc	45b1fa099c	ヒットポイント100と引き換えに、モンスター1体に直接ダメージを与える。モンスターがすでに傷ついているほど、ダメージは大きい。
+Necromancer/Command|desc	62112074c5	モンスターを操り、自分の代わりにそれを動かせる。できる行動は、移動、その場にとどまる、落とす（'d'）、魔法（'m'）、解き放つ（'r'）だ。
+Paladin/?|title	55501c19d6	勇士
+Paladin/?|title#2	940966d9d9	衛士
+Paladin/?|title#3	047c146c1d	保護者
+Paladin/?|title#4	35f2660845	防衛者
+Paladin/?|title#5	54383f3e20	護衛者
+Paladin/?|title#6	2352a22b9f	騎士
+Paladin/?|title#7	6809e8745e	重騎士
+Paladin/?|title#8	1645ba4a3d	勲爵士
+Paladin/?|title#9	1ac85b7c33	聖騎士
+Paladin/?|title#10	725fc6d38d	聖騎士団長
+Paladin/Bless|desc	c82b868ddc	あなたを祝福し、レベルに応じたターン数の間、ACに+5、命中に+10の修正を与える。
+Paladin/Detect Evil|desc	4a663255b6	すぐ近くの範囲の邪悪なモンスターをすべて、1ターンの間だけ感知する。
+Paladin/Call Light|desc	09e796a9ba	レベルに応じた範囲のすべてのマスを明るくし、効果範囲の光に弱いモンスターすべてを傷つける。部屋の中にいれば、部屋全体も明るくなる。
+Paladin/Minor Healing|desc	51b24c2ded	レベルに応じた量か割合のヒットポイントを回復し、切り傷と朦朧を20ぶん治す。
+Paladin/Sense Invisible|desc	bb6fde1a9c	24+1d24ターンの間、透明なモンスターが見えるようになる。
+Paladin/Heroism|desc	4c40e9b1fd	10のダメージを治し、恐怖を取り除く。キャラクターのレベルが15以上なら、レベルに応じた時間、ヒーロー気分（恐怖への耐性と命中+12の修正）にもなる。
+Paladin/Protection from Evil|desc	fcd803b510	レベルに応じた時間、邪悪から身を守る。邪悪なモンスターの近接攻撃はどれも、そのモンスターのレベルがあなたのキャラクターのレベルより高くない限り、はね返されることがある。
+Paladin/Remove Curse|desc	fa2c973430	アイテムから呪いを1つ取り除こうとする。キャラクターのレベルが高いほどよく効く。
+Paladin/Word of Recall|desc	3f1f409d97	ダンジョンから町へ、または町からダンジョンで訪れた最も深い階へテレポートする。帰還の効果はすぐには起こらず、14+1d20ターン遅れる。その間にもう一度帰還の祈りを唱えれば取り消せる。「階段と帰還の使用を制限する」オプションが立っていると、モルゴスが死んでいない限り、この祈りは効かない。
+Paladin/Healing|desc	8cfe3164e1	2000のダメージを回復し、朦朧、切り傷、毒、記憶喪失をすべて治す。
+Paladin/Clairvoyance|desc	af3cba8a1b	今いるダンジョンの階全体を明るくし、地図にし、すべてのアイテムの気配を感じ取る。
+Paladin/Smite Evil|desc	23e841897b	しばらくの間、近接攻撃が邪悪な生き物に特に効くようになる。
+Paladin/Demon Bane|desc	3b431181f5	しばらくの間、近接攻撃が悪魔にとても強く効くようになる。
+Paladin/Enchant Weapon|desc	aaa7d42aa6	武器の命中修正とダメージ修正を上げようとする。
+Paladin/Enchant Armour|desc	925c200da4	防具のアーマー・クラスの修正を上げようとする。
+Paladin/Single Combat|desc	513fa6d092	あなたと狙ったモンスターを、勝った者しか出られない石の小部屋に閉じ込める。
+Rogue/?|title	f88a1185a9	浮浪者
+Rogue/?|title#2	43bb3b80f9	すり
+Rogue/?|title#3	01d7aa0164	辻強盗
+Rogue/?|title#4	89ebc07e45	追いはぎ
+Rogue/?|title#5	4383933d0e	夜盗
+Rogue/?|title#6	6efb92eeb4	こそ泥
+Rogue/?|title#7	de27f6769b	ペテン師
+Rogue/?|title#8	bb71deb29d	悪漢
+Rogue/?|title#9	8ac2de7b44	盗人
+Rogue/?|title#10	9bb7d9f9b6	マスター
+Rogue/Detect Monsters|desc	4c5262d34f	すぐ近くの範囲の透明でないモンスターをすべて、1ターンの間だけ感知する。
+Rogue/Phase Door|desc	93b154fde3	最大10マス離れた所へランダムにテレポートする。
+Rogue/Object Detection|desc	64087fe98e	すぐ近くの範囲のアイテムをすべて感知する。
+Rogue/Detect Stairs|desc	f2bd6d770d	広い範囲の階段をすべて感知する。
+Rogue/Recharging|desc	05d175a779	ひとまとまりの魔法棒か杖に充填を足す。成功率と増える充填の数はあなたのレベルとともに増え、魔法棒や杖のレベルと充填の数とともに減る。充填に失敗すると、ひとまとまりのうち魔法棒か杖が1本壊れる。
+Rogue/Reveal Monsters|desc	ef72fc1d60	すぐ近くの範囲のモンスターをすべて、1ターンの間だけ感知する。
+Rogue/Teleport Self|desc	add737fa3c	今いる階の中でランダムにテレポートする。
+Rogue/Hit and Run|desc	3301675f12	モンスターから盗んだあと、短い距離をテレポートする支度をしておく。
+Rogue/Teleport Other|desc	a61d686924	通り道の最初のモンスターをテレポートさせて遠ざけるボルトを放つ。テレポートの距離はプレイヤーのレベルとともに伸びる。
+Rogue/Teleport Level|desc	52a3aeb24c	1階上か1階下（どちらかはランダム）へテレポートする。「強制的に下る」オプションが立っていると、この呪文は効かないことがある。
+Ranger/?|title	ae2e3ae79b	使い走り
+Ranger/?|title#2	b13a895e3e	馳夫
+Ranger/?|title#3	56be36a0f8	斥候
+Ranger/?|title#4	3364ae1875	狩人
+Ranger/?|title#5	c15771fc77	追跡者
+Ranger/?|title#6	bf073fae64	先導者
+Ranger/?|title#7	8b3ee45765	探検家
+Ranger/?|title#8	6ea1166d4f	探険者
+Ranger/?|title#9	6eb9532f38	野伏
+Ranger/?|title#10	f12d5ad3e2	野伏の総領
+Ranger/Remove Hunger|desc	ab17bb1c33	魔法で、ほどよく満腹にする（満腹しすぎにはならない）。
+Ranger/Detect Life|desc	6bb8c23012	すぐ近くの範囲の生きたモンスターをすべて、1ターンの間だけ感知する。
+Ranger/Herbal Curing|desc	24a4bc8b19	切り傷、毒、朦朧、黒の息吹をすべて治す。
+Ranger/Resist Poison|desc	a33b213e5b	20+1d20ターンの間、毒への耐性を得る。
+Ranger/Turn Stone to Mud|desc	a98fc76220	最初に当たった壁の一区画を壊すビームを放つ（永久壁は壊せない）。ビームに巻き込まれた、岩石溶解に弱いモンスターはそれぞれ20+1d30のダメージを受ける。
+Ranger/Sense Surroundings|desc	631d0cf0cd	近くの地形を地図にする。
+Ranger/Cover Tracks|desc	e9685a3921	レベルに応じた時間、モンスターがあなたを追うための匂いを残さないようにする。
+Ranger/Create Arrows|desc	408d1120ee	杖をひとまとまりの矢に変える。矢の質は杖のレベルとプレイヤーのレベルで決まる。
+Ranger/Haste Self|desc	06fb72a3d3	レベルに応じた時間、あなたを加速する（スピード+10）。
+Ranger/Decoy|desc	4fd4a69c97	見た目も音もプレイヤーそっくりな、魔法のおとりを残す。
+Ranger/Brand Ammunition|desc	212f079f2b	ひとまとまりの矢玉に火炎、冷気、毒のどれか（ランダムに選ぶ）の属性を付け、同時にその矢玉の命中修正とダメージ修正を上げようとする。矢玉にすでに属性やスレイがついているとき、壊れているとき、呪われているときは効かない。
+Blackguard/?|title	34aefad978	ドブネズミ
+Blackguard/?|title#2	8454a97304	乱暴者
+Blackguard/?|title#3	7662ae798d	ごろつき
+Blackguard/?|title#4	004ed26e04	無頼漢
+Blackguard/?|title#5	ab57870404	山賊
+Blackguard/?|title#6	533188f01b	略奪者
+Blackguard/?|title#7	3622319c2d	拷問者
+Blackguard/?|title#8	9ef0c107c4	蹂躙者
+Blackguard/?|title#9	dfe7cfc222	破壊者
+Blackguard/?|title#10	7e22015b32	暴君
+Blackguard/Seek Battle|desc	4a1b9b4716	すぐ近くの範囲の、恐怖の効くモンスターをすべて、1ターンの間だけ感知する。
+Blackguard/Berserk Strength|desc	f9259e33af	恐怖を取り除き、レベルに応じた時間、狂戦士の力（恐怖への耐性、近接の腕前+75、AC-10、時間がたっても回復しない）を得る。
+Blackguard/Whirlwind Attack|desc	4f51a30f02	隣にいる敵それぞれに、レベルに応じた回数の近接攻撃を加える。レベル5で1回で、15レベルごとに1回増える（20で2回、35で3回、50で4回）。
+Blackguard/Shatter Stone|desc	01e2beaf2e	隣の壁か瓦礫の一区画を壊す（永久壁は壊せない）。岩石溶解に弱いモンスターに20+1d30のダメージを与える。
+Blackguard/Leap into Battle|desc	2e65a8d3a8	狙った敵に向かって最大4マス走り、近接攻撃を加える。レベル25と40で攻撃の回数が1回ずつ増える。移動したときは、1マスごとに攻撃の回数が25%減り、端数は丸められる。
+Blackguard/Grim Purpose|desc	d5758b1971	12+d12ターンの間、心が研ぎ澄まされ、減速、麻痺、混乱を受けなくなる。
+Blackguard/Maim Foe|desc	cd5a561dff	狙った敵に、レベルに応じた回数の近接攻撃を試みる。15レベルごとに1回だ。どれかが敵にダメージを与えれば、敵は6ターンの間朦朧とする。
+Blackguard/Howl of the Damned|desc	2039698a4c	視界の中のモンスターすべてを、プレイヤーのレベルとモンスターの深さに応じた時間、怖がらせようとする。恐怖に耐性のあるモンスターには効かない。
+Blackguard/Relentless Taunting|desc	386aad070d	動けるモンスターがあなたに向かって走ってきやすくなり、遠くからの攻撃（呪文と生まれつきの能力を含む）を使いにくくなる。
+Blackguard/Venom|desc	d2a710d1cb	18+d18ターンの間、近接武器すべてに毒を塗る。
+Blackguard/Werewolf Form|desc	78c9fc6176	血も凍る叫びとともに、半人半狼の姿に変わる！この姿では、動くのも、攻撃するのも、回復するのも速くなる。
+Blackguard/Bloodlust|desc	3286b681f8	殺したいという強い欲求を与え、それを満たすたびに欲求は増す。近接攻撃のダメージと回数が増えるが、危険な副作用がある。
+Blackguard/Unholy Reprieve|desc	0f479c6bf1	HP66と引き換えに、腕力、知能、耐久力、経験値を回復する。
+Blackguard/Forceful Blow|desc	1e0864f468	当たるとフォースのダメージを余分に与える近接攻撃を試み、目標を押し戻して、朦朧とさせることもある。
+Blackguard/Quake|desc	8a82e17c3c	プレイヤーを中心に半径13の地震を起こす。

@@ -17,6 +17,23 @@ void TerrainMemory::update(const GameFrame &frame)
     if ((w <= 0) || (h <= 0)) {
         return; // まだフロアが来ていない。**捨てもしない**（次のフレームを待つ）
     }
+    if (same_floor(this->identity, frame.floor) && (w == this->width) && (h == this->height)) {
+        /*
+         * 町の窓がずれた（Frox。`FloorIdentity::town_origin_x`）。覚えていた地形は、原点の差だけ
+         * フレームの座標で動く——動かさないと、窓の外へ出た物が別のマスに残る（岩山・門・目印の幻）。
+         * ほかのコアは原点が常に 0 なので、ここは何もしない。
+         */
+        const int sx = frame.floor.town_origin_x - this->identity.town_origin_x;
+        const int sy = frame.floor.town_origin_y - this->identity.town_origin_y;
+        if ((sx != 0) || (sy != 0)) {
+            shift_grid(this->ids, w, h, sx, sy);
+            shift_grid(this->flags, w, h, sx, sy);
+            shift_grid(this->ascii, w, h, sx, sy);
+            shift_grid(this->fg, w, h, sx, sy);
+            this->identity.town_origin_x = frame.floor.town_origin_x;
+            this->identity.town_origin_y = frame.floor.town_origin_y;
+        }
+    }
     if (!same_floor(this->identity, frame.floor) || (w != this->width) || (h != this->height)) {
         this->identity = frame.floor;
         this->width = w;

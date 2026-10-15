@@ -23,6 +23,7 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+#include <cstdlib>
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -140,6 +141,16 @@ void sdl_win_audio_apply_options()
 
 int sdl_win_audio_term_xtra(int n, int v)
 {
+    /*
+     * `HENGBAND_MUTE=1` なら曲も効果音も鳴らさない（検査用。決めたこと 2026-09-26
+     * 「テスト中の音がうるさいので BGM と効果音を OFF にしてテストして」）。
+     */
+    if ((n == TERM_XTRA_SOUND || n == TERM_XTRA_MUSIC_BASIC || n == TERM_XTRA_MUSIC_DUNGEON
+            || n == TERM_XTRA_MUSIC_QUEST || n == TERM_XTRA_MUSIC_TOWN || n == TERM_XTRA_MUSIC_MONSTER
+            || n == TERM_XTRA_SCENE)
+        && std::getenv("HENGBAND_MUTE") != nullptr && std::getenv("HENGBAND_MUTE")[0] != '0') {
+        return 0;
+    }
     switch (n) {
     case TERM_XTRA_SOUND: {
         if (!use_sound) {

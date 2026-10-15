@@ -22,8 +22,11 @@
 
 #include "gb_lang_c.h"
 #include "gb_shim.h"
+#include "gb_unaware_category.h"
+#include "bridge/unaware_item_categories.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /*
@@ -51,6 +54,82 @@ const char *gb_core_name(void)
 const char *gb_core_version(void)
 {
     return GB_VERSION_STRING;
+}
+
+int gb_birth_race_score_mult(int race_index)
+{
+    int i;
+    int choice = 0;
+
+    if (race_index < 0) {
+        return -1;
+    }
+    for (i = 0; i < MAX_RACES; i++) {
+        if (race_info[i].flag_nobirth || race_info[i].flag_special || race_info[i].flag_only_unique) {
+            continue;
+        }
+        if (choice++ == race_index) {
+            return race_info[i].score_mult;
+        }
+    }
+    return -1;
+}
+
+const char *gb_birth_race_title(int race_index)
+{
+    int i;
+    int choice = 0;
+
+    if (race_index < 0) {
+        return NULL;
+    }
+    for (i = 0; i < MAX_RACES; i++) {
+        if (race_info[i].flag_nobirth || race_info[i].flag_special || race_info[i].flag_only_unique) {
+            continue;
+        }
+        if (choice++ == race_index) {
+            return race_info[i].title;
+        }
+    }
+    return NULL;
+}
+
+static const unsigned char *gb_skip_race_title_space(const unsigned char *text)
+{
+    while (*text == ' ' || (text[0] == 0x81 && text[1] == 0x40)) {
+        text += *text == ' ' ? 1 : 2;
+    }
+    return text;
+}
+
+int gb_birth_race_score_mult_named(const char *title)
+{
+    int i;
+    if (!title) {
+        return -1;
+    }
+    for (i = 0; i < MAX_RACES; i++) {
+        const unsigned char *left;
+        const unsigned char *right;
+        if (race_info[i].flag_nobirth || race_info[i].flag_special || race_info[i].flag_only_unique) {
+            continue;
+        }
+        left = (const unsigned char *)title;
+        right = (const unsigned char *)race_info[i].title;
+        for (;;) {
+            left = gb_skip_race_title_space(left);
+            right = gb_skip_race_title_space(right);
+            if (*left != *right) {
+                break;
+            }
+            if (!*left) {
+                return race_info[i].score_mult;
+            }
+            left++;
+            right++;
+        }
+    }
+    return -1;
 }
 
 /* ==================================================================== 小さな道具 */
@@ -142,7 +221,72 @@ int gb_read_item_line(int what, int index, char *out, int cap)
     return 0;
 }
 
-int gb_read_visible_monster(int index, char *out, int cap)
+/*
+ * 画面を作るための呼び出しで、ゲーム本体の乱数を進めない。
+ * `map_info()`（`cave.c`）は幻覚・色が変わるモンスターで `randint0` / `randint1` /
+ * `one_in_` を引き、`monster_desc()`（`monster2.c`）も幻覚中は `one_in_(2)` と
+ * `randint1` で名前を選ぶ。原作はゲームの進行に沿った回数だけ引くが、ここは画面を送る
+ * 頻度（経過時間）で回数が変わるので、同じセーブ・同じ入力でも乱数の列が一致しなくなる。
+ * 呼び出しの前に状態（`Rand_place` と `Rand_state[]`。`z-rand.c` にはほかの状態が無い）を
+ * 丸ごと退避し、終わったら戻す。`Rand_external()` は音の選択専用の別の状態なので対象外。
+ * `gb_targeting.inl` の `_gb_target_rng_save` と同じ内訳。
+ */
+typedef struct gb_rng_snapshot {
+    u16b place;
+    u32b state[RAND_DEG];
+} gb_rng_snapshot;
+
+static void gb_rng_save(gb_rng_snapshot *snap)
+{
+    snap->place = Rand_place;
+    memcpy(snap->state, Rand_state, sizeof(snap->state));
+}
+
+static void gb_rng_restore(const gb_rng_snapshot *snap)
+{
+    Rand_place = snap->place;
+    memcpy(Rand_state, snap->state, sizeof(snap->state));
+}
+
+/*
+ * 検査用（環境変数が無ければ何もしない）。`HD2D_TEST_RNG=1` で、呼び出しの間に乱数の状態が
+ * どう動いたか（inside）と戻した後（kept）の要約値を標準エラーへ出す。`HD2D_TEST_RNG=nofix` は
+ * 戻さない（この直しの前の動きを再現する）。`HD2D_TEST_FORCE_IMAGE=1` は毎回幻覚にする。
+ */
+static unsigned gb_rng_digest(void)
+{
+    unsigned h = 2166136261u;
+    int i;
+
+    h = (h ^ (unsigned)Rand_place) * 16777619u;
+    for (i = 0; i < RAND_DEG; i++) {
+        h = (h ^ (unsigned)Rand_state[i]) * 16777619u;
+    }
+    return h;
+}
+
+static void gb_test_force_image(void)
+{
+    if (getenv("HD2D_TEST_FORCE_IMAGE") != NULL) {
+        p_ptr->image = 1000;
+    }
+}
+
+static void gb_rng_finish(const gb_rng_snapshot *snap, const char *name)
+{
+    const char *mode = getenv("HD2D_TEST_RNG");
+    const int report = (mode != NULL) && (mode[0] != '\0');
+    const unsigned inside = report ? gb_rng_digest() : 0;
+
+    if (!(report && (strcmp(mode, "nofix") == 0))) {
+        gb_rng_restore(snap);
+    }
+    if (report) {
+        fprintf(stderr, "[hd2d-rng] %s inside=%08x kept=%08x\n", name, inside, gb_rng_digest());
+    }
+}
+
+static int gb_read_visible_monster_raw(int index, char *out, int cap)
 {
     int i;
     int seen = 0;
@@ -174,6 +318,18 @@ int gb_read_visible_monster(int index, char *out, int cap)
         return (int)strlen(out);
     }
     return 0;
+}
+
+int gb_read_visible_monster(int index, char *out, int cap)
+{
+    gb_rng_snapshot snap;
+    int result;
+
+    gb_rng_save(&snap);
+    gb_test_force_image();
+    result = gb_read_visible_monster_raw(index, out, cap);
+    gb_rng_finish(&snap, "gb_read_visible_monster");
+    return result;
 }
 
 /* ================================================== 文字入力（M1 / S5） */
@@ -439,6 +595,319 @@ int gb_fx_take(gb_fx_event *out, int cap)
     }
     gb_fx_num = 0;
     return n;
+}
+
+/* ==================================================================== 魔法・投射物の効果（projections / missiles） */
+
+/*
+ * `GameFrame::projections`（飛ぶ魔法・ボール・ブレス・ビーム・視界内の全員）と `GameFrame::missiles`（矢弾・投擲）の材料
+ * （決めたこと 2026-10-11）。
+ *
+ * 原作の `project()` などに足した**観測の呼び出し 1 行**（`tools/targeting/attack_fx_overlay.py`。記録するだけで遊びの結果は
+ * 変えない）がここを呼ぶ。ここは原作の型（`GF_xxx`・`PROJECT_xxx`・物）を読んで、属性のコア名・形・範囲・経路・旗の整数に直し、
+ * 共通の記録の置き場（`presentation/bridge/named_attack_fx.h`）へ `gb_named_fx_*`（gb_frame.cpp）経由で積む。
+ * 属性のコア名から見た目の名前への変換は C++ 側（`attack_fx_core_attr_aliases.h` の `gensoband_look_name`）。
+ *
+ * 旧来の `combat_fx` の飛道（`gb_fx_bolt`）は**積まない**（上の記録と二重に出るため。命中の火花だけ残す）。
+ */
+#include "gb_fx_names.inc"
+
+/*! `presentation/frame/attack_fx.h` の `ProjectionShape` / `AttackFxOrigin` / `ProjectionFxFlag` / `MissileKind` と同じ並び。 */
+enum { GB_FXS_BOLT = 0, GB_FXS_BEAM = 1, GB_FXS_BALL = 2, GB_FXS_BREATH = 3, GB_FXS_JUMP = 4 };
+enum { GB_FXO_PLAYER = 0, GB_FXO_MONSTER = 1, GB_FXO_OTHER = 2 };
+enum { GB_FXF_HIDDEN = 1, GB_FXF_BLIND = 2, GB_FXF_REFLECTED = 4, GB_FXF_ALL_IN_SIGHT = 8 };
+enum { GB_FXM_ARROW = 0, GB_FXM_BOLT = 1, GB_FXM_SHOT = 2, GB_FXM_THROWN = 3 };
+
+/*! 1 件に積むマスの上限（`named_attack_fx.h` の `kNamedMaxCells` と同じ）。 */
+#define GB_FX_CELLS 512
+
+static const char *gb_fx_gf_name(int typ)
+{
+    size_t i;
+
+    if (typ <= 0) {
+        return "";
+    }
+    for (i = 0; i < sizeof(gb_fx_gf_names) / sizeof(gb_fx_gf_names[0]); i++) {
+        if (gb_fx_gf_names[i].typ == typ) {
+            return gb_fx_gf_names[i].name;
+        }
+    }
+    return "";
+}
+
+static int gb_fx_origin_of(int who)
+{
+    return (who == 0) ? GB_FXO_PLAYER : ((who > 0) ? GB_FXO_MONSTER : GB_FXO_OTHER);
+}
+
+/*! 直前の投射の要約（反射の見分け用。反射は `project()` の中で入れ子に呼ばれるので、記録の並びで見分ける）。 */
+static struct {
+    int valid;
+    int reflectable;
+    int grids;
+    int typ;
+    int impact_y, impact_x;
+    int flg;
+} gb_fx_prev;
+
+void gb_fx_note_projection(int who, int y1, int x1, int by, int bx, int typ, int rad, int flg, int blind, int breath, int jump,
+    const u16b *path_g, int path_n, const byte *gy, const byte *gx, int grids)
+{
+    static int path[GB_FX_CELLS * 2];
+    static int area[GB_FX_CELLS * 3];
+    int shape;
+    int flags = 0;
+    int pn = 0;
+    int an = 0;
+    int i;
+    int impact_y = by;
+    int impact_x = bx;
+    const int hidden = (flg & PROJECT_HIDE) ? 1 : 0;
+    const int origin = gb_fx_origin_of(who);
+
+    if (breath) {
+        shape = GB_FXS_BREATH;
+    } else if ((flg & PROJECT_BEAM) || (flg & PROJECT_MASTERSPARK)) {
+        shape = GB_FXS_BEAM;
+    } else if (jump || (path_n <= 0) || ((y1 == by) && (x1 == bx))) {
+        shape = GB_FXS_JUMP;
+    } else if (rad > 0) {
+        shape = GB_FXS_BALL;
+    } else {
+        shape = GB_FXS_BOLT;
+    }
+
+    /* 経路：始点の次のマスから着弾点まで（ボルト・ボールは `path_n` が着弾点で切ってある。ビーム・ブレスは全部） */
+    if (shape != GB_FXS_JUMP) {
+        for (i = 0; (i < path_n) && (pn < GB_FX_CELLS); i++) {
+            path[pn * 2] = GRID_Y(path_g[i]);
+            path[pn * 2 + 1] = GRID_X(path_g[i]);
+            pn++;
+        }
+        if ((shape == GB_FXS_BEAM) && (pn > 0)) {
+            impact_y = path[(pn - 1) * 2];
+            impact_x = path[(pn - 1) * 2 + 1];
+        }
+    }
+
+    /* 範囲：プレイヤの視界内のマスだけ（隠す投射は全部）。距離は中心（ブレスは撃った者）から。ビームは 0。 */
+    for (i = 0; (i < grids) && (an < GB_FX_CELLS); i++) {
+        const int y = gy[i];
+        const int x = gx[i];
+        int d = 0;
+
+        /* ビームの範囲の先頭には撃った者のマスが入っている（原作の「ビームのマスを集める」の最初の 1 マス）。経路に無いので数えない */
+        if ((shape == GB_FXS_BEAM) && (y == y1) && (x == x1)) {
+            continue;
+        }
+        if (!hidden && !player_has_los_bold(y, x)) {
+            continue;
+        }
+        if (shape == GB_FXS_BREATH) {
+            d = distance(y1, x1, y, x);
+        } else if (shape != GB_FXS_BEAM) {
+            d = distance(by, bx, y, x);
+        }
+        area[an * 3] = (d < 0) ? 0 : ((d > 255) ? 255 : d);
+        area[an * 3 + 1] = y;
+        area[an * 3 + 2] = x;
+        an++;
+    }
+
+    if (hidden) {
+        flags |= GB_FXF_HIDDEN;
+    }
+    if (blind) {
+        flags |= GB_FXF_BLIND;
+    }
+    /* 視界内の全員（`project_hack()`）：プレイヤが飛び先指定・当てる・隠す、で半径 0 */
+    if ((who == 0) && jump && (rad == 0) && !breath && (flg == (PROJECT_KILL | PROJECT_HIDE))) {
+        flags |= GB_FXF_ALL_IN_SIGHT;
+    }
+    /* 反射：直前が反射できる 1 マスの投射で、そのマスからモンスターが同じ属性を撃ち返した */
+    if (gb_fx_prev.valid && gb_fx_prev.reflectable && (gb_fx_prev.grids <= 1) && (origin == GB_FXO_MONSTER) && (rad == 0)
+        && (typ == gb_fx_prev.typ) && (y1 == gb_fx_prev.impact_y) && (x1 == gb_fx_prev.impact_x)
+        && ((flg & ~PROJECT_PLAYER) == (gb_fx_prev.flg & ~PROJECT_PLAYER))) {
+        flags |= GB_FXF_REFLECTED;
+    }
+    gb_fx_prev.valid = 1;
+    gb_fx_prev.reflectable = (flg & PROJECT_REFLECTABLE) ? 1 : 0;
+    gb_fx_prev.grids = grids;
+    gb_fx_prev.typ = typ;
+    gb_fx_prev.impact_y = impact_y;
+    gb_fx_prev.impact_x = impact_x;
+    gb_fx_prev.flg = flg;
+
+    gb_named_fx_projection(origin, shape, gb_fx_gf_name(typ), rad, y1, x1, impact_y, impact_x, flags, path, pn, area, an);
+}
+
+/*! シーカーレイ・スーパーレイ：`project()` が途中で戻るので、最初の経路だけを太いビームとして記録する。 */
+void gb_fx_note_ray(int who, int y1, int x1, int typ, int flg, int blind, int jump, const u16b *path_g, int path_n)
+{
+    static int path[GB_FX_CELLS * 2];
+    static int area[GB_FX_CELLS * 3];
+    int pn = 0;
+    int an = 0;
+    int i;
+    int impact_y = y1;
+    int impact_x = x1;
+    const int hidden = (flg & PROJECT_HIDE) ? 1 : 0;
+
+    (void)jump;
+    for (i = 0; (i < path_n) && (pn < GB_FX_CELLS); i++) {
+        const int y = GRID_Y(path_g[i]);
+        const int x = GRID_X(path_g[i]);
+
+        path[pn * 2] = y;
+        path[pn * 2 + 1] = x;
+        pn++;
+        impact_y = y;
+        impact_x = x;
+        if (hidden || player_has_los_bold(y, x)) {
+            area[an * 3] = 0;
+            area[an * 3 + 1] = y;
+            area[an * 3 + 2] = x;
+            an++;
+        }
+    }
+    gb_named_fx_projection(gb_fx_origin_of(who), GB_FXS_BEAM, gb_fx_gf_name(typ), 0, y1, x1, impact_y, impact_x,
+        (hidden ? GB_FXF_HIDDEN : 0) | (blind ? GB_FXF_BLIND : 0), path, pn, area, an);
+}
+
+/*!
+ * 視界内の全員に別々の属性をかける魔法（`project_hack2()`。嵐のアンサンブル・金閣寺・各種の全体攻撃）。`project()` を通らないので、
+ * 視界内の判定の配列が出そろった所で 1 件だけ記録する。画面側は画面全体の光の波にまとめる。
+ */
+void gb_fx_note_all_sight(int typ_base, bool flag_in_sight[MAX_HGT][MAX_WID])
+{
+    static int area[GB_FX_CELLS * 3];
+    int an = 0;
+    int y;
+    int x;
+
+    for (y = 1; (y < cur_hgt - 1) && (an < GB_FX_CELLS); y++) {
+        for (x = 1; (x < cur_wid - 1) && (an < GB_FX_CELLS); x++) {
+            int d;
+
+            if (!flag_in_sight[y][x]) {
+                continue;
+            }
+            d = distance(py, px, y, x);
+            area[an * 3] = (d < 0) ? 0 : ((d > 255) ? 255 : d);
+            area[an * 3 + 1] = y;
+            area[an * 3 + 2] = x;
+            an++;
+        }
+    }
+    gb_named_fx_projection(GB_FXO_PLAYER, GB_FXS_JUMP, gb_fx_gf_name(typ_base), 0, py, px, py, px,
+        GB_FXF_HIDDEN | GB_FXF_ALL_IN_SIGHT | (p_ptr->blind ? GB_FXF_BLIND : 0), NULL, 0, area, an);
+}
+
+/*! 飛ばした物の基本アイテムの番号。名前を知らない物（正体の分からないアイテム）は正体を漏らさないので 0。 */
+static int gb_fx_item_id(const object_type *o_ptr)
+{
+    if (!o_ptr || !o_ptr->k_idx) {
+        return 0;
+    }
+    if (gb_unaware_category(o_ptr) != 0) {
+        return 0;
+    }
+    return o_ptr->k_idx;
+}
+
+/*!
+ * 矢弾の属性：**識別済みのものだけ**（原作より情報を増やさない）。プレイヤ自身が選んだスナイパーの技（`snipe_type`）と、
+ * 矢弾・弓の識別済みの旗（`object_flags_known`）から決める。理力は原作と同じ MP の条件（`csp > msp / 30`）を満たすときだけ。
+ */
+static const char *gb_fx_known_brand(const object_type *ammo, const object_type *launcher)
+{
+    u32b fa[TR_FLAG_SIZE];
+    u32b fl[TR_FLAG_SIZE];
+
+    if (snipe_type == SP_LITE) {
+        return "lite";
+    }
+    if (snipe_type == SP_FIRE) {
+        return "fire";
+    }
+    if (snipe_type == SP_COLD) {
+        return "cold";
+    }
+    if (snipe_type == SP_ELEC) {
+        return "elec";
+    }
+    if (snipe_type == SP_KILL_WALL) {
+        return "kill_wall";
+    }
+    if (snipe_type == SP_FINAL) {
+        return "mana";
+    }
+    object_flags_known((object_type *)ammo, fa);
+    object_flags_known((object_type *)launcher, fl);
+#define GB_FX_KNOWN(flag) (have_flag(fa, (flag)) || have_flag(fl, (flag)))
+    if (GB_FX_KNOWN(TR_BRAND_FIRE)) {
+        return "fire";
+    }
+    if (GB_FX_KNOWN(TR_BRAND_COLD)) {
+        return "cold";
+    }
+    if (GB_FX_KNOWN(TR_BRAND_ELEC)) {
+        return "elec";
+    }
+    if (GB_FX_KNOWN(TR_BRAND_ACID)) {
+        return "acid";
+    }
+    if (GB_FX_KNOWN(TR_BRAND_POIS)) {
+        return "pois";
+    }
+    if (GB_FX_KNOWN(TR_FORCE_WEAPON) && (p_ptr->csp > (p_ptr->msp / 30))) {
+        return "mana";
+    }
+#undef GB_FX_KNOWN
+    return "";
+}
+
+/*! 射撃 1 歩（`do_cmd_fire_aux()`）。`cur_dis == 1` が 1 発の始まり。盲目のときは記録しない（原作も見えないマスの動きは描かない）。 */
+void gb_fx_shot(int cur_dis, int y, int x, int prev_y, int prev_x, const object_type *ammo, const object_type *launcher)
+{
+    int kind = GB_FXM_ARROW;
+
+    if (p_ptr->blind || !ammo) {
+        return;
+    }
+    if (ammo->tval == TV_BOLT) {
+        kind = GB_FXM_BOLT;
+    }
+    gb_named_fx_missile_step((cur_dis <= 1) ? 1 : 0, kind, gb_fx_item_id(ammo), (cur_dis <= 1) ? gb_fx_known_brand(ammo, launcher) : "",
+        prev_y, prev_x, y, x);
+}
+
+/*! 投擲 1 歩（`do_cmd_throw_aux()`）。 */
+void gb_fx_throw(int cur_dis, int y, int x, int prev_y, int prev_x, const object_type *obj)
+{
+    if (p_ptr->blind || !obj) {
+        return;
+    }
+    gb_named_fx_missile_step((cur_dis <= 1) ? 1 : 0, GB_FXM_THROWN, gb_fx_item_id(obj), "", prev_y, prev_x, y, x);
+}
+
+/*! 射撃・投擲が相手に当たった。 */
+void gb_fx_hit(void)
+{
+    if (p_ptr->blind) {
+        return;
+    }
+    gb_named_fx_missile_hit();
+}
+
+/*! 投げた物が戻ってくる（ブーメランなど。原作が戻りの動きを描く所）。 */
+void gb_fx_throw_return(void)
+{
+    if (p_ptr->blind) {
+        return;
+    }
+    gb_named_fx_missile_returns();
 }
 
 /* ==================================================================== 効果音 */
@@ -879,6 +1348,11 @@ int gb_read_hud(gb_hud_data *out)
 
 /* =============================================================== 画面の状態（P3） */
 
+int gb_screen_depth(void)
+{
+    return (int)character_icky;
+}
+
 int gb_screen_flags(void)
 {
     int bits = 0;
@@ -954,6 +1428,42 @@ int gb_player_pos(int *x, int *y)
 }
 
 /*!
+ * @brief 位置の確認（`L`。原作の `do_cmd_locate()`）の最中なら、見ている区画の中心を返す（修-64）。
+ *
+ * @details 原作はこの間 `panel_row_min`/`panel_col_min`（見ている区画）だけを動かし、`px`/`py`（自キャラ）は
+ * 動かさない。行 0 は「Map sector [..] .. Direction?」（日本語は「マップ位置 [..] ..  方向?」。SJIS）を出して
+ * 方向を待つ。この目印で見分ける（原作は 1 バイトも変えない。Angband の `an_locate_active()` と同じ手）。
+ * 区画の大きさは `do_cmd_locate()` と同じ `get_screen_size()` で取る。
+ * @return 最中なら 1（`*cx`/`*cy` に区画の中心のマス）。そうでなければ 0。
+ */
+int gb_locate_panel_center(int *cx, int *cy)
+{
+    static const char en[] = "Map sector";
+    static const char jp[] = "\x83\x7d\x83\x62\x83\x76\x88\xca\x92\x75"; /* マップ位置（SJIS） */
+    char row0[32];
+    int wid = 0;
+    int hgt = 0;
+
+    if (!character_generated || !character_dungeon) {
+        return 0;
+    }
+    if (gb_term_row(0, row0, NULL, (int)sizeof(row0)) <= 0) {
+        return 0;
+    }
+    if ((strncmp(row0, en, sizeof(en) - 1) != 0) && (strncmp(row0, jp, sizeof(jp) - 1) != 0)) {
+        return 0;
+    }
+    get_screen_size(&wid, &hgt);
+    if (cx) {
+        *cx = (int)panel_col_min + (wid / 2);
+    }
+    if (cy) {
+        *cy = (int)panel_row_min + (hgt / 2);
+    }
+    return 1;
+}
+
+/*!
  * @brief そのマスの地形が「見えている」か。**`map_info()` と同じ判定にする**。
  *
  * @details 判定を独自に作ると、コアが画面に描いているものと HD2D の立体が食い違う
@@ -995,6 +1505,130 @@ static int gb_grid_lit_now(cave_type *c_ptr)
     return ((c_ptr->info & (CAVE_GLOW | CAVE_VIEW)) == (CAVE_GLOW | CAVE_VIEW)) ? 1 : 0;
 }
 
+/*!
+ * @brief 光源の枠の物から光の種類を決める（`LightingState::light_kind`）。
+ * @param o_ptr 光源の枠（`INVEN_LITE`）の物。使えない枠は NULL
+ * @param cur_lite 光の半径（`p_ptr->cur_lite`）
+ * @return 0 = 光が無い、1 = 松明、2 = ランタン、3 = アーティファクトの光源、4 = 装備によらない光
+ * @details 原作の `calc_torch()` と同じ見方をする。松明・ランタンは燃料切れなら半径に足されないので、
+ * 半径が残っていれば装備によらない光（4）。**行灯はランタンの見せ方（2）、宝塔・SANAGI・DRAGON などは
+ * アーティファクトの見せ方（3）**。
+ * 行灯は固定アーティファクトの土台でもあるので、アーティファクトの判定より先に見る。
+ * 読むだけでコアの状態は変えない。
+ */
+static int gb_light_kind_of(object_type *o_ptr, int cur_lite)
+{
+    if (cur_lite <= 0) {
+        return 0;
+    }
+    if (!o_ptr || !o_ptr->k_idx || (o_ptr->tval != TV_LITE)) {
+        return 4;
+    }
+    if (o_ptr->name2 == EGO_LITE_DARKNESS) {
+        return 4; /* 暗黒の光源は照らさない。残っている半径は別の光 */
+    }
+    if (o_ptr->sval == SV_LITE_ANDON) {
+        return 2;
+    }
+    if (object_is_artifact(o_ptr)) {
+        return 3;
+    }
+    if (o_ptr->sval == SV_LITE_TORCH) {
+        return (o_ptr->xtra4 > 0) ? 1 : 4;
+    }
+    if (o_ptr->sval == SV_LITE_LANTERN) {
+        return (o_ptr->xtra4 > 0) ? 2 : 4;
+    }
+    if (o_ptr->sval == SV_LITE_FEANOR) {
+        return 2;
+    }
+    return 3;
+}
+
+/*! @brief いまのプレイヤの光源の種類。光源の枠が使えない状態（`check_invalidate_inventory`）は枠が空と同じ。 */
+static int gb_player_light_kind(void)
+{
+    object_type *o_ptr = &inventory[INVEN_LITE];
+
+    if (check_invalidate_inventory(INVEN_LITE)) {
+        o_ptr = NULL;
+    }
+    return gb_light_kind_of(o_ptr, (int)p_ptr->cur_lite);
+}
+
+/*! @brief `gb_light_selftest` の 1 件。作った物（`tval`/`sval`/`name1`/`name2`/`xtra4`）の判定が `want` か。 */
+static void gb_light_case(const char *name, int tval, int sval, int name1, int name2, int xtra4,
+    int cur_lite, int want, char *err, int cap, int *fails)
+{
+    object_type forge;
+    s16b k_idx = lookup_kind(tval, sval);
+    int got;
+
+    if (!k_idx) {
+        got = -1;
+    } else {
+        object_prep(&forge, k_idx);
+        forge.name1 = (byte)name1;
+        forge.name2 = (byte)name2;
+        forge.xtra4 = (s16b)xtra4;
+        got = gb_light_kind_of(&forge, cur_lite);
+    }
+    if (got != want) {
+        if (*fails == 0 && err && cap > 1) {
+            sprintf(err, "%.60s (want %d, got %d)", name, want, got);
+            err[cap - 1] = '\0';
+        }
+        (*fails)++;
+    }
+}
+
+int gb_light_selftest(char *err, int cap)
+{
+    int fails = 0;
+    object_type empty;
+
+    if (err && cap > 0) {
+        err[0] = '\0';
+    }
+
+    /* 光が無い */
+    gb_light_case("torch, radius 0", TV_LITE, SV_LITE_TORCH, 0, 0, 1000, 0, 0, err, cap, &fails);
+    if (gb_light_kind_of(NULL, 0) != 0) {
+        fails++;
+    }
+    /* 枠が空・光源でない物でも半径が残っていれば装備によらない光 */
+    if (gb_light_kind_of(NULL, 1) != 4) {
+        if (fails == 0 && err && cap > 1) {
+            sprintf(err, "empty slot (want 4)");
+        }
+        fails++;
+    }
+    memset(&empty, 0, sizeof(empty));
+    if (gb_light_kind_of(&empty, 2) != 4) {
+        if (fails == 0 && err && cap > 1) {
+            sprintf(err, "k_idx 0 (want 4)");
+        }
+        fails++;
+    }
+    gb_light_case("ring in the light slot", TV_RING, SV_RING_AGGRAVATION, 0, 0, 0, 1, 4, err, cap, &fails);
+    /* 松明・ランタン（燃料の有無） */
+    gb_light_case("torch with fuel", TV_LITE, SV_LITE_TORCH, 0, 0, 1000, 1, 1, err, cap, &fails);
+    gb_light_case("torch without fuel", TV_LITE, SV_LITE_TORCH, 0, 0, 0, 1, 4, err, cap, &fails);
+    gb_light_case("lantern with fuel", TV_LITE, SV_LITE_LANTERN, 0, 0, 1000, 2, 2, err, cap, &fails);
+    gb_light_case("lantern without fuel", TV_LITE, SV_LITE_LANTERN, 0, 0, 0, 2, 4, err, cap, &fails);
+    gb_light_case("magic lantern (Feanor)", TV_LITE, SV_LITE_FEANOR, 0, 0, 0, 2, 2, err, cap, &fails);
+    gb_light_case("darkness torch", TV_LITE, SV_LITE_TORCH, 0, EGO_LITE_DARKNESS, 1000, 1, 4, err, cap, &fails);
+    /* 行灯はランタンの見せ方（固定アーティファクトの土台でも 2） */
+    gb_light_case("andon", TV_LITE, SV_LITE_ANDON, 0, 0, 0, 3, 2, err, cap, &fails);
+    gb_light_case("andon (artifact)", TV_LITE, SV_LITE_ANDON, 1, 0, 0, 3, 2, err, cap, &fails);
+    /* アーティファクトの見せ方 */
+    gb_light_case("houtou", TV_LITE, SV_LITE_HOUTOU, ART_HOUTOU, 0, 0, 3, 3, err, cap, &fails);
+    gb_light_case("sanagi", TV_LITE, SV_LITE_SANAGI, 0, 0, 0, 3, 3, err, cap, &fails);
+    gb_light_case("dragon", TV_LITE, SV_LITE_DRAGON, 0, 0, 0, 3, 3, err, cap, &fails);
+    gb_light_case("artifact torch", TV_LITE, SV_LITE_TORCH, ART_CLOWNPIECE, 0, 1000, 3, 3, err, cap, &fails);
+    return fails;
+}
+
 /*! @brief 地形フラグ → `GB_FEAT_*`（設計 §4.2 の表）。`KNOWN` / `PLAYER` は呼び出し側。 */
 static unsigned int gb_feature_bits(s16b feat, cave_type *c_ptr)
 {
@@ -1030,6 +1664,9 @@ static unsigned int gb_feature_bits(s16b feat, cave_type *c_ptr)
         || have_flag(f_ptr->flags, FF_QUEST_ENTER)) {
         bits |= GB_FEAT_STAIRS;
     }
+    if (have_flag(f_ptr->flags, FF_SHAFT)) {
+        bits |= GB_FEAT_SHAFT;
+    }
     if (have_flag(f_ptr->flags, FF_PERMANENT)) {
         bits |= GB_FEAT_PERMANENT;
     }
@@ -1059,7 +1696,53 @@ static unsigned int gb_feature_bits(s16b feat, cave_type *c_ptr)
     return bits;
 }
 
-int gb_read_map(int x0, int y0, int w, int h, gb_map_cell *out, int cap)
+/*!
+ * @brief 正体の分からないアイテムの分類（1..8）を返す。0 = 対象外。
+ * @details。
+ * 「正体そのものが分からない」の判定は `k_info[].flavor != 0`（未鑑定名の有無。
+ * 変愚の `is_apparent()` に当たる）と `k_info[].aware`（鑑定済みか。変愚の
+ * `is_aware()` に当たる）。分類は `k_info[].tval`（幻想蛮怒独自の番号。
+ * `TV_RING=47`・`TV_AMULET=48` など、変愚/Frox とは値が違うので流用しない）。
+ * 番号は `unaware_item_categories.h`（C からも読める）と
+ * `presentation::UnawareItemCategory`（`unaware_item_tiles.h`）の 2 つに `static_assert`
+ * で突き合わせてある。**`gb_native_store.c` と共有する**（宣言は `gb_unaware_category.h`）
+ * ——同じ判定を 2 か所に書かない（契約 §4）。
+ */
+unsigned char gb_unaware_category(const object_type *o_ptr)
+{
+    object_kind *k_ptr;
+    if (!o_ptr->k_idx) {
+        return 0;
+    }
+    k_ptr = &k_info[o_ptr->k_idx];
+    if (!k_ptr->flavor || k_ptr->aware) {
+        return 0; /* 未鑑定名が無い（武器・防具の類）か、すでに鑑定済み */
+    }
+    switch (k_ptr->tval) {
+    case TV_POTION:
+        return UNAWARE_CATEGORY_POTION;
+    case TV_SCROLL:
+        return UNAWARE_CATEGORY_SCROLL;
+    case TV_RING:
+        return UNAWARE_CATEGORY_RING;
+    case TV_AMULET:
+        return UNAWARE_CATEGORY_AMULET;
+    case TV_WAND:
+        return UNAWARE_CATEGORY_WAND;
+    case TV_STAFF:
+        return UNAWARE_CATEGORY_STAFF;
+    case TV_ROD:
+        return UNAWARE_CATEGORY_ROD;
+    case TV_MUSHROOM:
+        /* 幻想蛮怒はキノコが `TV_FOOD` と別の tval（`flavor.c:348` の `shuffle_flavors(TV_MUSHROOM)`）。
+         * 変愚・Frox の「FOOD のうちキノコだけ」とは形が違うが、分類としては同じ「キノコ」。 */
+        return UNAWARE_CATEGORY_MUSHROOM;
+    default:
+        return 0; /* Sil-Q の角笛のような 8 分類の外。幻想蛮怒には今のところ無い */
+    }
+}
+
+static int gb_read_map_raw(int x0, int y0, int w, int h, gb_map_cell *out, int cap)
 {
     int vx;
     int vy;
@@ -1121,6 +1804,8 @@ int gb_read_map(int x0, int y0, int w, int h, gb_map_cell *out, int cap)
             } else {
                 cell->light_level = 0;
             }
+            /* プレイヤの光源で照らされているマス（`update_lite()` が立てる）。 */
+            cell->lit_by_player = (c_ptr->info & CAVE_LITE) ? 1 : 0;
 
             /*
              * モンスターは **`ml`（視認中）のときだけ**（設計 §4）。
@@ -1163,6 +1848,7 @@ int gb_read_map(int x0, int y0, int w, int h, gb_map_cell *out, int cap)
                     next_o_idx = o_ptr->next_o_idx;
                     if (o_ptr->k_idx && (o_ptr->marked & OM_FOUND)) {
                         cell->object_id = (unsigned short)o_ptr->k_idx;
+                        cell->object_unaware_category = gb_unaware_category(o_ptr);
                         break;
                     }
                 }
@@ -1180,6 +1866,18 @@ int gb_read_map(int x0, int y0, int w, int h, gb_map_cell *out, int cap)
     }
 
     return n;
+}
+
+int gb_read_map(int x0, int y0, int w, int h, gb_map_cell *out, int cap)
+{
+    gb_rng_snapshot snap;
+    int result;
+
+    gb_rng_save(&snap);
+    gb_test_force_image();
+    result = gb_read_map_raw(x0, y0, w, h, out, cap);
+    gb_rng_finish(&snap, "gb_read_map");
+    return result;
 }
 
 int gb_read_minimap(unsigned char *out, int cap)
@@ -1226,7 +1924,9 @@ int gb_read_minimap(unsigned char *out, int cap)
                     kind = GB_MM_STAIRS;
                 } else if (have_flag(f_ptr->flags, FF_DOOR)) {
                     kind = GB_MM_DOOR;
-                } else if (have_flag(f_ptr->flags, FF_WALL)) {
+                } else if (have_flag(f_ptr->flags, FF_WALL) || have_flag(f_ptr->flags, FF_ICE_WALL)) {
+                    /* 氷壁（240。町 4 の紅魔館）は WALL の旗が無く（CAN_PASS の瓦礫扱い）床で送られていたが、見た目は塀なので壁で送る（修-27）。
+                     * 町の読み取りとクリック移動の経路が壁として扱う（町 4 では東の山と地続きなので岩山に読まれ、氷塊の絵にはならない）。通れるかどうかの規則は変えない（ミニマップの種別は表示と経路の目安だけ）。 */
                     /* 山は壁と分けて送る（町の読み方が「敷地か岩山か」を決めるのに使う）。 */
                     kind = have_flag(f_ptr->flags, FF_MOUNTAIN) ? GB_MM_MOUNTAIN : GB_MM_WALL;
                 }
@@ -1404,6 +2104,7 @@ int gb_read_floor_info(gb_floor_info *out)
     out->day_minute = ((hour % 24) * 60) + (minute % 60);
     out->daytime = is_daytime() ? 1 : 0;
     out->light_radius = (int)p_ptr->cur_lite;
+    out->light_kind = gb_player_light_kind();
 
     return GB_OK;
 }
@@ -1542,4 +2243,790 @@ void gb_fputs(const char *s, FILE *fff)
 	if (!fff || !s) return;
 
 	fputs(gb_tr(s), fff);
+}
+
+/* Report only the core command input boundary, never a nested prompt. */
+int gb_awaiting_command(void)
+{
+    return character_generated && !p_ptr->is_dead && inkey_flag;
+}
+
+/* ============================================================ 状態のアイコン（`GameFrame::status_effects`） */
+
+/*
+ * の幻想蛮怒版。
+ *
+ * ## 取り方
+ * - **一時的な状態**は、原作の `prt_status()`（`xtra1.c`。static）が作る旗の配列 `bar_flags` から取る。
+ *   `tools/targeting/overlay.py` が `prt_status()` の「長さを数える」の手前に 1 行足し、立っている旗の
+ *   番号・名札（原作が画面へ出す字。言語の切り替えを含む）・色を `gb_status_record()` へ渡す。
+ *   記録するだけで、旗にも画面にも乱数にも触れない。
+ * - 速さ・朦朧・切り傷・空腹は、原作の左の状態欄（`prt_speed`・`prt_stun`・`prt_cut`・`prt_hunger`）と同じ
+ *   しきい値・同じ字で、`p_ptr` を直に読む。
+ * - **常時の効果**は C 画面（`files.c` の `display_player_flag_info` ほか）の表と同じ判定。
+ *   **鑑定済みの旗だけ**（`object_flags_known`）と、種族・職業などの固有の旗（`player_flags` など。static なので
+ *   overlay.py が `files.c` の末尾へ足す読み取りの関数 `gb_native_player_flags` から取る）。一時的な効果（画面の `#`）は載せない。
+ *
+ * ## 種類（`StatusEffectKind`）
+ * 0 良い・1 悪い・2 待っている・3 特殊・4 常時の良い・5 常時の悪い。幻想蛮怒の種類の直し
+ * （冬眠・加重・財禍・忘却・生命爆発は良い、停止は特殊）はこの表に入っている。
+ */
+
+#define GB_BAR_COUNT 121 /* xtra1.c の BAR_ARIYA_STOP（120）+ 1。tools/gensoband/gb_status_table_check.py が原作と突き合わせる */
+
+#define GB_SK_GOOD 0
+#define GB_SK_BAD 1
+#define GB_SK_WAIT 2
+#define GB_SK_SPECIAL 3
+#define GB_SK_PERM 4
+#define GB_SK_PERM_BAD 5
+
+typedef struct gb_bar_icon {
+    const char *key;
+    unsigned char kind;
+} gb_bar_icon;
+
+/*! `BAR_*` の番号で引く。鍵は `hd2d/ui/status_icon_table.inc` にあるものだけ。 */
+static const gb_bar_icon gb_bar_icons[GB_BAR_COUNT] = {
+    /*   0 */ { "tsuyoshi", GB_SK_SPECIAL }, /* BAR_TSUYOSHI */
+    /*   1 */ { "hallucination", GB_SK_BAD }, /* BAR_HALLUCINATION */
+    /*   2 */ { "blind", GB_SK_BAD }, /* BAR_BLINDNESS */
+    /*   3 */ { "paralyzed", GB_SK_BAD }, /* BAR_PARALYZE */
+    /*   4 */ { "confused", GB_SK_BAD }, /* BAR_CONFUSE */
+    /*   5 */ { "poisoned", GB_SK_BAD }, /* BAR_POISONED */
+    /*   6 */ { "afraid", GB_SK_BAD }, /* BAR_AFRAID */
+    /*   7 */ { "levitate", GB_SK_GOOD }, /* BAR_LEVITATE */
+    /*   8 */ { "reflect", GB_SK_GOOD }, /* BAR_REFLECTION */
+    /*   9 */ { "passwall", GB_SK_GOOD }, /* BAR_PASSWALL */
+    /*  10 */ { "wraith", GB_SK_GOOD }, /* BAR_WRAITH */
+    /*  11 */ { "protevil", GB_SK_GOOD }, /* BAR_PROTEVIL */
+    /*  12 */ { "kawarimi", GB_SK_GOOD }, /* BAR_KAWARIMI */
+    /*  13 */ { "magicdef", GB_SK_GOOD }, /* BAR_MAGICDEFENSE */
+    /*  14 */ { "gb_death_aura", GB_SK_GOOD }, /* BAR_EXPAND（幻想蛮怒では死霊オーラ） */
+    /*  15 */ { "stoneskin", GB_SK_GOOD }, /* BAR_STONESKIN（物理防御） */
+    /*  16 */ { "multishadow", GB_SK_GOOD }, /* BAR_MULTISHADOW */
+    /*  17 */ { "resmagic", GB_SK_GOOD }, /* BAR_REGMAGIC */
+    /*  18 */ { "ultimate", GB_SK_GOOD }, /* BAR_ULTIMATE */
+    /*  19 */ { "invuln", GB_SK_GOOD }, /* BAR_INVULN */
+    /*  20 */ { "imm_acid", GB_SK_GOOD }, /* BAR_IMMACID */
+    /*  21 */ { "res_acid", GB_SK_GOOD }, /* BAR_RESACID */
+    /*  22 */ { "imm_elec", GB_SK_GOOD }, /* BAR_IMMELEC */
+    /*  23 */ { "res_elec", GB_SK_GOOD }, /* BAR_RESELEC */
+    /*  24 */ { "imm_fire", GB_SK_GOOD }, /* BAR_IMMFIRE */
+    /*  25 */ { "res_fire", GB_SK_GOOD }, /* BAR_RESFIRE */
+    /*  26 */ { "imm_cold", GB_SK_GOOD }, /* BAR_IMMCOLD */
+    /*  27 */ { "res_cold", GB_SK_GOOD }, /* BAR_RESCOLD */
+    /*  28 */ { "res_pois", GB_SK_GOOD }, /* BAR_RESPOIS */
+    /*  29 */ { "res_neth", GB_SK_GOOD }, /* BAR_RESNETH */
+    /*  30 */ { "res_time", GB_SK_GOOD }, /* BAR_RESTIME */
+    /*  31 */ { "dustrobe", GB_SK_GOOD }, /* BAR_DUSTROBE */
+    /*  32 */ { "sh_fire", GB_SK_GOOD }, /* BAR_SHFIRE */
+    /*  33 */ { "gb_barrier_wave", GB_SK_GOOD }, /* BAR_EVIL_UNDULATION（障壁波動） */
+    /*  34 */ { "sh_holy", GB_SK_GOOD }, /* BAR_SHHOLY */
+    /*  35 */ { "eyeeye", GB_SK_GOOD }, /* BAR_EYEEYE */
+    /*  36 */ { "blessed", GB_SK_GOOD }, /* BAR_BLESSED */
+    /*  37 */ { "hero", GB_SK_GOOD }, /* BAR_HEROISM */
+    /*  38 */ { "berserk", GB_SK_GOOD }, /* BAR_BERSERK */
+    /*  39 */ { "attk_fire", GB_SK_GOOD }, /* BAR_ATTKFIRE */
+    /*  40 */ { "attk_cold", GB_SK_GOOD }, /* BAR_ATTKCOLD */
+    /*  41 */ { "attk_elec", GB_SK_GOOD }, /* BAR_ATTKELEC */
+    /*  42 */ { "attk_acid", GB_SK_GOOD }, /* BAR_ATTKACID */
+    /*  43 */ { "attk_pois", GB_SK_GOOD }, /* BAR_ATTKPOIS */
+    /*  44 */ { "attk_conf", GB_SK_GOOD }, /* BAR_ATTKCONF */
+    /*  45 */ { "senseunseen", GB_SK_GOOD }, /* BAR_SENSEUNSEEN */
+    /*  46 */ { "telepathy", GB_SK_GOOD }, /* BAR_TELEPATHY */
+    /*  47 */ { "regeneration", GB_SK_GOOD }, /* BAR_REGENERATION */
+    /*  48 */ { "infravision", GB_SK_GOOD }, /* BAR_INFRAVISION */
+    /*  49 */ { "stealth", GB_SK_GOOD }, /* BAR_STEALTH */
+    /*  50 */ { "superstealth", GB_SK_GOOD }, /* BAR_SUPERSTEALTH */
+    /*  51 */ { "recall", GB_SK_WAIT }, /* BAR_RECALL */
+    /*  52 */ { "alter", GB_SK_WAIT }, /* BAR_ALTER */
+    /*  53 */ { "gb_hibernation", GB_SK_GOOD }, /* BAR_HIBERNATION（冬眠。 で良い） */
+    /*  54 */ { "gb_silence", GB_SK_BAD }, /* BAR_SILENT */
+    /*  55 */ { "gb_silence", GB_SK_BAD }, /* BAR_SILENT2 */
+    /*  56 */ { "resmagic", GB_SK_GOOD }, /* BAR_MAG_ABSORB（魔力吸収） */
+    /*  57 */ { "gb_sakuya_world", GB_SK_GOOD }, /* BAR_SAKUYA */
+    /*  58 */ { "gb_hina_doll", GB_SK_SPECIAL }, /* BAR_HINA */
+    /*  59 */ { "gb_boundary", GB_SK_GOOD }, /* BAR_YUKARI（境界操作） */
+    /*  60 */ { "superstealth", GB_SK_GOOD }, /* BAR_OPTICAL（光学迷彩） */
+    /*  61 */ { "gb_special_immunity", GB_SK_GOOD }, /* BAR_DANGO_IMM */
+    /*  62 */ { "gb_mist_wheel", GB_SK_GOOD }, /* BAR_EIBON */
+    /*  63 */ { "gb_crown_shots", GB_SK_GOOD }, /* BAR_SAGUME */
+    /*  64 */ { "gb_orbit_trap", GB_SK_SPECIAL }, /* BAR_ORBITAL_TRAP */
+    /*  65 */ { "reflect", GB_SK_GOOD }, /* BAR_HECATIA_MIRROR（反射鏡） */
+    /*  66 */ { "gb_nameless_art", GB_SK_GOOD }, /* BAR_JUNKO_TIME_SKILL */
+    /*  67 */ { "res_water", GB_SK_GOOD }, /* BAR_RESWATER */
+    /*  68 */ { "wraith", GB_SK_GOOD }, /* BAR_DARKSIDEOFTHEMOON（ルーミアの幽体） */
+    /*  69 */ { "res_chaos", GB_SK_GOOD }, /* BAR_RESCHAO */
+    /*  70 */ { "antitele", GB_SK_GOOD }, /* BAR_NENNBAKU（念縛。自分と周りの敵のテレポートを妨げる） */
+    /*  71 */ { "buildup", GB_SK_GOOD }, /* BAR_EXSTAT（強化） */
+    /*  72 */ { "cure", GB_SK_GOOD }, /* BAR_REACTIVE_HEAL（反応回復） */
+    /*  73 */ { "gb_radar", GB_SK_GOOD }, /* BAR_RADAR */
+    /*  74 */ { "runesword", GB_SK_GOOD }, /* BAR_EVILWEAPON（魔剣） */
+    /*  75 */ { "res_dark", GB_SK_GOOD }, /* BAR_RESDARK */
+    /*  76 */ { "gb_unite_dark", GB_SK_GOOD }, /* BAR_UNITE_DARK */
+    /*  77 */ { "gb_lucky", GB_SK_GOOD }, /* BAR_LUCKY */
+    /*  78 */ { "gb_foresight", GB_SK_GOOD }, /* BAR_FORESIGHT */
+    /*  79 */ { "gb_deportation", GB_SK_GOOD }, /* BAR_DEPORTATION */
+    /*  80 */ { "gb_claw_extend", GB_SK_GOOD }, /* BAR_CLAWEXTEND */
+    /*  81 */ { "gb_speedster", GB_SK_GOOD }, /* BAR_SPEEDSTER（高速移動） */
+    /*  82 */ { "force_weapon", GB_SK_GOOD }, /* BAR_FORCEWEAPON */
+    /*  83 */ { "gb_res_insanity", GB_SK_GOOD }, /* BAR_RES_INSANITY */
+    /*  84 */ { "gb_kamioroshi", GB_SK_GOOD }, /* BAR_KAMIOROSHI */
+    /*  85 */ { "gb_blade_foresight", GB_SK_GOOD }, /* BAR_ATTACK_FORE（予見魔剣） */
+    /*  86 */ { "gb_blade_warp", GB_SK_GOOD }, /* BAR_ATTACK_UNSUMMON（歪曲魔剣） */
+    /*  87 */ { "brand_magic", GB_SK_GOOD }, /* BAR_ATTACK_INC_DICES（強化魔剣） */
+    /*  88 */ { "chaotic", GB_SK_GOOD }, /* BAR_ATTACK_CHAOS（混沌魔剣） */
+    /*  89 */ { "might", GB_SK_GOOD }, /* BAR_KAIOUKEN（界王拳） */
+    /*  90 */ { "gb_aim", GB_SK_GOOD }, /* BAR_HEAD_SHOT（照準） */
+    /*  91 */ { "magicdef", GB_SK_GOOD }, /* BAR_MANA_SHIELD（結界ガード） */
+    /*  92 */ { "vampiric", GB_SK_GOOD }, /* BAR_ROB_MANA（魔力奪取） */
+    /*  93 */ { "stoneskin", GB_SK_GOOD }, /* BAR_STATUE_FORM（石像化） */
+    /*  94 */ { "gb_salvation", GB_SK_GOOD }, /* BAR_HELLFIRE_BARRIER（救済） */
+    /*  95 */ { "vorpal", GB_SK_GOOD }, /* BAR_ATTACK_VORPAL（切れ味） */
+    /*  96 */ { "gb_squander", GB_SK_SPECIAL }, /* BAR_WASTE_MONEY */
+    /*  97 */ { "gb_wealth_curse", GB_SK_GOOD }, /* BAR_PLUCK_PIGEON（財禍。 で良い） */
+    /*  98 */ { "gb_back_door", GB_SK_GOOD }, /* BAR_BACKDOOR_POWER */
+    /*  99 */ { "gb_spellcard", GB_SK_SPECIAL }, /* BAR_SPELLCARD */
+    /* 100 */ { "gb_muen", GB_SK_SPECIAL }, /* BAR_MUEN */
+    /* 101 */ { "gb_heavy", GB_SK_GOOD }, /* BAR_HEAVY（加重。§2.5 で良い） */
+    /* 102 */ { "gb_bribe", GB_SK_SPECIAL }, /* BAR_YACHIE_BRIBE */
+    /* 103 */ { "gb_moth_lamp", GB_SK_SPECIAL }, /* BAR_YUYUKO_YUUGA */
+    /* 104 */ { "gb_drunken_fist", GB_SK_GOOD }, /* BAR_SUIKEN */
+    /* 105 */ { "gb_pierce_cold", GB_SK_GOOD }, /* BAR_LETTY_POWERUP */
+    /* 106 */ { "superstealth", GB_SK_GOOD }, /* BAR_SUPERSTEALTH_FOREST（超隠密(森)） */
+    /* 107 */ { "gb_gluttony", GB_SK_SPECIAL }, /* BAR_MOMOYO_EAT */
+    /* 108 */ { "aggravate", GB_SK_BAD }, /* BAR_TIM_AGGRAVATION（一時反感） */
+    /* 109 */ { "gb_amplify_stone", GB_SK_GOOD }, /* BAR_AMPLIFY_STONE */
+    /* 110 */ { "gb_counter", GB_SK_GOOD }, /* BAR_COUNTER */
+    /* 111 */ { "gb_life_explode", GB_SK_GOOD }, /* BAR_LIFE_EXPLODE（生命爆発。§2.5 で良い） */
+    /* 112 */ { "gb_hirari_cloth", GB_SK_GOOD }, /* BAR_HIRARINUNO */
+    /* 113 */ { "gb_forgotten", GB_SK_GOOD }, /* BAR_MIYOI_FORGOTTEN（忘却。§2.5 で良い） */
+    /* 114 */ { "gb_no_move", GB_SK_BAD }, /* BAR_NO_MOVE */
+    /* 115 */ { "gb_transport_trap", GB_SK_SPECIAL }, /* BAR_TRANSPORTATION_TRAP */
+    /* 116 */ { "gb_void", GB_SK_GOOD }, /* BAR_VOID */
+    /* 117 */ { "gb_bees", GB_SK_GOOD }, /* BAR_BEES */
+    /* 118 */ { "stealth", GB_SK_GOOD }, /* BAR_HIDE（潜伏） */
+    /* 119 */ { "gb_blast_guard", GB_SK_GOOD }, /* BAR_RES_BLAST */
+    /* 120 */ { "gb_halt", GB_SK_SPECIAL }, /* BAR_ARIYA_STOP（停止。§2.5 で特殊） */
+};
+
+/*! 表の組み方の外から見える数（自己検査と check スクリプト用）。 */
+int gb_status_bar_table_count(void)
+{
+    return GB_BAR_COUNT;
+}
+
+const char *gb_status_bar_table_key(int bar, int *kind)
+{
+    if ((bar < 0) || (bar >= GB_BAR_COUNT)) {
+        return NULL;
+    }
+    if (kind) {
+        *kind = (int)gb_bar_icons[bar].kind;
+    }
+    return gb_bar_icons[bar].key;
+}
+
+/* ---------------------------------------------------------------- 記録（overlay.py が足した 1 行の呼び先） */
+
+static unsigned char gb_status_on[GB_BAR_COUNT];
+static char gb_status_label[GB_BAR_COUNT][48];
+static unsigned char gb_status_attr[GB_BAR_COUNT];
+static int gb_status_overflow; /* 原作の `bar[]` が表より長い（原作が版上げで増えた）ときの印 */
+static unsigned long gb_status_hash;
+
+/*!
+ * @brief `prt_status()` が組んだ旗を覚える。`bar < 0` は「組み直しの始まり」（`attr` に原作の `bar[]` の行数）。
+ * @details 名札は原作が画面へ出す字（CP932 か英語）。全角を割らないように切る。
+ */
+void gb_status_record(int bar, const char *label, int attr)
+{
+    if (bar < 0) {
+        memset(gb_status_on, 0, sizeof(gb_status_on));
+        gb_status_hash = 2166136261UL;
+        gb_status_overflow = (attr > GB_BAR_COUNT) ? 1 : 0;
+        return;
+    }
+    if (bar >= GB_BAR_COUNT) {
+        gb_status_overflow = 1;
+        return;
+    }
+    gb_status_on[bar] = 1;
+    gb_status_attr[bar] = (unsigned char)attr;
+    {
+        int i = 0;
+        const char *s = label ? label : "";
+        while (s[i] && (i < (int)sizeof(gb_status_label[bar]) - 1)) {
+            unsigned char c = (unsigned char)s[i];
+            int lead = ((c >= 0x81) && (c <= 0x9F)) || ((c >= 0xE0) && (c <= 0xFC));
+            if (lead && (!s[i + 1] || (i + 2 > (int)sizeof(gb_status_label[bar]) - 1))) {
+                break;
+            }
+            gb_status_label[bar][i] = s[i];
+            i++;
+            if (lead) {
+                gb_status_label[bar][i] = s[i];
+                i++;
+            }
+        }
+        gb_status_label[bar][i] = '\0';
+    }
+    gb_status_hash = (gb_status_hash ^ (unsigned long)(bar + 1)) * 16777619UL;
+}
+
+/*! 旗の組が変わったら変わる値（`gb_change_digest` に混ぜる）。 */
+unsigned long gb_status_stamp(void)
+{
+    return gb_status_hash;
+}
+
+/* ---------------------------------------------------------------- 常時の効果の表 */
+
+#define GB_PM_NORMAL 0 /* 装備の枠 12 + 固有の旗 */
+#define GB_PM_WEAPON 1 /* 利き手・逆手 + 固有の旗（`DP_WP`） */
+#define GB_PM_CURSE 2 /* 装備の呪い（`DP_CURSE`） */
+
+typedef struct gb_perm_row {
+    short flag; /*!< 耐性・能力の旗（呪いの行は -1） */
+    short greater; /*!< 免疫・皆殺し・極みの旗（無ければ -1） */
+    unsigned char mode;
+    unsigned char kind;
+    const char *key;
+    const char *ja;
+    const char *en;
+    const char *imm_key; /*!< 免疫のときの鍵（無ければ NULL ＝ key のまま） */
+    const char *imm_ja;
+    const char *imm_en;
+} gb_perm_row;
+
+#define GBP(flag, key, ja, en) { flag, -1, GB_PM_NORMAL, GB_SK_PERM, key, ja, en, NULL, NULL, NULL }
+#define GBP_BAD(flag, key, ja, en) { flag, -1, GB_PM_NORMAL, GB_SK_PERM_BAD, key, ja, en, NULL, NULL, NULL }
+#define GBP_IMM(flag, gr, key, ja, en, ikey, ija, ien) { flag, gr, GB_PM_NORMAL, GB_SK_PERM, key, ja, en, ikey, ija, ien }
+#define GBP_WP(flag, gr, key, ja, en) { flag, gr, GB_PM_WEAPON, GB_SK_PERM, key, ja, en, NULL, NULL, NULL }
+
+/*!
+ * C 画面（`display_player_flag_info` / `display_player_other_flag_info`）の行の順。
+ * 描いていないアイコン（罠解除 `TR_DISARM`・魔法防御上昇 `TR_SAVING`・乱テレポート `TR_TELEPORT`）は載せない。
+ */
+static const gb_perm_row gb_perm_rows[] = {
+    /* ---- ページ 1 ---- */
+    GBP_IMM(TR_RES_ACID, TR_IM_ACID, "res_acid", "耐酸", "Resist Acid", "imm_acid", "酸免疫", "Immune Acid"),
+    GBP_IMM(TR_RES_ELEC, TR_IM_ELEC, "res_elec", "耐電撃", "Resist Elec", "imm_elec", "電撃免疫", "Immune Elec"),
+    GBP_IMM(TR_RES_FIRE, TR_IM_FIRE, "res_fire", "耐火炎", "Resist Fire", "imm_fire", "火炎免疫", "Immune Fire"),
+    GBP_IMM(TR_RES_COLD, TR_IM_COLD, "res_cold", "耐冷気", "Resist Cold", "imm_cold", "冷気免疫", "Immune Cold"),
+    GBP(TR_RES_POIS, "res_pois", "耐毒", "Resist Poison"),
+    GBP(TR_RES_LITE, "res_lite", "耐閃光", "Resist Light"),
+    GBP(TR_RES_DARK, "res_dark", "耐暗黒", "Resist Dark"),
+    GBP(TR_RES_SHARDS, "res_shard", "耐破片", "Resist Shards"),
+    GBP(TR_RES_WATER, "res_water", "耐水", "Resist Water"),
+    GBP(TR_RES_HOLY, "gb_res_holy", "耐破邪", "Resist Holy"),
+    /* ---- ページ 2 ---- */
+    GBP(TR_RES_SOUND, "res_sound", "耐轟音", "Resist Sound"),
+    GBP(TR_RES_NETHER, "res_neth", "耐地獄", "Resist Nether"),
+    GBP(TR_RES_TIME, "res_time", "耐時空", "Resist Time"),
+    GBP(TR_RES_CHAOS, "res_chaos", "耐混沌", "Resist Chaos"),
+    GBP(TR_RES_DISEN, "res_disen", "耐劣化", "Resist Disen"),
+    GBP(TR_RES_FEAR, "res_fear", "耐恐怖", "Resist Fear"),
+    GBP(TR_FREE_ACT, "free_act", "耐麻痺", "Free Action"),
+    GBP(TR_RES_CONF, "res_conf", "耐混乱", "Resist Conf"),
+    GBP(TR_RES_BLIND, "res_blind", "耐盲目", "Resist Blind"),
+    GBP(TR_RES_INSANITY, "gb_res_insanity", "耐狂気", "Resist Insanity"),
+    /* ---- ページ 3 ---- */
+    GBP(TR_SEE_INVIS, "senseunseen", "透明視認", "See Invisible"),
+    GBP(TR_WARNING, "warning", "警告", "Warning"),
+    GBP(TR_SLOW_DIGEST, "slow_digest", "栄養持続", "Slow Digest"),
+    GBP(TR_REGEN, "regeneration", "急速回復", "Regeneration"),
+    GBP(TR_LEVITATION, "levitate", "浮遊", "Levitation"),
+    GBP(TR_SPEEDSTER, "gb_speedster", "高速移動", "Fast Move"),
+    GBP_BAD(TR_NO_TELE, "no_tele", "反テレポ", "No Teleport"),
+    GBP_BAD(TR_NO_MAGIC, "no_magic", "反魔法", "Anti-Magic"),
+    GBP(TR_REFLECT, "reflect", "反射", "Reflection"),
+    { -1, -1, GB_PM_CURSE, GB_SK_PERM_BAD, "cursed", "呪い", "Cursed", NULL, NULL, NULL },
+    /* ---- 武器の性質（利き手・逆手） ---- */
+    GBP_WP(TR_SLAY_EVIL, TR_KILL_EVIL, "slay_evil", "混沌倍打", "Slay Evil"),
+    GBP_WP(TR_SLAY_GOOD, TR_KILL_GOOD, "slay_good", "秩序倍打", "Slay Good"),
+    GBP_WP(TR_SLAY_HUMAN, TR_KILL_HUMAN, "slay_human", "人間倍打", "Slay Human"),
+    GBP_WP(TR_SLAY_ANIMAL, TR_KILL_ANIMAL, "slay_animal", "動物倍打", "Slay Animal"),
+    GBP_WP(TR_SLAY_UNDEAD, TR_KILL_UNDEAD, "slay_undead", "不死倍打", "Slay Undead"),
+    GBP_WP(TR_SLAY_DRAGON, TR_KILL_DRAGON, "slay_dragon", "竜倍打", "Slay Dragon"),
+    GBP_WP(TR_SLAY_DEMON, TR_KILL_DEMON, "slay_demon", "悪魔倍打", "Slay Demon"),
+    GBP_WP(TR_SLAY_DEITY, TR_KILL_DEITY, "gb_slay_deity", "神格倍打", "Slay Deity"),
+    GBP_WP(TR_SLAY_KWAI, TR_KILL_KWAI, "gb_slay_kwai", "妖怪倍打", "Slay Youkai"),
+    GBP_WP(TR_BRAND_ACID, -1, "attk_acid", "溶解", "Acid Brand"),
+    GBP_WP(TR_BRAND_ELEC, -1, "attk_elec", "電撃", "Elec Brand"),
+    GBP_WP(TR_BRAND_FIRE, -1, "attk_fire", "焼棄", "Fire Brand"),
+    GBP_WP(TR_BRAND_COLD, -1, "attk_cold", "凍結", "Cold Brand"),
+    GBP_WP(TR_BRAND_POIS, -1, "attk_pois", "毒殺", "Poison Brand"),
+    GBP_WP(TR_VORPAL, TR_EX_VORPAL, "vorpal", "切れ味", "Sharpness"),
+    GBP_WP(TR_IMPACT, -1, "earthquake", "地震", "Quake"),
+    GBP_WP(TR_VAMPIRIC, -1, "vampiric", "吸血", "Vampiric"),
+    GBP_WP(TR_CHAOTIC, -1, "chaotic", "カオス効果", "Chaotic"),
+    GBP_WP(TR_FORCE_WEAPON, -1, "force_weapon", "理力", "Force Weapon"),
+    GBP_WP(TR_GENZI, -1, "gb_genzi", "二刀流緩和", "Dual Wield"), /* C 画面には行が無いが、鑑定済みの旗なので出す */
+    /* ---- 感知 ---- */
+    GBP(TR_TELEPATHY, "telepathy", "テレパシー", "Telepathy"),
+    GBP(TR_ESP_UNIQUE, "esp_unique", "ユニークESP", "Sense Uniques"),
+    GBP(TR_ESP_NONLIVING, "esp_nonliving", "無生物ESP", "Sense Nonliving"),
+    GBP(TR_ESP_EVIL, "esp_evil", "混沌ESP", "Sense Evil"),
+    GBP(TR_ESP_GOOD, "esp_good", "秩序ESP", "Sense Good"),
+    GBP(TR_ESP_HUMAN, "esp_human", "人間ESP", "Sense Humans"),
+    GBP(TR_ESP_ANIMAL, "esp_animal", "動物ESP", "Sense Animals"),
+    GBP(TR_ESP_UNDEAD, "esp_undead", "不死ESP", "Sense Undead"),
+    GBP(TR_ESP_DRAGON, "esp_dragon", "竜ESP", "Sense Dragons"),
+    GBP(TR_ESP_DEMON, "esp_demon", "悪魔ESP", "Sense Demons"),
+    GBP(TR_ESP_DEITY, "gb_esp_deity", "神格ESP", "Sense Deity"),
+    GBP(TR_ESP_KWAI, "gb_esp_kwai", "妖怪ESP", "Sense Youkai"),
+    /* ---- 能力値の維持 ---- */
+    GBP(TR_SUST_STR, "sust_str", "腕力維持", "Sust Str"),
+    GBP(TR_SUST_INT, "sust_int", "知力維持", "Sust Int"),
+    GBP(TR_SUST_WIS, "sust_wis", "賢さ維持", "Sust Wis"),
+    GBP(TR_SUST_DEX, "sust_dex", "器用維持", "Sust Dex"),
+    GBP(TR_SUST_CON, "sust_con", "耐久維持", "Sust Con"),
+    GBP(TR_SUST_CHR, "sust_chr", "魅力維持", "Sust Chr"),
+    /* ---- 能力・その他 ---- */
+    GBP(TR_SPEED, "haste", "加速", "Speed"),
+    GBP(TR_BLOWS, "blows", "追加攻撃", "Extra Blows"),
+    GBP(TR_INFRA, "infravision", "赤外線視力", "Infravision"),
+    GBP(TR_MAGIC_MASTERY, "magic_mastery", "魔法道具支配", "Magic Mastery"),
+    GBP(TR_STEALTH, "stealth", "隠密", "Stealth"),
+    GBP(TR_SEARCH, "search", "探索", "Searching"),
+    GBP(TR_TUNNEL, "tunnel", "採掘", "Tunneling"),
+    GBP(TR_EASY_SPELL, "easy_spell", "魔法難度減少", "Easy Spell"),
+    GBP(TR_DEC_MANA, "dec_mana", "消費魔力減少", "Economic Mana"),
+    GBP(TR_BLESSED, "blessed", "祝福", "Blessed"),
+    GBP(TR_LITE, "lite", "永遠光源", "Perm Light"),
+    GBP(TR_RIDING, "riding", "乗馬", "For Riding"),
+    GBP(TR_THROW, "throw", "投擲", "Throwing"),
+    GBP_BAD(TR_DRAIN_EXP, "drain_exp", "経験値吸収", "Drain Exp"),
+    GBP_BAD(TR_AGGRAVATE, "aggravate", "反感", "Aggravate"),
+    GBP_BAD(TR_TY_CURSE, "ty_curse", "太古の怨念", "TY Curse"),
+};
+
+#define GB_PERM_ROWS ((int)(sizeof(gb_perm_rows) / sizeof(gb_perm_rows[0])))
+
+int gb_status_perm_row_count(void)
+{
+    return GB_PERM_ROWS;
+}
+
+const char *gb_status_perm_row_key(int row, int *kind, const char **imm_key)
+{
+    if ((row < 0) || (row >= GB_PERM_ROWS)) {
+        return NULL;
+    }
+    if (kind) {
+        *kind = (int)gb_perm_rows[row].kind;
+    }
+    if (imm_key) {
+        *imm_key = gb_perm_rows[row].imm_key;
+    }
+    return gb_perm_rows[row].key;
+}
+
+/* 原作の `files.c` の末尾へ overlay.py が足す読み取りの関数（static な `player_flags` などを外へ出すだけ）。 */
+extern void gb_native_player_flags(u32b *player, u32b *tim, u32b *imm, u32b *tim_imm);
+/* `files.c`（static ではない）。女苑の指輪の枠（拡張インベントリ）の旗をまとめる。 */
+extern void obj_flags_known_jyoon_ring(int slot, u32b flgs[TR_FLAG_SIZE]);
+
+typedef struct gb_perm_ctx {
+    u32b slot[INVEN_TOTAL][TR_FLAG_SIZE]; /*!< 装備の枠ごとの鑑定済みの旗 */
+    unsigned char used[INVEN_TOTAL]; /*!< 枠に物があって数える */
+    u32b player[TR_FLAG_SIZE];
+    u32b tim[TR_FLAG_SIZE];
+    u32b imm[TR_FLAG_SIZE];
+    u32b tim_imm[TR_FLAG_SIZE];
+} gb_perm_ctx;
+
+static void gb_perm_collect(gb_perm_ctx *c)
+{
+    int i;
+
+    memset(c, 0, sizeof(*c));
+    for (i = INVEN_RARM; i < INVEN_TOTAL; i++) {
+        object_type *o_ptr = &inventory[i];
+
+        if (check_invalidate_inventory(i)) {
+            continue;
+        }
+        if ((p_ptr->pclass == CLASS_JYOON) && ((i == INVEN_RIGHT) || (i == INVEN_LEFT))) {
+            obj_flags_known_jyoon_ring(i, c->slot[i]);
+            c->used[i] = 1;
+            continue;
+        }
+        if (!o_ptr->k_idx) {
+            continue;
+        }
+        object_flags_known(o_ptr, c->slot[i]);
+        c->used[i] = 1;
+    }
+    gb_native_player_flags(c->player, c->tim, c->imm, c->tim_imm);
+}
+
+/*!
+ * @brief 1 行の判定。C 画面の `display_flag_aux` と同じ。一時的な効果（`tim` 側）は見ない。
+ * @return 0 = 無い、1 = 耐性・能力あり、2 = 免疫あり（`imm_key` があるとき）
+ */
+static int gb_perm_row_state(const gb_perm_ctx *c, const gb_perm_row *r)
+{
+    int i;
+    int max_i = (r->mode == GB_PM_WEAPON) ? (INVEN_LARM + 1) : INVEN_TOTAL;
+    int has = 0;
+    int imm = 0;
+
+    if (r->mode == GB_PM_CURSE) {
+        for (i = INVEN_RARM; i < INVEN_TOTAL; i++) {
+            object_type *o_ptr = &inventory[i];
+
+            if (check_invalidate_inventory(i) || !o_ptr->k_idx) {
+                continue;
+            }
+            if (o_ptr->curse_flags & (TRC_CURSED | TRC_HEAVY_CURSE | TRC_PERMA_CURSE)) {
+                return 1;
+            }
+            if (c->used[i] && (have_flag(c->slot[i], TR_ADD_L_CURSE) || have_flag(c->slot[i], TR_ADD_H_CURSE))) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    for (i = INVEN_RARM; i < max_i; i++) {
+        if (!c->used[i]) {
+            continue;
+        }
+        if ((r->greater >= 0) && have_flag(c->slot[i], r->greater)) {
+            imm = 1;
+        }
+        if (have_flag(c->slot[i], r->flag)) {
+            has = 1;
+        }
+    }
+    /* 種族・職業などの固有の旗。免疫（`player_imm`）は耐性の旗そのものを立てて来ることもある。 */
+    if (have_flag(c->player, r->flag)) {
+        has = 1;
+    }
+    if (have_flag(c->imm, r->flag)) {
+        has = 1;
+        imm = 1;
+    }
+    if ((r->greater >= 0) && have_flag(c->imm, r->greater)) {
+        imm = 1;
+    }
+    if (imm && r->imm_key) {
+        return 2;
+    }
+    return (has || imm) ? 1 : 0;
+}
+
+/* ---------------------------------------------------------------- 組み立て */
+
+static int gb_status_push(gb_status_effect *out, int *n, int cap, const char *key, const char *label_sjis,
+    const char *amount, int kind)
+{
+    int i;
+    gb_status_effect *e;
+
+    if (!key || !key[0]) {
+        return 0;
+    }
+    for (i = 0; i < *n; i++) { /* 同じ鍵・同じ種類の重複は 1 つにする（光学迷彩と超隠密など） */
+        if ((out[i].kind == kind) && (strcmp(out[i].key, key) == 0)) {
+            return 0;
+        }
+    }
+    if (*n >= cap) {
+        return 0;
+    }
+    e = &out[*n];
+    memset(e, 0, sizeof(*e));
+    strncpy(e->key, key, sizeof(e->key) - 1);
+    if (label_sjis) {
+        strncpy(e->label, label_sjis, sizeof(e->label) - 1);
+    }
+    if (amount) {
+        strncpy(e->amount, amount, sizeof(e->amount) - 1);
+    }
+    e->kind = kind;
+    (*n)++;
+    return 1;
+}
+
+#define GB_L(ja, en) (gb_lang_enabled() ? (en) : (ja))
+
+int gb_read_status_effects(gb_status_effect *out, int cap)
+{
+    int n = 0;
+    int i;
+
+    if (!out || (cap <= 0) || !character_generated || !p_ptr || p_ptr->is_dead) {
+        return 0;
+    }
+    if (gb_status_overflow) { /* 原作の `bar[]` が表より長い。版上げで BAR_* が増えたので表を足す（一度だけ知らせる） */
+        static int warned;
+
+        if (!warned) {
+            warned = 1;
+            fprintf(stderr, "[gensoband] status icons: the original bar[] is longer than GB_BAR_COUNT (%d); extend gb_bar_icons[]\n",
+                GB_BAR_COUNT);
+        }
+    }
+
+    /* (1) 速さ。`prt_speed` と同じ式（探索中の減速は見かけから外す）。 */
+    {
+        int sp = p_ptr->pspeed;
+        char amt[16];
+
+        if ((p_ptr->action == ACTION_SEARCH) && !p_ptr->lightspeed) {
+            sp += 10;
+        }
+        if (CLASS_RIDING_BACKDANCE && p_ptr->riding) {
+            const char *rdesc = (p_ptr->pclass == CLASS_TSUKASA) ? GB_L("寄生", "Parasite") : GB_L("ダンス", "Dance");
+
+            if (sp > 110) {
+                sprintf(amt, "+%d", sp - 110);
+                gb_status_push(out, &n, cap, "haste", rdesc, amt, GB_SK_GOOD);
+            } else if (sp < 110) {
+                sprintf(amt, "-%d", 110 - sp);
+                gb_status_push(out, &n, cap, "slow", rdesc, amt, GB_SK_BAD);
+            }
+        } else if (sp > 110) {
+            sprintf(amt, "+%d", sp - 110);
+            gb_status_push(out, &n, cap, "haste", p_ptr->riding ? GB_L("乗馬", "Ride") : GB_L("加速", "Fast"), amt,
+                GB_SK_GOOD);
+        } else if (sp < 110) {
+            sprintf(amt, "-%d", 110 - sp);
+            gb_status_push(out, &n, cap, "slow", p_ptr->riding ? GB_L("乗馬", "Ride") : GB_L("減速", "Slow"), amt,
+                GB_SK_BAD);
+        }
+    }
+
+    /* (2) 状態の旗。`BAR_*` の小さい順＝原作の最下段の並び。 */
+    for (i = 0; i < GB_BAR_COUNT; i++) {
+        if (gb_status_on[i]) {
+            gb_status_push(out, &n, cap, gb_bar_icons[i].key, gb_status_label[i], NULL, (int)gb_bar_icons[i].kind);
+        }
+    }
+
+    /* (3) 朦朧・切り傷・空腹（原作の `prt_stun`・`prt_cut`・`prt_hunger`）。 */
+    {
+        int s = p_ptr->stun;
+        const char *label = NULL;
+
+        if ((p_ptr->alcohol >= DRANK_4) && !(p_ptr->muta2 & MUT2_ALCOHOL)) {
+            label = GB_L("意識不明瞭", "Knocked out");
+        } else if (s > 100) {
+            label = GB_L("意識不明瞭", "Knocked out");
+        } else if (s > 50) {
+            label = GB_L("ひどく朦朧", "Heavy stun");
+        } else if (s) {
+            label = GB_L("朦朧", "Stun");
+        } else if (REF_BROKEN_VAL) {
+            int b = REF_BROKEN_VAL;
+
+            if (b < BROKEN_1) {
+                label = GB_L("傷", "Scratch");
+            } else if (b < BROKEN_2) {
+                label = GB_L("亀裂", "Crack");
+            } else if (b < BROKEN_3) {
+                label = GB_L("破損", "Damaged");
+            } else {
+                label = GB_L("大破", "Wrecked");
+            }
+        }
+        if (label) {
+            gb_status_push(out, &n, cap, "stun", label, NULL, GB_SK_BAD);
+        }
+    }
+    {
+        int c = p_ptr->cut;
+        const char *label = NULL;
+
+        if (c > CUT_7) {
+            label = GB_L("深刻な大怪我", "Mortal wound");
+        } else if (c > CUT_6) {
+            label = GB_L("ひどい深手", "Deep gash");
+        } else if (c > CUT_5) {
+            label = GB_L("大怪我", "Severe cut");
+        } else if (c > CUT_4) {
+            label = GB_L("大変な傷", "Nasty cut");
+        } else if (c > CUT_3) {
+            label = GB_L("ひどい傷", "Bad cut");
+        } else if (c > CUT_2) {
+            label = GB_L("軽傷", "Light cut");
+        } else if (c) {
+            label = GB_L("かすり傷", "Graze");
+        }
+        if (label) {
+            gb_status_push(out, &n, cap, "cut", label, NULL, GB_SK_BAD);
+        }
+    }
+    {
+        const char *label = NULL;
+
+        if ((CHECK_YUMA_FOOD_STOCK) > 0) {
+            label = NULL; /* 尤魔の満腹のたくわえは悪い状態ではない */
+        } else if (p_ptr->food < PY_FOOD_FAINT) {
+            label = GB_L("衰弱", "Weak");
+        } else if (p_ptr->food < PY_FOOD_WEAK) {
+            label = GB_L("衰弱", "Weak");
+        } else if (p_ptr->food < PY_FOOD_ALERT) {
+            label = GB_L("空腹", "Hungry");
+        } else if ((p_ptr->food >= PY_FOOD_MAX) && (p_ptr->pclass != CLASS_YUMA)) {
+            label = GB_L("過食", "Gorged");
+        }
+        if (label) {
+            gb_status_push(out, &n, cap, "hungry", label, NULL, GB_SK_BAD);
+        }
+    }
+
+    /* (4) 常時の効果（C 画面の耐性・能力の表。鑑定済みの分だけ）。 */
+    {
+        static gb_perm_ctx ctx; /* ゲームのスレッドは 1 本。大きいので静的に持つ */
+
+        gb_perm_collect(&ctx);
+        for (i = 0; i < GB_PERM_ROWS; i++) {
+            const gb_perm_row *r = &gb_perm_rows[i];
+            int st = gb_perm_row_state(&ctx, r);
+
+            if (st == 2) {
+                gb_status_push(out, &n, cap, r->imm_key, GB_L(r->imm_ja, r->imm_en), NULL, r->kind);
+            } else if (st == 1) {
+                gb_status_push(out, &n, cap, r->key, GB_L(r->ja, r->en), NULL, r->kind);
+            }
+        }
+    }
+    return n;
+}
+
+/*!
+ * @brief 状態のアイコンの表の自己検査（キャラクター不要）。
+ * @details 表の鍵が空でない・長さの上限内・種類が 0..5・同じ BAR の鍵が別の種類で重複しない、
+ * 常時の効果の行の旗が範囲内、を見る。画面側の表（`status_icon_table.inc`）との突き合わせは、
+ * 環境変数 `HENGBAND_STATUS_ICON_TABLE` にそのファイルの絶対パスがあるときだけここで行う
+ * （無ければ `*checked` を 0 のまま返し、突き合わせは `tools/gensoband/gb_status_table_check.py` が行う）。
+ * @return 外れた件数（0 なら全部合っている）
+ */
+int gb_status_selftest(char *err, int cap, int *checked)
+{
+    int fails = 0;
+    int i;
+    const char *path = getenv("HENGBAND_STATUS_ICON_TABLE");
+    char *table = NULL;
+    long len = 0;
+
+    if (err && (cap > 0)) {
+        err[0] = '\0';
+    }
+    if (checked) {
+        *checked = 0;
+    }
+#define GB_ST_FAIL(...) \
+    do { \
+        if ((fails == 0) && err && (cap > 1)) { \
+            sprintf(err, __VA_ARGS__); \
+            err[cap - 1] = '\0'; \
+        } \
+        fails++; \
+    } while (0)
+
+    if (path && path[0]) {
+        FILE *fp = fopen(path, "rb");
+
+        if (fp) {
+            fseek(fp, 0, SEEK_END);
+            len = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            if ((len > 0) && (len < 4 * 1024 * 1024)) {
+                table = (char *)malloc((size_t)len + 1);
+                if (table) {
+                    len = (long)fread(table, 1, (size_t)len, fp);
+                    table[len] = '\0';
+                }
+            }
+            fclose(fp);
+        }
+        if (!table) {
+            GB_ST_FAIL("icon table unreadable: %.100s", path);
+        }
+    }
+
+    for (i = 0; i < GB_BAR_COUNT; i++) {
+        const gb_bar_icon *b = &gb_bar_icons[i];
+
+        if (!b->key || !b->key[0] || (strlen(b->key) >= sizeof(((gb_status_effect *)0)->key))) {
+            GB_ST_FAIL("bar %d: bad key", i);
+            continue;
+        }
+        if (b->kind > GB_SK_SPECIAL) {
+            GB_ST_FAIL("bar %d (%s): kind %d is not a temporary kind", i, b->key, (int)b->kind);
+        }
+        if (table) {
+            char needle[64];
+
+            sprintf(needle, "{ \"%s\",", b->key);
+            if (!strstr(table, needle)) {
+                GB_ST_FAIL("bar %d: key '%s' is not in the icon table", i, b->key);
+            }
+            if (checked) {
+                (*checked)++;
+            }
+        }
+    }
+    for (i = 0; i < GB_PERM_ROWS; i++) {
+        const gb_perm_row *r = &gb_perm_rows[i];
+
+        if (!r->key || !r->key[0] || !r->ja || !r->en) {
+            GB_ST_FAIL("perm row %d: missing key or label", i);
+            continue;
+        }
+        if ((r->kind != GB_SK_PERM) && (r->kind != GB_SK_PERM_BAD)) {
+            GB_ST_FAIL("perm row %d (%s): kind %d is not permanent", i, r->key, (int)r->kind);
+        }
+        if ((r->mode != GB_PM_CURSE) && ((r->flag < 0) || (r->flag >= TR_FLAG_MAX))) {
+            GB_ST_FAIL("perm row %d (%s): flag %d out of range", i, r->key, (int)r->flag);
+        }
+        if (r->imm_key && (!r->imm_ja || !r->imm_en)) {
+            GB_ST_FAIL("perm row %d (%s): immune label missing", i, r->key);
+        }
+        if (table) {
+            char needle[64];
+
+            sprintf(needle, "{ \"%s\",", r->key);
+            if (!strstr(table, needle)) {
+                GB_ST_FAIL("perm row %d: key '%s' is not in the icon table", i, r->key);
+            }
+            if (checked) {
+                (*checked)++;
+            }
+            if (r->imm_key) {
+                sprintf(needle, "{ \"%s\",", r->imm_key);
+                if (!strstr(table, needle)) {
+                    GB_ST_FAIL("perm row %d: key '%s' is not in the icon table", i, r->imm_key);
+                }
+                if (checked) {
+                    (*checked)++;
+                }
+            }
+        }
+    }
+    /* 速さ・朦朧・切り傷・空腹の鍵（`gb_read_status_effects` が直に書く）。 */
+    if (table) {
+        static const char *const direct[] = { "haste", "slow", "stun", "cut", "hungry" };
+
+        for (i = 0; i < 5; i++) {
+            char needle[64];
+
+            sprintf(needle, "{ \"%s\",", direct[i]);
+            if (!strstr(table, needle)) {
+                GB_ST_FAIL("direct key '%s' is not in the icon table", direct[i]);
+            }
+            if (checked) {
+                (*checked)++;
+            }
+        }
+    }
+    free(table);
+#undef GB_ST_FAIL
+    return fails;
 }

@@ -279,6 +279,22 @@ def _load(module_path, name):
     return module
 
 
+def _fit_rock_to_cell(vol):
+    """Keep the archived 60x60 prototype's shape inside one 32-voxel cell.
+
+    A one-cell terrain object must not claim neighbouring grid squares.  Use
+    nearest-neighbour sampling so palette indices and the faceted silhouette
+    remain exact, then leave a one-voxel margin around the footprint.
+    """
+    target = (30, 30, 24)
+    axes = [np.minimum((np.arange(size) * vol.shape[i] / size).astype(np.int32), vol.shape[i] - 1)
+            for i, size in enumerate(target)]
+    fitted = vol[np.ix_(axes[0], axes[1], axes[2])]
+    out = np.zeros((32, 32, 24), dtype=vol.dtype)
+    out[1:31, 1:31, :] = fitted
+    return out
+
+
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
     root = os.path.abspath(os.path.join(here, '..', '..'))
@@ -299,9 +315,11 @@ def main():
     singles = (
         ('shop', va.shop(), {'kind': 'static'}, 0.0),
         ('tree', va.tree(), {'kind': 'wind'}, 0.45),
-        ('rock', va.rock(), {'kind': 'static'}, 0.0),
+        ('rock', _fit_rock_to_cell(va.rock()), {'kind': 'static'}, 0.0),
         ('grass', va.grass(), {'kind': 'wind'}, 1.0),
     )
+    if '--only-rock' in sys.argv[1:]:
+        singles = tuple(entry for entry in singles if entry[0] == 'rock')
     for name, vol, motion, wind_k in singles:
         parts = [('main', vol, (0, 0, 0))]
         extra = [{'name': 'main', 'voxels': 'main', 'grounded': True,
@@ -311,6 +329,9 @@ def main():
         print('%-5s %-14s voxels=%-8d vox=%7d B  footprint=%d マス  motion=%s k=%.2f'
               % (name, 'x'.join(map(str, vol.shape)), int((vol > 0).sum()), size, len(fp),
                  motion['kind'], wind_k))
+
+    if '--only-rock' in sys.argv[1:]:
+        return
 
     # --- 水車小屋（パーツ 2 つ。シーングラフとピボットの経路を通す） ---
     hut = mill.hut()

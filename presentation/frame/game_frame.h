@@ -5,9 +5,13 @@
  * 所属は presentation/frame 専属。ui は include するのみ（循環禁止）。
  */
 #pragma once
+#include "frame/modern_window.h"
+#include "frame/targeting.h"
 
 #include "frame/combat_fx.h"
 #include "frame/sound_event.h"
+#include "frame/status_effect.h"
+#include "frame/attack_fx.h"
 #include "frame/hud_snapshot.h"
 #include "frame/map_cell_view.h"
 #include "frame/message_event.h"
@@ -76,10 +80,36 @@ struct MonsterAlertCell {
     uint8_t level{ static_cast<uint8_t>(MonsterAlert::Unknown) };
 };
 
+/*!
+ * @brief Term の 1 行の中で「同じ色が続いている区間」（UTF-8 バイト位置）。
+ * @details `TermMirrorLine::color` は 1 行 1 色なので、**1 行に何色も出る画面**が潰れる。
+ * いちばん分かりやすいのがカラーの設定（`&` →(3)）の見本行で、コアは
+ * `term_putstr(i * 4, 22, -1, i, format("%3d", i))`（`cmd-io/cmd-dump.cpp:112`）と
+ * **数字 1 つずつ別の色**で描くのに、ミラーでは行頭の色（＝黒）に染まって
+ * **見本がまるごと見えなかった**。
+ * @note 位置は `MenuChoice` と同じく UTF-8 の**バイト位置**（Term 列ではない）。
+ * @note **`SubPanelLine`/`TermTextRun` より前に置いてある**——AH-25 の直しで
+ * この 2 つも `color_spans` を持つようになったので、宣言の前後がそのまま
+ * コンパイルできる順でなければならない。元は `TermMirrorLine` の直前にあった。
+ */
+struct TermColorSpan {
+    int begin{ 0 };
+    int len{ 0 };
+    uint8_t color{ 1 }; //!< TERM_COLOR 相当
+};
+
 //! サブパネル 1 行（コアのサブウインドウ Term 由来）。
 struct SubPanelLine {
     std::string text_utf8;
-    uint8_t color{ 1 }; //!< TERM_COLOR 相当（行内で最初に見つかった文字の色）
+    uint8_t color{ 1 }; //!< TERM_COLOR 相当（行内で最初に見つかった文字の色。`color_spans` が空のときだけ使う）
+    /*!
+     * @brief AH-25: 状態列（`status_col_lines`）の 1 行に何色も出るときの区間。
+     * @details `TermColorSpan`/`TermMirrorLine::color_spans` と同じ考え方
+     * ——**空なら行全体が `color`**（既定）で、
+     * 他のコアはここを埋めないので 1 バイトも変わらない。埋めるのは Angband の
+     * `an_frame.cpp`（`fill_status_and_bottom()`）だけ。
+     */
+    std::vector<TermColorSpan> color_spans;
 };
 
 /*!
@@ -97,6 +127,18 @@ struct SubPanelContent {
 };
 
 /*!
+ * @brief 画面側の既定の描き方を「種類」として選ぶ番号（2026-09-23。気づいたこと
+ * 「Rogue のサブパネルの割り当てが変更できない」）。
+ * @details コアのサブウインドウを持たないコア（Rogue 系）が、UI 既定の 5 種
+ * （0 メッセージ / 1 装備 / 2 視界の敵 / 3 キャラクター / 4 持ち物）を枠ごとに選ばせるために
+ * 申告する。`kind - kBuiltinSubPanelKindBase` が `draw_default_sub_panel` の枠番号で、
+ * 中身はフレームの既存の欄（messages / sub2_lines など）から描く。コアのサブウインドウの
+ * 番号（`SubWindowRedrawingFlag` は 32 未満）と重ならない。
+ */
+constexpr int kBuiltinSubPanelKindBase = 100;
+constexpr int kBuiltinSubPanelKindCount = 5;
+
+/*!
  * @brief K-32: Term の 1 行を「同じ色の連なり」に切った断片。
  * @details コアの最下行（ステータスバー）は**桁と色の両方に意味がある**
  * （空腹・朦朧などが色つきで左に、速度・学習・階層が右端の決まった桁に出る。
@@ -106,7 +148,14 @@ struct SubPanelContent {
 struct TermTextRun {
     int col{}; //!< Term 桁（0 起点）。描画側はこの桁に合わせて置く
     std::string text_utf8;
-    uint8_t color{ 1 }; //!< TERM_COLOR 相当
+    uint8_t color{ 1 }; //!< TERM_COLOR 相当（`color_spans` が空のときだけ使う）
+    /*!
+     * @brief AH-25: 最下段（`bottom_row_runs`）の 1 本の中に何色も出るときの区間。
+     * @details `SubPanelLine::color_spans` と同じ考え方。
+     * **空なら `run` 全体が `color`**（既定）——他のコアはここを埋めないので
+     * 1 バイトも変わらない。埋めるのは Angband の `an_frame.cpp` だけ。
+     */
+    std::vector<TermColorSpan> color_spans;
 };
 
 /*!
@@ -148,21 +197,6 @@ struct TermPalette {
 
     bool operator==(const TermPalette &other) const { return this->rgb == other.rgb; }
     bool operator!=(const TermPalette &other) const { return !(*this == other); }
-};
-
-/*!
- * @brief Term の 1 行の中で「同じ色が続いている区間」（UTF-8 バイト位置）。
- * @details `TermMirrorLine::color` は 1 行 1 色なので、**1 行に何色も出る画面**が潰れる。
- * いちばん分かりやすいのがカラーの設定（`&` →(3)）の見本行で、コアは
- * `term_putstr(i * 4, 22, -1, i, format("%3d", i))`（`cmd-io/cmd-dump.cpp:112`）と
- * **数字 1 つずつ別の色**で描くのに、ミラーでは行頭の色（＝黒）に染まって
- * **見本がまるごと見えなかった**。
- * @note 位置は `MenuChoice` と同じく UTF-8 の**バイト位置**（Term 列ではない）。
- */
-struct TermColorSpan {
-    int begin{ 0 };
-    int len{ 0 };
-    uint8_t color{ 1 }; //!< TERM_COLOR 相当
 };
 
 //! MenuOverlay 用 Term ミラー1行（読取専用・Phase8）。
@@ -213,6 +247,9 @@ struct MenuChoice {
     int key_begin{0}; //!< 決定キーを表す文字そのものの開始バイト（`i/e)` の `i` / `e`）
     int key_len{0}; //!< 同・バイト長
     int key{0}; //!< KeyQueue へ積む 1 キー（ESC=0x1B / スペース=0x20）
+    bool available{true};
+    bool selected{false}; // Explicit native selection, including keyless choices.
+    std::string reason_utf8,description_utf8,label_utf8;
 };
 
 /*!
@@ -244,6 +281,8 @@ struct PromptBar {
      * プロンプトも同じ器に載せたので、「B/ESC:いいえ」を出しっぱなしにできなくなった。
      */
     std::string footer_utf8;
+    //! true = PromptBar のまま描画し、全画面 Modern ダイアログへ昇格させない。
+    bool lightweight{false};
     /*!
      * @brief 元の画面（Term ミラー）の中での行。`< 0` はミラーに出ていない画面。
      * @details 数値入力と同じで、出ている画面（店・建物）では**別窓を出さず
@@ -322,6 +361,16 @@ struct TeleportFx {
  * 既存の 旧2D画面 は未知キーとして黙って捨てる（v1 §2.3）。
  * @note フロアの**寸法**は足していない。`MinimapSnapshot::width/height` が既に運んでいる。
  */
+/*!
+ * @brief フロアの中の**区域**（長方形）。Umoria の部屋の種類を運ぶ（2026-10-03）。
+ * @details `style` は `dungeon_styles.jsonc` の `id` として引かれる——区域の中のマスだけ、
+ * その意匠で床・壁・柱・小物を差し替える。送らないコアは空のままで、絵は変わらない。
+ */
+struct FloorZone {
+    int style{ 0 }; //!< 意匠の id
+    int x0{ 0 }, y0{ 0 }, x1{ 0 }, y1{ 0 }; //!< 両端を含む
+};
+
 struct FloorIdentity {
     //! `FloorType::dungeon_id`。地上は 0。
     int dungeon_id{ 0 };
@@ -374,6 +423,31 @@ struct FloorIdentity {
      * @note 同上、版は上げない。
      */
     bool wild_mode{ false };
+    /*!
+     * @brief 区域（`FloorZone`）。**追加だけ**なので版は上げない。空なら鍵ごと出ない。
+     */
+    std::vector<FloorZone> zones;
+    /*!
+     * @brief **町の地図の左上が、階の座標（`cells`・`minimap` の gx, gy）のどこに出ているか**（マス）。
+     *
+     * @details 町の地図（`lib/edit/` の町のデータ）の (0,0) のマスが、フレームの座標では
+     * (`town_origin_x`, `town_origin_y`) に当たる。**町の座標＝フレームの座標 − 原点**。
+     * 画面側は、町ごとの意匠の表（`town_styles.jsonc` の `zones`・`features`・`sites`・`brook` など、
+     * 町の地図の座標で書いてあるもの）と、見た目の乱数の種・街灯の格子・岩山の記憶を、
+     * この原点を引いた町の座標で扱う。
+     *
+     * **なぜ要るか。** 町が荒野の窓の中にある Frox は、荒野の窓を 66 桁・22 行ずつずらすので
+     * （原作 `wild.c` の `WILD_SCROLL_CX`／`CY`）、町の地図の左上が窓のどこに出るかが
+     * 歩くたびに変わる（宿屋の移動で着いた時点でもずれている町がある）。座標が動かない前提の
+     * 画面側は、岩山の記憶を別の位置に残し、意匠の目印を門のない所へ置いた。
+     *
+     * 町の地図が窓に固定されているコア（変愚・短愚・幻想蛮怒・Angband・Umoria など）は
+     * 送らない（0 のまま）。既定値 0 は鍵ごと出ない。町の外・ダンジョンでも 0。
+     * @note 追加だけなので版は上げない（v1 §3.2）。`same_floor` には含めない
+     * ——窓がずれても同じ町であり、実体や効果の記憶を捨てる理由にならない。
+     */
+    int town_origin_x{ 0 };
+    int town_origin_y{ 0 };
 };
 
 //! `FloorIdentity::kind` の値。
@@ -417,6 +491,36 @@ struct LightingState {
      * マスあたり 0/1/2 の 3 段しか無いので、これだけでは丸い減衰が作れない。
      */
     int light_radius{ 0 };
+    /*!
+     * @brief プレイヤの光源の種類（光の届く範囲の見せ方）。
+     * @details 0 = 送っていない／無し（画面側は従来の暖色）、1 = 松明、2 = ランタン、
+     * 3 = アーティファクトの光源、4 = それ以外（種族・魔法など装備によらない光）、
+     * 5 = **暗黒側**（Sil-Q の負の光・Angband の UNLIGHT）。5 のときの `player_lit` は「暗くされた範囲」で、
+     * 画面側は範囲を明るくせず、暗く冷たい色にする。
+     * 画面側はこれで色と揺らぎを変える。知らない値は 0 と同じに扱う
+     * （5 を知らない古い画面では範囲が従来の暖色で明るく出るだけで、落ちない）。
+     */
+    uint8_t light_kind{ 0 };
+    /*!
+     * @brief **プレイヤの光源で照らされているマス**（`GameFrame::cells` と同じ並びのビット列。
+     * 1 マス 1 ビット・下位ビットから詰める）。。
+     * @details `MapCellView::light_level` の 2（いま照明あり）は「松明で照らされている」と
+     * 「明るい部屋」を区別しない。明るい部屋の中でも松明の範囲を一段明るく見せるために、
+     * 変愚なら `CAVE_LITE` の立ったマスだけをここで運ぶ。**空なら送っていない**
+     * （画面側は従来どおり点光源の減衰だけで描く）。マスの組（17 要素の固定の並び）に
+     * 足さないのは、足すと古い画面が組の長さ違いでフレームごと捨てるため。
+     */
+    std::vector<uint8_t> player_lit;
+    /*!
+     * @brief **いま見えていない記憶のマスを、少し暗くしてほしい**という申告（Rogue 系。
+     * ）。
+     * @details 0 = 申告なし（既定。鍵ごと出ない。画面側は `light_level` を読まず、絵は今までと 1 画素も変わらない）、
+     * 1 = 申告あり。申告したコアの `MapCellView::light_level` 1 は「いま見えていない記憶のマス」の意味で、
+     * 画面側はそのマスを少し暗くする（見えなくはしない。暗さは画面側が決める）。
+     * **コアごとに `light_level` の意味が違う**（変愚は 0 が記憶・1 が視界内の暗がり、Rogue 系は 2 が見えている・
+     * 1 が記憶）ので、`light_level` だけでは判じられず、申告が要る。知らない値は 0 と同じに扱う。
+     */
+    uint8_t memory_dim{ 0 };
 };
 
 /*!
@@ -466,6 +570,7 @@ struct SurroundingsView {
 };
 
 struct GameFrame {
+    ModernWindow modern;
     uint64_t frame_id{};
     int cam_x{};
     int cam_y{};
@@ -502,6 +607,7 @@ struct GameFrame {
      */
     int16_t target_gx{ -1 };
     int16_t target_gy{ -1 };
+    TargetingState targeting;
     /*! @} */
     /*!
      * @brief この 1 フレームで起きた戦闘の見せ場。
@@ -519,6 +625,20 @@ struct GameFrame {
      * 立てていなければコアが従来どおり自分で鳴らす（移行の途中でも二重に鳴らない）。
      */
     std::vector<SoundEvent> sounds;
+    /*!
+     * @brief かかっているバフ・デバフ（`frame/status_effect.h`）。
+     * @details `combat_fx` や `sounds` と違って**汲んだら消える性質は無い**——「いまかかっている
+     * もの」を毎フレーム写す。並びは原作の最下段の表の順。空なら codec が丸ごと省く。
+     */
+    std::vector<StatusEffectView> status_effects;
+    /*!
+     * @name 攻撃の視覚効果（`frame/attack_fx.h`）
+     * @details `combat_fx` と同じく**汲んだら消える**。空なら codec が丸ごと省く。
+     * @{
+     */
+    std::vector<ProjectionFx> projections;
+    std::vector<MissileFx> missiles;
+    /*! @} */
     std::string controller_hint;
     /*!
      * @brief コアが自由文字入力（`askfor`）の中にいるか。
@@ -528,6 +648,13 @@ struct GameFrame {
      * （`presentation::install_text_input_hook`）。
      */
     bool text_input_active{false};
+    /*!
+     * @brief 自由文字入力のうち、現在の欄が**プレイヤー表示名**か。
+     * @details 古い Core の player-name/save-file 制約から UTF-8 表示名を分離するための
+     * 明示フラグ。真の間は UI が ASCII 文字も `text` イベントで送り、adapter 側の
+     * PlayerIdentity が UTF-8 の正本を受け取る。偽なら従来の文字入力経路のまま。
+     */
+    bool player_name_input_active{false};
     /*!
      * @brief **コアがいま「次の命令」を待っているか**（v1 の追補。2026-08-23）。
      *
@@ -548,6 +675,8 @@ struct GameFrame {
      * （変愚系はこれまでどおり `\r` を送り、コア自身のメニューが開く）。
      */
     bool awaiting_command{false};
+    // Native menu-opening printable keys with no user keymap, supplied by the core.
+    std::string command_menu_keys;
     /*!
      * @brief **コアが @ から離れた所を見ている**（`cam_x` / `cam_y` を注視点にすること）。
      *
@@ -570,6 +699,20 @@ struct GameFrame {
     bool pre_game_menu{false};
 
     /*!
+     * @brief 死亡・引退・勝利のあとの画面（墓石・得点表・経緯・ファイル名の入力など）か。
+     * @details `pre_game_menu` はタイトル・誕生・死亡後をまとめて「本文を全面に出す」と
+     * 指すので、**題や画面の状態（`phase`）を決める材料には粗すぎた**
+     * （死亡の窓が「キャラクター作成」と呼ばれ、`phase` が `birth` になる。
+     * 遊びのテスト 1 周目の修-10）。ゲームが終わった画面ではこの旗を**`pre_game_menu` と一緒に**立てる。
+     * `pre_game_menu` の意味は変えない（全面に出す判定の 30 か所余りはそのまま）。
+     * @note **送らないコアでは偽のまま**で、絵は 1 ビットも変わらない（古い組み合わせでも壊れない。
+     *       プロトコルの未知の欄は捨てる約束）。立てるのは変愚・短愚・幻想蛮怒・Frox・Sil-Q・Umoria・
+     *       Rogue 3.6・5.4。Angband と RogueClone2 は死亡の画面の見分けを持たないので立てない。
+     * @note 偽のときに `pre_game_menu` だけが真なら、それはタイトルか誕生の画面。
+     */
+    bool game_over{false};
+
+    /*!
      * @brief **重ねのメニューで、地図はまだ生きている**か。
      * @details `menu_open` は「Term ミラーを前に出す」だが、**地図を消さずに
      * 小さな箱を重ねるだけ**の画がある（Frox のコマンドメニュー。`util.c` の
@@ -585,6 +728,17 @@ struct GameFrame {
      *       （持ち物・店のように地図を消してから描く画は、今までどおり全面の写し）。
      */
     bool menu_over_map{false};
+
+    /*!
+     * @brief 選択肢の窓を**地図の上の小さな箱**で出すか（`menu_over_map` と一緒に立てる）。
+     * @details 地図のクリックが開いた文脈メニュー（AH-58）はクリックした点の近くへ出すが、
+     * コマンドメニューやキーから始めた問い（アイテムを選ぶ問いなど）にはその点が無い。
+     * 真のときは、点が無くても小さな箱で出す（地図の下寄りの中央）。
+     * 決めたこと 2026-10-02「対象を選ぶ必要があるときは小さく選択肢をポップアップさせよう。
+     * 全画面にならないように」。いまは Rogue 系のアイテムを選ぶ問いだけが立てる。
+     * @note 送らないコアでは偽のまま（Frox・幻想蛮怒のコマンドメニューは今までどおり）。
+     */
+    bool menu_popup{false};
 
     /*!
      * @brief K-47: **起動からオープニングを抜けるまで**（＝タイトル画を敷いてよい間）か。
@@ -677,6 +831,39 @@ struct GameFrame {
 
     //! icky 中の Term 全文ミラー（menu_open 時のみ Bridge が充填）。
     std::vector<TermMirrorLine> menu_term_lines;
+
+    /*!
+     * @brief AH-12: 「メニューの枠」（`menu->active` の矩形）の**外**にあって
+     * `menu_term_lines` から捨てられている、行 0 でも枠の中でもない見出し・説明
+     * （店の名前と所持金・呪文の説明など）。
+     * @details アダプタが `struct menu` の矩形の外を刈り込むのは地図・状態列の
+     * 混入を防ぐためだが（`menu_term_lines` 自体はそのまま）、刈り込んだ分は
+     * どこにも残らず新 UI に届かなかった（AH-12）。**このフィールドを送るのは
+     * Angband のアダプタだけ**——他のコアは `struct menu` の矩形を使う形が違う
+     * （または刈り込みの実装が無い）ので、空のまま（既定）で届く。
+     * @note 複数行なら `\n` で連結。空なら「捨てた見出しは無い」。
+     */
+    std::string menu_box_header_utf8;
+
+    /*!
+     * @brief AH-16（後半）: いま Enter が「確定」ではなく
+     * 「記録するキーそのもの」として扱われる画面にいるか。
+     * @details Angband のキーマップ作成/照会/削除（`ui-options.c` の
+     * `ui_keymap_create()`/`ui_keymap_query()`/`ui_keymap_remove()`）は
+     * `struct menu` の行の動作として raw に描き、`keymap_get_trigger()`/
+     * `inkey()` を直に呼んで**次に押された 1 打鍵をそのまま記録する**——
+     * 既存の `frame.text_input_active`（Enter を確定として扱う契約）を
+     * 被せると意味が逆になる。`native_modern.h`/`ModernWindow::capture_keys`
+     * には既に「Enter も含めて生のキーを送る」契約がある（`hd2d/ui/game_hud.cpp`
+     * の「トリガーキー:」のカーソル行から立てる、他コアの経路）ので、
+     * Angband アダプタは別の契約を増やさず、この場から同じ
+     * `ModernWindow::capture_keys` を立てる合図としてこのフラグを使う
+     * （`menu_box_header_utf8` と同じく、この構造体の中だけで使う——
+     * `an_main.cpp` が立て、`native_modern.h` の `capture()` が読んで
+     * `window.capture_keys` へ写す——ので `frame_codec.cpp` へは載らない）。
+     */
+    bool capture_keys{false};
+
     /*!
      * @name 文字入力のキャレット位置。負値＝出さない。
      * @details **どちらも `menu_term_lines` の中での位置**である。

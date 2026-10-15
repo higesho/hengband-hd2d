@@ -213,7 +213,7 @@ BoardPlacement first_person_recenter(const float head_position[3], const float h
     board.yaw = std::atan2(-flat.x, -flat.z);
     /*
      * **足元に置く。**y は 0（ステージの床）——世界の床を実際の床に合わせると、
-     * 利用者の身長がそのまま目の高さになる。`kFpsEyeHeight` は足さない。
+     * 遊ぶ人の身長がそのまま目の高さになる。`kFpsEyeHeight` は足さない。
      */
     board.origin = Vec3{ head_position[0], 0.f, head_position[2] };
     return board;
@@ -634,7 +634,7 @@ bool orientation_check(std::string &report)
     /*
      * 一人称 VR（§17）。見るのは 4 つ。
      * 1. 縮尺が身長から出ているか（平らな画面の目の高さと同じ比になるか）
-     * 2. プレイヤのマスが**利用者の足元**に来るか（目の高さが身長ぶん上にあるか）
+     * 2. プレイヤのマスが**遊ぶ人の足元**に来るか（目の高さが身長ぶん上にあるか）
      * 3. 目の世界座標が `kFpsEyeHeight` マスの高さになるか（＝平らな画面と同じ目線）
      * 4. **頭が照準か**——再中心の直後は北（0）、頭を右へ 90 度回したら東（+90 度）
      */

@@ -1,0 +1,39 @@
+# terrain.ja.tsv — terrain.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+open floor|desc	09347c26a9	何も無い床か、むき出しの地面だ。何でも歩いて渡れ、トラップやアイテムを置ける。視線をさえぎらない。
+closed door|confused-msg	d1344957c6	ドアにぶつかった
+closed door|desc	9a64c9349f	ドアには鍵がかかっていることがあり、通り抜けるのはたやすくないかもしれない。鍵を扱えるかどうかは解除の腕前で大きく変わるが、つるはしで叩き壊すことも、魔法で吹き飛ばすこともできる。モンスターもドアで足止めされるので、鍵をかければ貴重な時間を稼げる。
+open door|desc	70e7a374a4	すでに開いているドアだ。開いている間は、プレイヤーもモンスターも呪文も飛び道具も通り抜けられる。
+broken door|desc	60c0ce6f00	ひどく壊れていて閉められないドアだ。
+up staircase|desc	de4d4769be	ダンジョンのより浅い所へ上る階段だ。
+down staircase|desc	eddb882b43	ダンジョンのより深い所へ下る階段だ。
+General Store|desc	bd12db4c0a	雑貨屋は食料、矢玉、明かりの品を売っている。
+Armoury|desc	b803aa32fe	ここで売っている防具は、敵の攻撃からいくらか身を守ってくれる。
+Weapon Smiths|desc	03911e1c85	敵を打ち、射るための武器が、この心そそる店の暑く鼻をつく奥の部屋で鍛えられている。
+Bookseller|desc	b1654fa14b	神秘の書物の棚が並ぶ、静かで物思いにふけれる避難所だ。
+Alchemy Shop|desc	9a25ad2a43	薬と巻物が売り買いされる、薄暗く香りの漂う部屋だ。
+Magic Shop|desc	605f1a9504	魔法を封じ込めた道具や装飾品の店だ。
+Black Market|desc	1539febbea	このいかがわしいたまり場に入るときは、背中に気をつけ、財布を握りしめておけ。愛想のいい応対も掘り出し物も期待するな。
+Home|desc	de2ad58beb	中つ国の中であなたの安全な場所で、身につけている物のほかに品物をしまっておける唯一の場所だ。
+secret door|confused-msg	4403f70c4e	壁に体当たりした
+secret door|desc	6067dbebda	慣れない目には花崗岩の壁のように見えるドアだ。
+pile of rubble|confused-msg	1f679cc92e	岩にぶつかった
+pile of rubble|desc	fc81a0bb6b	視線をさえぎり、飛び道具、ボルト、ビームを止める。溶かしたり掘り抜いたりすると、ふつうの床になる。
+magma vein|confused-msg	4403f70c4e	壁に体当たりした
+magma vein|desc	34f9840858	柔らかい岩の鉱脈だ。掘るか魔法で取り除け、実体の無いモンスターは通り抜けられる。どんな呪文も飛び道具も視線も止める。
+quartz vein|confused-msg	4403f70c4e	壁に体当たりした
+quartz vein|desc	09a1e08770	やや硬い岩の鉱脈だ。掘るか魔法で取り除け、実体の無いモンスターは通り抜けられる。どんな呪文も飛び道具も視線も止める。
+magma vein with treasure|confused-msg	4403f70c4e	壁に体当たりした
+magma vein with treasure|desc	0c430da981	柔らかい岩の鉱脈だ。掘るか魔法で取り除け、実体の無いモンスターは通り抜けられる。どんな呪文も飛び道具も視線も止める。目に見える財宝を含んでいる。
+quartz vein with treasure|confused-msg	4403f70c4e	壁に体当たりした
+quartz vein with treasure|desc	c4d15ecd35	やや硬い岩の鉱脈だ。掘るか魔法で取り除け、実体の無いモンスターは通り抜けられる。どんな呪文も飛び道具も視線も止める。目に見える財宝を含んでいる。
+granite wall|confused-msg	4403f70c4e	壁に体当たりした
+granite wall|desc	19cf404abf	硬い岩の層だ。掘るか魔法で取り除け、実体の無いモンスターは通り抜けられる。どんな呪文も飛び道具も視線も止める。
+permanent wall|confused-msg	4403f70c4e	壁に体当たりした
+permanent wall|desc	5ee396ab0d	たいていの壁は掘り抜けるが、これは通り抜けられない。ダンジョンはこの種の壁に囲まれており、特別な部屋のいくつかもこれでできている。
+lava|desc	eb39010324	光を放つ溶岩の燃えるたまりだ。踏み込むのは命がけだ！
+lava|walk-msg	055759a561	溶岩でやけどする！本当に踏み込む？
+lava|run-msg	0f4cf90197	溶岩が行く手をふさいでいる。踏み込む？
+lava|hurt-msg	e4a38a038e	溶岩に焼かれた！
+lava|die-msg	1a598e2a4c	溶岩で燃え尽きて
+pile of passable rubble|desc	775c7b8a6b	視線をさえぎり、飛び道具、ボルト、ビームを止め、ボールの呪文の半径を縮める。溶かしたり掘り抜いたりするとふつうの床になり、プレイヤーもモンスターも歩いて通り抜けられる。

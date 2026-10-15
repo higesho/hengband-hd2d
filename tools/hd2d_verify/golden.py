@@ -65,7 +65,10 @@ for _s in (sys.stdout, sys.stderr):
         pass
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-EXE = os.path.join(ROOT, 'HengbandHd2d.exe')
+#: 検査する画面の実行体。既定はリポジトリ直下。**エディタ込みで組んだ実行体でしか動かない検査**（`--edit-check`・
+#: `--slab-ladder-check`）を、配布用（エディタ無し）の箱とは別の実行体で流すために、環境変数で差し替えられる
+#: （関門 `tools/release_gate.py` が使う。2026-10-09）。基準そのものは変えない。
+EXE = os.environ.get('HD2D_GOLDEN_EXE') or os.path.join(ROOT, 'HengbandHd2d.exe')
 GOLDEN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'golden')
 
 #: 走らせる検査。(基準の名前, 引数, パイプで受けるか)
@@ -97,9 +100,11 @@ MASKS = [
     # GPU と driver の申告（機械が変われば変わる）
     (re.compile(r'^\[hd2d\] GL .*$', re.M), '[hd2d] GL <環境>'),
     (re.compile(r'^\[hd2d\] XR_RUNTIME .*$', re.M), '[hd2d] XR_RUNTIME <環境>'),
-    # 一時ディレクトリの絶対パス（ユーザー名が入る）
-    (re.compile(r'[A-Za-z]:[\/]Users[\/][^\s"]+'), '<一時パス>'),
-    (re.compile(r'[A-Za-z]:[\/]Project2[\/][^\s"]+'), '<パス>'),
+    # 一時ディレクトリの絶対パス（遊ぶ人名が入る）。**文字クラスは `[\\/]`**（バックスラッシュとスラッシュ）。
+    # 以前の `[\/]` は正規表現では `/` のエスケープで、`/` にしか当たらなかった。そのため
+    # `<ドライブ>:\Users\<名前>\...` が伏せられずに基準へ焼き込まれていた（slab_ladder.txt。2026-10-09 の取り直しで発見）。
+    (re.compile(r'[A-Za-z]:[\\/]Users[\\/][^\s"]+'), '<一時パス>'),
+    (re.compile(r'[A-Za-z]:[\\/]Project2[\\/][^\s"]+'), '<パス>'),
 ]
 
 
@@ -107,6 +112,10 @@ MASKS = [
 DROPS = [
     # NVIDIA のドライバが出す性能の注意（--cutaway-check で回数が変わる）
     re.compile(r'^\[hd2d\]\[gl\] .*$'),
+    # つないでいるゲームパッドの名前（--core-select-check。機械が変われば変わる）
+    re.compile(r'^\[hd2d\] パッド: .*$'),
+    # コア選択の演出の所要フレーム数と時間（--core-select-check。機械の速さで変わる。整数の ms は上の MASKS に掛からない）
+    re.compile(r'^\[hd2d\] コア選択の演出: .*$'),
 ]
 
 
@@ -131,10 +140,14 @@ def mask(text: str) -> str:
 
 def run_one(args: list[str], piped: bool, timeout: int = 600) -> str:
     """検査を 1 つ走らせ、伏せ字を当てた出力を返す。"""
+    #: 検査で音を鳴らさない（`HENGBAND_MUTE=1`）。**基準を取るときも比べるときも常に付ける**。付けないと
+    #: `--ui-check` が音の装置名（ヘッドホンの型番など）を出力へ入れ、機械が変わるたびに差分になる。
+    env = dict(os.environ, HENGBAND_MUTE='1')
     try:
         proc = subprocess.run(
             [EXE] + args,
             cwd=ROOT,
+            env=env,
             input=b'' if piped else None,
             stdin=None if piped else subprocess.DEVNULL,
             stdout=subprocess.PIPE,
@@ -153,6 +166,7 @@ def main() -> int:
     ap.add_argument('--record', action='store_true', help='いまの出力を基準として保存する')
     ap.add_argument('--check', action='store_true', help='基準と突き合わせる')
     ap.add_argument('--only', help='この名前の検査だけ走らせる（カンマ区切り）')
+    ap.add_argument('--skip', help='この名前の検査を外す（カンマ区切り。配布用の実行体では動かない edit・slab_ladder を外す用）')
     args = ap.parse_args()
 
     if not args.record and not args.check:
@@ -170,6 +184,14 @@ def main() -> int:
         if not targets:
             print('!! その名前の検査は無い: %s' % args.only)
             return 2
+
+    if args.skip:
+        drop = {s.strip() for s in args.skip.split(',')}
+        unknown = drop - {c[0] for c in CHECKS}
+        if unknown:
+            print('!! その名前の検査は無い: %s' % ', '.join(sorted(unknown)))
+            return 2
+        targets = [c for c in targets if c[0] not in drop]
 
     failed = []
     for name, argv, piped in targets:

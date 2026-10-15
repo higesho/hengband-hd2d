@@ -267,6 +267,65 @@ bool TileManifest::load_entities(const std::string &csv_path, const std::string 
     return true;
 }
 
+namespace {
+//! 正体の分からないアイテムの代表タイルに割り当てる id の起点（kind='K'）。
+//! Frox 自身の k_idx（mapping.csv 実測で最大 721）とはぶつからない帯を選んである。
+constexpr int kUnawareRepresentativeIdBase = 60000; // + 1..8 (UNAWARE_CATEGORY_*) = 60001..60008
+} // namespace
+
+void TileManifest::add_unaware_representative_tiles()
+{
+    /*
+     * 分類 → 変愚の K の番号は
+     * `presentation::unaware_item_representative_bi_id()`（`unaware_item_tiles.h`）の
+     * 1 か所だけにあり、ここは新しい絵を作らずその番号の板（`tilework/sfc/K<id>.png`）を
+     * 目録へ追加登録するだけ。Frox は既に K229/K175/K2 をいくつかのアイテムで流用している
+     * （実測: K229 は fc_id 412/414/436、K175 は 12 件、K2 は 3 件が既に同じ絵を指す）。
+     *
+     * **薬・巻物・キノコの 3 分類だけ登録する。** 指輪・アミュレット・ワンド・杖・
+     * ロッドは Frox では対象外——`lib/edit/k_info.txt` を読むと、この 5 種は
+     * tval ごとに `N:*:& Ring~` のような**種類が 1 個しか無い**形で、`flavor_name`
+     * を持つ書き方（`N:400:Water:Clear` のような 2 個目の `:`）が無い。だから
+     * `k_info[].flavor` は常に 0 で、`fc_shim.c` の `fc_unaware_category()` が
+     * 呼ばれても 0 しか返さない。ここへ登録しても引かれないので登録しない
+     * （目録を実態と合わせておく）。
+     */
+    constexpr presentation::UnawareItemCategory kAllCategories[] = {
+        presentation::UnawareItemCategory::Potion,
+        presentation::UnawareItemCategory::Scroll,
+        presentation::UnawareItemCategory::Mushroom,
+    };
+
+    int next_index = static_cast<int>(this->message_.assets.size()) + 1;
+    for (const auto category : kAllCategories) {
+        const auto bi_id = presentation::unaware_item_representative_bi_id(category);
+        char path[64]{};
+        std::snprintf(path, sizeof(path), "tilework/sfc/K%u.png", static_cast<unsigned>(bi_id));
+
+        presentation::AssetManifestWireEntry wire;
+        wire.index = next_index;
+        wire.kind = "K";
+        wire.id = kUnawareRepresentativeIdBase + static_cast<int>(category);
+        wire.path = path;
+        this->message_.assets.push_back(wire);
+
+        const auto key = (static_cast<std::uint32_t>(static_cast<unsigned char>('K')) << 24)
+            | (static_cast<std::uint32_t>(wire.id) & 0x00FFFFFFu);
+        this->entity_index_[key] = static_cast<std::uint16_t>(next_index);
+        ++next_index;
+
+        /* 2D の絵（PNG）が無くても実害は無い（HD2D は .vox しか使わない）。実測では 8 枚とも存在する。 */
+        if (!file_exists(join_path(this->message_.root, path))) {
+            ++this->missing_files_;
+        }
+    }
+}
+
+std::uint16_t TileManifest::lookup_unaware_representative(presentation::UnawareItemCategory category) const
+{
+    return this->lookup_entity('K', kUnawareRepresentativeIdBase + static_cast<int>(category));
+}
+
 std::uint16_t TileManifest::lookup_entity(char kind, int id) const
 {
     if ((id < 0) || (id > 0xFFFF)) {

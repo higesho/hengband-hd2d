@@ -1,4 +1,4 @@
-﻿/*!
+/*!
  * @file fc_pad_commands.cpp
  * @brief `fc_pad_commands.h` の実装。**根拠はコアの表**。
  *
@@ -131,6 +131,22 @@ struct PadExtra {
  */
 const PadExtra kExtras[] = {
     { '.', "Action", "Run(.)" },
+    { 'n', "Action", "Repeat last command(n/X)" }, //!< 原作の `repeat_check()`（`util.c`）。パッドとタッチの唯一の手段
+    /*
+     * 記録と再生（`repeat_check()` の `"` と `'`。原作ヘルプ `commdesc.txt` の
+     * Extra Commands に「Repeat Last Command」と並んで載っている）。
+     * `menu_info` の Options にある `Enter a user pref(")` の行は、実際には
+     * `process_command()` に `"` の分岐が無く、`repeat_check()` が先に取って
+     * 「記録」になる（ユーザー設定の 1 行入力は `!`）。原作の行は削らずに残し、
+     * 正しい名前の行をここに足す。
+     */
+    { '"', "Action", "Record command(\")" },
+    { '\'', "Action", "Playback recorded command(')" },
+    /*
+     * 繰り返し回数（`request_command()` の `Count: `。原作ヘルプ `commdesc.txt` 冒頭の
+     * "repeat count"）。回数は数量の欄と同じ枠で入れる（`input_event_adapter.h`）。
+     */
+    { '0', "Action", "Set repeat count(0)" },
 };
 
 /*!
@@ -138,6 +154,21 @@ const PadExtra kExtras[] = {
  * @details 件数の上限はコアの表の形（分類 9 × 項目 10）から来る 90 で足りるが、
  * 先方が増やしても落ちないように少し余裕を持たせる。
  */
+/*!
+ * @brief 1 つの配列のキー列を積む。逆引きで出せない（`key == 0`）ときは `\` ＋コマンド文字（2026-10-07）。
+ * @details `\` の後の 1 字は原作がキー配置を通さずにコマンドとして読む。**割り当ては番号で持つ**ので、
+ * どちらの配列でも同じコマンドが出れば、配列を切り替えても割り当ては働き続ける。
+ */
+void append_command_keys(std::vector<int> &seq, unsigned char key, int command)
+{
+    if (key != 0) {
+        seq.push_back(key);
+    } else if (command > 0) {
+        seq.push_back('\\');
+        seq.push_back(command);
+    }
+}
+
 std::vector<presentation::PadCommandWireEntry> entries_from_core()
 {
     constexpr int kMax = 128;
@@ -156,22 +187,20 @@ std::vector<presentation::PadCommandWireEntry> entries_from_core()
     int id = 1;
     for (int i = 0; i < n; ++i) {
         const fc_pad_command &src = raw[static_cast<std::size_t>(i)];
+
         presentation::PadCommandWireEntry wire;
         wire.id = id++;
         wire.command = src.command;
         wire.group_utf8 = tr_utf8(src.group); //!< 追補 A4
         wire.label_utf8 = tr_utf8(src.label); //!< 追補 A4
         /*
-         * **キーが 0 の配列には何も積まない。**「そのコマンドはこの配列では出せない」
-         * の意味（黙って誤ったキーを積むより無反応が安全）。項目そのものは残す——
-         * 一覧から消すと「押せないこと」まで見えなくなる。
+         * **キーが 0 の配列**（その配列のキー配置の表を逆に引いても出せないコマンド）は、原作の
+         * 「キー配置を飛ばす」`\`（`util.c` の `request_command()`）を前に付けてコマンド文字をそのまま
+         * 出す（2026-10-07）。以前は何も積まず、ローグライクのキー配置に切り替えると
+         * そのコマンドの割り当てが死んでいた（「銘を刻む」「敵の一覧」など 5 件）。
          */
-        if (src.key_normal != 0) {
-            wire.seq_original.push_back(src.key_normal);
-        }
-        if (src.key_rogue != 0) {
-            wire.seq_rogue.push_back(src.key_rogue);
-        }
+        append_command_keys(wire.seq_original, src.key_normal, src.command);
+        append_command_keys(wire.seq_rogue, src.key_rogue, src.command);
         out.push_back(std::move(wire));
     }
     return out;
@@ -201,6 +230,9 @@ std::vector<presentation::PadCommandWireEntry> entries_from_seeds()
  * @details `id` は**続きの番号**を振る。`command`（`.`）はコアの表と重ならない
  * （`menu_info` に `.` は無い。2026-08-24 に全数当てた）ので、
  * 画面側が `command` で覚えた割り当ても衝突しない。
+ * **例外は `"`（記録）**——`menu_info` の `Enter a user pref(")` と同じ字である。
+ * どちらを押しても原作では同じ「記録」になるので、`command` で覚えた割り当てが
+ * 前の行へ解決されても働きは変わらない。
  */
 void append_extras(std::vector<presentation::PadCommandWireEntry> &out)
 {
@@ -212,14 +244,8 @@ void append_extras(std::vector<presentation::PadCommandWireEntry> &out)
         wire.group_utf8 = tr_utf8(extra.group); //!< 追補 A4
         wire.label_utf8 = tr_utf8(extra.label); //!< 追補 A4
 
-        const unsigned char key_original = fc_pad_key_for_command(0, extra.command);
-        const unsigned char key_rogue = fc_pad_key_for_command(1, extra.command);
-        if (key_original != 0) {
-            wire.seq_original.push_back(key_original);
-        }
-        if (key_rogue != 0) {
-            wire.seq_rogue.push_back(key_rogue);
-        }
+        append_command_keys(wire.seq_original, fc_pad_key_for_command(0, extra.command), extra.command);
+        append_command_keys(wire.seq_rogue, fc_pad_key_for_command(1, extra.command), extra.command);
         out.push_back(std::move(wire));
     }
 }

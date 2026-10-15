@@ -102,6 +102,8 @@
 #include <string>
 #include <vector>
 
+#include "sq_shim.h" // sq_keymap_mode / sq_keymap_action（キー配置ごとの逆引き。2026-10-07）
+
 namespace sq {
 
 namespace {
@@ -112,7 +114,7 @@ struct PadSeed {
      *
      * @details 画面側は割り当てを `pad_bind=<ボタン>:<id>` で cfg に**焼き込む**
      * （`hd2d/ui/game_pad.h` の `PadBinds`）。番号を並び順から採ると、
-     * **表の途中に 1 行足しただけで以後の割り当てが全部ずれる**——利用者の
+     * **表の途中に 1 行足しただけで以後の割り当てが全部ずれる**——遊ぶ人の
      * 「持ち物」のボタンが黙って「調べる」になる。あちらの註記も
      * 「`id` は表の並び順から出る番号なので、コアの版が動くと別のコマンドを指しうる」と
      * 断ってあるが、**こちらが番号を据えれば起きない**。
@@ -292,13 +294,90 @@ const PadSeed kSeeds[] = {
     { 25, 0x13, "System", "", "Save", 0x13 },
 };
 
+//! Sil-Q のキー配置の番号（`silq/src/defines.h` の KEYMAP_MODE_*。ここからは原作の見出しが見えない）。
+constexpr int kKeymapSil = 0;
+constexpr int kKeymapSilHjkl = 1;
+constexpr int kKeymapAngband = 2;
+constexpr int kKeymapAngbandHjkl = 3;
+
+/*!
+ * @brief 原作 `request_command()` がキー配置の表を引く前に横取りする「回数の指定」のキーか。
+ * @details Sil の配置では `R`、Angband 風の配置では `0`（`util.c` の `request_command()`）。
+ * この字を押すと、表に何が書いてあっても回数の入力になる。
+ */
+bool is_count_key(int mode, int key)
+{
+    const bool angband = (mode == kKeymapAngband) || (mode == kKeymapAngbandHjkl);
+    return angband ? (key == '0') : (key == 'R');
+}
+
+//! いまの配置で `key` を押したときに起きる動作（表に無ければ字そのもの）。
+std::string action_of(int mode, int key)
+{
+    const char *act = sq_keymap_action(mode, key);
+    return (act != nullptr) ? std::string(act) : std::string(1, static_cast<char>(key));
+}
+
+/*!
+ * @brief 表の字（**Sil の標準の配置で押す字**）と同じ動作を、いまの配置で起こすキーの列（2026-10-07）。
+ *
+ * @details Sil-Q には配置が 4 つある（Sil・Sil＋hjkl・Angband 風・Angband 風＋hjkl。
+ * `lib/pref/pref.prf` の `C:<配置>:<キー>`）。標準の字をそのまま送ると、hjkl の配置では
+ * 「見る」の `l` が東へ歩き、Angband 風の配置では「投げる」の `t` が「外す」になる。
+ * そこで変愚の `resolve_pad_command_keys()` と同じく、**同じ動作を起こすキーを表から逆に引く**。
+ *   1. その字自身が同じ動作を起こすなら、その字
+ *   2. 同じ動作を起こす別のキー（印字できる字を先に探す）
+ *   3. 無ければ原作の `\`（`request_command()` の「キー配置を飛ばす」）を前に付けて動作の字を送る
+ * 「回数の指定」に横取りされるキー（`is_count_key`）は使わない。
+ *
+ * **番号（`id`）とコマンド文字（`command`）は配置によらず同じ**なので、画面側の割り当て
+ * （パッドもキーボードも番号で持つ）は配置を切り替えても動かない。
+ */
+std::vector<int> resolve_keys(int key, int mode)
+{
+    const std::string want = action_of(kKeymapSil, key);
+    if (!is_count_key(mode, key) && (action_of(mode, key) == want)) {
+        return { key };
+    }
+    const auto search = [&](int from, int to) -> int {
+        for (int k = from; k <= to; ++k) {
+            if (is_count_key(mode, k)) {
+                continue;
+            }
+            const char *act = sq_keymap_action(mode, k);
+            if ((act != nullptr) && (want == act)) {
+                return k;
+            }
+        }
+        return 0;
+    };
+    int found = search(0x21, 0x7E);
+    if (found == 0) {
+        found = search(0x01, 0x1A);
+    }
+    if (found != 0) {
+        return { found };
+    }
+    std::vector<int> keys{ '\\' };
+    for (const char c : want) {
+        keys.push_back(static_cast<unsigned char>(c));
+    }
+    return keys;
+}
+
 } // namespace
 
 presentation::PadCommandsMessage build_pad_commands()
 {
     presentation::PadCommandsMessage message;
-    /* Sil-Q に配列の切り替えは無い（`sq_pad_commands.h` の注記）。 */
-    message.current_keymap = "original";
+    /*
+     * 配置は 4 つあるが、プロトコルの `current_keymap` は 2 値（"original" / "rogue"）。
+     * 画面側がこの値で見るのは「hjkl を方向として読むか」なので、hjkl の配置なら "rogue"。
+     * キー列は**いまの配置で引いた 1 本**を両方の欄へ入れる（`resolve_keys`。配置が変わったら
+     * `sq_main.cpp` の `host_present()` が送り直す）。
+     */
+    const int mode = sq_keymap_mode();
+    message.current_keymap = ((mode == kKeymapSilHjkl) || (mode == kKeymapAngbandHjkl)) ? "rogue" : "original";
 
     for (const PadSeed &seed : kSeeds) {
         presentation::PadCommandWireEntry wire;
@@ -316,13 +395,12 @@ presentation::PadCommandsMessage build_pad_commands()
             ? tr_utf8(seed.subgroup)
             : std::string();
         wire.label_utf8 = tr_utf8(seed.label);
-        wire.seq_original.push_back(seed.key);
-        wire.seq_rogue.push_back(seed.key);
+        wire.seq_original = resolve_keys(seed.key, mode);
         if (seed.key2 != 0) {
-            //! 2 打目（マニュアルだけ）。**Sil-Q に配列の切り替えは無い**ので両方へ同じ物を積む。
+            //! 2 打目（マニュアルだけ）。`?` の画の中の字なので、キー配置の表は通らない。
             wire.seq_original.push_back(seed.key2);
-            wire.seq_rogue.push_back(seed.key2);
         }
+        wire.seq_rogue = wire.seq_original;
         message.entries.push_back(std::move(wire));
     }
 

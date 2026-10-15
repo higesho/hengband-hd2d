@@ -3803,6 +3803,21 @@ J:矢筒に入っているのは
 E:You are wearing
 J:身に着けているのは
 
+# object2.c inven_takeoff() ― 装備を外したときの文（`msg_format("%s %s (%c).", act, …)` の `act`。
+# 書式 `%s %s (%c).` は上で `%s%s(%c)。` と訳してある。上の「〜ているのは」の過去形で揃えた。
+# 弓と明かりは原作が同じ字（`You were holding`）を使うので、訳も 1 つ。
+E:You were wielding
+J:構えていたのは
+
+E:You were holding
+J:手にしていたのは
+
+E:You have removed from your quiver
+J:矢筒から外したのは
+
+E:You were wearing
+J:身に着けていたのは
+
 # cmd3.c / cmd2.c / spells2.c ― アイテムを選ぶ問いと、選べないときの断り
 #（`q` / `s` に代入して `get_item()` へ渡す。フック #9）。
 E:Use which item?\s
@@ -3897,6 +3912,39 @@ J:魔力を戻せるアイテムを持っていない。
 
 E:Give thrall which item?\s
 J:虜囚にどれを渡しますか？\s
+
+# cmd6.c ― 食べる・飲む・演奏する・杖を振るう・発動させる、の問いと断り
+#（`q` / `s` に代入して `get_item()` へ渡す。フック #9）。語は `files.c` のコマンド名の訳
+#（`eat food`＝食べる・`quaff potion`＝薬を飲む・`activate staff`＝杖を振るう・`play instrument`＝楽器を奏でる）に合わせた。
+E:Eat which item?\s
+J:どれを食べますか？\s
+
+E:You have nothing to eat.
+J:食べられるアイテムを持っていない。
+
+E:Quaff which potion?\s
+J:どの薬を飲みますか？\s
+
+E:You have no potions to quaff.
+J:飲める薬を持っていない。
+
+E:Play which instrument?\s
+J:どの楽器を奏でますか？\s
+
+E:You have no instrument to play.
+J:奏でられる楽器を持っていない。
+
+E:Activate which staff?\s
+J:どの杖を振るいますか？\s
+
+E:You have no staff to activate.
+J:振るえる杖を持っていない。
+
+E:Activate which item?\s
+J:どれを発動させますか？\s
+
+E:You have nothing to activate.
+J:発動させられるアイテムを持っていない。
 
 # cmd3.c ― シルマリルを外したとき（`%s` の引数として渡る）。
 E:You have freed a Silmaril!
@@ -6963,6 +7011,71 @@ J:矢筒 2
 
 E:In pack
 J:荷物袋
+
+# object1.c describe_empty_slot() ― 装備の一覧（サブパネルの装備欄）で、何も着けていない枠に出る字。
+# `Term_putstr(offset, row, n, attr, o_name)` の `n` は**英語の字のバイト数**で、訳もその数で切られる
+#（`z-term.c` の `Term_addstr()` は訳したあとの字を `n` で数える）。だから訳は英語より長くしない。
+# 括弧は英語のまま付ける。語は上の枠の名（利き手・飛び道具・明かり・胴・矢筒 1 ほか）と、
+# 品目の名（護符・外套・盾・兜・手袋・靴）に合わせた。
+E:(no weapon)
+J:(武器なし)
+W:11
+
+E:(no bow)
+J:(弓なし)
+W:8
+
+E:(no left ring)
+J:(左手指輪なし)
+W:14
+
+E:(no right ring)
+J:(右手指輪なし)
+W:15
+
+E:(no amulet)
+J:(護符なし)
+W:11
+
+E:(no light source)
+J:(明かりなし)
+W:17
+
+E:(no body armour)
+J:(胴の防具なし)
+W:16
+
+E:(no cloak)
+J:(外套なし)
+W:10
+
+E:(no shield)
+J:(盾なし)
+W:11
+
+E:(no helmet)
+J:(兜なし)
+W:11
+
+E:(no gloves)
+J:(手袋なし)
+W:11
+
+E:(no boots)
+J:(靴なし)
+W:10
+
+E:(empty 1st quiver)
+J:(矢筒 1 は空)
+W:18
+
+E:(empty 2nd quiver)
+J:(矢筒 2 は空)
+W:18
+
+E:(empty slot)
+J:(空き枠)
+W:12
 
 E:wielding
 J:構えている

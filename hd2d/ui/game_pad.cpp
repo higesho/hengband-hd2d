@@ -332,6 +332,19 @@ void GamePad::open(int joystick_index)
 #endif
 }
 
+void GamePad::open_present_devices()
+{
+#if !defined(HENGBAND_QUEST)
+    if (SDL_WasInit(SDL_INIT_GAMECONTROLLER) == 0) {
+        return;
+    }
+    const int count = SDL_NumJoysticks();
+    for (int i = 0; (i < count) && (this->controller_ == nullptr); ++i) {
+        this->open(i);
+    }
+#endif
+}
+
 void GamePad::close()
 {
     if (this->controller_ != nullptr) {
@@ -343,7 +356,7 @@ void GamePad::close()
     this->forget_hold();
 }
 
-void GamePad::forget_hold()
+void GamePad::forget_direction_hold()
 {
     this->held_dx_ = 0;
     this->held_dy_ = 0;
@@ -354,6 +367,13 @@ void GamePad::forget_hold()
     for (bool &down : this->dpad_) {
         down = false;
     }
+    this->external_right_x_ = 0.f;
+    this->external_right_y_ = 0.f;
+}
+
+void GamePad::forget_hold()
+{
+    this->forget_direction_hold();
     for (bool &down : this->trigger_down_) {
         down = false;
     }
@@ -364,8 +384,6 @@ void GamePad::forget_hold()
     for (bool &down : this->external_prev_) {
         down = false;
     }
-    this->external_right_x_ = 0.f;
-    this->external_right_y_ = 0.f;
 }
 
 bool GamePad::on_event(const SDL_Event &event)
@@ -767,9 +785,9 @@ void PadBinds::parse(const std::string &line)
 }
 
 bool emit_core_command(int command_id, const std::vector<PadCommand> &commands,
-    presentation::InputEventsMessage &out)
+    presentation::InputEventsMessage &out, bool explicit_menu_selection)
 {
-    if (command_id <= 0) {
+    if (command_id < 0 || (command_id == 0 && !explicit_menu_selection)) {
         return false; // 0 = 割り当て無し / 負 = この exe 自身の操作（呼び出し側が処理済み）
     }
     for (const auto &command : commands) {
@@ -834,6 +852,52 @@ bool emit_core_command(int command_id, const std::vector<PadCommand> &commands,
     return false;
 }
 
+int run_command_char_for_core(const std::string &core_name)
+{
+    /*
+     * 握手の `core_name`（各コアの `ack.core_name`）。走る命令の字は、各コアの `pad_commands` の
+     * `command` 欄と同じ字にそろえてある（変愚・短愚は `pad_command_table.cpp` の「走る」の行、
+     * 幻想蛮怒・Frox・Sil-Q は各 `*_pad_commands.cpp`、Angband・Umoria・Rogue 系は各 `*_main.cpp`）。
+     */
+    if ((core_name == "hengband") || (core_name == "tangband") || (core_name == "gensoband")
+        || (core_name == "frox") || (core_name == "silq") || (core_name == "angband")
+        || (core_name == "Umoria")) {
+        return '.';
+    }
+    if (core_name == "Rogue 3.6") {
+        return 'f'; // 3.6 の `f` は方向を訊いて走る接頭コマンド
+    }
+    if (core_name == "Rogue 5.4") {
+        return 'g'; // 5.4 には走る接頭コマンドが無いので、アダプタが空きキーの `g` に足している
+    }
+    if (core_name == "RogueClone2") {
+        return 0x06; // `^F`（方向を訊いてから走る。再構成が play.c に足した）
+    }
+    return 0;
+}
+
+bool run_direction_via_targeting_ui(const std::string &core_name)
+{
+    return (core_name == "hengband") || (core_name == "tangband") || (core_name == "gensoband")
+        || (core_name == "frox") || (core_name == "silq") || (core_name == "angband");
+}
+
+bool emit_run_command(const std::string &core_name, const std::vector<PadCommand> &commands,
+    presentation::InputEventsMessage &out)
+{
+    const int run_char = run_command_char_for_core(core_name);
+    if (run_char == 0) {
+        return false;
+    }
+    for (const auto &command : commands) {
+        if ((command.command != run_char) || command.keys.empty()) {
+            continue;
+        }
+        return emit_core_command(command.id, commands, out, true);
+    }
+    return false;
+}
+
 PadMacroFlags make_pad_macro_flags(const std::vector<std::vector<int>> &macro_triggers)
 {
     PadMacroFlags flags;
@@ -868,7 +932,7 @@ bool emit_pad_macro_trigger(PadInput input, int mods, presentation::InputEventsM
 }
 
 bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &commands,
-    const std::string &core_name)
+    const std::string &core_name, bool previous_edition)
 {
     /*
      * **コアごとの既定**（2026-09-01 に決めた。遊びながら組み直した `hd2d-*.cfg` を写した）。
@@ -888,9 +952,21 @@ bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &com
         const char *note;
     };
     /*
+     * **原作にパッドは無いので、既定は我々が定める。基本は変愚の割り当てをベースに、
+     * コアごとに「変愚の同じボタンと同じ意味のコマンド」を割り当てる**。
+     * 字が同じでも意味は同じとは限らない——Rogue 3.6 の `f` は「方向を訊いて走る」・Rogue 5.4 の `g` も走る・
+     * `a` は「直前のコマンドを繰り返す」・RogueClone2 の `f` は「連続攻撃」・Angband の `s` は「盗む」。
+     * 変愚の字のまま引くと、撃つボタンが走る・拾うボタンが走る・探すボタンが盗む、になっていた。
+     * そこでコアごとに、各アダプタが送る表（`command` 欄）の字を原作のコマンドの意味で選んで並べる。
+     * **原作に同じ意味のコマンドが無いボタンは空ける**（無いコマンドを近い字で埋めると別の動作が走る）。
+     * 対応の表は各並びの前に置いた。
+     */
+
+    /*
      * **変愚蛮怒系（変愚・短愚・幻想）と Frox は同じ並びである**
-     * ——3 コアから採った字が 1 つも違わなかった（2026-09-01 に実測）。
-     * 短愚は決めたことで変愚に合わせる。
+     * ——3 コアから採った字が 1 つも違わなかった（2026-09-01 に実測。2026-10-15 に 4 コアの原作の
+     * `menu_info`（`Get items(g)`・`Fire missile weapon(f/t)` など）で字と意味を読み直し、同じと確かめた）。
+     * 短愚は決めたことで変愚に合わせる。**ここが基準**で、下の各コアはこの行の意味に合わせる。
      */
     static const Row kHengband[] = {
         { PadInput::X, 0, 'g', 0, i18n::tr("hd2d.app.hd2d-app.pick-up") },
@@ -911,8 +987,9 @@ bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &com
         { PadInput::Y, kPadModAlt, 'u', 0, i18n::tr("hd2d.app.hd2d-app.use-a-staff") },
     };
     /*
-     * **Sil-Q は別の並び。** `LT` は割り当てが無い（そう組んである）。
-     * **`Start` はコアの命令**（`m` 主メニュー）で、画面側の操作ではない。
+     * **Sil-Q は別の並び。** `LT` は割り当てが無い（遊ぶ人がそう組んだ）。
+     * **`Start` は画面のコマンドメニュー**（ほかのコアと同じ。決めたこと 2026-10-15）。
+     * 前の版は原作の主メニュー（`m`）だった（下の `kSilqPreviousStart`）。
      * `RS` の `S` は**隠密の構え**である——変愚の `S`（探索モードの ON/OFF）とは別物で、
      * 上の注記と逆に見えるが矛盾しない。Sil-Q には「探す」が無い（探索が自動）。
      */
@@ -922,7 +999,7 @@ bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &com
         { PadInput::LeftShoulder, 0, '<', 0, i18n::tr("hd2d.app.hd2d-app.go-up-the-stairs") },
         { PadInput::RightShoulder, 0, '>', 0, i18n::tr("hd2d.app.hd2d-app.go-down-the-stairs") },
         { PadInput::RightTrigger, 0, 'z', 0, i18n::tr("hd2d.app.hd2d-app.stay") },
-        { PadInput::Start, 0, 'm', 0, i18n::tr("hd2d.app.hd2d-app.main-menu") },
+        { PadInput::Start, 0, 0, kActionCommandMenu, i18n::tr("hd2d.app.hd2d-app.command-menu") },
         { PadInput::LeftStick, 0, 0, kActionFpsToggle,
             i18n::tr("hd2d.app.hd2d-app.toggle-first-person") },
         { PadInput::RightStick, 0, 'S', 0, i18n::tr("hd2d.app.hd2d-app.stealth-mode") },
@@ -933,46 +1010,192 @@ bool apply_default_pad_binds(PadBinds &binds, const std::vector<PadCommand> &com
         { PadInput::X, kPadModAlt, 'f', 0, i18n::tr("hd2d.app.hd2d-app.fire-a-missile") },
         { PadInput::Y, kPadModAlt, 'F', 0, i18n::tr("hd2d.app.hd2d-app.fire-second-quiver") },
     };
+    //! 前の版（版 1）の Sil-Q は、上の並びと **Start だけが違った**（原作の主メニュー `m`）。差の 1 行だけ持つ。
+    static const Row kSilqPreviousStart = { PadInput::Start, 0, 'm', 0, i18n::tr("hd2d.app.hd2d-app.main-menu") };
 
-    const Row *rows = kHengband;
-    std::size_t row_count = sizeof(kHengband) / sizeof(kHengband[0]);
+    /*
+     * **Rogue 系（Rogue 3.6・Rogue 5.4・RogueClone2）。**
+     * 原作にあるのは階段・探す・投げる・杖（魔法棒と杖の区別が無く、字は `z` の 1 つ）・拾う（5.4 と
+     * RogueClone2 の `,`）だけで、**開ける・閉じる・掘る・発動・ロッドは無い**ので空ける。
+     *
+     * | ボタン | 変愚の意味 | Rogue の字（コマンド名） | 理由 |
+     * | --- | --- | --- | --- |
+     * | X | 拾う `g` | `,`（足元の物を拾う。5.4・RogueClone2 のみ） | 3.6 は歩くだけで拾うので空 |
+     * | Y | 撃つ `f` | `t`（投げる） | Rogue に飛び道具の発射は無く、遠くへ飛ばすのは投げるだけ。`f` は 3.6 で走る・5.4/RogueClone2 で連続攻撃 |
+     * | LB / RB | 階段 | `<` / `>` | 同じ |
+     * | LT | 探す `s` | `s`（周囲を探索する） | 同じ |
+     * | RT | 掘る | 空 | 掘るコマンドは無い |
+     * | LB+X | ロッド | 空 | ロッドは無い |
+     * | LB+Y | 発動 | 空 | 発動は無い |
+     * | RB+A / RB+B | ドアを開ける／閉じる | 空 | 戸は歩いて通る。`o` は原作の設定の画面で別物 |
+     * | RB+X | 魔法棒 | `z`（杖を振る） | Rogue の杖は魔法棒を兼ねる。字が 1 つなので魔法棒のボタンだけに置く |
+     * | RB+Y | 杖 | 空 | 同じ `z` を 2 つのボタンに置けない（割り当ては 1 操作 1 枠） |
+     */
+    static const Row kRogueCommon[] = {
+        { PadInput::Y, 0, 't', 0, i18n::tr("hd2d.app.hd2d-app.throw") },
+        { PadInput::LeftShoulder, 0, '<', 0, i18n::tr("hd2d.app.hd2d-app.go-up-the-stairs") },
+        { PadInput::RightShoulder, 0, '>', 0, i18n::tr("hd2d.app.hd2d-app.go-down-the-stairs") },
+        { PadInput::LeftTrigger, 0, 's', 0, i18n::tr("hd2d.app.hd2d-app.search") },
+        { PadInput::Start, 0, 0, kActionCommandMenu, i18n::tr("hd2d.app.hd2d-app.command-menu") },
+        { PadInput::LeftStick, 0, 0, kActionFpsToggle,
+            i18n::tr("hd2d.app.hd2d-app.toggle-first-person") },
+        { PadInput::X, kPadModAlt, 'z', 0, i18n::tr("hd2d.app.hd2d-app.zap-a-wand") },
+    };
+    //! Rogue 5.4 と RogueClone2 は足元の物を拾う `,` を持つ（アダプタの表も `,`）。
+    static const Row kRoguePickUp[] = {
+        { PadInput::X, 0, ',', 0, i18n::tr("hd2d.app.hd2d-app.pick-up") },
+    };
+    /*
+     * **Umoria。** 変愚の行のうち、拾う（`g`。Umoria は自動で拾い、`-` が「拾わずに移動」）・ロッド・発動は
+     * 原作に無いので空。ほかは字も意味も同じ（`f` は「撃つ・投げる」、`s` は探す、`T` は掘る、
+     * `o` `c` は戸、`a` は魔法棒、`u` は杖）。変愚の行から X・LB+X・LB+Y を除いたもの。
+     */
+    static const Row kUmoria[] = {
+        { PadInput::Y, 0, 'f', 0, i18n::tr("hd2d.app.hd2d-app.fire-a-missile") },
+        { PadInput::LeftShoulder, 0, '<', 0, i18n::tr("hd2d.app.hd2d-app.go-up-the-stairs") },
+        { PadInput::RightShoulder, 0, '>', 0, i18n::tr("hd2d.app.hd2d-app.go-down-the-stairs") },
+        { PadInput::LeftTrigger, 0, 's', 0, i18n::tr("hd2d.app.hd2d-app.search") },
+        { PadInput::RightTrigger, 0, 'T', 0, i18n::tr("hd2d.app.hd2d-app.tunnel") },
+        { PadInput::Start, 0, 0, kActionCommandMenu, i18n::tr("hd2d.app.hd2d-app.command-menu") },
+        { PadInput::LeftStick, 0, 0, kActionFpsToggle,
+            i18n::tr("hd2d.app.hd2d-app.toggle-first-person") },
+        { PadInput::A, kPadModAlt, 'o', 0, i18n::tr("hd2d.app.hd2d-app.open-a-door") },
+        { PadInput::B, kPadModAlt, 'c', 0, i18n::tr("hd2d.app.hd2d-app.close-a-door") },
+        { PadInput::X, kPadModAlt, 'a', 0, i18n::tr("hd2d.app.hd2d-app.aim-a-wand") },
+        { PadInput::Y, kPadModAlt, 'u', 0, i18n::tr("hd2d.app.hd2d-app.use-a-staff") },
+    };
+    /*
+     * **Angband。** 変愚の行のうち LT（探す）だけを空ける——Angband 4.2 は罠・隠し扉の探索を廃止していて、
+     * `s` は「盗む」（盗賊の技）である。ほかは字も意味も同じ（`g` 拾う・`f` 撃つ・`T` 掘る・`z` ロッド・
+     * `A` 発動・`a` 魔法棒・`u` 杖・`o` `c` 戸）。
+     */
+    static const Row kAngband[] = {
+        { PadInput::X, 0, 'g', 0, i18n::tr("hd2d.app.hd2d-app.pick-up") },
+        { PadInput::Y, 0, 'f', 0, i18n::tr("hd2d.app.hd2d-app.fire-a-missile") },
+        { PadInput::LeftShoulder, 0, '<', 0, i18n::tr("hd2d.app.hd2d-app.go-up-the-stairs") },
+        { PadInput::RightShoulder, 0, '>', 0, i18n::tr("hd2d.app.hd2d-app.go-down-the-stairs") },
+        { PadInput::RightTrigger, 0, 'T', 0, i18n::tr("hd2d.app.hd2d-app.tunnel") },
+        { PadInput::Start, 0, 0, kActionCommandMenu, i18n::tr("hd2d.app.hd2d-app.command-menu") },
+        { PadInput::LeftStick, 0, 0, kActionFpsToggle,
+            i18n::tr("hd2d.app.hd2d-app.toggle-first-person") },
+        { PadInput::X, kPadModCtrl, 'z', 0, i18n::tr("hd2d.app.hd2d-app.zap-a-rod") },
+        { PadInput::Y, kPadModCtrl, 'A', 0, i18n::tr("hd2d.app.hd2d-app.activate") },
+        { PadInput::A, kPadModAlt, 'o', 0, i18n::tr("hd2d.app.hd2d-app.open-a-door") },
+        { PadInput::B, kPadModAlt, 'c', 0, i18n::tr("hd2d.app.hd2d-app.close-a-door") },
+        { PadInput::X, kPadModAlt, 'a', 0, i18n::tr("hd2d.app.hd2d-app.aim-a-wand") },
+        { PadInput::Y, kPadModAlt, 'u', 0, i18n::tr("hd2d.app.hd2d-app.use-a-staff") },
+    };
+
+    //! 使う並び（最大 2 つ）。**握手の `core_name` と同じ綴り**で選ぶ（`run_command_char_for_core` と同じ）。
+    struct RowSpan {
+        const Row *rows;
+        std::size_t count;
+    };
+    RowSpan spans[2] = { { kHengband, sizeof(kHengband) / sizeof(kHengband[0]) }, { nullptr, 0 } };
     if (core_name == "silq") {
-        rows = kSilq;
-        row_count = sizeof(kSilq) / sizeof(kSilq[0]);
+        spans[0] = { kSilq, sizeof(kSilq) / sizeof(kSilq[0]) };
+    } else if (previous_edition) {
+        //! 前の版（版 1。`migrate_pad_binds` が使う）は、Sil-Q 以外のどのコアも変愚の並びを字のまま引いていた。
+    } else if (core_name == "Rogue 3.6") {
+        spans[0] = { kRogueCommon, sizeof(kRogueCommon) / sizeof(kRogueCommon[0]) };
+    } else if ((core_name == "Rogue 5.4") || (core_name == "RogueClone2")) {
+        spans[0] = { kRogueCommon, sizeof(kRogueCommon) / sizeof(kRogueCommon[0]) };
+        spans[1] = { kRoguePickUp, sizeof(kRoguePickUp) / sizeof(kRoguePickUp[0]) };
+    } else if (core_name == "Umoria") {
+        spans[0] = { kUmoria, sizeof(kUmoria) / sizeof(kUmoria[0]) };
+    } else if (core_name == "angband") {
+        spans[0] = { kAngband, sizeof(kAngband) / sizeof(kAngband[0]) };
     }
+    //! 上のどれでもない名前（変愚・短愚・幻想蛮怒・Frox と、知らないコア）は変愚の並びのまま。
 
     bool any = false;
-    for (std::size_t ri = 0; ri < row_count; ++ri) {
-        const Row &row = rows[ri];
-        //! 画面側の操作はコアの表を要らない。**先に片づける。**
-        if (row.command == 0) {
-            if (binds.assign(row.action, row.input, row.mods)) {
+    for (const RowSpan &span : spans) {
+        for (std::size_t ri = 0; ri < span.count; ++ri) {
+            const bool silq_previous_start = previous_edition && (core_name == "silq")
+                && (span.rows[ri].input == PadInput::Start) && (span.rows[ri].mods == 0);
+            const Row &row = silq_previous_start ? kSilqPreviousStart : span.rows[ri];
+            //! 画面側の操作はコアの表を要らない。**先に片づける。**
+            if (row.command == 0) {
+                if (binds.assign(row.action, row.input, row.mods)) {
+                    any = true;
+                }
+                continue;
+            }
+            const PadCommand *found = nullptr;
+            for (const auto &command : commands) {
+                if (command.command == row.command) {
+                    found = &command;
+                    break;
+                }
+            }
+            if (found == nullptr) {
+                //! **黙って諦めない。**版によって無いこともあるので、消えたことが分かるように残す。
+                std::fprintf(stderr, i18n::tr("hd2d.ui.game-pad.hd2d-default-binding-s-c-is-not-in"),
+                    row.note, static_cast<char>(row.command));
+                continue;
+            }
+            if (binds.assign(found->id, row.input, row.mods)) {
                 any = true;
             }
-            continue;
-        }
-        const PadCommand *found = nullptr;
-        for (const auto &command : commands) {
-            if (command.command == row.command) {
-                found = &command;
-                break;
-            }
-        }
-        if (found == nullptr) {
-            //! **黙って諦めない。**版によって無いこともあるので、消えたことが分かるように残す。
-            std::fprintf(stderr, i18n::tr("hd2d.ui.game-pad.hd2d-default-binding-s-c-is-not-in"),
-                row.note, static_cast<char>(row.command));
-            continue;
-        }
-        if (binds.assign(found->id, row.input, row.mods)) {
-            any = true;
         }
     }
     return any;
 }
 
+bool migrate_pad_binds(PadBinds &binds, const std::vector<PadCommand> &commands,
+    const std::string &core_name)
+{
+    //! 前の版と今の版の既定を、どちらも空から、**いまの表で**引き直す。
+    PadBinds before{};
+    PadBinds after{};
+    (void)apply_default_pad_binds(before, commands, core_name, true);
+    (void)apply_default_pad_binds(after, commands, core_name, false);
+
+    const PadBinds original = binds;
+    bool replace[kPadModLayerCount][kPadInputCount]{};
+    for (int mods = 0; mods < kPadModLayerCount; ++mods) {
+        for (int i = 0; i < kPadInputCount; ++i) {
+            if (binds.command[mods][i] == before.command[mods][i]) {
+                replace[mods][i] = true;
+                binds.command[mods][i] = 0;
+            }
+        }
+    }
+    for (int mods = 0; mods < kPadModLayerCount; ++mods) {
+        for (int i = 0; i < kPadInputCount; ++i) {
+            const int action = after.command[mods][i];
+            //! 遊ぶ人が別の枠へ持っている操作は動かさない（`input_for` が見つけたら置かない）。
+            if (replace[mods][i] && (action != 0) && (binds.input_for(action).input == PadInput::Count)) {
+                binds.command[mods][i] = action;
+            }
+        }
+    }
+    for (int mods = 0; mods < kPadModLayerCount; ++mods) {
+        for (int i = 0; i < kPadInputCount; ++i) {
+            if (binds.command[mods][i] != original.command[mods][i]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool upgrade_pad_defaults(PadBinds &binds, int &version, const std::vector<PadCommand> &commands,
+    const std::string &core_name)
+{
+    if (version >= kPadDefaultsVersion) {
+        return false;
+    }
+    const int stored = version;
+    version = kPadDefaultsVersion;
+    if (stored <= 0) {
+        return apply_default_pad_binds(binds, commands, core_name);
+    }
+    return migrate_pad_binds(binds, commands, core_name);
+}
+
 std::vector<std::string> build_pad_bind_items(const PadBinds &binds, const std::vector<PadCommand> &commands,
-    const PadMacroFlags &macros, int chord_mask)
+    const PadMacroFlags &macros, int chord_mask, bool modern_ui)
 {
     std::vector<std::string> items;
     items.reserve(static_cast<std::size_t>(kPadInputCount) + 1U);
@@ -1040,6 +1263,16 @@ std::vector<std::string> build_pad_bind_items(const PadBinds &binds, const std::
 
     for (int i = 0; i < kPadInputCount; ++i) {
         const auto input = static_cast<PadInput>(i);
+        /*
+         * **新 UI では `Back` を出さない**（AH-37。
+         * `hd2d/ui/feature_menu.cpp::open_features()` の註のとおり、新 UI では
+         * `Back`（機能メニュー）と `Start`（コマンドメニュー）が同じ 1 つの窓を
+         * 同じ道で開くので、両方を別の入口として案内すると 2 つ窓があるように
+         * 見えてしまう。旧 UI では今までどおり両方を出す。
+         */
+        if (modern_ui && (input == PadInput::Back)) {
+            continue;
+        }
         std::string label;
         switch (input) {
         //! 固定の 3 つ（`pad_input_is_fixed`）。**割り当てを引かずに役をそのまま書く。**
@@ -1086,7 +1319,7 @@ std::vector<std::string> build_pad_bind_items(const PadBinds &binds, const std::
             label = i18n::tr("hd2d.ui.game-pad.macro");
         }
         if (label.empty()) {
-            label = "—"; //!< 未割当も出す。「割り当てが無い」ことも利用者が知りたい情報
+            label = "—"; //!< 未割当も出す。「割り当てが無い」ことも遊ぶ人が知りたい情報
         }
         items.push_back(std::string(pad_input_name(input)) + ":" + label);
     }

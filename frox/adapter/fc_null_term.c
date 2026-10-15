@@ -248,6 +248,35 @@ static void fc_present(void)
 }
 
 /*!
+ * @brief 誕生の最初の画面（遊び方の選択）が出ているか。
+ * @details 原作 `py_birth.c` の `_welcome_ui()` は、見出し `Choose the Type of Game to Play`
+ * （日本語層では「遊び方を選ぶ」。字は CP932 のバイトで直に書く）を描いてキーを待つ。
+ * 毎回 `_sync_term()` が保存した空の画へ戻してから描くので、他の画面に古い見出しが残ることは無い。
+ * 前に積んだキーがまだ読まれていない間は、見えている画が最新とは限らないので偽にする
+ * （例：`b` と ESC が同じ回に届いたとき、`b` の先の画面の ESC を取消と誤らない）。
+ */
+static int fc_birth_first_screen(void)
+{
+    static const char ja[] = "\x97\x56\x82\xd1\x95\xfb\x82\xf0\x91\x49\x82\xd4";
+    static const char en[] = "Choose the Type of Game to Play";
+    char cells[512];
+    int y;
+
+    if (character_generated || !fc_term_ready || !Term || (Term->key_head != Term->key_tail)) {
+        return 0;
+    }
+    for (y = 0; y < (int)fc_term_body.hgt; y++) {
+        if (fc_term_row(y, cells, NULL, (int)sizeof(cells)) < 0) {
+            return 0;
+        }
+        if (strstr(cells, en) || strstr(cells, ja)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/*!
  * @brief 受信キューにあるだけキーを Term へ積む。
  * @return 積んだ個数
  *
@@ -264,6 +293,10 @@ static int fc_drain_keys_into_term(void)
     }
 
     while ((key = fc_hooks.next_key()) > 0) {
+        /* 誕生の最初の画面での取消は、原作が `quit(NULL)` へ進む。タイトルへ戻る印を付ける（修-61）。 */
+        if ((key == ESCAPE) && fc_birth_first_screen()) {
+            fc_birth_cancel_mark();
+        }
         (void)Term_keypress(key);
         pushed++;
         /* 待ち行列の容量（term_init の第 4 引数）を超えて押し込まない。 */
@@ -469,6 +502,20 @@ int fc_term_size(int *cols, int *rows)
     return FC_OK;
 }
 
+int fc_term_resize_rows(int rows)
+{
+    term *previous;
+    errr result;
+    if (!fc_term_ready) return FC_ERR_STATE;
+    if ((rows < 24) || (rows > 80)) return FC_ERR_ARG;
+    if ((int)fc_term_body.hgt == rows) return FC_OK;
+    previous = Term;
+    Term_activate(&fc_term_body);
+    result = Term_resize((int)fc_term_body.wid, rows);
+    if (previous != &fc_term_body) Term_activate(previous);
+    return result ? FC_ERR_TERM : FC_OK;
+}
+
 int fc_term_row(int y, char *text, unsigned char *attr, int cap)
 {
     const term_win *win;
@@ -497,6 +544,50 @@ int fc_term_row(int y, char *text, unsigned char *attr, int cap)
         return FC_ERR_STATE;
     }
 
+    n = (int)fc_term_body.wid;
+    if (n > cap - 1) {
+        n = cap - 1;
+    }
+
+    for (x = 0; x < n; x++) {
+        text[x] = win->c[y][x];
+        if (attr) {
+            attr[x] = (unsigned char)win->a[y][x];
+        }
+    }
+    text[n] = '\0';
+
+    return n;
+}
+
+int fc_term_saved_active(void)
+{
+    /*
+     * 保存が生きているかは原作の深さ（`screen_save()` の入れ子）で判じる。`Term_load()` は `mem` を捨てないので、
+     * 深さが 0 に戻ったあとの `mem` は古い画である。`Term_save()` を直に呼ぶ doc UI（`fc_ui_term_save()`）は
+     * 終わりが見えない（旗は命令待ちまで降りない）うえ、建物の画面のように `screen_save()` を呼ばずに
+     * 描かれた画面の上で呼ばれると `mem` が地図ではなくその画面になるので、基準には使わない。
+     */
+    return (fc_term_ready && (fc_term_body.mem != NULL) && screen_is_saved()) ? 1 : 0;
+}
+
+int fc_term_saved_row(int y, char *text, unsigned char *attr, int cap)
+{
+    const term_win *win;
+    int n;
+    int x;
+
+    if (!fc_term_ready) {
+        return FC_ERR_STATE;
+    }
+    if (!text || (cap <= 1) || (y < 0) || (y >= (int)fc_term_body.hgt)) {
+        return FC_ERR_ARG;
+    }
+    if (!fc_term_saved_active()) {
+        return FC_ERR_STATE;
+    }
+
+    win = fc_term_body.mem;
     n = (int)fc_term_body.wid;
     if (n > cap - 1) {
         n = cap - 1;
@@ -629,6 +720,7 @@ unsigned long long fc_change_digest(void)
      * 届かなければ IME は出ないし、非 ASCII も送られてこない。
      */
     FC_MIX(fc_text_input_active() ? 1 : 0);
+    FC_MIX(fc_awaiting_command() ? 1 : 0);
     FC_MIX_INT(game_turn);
     FC_MIX_INT(msg_count());
     FC_MIX(character_generated ? 1 : 0);
@@ -637,6 +729,12 @@ unsigned long long fc_change_digest(void)
     FC_MIX(character_dungeon ? 1 : 0);
     /* 降ろす判定も兼ねる（fc_doc_ui_active() は呼ばれた時に inkey_flag を見て降ろす）。 */
     FC_MIX(fc_doc_ui_active() ? 1 : 0);
+    /*
+     * 選択メニュー（`menu_choose()`）の全件を持っているか。メニューは開く瞬間に Term へ描かれるので
+     * 普通は画の変化で拾えるが、画面側へ渡す一覧は Term ではなく全件から組む（`fc_menu.cpp` の `menu_choose_apply()`）。
+     * 旗が変わる瞬間に Term が 1 セルも動かない場面（同じ画のメニューを続けて開く）でも一覧を組み直すため混ぜる。
+     */
+    FC_MIX_INT(fc_menu_choose_count());
     /*
      * 見せ場の累計（FH-05）。弾道は描いて即消すので、animation が終わった後の
      * Term は元の画と同じになりうる——混ぜないと、積んだ見せ場が次の別の変化まで
@@ -649,6 +747,9 @@ unsigned long long fc_change_digest(void)
      * 線に乗らず、音が次の別の変化まで遅れる。
      */
     FC_MIX_INT(fc_sound_total());
+    /* 状態の旗の組（と札の字）も混ぜる。最下段の字が溢れて短縮されても、
+     * 同じ字のまま別の状態へ替わっても、アイコンは必ず追いつかせる。 */
+    FC_MIX_INT(fc_status_stamp());
 
     if (character_generated) {
         FC_MIX_INT(py);

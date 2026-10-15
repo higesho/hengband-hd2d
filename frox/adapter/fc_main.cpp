@@ -1,4 +1,20 @@
-﻿/*!
+#if defined(HENGBAND_DESKTOP_LINUX)
+#include <csignal>
+#endif
+#include "bridge/native_store_menu.h"
+#include "bridge/native_item_display_impl.h"
+#include "bridge/native_inventory_menu.h"
+extern "C" void fc_native_describe_item(const void *,native_store_item *);
+extern "C" int fc_native_owned_item(int,native_store_item *);
+static presentation::NativeInventoryMenu g_inventory_menu;
+extern "C" int fc_native_shop_info(native_store_info *);
+extern "C" int fc_native_shop_item(int,native_store_item *);
+extern "C" int fc_native_home_info(native_store_info *);
+extern "C" int fc_native_home_item(int,native_store_item *);
+#include "bridge/native_modern.h"
+#include "bridge/native_save_picker.h"
+#include <variant>
+/*!
  * @file fc_main.cpp
  * @brief `FroxCore.exe` の入口（プロトコル v1 の core 側）。**P6 本実装**。
  *
@@ -34,15 +50,19 @@
 #include "fc_manifest.h"
 #include "fc_text.h" //!< 線（UTF-8）→ コア（CP932）の復号器（追補 A1）
 #include "fc_menu.h" //!< `--selftest` の個数の綴り（FH-15）
+#include "fc_history.h" //!< メッセージ履歴の折り返された行を 1 メッセージ 1 行にまとめる
 #include "fc_pad_commands.h"
 #include "fc_sub_panels.h"
 
 #include "bridge/input_event_adapter.h"
+#include "bridge/player_identity.h" //!< 日本語の名前のセーブ枠の別名と、選択の一覧用の名前の控え（修-57）
 #include "frame/frame_codec.h"
+#include "bridge/native_targeting_runtime.h"
 #include "frame/protocol_messages.h"
 #include "frame/protocol_transport.h"
 
 #include "portable/legacy_os.h"
+#include "bridge/slab_presence.h" //!< 目録の記録は PNG ではなく板（.vox）の有無を数える
 
 #include <algorithm>
 #include <atomic>
@@ -200,7 +220,11 @@ std::atomic<bool> g_exit_sent{ false };
 
 //! 受信キュー。**M0 は ASCII だけ**を積む（非 ASCII は数えて捨てる）。
 std::mutex g_inbox_mutex;
-std::deque<int> g_key_queue;
+presentation::NativeModernMenu g_native_menu;
+presentation::NativeStoreMenu g_store_menu;
+extern "C" int fc_native_test_open(int);
+bool g_native_test_started=false;
+std::deque<std::variant<int,presentation::InputEventWire>> g_key_queue;
 //! 捨てた非 ASCII キーの数（終了時に stderr へ言う。黙って握り潰さない）。
 unsigned long g_dropped_keys = 0;
 //! 線（UTF-8）→ コア（CP932）。**ステートフル**なので 1 つを持ち回す（追補 A1）。
@@ -209,6 +233,8 @@ fc::FcKeyDecoder g_key_decoder;
 //! 直近の `ui_state`。視界の大きさとカメラの追従に効く（v1 §7）。
 presentation::UiStateMessage g_ui_state;
 bool g_ui_state_dirty = false;
+//! 画面が望む Term の高さ（行数）。0 は未指定。`apply_wanted_term_rows()` が安全な間にだけ反映する。
+int g_wanted_term_rows = 0;
 //! 最初の `ui_state` が来たか（設計 §3.6 の 5。M0 は lang を読み捨てるだけ）。
 std::atomic<bool> g_first_ui_state_seen{ false };
 std::string g_first_ui_state_lang;
@@ -329,9 +355,16 @@ void receive_loop()
                 std::fprintf(stderr, "[frox] bad \"input_event\": %s\n", err.c_str());
                 continue;
             }
-            std::vector<int> keys;
-            presentation::append_input_event_keys(message, keys);
-            enqueue_keys(keys);
+            for (const auto &event : message.events) {
+                if (event.e == "ui_action") {
+                    std::lock_guard<std::mutex> lock(g_inbox_mutex);
+                    g_key_queue.push_back(event);
+                } else {
+                    presentation::InputEventsMessage one; one.events.push_back(event);
+                    std::vector<int> keys; presentation::append_input_event_keys(one, keys);
+                    enqueue_keys(keys);
+                }
+            }
             continue;
         }
         if (type == "ui_state") {
@@ -401,6 +434,21 @@ int g_last_pad_stamp = -1;
 //! タイル目録（設計 §4.2）。起動時に 1 回読んで、以後 `fc_frame` が索引に使う。
 fc::TileManifest g_manifest;
 
+/*!
+ * @brief 一覧のアイコン用 tile_index。`kind_id` が有ればその種類の板、無ければ
+ * `unaware_category`（正体の分からないアイテム）の代表の板。
+ */
+uint16_t fc_tile_for_row(int kind_id, int unaware_category)
+{
+    if (kind_id) {
+        return g_manifest.lookup_entity('K', kind_id);
+    }
+    if (unaware_category) {
+        return g_manifest.lookup_unaware_representative(static_cast<presentation::UnawareItemCategory>(unaware_category));
+    }
+    return 0;
+}
+
 void send_pad_commands()
 {
     (void)send_message("pad_commands", presentation::encode_pad_commands(fc::build_pad_commands()));
@@ -423,7 +471,9 @@ void send_startup_tables()
     (void)send_message(
         "sub_panel_kinds", presentation::encode_sub_panel_kinds(fc::build_sub_panel_kinds()));
     if (!g_manifest.message().assets.empty()) {
-        (void)send_message("asset_manifest", presentation::encode_asset_manifest(g_manifest.message()));
+        auto manifest = g_manifest.message();
+        manifest.root = portable::path_to_utf8(manifest.root); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
+        (void)send_message("asset_manifest", presentation::encode_asset_manifest(manifest));
     }
 }
 
@@ -432,7 +482,45 @@ void send_startup_tables()
 //! 直近の安い digest（`fc_change_digest`）。capture を丸ごと省くための門。
 unsigned long long g_last_digest = 0;
 bool g_has_last_digest = false;
-//! 地形の記憶を書いたか（`last_slot.txt`）。@ が出来た最初の 1 回だけ書く。
+
+//! 原作へ最後に渡したキー（建物のクエストの説明文を閉じる決定が、同じ命令の繰り返しかを見分ける。修-33）。
+int g_last_key_to_core = 0;
+
+int pop_native_key_locked() {
+    while (!g_key_queue.empty()) {
+        auto queued = std::move(g_key_queue.front()); g_key_queue.pop_front();
+        if (auto key = std::get_if<int>(&queued)) { g_last_key_to_core = *key; return *key; }
+        std::vector<int> translated;
+        auto event=std::get<presentation::InputEventWire>(queued);
+        // オプションの一覧: 画面が動かしたい項目（focus）を、原作のカーソルを 1 つ動かす上下のキーに直す（`fc_menu.h` の `OptionsList`）
+        fc::options_list().rewrite_focus(event);
+        if(!presentation::native_targeting().input(event,translated)&&!g_inventory_menu.input(event,translated)&&!g_store_menu.input(event,translated))g_native_menu.input(event, translated);
+        // Once the native menu has validated this choice, pass the exact object
+        // to obj_prompt. This also selects rows beyond its original text page.
+        // ただし**画面に札（a) b) …）が付いている行は、旧 UI と同じく札のキーをそのまま原作へ渡す**。
+        // 床から拾う処理（`pack.c` の `_get_floor`）と銘を刻む `{`・消す `}`（`obj.c`）は、キーを受けた
+        // `cmd_handler` の中で処理する作りで、「この物を選んだ」と直接渡された選択を見ない。直接渡すと
+        // 一覧が閉じるだけで何も拾われなかった（2026-10-10 の気づいたこと。Android）。直接渡すのは、札の無い行
+        // （ページの外にある行。キーは Enter）だけにする。
+        /*
+         * 修-33（F-frox-307）：建物の「クエストを受ける」は、説明文を箱へ出したあとキーを待たずに命令待ちへ戻り、文は次の命令まで残る。
+         * 窓の選択肢は同じ行（クエストを受ける）に残るので、説明文を読み終えた決定が同じ命令を送り直し、
+         * 「現在のクエストを終了させていません！」になっていた。文が出ているあいだに同じ命令のキーを送ろうとしたら、
+         * 命令は送らず、原作の `msg_line_clear()`（次の命令の処理が始まる所で毎回呼ぶもの）で文を閉じるだけにする。
+         */
+        if(translated.size()==1&&fc::repeats_command_under_message(translated.front(),g_last_key_to_core,fc::building_quest_message_shown())) {
+            fc_msg_line_clear();
+            translated.clear();
+        }
+        const bool lettered=!translated.empty()&&translated.front()>' '&&translated.front()<0x7f;
+        if(event.action=="choice"&&!translated.empty()&&!lettered&&presentation::select_native_item(event.target))translated={13};
+        g_has_last_digest = false;
+        for (auto it = translated.rbegin(); it != translated.rend(); ++it) g_key_queue.push_front(*it);
+    }
+    return 0;
+}
+
+//! 覚え書きを書いたか（`last_slot.txt`）。@ が出来た最初の 1 回だけ書く。
 bool g_slot_remembered = false;
 //! @ が出来た直後の 1 回きりの仕込み（サブパネルの当て直し）を済ませたか。
 bool g_post_birth_primed = false;
@@ -446,7 +534,11 @@ void remember_slot_once()
     g_slot_remembered = true;
 
     const std::string dir = fc_save_dir();
+#if defined(HENGBAND_DESKTOP_LINUX)
+    const std::string base = std::filesystem::path(fc_savefile_path()).filename().string();
+#else
     const std::string base = fc_savefile_base();
+#endif
     if (dir.empty() || base.empty()) {
         return;
     }
@@ -466,6 +558,90 @@ void remember_slot_once()
     std::fprintf(stderr, "[frox] remembered save slot \"%s\"\n", base.c_str());
 }
 
+/*!
+ * @brief 選択の一覧に出す名前の控えを、いまの枠に合わせる（修-57）。
+ * @details 名前に日本語を含む冒険者のセーブ枠は ASCII の別名（`fc_save_base_name()`）なので、枠の名のままでは
+ * 一覧で読めない。セーブは一覧から読めないため、名前（UTF-8）をセーブの隣の控え（`player-identities/frox/`）へ書く。
+ * 名前が変わった（城下の名前変更）ときは書き直し、半角の名前に戻ったときは控えを消す。
+ */
+void sync_slot_display_name()
+{
+    static std::string kept_slot, kept_name;
+    if (!fc_character_generated()) {
+        return;
+    }
+    const std::string slot = fc_savefile_base();
+    if (slot.empty()) {
+        return;
+    }
+    fc_hud_data hud{};
+    if (fc_read_hud(&hud) != FC_OK) {
+        return;
+    }
+    const std::string name(hud.name);
+    if ((slot == kept_slot) && (name == kept_name)) {
+        return;
+    }
+    kept_slot = slot;
+    kept_name = name;
+    const bool wide = std::any_of(name.begin(), name.end(), [](unsigned char c) { return c >= 0x80; });
+    if (wide) {
+        const std::string utf8 = fc::sjis_to_utf8(name);
+        if (presentation::player_identity_load("frox", slot, {}) != utf8) {
+            (void)presentation::player_identity_store("frox", slot, utf8);
+        }
+    } else {
+        presentation::player_identity_remove("frox", slot);
+    }
+}
+
+//! 選択の一覧の 1 行の字（UTF-8）。日本語の名前の枠は控えの名前、それ以外は枠の名のまま。
+std::string slot_display_name(const std::string &slot)
+{
+    const std::string kept = presentation::player_identity_load("frox", slot, {});
+    return kept.empty() ? fc::sjis_to_utf8(slot) : kept;
+}
+
+/*!
+ * @brief 画面が望む Term の高さを、**原作のコマンド待ちの境界でだけ**反映する。
+ * @details Term の高さを変えると、原作の `Term_resize()` が `resize_hook`（`resize_map()`）を呼ぶ。
+ * `resize_map()` は `msg_line_clear()`（メッセージ行の字を消す）と `msg_line_init(ui_msg_rect())`
+ * （メッセージ行の置き場を通常の幅・高さへ戻す）、地図の描き直しをする。そのため、問いが出ている最中に
+ * 高さが変わると、問いの行が Term から消える。
+ *
+ * Android では、店の数量の問いが出ると `text_input_active` でソフトキーボードが出て、窓の使える高さが縮み、
+ * 画面が送る `main_term_rows` が変わる。その `Term_resize()` が数量の問い（`いくつ (1 to 32): 1`）の行を消し、
+ * アダプタは数量の入力と読めなくなって、ただの文字入力の欄（初期値が空・十字キーの上下が効かない）にしていた
+ * （Windows で窓の高さを変えて再現した）。店では `msg_line_init` の置き場も
+ * 店用（`ui_shop_msg_rect()`）から通常用に戻るので、店を出るまでメッセージが店の一覧に重なる。
+ *
+ * `inkey_flag`（`fc_awaiting_command()`）が真なのは `request_command()` が最上位のコマンドを待つ間だけで、
+ * 店・問い・`-続く-`・文字入力の待ちでは偽。ダンジョンがまだ無い間（`resize_map()` が何もしない）は、すぐ反映する。
+ * 反映できなかった分は覚えておき、次の呼び出しで再び試す（`fc_term_resize_rows()` は同じ高さなら何もしない）。
+ */
+bool term_resize_allowed(int screen_flags, int awaiting_command)
+{
+    return ((screen_flags & FC_SCREEN_DUNGEON) == 0) || (awaiting_command != 0);
+}
+
+//! @return Term の高さが実際に替わったら真（フレームの Term の写しの行数が替わるので、送り直す）。
+bool apply_wanted_term_rows()
+{
+    if (g_wanted_term_rows <= 0) {
+        return false;
+    }
+    if (!term_resize_allowed(fc_screen_flags(), fc_awaiting_command())) {
+        return false;
+    }
+    int cols = 0;
+    int before = 0;
+    int after = 0;
+    (void)fc_term_size(&cols, &before);
+    (void)fc_term_resize_rows(g_wanted_term_rows);
+    (void)fc_term_size(&cols, &after);
+    return before != after;
+}
+
 //! 溜まっている `ui_state` をゲームスレッド側へ渡す（`host_present` の頭で 1 回）。
 bool apply_ui_state()
 {
@@ -478,7 +654,14 @@ bool apply_ui_state()
         g_ui_state_dirty = false;
         state = g_ui_state;
     }
+    g_native_menu.set_enabled(state.modern_ui);
+    g_native_menu.set_language(state.lang);
+    g_native_menu.set_document_profile("frox");
+    g_inventory_menu.configure(state.modern_ui,state.lang,"frox");
+    g_store_menu.set_enabled(state.modern_ui,state.lang!="en","frox");
+    presentation::configure_native_targeting(state.modern_ui&&state.targeting_ui,state.lang,[](const char *s){return fc::sjis_to_utf8(std::string(s));});
     fc::set_view_size(state.view_w, state.view_h);
+    if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
     fc::set_camera_follow_player(state.camera_follow_player);
     fc::set_cursor_mode(state.cursor_mode);
     /*
@@ -502,6 +685,48 @@ bool apply_ui_state()
     return true;
 }
 
+/*!
+ * @brief 建物の窓の見出し（題と、建物の主・種族・名前の欄）を覚え、説明文が見出しの行を塗りつぶした画で差し戻す（修-33・F-frox-307）。
+ * @details 建物の画面は見出しを Term の行 3 に描く（`bldg.c` の `display_buldg()`）。市長室・警察署の「クエストを受ける」は、
+ * クエストの説明文を `msg_print_for_prompt()` で行 0 から 5 行ほどの箱へ重ねて出すので、行 3 の見出しが説明文の 1 行に
+ * 塗り替わる。共通の窓の組み立て（`modern_building_heading()`）は行 3 から題を取るため、題が説明文の 1 行になっていた。
+ * 箱が行 3 に掛かっていない画の見出しを覚え、掛かった画の題と見出しをそれで差し戻す。説明文そのものは本文（paragraph）に
+ * 全行入っているので、そちらは触らない。建物の画面でなくなったら（行 23 の「建物を出る」が消えたら）捨てる。
+ */
+void keep_building_heading(GameFrame &frame)
+{
+    static std::string kept_title;
+    static std::string kept_venue;
+    bool in_building=false;
+    for(const auto &line:frame.menu_term_lines)if(line.source_row==23) {
+        in_building=line.text_utf8.find("Exit building")!=std::string::npos
+            ||line.text_utf8.find(reinterpret_cast<const char*>(u8"建物を出"))!=std::string::npos;
+        break;
+    }
+    if(!in_building) {
+        kept_title.clear();
+        kept_venue.clear();
+        return;
+    }
+    auto &w=frame.modern;
+    if(w.stage!="choices")return;
+    int box_x=0,box_y=0,box_w=0,box_h=0;
+    const bool box_known=fc_msg_rect(&box_x,&box_y,&box_w,&box_h)==FC_OK;
+    const bool header_covered=box_known&&box_y<=3&&3<box_y+box_h;
+    //! 説明文を閉じた直後（`msg_line_clear()` で箱の行が空になった画）は箱が行 3 に掛かっていないが、見出しの行も空のまま
+    if(!header_covered&&!(w.venue_header.empty()&&!kept_title.empty()&&!kept_venue.empty())) {
+        if(!w.venue_header.empty()) {
+            kept_title=w.title;
+            kept_venue=w.venue_header;
+        }
+        return;
+    }
+    if(!kept_title.empty()&&!kept_venue.empty()) {
+        w.title=kept_title;
+        w.venue_header=kept_venue;
+    }
+}
+
 void host_present()
 {
     /*
@@ -522,23 +747,102 @@ void host_present()
      * 下の払い出し済みペイロード比較（v1 §6.4）は**そのまま残す**——digest は
      * 衝突しうるが、こちらは厳密だから。
      */
-    const bool view_changed = apply_ui_state();
+    bool view_changed = apply_ui_state();
+    if (apply_wanted_term_rows()) {
+        view_changed = true; // 後から反映した高さでも、digest の門を越えて送り直す（幻想蛮怒・Sil-Q と同じ）
+    }
     /*
      * **カーソル選択は門より手前で当てる。** `request_command()` はコマンドを
      * 1 つ受けるたびに `use_menu` を落とすので、「画が変わらないので capture を
      * 省いた」フレームでも立て直しが要る。費用は代入 2 つ。
      */
     fc::apply_cursor_mode();
-    const unsigned long long digest = fc_change_digest();
-    if (g_has_last_digest && !view_changed && (digest == g_last_digest)) {
+    const unsigned long long digest = fc_change_digest() ^ (g_native_menu.enabled() ?
+        (static_cast<unsigned long long>(fc_text_edit_active())<<61) ^ (static_cast<unsigned long long>(fc_text_ascii_only())<<60) : 0);
+    // 魔法・矢弾の効果の記録が溜まっているときは、画が同じでも組む（汲まれるまで残るので、組まないと届かない）。
+    if (g_has_last_digest && !view_changed && (digest == g_last_digest) && !fc::attack_fx_ready()) {
         return;
     }
     g_last_digest = digest;
     g_has_last_digest = true;
 
     remember_slot_once();
+    sync_slot_display_name();
 
-    const GameFrame frame = fc::capture_frame(++g_frame_id);
+    GameFrame frame = fc::capture_frame(++g_frame_id);
+    if(g_native_menu.enabled())frame.text_input_active=fc_text_edit_active()!=0||fc::autopick_editor_open();
+    native_store_info store_info{};
+    int (*read_store_item)(int,native_store_item *)=nullptr;
+    if(fc_native_shop_info(&store_info))read_store_item=fc_native_shop_item;
+    else if(fc_native_home_info(&store_info))read_store_item=fc_native_home_item;
+    std::vector<ModernRow> store_rows;
+    if(read_store_item)for(int i=0;;++i){
+        native_store_item raw{};if(!read_store_item(i,&raw))break;if(!raw.count)continue;
+        ModernRow row;row.tab=raw.tab;row.slot=raw.slot;row.selection=raw.selection;row.key=raw.key;
+        row.hotkey=raw.tab?raw.key:('a'+raw.slot%std::max(1,store_info.page_size));
+        row.count=raw.count;row.price=raw.price;row.price_known=raw.price_known!=0;row.available=raw.available!=0;row.equipped=raw.location==1;
+        row.label=fc::sjis_to_utf8(std::string(raw.name));row.weight=raw.weight;
+        row.description=fc::sjis_to_utf8(std::string(raw.description));row.reason=fc::sjis_to_utf8(std::string(raw.reason));
+        if(!row.available&&row.reason.empty())row.reason=(g_first_ui_state_lang!="en")?std::string(reinterpret_cast<const char*>(u8"この店ではこのアイテムを受け付けない。")):std::string("This store does not accept this item.");
+        row.tile=fc_tile_for_row(raw.kind_id,raw.unaware_category);
+        row.glyph=fc::sjis_to_utf8(std::string(raw.glyph));row.glyph_color=raw.glyph_color;
+        row.id=presentation::native_store_id(store_info.kind,raw,row.label);
+        const bool ja=g_first_ui_state_lang!="en";
+        const char *action=raw.tab?(store_info.kind==1?"sell":(store_info.kind==2?"deposit":"donate")):(store_info.kind==1?"buy":(store_info.kind==2?"take":"remove"));
+        const char *label=raw.tab?(store_info.kind==1?(store_info.giving?(ja?"譲る":"Give"):(ja?"売る":"Sell")):(store_info.kind==2?(ja?"置く":"Deposit"):(ja?"寄贈する":"Donate"))):(store_info.kind==1?(ja?"買う":"Buy"):(store_info.kind==2?(ja?"取る":"Take"):(ja?"展示を取り除く":"Remove exhibit")));
+        row.actions.push_back({action,fc::sjis_to_utf8(std::string(label)),row.reason,row.available,raw.tab?store_info.put_key:store_info.get_key});
+        if(raw.tab==0)for(const char *command=raw.commands;*command;++command) {
+            if(*command=='R')row.actions.push_back({"reserve",fc::sjis_to_utf8(std::string(ja?"取り置きする":"Reserve")),"",true,'R'});
+            else if(*command=='H')row.actions.push_back({"hide",fc::sjis_to_utf8(std::string(ja?"不要なアイテムとして隠す":"Hide this item")),"",true,'H'});
+        }
+        if(raw.tab==0&&store_info.kind==2&&store_info.remove_key)row.actions.push_back({"remove",fc::sjis_to_utf8(std::string(ja?"破棄する":"Destroy")),"",true,store_info.remove_key});
+        store_rows.push_back(std::move(row));
+    }
+    g_store_menu.set_title(fc::sjis_to_utf8(std::string(store_info.title)));
+    g_store_menu.set_heading(fc::sjis_to_utf8(std::string(store_info.heading)));
+    g_store_menu.capture(frame,store_info,std::move(store_rows));
+    /*
+     * 補助の選択肢（行に結び付かない `line_index < 0` の札。`?` 閲覧・`!` 名札など）は、下の準備が
+     * 残す（2026-10-07 に共通の側で直した。`native_targeting_runtime.cpp` の `prepare_native_targeting_menu_frame`。
+     * 以前は標的のプレビューのある一覧——アーチャーの `U`——で消えていた）。
+     */
+    presentation::prepare_native_targeting_menu_frame(frame);
+    const auto items=g_native_menu.enabled()?presentation::read_native_item_rows(fc_native_describe_item,
+        [](const char *s){return fc::sjis_to_utf8(s);},fc_tile_for_row,true):std::vector<presentation::NativeItemRow>{};
+    /*
+     * メッセージ履歴（Ctrl+P）は、原作が折り返した行を 1 メッセージ 1 行にまとめてから窓を組む（`fc_history.h`）。
+     * 窓を組む間だけ行を差し替え、送る写し（`frame.menu_term_lines`）は元に戻す。
+     */
+    std::vector<TermMirrorLine> unjoined_lines;
+    bool joined_history=false;
+    if(g_native_menu.enabled()&&frame.menu_open&&fc::history_header_index(frame.menu_term_lines)>=0) {
+        std::vector<std::string> history;
+        const int total=fc_message_count();
+        char buffer[2048];
+        history.reserve(static_cast<std::size_t>(total>0?total:0));
+        for(int age=total-1;age>=0;--age) { // 履歴は古いものが先（`do_cmd_messages()` は `msg_count() - 1` から 0 へ）
+            if(fc_message_display_text(age,buffer,static_cast<int>(sizeof(buffer)))<=0){history.emplace_back();continue;}
+            std::string text=fc::sjis_to_utf8(std::string(buffer));
+            if(fc_message_repeat(age)>1)text+=" (x"+std::to_string(fc_message_repeat(age))+")";
+            history.push_back(std::move(text));
+        }
+        unjoined_lines=frame.menu_term_lines;
+        joined_history=fc::join_history_lines(frame.menu_term_lines,history);
+    }
+    // 選択メニュー（原作の `menu_choose()`）は、Term に描かれた行ではなく、取っておいた全件で選択肢を組む（`fc_menu.h` の `MenuChooseItem`）
+    if(g_native_menu.enabled())fc::menu_choose_apply(frame);
+    g_native_menu.capture(frame,fc::birth_menu_actions(frame),items);
+    if(joined_history)frame.menu_term_lines=std::move(unjoined_lines);
+    if(g_native_menu.enabled())keep_building_heading(frame);
+    presentation::apply_native_targeting_menu_frame(frame);
+    fc::fill_travel_reticle(frame); // 上が重ねだけの targeting を空にするので、その後に積む（修-32）
+    g_inventory_menu.capture(frame,[]{return presentation::read_native_owned_items(fc_native_owned_item,
+        [](const char *s){return fc::sjis_to_utf8(s);},fc_tile_for_row);},[]{return fc::build_pad_commands();});
+    if(g_native_menu.enabled()&&frame.modern.stage=="text")frame.modern.text_ascii_only=fc_text_ascii_only()!=0;
+    // 店の購入の確認は「はい」を初期の選択にする（`fc::store_purchase_default_yes`。決定だけで買える）
+    if(store_info.active)fc::store_purchase_default_yes(frame);
+    // オプションの一覧は、原作が描いた途中までの行ではなく、原作の表の全件にする（`fc_menu.h` の `OptionsList`）
+    if(g_native_menu.enabled())fc::options_list().apply(frame);
     const std::string wire = presentation::encode_game_frame(frame);
     std::string key = frame_compare_key(wire);
     if (g_has_last_frame && (key == g_last_frame_key)) {
@@ -557,13 +861,21 @@ void host_present()
 
 int host_next_key()
 {
+    if(presentation::native_targeting().take_disabled_wake())return 27;
+    if(!g_native_test_started && fc_awaiting_command()) {
+        const char *test=std::getenv("HD2D_TEST_STORE");
+        if(test) {
+            g_native_test_started=true;
+            std::fprintf(stderr,"[native-menu-test] entering store %s\n",test);
+            fc_native_test_open(std::atoi(test));
+            g_has_last_digest=false;
+        }
+    }
     std::lock_guard<std::mutex> lock(g_inbox_mutex);
     if (g_key_queue.empty()) {
         return 0;
     }
-    const int key = g_key_queue.front();
-    g_key_queue.pop_front();
-    return key;
+    return pop_native_key_locked();
 }
 
 void host_drop_keys()
@@ -572,6 +884,11 @@ void host_drop_keys()
     if (!g_key_queue.empty()) {
         std::fprintf(stderr, "[frox] FLUSH drops %u key(s)\n",
             static_cast<unsigned>(g_key_queue.size()));
+        for(const auto &queued:g_key_queue)if(const auto *event=std::get_if<presentation::InputEventWire>(&queued)) {
+            g_native_menu.adopt_request(event->request_id,"rejected");
+            g_store_menu.reject_queued_request(event->request_id);
+            g_has_last_digest=false;
+        }
         g_key_queue.clear();
     }
 }
@@ -764,8 +1081,16 @@ std::vector<std::string> list_save_slots()
         dir.push_back(portable::kPathSep);
     }
     for (const std::string &name : portable::list_files(dir)) {
-        if (name.empty() || (name.find('.') != std::string::npos)) {
+        if (name.empty() || name.front()=='.') continue;
+        const auto dot=name.find('.');
+        if (dot!=std::string::npos) {
+#if defined(HENGBAND_DESKTOP_LINUX)
+            // Original Unix saves have an optional numeric UID prefix.
+            if (dot==0 || dot+1==name.size() || name.find('.',dot+1)!=std::string::npos
+                || !std::all_of(name.begin(),name.begin()+dot,[](unsigned char c){return c>='0'&&c<='9';})) continue;
+#else
             continue;
+#endif
         }
         slots.push_back(name);
     }
@@ -785,9 +1110,7 @@ int wait_key_for_menu()
         {
             std::lock_guard<std::mutex> lock(g_inbox_mutex);
             if (!g_key_queue.empty()) {
-                const int key = g_key_queue.front();
-                g_key_queue.pop_front();
-                return key;
+                return pop_native_key_locked();
             }
         }
         if (g_ui_gone.load() || g_quit_requested.load()) {
@@ -810,8 +1133,44 @@ int wait_key_for_menu()
  * 9 件まで。超えたぶんは見出しに件数だけ正直に書く（隠れた枠は `--savefile=` で開ける）。
  * **文言は英語**（M0。ASCII なので span の位置＝桁位置で換算が要らない）。
  */
+int modern_title_and_pick_savefile()
+{
+    const bool ja=g_first_ui_state_lang!="en";
+    presentation::NativeSavePicker picker("FroxComposband",ja,list_save_slots,
+        [](const std::string &name){
+            const std::string result=presentation::remove_native_save(fc_save_dir(),name);
+            if(result.empty())presentation::player_identity_remove("frox",name);
+            return result;
+        },
+        [](const std::string &name){return slot_display_name(name);});
+    for(;;) {
+        const auto page=picker.page();fc_term_clear();
+        fc_term_putstr(2,1,1,fc::utf8_to_sjis(page.title).c_str());
+        std::vector<MenuChoice> choices;
+        for(size_t i=0;i<page.rows.size();++i) {
+            const auto &row=page.rows[i];const int at=4+int(i);
+            const auto line=std::string(1,char(row.key))+") "+row.label;
+            fc_term_putstr(2,at,row.selected?14:1,fc::utf8_to_sjis(line).c_str());
+            MenuChoice choice;choice.line_index=at;choice.span_begin=2;choice.span_len=int(line.size());choice.key_begin=2;choice.key_len=1;
+            choice.key=row.key;choice.selected=row.selected;choice.label_utf8=row.label;choice.description_utf8=page.description;choices.push_back(std::move(choice));
+        }
+        if(page.rows.size()<4) {
+            std::string description=page.description;size_t pos=0;int at=10;
+            while(pos<description.size()&&at<kTermRows) {auto end=description.find('\n',pos);auto line=description.substr(pos,end==std::string::npos?end:end-pos);fc_term_putstr(2,at++,1,fc::utf8_to_sjis(line).c_str());if(end==std::string::npos)break;pos=end+1;}
+        }
+        fc::set_pregame_choices(choices);fc_term_present();
+        const int result=picker.key(wait_key_for_menu());
+        if(result==-2)continue;
+        fc::set_pregame_choices({});
+        if(result<0)return -1;
+        if(result==1){fc_clear_savefile();return 1;}
+        return choose_savefile(picker.selected())?1:0;
+    }
+}
+
 int title_and_pick_savefile()
 {
+    if(g_native_menu.enabled())return modern_title_and_pick_savefile();
     const std::vector<std::string> slots = list_save_slots();
     const std::string last = read_remembered_slot();
     constexpr int kMaxListed = 9;
@@ -1164,6 +1523,61 @@ int run_selftest(const std::string &lib_dir)
             (bad == 0) ? "ok" : "FAIL");
         failures += bad;
     }
+    {
+        const int bad = fc::audit_semantics_selftest();
+        std::fprintf(stderr, "[frox] selftest: audit semantics: %s\n",
+            (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+    {
+        const int bad = fc::idle_mirror_selftest();
+        std::fprintf(stderr, "[frox] selftest: idle mirror: %s\n",
+            (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+    /* オプションの一覧: 原作の表から全件を取り、画面の focus を原作のカーソルの 1 キーにできること */
+    {
+        const int bad = fc::options_list_selftest();
+        std::fprintf(stderr, "[frox] selftest: options list: %s\n",
+            (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+    /* 選択メニュー（`menu_choose()`）: 全件の取り方と、Term からはみ出す項目・2 列の並びを含む一覧の組み直し */
+    {
+        const int bad = fc::menu_choose_selftest();
+        std::fprintf(stderr, "[frox] selftest: menu choose list: %s\n",
+            (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+    /* 店の購入の確認: 決定だけで買えるよう「はい」が初期（売る・譲るなどは「いいえ」のまま） */
+    {
+        const int bad = fc::store_purchase_default_selftest();
+        std::fprintf(stderr, "[frox] selftest: store purchase default: %s\n",
+            (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+    /* 店の命令の同義キー（p・g・d）を店の窓が送れる（2026-10-11 の気づいたこと: キーボードの p が断られた） */
+    {
+        const int bad = fc::store_native_key_selftest();
+        std::fprintf(stderr, "[frox] selftest: store native key: %s\n", (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+    /* Term の高さを変えてよい時（問いの最中に変えると、原作の resize_map() が問いの行を消す） */
+    {
+        int bad = 0;
+        const auto expect = [&](bool ok, const char *what) {
+            if (!ok) {
+                ++bad;
+                std::fprintf(stderr, "[frox] selftest: term resize gate: FAIL - %s\n", what);
+            }
+        };
+        expect(term_resize_allowed(0, 0), "no dungeon yet: resize now");
+        expect(term_resize_allowed(FC_SCREEN_GENERATED | FC_SCREEN_DUNGEON, 1), "dungeon, waiting for a command: resize now");
+        expect(!term_resize_allowed(FC_SCREEN_GENERATED | FC_SCREEN_DUNGEON, 0), "dungeon, inside a prompt/store: defer");
+        expect(!term_resize_allowed(FC_SCREEN_GENERATED | FC_SCREEN_DUNGEON | FC_SCREEN_ICKY, 0), "dungeon, inside a menu: defer");
+        std::fprintf(stderr, "[frox] selftest: term resize gate: %s\n", (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
 
     /*
      * **店の矩形での読み取り**（FH-13 / FH-15）。店は箱を `rect(0,0,80,3)` へ
@@ -1218,6 +1632,37 @@ int run_selftest(const std::string &lib_dir)
         const int bad = fc::lang_selftest();
         std::fprintf(stderr, "[frox] selftest: japanese layer: %s\n",
             (bad == 0) ? "ok" : "FAIL");
+        failures += bad;
+    }
+
+    /* 光源の種類の判定（光の届く範囲）。キャラクターは要らない。 */
+    {
+        char light_err[160];
+        const int bad = fc_light_selftest(light_err, static_cast<int>(sizeof(light_err)));
+        if (bad != 0) {
+            std::fprintf(stderr, "[frox] selftest: light kind: FAIL - %d case(s), first: %s\n", bad, light_err);
+        } else {
+            std::fprintf(stderr, "[frox] selftest: light kind: ok\n");
+        }
+        failures += bad;
+    }
+
+    /*
+     * 状態のアイコンの表の自己検査。キャラクターは要らない。
+     * 環境変数 HENGBAND_STATUS_ICON_TABLE に `hd2d/ui/status_icon_table.inc` のパスがあれば、
+     * 送る鍵が全部その表にあることまで見る（無ければ表の中の整合だけ。関門はパスを渡す）。
+     */
+    {
+        char status_err[160];
+        int status_checked = 0;
+        const int bad = fc_status_selftest(status_err, static_cast<int>(sizeof(status_err)), &status_checked);
+        if (bad != 0) {
+            std::fprintf(stderr, "[frox] selftest: status icons: FAIL - %d case(s), first: %s\n", bad, status_err);
+        } else {
+            std::fprintf(stderr,
+                "[frox] selftest: status icons: ok (%d keys checked against the icon table, %d bar entries, %d permanent rows, %d resist rows)\n",
+                status_checked, fc_status_bar_table_count(), fc_status_perm_row_count(), fc_status_res_row_count());
+        }
         failures += bad;
     }
 
@@ -1281,9 +1726,8 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
         /* 致命ではない——絵が出ないだけで遊べる。**捏造せずに数えて言う**。 */
         std::fprintf(stderr, "[frox] tile manifest unavailable: %s\n", g_manifest.error().c_str());
     } else {
-        std::fprintf(stderr, "[frox] tile manifest: %u entries from %s (%d png missing)\n",
-            static_cast<unsigned>(g_manifest.message().assets.size()), csv.c_str(),
-            g_manifest.missing_files());
+        std::fprintf(stderr, "[frox] tile manifest: %u entries from %s\n",
+            static_cast<unsigned>(g_manifest.message().assets.size()), csv.c_str());
         fc::set_tile_manifest(&g_manifest);
         /*
          * **実体（R / K / P）を同じ目録へ継ぎ足す**（M2）。地形だけでも遊べるので、
@@ -1293,8 +1737,17 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
         if (!g_manifest.load_entities(map_csv, exe_dir())) {
             std::fprintf(stderr, "[frox] entity manifest unavailable: %s\n", g_manifest.error().c_str());
         } else {
-            std::fprintf(stderr, "[frox] entity manifest: %d entries from %s (%d png missing in total)\n",
-                g_manifest.entity_count(), map_csv.c_str(), g_manifest.missing_files());
+            /*
+             * 正体の分からないアイテムの代表タイルを追加登録する。
+             * 新しい絵は作らない——変愚の既存の板を指す行を目録の末尾へ足すだけ
+             * （fc_manifest.cpp の add_unaware_representative_tiles() 参照）。
+             */
+            g_manifest.add_unaware_representative_tiles();
+            // 目録の記録は、画面が実際に引く板（.vox）の有無を数える。PNG は HD2D が使わない開発の頃の 2D の絵で、
+            // 配布物には無いので「全部無い」と出て、異常のダイアログで原因に見えていた（2026-10-06。slab_presence.h）。
+            const auto slabs = presentation::count_slab_presence(g_manifest.message(), { frox_slab_dir(), presentation::default_slab_dir() });
+            std::fprintf(stderr, "[frox] entity manifest: %d entries from %s (entity slabs: %d of %d missing)\n",
+                g_manifest.entity_count(), map_csv.c_str(), slabs.missing, slabs.entity_rows);
         }
     }
 
@@ -1347,7 +1800,7 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * かつては「コアが自分で鳴らせる」だったが、いまは「**音の出来事を出せる**」である。
      * Frox は winmm を叩く実体を持たないが、`frame.sounds` へ名前とマスを載せるので
      * 画面側が鳴らせる。名乗らないと機能メニューの「音」の節が入口から消え、
-     * 利用者が音量も入切も触れなくなる。
+     * 遊ぶ人が音量も入切も触れなくなる。
      *
      * `lang-restart` の意味は「**遊んでいる途中に言語を替えるなら、保存して
      * 起こし直してくれ**」である。Frox の言語は `init_angband()` より前に
@@ -1361,7 +1814,7 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * 変愚から流用する `R955` などは既定側で見つかる。`graf` は出さない
      * ——8/16px の面を持たないので、画面側に該当スタイルを無効化させる。
      */
-    ack.asset_root_slab = frox_slab_dir();
+    ack.asset_root_slab = portable::path_to_utf8(frox_slab_dir()); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
     ack.features.emplace_back("lang-restart");
     ack.features.emplace_back("audio");
     if (!send_message("hello_ack", presentation::encode_hello_ack(ack))) {
@@ -1483,46 +1936,56 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
     /*
      * ゲームを回す。**戻ってくるのは終わったとき**。
      * `--savefile=` があれば従来どおり黙って決める（検証・自動運転のオプション）。
-     * 無ければタイトルとセーブ選択を出して利用者が選ぶ。
+     * 無ければタイトルとセーブ選択を出して遊ぶ人が選ぶ。
      */
     int pick;
-    if (!savefile_slot.empty()) {
-        pick = choose_savefile(savefile_slot) ? 1 : 0;
-        fc_resume_clear(); //!< 枠を名指しされた。印は持ち越さない（追補 A2）
-    } else if (resume) {
-        /*
-         * **言語切り替えの立て直し**（追補 A2）。直前の自分が保存した枠を、
-         * タイトルを出さずに開く。印は `fc_resume_take()` が消すので一度きりである。
-         *
-         * 印が無い・セーブが消えている・新規で始まってしまう——どれもタイトルへ
-         * 落とす。**黙って新規を始めない**：立て直しは「同じ人物で続ける」意味だから、
-         * 別の何かが始まるくらいならタイトルで選ばせるほうが正しい。
-         */
-        char slot[64];
-        pick = -2;
-        if (fc_resume_take(slot, sizeof(slot)) && !choose_savefile(slot)) {
-            std::fprintf(stderr, "[frox] --resume opened %s\n", slot);
-            pick = 0;
-        }
-        if (pick != 0) {
-            std::fprintf(stderr, "[frox] --resume found nothing to open; showing the title\n");
-            fc_clear_savefile();
+    /*
+     * 誕生の最初の画面で取消されたら（`FC_BIRTH_CANCEL`）、タイトルとセーブ選択を出し直す（修-61。コアのプロセスは終わらない）。
+     * 2 周目以降は `--savefile=`・`--resume` の指定を使わず、いつもの選択画面から始める。
+     */
+    for (bool first_round = true;; first_round = false) {
+        if (first_round && !savefile_slot.empty()) {
+            pick = choose_savefile(savefile_slot) ? 1 : 0;
+            fc_resume_clear(); //!< 枠を名指しされた。印は持ち越さない（追補 A2）
+        } else if (first_round && resume) {
+            /*
+             * **言語切り替えの立て直し**（追補 A2）。直前の自分が保存した枠を、
+             * タイトルを出さずに開く。印は `fc_resume_take()` が消すので一度きりである。
+             *
+             * 印が無い・セーブが消えている・新規で始まってしまう——どれもタイトルへ
+             * 落とす。**黙って新規を始めない**：立て直しは「同じ人物で続ける」意味だから、
+             * 別の何かが始まるくらいならタイトルで選ばせるほうが正しい。
+             */
+            char slot[64];
+            pick = -2;
+            if (fc_resume_take(slot, sizeof(slot)) && !choose_savefile(slot)) {
+                std::fprintf(stderr, "[frox] --resume opened %s\n", slot);
+                pick = 0;
+            }
+            if (pick != 0) {
+                std::fprintf(stderr, "[frox] --resume found nothing to open; showing the title\n");
+                fc_clear_savefile();
+                pick = title_and_pick_savefile();
+            }
+        } else {
+            fc_resume_clear(); //!< ふつうの起動。**残っている印を消す**（持ち越さない）
             pick = title_and_pick_savefile();
         }
-    } else {
-        fc_resume_clear(); //!< ふつうの起動。**残っている印を消す**（持ち越さない）
-        pick = title_and_pick_savefile();
+        if (pick < 0) {
+            std::fprintf(stderr, "[frox] shut down at the save picker (the ui went away)\n");
+            send_exit_once(g_ui_gone.load() ? 1 : 0);
+            fc_set_host_hooks(nullptr);
+            fc_term_remove();
+            g_log.close();
+            return 0;
+        }
+        rc = fc_run_game((pick == 1) ? 1 : 0);
+        std::fprintf(stderr, "[frox] game finished (%d)\n", rc);
+        if (rc != FC_BIRTH_CANCEL) {
+            break;
+        }
+        fc_clear_savefile();
     }
-    if (pick < 0) {
-        std::fprintf(stderr, "[frox] shut down at the save picker (the ui went away)\n");
-        send_exit_once(g_ui_gone.load() ? 1 : 0);
-        fc_set_host_hooks(nullptr);
-        fc_term_remove();
-        g_log.close();
-        return 0;
-    }
-    rc = fc_run_game((pick == 1) ? 1 : 0);
-    std::fprintf(stderr, "[frox] game finished (%d)\n", rc);
 
     /* 引けなかった鍵を書き出す（`--report-untranslated=`）。ゲームのスレッドは終わっている。 */
     fc::lang_write_report();
@@ -1553,6 +2016,46 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
 }
 
 } // namespace
+
+//! 新しい UI（`ui_mode=modern`）が有効か。`fc_shim.c` の `fc_menu_choose()` が読む（ゲームのスレッドから呼ばれる）。
+/*!
+ * @brief 日本語（0x80 以上のバイト）を含む名前のセーブの名前を作る（フック #125・#126。修-57）。
+ * @param full_name 冒険者の名前（CP932）
+ * @param out 別名の置き場
+ * @param cap `out` の大きさ（バイト）
+ * @return 1 = 別名を作った／0 = 半角だけの名前（原作の道をそのまま通す）
+ *
+ * @details 別名は `P` ＋ 7 字（英数字、紛らわしい字を除いた 32 種）で、名前の UTF-8 の FNV-1a 64 ビットのハッシュから作る
+ * （`presentation/bridge/player_identity.h` の `player_identity_core_name()`。Sil-Q の `sq_save_base_name()` と同じ式）。
+ * 同じ名前は必ず同じ別名、別の名前はほぼ別の別名になるので、日本語の名前のキャラクターが同じセーブへ書き合わない。
+ */
+extern "C" int fc_save_base_name(const char *full_name, char *out, int cap)
+{
+    if ((full_name == nullptr) || (out == nullptr) || (cap <= 1)) {
+        return 0;
+    }
+    bool wide = false;
+    for (const unsigned char *q = reinterpret_cast<const unsigned char *>(full_name); *q != 0; ++q) {
+        if (*q >= 0x80) {
+            wide = true;
+            break;
+        }
+    }
+    if (!wide) {
+        return 0;
+    }
+    const std::string alias = presentation::player_identity_core_name(fc::sjis_to_utf8(full_name), 8);
+    if (alias.empty()) {
+        return 0;
+    }
+    std::snprintf(out, static_cast<std::size_t>(cap), "%s", alias.c_str());
+    return 1;
+}
+
+extern "C" int fc_modern_ui_enabled(void)
+{
+    return g_native_menu.enabled() ? 1 : 0;
+}
 
 #if !defined(_WIN32)
 
@@ -1597,6 +2100,9 @@ extern "C" __attribute__((visibility("default"))) int hengband_core_entry(presen
 
 int main(int argc, char **argv)
 {
+#if defined(HENGBAND_DESKTOP_LINUX)
+    std::signal(SIGPIPE, SIG_IGN);
+#endif
     bool selftest = false;
     bool has_protocol_arg = false;
     std::string log_path;

@@ -84,7 +84,7 @@ void input_log(const char *fmt, ...)
  * @details `term_key_push()` は**先頭**へ積む関数（`src/term/z-term.cpp:1770` に
  * "Add a keypress to the FRONT of the queue"）で、1 回の `on_event` で 2 個以上積むと
  * **消費順が逆転する**。K-16 の「積むのは 1 回 1 キー」という制約はこれが原因だった。
- * 本来 UI が積むのは「利用者がその順に押したキー」なので、**FIFO が正しい**。
+ * 本来 UI が積むのは「遊ぶ人がその順に押したキー」なので、**FIFO が正しい**。
  * ここを直すと、コマンドメニュー経由の複数キー注入・キーマップ逆引きの多バイト列が
  * そのままの順で通るようになる（K-16 §14.2 の制約は解消）。
  * @note `key_queue` / `key_head` / `key_size` は `z-term.h` の公開メンバなので、
@@ -451,6 +451,22 @@ void SdlNullTerm::install(PlayerType *player, Bridge *bridge, const UiSeam &seam
     term_activate(&term_);
 }
 
+bool SdlNullTerm::resize_rows(int rows)
+{
+    rows = std::clamp(rows, 24, 255);
+    if (term_.hgt == rows) {
+        return true;
+    }
+    term_activate(&term_);
+    term_resize(term_.wid, rows);
+    return term_.hgt == rows;
+}
+
+bool resize_main_term_rows(int rows)
+{
+    return s_active_null_term != nullptr && s_active_null_term->resize_rows(rows);
+}
+
 void SdlNullTerm::on_fresh()
 {
     if (!seam_.present || bridge_ == nullptr) {
@@ -555,6 +571,7 @@ errr SdlNullTerm::on_event(int wait)
 
 void SdlNullTerm::on_flush()
 {
+    if(seam_.discard_input){seam_.discard_input();return;}
     KeyQueue discard;
     if (seam_.pump_input) {
         seam_.pump_input(discard);

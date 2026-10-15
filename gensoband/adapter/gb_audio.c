@@ -529,6 +529,11 @@ void gb_audio_init(void)
     gb_audio_log = (log && (log[0] != '0')) ? 1 : 0;
     log = getenv("GB_AUDIO_SILENT");
     gb_audio_silent = (log && (log[0] != '0')) ? 1 : 0;
+    /* `HENGBAND_MUTE=1` でも黙る（検査用。決めたこと 2026-09-26） */
+    log = getenv("HENGBAND_MUTE");
+    if (log && (log[0] != '0')) {
+        gb_audio_silent = 1;
+    }
 
     /* 道は `lib/xtra` の下（`main-win.c:6239` と同じ作り）。 */
     path_build(gb_dir_sound, sizeof(gb_dir_sound), ANGBAND_DIR_XTRA, "sound");

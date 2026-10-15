@@ -63,6 +63,9 @@ public:
     //! いま選んでいる答え（`prompt().choices` の添字）。
     int prompt_index() const { return this->prompt_index_; }
     const PromptBar &prompt() const { return this->prompt_; }
+    //! Look-mode auxiliary actions use LB/RB to choose an action while the D-pad stays owned by map movement.
+    bool prompt_uses_shoulders() const { return this->prompt_.footer_utf8.rfind("LB/RB:", 0) == 0; }
+    void step_prompt(int delta);
     //! いま選んでいる桁（0 = 1 の位）。
     int numeric_place() const { return this->numeric_place_; }
     const NumericInput &numeric() const { return this->numeric_; }

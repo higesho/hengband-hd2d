@@ -1,0 +1,245 @@
+# flavor.ja.tsv — tools/angband/an_build_names.py が作る（手で直さない）。
+# 英語名 \t 日本語名 \t 出どころ（票＝承認済みの用語票 2026-09-24／変愚／Frox／Sil-Q／遊ぶ人）
+amulet:Adamant	アダマント	票
+amulet:Agate	めのうの	変愚
+amulet:Azure	瑠璃の	変愚
+amulet:Bone	骨の	変愚
+amulet:Brass	真鍮の	変愚
+amulet:Carved Oak	彫刻入りオーク	票
+amulet:Copper	銅の	変愚
+amulet:Crystal	水晶の	変愚
+amulet:Dragon Tooth	竜の牙	票
+amulet:Driftwood	流木の	変愚
+amulet:Flint Stone	火打石	票
+amulet:Ivory	象牙の	変愚
+amulet:Mithril	ミスリルの	変愚
+amulet:Mother-of-Pearl	真珠層	票
+amulet:Obsidian	黒曜石の	変愚
+amulet:Pewter	しろめの	変愚
+amulet:Ruby	ルビーの	変愚
+amulet:Sea Shell	貝殻	票
+amulet:Silver	銀の	変愚
+amulet:Tortoise Shell	べっ甲の	変愚
+mushroom:Crumbly	ぼろぼろの	票
+mushroom:Firm	固い	票
+mushroom:Fragile	もろい	票
+mushroom:Furry	苔むした	変愚
+mushroom:Gelatinous	ゼラチン質の	票
+mushroom:Glowing	光る	票
+mushroom:Marbled	大理石模様の	票
+mushroom:Moist	湿った	票
+mushroom:Moldy	かびた	票
+mushroom:Mottled	まだらの	票
+mushroom:Rubbery	ゴムのような	票
+mushroom:Slimy	ねばねばした	変愚
+mushroom:Smelly	臭い	票
+mushroom:Speckled	斑点の	票
+mushroom:Spotted	水玉の	票
+mushroom:Striped	縞の	票
+mushroom:Waxy	蝋のような	票
+mushroom:Withered	しなびた	票
+mushroom:Woody	木質の	票
+mushroom:Wrinkled	しわしわの	変愚
+potion:Azure	紺碧の	変愚
+potion:Black	黒い	変愚
+potion:Blue	青い	変愚
+potion:Brown	茶色の	変愚
+potion:Bubbling	泡だった	変愚
+potion:Cerulean	空色	票
+potion:Chartreuse	薄黄緑色の	変愚
+potion:Clear	透明な	変愚
+potion:Cloudy	濁った	変愚
+potion:Coagulated Crimson	凝固した深紅	票
+potion:Copper Speckled	銅斑の	変愚
+potion:Crimson	紅色の	変愚
+potion:Cyan	シアン色の	変愚
+potion:Dark Green	深い緑の	変愚
+potion:Dark Red	深い赤色の	変愚
+potion:Gloopy Green	暗緑色の	変愚
+potion:Gold	金色の	変愚
+potion:Green	緑色の	変愚
+potion:Grey	グレーの	変愚
+potion:Hazy	ぼやけた色の	変愚
+potion:Icky Green	よどんだ緑の	変愚
+potion:Indigo	藍色の	変愚
+potion:Lavender	ラベンダー色	票
+potion:Light Blue	薄い青色の	変愚
+potion:Light Brown	薄茶色の	変愚
+potion:Light Green	薄い緑色の	変愚
+potion:Light Pink	薄桃色	票
+potion:Light Purple	薄紫	票
+potion:Light Teal	薄青緑	票
+potion:Light Violet	薄すみれ色	票
+potion:Light Yellow	薄黄色	票
+potion:Magenta	マゼンタ色の	変愚
+potion:Metallic Blue	青く輝く	変愚
+potion:Metallic Green	緑に輝く	変愚
+potion:Metallic Purple	紫に輝く	変愚
+potion:Metallic Red	赤く輝く	変愚
+potion:Misty	霧の	票
+potion:Muddy	泥色	票
+potion:Mustard Yellow	からし色	票
+potion:Ochre	黄土色	票
+potion:Oily Yellow	ねばった黄色の	変愚
+potion:Orange	オレンジ色の	変愚
+potion:Orange Speckled	オレンジ斑の	変愚
+potion:Pink	ピンク色の	変愚
+potion:Pungent	刺激臭のする	変愚
+potion:Purple	紫色の	変愚
+potion:Purple Speckled	紫の斑点の	票
+potion:Red	赤い	変愚
+potion:Shimmering	輝く	変愚
+potion:Smoky	煙った	変愚
+potion:Tangerine	橙色の	変愚
+potion:Teal	青緑色の	遊ぶ人
+potion:Ultramarine	群青	票
+potion:Vermilion	朱色の	変愚
+potion:Vespertine	夕暮色	票
+potion:Violet	スミレ色の	変愚
+potion:Viscous Pink	ドロドロの	変愚
+potion:White	白い	変愚
+potion:Yellow	黄色い	変愚
+ring:Adamantite	アダマンタイトの	変愚
+ring:Alexandrite	金緑石の	変愚
+ring:Amber	琥珀の	変愚
+ring:Amethyst	アメジストの	変愚
+ring:Aquamarine	アクアマリンの	変愚
+ring:Azurite	めのうの	変愚
+ring:Beryl	緑柱石の	変愚
+ring:Bloodstone	血玉随の	変愚
+ring:Bronze	青銅の	変愚
+ring:Calcite	方解石の	変愚
+ring:Carnelian	赤めのうの	変愚
+ring:Corundum	綱玉の	変愚
+ring:Diamond	ダイアモンドの	変愚
+ring:Emerald	エメラルドの	変愚
+ring:Fluorite	ホタル石の	変愚
+ring:Garnet	ガーネットの	変愚
+ring:Gold	金の	変愚
+ring:Hematite	赤鉄鉱	票
+ring:Jade	ひすいの	変愚
+ring:Jasper	ジャスパーの	変愚
+ring:Jet	黒玉の	変愚
+ring:Jewelled	宝石飾りの	票
+ring:Lapis Lazuli	青瑠璃の	変愚
+ring:Malachite	クジャク石の	変愚
+ring:Marble	大理石の	変愚
+ring:Moonstone	ムーンストーンの	変愚
+ring:Obsidian	黒曜石の	変愚
+ring:Onyx	縞めのうの	変愚
+ring:Opal	オパールの	変愚
+ring:Pearl	真珠の	変愚
+ring:Platinum	プラチナの	変愚
+ring:Quartz	水晶の	変愚
+ring:Quartzite	石英岩の	変愚
+ring:Rhodonite	ザクロ石の	変愚
+ring:Silver	銀の	変愚
+ring:Tiger Eye	虎目石の	変愚
+ring:Topaz	トパーズの	変愚
+ring:Turquoise	トルコ石の	変愚
+ring:Zircon	ジルコンの	変愚
+rod:Aluminium	アルミニウム	票
+rod:Aluminium-Plated	アルミニウムめっき	票
+rod:Brass	真鍮の	変愚
+rod:Bronze	青銅の	変愚
+rod:Cast Iron	鋳鉄の	変愚
+rod:Chromium	クロムの	変愚
+rod:Copper	銅の	変愚
+rod:Copper-Plated	銅メッキの	変愚
+rod:Engraved Gold	彫金の	票
+rod:Gold	金の	変愚
+rod:Iron	鉄の	変愚
+rod:Ivory	象牙の	変愚
+rod:Lead-Plated	鉛メッキの	変愚
+rod:Magnesium	マグネシウムの	変愚
+rod:Mithril	ミスリルの	変愚
+rod:Mithril-Plated	ミスリルめっき	票
+rod:Molybdenum	モリブデンの	変愚
+rod:Nickel	ニッケルの	変愚
+rod:Nickel-Plated	ニッケルめっき	票
+rod:Pewter	しろめの	変愚
+rod:Platinum	プラチナの	変愚
+rod:Polished Steel	磨いた鋼	票
+rod:Runed	ルーンの	変愚
+rod:Rusted Steel	錆びた鋼	票
+rod:Rusty Iron	錆びた鉄	票
+rod:Silver	銀の	変愚
+rod:Silver-Gilt	銀めっき	票
+rod:Steel	鋼鉄の	変愚
+rod:Tin	ブリキの	変愚
+rod:Tin-Plated	スズメッキの	変愚
+rod:Titanium	チタンの	変愚
+rod:Tungsten	タングステンの	変愚
+rod:White Gold	ホワイトゴールド	票
+rod:Zinc	亜鉛の	変愚
+rod:Zirconium	ジルコンの	変愚
+staff:Aspen	ポプラの	変愚
+staff:Balsa	バルサの	変愚
+staff:Bamboo	竹の	変愚
+staff:Banyan	バンヤンの	変愚
+staff:Birch	カバの	変愚
+staff:Blackthorn	リンボク	票
+staff:Cedar	西洋スギの	変愚
+staff:Cottonwood	檜の	変愚
+staff:Cypress	イトスギの	変愚
+staff:Dogwood	ミズキの	変愚
+staff:Elm	ニレの	変愚
+staff:Eucalyptus	ユーカリの	変愚
+staff:Gnarled	月桂樹の	変愚
+staff:Golden	金色の	変愚
+staff:Hawthorn	サンザシの	変愚
+staff:Hazel	ハシバミ	票
+staff:Hemlock	ツガの	変愚
+staff:Hickory	ブナの	変愚
+staff:Ironwood	黒檀の	変愚
+staff:Ivory	象牙の	変愚
+staff:Locust	アカシアの	変愚
+staff:Mahogany	マホガニーの	変愚
+staff:Maple	カエデの	変愚
+staff:Mistletoe	ヤドリギの	変愚
+staff:Mulberry	クワの	変愚
+staff:Oak	カシの	変愚
+staff:Pine	松の	変愚
+staff:Redwood	杉の	変愚
+staff:Rosewood	紫檀の	変愚
+staff:Silver Birch	白樺	票
+staff:Spruce	エゾマツの	変愚
+staff:Sycamore	イチジクの	変愚
+staff:Teak	チークの	変愚
+staff:Walnut	クルミの	変愚
+staff:Willow	柳	票
+wand:Aluminium	アルミニウム	票
+wand:Aluminium-Plated	アルミニウムめっき	票
+wand:Brass	真鍮の	変愚
+wand:Bronze	青銅の	変愚
+wand:Cast Iron	鋳鉄の	変愚
+wand:Chromium	クロムの	変愚
+wand:Copper	銅の	変愚
+wand:Copper-Plated	銅メッキの	変愚
+wand:Gold	金の	変愚
+wand:Gold-Plated	金メッキの	変愚
+wand:Iron	鉄の	変愚
+wand:Ivory	象牙の	変愚
+wand:Lead	鉛の	変愚
+wand:Lead-Plated	鉛メッキの	変愚
+wand:Magnesium	マグネシウムの	変愚
+wand:Mithril	ミスリルの	変愚
+wand:Mithril-Plated	ミスリルめっき	票
+wand:Molybdenum	モリブデンの	変愚
+wand:Nickel	ニッケルの	変愚
+wand:Nickel-Plated	ニッケルめっき	票
+wand:Pewter	しろめの	変愚
+wand:Platinum	プラチナの	変愚
+wand:Runed	ルーンの	変愚
+wand:Rusty	錆びた	変愚
+wand:Silver	銀の	変愚
+wand:Silver-Plated	銀メッキの	変愚
+wand:Steel	鋼鉄の	変愚
+wand:Steel-Plated	鋼めっき	票
+wand:Tin	ブリキの	変愚
+wand:Tin-Plated	スズメッキの	変愚
+wand:Titanium	チタンの	変愚
+wand:Tungsten	タングステンの	変愚
+wand:Zinc	亜鉛の	変愚
+wand:Zinc-Plated	亜鉛メッキの	変愚
+wand:Zirconium	ジルコンの	変愚

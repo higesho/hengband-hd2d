@@ -118,6 +118,16 @@ static const struct { const char *jp; const char *en; } en_decor[] = {
      * 上流の `#else` も `" to infravision"` の写しのままだった。ここで直す。 */
     { "\x96\x82\x96\x40\x96\x68\x8c\xe4", " to saving throw" },   /* 魔法防御 */
     { "\x89\xf0\x8f\x9c", " to disarming" },                         /* 解除 */
+    /* `(+2隠密)` のような pval の語（`flavor.c:3253-3300` が `object_desc_str()` で直に継ぎ足す）。
+     * `)` までを鍵にして、名前の中の同じ字を巻き込まない。攻撃（回数）は単複があるので `en_fix_blows()` が直す。 */
+    { "\x89\xc1\x91\xac)", " to speed)" },                          /* 加速) */
+    { "\x89\x42\x96\xa7)", " to stealth)" },                        /* 隠密) */
+    { "\x92\x54\x8d\xf5)", " to searching)" },                      /* 探索) */
+    { "\x90\xd4\x8a\x4f\x90\xfc\x8e\x8b\x97\xcd)", " to infravision)" }, /* 赤外線視力) */
+    /* ロッドの充填（`flavor.c:3189-3226`）。 */
+    { "(\x8f\x5b\x93\x55\x92\x86)", "(charging)" },                  /* (充填中) */
+    { "\x96\x7b \x8f\x5b\x93\x55\x92\x86)", " charging)" },          /* 本 充填中) */
+    { "\x96\x87 \x8f\x5b\x93\x55\x92\x86)", " charging)" },          /* 枚 充填中) */
 
     /* **全角の括弧と印を ASCII へ**（2026-08-28 に決めた）。
      * `object_desc_str()` はフックを 1 つも通らないので、名前が組み上がった
@@ -163,6 +173,7 @@ static const char *en_kind_of_tval(int tval)
     case TV_WAND: return "Wand";
     case TV_ROD: return "Rod";
     case TV_FOOD: return "Mushroom";
+    case TV_MUSHROOM: return "Mushroom";
     default: return NULL;
     }
 }
@@ -199,6 +210,253 @@ static int en_rotate_tag(char *buf, size_t cap, const char *tag)
     tail[sizeof(tail) - 1] = '\0';
     (void)en_insert(buf, cap, end, tail);
     return 1;
+}
+
+/*!
+ * 種別ごとの日本語の接尾辞（`flavor.c` の `basenm`。`%の薬`・`%薬` の「薬」の部分）と英語の種別名。
+ * 識別済みの名前は JP 枝では `<英語の名前>の薬` になる（名前の部分は `lib-en/edit` で英語、種別の語は日本語のまま）。
+ */
+static const struct { int tval; const char *jp; const char *en; } en_kind_suffix[] = {
+    { TV_POTION, "\x96\xf2", "Potion" },                                       /* 薬 */
+    { TV_SCROLL, "\x8a\xaa\x95\xa8", "Scroll" },                              /* 巻物 */
+    { TV_WAND, "\x96\x82\x96\x40\x96\x5f", "Wand" },                          /* 魔法棒 */
+    { TV_STAFF, "\x8f\xf1", "Staff" },                                         /* 杖 */
+    { TV_ROD, "\x83\x8d\x83\x62\x83\x68", "Rod" },                            /* ロッド */
+    { TV_RING, "\x8e\x77\x97\xd6", "Ring" },                                   /* 指輪 */
+    { TV_AMULET, "\x83\x41\x83\x7e\x83\x85\x83\x8c\x83\x62\x83\x67", "Amulet" }, /* アミュレット */
+    { TV_MUSHROOM, "\x83\x4c\x83\x6d\x83\x52", "Mushroom" },                   /* キノコ */
+};
+
+/*! 名前（`buf` の `from` から `to` の手前まで）を `with` に置き換える。入らなければ元のままにする。 */
+static int en_replace_span(char *buf, size_t cap, size_t from, size_t to, const char *with)
+{
+    char saved[MAX_NLEN];
+    if (strlen(buf) >= sizeof(saved)) return 0;
+    strcpy(saved, buf);
+    en_cut(buf, from, to - from);
+    if (!en_insert(buf, cap, from, with)) {
+        strcpy(buf, saved);
+        return 0;
+    }
+    return 1;
+}
+
+/*!
+ * @brief 識別済みの `Xの薬`・`X薬`・`Xの<色>薬` を `Potion of X`・`<Color> Potion of X` へ。
+ * @details 種別の語は日本語の接尾辞で後置されている（`flavor.c` の `basenm`）。名前の頭の英語（`X`）を残し、
+ * 種別名を前へ回す。`<色>` が付く形（識別済みでも別名を併記する表示）は色＋種別をカタログで引く（引けなければ触らない）。
+ * 複数形（`Potions of X`）は後ろの 4) が ` of ` の手前の語を複数形にするので、ここは単数のまま作る。
+ * **名前が日本語で始まる形（未識別の `青い薬`）には触らない**（3) が引く）。
+ */
+static void en_fix_kind_suffix(char *buf, size_t cap, int tval)
+{
+    size_t i, d = 0, end, ascii_end, j, slen, n;
+    const char *jp = NULL, *kind = NULL;
+    char built[MAX_NLEN];
+
+    for (i = 0; i < sizeof(en_kind_suffix) / sizeof(en_kind_suffix[0]); i++) {
+        if (en_kind_suffix[i].tval == tval) {
+            jp = en_kind_suffix[i].jp;
+            kind = en_kind_suffix[i].en;
+            break;
+        }
+    }
+    if (!jp) return;
+    slen = strlen(jp);
+
+    while ((buf[d] >= '0') && (buf[d] <= '9')) d++;
+    if (buf[d] == ' ') d++;
+    end = en_name_end(buf);
+    while ((end > d) && (buf[end - 1] == ' ')) end--;
+    if (end <= d) return;
+
+    /* 頭の英語（名前 X）。ここに日本語が来る形（未識別）は対象外。 */
+    ascii_end = d;
+    while ((ascii_end < end) && ((unsigned char)buf[ascii_end] < 0x80)) ascii_end++;
+    if ((ascii_end == d) || (ascii_end == end)) return;
+    if ((end - ascii_end) < slen) return;
+
+    /* 接尾辞が文字の境目から始まっていること（トレイルバイトの偶然の一致を除く）。 */
+    for (j = ascii_end; j < end - slen; j += en_is_lead((unsigned char)buf[j]) ? 2 : 1) {
+    }
+    if ((j != end - slen) || (memcmp(buf + end - slen, jp, slen) != 0)) return;
+
+    n = ascii_end - d;
+    while ((n > 0) && (buf[d + n - 1] == ' ')) n--;
+    if ((n == 0) || (n + 32 >= sizeof(built))) return;
+
+    if ((end - slen) == ascii_end) {
+        /* `X薬`（「の」の無い形。惚れ薬・アミュレットなど） */
+        snprintf(built, sizeof(built), "%s of %.*s", kind, (int)n, buf + d);
+    } else if (((unsigned char)buf[ascii_end] == 0x82) && ((unsigned char)buf[ascii_end + 1] == 0xcc)) {
+        const size_t color_from = ascii_end + 2;
+        if (color_from == end - slen) {
+            /* `Xの薬` */
+            snprintf(built, sizeof(built), "%s of %.*s", kind, (int)n, buf + d);
+        } else {
+            /* `Xの<色>薬`：色＋種別（`青い薬` → `Blue Potion`）をカタログで引く。 */
+            char key[MAX_NLEN];
+            const size_t klen = end - color_from;
+            const char *tr;
+            if (klen >= sizeof(key)) return;
+            memcpy(key, buf + color_from, klen);
+            key[klen] = '\0';
+            tr = gb_tr(key);
+            if ((tr == key) || !tr || !tr[0] || !en_is_ascii(tr)) return;
+            snprintf(built, sizeof(built), "%s of %.*s", tr, (int)n, buf + d);
+        }
+    } else {
+        return;
+    }
+    (void)en_replace_span(buf, cap, d, end, built);
+}
+
+/*!
+ * @brief 識別済みの巻物 `「題」と書かれたXの巻物` を `Scroll titled "題" of X` へ。
+ * @details 未識別の `「題」と書かれた巻物` は 3a が直す。こちらは名前が分かっている形（`flavor.c` の
+ * `「#」と書かれた%の巻物`）。X が英語のときだけ。
+ */
+static void en_fix_aware_scroll(char *buf, size_t cap)
+{
+    static const char written[] = "\x82\xc6\x8f\x91\x82\xa9\x82\xea\x82\xbd"; /* と書かれた */
+    static const char tail[] = "\x82\xcc\x8a\xaa\x95\xa8";                     /* の巻物 */
+    const long open = en_find(buf, "\x81\x75");  /* 「 */
+    const long close = en_find(buf, "\x81\x76"); /* 」 */
+    size_t name_from, name_end_pos, n;
+    char title[MAX_NLEN], name[MAX_NLEN], built[MAX_NLEN];
+
+    if ((open < 0) || (close <= open)) return;
+    if (strncmp(buf + close + 2, written, sizeof(written) - 1) != 0) return;
+    name_from = (size_t)close + 2 + sizeof(written) - 1;
+    name_end_pos = name_from;
+    while ((buf[name_end_pos] != '\0') && ((unsigned char)buf[name_end_pos] < 0x80)
+        && (buf[name_end_pos] != '(') && (buf[name_end_pos] != '[') && (buf[name_end_pos] != '{')) name_end_pos++;
+    if ((name_end_pos == name_from) || (strncmp(buf + name_end_pos, tail, sizeof(tail) - 1) != 0)) return;
+
+    n = (size_t)(close - open) - 2;
+    if ((n == 0) || (n >= sizeof(title))) return;
+    memcpy(title, buf + open + 2, n);
+    title[n] = '\0';
+    if (!en_is_ascii(title)) return;
+    n = name_end_pos - name_from;
+    if (n >= sizeof(name)) return;
+    memcpy(name, buf + name_from, n);
+    name[n] = '\0';
+    snprintf(built, sizeof(built), "Scroll titled \"%s\" of %s", title, name);
+    (void)en_replace_span(buf, cap, (size_t)open, name_end_pos + sizeof(tail) - 1, built);
+}
+
+/*!
+ * @brief 杖・魔法棒の回数 `(7回分)` を `(7 charges)` へ（`1回分` は `(1 charge)`）。
+ * @details `flavor.c:3147` は `回分` を `object_desc_str()` で直に継ぎ足す（フックを通らない）。
+ * 積み重ねた杖の `(2x 6回分)` も同じ。`回分の魔力`（別の飾り）は `)` が続かないので触らない。
+ */
+static void en_fix_charges(char *buf, size_t cap)
+{
+    static const char unit[] = "\x89\xf1\x95\xaa"; /* 回分 */
+    size_t guard;
+    for (guard = 0; guard < 4; guard++) {
+        const char *at = strstr(buf, unit);
+        size_t pos, digits_from;
+        int one;
+        while (at && (at[sizeof(unit) - 1] != ')')) at = strstr(at + 1, unit);
+        if (!at) return;
+        pos = (size_t)(at - buf);
+        digits_from = pos;
+        while ((digits_from > 0) && (buf[digits_from - 1] >= '0') && (buf[digits_from - 1] <= '9')) digits_from--;
+        if (digits_from == pos) return;
+        one = ((pos - digits_from) == 1) && (buf[digits_from] == '1');
+        en_cut(buf, pos, sizeof(unit) - 1);
+        if (!en_insert(buf, cap, pos, one ? " charge" : " charges")) return;
+    }
+}
+
+/*!
+ * @brief 攻撃回数の pval `(+2攻撃)` を `(+2 attacks)` へ（`+1`・`-1` は `attack`）。
+ * @details `flavor.c:3264`。英語の `#else` は絶対値が 1 以外なら複数形にする。
+ */
+static void en_fix_blows(char *buf, size_t cap)
+{
+    static const char unit[] = "\x8d\x55\x8c\x82"; /* 攻撃 */
+    size_t guard;
+    for (guard = 0; guard < 4; guard++) {
+        const char *at = strstr(buf, unit);
+        size_t pos, digits_from;
+        int one;
+        while (at && (at[sizeof(unit) - 1] != ')')) at = strstr(at + 1, unit);
+        if (!at) return;
+        pos = (size_t)(at - buf);
+        digits_from = pos;
+        while ((digits_from > 0) && (buf[digits_from - 1] >= '0') && (buf[digits_from - 1] <= '9')) digits_from--;
+        if (digits_from == pos) return;
+        one = ((pos - digits_from) == 1) && (buf[digits_from] == '1');
+        en_cut(buf, pos, sizeof(unit) - 1);
+        if (!en_insert(buf, cap, pos, one ? " attack" : " attacks")) return;
+    }
+}
+
+/*!
+ * @brief 名前の組み直しの自己検査（修-25）。`--selftest` から呼ぶ。失敗した件数を返す。
+ * @details 物の実体は要らない形（種別の語を前へ回す・巻物・回数）だけを、組んだ後の文字列で確かめる。
+ */
+int gb_name_en_selftest(void)
+{
+    int failed = 0;
+    const struct { int tval; const char *in; const char *out; int charges; } cases[] = {
+        { TV_POTION, "Poison\x82\xcc\x96\xf2", "Potion of Poison", 0 },                        /* Poisonの薬 */
+        { TV_POTION, "6 Poison\x82\xcc\x96\xf2", "6 Potion of Poison", 0 },                    /* 数詞は 1) が済ませた後 */
+        { TV_POTION, "Heroism\x96\xf2", "Potion of Heroism", 0 },                              /* 「の」の無い形 */
+        { TV_POTION, "\x90\xc2\x82\xa2\x96\xf2", "\x90\xc2\x82\xa2\x96\xf2", 0 },              /* 青い薬（未識別。触らない） */
+        { TV_WAND, "Acid Balls\x82\xcc\x96\x82\x96\x40\x96\x5f (7\x89\xf1\x95\xaa)",
+            "Wand of Acid Balls (7 charges)", 1 },                                            /* 魔法棒 */
+        { TV_STAFF, "Light\x82\xcc\x8f\xf1 (1\x89\xf1\x95\xaa)", "Staff of Light (1 charge)", 1 },
+        { TV_STAFF, "Light\x82\xcc\x8f\xf1 (2x 6\x89\xf1\x95\xaa)", "Staff of Light (2x 6 charges)", 1 },
+        { TV_ROD, "Detection\x82\xcc\x83\x8d\x83\x62\x83\x68", "Rod of Detection", 0 },
+        { TV_RING, "Speed\x82\xcc\x8e\x77\x97\xd6", "Ring of Speed", 0 },
+        { TV_SCROLL, "Light\x82\xcc\x8a\xaa\x95\xa8", "Scroll of Light", 0 },
+        { TV_SCROLL, "\x81\x75" "ABC\x81\x76\x82\xc6\x8f\x91\x82\xa9\x82\xea\x82\xbd" "Light\x82\xcc\x8a\xaa\x95\xa8",
+            "Scroll titled \"ABC\" of Light", 2 },                                           /* 識別済みの巻物（題つき） */
+        { TV_POTION, "Potion\x89\xf1\x95\xaa\x82\xcc\x96\x82\x97\xcd", "Potion\x89\xf1\x95\xaa\x82\xcc\x96\x82\x97\xcd", 0 }, /* 別の飾りは触らない */
+        { TV_SWORD, "Dagger\x82\xcc\x96\xf2", "Dagger\x82\xcc\x96\xf2", 0 },                   /* 種別が違えば触らない */
+        { TV_SWORD, "Dagger (+2\x8d\x55\x8c\x82)", "Dagger (+2 attacks)", 3 },                 /* 攻撃回数（複数） */
+        { TV_SWORD, "Dagger (+1\x8d\x55\x8c\x82)", "Dagger (+1 attack)", 3 },                  /* 攻撃回数（単数） */
+    };
+    size_t i;
+    {
+        const struct { const char *in; const char *out; } decor_cases[] = {
+            { "Fur Cloak [3,+4] (+2\x89\x42\x96\xa7)", "Fur Cloak [3,+4] (+2 to stealth)" },          /* 隠密 */
+            { "Boots (+3\x89\xc1\x91\xac)", "Boots (+3 to speed)" },                                  /* 加速 */
+            { "Ring (+5\x92\x54\x8d\xf5)", "Ring (+5 to searching)" },                               /* 探索 */
+            { "Rod of Light(\x8f\x5b\x93\x55\x92\x86)", "Rod of Light(charging)" },                  /* (充填中) */
+            { "Rods of Light (2\x96\x7b \x8f\x5b\x93\x55\x92\x86)", "Rods of Light (2 charging)" }, /* 本 充填中) */
+        };
+        for (i = 0; i < sizeof(decor_cases) / sizeof(decor_cases[0]); i++) {
+            char buf[MAX_NLEN];
+            strcpy(buf, decor_cases[i].in);
+            en_apply_decor(buf, MAX_NLEN);
+            if (strcmp(buf, decor_cases[i].out) != 0) {
+                fprintf(stderr, "[gensoband] name selftest FAIL decor #%d: got \"%s\"\n", (int)i, buf);
+                failed++;
+            }
+        }
+    }
+    for (i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        char buf[MAX_NLEN];
+        strcpy(buf, cases[i].in);
+        if (cases[i].charges == 2) {
+            en_fix_aware_scroll(buf, MAX_NLEN);
+        } else if (cases[i].charges == 3) {
+            en_fix_blows(buf, MAX_NLEN);
+        } else {
+            en_fix_kind_suffix(buf, MAX_NLEN, cases[i].tval);
+            if (cases[i].charges) en_fix_charges(buf, MAX_NLEN);
+        }
+        if (strcmp(buf, cases[i].out) != 0) {
+            fprintf(stderr, "[gensoband] name selftest FAIL #%d: got \"%s\"\n", (int)i, buf);
+            failed++;
+        }
+    }
+    return failed;
 }
 
 void gb_object_desc_en_fix(char *buf, void *obj, unsigned long mode)
@@ -301,6 +559,13 @@ void gb_object_desc_en_fix(char *buf, void *obj, unsigned long mode)
         }
     }
 
+    /* --- 3b) 識別済みの種別の語（`Xの薬`・`Xの巻物`・`Xの魔法棒`・`Xの杖` ほか）を前へ回す。
+     *     複数形（4）より前に置く（` of ` の手前の語を複数形にするため）。 --- */
+    en_fix_aware_scroll(buf, cap);
+    en_fix_kind_suffix(buf, cap, o_ptr->tval);
+    en_fix_charges(buf, cap);
+    en_fix_blows(buf, cap);
+
     /* --- 3) 未識別（`青い薬` の形＝種別の直前まで日本語）。 --- */
     {
         size_t d = 0;
@@ -341,6 +606,8 @@ void gb_object_desc_en_fix(char *buf, void *obj, unsigned long mode)
         cut_at = en_find(buf, " of ");
         if ((cut_at >= 0) && ((size_t)cut_at < end)) end = (size_t)cut_at;
         cut_at = en_find(buf, " '");
+        if ((cut_at >= 0) && ((size_t)cut_at < end)) end = (size_t)cut_at;
+        cut_at = en_find(buf, " titled ");
         if ((cut_at >= 0) && ((size_t)cut_at < end)) end = (size_t)cut_at;
         while ((end > d) && (buf[end - 1] == ' ')) end--;
         if ((end > d) && ((unsigned char)buf[end - 1] < 0x80) && (buf[end - 1] != '#')) {

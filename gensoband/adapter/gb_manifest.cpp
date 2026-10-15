@@ -121,6 +121,12 @@ std::string join_path(const std::string &root, const std::string &rel)
     return out;
 }
 
+/*!
+ * 正体の分からないアイテムの代表タイルに割り当てる id の起点（`gb::TileManifest::kind='K'`）。
+ * 幻想蛮怒自身の k_idx（mapping.csv 実測で最大 924）とはぶつからない帯を選んである。
+ */
+constexpr int kUnawareRepresentativeIdBase = 9000; // + 1..8 (UNAWARE_CATEGORY_*) = 9001..9008
+
 } // namespace
 
 bool TileManifest::load(const std::string &csv_path, const std::string &root)
@@ -232,6 +238,69 @@ bool TileManifest::load(const std::string &csv_path, const std::string &root)
         return false;
     }
     return true;
+}
+
+void TileManifest::add_unaware_representative_tiles()
+{
+    /*
+     * 分類 → 変愚の K の番号は
+     * `presentation::unaware_item_representative_bi_id()`（`unaware_item_tiles.h`）の
+     * 1 か所だけにあり、ここは新しい絵を作らずその番号の板（`tilework/sfc/K<id>.png`）を
+     * 目録へ追加登録するだけ。幻想蛮怒自身の板（`gensoband/tilework/64/GK*.png`）は
+     * 別の絵なので触らない——画面側の `SlabLibrary::acquire()` が
+     * ［申告された置き場（`gensoband/assets/slab`）→ 既定の置き場（`assets/voxel/slab`）］の
+     * 2 段で探し、申告された置き場に無い名前は既定へ落ちる。だから `K229` のような
+     * 変愚の名前を目録に足すだけで、変愚の板がそのまま出る（新しい .vox は要らない）。
+     */
+    constexpr presentation::UnawareItemCategory kAllCategories[] = {
+        presentation::UnawareItemCategory::Potion,
+        presentation::UnawareItemCategory::Scroll,
+        presentation::UnawareItemCategory::Ring,
+        presentation::UnawareItemCategory::Amulet,
+        presentation::UnawareItemCategory::Wand,
+        presentation::UnawareItemCategory::Staff,
+        presentation::UnawareItemCategory::Rod,
+        presentation::UnawareItemCategory::Mushroom,
+    };
+
+    int index = static_cast<int>(this->message_.assets.size());
+    for (const auto category : kAllCategories) {
+        if (index >= 65535) {
+            std::fprintf(stderr, "[gensoband] unaware representative tiles: index exhausted\n");
+            break;
+        }
+        ++index;
+
+        const auto bi_id = presentation::unaware_item_representative_bi_id(category);
+        char path[64]{};
+        std::snprintf(path, sizeof(path), "tilework/sfc/K%u.png", static_cast<unsigned>(bi_id));
+
+        presentation::AssetManifestWireEntry entry;
+        entry.index = index;
+        entry.kind = "K";
+        entry.id = kUnawareRepresentativeIdBase + static_cast<int>(category);
+        entry.path = path;
+        this->message_.assets.push_back(entry);
+
+        const auto key = (static_cast<std::uint32_t>(static_cast<unsigned char>('K')) << 24)
+            | (static_cast<std::uint32_t>(entry.id) & 0x00FFFFFFu);
+        this->index_.emplace(key, static_cast<std::uint16_t>(index));
+
+        if (!file_exists(join_path(this->message_.root, path))) {
+            /*
+             * ここで数える「無い」は 2D の絵（PNG）の話——HD2D は .vox しか使わないので
+             * 実害は無い。変愚のリポジトリに tilework/sfc/K<id>.png が実在するかぎり
+             * missing_files() は増えない（実測: K229/K175/K147/K166/K270/K319/K353/K2 は
+             * すべて存在する）。
+             */
+            ++this->missing_files_;
+        }
+    }
+}
+
+std::uint16_t TileManifest::lookup_unaware_representative(presentation::UnawareItemCategory category) const
+{
+    return this->lookup('K', kUnawareRepresentativeIdBase + static_cast<int>(category));
 }
 
 std::uint16_t TileManifest::lookup(char kind, int id) const

@@ -1,8 +1,10 @@
-﻿/*!
+/*!
  * @file hd2d_settings.cpp
  * @brief `hd2d_settings.h` の実装。
  */
 #include "ui/hd2d_settings.h"
+
+#include "frame/game_frame.h" //!< kBuiltinSubPanelKindBase（画面が自分で描くサブパネルの種類の番号）
 
 #include <algorithm>
 #include <cstdio>
@@ -12,6 +14,24 @@
 #include <sstream>
 
 namespace hd2d {
+
+/*!
+ * @brief `key_bind=` に**新しい UI 操作を足した回数**（AH-37。決めたこと 2026-09-25）。
+ * @details `KeyBinds::parse()` は「読めた分だけ入れる」——`key_bind=` の行に無い操作は
+ * **遊ぶ人が割り当てを消した**（`clear`）のか、**この cfg を書いた版にまだその操作が
+ * 無かった**のか、行の中身だけでは区別が付かない。前者なら未割り当てのままにしないと
+ * 消したはずの割り当てが毎回復活し、後者なら新しい既定（例: `kActionCommandMenu` の F1）
+ * を足さないと、その操作だけ「割り当て無し」に見えてしまう
+ * （帯の案内が空になる／古い綴りへ化けて見える。気づいたこと 2026-09-25——
+ * F1 の既定を足した直後の cfg にまだ `-10` の行が無く、`ui_key(kActionCommandMenu)`
+ * が空扱いになっていた）。
+ *
+ * 解決は `key_bind=` の行と対で `key_bind_epoch=` を書き、**この版が知っている
+ * 操作の総数の目印**にする——新しい UI 操作を `key_binds.h` へ足すたびにここを 1 増やす。
+ * 読むとき、保存されていた epoch が今より小さければ「まだ無かった操作」を
+ * `default_key_binds()` から補う。epoch が無い cfg（この仕組みより前）は 0 として扱う。
+ */
+constexpr int kKeyBindEpochCurrent = 1; //!< 1 = kActionCommandMenu（F1）を足した回。
 
 /*!
  * @brief 1 行動あたりの秒数。
@@ -256,17 +276,22 @@ bool Hd2dSettings::differs_from(const Hd2dSettings &other) const
         || (this->vr_fps_cell_m != other.vr_fps_cell_m) || vr_fps_show_differ(this->vr_fps_show, other.vr_fps_show)
         || (this->vr_render_scale != other.vr_render_scale)
         || (this->move_smoothing != other.move_smoothing)
+        || (this->modern_ui != other.modern_ui) || (this->modern_theme != other.modern_theme) || (this->modern_font_level != other.modern_font_level)
         || (this->main_panel != other.main_panel)
         || (this->status_col_side != other.status_col_side)
         || (this->entity_glyph_fallback != other.entity_glyph_fallback)
         || (this->ascii_panel_px != other.ascii_panel_px)
         || (this->entity_style != other.entity_style)
+        || (this->entity_slab_screen_aligned != other.entity_slab_screen_aligned)
         || (this->entity_glyph_pct != other.entity_glyph_pct)
         || (this->scene_look != other.scene_look) || (this->tron_sky != other.tron_sky)
         || (this->tron_face_glyph != other.tron_face_glyph)
         || (this->wear_pct != other.wear_pct)
         || (this->wear_materials != other.wear_materials)
         || (this->leaf_pct != other.leaf_pct)
+        || (this->light_range_pct != other.light_range_pct)
+        || (this->light_range_fade_ms != other.light_range_fade_ms)
+        || (this->torch_flicker != other.torch_flicker)
         || (this->minimap_corner != other.minimap_corner)
         || (this->minimap_size_pct != other.minimap_size_pct)
         || (this->minimap_cell_px != other.minimap_cell_px)
@@ -279,7 +304,7 @@ bool Hd2dSettings::differs_from(const Hd2dSettings &other) const
         || (this->fps_vertical_look != other.fps_vertical_look)
         || (this->fps_wall_upper != other.fps_wall_upper) || (this->fps_ceiling != other.fps_ceiling)
         || (this->fps_step_ms != other.fps_step_ms)
-        || (this->pad_defaults_applied != other.pad_defaults_applied)
+        || (this->pad_defaults_version != other.pad_defaults_version)
         || (this->key_binds.to_line() != other.key_binds.to_line())
         || sub_split_differ(this->sub_split, other.sub_split)
         || sub_kinds_differ(this->sub_panel_kind, other.sub_panel_kind)
@@ -287,6 +312,11 @@ bool Hd2dSettings::differs_from(const Hd2dSettings &other) const
         || (this->realtime_enabled != other.realtime_enabled)
         || (this->realtime_speed_index != other.realtime_speed_index)
         || (this->damage_flash != other.damage_flash) || (this->damage_shake != other.damage_shake)
+        || (this->fx_screen_shake != other.fx_screen_shake)
+        || (this->orb_wave != other.orb_wave) || (this->orb_wave_size_pct != other.orb_wave_size_pct)
+        || (this->orb_wave_speed_pct != other.orb_wave_speed_pct)
+        || (this->orb_rise_speed_pct != other.orb_rise_speed_pct)
+        || (this->orb_fall_speed_pct != other.orb_fall_speed_pct)
         || (this->realtime_prompt_live != other.realtime_prompt_live)
         || (this->realtime_self_span_index != other.realtime_self_span_index)
         || (this->bgm_mode != other.bgm_mode) || (this->sound_enabled != other.sound_enabled)
@@ -305,6 +335,8 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
     if (!file) {
         return false; // 無いのは**失敗ではない**（初回起動）
     }
+    bool saw_key_bind = false; //!< `key_bind=` の行を読んだか（kKeyBindEpochCurrent の註）。
+    int key_bind_epoch = 0; //!< 保存されていた epoch。無い cfg は 0（＝最古）扱い。
     std::string line;
     while (std::getline(file, line)) {
         std::string key;
@@ -424,8 +456,16 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             static constexpr int kLegacyOrder[5] = { 0, 1, 2, kSubRightSlot, kSubRightSlot + 1 };
             for (int i = 0; i < got; ++i) {
                 const int slot = (got == 5) ? kLegacyOrder[i] : i;
-                //! 知らない番号は「UI 既定」へ倒す（コアが増えた版の cfg でも落ちない）。
-                out.sub_panel_kind[slot] = ((kinds[i] >= 0) && (kinds[i] < 16)) ? kinds[i] : -1;
+                /*
+                 * 知らない番号は「UI 既定」へ倒す（コアが増えた版の cfg でも落ちない）。
+                 * **画面が自分で描く 5 種（100〜104。Rogue 系・Umoria）も受け付ける**——0〜15 だけを
+                 * 受けていたので、保存した割り当てが次の起動で全部「UI 既定」に戻り、その値で cfg も
+                 * 上書きされていた（気づいたこと 2026-10-04「サブパネルの設定が保存されない」。Umoria）。
+                 */
+                const bool core_kind = (kinds[i] >= 0) && (kinds[i] < 16);
+                const bool builtin_kind = (kinds[i] >= kBuiltinSubPanelKindBase)
+                    && (kinds[i] < kBuiltinSubPanelKindBase + kBuiltinSubPanelKindCount);
+                out.sub_panel_kind[slot] = (core_kind || builtin_kind) ? kinds[i] : -1;
             }
         } else if (key == "pad_bind") {
             out.pad = PadBinds{};
@@ -441,7 +481,7 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
         } else if (key == "fps_ceiling") {
             out.fps_ceiling = (std::atoi(value.c_str()) != 0);
         } else if (key == "pad_defaults") {
-            out.pad_defaults_applied = (std::atoi(value.c_str()) != 0);
+            out.pad_defaults_version = std::max(0, std::atoi(value.c_str()));
         } else if (key == "realtime") {
             out.realtime_enabled = (std::atoi(value.c_str()) != 0);
         } else if (key == "realtime_prompt") {
@@ -452,6 +492,18 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             out.damage_flash = (std::atoi(value.c_str()) != 0);
         } else if (key == "damage_shake") {
             out.damage_shake = (std::atoi(value.c_str()) != 0);
+        } else if (key == "fx_screen_shake") {
+            out.fx_screen_shake = (std::atoi(value.c_str()) != 0);
+        } else if (key == "orb_wave") {
+            out.orb_wave = (std::atoi(value.c_str()) != 0);
+        } else if (key == "orb_wave_size") {
+            out.orb_wave_size_pct = std::clamp(std::atoi(value.c_str()), Hd2dSettings::kOrbPctMin, Hd2dSettings::kOrbPctMax);
+        } else if (key == "orb_wave_speed") {
+            out.orb_wave_speed_pct = std::clamp(std::atoi(value.c_str()), Hd2dSettings::kOrbPctMin, Hd2dSettings::kOrbPctMax);
+        } else if (key == "orb_rise_speed") {
+            out.orb_rise_speed_pct = std::clamp(std::atoi(value.c_str()), Hd2dSettings::kOrbPctMin, Hd2dSettings::kOrbPctMax);
+        } else if (key == "orb_fall_speed") {
+            out.orb_fall_speed_pct = std::clamp(std::atoi(value.c_str()), Hd2dSettings::kOrbPctMin, Hd2dSettings::kOrbPctMax);
         } else if (key == "realtime_speed") {
             out.realtime_speed_index = std::clamp(std::atoi(value.c_str()), 0, Hd2dSettings::kRealtimeSpeedCount - 1);
         } else if (key == "bgm") {
@@ -471,6 +523,9 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             out.sound_volume = std::clamp(std::atoi(value.c_str()), 0, Hd2dSettings::kVolumeMax);
         } else if (key == "vpad_show") {
             out.vpad.show = (std::atoi(value.c_str()) != 0);
+        } else if(key=="ui_mode") { out.modern_ui=(value=="modern");
+        } else if(key=="ui_font_level") {out.modern_font_level=std::clamp(std::atoi(value.c_str()),0,4);
+        } else if(key=="ui_theme") {out.modern_theme=(value=="parchment"?1:(value=="japanese"?2:0));
         } else if (key == "main_panel") {
             //! 綴りで書く（数字だと cfg を読んだ人に意味が分からない）。
             out.main_panel = (value == "ascii") ? Hd2dSettings::MainPanel::Ascii
@@ -493,6 +548,8 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             //! 綴りで書く（数字だと cfg を読んだ人に意味が分からない）。
             out.entity_style = (value == "ascii") ? Hd2dSettings::EntityStyle::Ascii
                                                   : Hd2dSettings::EntityStyle::Slab;
+        } else if (key == "entity_slab_screen_aligned") {
+            out.entity_slab_screen_aligned = (std::atoi(value.c_str()) != 0);
         } else if (key == "look") {
             //! 画調。**綴りで書く**（他の軸と同じ流儀）。
             SceneLookKind look = Hd2dSettings{}.scene_look;
@@ -517,6 +574,15 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             //! 木の葉（`render/leaf_detail.h`）。百分率。
             out.leaf_pct = std::clamp(std::atoi(value.c_str()),
                 Hd2dSettings::kLeafPctMin, Hd2dSettings::kLeafPctMax);
+        } else if (key == "light_range") {
+            //! 光の届く範囲の強さ（百分率）。
+            out.light_range_pct = std::clamp(std::atoi(value.c_str()),
+                Hd2dSettings::kLightRangePctMin, Hd2dSettings::kLightRangePctMax);
+        } else if (key == "light_range_fade_ms") {
+            out.light_range_fade_ms = std::clamp(std::atoi(value.c_str()),
+                Hd2dSettings::kLightRangeFadeMsMin, Hd2dSettings::kLightRangeFadeMsMax);
+        } else if (key == "torch_flicker") {
+            out.torch_flicker = (std::atoi(value.c_str()) != 0);
         } else if (key == "entity_glyph") {
             out.entity_glyph_pct = std::clamp(std::atoi(value.c_str()),
                 Hd2dSettings::kEntityGlyphPctMin, Hd2dSettings::kEntityGlyphPctMax);
@@ -549,6 +615,9 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             //! **既定を捨ててから読む。**足すだけだと「消した割り当て」が毎回復活する。
             out.key_binds = KeyBinds{};
             out.key_binds.parse(value);
+            saw_key_bind = true;
+        } else if (key == "key_bind_epoch") {
+            key_bind_epoch = std::atoi(value.c_str());
         } else if (key == "key_feature_menu") {
             migrate_fkey(out.key_binds, kActionFeatureMenu, std::atoi(value.c_str()));
         } else if (key == "key_layout_cycle") {
@@ -559,6 +628,22 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
             migrate_fkey(out.key_binds, kActionFpsToggle, std::atoi(value.c_str()));
         }
         // 知らないキーは黙って飛ばす（版が進んだ cfg でも落ちない）
+    }
+    /*
+     * `kKeyBindEpochCurrent` の註のとおり——`key_bind=` はあったが、その cfg を
+     * 書いた版がまだ知らなかった UI 操作だけを `default_key_binds()` から補う。
+     * `key_bind=` の行が無い cfg（`saw_key_bind` が偽）は `out.key_binds` が
+     * `Hd2dSettings::key_binds` の初期値（`default_key_binds()` そのもの）の
+     * ままなので、ここでは触らない。
+     */
+    if (saw_key_bind && (key_bind_epoch < kKeyBindEpochCurrent)) {
+        if (key_bind_epoch < 1) {
+            //! epoch 1 で足した操作: kActionCommandMenu（F1）。AH-37。
+            if (out.key_binds.find(kActionCommandMenu).keycode == 0) {
+                const KeyBindEntry def = default_key_binds().find(kActionCommandMenu);
+                (void)out.key_binds.assign(kActionCommandMenu, def.keycode, def.mods);
+            }
+        }
     }
     return true;
 }
@@ -697,9 +782,10 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     file << "# 割り当ては「操作ごと」に持つ（操作の番号 ＝ 正:コアのコマンド id / 負:UI 自身の操作）。\n";
     file << "# パッド（`X:12,LB:-4` の形）。A=決定 / B=取消 / Back=機能メニュー は固定なので書かない。\n";
     file << "pad_bind=" << settings.pad.to_line() << '\n';
-    file << "# 既定の割り当てを入れ終わったか。**0 に戻すと次回の起動で既定へ戻る**\n";
+    file << "# 既定の割り当ての版（0 = 未 / 1 = 前の版 / 2 = いまの版）。**0 に戻すと次回の起動で既定へ戻る**\n";
     file << "# （コアのコマンド id は実行時にしか分からないので、握手のあとで入れている）。\n";
-    file << "pad_defaults=" << (settings.pad_defaults_applied ? 1 : 0) << '\n';
+    file << "# 1 以下で読むと、前の版の既定のままの枠だけをいまの既定へ移す（変えた枠は残す）。\n";
+    file << "pad_defaults=" << settings.pad_defaults_version << '\n';
     file << "# ゲーム進行。1 = 実時間で進む。既定 0＝ターン制。\n";
     file << "# realtime_speed は 1 行動あたりの秒数の表への添字（0=0.2 秒 … 4=1.0 秒 … 7=3.0 秒）。\n";
     file << "realtime=" << (settings.realtime_enabled ? 1 : 0) << '\n';
@@ -707,6 +793,15 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     file << "# 被弾の見せ方。flash は属性で色が変わる全面の閃き、shake は画面の揺れ（酔う人向けに別々）。\n";
     file << "damage_flash=" << (settings.damage_flash ? 1 : 0) << '\n';
     file << "damage_shake=" << (settings.damage_shake ? 1 : 0) << '\n';
+    file << "# 攻撃の視覚効果（轟音など）の画面の揺れ。0 で切る（酔う人向け）。\n";
+    file << "fx_screen_shake=" << (settings.fx_screen_shake ? 1 : 0) << '\n';
+    file << "# HP/MP の玉。orb_wave は波打つ水面（0 = 平ら）。*_size / *_speed は 100 が既定の割合（%）。\n";
+    file << "# rise は回復で液面が上がる速さ、fall はダメージで下がる速さ。\n";
+    file << "orb_wave=" << (settings.orb_wave ? 1 : 0) << '\n';
+    file << "orb_wave_size=" << settings.orb_wave_size_pct << '\n';
+    file << "orb_wave_speed=" << settings.orb_wave_speed_pct << '\n';
+    file << "orb_rise_speed=" << settings.orb_rise_speed_pct << '\n';
+    file << "orb_fall_speed=" << settings.orb_fall_speed_pct << '\n';
     file << "# 小窓（持ち物・足元の選択）の裏でも世界を進めるか。1 = 進む（選びながら殴られる）。\n";
     file << "realtime_prompt=" << (settings.realtime_prompt_live ? 1 : 0) << '\n';
     file << "# 速さの振れ幅（0=自分の拍は不変・世界が伸縮 … 4=制限なし）。はみ出た分は世界の拍へ載る。\n";
@@ -720,6 +815,9 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     file << "# バーチャルパッド（Android の既定は 1。Windows でもタッチ画面なら 1 で使える）。\n";
     file << "vpad_show=" << (settings.vpad.show ? 1 : 0) << '\n';
     //! メインパネルの中身。**読む側の綴りと 1 対 1。**
+    file << "ui_font_level=" << std::clamp(settings.modern_font_level,0,4) << '\n';
+    file << "ui_mode=" << (settings.modern_ui?"modern":"original") << '\n';
+    file << "ui_theme=" << (settings.modern_theme==1?"parchment":(settings.modern_theme==2?"japanese":"frosted")) << '\n';
     file << "main_panel=" << ((settings.main_panel == Hd2dSettings::MainPanel::Ascii) ? "ascii" : "hd2d") << '\n';
     file << "ascii_panel_px=" << settings.ascii_panel_px << '\n';
     //! 状態列の位置。**読む側の綴りと 1 対 1。**
@@ -734,6 +832,8 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     //! 実体の表現。**読む側の綴りと 1 対 1。**
     file << "entity_style=" << ((settings.entity_style == Hd2dSettings::EntityStyle::Ascii) ? "ascii" : "slab")
          << '\n';
+    file << "# ボクセル板の向き（0 = 従来のワールド基準 / 1 = 常に画面平面へ正対）。\n";
+    file << "entity_slab_screen_aligned=" << (settings.entity_slab_screen_aligned ? 1 : 0) << '\n';
     file << "entity_glyph=" << settings.entity_glyph_pct << '\n';
     //! 画調。**読む側の綴りと 1 対 1。**
     file << "# 画調（standard = 従来の絵 / tron = 黒い面にネオンの線）。\n";
@@ -748,7 +848,13 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     file << "wear_materials=" << wear_materials_text(settings.wear_materials) << '\n';
     file << "# 木の葉の細かさ（0 = 描かない / 100 = 既定 / 200 = 倍）。葉の面にだけ効く。\n";
     file << "leaf=" << settings.leaf_pct << '\n';
-    //! ミニマップ（2026-08-19 に決めた）。**読む側の綴りと 1 対 1。**
+    file << "# 光の届く範囲（プレイヤの光源で照らされているマス）の強調の強さ（0 = 出さない / 100 = 既定 / 200 = 倍）。\n";
+    file << "light_range=" << settings.light_range_pct << '\n';
+    file << "# 範囲に入った・出たマスが目標の明るさへ寄るまでの時間（ミリ秒。0 = 即座に合わせる）。\n";
+    file << "light_range_fade_ms=" << settings.light_range_fade_ms << '\n';
+    file << "# 松明の光の揺らぎ（1 = 揺らす・既定 / 0 = 安定）。光源の種類が松明のときだけ効く。\n";
+    file << "torch_flicker=" << (settings.torch_flicker ? 1 : 0) << '\n';
+    //! ミニマップ。**読む側の綴りと 1 対 1。**
     file << "minimap_corner=" << static_cast<int>(settings.minimap_corner) << '\n';
     file << "minimap_size=" << settings.minimap_size_pct << '\n';
     file << "minimap_cell_px=" << settings.minimap_cell_px << '\n';
@@ -777,6 +883,7 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     }
     file << '\n';
     file << "key_bind=" << settings.key_binds.to_line() << '\n';
+    file << "key_bind_epoch=" << kKeyBindEpochCurrent << '\n';
     return static_cast<bool>(file);
 }
 
@@ -809,6 +916,8 @@ void default_sub_panel_kinds(const std::string &core_name, int out[kUiSubPanels]
     static const int kGensoband[kUiSubPanels] = { 6, 8, 1, 3, 3, 0, -1 };
     //! **FroxComposband。**`hd2d-FroxCore.cfg` の 2026-09-01 の中身。
     static const int kFrox[kUiSubPanels] = { 6, 8, 1, 3, 1, 0, -1 };
+    //! RogueClone2 はコア側サブウインドウを持たず、UI の固定情報欄だけを使う。
+    static const int kRogue2[kUiSubPanels] = { -1, -1, -1, -1, -1, -1, -1 };
 
     const int *src = kHengband;
     if (core_name == "silq") {
@@ -817,6 +926,10 @@ void default_sub_panel_kinds(const std::string &core_name, int out[kUiSubPanels]
         src = kGensoband;
     } else if (core_name == "frox") {
         src = kFrox;
+    } else if (core_name == "RogueClone2" || core_name == "Rogue 3.6" || core_name == "Rogue 5.4"
+        || core_name == "angband") {
+        //! Angband も同じ（画面側の既定の 5 種だけを申告する。`angband/adapter/an_main.cpp`）。
+        src = kRogue2;
     }
     //! `hengband` と `tangband` は同じ（2026-09-01 に決めた「短愚が変愚と同じにして」）。
     for (int i = 0; i < kUiSubPanels; ++i) {
@@ -866,7 +979,7 @@ std::string settings_path_for_core(const std::string &core_path)
     //! ファイル名にできない字は落とす（cfg は人が手で直せる所に置く）。
     std::string safe;
     for (const char c : name) {
-        safe += (std::strchr("\/:*?\"<>|", c) == nullptr) ? c : '_';
+        safe += (std::strchr("/\\:*?\"<>|", c) == nullptr) ? c : '_';
     }
     if (safe.empty()) {
         return default_settings_path();

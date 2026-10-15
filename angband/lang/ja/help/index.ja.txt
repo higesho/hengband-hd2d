@@ -1,0 +1,26 @@
+#! lib/help/index.txt の訳。tools/angband/an_build_ja_help.py が lib-ja/help/index.txt を作る。
+#! `.. menu::` の行はファイル名なので訳さない。キーの綴り（SPACE・RET ほか）も変えない。
+ゲームの中で使えるコマンドと、画面に出る記号の簡単な手引きです。詳しくは次の
+ページを見てください（英語）。
+
+   https://angband.readthedocs.io/en/latest/
+
+
+次のヘルプから選んでください:
+
+    (a) 使えるコマンド
+    (b) 画面に出る記号
+
+
+
+
+ヘルプの閲覧のコマンド:
+#! stops 22,42
+  #     行へ移動	%  ファイルを開く	?  前のファイル／目次へ
+  SPACE 1ページ進む	-  1ページ戻る	/  文字を検索する
+  RET   1行進む	=  1行戻る	&  文字を強調して表示する
+  +     半ページ進む	_  半ページ戻る	!  大文字と小文字の区別を切り替える
+
+.. menu:: [a] commands.txt
+
+.. menu:: [b] symbols.txt

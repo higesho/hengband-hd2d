@@ -4,7 +4,7 @@
  *
  * コアの `window_stuff()` は `angband_terms[i]` のうち `g_window_flags[i]` に
  * 立っている種類だけを `fix_*` で描く（`src/core/window-redrawer.cpp:246`）。
- * ここでは画素を出さない Term を `kSubPanelCount` 枚置き、そのフラグを利用者の選択で
+ * ここでは画素を出さない Term を `kSubPanelCount` 枚置き、そのフラグを遊ぶ人の選択で
  * 入れ替え、
  * コアが描いた文字グリッドを読み取って `GameFrame::sub_panels` に積む。
  * **コアは 1 行も変えない**（必守制約 1）。
@@ -372,13 +372,13 @@ int sanitize_kind(int kind)
  *
  * ## 見分けにフラグの差分を使ってはいけない
  * 最初はそう書いて**振動した**（歩くだけで所持品と装備品が入れ替わり続けた）。
- * `g_window_flags` を書くのは利用者だけではない:
+ * `g_window_flags` を書くのは遊ぶ人だけではない:
  *
  * | 誰が | いつ |
  * | --- | --- |
  * | `toggle_inventory_equipment()` | 床の品物を選ぶたび・店・Ctrl-I。**所持品↔装備品を全窓で入れ替える** |
  * | `option-loader.cpp` | セーブの読み込み。配列を丸ごと書く |
- * | `do_cmd_options_win()` | **`=`→`w`。これだけが利用者の意図** |
+ * | `do_cmd_options_win` | **`=`→`w`。これだけが遊ぶ人の意図** |
  *
  * だから見るのは `g_window_flags_generation`（`src/game-option/option-flags.h`）である。
  * **`=` の画面で実際に変わったときだけ**増える数字で、上の 2 つでは動かない。
@@ -418,7 +418,7 @@ int current_kind(int panel)
  * @brief コア側で決まった中身を抱え込む。**フレームの頭で 1 回**呼ぶ。
  * @param opts キャラクター別構成を読んだ直後なら、その値が入っている。
  * @details 抱え込む理由は 2 つあり、どちらも「画面まで往復するのに数フレーム掛かる」ため:
- *   - `=`→`w` で利用者が変えた（`g_window_flags_generation` が動いた）
+ *   - `=`→`w` で遊ぶ人が変えた（`g_window_flags_generation` が動いた）
  *   - **キャラクター別構成を読んだ**（`<セーブ名>.sdl2panels`。2026-08-19）
  */
 void take_core_side_changes(const SdlUiOptions &opts)

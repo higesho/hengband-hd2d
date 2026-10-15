@@ -1,0 +1,31 @@
+# blow_effects.ja.tsv — blow_effects.txt の説明の訳（変愚の説明文は写していない）。
+# 鍵 \t 英語原文の SHA-1 の頭 10 桁 \t 訳文。原文が変われば訳は使われない（tools/angband/an_build_ja_gamedata.py count が「古い訳」と数える）。
+HURT|desc	a6d81694b1	攻撃する
+POISON|desc	e6aa09fd40	毒を与える
+DISENCHANT|desc	3224226589	劣化させる
+DRAIN_CHARGES|desc	6cd086b1ad	充填を吸い取る
+EAT_GOLD|desc	ffc5fea995	金を盗む
+EAT_ITEM|desc	1584149dde	アイテムを盗む
+EAT_FOOD|desc	1879e2be23	食料を食べる
+EAT_LIGHT|desc	d82ad911f9	明かりを吸い取る
+ACID|desc	c61df9a90f	酸を浴びせる
+ELEC|desc	53f7dd45e8	感電させる
+FIRE|desc	03b5db720e	焼く
+COLD|desc	adcdee7c29	凍らせる
+BLIND|desc	7afb6295c7	盲目にする
+CONFUSE|desc	27d748cf56	混乱させる
+TERRIFY|desc	b4d36dff6c	恐怖させる
+PARALYZE|desc	99fc7386bc	麻痺させる
+LOSE_STR|desc	4420065db7	腕力を下げる
+LOSE_INT|desc	4aae7e6846	知能を下げる
+LOSE_WIS|desc	15f69bef84	賢さを下げる
+LOSE_DEX|desc	4d8c1dec9b	器用さを下げる
+LOSE_CON|desc	6137f71e0b	耐久力を下げる
+LOSE_ALL|desc	61c614422d	全能力値を下げる
+SHATTER|desc	a53032396b	粉砕する
+EXP_10|desc	f4f9259830	経験値を下げる
+EXP_20|desc	f4f9259830	経験値を下げる
+EXP_40|desc	f4f9259830	経験値を下げる
+EXP_80|desc	f4f9259830	経験値を下げる
+HALLU|desc	c26aa9649f	幻覚を見せる
+BLACK_BREATH|desc	8d25b69459	黒の息吹をもたらす
