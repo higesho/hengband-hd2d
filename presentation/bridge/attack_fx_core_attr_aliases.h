@@ -1,8 +1,8 @@
 ﻿/*!
  * @file attack_fx_core_attr_aliases.h
- * @brief 変愚以外のコア（Frox・幻想蛮怒・Sil-Q）の属性を、画面側の「攻撃の見た目」の名前に直す表
+ * @brief 変愚以外のコア（Frox・幻想蛮怒・Sil-Q・TOband）の属性を、画面側の「攻撃の見た目」の名前に直す表
  * @details
- * 変愚の属性の名前の一覧（`attack_fx_attr_names.h`）に無い属性が、Frox・幻想蛮怒・Sil-Q にはある。
+ * 変愚の属性の名前の一覧（`attack_fx_attr_names.h`）に無い属性が、Frox・幻想蛮怒・Sil-Q・TOband にはある。
  * 画面側（`hd2d/render/fx_styles/`）は、それらに **専用の見た目** を持つ（Frox は `fc_` 、幻想蛮怒は `gb_`、Sil-Q は `sq_` を頭に付けた名前）か、
  * すでにある見た目へ **寄せる**（決めたこと 2026-10-11「案どおり寄せる」）。
  * コアのアダプタは、原作の属性（Frox の `GF_xxx`・幻想蛮怒の `GF_xxx`）を小文字にした名前（`GF_` を除く。例 `storm`・`tsukumo_storm`）を
@@ -13,10 +13,10 @@
  * 2. 寄せる表（`kFroxAliases` / `kGensobandAliases`）にあれば、寄せ先の見た目（変愚と共通の名前）
  * 3. どちらにも無ければ、コア名がそのまま変愚の名前と同じ（`fire`・`pois`・`old_sleep` など）
  *
- * 関数 `frox_look_name` / `gensoband_look_name` がこの順で引く。どの表にも無い名前は、3. のとおりそのまま返す。
+ * 関数 `frox_look_name` / `gensoband_look_name` / `silq_look_name` / `toband_look_name` がこの順で引く（TOband は専用の見た目が無いので寄せる表だけ）。どの表にも無い名前は、3. のとおりそのまま返す。
  * 変愚と同名かどうかは、呼ぶ側（またはアダプタの検査）が `attack_fx_attr_names.h` で確かめる。
  * 原作の属性の全数が、専用・寄せる・同名のどれかへつながっていることは `tools/attack_fx_core_names_check.py` が数える
- * （Frox は 135 個＝専用 23・寄せる 20・同名 92。幻想蛮怒は 170 個＝専用 41・寄せる 36・同名 93。Sil-Q は 27 個＝専用 2・寄せる 11・同名 14）。
+ * （Frox は 135 個＝専用 23・寄せる 20・同名 92。幻想蛮怒は 170 個＝専用 41・寄せる 36・同名 93。Sil-Q は 27 個＝専用 2・寄せる 11・同名 14。TOband は 103 個＝専用 0・寄せる 30・同名 73）。
  *
  * 画面側の検査（`--attack-fx-check`）は、この表の見た目の名前がすべて登録表にあること、寄せ先もすべて登録表にあることを確かめる。
  * 依存はこのヘッダだけ（ゲームの型を何も使わない）。UTF-8 BOM 付き。
@@ -206,6 +206,49 @@ inline constexpr CoreAttrAlias kGensobandAliases[] = {
 };
 /*! @} */
 
+/*!
+ * @name TOband（`toband/src/defines.h` の `GF_xxx`。103 個）
+ * @{
+ */
+/*!
+ * 専用の見た目は無い。変愚と同名の 73 個以外は、既存の見た目へ寄せる（決めたこと 2026-10-17「新しい見た目は作らない」）。
+ * 寄せ先は意味の近いもの（原作の `project_m()` の効果と、同じコアの呼び出し側の用途で決めた）。`cave_temp` は範囲を数えるだけの内部の印で
+ * 絵を出さない（アダプタが記録しない）が、全数の突き合わせのために `none` へつなぐ。
+ */
+inline constexpr CoreAttrAlias kTobandAliases[] = {
+    { "stone", "stasis" },
+    { "old_stone", "stasis" },
+    { "special_stone", "stasis" },
+    { "inertia", "inertial" },
+    { "physical", "missile" },
+    { "blunt", "force" },
+    { "edged", "engetsu" },
+    { "volcanic_bomb", "meteor" },
+    { "godly_spear", "psy_spear" },
+    { "pure_fire", "fire" },
+    { "pure_aqua", "water" },
+    { "pure_earth", "shards" },
+    { "pure_wind", "force" },
+    { "make_glyph", "make_rune_protection" },
+    { "old_drain", "hypodynamia" },
+    { "new_drain", "hypodynamia" },
+    { "dual_drain", "hypodynamia" },
+    { "drain_soul", "hypodynamia" },
+    { "new_slow", "old_slow" },
+    { "silent", "stun" },
+    { "control_beast", "control_animal" },
+    { "control_dragon", "domination" },
+    { "genocide_undead", "genocide" },
+    { "strike_nova", "fire" },
+    { "word_of_pain", "wounds" },
+    { "shining", "lite" },
+    { "erase_elem", "disenchant" },
+    { "cave_temp", "none" },
+    { "brainstorm", "mind_blast" },
+    { "umbra", "dark" },
+};
+/*! @} */
+
 namespace detail {
 
 template <std::size_t N>
@@ -252,6 +295,15 @@ inline const char *silq_look_name(const char *core_name)
         return own;
     }
     if (const char *alias = detail::find_look(kSilqAliases, core_name)) {
+        return alias;
+    }
+    return core_name;
+}
+
+//! TOband のコア名（`GF_` を除いた小文字）→ 見た目の名前。寄せ先 → そのまま、の順（専用の見た目は無い）。
+inline const char *toband_look_name(const char *core_name)
+{
+    if (const char *alias = detail::find_look(kTobandAliases, core_name)) {
         return alias;
     }
     return core_name;

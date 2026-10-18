@@ -7,7 +7,7 @@
 ## 日本語
 
 変愚蛮怒（Hengband）を 3D 表示にした派生版です。画面部分を新しく作り、
-変愚蛮怒・短愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2 の 10 本を
+変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2 の 11 本を
 同じ画面で遊べるようにしました。
 
 作者: Higesho
@@ -33,16 +33,17 @@
 - **Linux**: tar.gz を展開して `./HengbandHd2d.sh` を起動してください。OpenGL 4.5 が使える環境が要ります。詳しくは展開した中の `README-linux.txt` を見てください。
 - **Android**: apk をインストールしてください（arm64-v8a）。
 
-現在の配布物は 10 本のコアを組み込み済みで、原作の ZIP を取り込んでコンパイルする機能（`tools/core_import/`）は
+現在の配布物は 11 本のコアを組み込み済みで、原作の ZIP を取り込んでコンパイルする機能（`tools/core_import/`）は
 ソースにはありますが、配布物には含めていません。
 
-### 10 本のゲーム
+### 11 本のゲーム
 
 | ゲーム | 説明 |
 | --- | --- |
 | 変愚蛮怒 | Hengband 3.0.2.5-Beta です |
 | 短愚蛮怒 | 変愚蛮怒の短編版です（同じソースを別の設定でビルドしています） |
 | 幻想蛮怒 | 東方 Project をモチーフにした変愚蛮怒の派生版です。町とダンジョンを作り込み、英語版も用意しました |
+| TOband | タクティクスオウガをモチーフにした変愚蛮怒の派生版です |
 | Sil-Q | Sil の後継です。日本語化しました |
 | FroxComposband | Composband の派生版です。日本語化しました |
 | Angband | Angband 4.2.6 です。日本語表示に対応しました |
@@ -131,7 +132,7 @@ vcpkg install openal-soft:x64-windows --overlay-triplets=.\tools\vcpkg\triplets
 msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platform=x64 /m
 ```
 
-リポジトリ直下に `HengbandHd2d.exe` と、変愚蛮怒・短愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband の exe ができます。
+リポジトリ直下に `HengbandHd2d.exe` と、変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband の exe ができます。
 
 `/p:Platform=x64` は画面側だけの指定で、コアは Win32 でビルドされます。
 別プロセスなので混在しても問題ありません。画面側を x64 にしているのは VR 対応のためです。
@@ -201,7 +202,7 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 | `presentation/` | コア側の描画データの作成とプロトコル |
 | `platform/` | Windows / Android / Linux の起動処理 |
 | `tools/core_sources/` | 外部原作の版固定、必要なパッチ、ソースとデータの準備 |
-| `gensoband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` | コア別アダプター・翻訳・ゲームデータ。原作の src と原作のゲームデータは外部で管理 |
+| `gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` | コア別アダプター・翻訳・ゲームデータ。原作の src と原作のゲームデータは外部で管理 |
 | `tools/targeting/` | 原作ソースへ狙いの表示などの呼び出しを足す書き換え |
 | `tools/voxel/` | ボクセルモデルの生成 |
 | `tools/hd2d_verify/` | 動作確認用のスクリプト |
@@ -227,7 +228,7 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 
 系統ごとに違います。[LICENSE](LICENSE) と [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) をご覧ください。
 
-- 変愚蛮怒・短愚蛮怒・幻想蛮怒・FroxComposband、画面、共通コード、アダプターは Moria/Angband 使用許諾です。非営利での配布は可能で、著作権表記と使用許諾文を含める必要があります
+- 変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・FroxComposband、画面、共通コード、アダプターは Moria/Angband 使用許諾です。非営利での配布は可能で、著作権表記と使用許諾文を含める必要があります
 - Sil-Q は GPL v2 と Angband 使用許諾のデュアルライセンスです
 - Angband は GPL v2 で配布します（原作は GPL v2 と Angband 使用許諾の二重許諾で、GPL v2 を選んでいます）
 - Umoria は GPL v3 です
@@ -248,7 +249,7 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 ## English
 
 A fork of Hengband with a 3D display. The screen side was written from scratch,
-and ten games can be played on it: Hengband, Tangband, Gensoband, Sil-Q, FroxComposband,
+and eleven games can be played on it: Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband,
 Angband, Umoria, Rogue 3.6, Rogue 5.4 and RogueClone2.
 
 Author: Higesho
@@ -274,16 +275,17 @@ Project page: <https://higesho.github.io/>
 - **Linux**: unpack the tar.gz and run `./HengbandHd2d.sh`. It needs OpenGL 4.5. See `README-linux.txt` inside the package.
 - **Android**: install the apk (arm64-v8a).
 
-The current packages contain the ten prebuilt cores. The feature that imports and compiles upstream source ZIPs
+The current packages contain the eleven prebuilt cores. The feature that imports and compiles upstream source ZIPs
 (`tools/core_import/`) is in the source but is not included in the packages.
 
-### The ten games
+### The eleven games
 
 | Game | Description |
 | --- | --- |
 | Hengband | Hengband 3.0.2.5-Beta |
 | Tangband | A short version of Hengband (the same source built with different settings) |
 | Gensoband | A Touhou Project themed fork of Hengband. Towns and dungeons were redesigned, and an English version was added |
+| TOband | A Tactics Ogre themed fork of Hengband |
 | Sil-Q | A successor of Sil, translated into Japanese |
 | FroxComposband | A fork of Composband, translated into Japanese |
 | Angband | Angband 4.2.6, with Japanese display support |
@@ -371,7 +373,7 @@ With the default triplets, `sdl2-ttf` drops glyphs on x64 (an MSVC optimizer iss
 msbuild .\VisualStudio\Hengband.sln /t:Build /p:Configuration=Release /p:Platform=x64 /m
 ```
 
-`HengbandHd2d.exe` and the executables of Hengband, Tangband, Gensoband, Sil-Q and FroxComposband are placed in the repository root.
+`HengbandHd2d.exe` and the executables of Hengband, Tangband, Gensoband, TOband, Sil-Q and FroxComposband are placed in the repository root.
 
 `/p:Platform=x64` applies to the screen side only; the cores are built as Win32.
 They are separate processes, so mixing them is fine. The screen is x64 for VR support.
@@ -441,7 +443,7 @@ See the comment at the top of each script for details.
 | `presentation/` | Core-side rendering data and the protocol |
 | `platform/` | Entry points for Windows, Android and Linux |
 | `tools/core_sources/` | Pinned external sources, patches, and preparation of the sources and data |
-| `gensoband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` | Adapters, translations and game data; the upstream src and upstream game data are external |
+| `gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` | Adapters, translations and game data; the upstream src and upstream game data are external |
 | `tools/targeting/` | Rewrites that add calls (target display and so on) to the upstream sources |
 | `tools/voxel/` | Voxel model generation |
 | `tools/hd2d_verify/` | Verification scripts |
@@ -467,7 +469,7 @@ The documents of the original Hengband are kept as they were, as the license req
 
 Different parts are under different licenses. See [LICENSE](LICENSE) and [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
 
-- Hengband, Tangband, Gensoband and FroxComposband, the screen, the shared code and the adapters are under the Moria/Angband license. Non-commercial distribution is allowed,
+- Hengband, Tangband, Gensoband, TOband and FroxComposband, the screen, the shared code and the adapters are under the Moria/Angband license. Non-commercial distribution is allowed,
   and all copies must include the copyright notice and the license text
 - Sil-Q is dual-licensed under GPL v2 and the Angband license
 - Angband is distributed under GPL v2 (the upstream dual license is GPL v2 or the Angband license; GPL v2 is chosen)

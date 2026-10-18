@@ -2724,6 +2724,546 @@ int fc_awaiting_command(void)
     return character_generated && !p_ptr->is_dead && inkey_flag;
 }
 
+/* ============================================== 検査用：敵の行動の指定（HD2D_TEST_MONSTER_ACT） */
+
+/*
+ * 攻撃の効果の検査で、敵が魔法を撃つまで休んで待たずに済ませるための入口。
+ * **環境変数 `HD2D_TEST_MONSTER_ACT`（命令ファイルのパス）が無いときは何もしない**
+ * （普段の遊び・配布物には効かない）。
+ *
+ * 呼び出しは `fc_null_term.c` の「キーを待つ間の繰り返し」の頭（キーを Term へ積む直前）から。
+ * 最上位のコマンドを待っているとき（`fc_awaiting_command()`）だけ読む。-more- や選択画面の最中は読まない。
+ * ファイルがあれば**複数行**を上から順に、1 回のコマンド待ちの中で全部実行し（その間ゲームの時間は進めない）、
+ * ファイルを消す（消せなければ名前を変える）。空行と `#` で始まる行は読み飛ばす。
+ * 結果は標準エラーへ 1 行ずつ `[test-monster-act] ok <命令>` / `[test-monster-act] fail <理由>`。
+ * 途中で fail したら残りの行は実行せず、各行に `[test-monster-act] skip <命令>` を出す。
+ *
+ *   cast <原作の魔法の名前> [nearest|<番号>]  … その敵に、その魔法をプレイヤーへ向けていま撃たせる
+ *   melee [nearest|<番号>]                    … その敵に、いまプレイヤーへ直接攻撃させる（隣にいるときだけ）
+ *   place <nearest|番号> <dx> <dy>            … その敵を、プレイヤーの位置から (dx, dy) ずれたマスへ動かす（時間は使わない）
+ *   hold <nearest|番号|all> on|off            … on の間、その敵は自分の番に行動しない（all は敵対している敵だけ。ペットは止めない）
+ *
+ * `place`：マスが地図の外・その敵が立てない地形・ほかの敵やプレイヤーがいる、のとき fail。動かしたあとの更新は、
+ * 原作が敵を動かすとき（`melee2.c` の `process_monster()`、`spells3.c` の `teleport_away()`）と同じ
+ * （`cave[][].m_idx` の付け替え・`update_mon()`・`lite_spot()`・`PW_MONSTER_LIST`）。
+ *
+ * `hold`：敵が行動する条件は、原作の `process_monsters()` が敵ごとの `energy_need`（次の番までの待ち。0 以下で番が来る）を
+ * 速さの分だけ減らし、0 以下になった敵だけを動かす仕組み。止めている敵の `energy_need` を、コマンド待ちのたびに
+ * 番が来ない大きな値（`FC_TMA_HOLD_VALUE`）へ置き直す。止める前の値を覚えておき、off で戻す。
+ * 眠らせる・麻痺させる方法は使わない（画面の表示や状態が変わるため）。止めている敵が死んだ・階を移った（その枠が
+ * ほかの敵や空になった）ときは、記録から外す。入口から命じた cast・melee・place は `energy_need` を見ないので働く。
+ * `hold` が成功したときは、判定の行のほかに `[test-monster-act] info held=<止めている敵の番号,...>` を出す（検査用）。
+ *
+ * 魔法の名前は原作の記法（`BR_FIRE`・`BO_FIRE`・`BA_POIS`・`MISSILE`・`BLINK` ほか。`mon_spell_parse()` が読む名前）。
+ * 敵がその魔法を持っているかは問わない。持っていればその種族の定義で、持っていなければ原作の読み取りが返す既定の強さで撃たせる。
+ * 撃たせ方は原作の `mon_spell_cast(mon, ai)` に「指定の魔法を選ぶ ai」を渡す（原作のデバッグ用の
+ * `mon_spell_ai_wizard` と同じ道。原作の旗・確率の表は書き換えない）。
+ *
+ * 番の外から呼ぶので、モンスターの番の途中で原作が前提にしているものを整える:
+ *   - 出現直後の敵にプレイヤーの最初の 1 手を待たせる印（`MFLAG_NICE`）を外す（原作もそのターンの終わりに外す）
+ *   - 敵がプレイヤーに気づいている印（`MFLAG2_AWARE`。呼んだばかりの敵は最初の番までは立っていない）を、
+ *     敵の最初の番と同じ条件で立てる
+ *   - `hack_m_idx`（いまの番の敵。`process_monsters()` が立てる）を撃たせる敵にし、終わったら戻す
+ *   - `msg_boundary()`（敵の番の頭と同じ。メッセージの区切り）
+ *   - `inkey_flag`（コマンド待ちの旗。メッセージの -more- が入れ子の `inkey()` を呼ぶと下ろされるので、終わったら戻す）
+ *   - 終わったら `notice_stuff()`・`handle_stuff()`・`Term_fresh()`（番の終わりと同じ再描画の要求の処理）
+ * `mon_current()`／`mon_spell_current()` は `mon_spell_cast()` 自身が立てて消す。
+ * **乱数と乱数の種には触らない**（魔法の内側の通常の乱数の消費だけ）。
+ */
+#define FC_TMA_MAX_LINES 128
+
+static int fc_tma_busy = 0;
+static int fc_tma_stuck = 0;
+static const mon_spell_t *fc_tma_spell = NULL;
+
+static bool fc_tma_ai(mon_spell_cast_ptr cast)
+{
+    cast->spell = (mon_spell_ptr)fc_tma_spell;
+    return cast->spell != NULL;
+}
+
+static void fc_tma_report(const char *verdict, const char *line, const char *reason)
+{
+    if (reason) {
+        fprintf(stderr, "[test-monster-act] %s %s\n", verdict, reason);
+    } else {
+        fprintf(stderr, "[test-monster-act] %s %s\n", verdict, line);
+    }
+    fflush(stderr);
+}
+
+/* 敵の指定（nearest・省略・番号）。番号は m_list の添字（フレームの monster_slot と同じ）。 */
+static monster_type *fc_tma_pick(const char *arg, int *m_idx_out)
+{
+    int i;
+    int best = 0;
+    int best_dist = 0;
+
+    if (arg && arg[0] && strcmp(arg, "nearest") != 0) {
+        char *end = NULL;
+        long n = strtol(arg, &end, 10);
+        if (!end || (*end != '\0') || (n < 1) || (n >= (long)m_max)) {
+            return NULL;
+        }
+        if (!m_list[n].r_idx) {
+            return NULL;
+        }
+        *m_idx_out = (int)n;
+        return &m_list[n];
+    }
+
+    for (i = 1; i < m_max; i++) {
+        monster_type *m_ptr = &m_list[i];
+        int d;
+
+        if (!m_ptr->r_idx || !m_ptr->ml) {
+            continue;
+        }
+        d = distance(py, px, m_ptr->fy, m_ptr->fx);
+        if (!best || (d < best_dist)) {
+            best = i;
+            best_dist = d;
+        }
+    }
+    if (!best) {
+        return NULL;
+    }
+    *m_idx_out = best;
+    return &m_list[best];
+}
+
+/*
+ * 止めている敵の記録。`energy_need` は s16b（最大 32767）。
+ *   FC_TMA_HOLD_VALUE … 止めるときに置く値。速い敵でも休みを数十ターン重ねて減らし切れない大きさ
+ *   FC_TMA_HOLD_REARM … これを下回っていたら置き直す
+ *   FC_TMA_HOLD_VALID … これを下回っていたら「止めていた敵ではない」とみなして記録から外す
+ *                       （通常の敵の `energy_need` は数百以下。その枠が別の敵に使い回されたことを見分ける）
+ */
+#define FC_TMA_HOLD_MAX   256
+#define FC_TMA_HOLD_VALUE 30000
+#define FC_TMA_HOLD_REARM 25000
+#define FC_TMA_HOLD_VALID 5000
+
+typedef struct {
+    int m_idx;
+    s16b r_idx;
+    s16b saved;
+} fc_tma_hold_t;
+
+static fc_tma_hold_t fc_tma_holds[FC_TMA_HOLD_MAX];
+static int fc_tma_nholds = 0;
+static int fc_tma_hold_all = 0;
+
+static int fc_tma_hold_find(int m_idx)
+{
+    int i;
+    for (i = 0; i < fc_tma_nholds; i++) {
+        if (fc_tma_holds[i].m_idx == m_idx) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static void fc_tma_hold_remove_at(int k)
+{
+    fc_tma_holds[k] = fc_tma_holds[fc_tma_nholds - 1];
+    fc_tma_nholds--;
+}
+
+/* その敵を止める記録に足す（止める前の energy_need を覚えて置き直す）。すでに止めていれば何もしない。足せなければ FALSE。 */
+static bool fc_tma_hold_add(int m_idx)
+{
+    monster_type *m_ptr = &m_list[m_idx];
+
+    if (fc_tma_hold_find(m_idx) >= 0) {
+        return TRUE;
+    }
+    if (fc_tma_nholds >= FC_TMA_HOLD_MAX) {
+        return FALSE;
+    }
+    fc_tma_holds[fc_tma_nholds].m_idx = m_idx;
+    fc_tma_holds[fc_tma_nholds].r_idx = m_ptr->r_idx;
+    fc_tma_holds[fc_tma_nholds].saved = m_ptr->energy_need;
+    fc_tma_nholds++;
+    m_ptr->energy_need = FC_TMA_HOLD_VALUE;
+    return TRUE;
+}
+
+/* 記録の k 番を元に戻して外す。枠がほかの敵に使い回されていれば値は戻さない。 */
+static void fc_tma_hold_release_at(int k)
+{
+    const fc_tma_hold_t h = fc_tma_holds[k];
+    monster_type *m_ptr = &m_list[h.m_idx];
+
+    if (m_ptr->r_idx == h.r_idx && m_ptr->energy_need >= FC_TMA_HOLD_VALID) {
+        m_ptr->energy_need = h.saved;
+    }
+    fc_tma_hold_remove_at(k);
+}
+
+/* コマンド待ちのたびに呼ぶ：外れた記録を外し、all のとき新しい敵対の敵を足し、止めている敵の待ちを置き直す。 */
+static void fc_tma_hold_maintain(void)
+{
+    int i;
+
+    if (!character_generated || (fc_tma_nholds == 0 && !fc_tma_hold_all)) {
+        return;
+    }
+    for (i = fc_tma_nholds - 1; i >= 0; i--) {
+        const fc_tma_hold_t *h = &fc_tma_holds[i];
+        monster_type *m_ptr = ((h->m_idx >= 1) && (h->m_idx < m_max)) ? &m_list[h->m_idx] : NULL;
+
+        if (!m_ptr || !m_ptr->r_idx || (m_ptr->r_idx != h->r_idx) || (m_ptr->energy_need < FC_TMA_HOLD_VALID)) {
+            fc_tma_hold_remove_at(i);
+        }
+    }
+    if (fc_tma_hold_all) {
+        for (i = 1; i < m_max; i++) {
+            monster_type *m_ptr = &m_list[i];
+            if (m_ptr->r_idx && (i != p_ptr->riding) && is_hostile(m_ptr)) {
+                (void)fc_tma_hold_add(i);
+            }
+        }
+    }
+    for (i = 0; i < fc_tma_nholds; i++) {
+        monster_type *m_ptr = &m_list[fc_tma_holds[i].m_idx];
+        if (m_ptr->energy_need < FC_TMA_HOLD_REARM) {
+            m_ptr->energy_need = FC_TMA_HOLD_VALUE;
+        }
+    }
+}
+
+/* 1 命令を実行する。成功なら NULL、失敗なら理由の文字列を返す。 */
+static const char *fc_tma_run_one(char *line)
+{
+    char *tok[4];
+    int ntok = 0;
+    char *p = line;
+    int m_idx = 0;
+    monster_type *m_ptr;
+    int saved_hack;
+    bool saved_inkey_flag;
+    bool done = FALSE;
+
+    while (*p && (ntok < 4)) {
+        while ((*p == ' ') || (*p == '\t')) {
+            *p++ = '\0';
+        }
+        if (!*p) {
+            break;
+        }
+        tok[ntok++] = p;
+        while (*p && (*p != ' ') && (*p != '\t')) {
+            p++;
+        }
+    }
+    if (*p) {
+        *p = '\0';
+    }
+    if (ntok == 0) {
+        return NULL;
+    }
+
+    if (!character_generated || !p_ptr->playing || p_ptr->is_dead) {
+        return "the game is not running";
+    }
+
+    if (strcmp(tok[0], "cast") == 0) {
+        mon_spell_t want;
+        mon_spell_ptr spell;
+        char name[64];
+
+        if (ntok < 2) {
+            return "cast needs a spell name";
+        }
+        if (strlen(tok[1]) >= sizeof(name)) {
+            return "spell name too long";
+        }
+        m_ptr = fc_tma_pick((ntok >= 3) ? tok[2] : NULL, &m_idx);
+        if (!m_ptr) {
+            return "no such monster";
+        }
+        /* 原作の記法の名前を原作の読み取りで id に直す（BR_FIRE → 息・火 など） */
+        memset(&want, 0, sizeof(want));
+        strcpy(name, tok[1]);
+        if (mon_spell_parse(&want, r_info[m_ptr->r_idx].level, name) != 0) {
+            return "unknown spell name";
+        }
+        /* その敵の種族が持つ魔法ならその定義を、持たなければ読み取った定義（既定の強さ）をそのまま使う */
+        spell = r_info[m_ptr->r_idx].spells ? mon_spells_find(r_info[m_ptr->r_idx].spells, want.id) : NULL;
+        if (!spell) {
+            spell = &want;
+        }
+        if (m_ptr->cdis > MAX_RANGE) {
+            return "the monster is out of range";
+        }
+        if (!is_hostile(m_ptr)) {
+            return "the monster is not hostile";
+        }
+        if (MON_CONFUSED(m_ptr)) {
+            return "the monster is confused";
+        }
+        /*
+         * 原作の `mon_spell_cast()` は「プレイヤーに気づいている」敵にしか撃たせない（`_can_cast()`）。
+         * 気づく処理は敵の最初の番で `process_monsters()` が自動で行う（`melee2.c`「Monsters are automatically aware
+         * of the player」）。呼んだばかりの敵はまだ番が来ていないので、同じ印を立てる。
+         */
+        if (!is_aware(m_ptr) && (p_ptr->prace != RACE_MON_RING)) {
+            m_ptr->mflag2 |= MFLAG2_AWARE;
+        }
+        /*
+         * `MFLAG_NICE`（出現した直後の敵に「プレイヤーの最初の 1 手」を待たせる印）が立っていると撃てない（`_can_cast()`）。
+         * 原作はそのターンの終わりに `dungeon.c` の `repair_monsters` の処理で全員から外す。同じ印を外す。
+         */
+        m_ptr->mflag &= ~(MFLAG_NICE);
+        fc_tma_spell = spell;
+        saved_hack = hack_m_idx;
+        saved_inkey_flag = inkey_flag;
+        hack_m_idx = m_idx;
+        msg_boundary();
+        done = mon_spell_cast(m_ptr, fc_tma_ai);
+        hack_m_idx = saved_hack;
+        inkey_flag = saved_inkey_flag;
+        fc_tma_spell = NULL;
+        if (!done) {
+            return "the monster could not cast (not aware, or anti-magic level)";
+        }
+    } else if (strcmp(tok[0], "melee") == 0) {
+        m_ptr = fc_tma_pick((ntok >= 2) ? tok[1] : NULL, &m_idx);
+        if (!m_ptr) {
+            return "no such monster";
+        }
+        if (distance(py, px, m_ptr->fy, m_ptr->fx) != 1) {
+            return "the monster is not adjacent";
+        }
+        saved_hack = hack_m_idx;
+        saved_inkey_flag = inkey_flag;
+        hack_m_idx = m_idx;
+        msg_boundary();
+        done = make_attack_normal(m_idx);
+        hack_m_idx = saved_hack;
+        inkey_flag = saved_inkey_flag;
+        if (!done) {
+            return "the monster did not attack (never-blow/friendly?)";
+        }
+    } else if (strcmp(tok[0], "place") == 0) {
+        char *end_dx = NULL;
+        char *end_dy = NULL;
+        long ldx, ldy;
+        int ny, nx, oy, ox;
+        monster_race *r_ptr;
+
+        if (ntok < 4) {
+            return "place needs <monster> <dx> <dy>";
+        }
+        ldx = strtol(tok[2], &end_dx, 10);
+        ldy = strtol(tok[3], &end_dy, 10);
+        if (!end_dx || *end_dx || !end_dy || *end_dy || (ldx < -300) || (ldx > 300) || (ldy < -300) || (ldy > 300)) {
+            return "place needs integer dx and dy";
+        }
+        m_ptr = fc_tma_pick(tok[1], &m_idx);
+        if (!m_ptr) {
+            return "no such monster";
+        }
+        if (m_idx == p_ptr->riding) {
+            return "the monster is the player's mount";
+        }
+        ny = py + (int)ldy;
+        nx = px + (int)ldx;
+        if (!in_bounds(ny, nx)) {
+            return "the grid is outside the map";
+        }
+        r_ptr = &r_info[m_ptr->r_idx];
+        oy = m_ptr->fy;
+        ox = m_ptr->fx;
+        if (!((oy == ny) && (ox == nx))) {
+            if (player_bold(ny, nx)) {
+                return "the player is on that grid";
+            }
+            if (cave[ny][nx].m_idx) {
+                return "another monster is on that grid";
+            }
+            if (!monster_can_enter(ny, nx, r_ptr, 0)) {
+                return "the monster cannot stand on that terrain";
+            }
+            /* 原作が敵を動かすとき（teleport_away() ほか）と同じ付け替えと更新 */
+            cave[oy][ox].m_idx = 0;
+            cave[ny][nx].m_idx = m_idx;
+            m_ptr->fy = ny;
+            m_ptr->fx = nx;
+            reset_target(m_ptr);
+            update_mon(m_idx, TRUE);
+            lite_spot(oy, ox);
+            lite_spot(ny, nx);
+            p_ptr->window |= PW_MONSTER_LIST;
+            if (r_ptr->flags7 & (RF7_LITE_MASK | RF7_DARK_MASK)) {
+                p_ptr->update |= PU_MON_LITE;
+            }
+        }
+    } else if (strcmp(tok[0], "hold") == 0) {
+        int on;
+        int k;
+
+        if (ntok < 3) {
+            return "hold needs <monster|all> on|off";
+        }
+        if (strcmp(tok[2], "on") == 0) {
+            on = 1;
+        } else if (strcmp(tok[2], "off") == 0) {
+            on = 0;
+        } else {
+            return "hold needs on or off";
+        }
+        if (strcmp(tok[1], "all") == 0) {
+            if (on) {
+                fc_tma_hold_all = 1;
+                fc_tma_hold_maintain();
+            } else {
+                fc_tma_hold_all = 0;
+                while (fc_tma_nholds > 0) {
+                    fc_tma_hold_release_at(fc_tma_nholds - 1);
+                }
+            }
+        } else {
+            m_ptr = fc_tma_pick(tok[1], &m_idx);
+            if (!m_ptr) {
+                return "no such monster";
+            }
+            if (on) {
+                if (!fc_tma_hold_add(m_idx)) {
+                    return "too many held monsters";
+                }
+            } else {
+                if (fc_tma_hold_all) {
+                    return "hold all is on (turn it off first)";
+                }
+                k = fc_tma_hold_find(m_idx);
+                if (k >= 0) {
+                    fc_tma_hold_release_at(k);
+                }
+            }
+        }
+        /* 止めている敵の番号の一覧（検査が、ペットが含まれないことなどを確かめる。判定の行ではない） */
+        {
+            int j;
+            fprintf(stderr, "[test-monster-act] info held=");
+            for (j = 0; j < fc_tma_nholds; j++) {
+                fprintf(stderr, "%s%d", (j > 0) ? "," : "", fc_tma_holds[j].m_idx);
+            }
+            fprintf(stderr, "\n");
+            fflush(stderr);
+        }
+    } else {
+        return "unknown command";
+    }
+
+    if (p_ptr->notice) {
+        notice_stuff();
+    }
+    handle_stuff();
+    Term_fresh();
+    return NULL;
+}
+
+void fc_test_monster_act_poll(void)
+{
+    const char *path = getenv("HD2D_TEST_MONSTER_ACT");
+    FILE *fp;
+    char buf[16384];
+    char lines[FC_TMA_MAX_LINES][256];
+    int nlines = 0;
+    size_t len;
+    int i;
+    int failed = 0;
+
+    if (!path || !path[0] || fc_tma_busy) {
+        return;
+    }
+    /* 止めている敵の待ちの置き直し（命令ファイルが無くても毎回） */
+    fc_tma_hold_maintain();
+    if (!fc_awaiting_command()) {
+        return;
+    }
+    fp = fopen(path, "rb");
+    if (!fp) {
+        fc_tma_stuck = 0;
+        return;
+    }
+    if (fc_tma_stuck) {
+        fclose(fp);
+        return;
+    }
+    len = fread(buf, 1, sizeof(buf) - 1, fp);
+    fclose(fp);
+    buf[len] = '\0';
+
+    /* 先に消す。消せなければ名前を変える。どちらもできなければ二重に撃たないよう印を立てる */
+    if (remove(path) != 0) {
+        char moved[1100];
+        snprintf(moved, sizeof(moved), "%s.done", path);
+        (void)remove(moved);
+        if (rename(path, moved) != 0) {
+            fc_tma_stuck = 1;
+        }
+    }
+
+    {
+        char *q = buf;
+        while (*q && (nlines < FC_TMA_MAX_LINES)) {
+            char *eol = q;
+            size_t n;
+            while (*eol && (*eol != '\n') && (*eol != '\r')) {
+                eol++;
+            }
+            n = (size_t)(eol - q);
+            if (n >= sizeof(lines[0])) {
+                n = sizeof(lines[0]) - 1;
+            }
+            memcpy(lines[nlines], q, n);
+            lines[nlines][n] = '\0';
+            nlines++;
+            while ((*eol == '\n') || (*eol == '\r')) {
+                eol++;
+            }
+            q = eol;
+        }
+    }
+
+    fc_tma_busy = 1;
+    for (i = 0; i < nlines; i++) {
+        char shown[256];
+        const char *why;
+        char *a = lines[i];
+        size_t alen;
+
+        while ((*a == ' ') || (*a == '\t')) {
+            a++;
+        }
+        alen = strlen(a);
+        while ((alen > 0) && ((a[alen - 1] == ' ') || (a[alen - 1] == '\t'))) {
+            a[--alen] = '\0';
+        }
+        /* 空行と # で始まる行は読み飛ばす */
+        if (!*a || (*a == '#')) {
+            continue;
+        }
+        strcpy(shown, a);
+        if (failed) {
+            fc_tma_report("skip", shown, NULL);
+            continue;
+        }
+        why = fc_tma_run_one(a);
+        if (why) {
+            fc_tma_report("fail", shown, why);
+            failed = 1;
+        } else {
+            fc_tma_report("ok", shown, NULL);
+        }
+    }
+    fc_tma_busy = 0;
+}
+
 /* ============================================== オプションの一覧（原作の表からの全件の取得） */
 
 /*

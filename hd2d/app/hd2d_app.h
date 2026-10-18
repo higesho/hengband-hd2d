@@ -209,6 +209,12 @@ struct AppOptions {
      */
     int camera_turn{ 0 };
     /*!
+     * @brief `--turn=` が指定されたか。
+     * @details 真なら起動時の向きは `camera_turn` が勝つ。偽なら、コアが `hello_ack.default_view_turn`
+     * で申告した向きから始める（申告が無ければ 0＝北）。
+     */
+    bool camera_turn_given{ false };
+    /*!
      * @brief **VR ジオラマの盤の回転**の初期値（`--board-turn=0..3`）。
      * @details。実行中は右スティック横のフリックと F5／F6 だが、
      * **どちらもスクリプトから出せない**（UI が食う・スティックは注入できない）。

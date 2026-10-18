@@ -59,11 +59,15 @@ struct OrbHudImages {
     const UiImage *front{ nullptr };
     //! アイコンを 10 列に並べた 1 枚（64x64 のセル）。
     const UiImage *status_icons{ nullptr };
+    //! 天候のアイコンを 8 列 x 1 行に並べた 1 枚（64x64 のセル。`tools/hud/gen_weather_icons.py`）。左の状態欄の天候に使う。
+    const UiImage *weather_icons{ nullptr };
 
     //! 玉の 6 層が全部読めているか。
     bool has_orb() const;
     //! アイコンのシートが読めているか。
     bool has_icons() const;
+    //! 天候のアイコンのシートが読めているか。
+    bool has_weather_icons() const;
 };
 
 //! 液面の動きの設定（`Hd2dSettings` の `orb_*` の写し。100% = 1.0）。

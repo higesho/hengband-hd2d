@@ -56,7 +56,8 @@
 #include "render/light_shaft.h"
 #include "render/camera.h"
 #include "render/cloud_layer.h"
-#include "render/dust_motes.h" //!< 空中に浮かぶ埃（2026-08-23 に決めた）
+#include "render/dust_motes.h" //!< 空中に浮かぶ埃
+#include "render/weather_fx.h" //!< 天候（雨・雪・風・日中の光。コアが申告したときだけ）
 #include "render/gl_core.h"
 #include "render/lighting.h"
 #include "render/math3d.h"
@@ -651,6 +652,8 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
     static const Known kKnown[] = {
         { "変愚蛮怒", "HengbandCore.exe" },
         { "短愚蛮怒", "TangbandCore.exe" },
+        //! TOband。表示名は固有名詞のまま（和名は無い）。
+        { "TOband", "TobandCore.exe" },
         { "幻想蛮怒", "GensobandCore.exe" },
         /*
          * Sil-Q。**表示名は英語のまま**である
@@ -677,6 +680,7 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
 #elif defined(HENGBAND_DESKTOP_LINUX)
     static const Known kKnown[] = {
         { "変愚蛮怒", "HengbandCore" }, { "短愚蛮怒", "TangbandCore" },
+        { "TOband", "TobandCore" },
         { "幻想蛮怒", "GensobandCore" }, { "Sil-Q", "SilCore" },
         { "FroxComposband", "FroxCore" }, { "RogueClone2", "Rogue2Core" },
         { "Rogue 3.6", "Rogue36Core" }, { "Rogue 5.4", "Rogue54Core" },
@@ -697,6 +701,8 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
     static const Known kKnown[] = {
         { "変愚蛮怒", "libhengcore.so" },
         { "短愚蛮怒", "libtangcore.so" },
+        //! TOband。`.so` を作るのは後段（Android / Quest は M0 の対象外）——無い間は一覧に出ない。
+        { "TOband", "libtobandcore.so" },
         { "幻想蛮怒", "libgensocore.so" },
         //! 表示名を英語のままにする理由は Windows 側と同じ（上の註）。
         { "Sil-Q", "libsilcore.so" },
@@ -739,7 +745,8 @@ std::string core_key_for_path(const std::string &path)
     for (char &c : low) {
         c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
     }
-    const char *key = (low.find("rogue36") != std::string::npos) ? "rogue36"
+    const char *key = (low.find("toband") != std::string::npos)      ? "toband"
+                      : (low.find("rogue36") != std::string::npos)   ? "rogue36"
                       : (low.find("rogue54") != std::string::npos) ? "rogue54"
                       : (low.find("rogue2") != std::string::npos)  ? "rogue2"
                       : (low.find("tang") != std::string::npos)    ? "tang"
@@ -894,70 +901,114 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
      */
     std::vector<UiImage> banners(cores.size());
     /*
-     * **2 列に並べる**（決めたこと 2026-09-23「コアが増えてきたのでバナーを 2 列にして
-     * 左に Rogue3.6 / Rogue5.4 / Rogue Clone2、右に 変愚 / 短愚 / 幻想 / Sil-Q / Frox」）。
-     * 並びは見つかった順ではなく、この表の順で固定する。表に無いコアは右の列の末尾。
-     * Angband は左の列の末尾（Rogue → Angband の系譜の順）。
+     * **列に並べる**。並びは見つかった順ではなく、下の表の順で固定する。
+     * - 縦長の窓（幅 <= 高さ）は 2 列（決めたこと 2026-09-23「コアが増えてきたのでバナーを 2 列にして
+     *   左に Rogue3.6 / Rogue5.4 / Rogue Clone2、右に 変愚 / 短愚 / 幻想 / Sil-Q / Frox」。Angband は左の列の末尾、
+     *   Rogue → Angband の系譜の順）。TOband は右の列の最後尾。
+     * - 横長の窓（幅 > 高さ）は 3 列:
+     *     Rogue3.6     変愚   Sil-Q
+     *     Rogue5.4     短愚
+     *     RogueClone2  幻想
+     *     Umoria       Frox
+     *     Angband      TOband
+     * 表に無いコアは真ん中（縦長では右）の列の末尾。空の列は詰める（Rogue だけ・変愚系だけの配布は 1 列で中央）。
+     * 窓は回せる（Android の回転・窓の大きさの変更）ので、両方の並びを作っておき、毎回窓の縦横で選ぶ。
      */
     struct CoreSlot {
-        int column{ 1 };
+        int column{ 0 };
         int row{ 0 };
     };
-    static constexpr const char *kLeftColumn[] = { "rogue36", "rogue54", "rogue2", "umoria", "angband" };
-    static constexpr const char *kRightColumn[] = { "heng", "tang", "genso", "sil", "frox" };
+    struct ColumnLayout {
+        std::vector<CoreSlot> slots;
+        std::vector<int> column_rows; //!< 列ごとの段の数（空の列は詰めてある）
+        int column_count() const { return static_cast<int>(column_rows.size()); }
+        int max_rows() const
+        {
+            int rows = 0;
+            for (const int r : column_rows) {
+                rows = std::max(rows, r);
+            }
+            return rows;
+        }
+    };
     std::vector<std::string> core_keys(cores.size());
     for (std::size_t i = 0; i < cores.size(); ++i) {
         core_keys[i] = core_key_for_path(cores[i].path);
     }
-    std::vector<CoreSlot> slots(cores.size());
-    int column_rows[2] = { 0, 0 };
-    {
+    const auto build_layout = [&](const std::vector<std::vector<const char *>> &columns, int extra_column) {
+        ColumnLayout layout;
+        layout.slots.resize(cores.size());
+        std::vector<int> rows(columns.size(), 0);
         std::vector<bool> placed(cores.size(), false);
-        const auto place_column = [&](int column, const char *const *keys, std::size_t count) {
-            for (std::size_t k = 0; k < count; ++k) {
+        for (std::size_t c = 0; c < columns.size(); ++c) {
+            for (const char *key : columns[c]) {
                 for (std::size_t i = 0; i < cores.size(); ++i) {
-                    if (!placed[i] && core_keys[i] == keys[k]) {
-                        slots[i] = CoreSlot{ column, column_rows[column]++ };
+                    if (!placed[i] && core_keys[i] == key) {
+                        layout.slots[i] = CoreSlot{ static_cast<int>(c), rows[c]++ };
                         placed[i] = true;
                     }
                 }
             }
-        };
-        place_column(0, kLeftColumn, std::size(kLeftColumn));
-        place_column(1, kRightColumn, std::size(kRightColumn));
+        }
         for (std::size_t i = 0; i < cores.size(); ++i) {
             if (!placed[i]) {
-                slots[i] = CoreSlot{ 1, column_rows[1]++ };
+                layout.slots[i] = CoreSlot{ extra_column, rows[static_cast<std::size_t>(extra_column)]++ };
             }
         }
-        //! 片方の列しか無いとき（Rogue だけ・変愚系だけの配布）は 1 列で中央に出す。
-        if (column_rows[0] == 0 || column_rows[1] == 0) {
-            const int only = column_rows[0] == 0 ? 1 : 0;
-            for (auto &slot : slots) {
-                slot.column = 0;
+        //! 空の列を詰める（列の番号を付け直す）。全部空なら 1 列。
+        std::vector<int> renumber(columns.size(), 0);
+        for (std::size_t c = 0; c < columns.size(); ++c) {
+            renumber[c] = static_cast<int>(layout.column_rows.size());
+            if (rows[c] > 0) {
+                layout.column_rows.push_back(rows[c]);
             }
-            column_rows[0] = column_rows[only];
-            column_rows[1] = 0;
         }
-    }
-    const int column_count = column_rows[1] > 0 ? 2 : 1;
-    //! 同じ列の中で上下に動く／列を移る。列を移るときは同じ段（無ければその列の最後）へ。
+        for (auto &slot : layout.slots) {
+            slot.column = renumber[static_cast<std::size_t>(slot.column)];
+        }
+        if (layout.column_rows.empty()) {
+            layout.column_rows.push_back(0);
+        }
+        return layout;
+    };
+    const ColumnLayout tall_layout = build_layout({
+        { "rogue36", "rogue54", "rogue2", "umoria", "angband" },
+        { "heng", "tang", "genso", "sil", "frox", "toband" },
+    }, 1);
+    const ColumnLayout wide_layout = build_layout({
+        { "rogue36", "rogue54", "rogue2", "umoria", "angband" },
+        { "heng", "tang", "genso", "frox", "toband" },
+        { "sil" },
+    }, 1);
+    const auto layout_for = [&](int win_w, int win_h) -> const ColumnLayout & {
+        return (win_w > win_h) ? wide_layout : tall_layout;
+    };
+    const auto current_layout = [&]() -> const ColumnLayout & {
+        int w = 0;
+        int h = 0;
+        SDL_GetWindowSize(window.window, &w, &h);
+        return layout_for(w, h);
+    };
+    //! 同じ列の中で上下に動く／列を移る（端からは反対の端へ回る）。列を移るときは同じ段（無ければその列の最後）へ。
     const auto move_cursor = [&](int current, int dx, int dy) {
         if (cores.empty() || current < 0) {
             return 0;
         }
-        const CoreSlot from = slots[static_cast<std::size_t>(current)];
+        const ColumnLayout &layout = current_layout();
+        const CoreSlot from = layout.slots[static_cast<std::size_t>(current)];
+        const int column_count = layout.column_count();
         int column = from.column;
         int row = from.row;
-        if (dx != 0 && column_count == 2) {
-            column = 1 - column;
-            row = std::min(row, column_rows[column] - 1);
+        if (dx != 0 && column_count > 1) {
+            column = (column + (dx > 0 ? 1 : column_count - 1)) % column_count;
+            row = std::min(row, layout.column_rows[static_cast<std::size_t>(column)] - 1);
         }
-        if (dy != 0 && column_rows[column] > 0) {
-            row = (row + (dy > 0 ? 1 : column_rows[column] - 1)) % column_rows[column];
+        const int rows_here = layout.column_rows[static_cast<std::size_t>(column)];
+        if (dy != 0 && rows_here > 0) {
+            row = (row + (dy > 0 ? 1 : rows_here - 1)) % rows_here;
         }
-        for (std::size_t i = 0; i < slots.size(); ++i) {
-            if (slots[i].column == column && slots[i].row == row) {
+        for (std::size_t i = 0; i < layout.slots.size(); ++i) {
+            if (layout.slots[i].column == column && layout.slots[i].row == row) {
                 return static_cast<int>(i);
             }
         }
@@ -1025,12 +1076,14 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
          */
         plan.head_h = 32;
         plan.foot_h = std::max(32, win_h - core_import_entry_rect(win_w, win_h).y + 8);
-        //! 段の数は長いほうの列で決める（右の 5 本）。短い列は上から詰める。
-        const int rows = std::max(1, std::max(column_rows[0], column_rows[1]));
+        //! 段の数はいちばん長い列で決める。短い列は上から詰める。
+        const ColumnLayout &layout = layout_for(win_w, win_h);
+        const int column_count = layout.column_count();
+        const int rows = std::max(1, layout.max_rows());
         const int avail_h = win_h - plan.head_h - plan.foot_h;
         int banner_h = std::min(360, (avail_h - ((rows - 1) * plan.gap)) / std::max(1, rows));
         int banner_w = banner_h * 4;
-        //! 横は 2 列ぶん（列の間も gap）が窓に収まるように抑える。
+        //! 横は列の数ぶん（列の間も gap）が窓に収まるように抑える。
         const int max_w = ((win_w - 120) - ((column_count - 1) * plan.gap)) / column_count;
         if (banner_w > max_w) {
             banner_w = max_w;
@@ -1046,8 +1099,9 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
     };
     const auto row_rect_at = [&](int win_w, int win_h, int index) {
         const RowPlan plan = plan_rows(win_w, win_h);
-        const CoreSlot slot = (index >= 0 && index < static_cast<int>(slots.size()))
-            ? slots[static_cast<std::size_t>(index)] : CoreSlot{ 0, 0 };
+        const ColumnLayout &layout = layout_for(win_w, win_h);
+        const CoreSlot slot = (index >= 0 && index < static_cast<int>(layout.slots.size()))
+            ? layout.slots[static_cast<std::size_t>(index)] : CoreSlot{ 0, 0 };
         return RectPx{ plan.x + (slot.column * (plan.w + plan.gap)), plan.y0 + (slot.row * (plan.h + plan.gap)),
             plan.w, plan.h };
     };
@@ -1969,6 +2023,7 @@ int run(const AppOptions &options)
     UiImage orb_glass_top_image;
     UiImage orb_front_image;
     UiImage status_icons_image;
+    UiImage weather_icons_image;
     {
         std::string image_err;
         if (!title_image.load(kTitleImagePath, image_err)) {
@@ -1996,6 +2051,7 @@ int run(const AppOptions &options)
             { &orb_liquid_hp_image, kOrbLiquidHpPath }, { &orb_liquid_mp_image, kOrbLiquidMpPath },
             { &orb_glass_top_image, kOrbGlassTopPath }, { &orb_front_image, kOrbFrontPath },
             { &status_icons_image, kStatusIconsPath },
+            { &weather_icons_image, kWeatherIconsPath },
         };
         for (const auto &file : orb_files) {
             if (!file.first->load_minified(file.second, image_err)) {
@@ -2010,6 +2066,7 @@ int run(const AppOptions &options)
         backdrops.orb.glass_top = &orb_glass_top_image;
         backdrops.orb.front = &orb_front_image;
         backdrops.orb.status_icons = &status_icons_image;
+        backdrops.orb.weather_icons = &weather_icons_image;
         //! 「背面の絵」の設定を切っても玉は出す（玉は絵ではなく HP/MP の表示そのもの）。
         backdrops_orb_only.painter = &images;
         backdrops_orb_only.orb = backdrops.orb;
@@ -2412,6 +2469,21 @@ int run(const AppOptions &options)
         std::fprintf(stderr, "[hd2d] 埃を用意できませんでした（埃なしで続けます）: %s\n", err.c_str());
     }
     /*
+     * --- 雨と雪（天候。2026-10-18）---
+     * 埃と同じ扱い: 失敗しても続ける。コアが天候を申告したときだけ使う（`weather_view`）。
+     */
+    WeatherParticles weather_particles;
+    if (!weather_particles.init(err)) {
+        std::fprintf(stderr, "[hd2d] 雨と雪を用意できませんでした（出さずに続けます）: %s\n", err.c_str());
+    }
+    WeatherView weather_view;
+    WeatherState forced_weather_state;
+    const bool force_weather = forced_weather(forced_weather_state); //!< `HD2D_FORCE_WEATHER`（検査用）
+    if (force_weather) {
+        std::fprintf(stderr, "[hd2d] HD2D_FORCE_WEATHER: 天候を 雨%d 風%d 気温%d に差し替えます（コアが申告したときだけ。コアには影響しません）\n",
+            forced_weather_state.rain, forced_weather_state.wind, forced_weather_state.temp);
+    }
+    /*
      * --- ポスト処理（P7）---
      * **影と違って、失敗したら続けない。**トーンマップがここにしか無いので、
      * 無いまま進むと線形の HDR が画面へ直に出て白く飛ぶ（`init_post_chain` の注記）。
@@ -2713,6 +2785,8 @@ int run(const AppOptions &options)
      * 板の 2 段探索（設計 §5.4 / §6.4）。コアが `asset_roots.slab` を申告していれば
      * ［申告 → 既定］の順で探す。**変愚コアは申告しないので空のまま**＝従来どおり。
      */
+    //! 地面の凹凸。申告の無いコアは 0＝従来どおり平ら。
+    set_ground_relief_voxels(link.hello_ack().ground_relief);
     if (!link.hello_ack().asset_root_slab.empty()) {
         slab_library.set_declared_dir(link.hello_ack().asset_root_slab);
         std::fprintf(stderr, "[hd2d] slab roots: \"%s\" -> \"%s\"\n",
@@ -2844,9 +2918,13 @@ int run(const AppOptions &options)
      * どちら回りか決まらず、右へ 2 回押したのに左へ回る絵が出る。
      * @note **cfg に保存しない**（設計書 §14-1）。回転は設定ではなく操作で、
      * 次に起動したときは北から始まるのが地図として安全である。
+     * **起動時の角は `--turn=` > コアの申告（`hello_ack.default_view_turn`）> 0 の順に強い**
+     * （申告の無いコアは 0＝従来どおり）。
      * @{
      */
-    int camera_turn = ((options.camera_turn % kViewTurnCount) + kViewTurnCount) % kViewTurnCount;
+    int camera_turn = options.camera_turn_given
+        ? (((options.camera_turn % kViewTurnCount) + kViewTurnCount) % kViewTurnCount)
+        : (((link.hello_ack().default_view_turn % kViewTurnCount) + kViewTurnCount) % kViewTurnCount);
     float camera_turn_goal = view_turn_yaw(camera_turn);
     float camera_turn_yaw = camera_turn_goal; //!< 起動直後は回さない（`--turn=` はその角から始まる）
     //! 右スティック横の 90° 回し。倒しっぱなしで回り続けないよう中立へ戻るまで next を受けない。
@@ -5066,6 +5144,14 @@ int run(const AppOptions &options)
         take_new_frame(link, frame, frame_bytes, hud_state, combat_fx, attack_fx, settings,
             sub_kinds_synced, sub_panel_kind_choices, sent_sub_kinds, perf_freq, ms_decode);
         /*
+         * 天候。`HD2D_FORCE_WEATHER` はコアが申告しているときだけ値を差し替える（検査用）。
+         * なめらかな値を進める。**申告の無いコアは `weather_view` が初期値のまま動かない**（何も変わらない）。
+         */
+        if (force_weather && frame.weather.declared) {
+            frame.weather = forced_weather_state;
+        }
+        update_weather_view(weather_view, frame.weather, frame_seconds, std::cos(camera.azimuth()), std::sin(camera.azimuth()));
+        /*
          * 地図の右クリック・長押しが開く文脈メニューは、押した点の近くへ小さな窓で出す（AH-58）。窓にする
          * かどうかはコアが決める（`frame.menu_over_map`。`ModernStoreUi::context_popup_active()`）。
          * アンカーは右クリックのたびに書き換わるだけなので、毎フレーム渡せばよい（地図のクリックを申告しない
@@ -5313,6 +5399,25 @@ int run(const AppOptions &options)
                 static_cast<float>(settings.entity_glyph_pct) / 100.f,
                 (settings.entity_glyph_fallback && glyph_ready) ? &glyph_atlas : nullptr,
                 model_player);
+            /*
+             * 地面の凹凸（§6.3）。立っているマスの地面の持ち上げ量だけ実体も持ち上げる（足が埋まらないように）。
+             * 量は地形が前のフレームで決めたもの（`terrain` はこの後で作り直す。階が替わった最初の 1 フレームだけずれる）。
+             * 申告の無いコアは `ground_lift` が空で、どれも 0 を足すだけ。
+             */
+            if (!terrain.ground_lift.empty()) {
+                const auto lift_at = [&terrain](float x, float y) {
+                    return terrain.ground_lift_at(static_cast<int>(std::floor(x)), static_cast<int>(std::floor(y)));
+                };
+                for (auto &slot : entity_view.slabs) {
+                    slot.inst.z += lift_at(slot.cx, slot.cy);
+                }
+                for (auto &glyph : entity_view.glyphs) {
+                    glyph.z += lift_at(glyph.x, glyph.y);
+                }
+                for (auto &ring : entity_view.rings) {
+                    ring.z += lift_at(ring.x, ring.y);
+                }
+            }
             for(auto &body:entity_view.targeting_entities)if(body.glyph) {
                 body.normal=vr_frame_ready
                     ? normalize(Vec3{entity_view.player_x-body.x,entity_view.player_y-body.y,0.f})
@@ -5329,8 +5434,10 @@ int run(const AppOptions &options)
                 : fx_find_mod(attack_fx_frame.entity_mods, static_cast<int>(std::floor(entity_view.player_x)),
                       static_cast<int>(std::floor(entity_view.player_y)));
             const Mat4 player_model_transform = (player_fx_mod != nullptr)
-                ? fx_mod_model_matrix(*player_fx_mod, Vec3{ entity_view.player_x, entity_view.player_y, 0.02f })
-                : translation({entity_view.player_x, entity_view.player_y, 0.02f});
+                ? fx_mod_model_matrix(*player_fx_mod, Vec3{ entity_view.player_x, entity_view.player_y,
+                      0.02f + terrain.ground_lift_at(static_cast<int>(std::floor(entity_view.player_x)), static_cast<int>(std::floor(entity_view.player_y))) })
+                : translation({entity_view.player_x, entity_view.player_y,
+                      0.02f + terrain.ground_lift_at(static_cast<int>(std::floor(entity_view.player_x)), static_cast<int>(std::floor(entity_view.player_y)))});
             if (draw_player_model && !player_model_reported) {
                 std::fprintf(stderr, "[model] player GLB active: %zu vertices\n", player_model_asset.vertex_count);
                 player_model_reported = true;
@@ -5358,7 +5465,7 @@ int run(const AppOptions &options)
                     shaft_failed = true; //!< **一度だけ言う**（毎フレーム吠えない）
                 }
             }
-            if ((frame.targeting.active||frame.targeting.preview_only) && !optional_render.targeting.ready() && !optional_render.targeting_failed) {
+            if ((frame.targeting.active||frame.targeting.preview_only||!frame.element_scope.empty()) && !optional_render.targeting.ready() && !optional_render.targeting_failed) {
                 std::string targeting_error;
                 if (!optional_render.targeting.init(targeting_error)) {
                     optional_render.targeting_failed = true;
@@ -5584,6 +5691,8 @@ int run(const AppOptions &options)
              * 松明の丸い明かりと日向の対比はそのまま残る。
              */
             lighting.ambient_scale *= settings.dungeon_light;
+            //! 日中の天候の光（コアが天候を申告したときだけ。夜は変えない。地上でも地下でも）。
+            apply_weather_light(lighting, weather_view, light_state);
             /*
              * **画調**。**光を組み終えた最後**に掛ける
              * ——上の町の補正や `dungeon_light` の前に置くと、TRON で落とした光を
@@ -6209,7 +6318,17 @@ int run(const AppOptions &options)
                 optional_render.targeting.draw(view_projection, targeting_visual.area, true);
                 optional_render.targeting.draw(view_projection, targeting_visual.dots, true);
                 /*
-                 * **光の柱**（2026-08-22 に決めた）。地形と輪の後・実体より前に描く。
+                 * **エレメントスコープの四角**（TOband。決めたこと 2026-10-18）。原作がスコープ中のときだけ、
+                 * コアが `element_scope` に見えているマスの色を積んで送る（空なら何も描かない＝ほかのコアの絵は変わらない）。
+                 * 狙いの範囲と同じ描画器で、地面から少し浮かせた半透明の四角を重ねる。地面の凹凸があるコアは持ち上げた高さを足す。
+                 */
+                if (!frame.element_scope.empty()) {
+                    const auto scope_quads = build_element_scope_quads(frame.element_scope,
+                        [&terrain](int gx, int gy) { return terrain.ground_lift_at(gx, gy); });
+                    optional_render.targeting.draw(view_projection, scope_quads, true);
+                }
+                /*
+                 * **光の柱**。地形と輪の後・実体より前に描く。
                  *
                  * 後ろにすると板や字の上に光が乗って字が読めなくなる（加算なので白く飛ぶ）。
                  * 前にすれば、柱の中に立った実体は**柱に隠されずに**そのまま見える——
@@ -6388,6 +6507,12 @@ int run(const AppOptions &options)
                 {
                     DustParams dust_params;
                     dust_params.amount = settings.dust;
+                    if (weather_view.active()) {
+                        //! 天候を申告するコアだけ。雨・雪が降るあいだは埃を雨・雪に譲り、降っていなければ風で横に流す。
+                        dust_params.amount *= 1.f - std::min(1.f, weather_view.precipitation());
+                        dust_params.wind_x = static_cast<float>(std::fmod(weather_view.wind_x, static_cast<double>(dust_params.span)));
+                        dust_params.wind_y = static_cast<float>(std::fmod(weather_view.wind_y, static_cast<double>(dust_params.span)));
+                    }
                     /*
                      * **粒は自分でぼけた大きさへ広がる**（2026-08-23 に決めた）。
                      * 錯乱円の測りは後処理と同じ `measure_dof()`——ここで別に測ると
@@ -6398,6 +6523,9 @@ int run(const AppOptions &options)
                         camera.target.y, dust_to_target.x, dust_to_target.y);
                     dust.draw(view_projection, view.eye, lighting.sky_color, world_seconds, dust_params,
                         dust_dof, camera.target, view.height);
+                    //! 雨と雪（降っていなければ何も描かない）。
+                    weather_particles.draw(view_projection, camera.target, lighting.sky_color, world_seconds, weather_view,
+                        WeatherParticleParams{}, view.width, view.height);
                 }
                 //! ここまでが 3D の描画。**段の名前つきで**吸う（gl_core.h の註）。
                 gl::probe_gl_errors("3D の描画");
@@ -6700,6 +6828,38 @@ int run(const AppOptions &options)
                     paint.flush();
                     text.flush();
                 }
+                /*
+                 * **カーソルの右下の小さなポップアップ**（TOband。原作が狙う・調べるときの 1 行目に出す
+                 * マスの属性の値とモンスターの属性の名前。`TargetingState::info`）。コアが送ったときだけ立つので、
+                 * ほかのコアでは `has_cursor_info()` が偽のまま何も描かない。カーソルのマスの画面位置は
+                 * 3D では `camera.project`、2D のアスキー地図では `map_projection` から求める。
+                 */
+                if (hud_state.targeting.has_cursor_info() && !vr_frame_ready) {
+                    const TargetingPoint cursor = hud_state.targeting.state().selected;
+                    int anchor_x = 0;
+                    int anchor_y = 0;
+                    bool anchored = false;
+                    if (settings.main_panel == Hd2dSettings::MainPanel::Ascii) {
+                        const TargetingMapProjection &grid = hud_state.targeting.map_projection;
+                        if ((grid.cell_w > 0) && (grid.cell_h > 0)) {
+                            anchor_x = grid.x + ((cursor.x - grid.cam_x + (grid.cols / 2)) * grid.cell_w) + (grid.cell_w / 2);
+                            anchor_y = grid.y + ((cursor.y - grid.cam_y + (grid.rows / 2)) * grid.cell_h) + (grid.cell_h / 2);
+                            anchored = true;
+                        }
+                    } else {
+                        float projected_x = 0.f;
+                        float projected_y = 0.f;
+                        if (camera.project(Vec3{ static_cast<float>(cursor.x) + 0.5f, static_cast<float>(cursor.y) + 0.5f, 0.f },
+                                projected_x, projected_y)) {
+                            anchor_x = static_cast<int>(std::lround(projected_x - 0.5f)) + layout.scene.x;
+                            anchor_y = static_cast<int>(std::lround(projected_y - 0.5f)) + layout.scene.y;
+                            anchored = true;
+                        }
+                    }
+                    if (anchored) {
+                        hud_state.targeting.draw_cursor_info(paint, text, vr_layout, hud_state.modern_theme, anchor_x, anchor_y);
+                    }
+                }
             }
         }
         /*
@@ -6991,8 +7151,16 @@ int run(const AppOptions &options)
             } else {
                 drawn = "map";
             }
-            const std::string line = drawn + " core_menu=" + (frame.menu_open ? "1" : "0")
+            std::string line = drawn + " core_menu=" + (frame.menu_open ? "1" : "0")
                 + " modern_kind=" + frame.modern.kind + ":" + frame.modern.stage;
+            //! TOband のエレメントスコープ（四角）と、カーソルのポップアップ（カーソルのマスごと）が出ている間は、行を変えて撮る。
+            //! コアが送ったときだけ付く印なので、ほかのコアの行は今までと同じ。
+            if (!frame.element_scope.empty()) {
+                line += " scope=" + std::to_string(frame.element_scope.size());
+            }
+            if (!frame.targeting.info.empty()) {
+                line += " aim=" + std::to_string(frame.targeting.selected.x) + "," + std::to_string(frame.targeting.selected.y);
+            }
             if (line != window_log_last) {
                 window_log_last = line;
                 window_log_out << frame_index << ' ' << SDL_GetTicks() << ' ' << line << '\n';
@@ -7309,6 +7477,17 @@ int run(const AppOptions &options)
                 }
                 ui_probe().overlays(std::move(probe_overlays), static_cast<int>(overlay_glyphs.size()));
             }
+            if (!frame.element_scope.empty()) {
+                //! エレメントスコープの四角（TOband）。描画器が使える間は、送られた数だけ描いている（描画の側は `frame.element_scope` を 1 マス 1 枚にする）。
+                std::vector<ProbeScopeCell> probe_scope;
+                probe_scope.reserve(frame.element_scope.size());
+                for (const ElementScopeCell &cell : frame.element_scope) {
+                    const RgbColor rgb = term_color_to_rgb(cell.color);
+                    probe_scope.push_back({ cell.gx, cell.gy, cell.color, { rgb.r, rgb.g, rgb.b } });
+                }
+                ui_probe().element_scope(std::move(probe_scope),
+                    optional_render.targeting.ready() ? static_cast<int>(frame.element_scope.size()) : 0);
+            }
             {
                 //! 窓の焦点・大きさと、昼夜（画面が光の計算に使った時刻）。
                 const Uint32 window_flags = SDL_GetWindowFlags(window.window);
@@ -7327,6 +7506,22 @@ int run(const AppOptions &options)
                 time.daytime = light_state.daytime;
                 time.night_factor = lamp_night_factor(light_state);
                 ui_probe().time_state(time);
+                if (weather_view.active() && frame.weather.declared) {
+                    ProbeWeather pw;
+                    pw.rain = frame.weather.rain;
+                    pw.wind = frame.weather.wind;
+                    pw.temp = frame.weather.temp;
+                    pw.rain_amount = weather_view.rain_amount;
+                    pw.snow_amount = weather_view.snow_amount;
+                    pw.wind_x = weather_view.wind_x;
+                    pw.wind_y = weather_view.wind_y;
+                    pw.right_x = weather_view.right_x;
+                    pw.right_y = weather_view.right_y;
+                    pw.icon = weather_icon_index(frame.weather);
+                    pw.dust_amount = settings.dust * (1.f - std::min(1.f, weather_view.precipitation()));
+                    pw.daylight = weather_daylight_factor(light_state.day_minute);
+                    ui_probe().weather(pw);
+                }
             }
             //! コアの生死と、コアのフレームが最後に変わってからの時間（`frame_age_ms`。フレームの番号が変わった時刻を持つ）。
             ui_probe().liveness(!link.core_gone() && !link.child_exited(), link.exit_received() ? link.exit_code() : -1);
@@ -7573,6 +7768,7 @@ int run(const AppOptions &options)
     release_lit_placeholder();
     optional_render.shutdown();
     dust.shutdown();
+    weather_particles.shutdown();
     post.shutdown();
     shadow.shutdown();
     sky.shutdown();
@@ -7605,6 +7801,7 @@ int run(const AppOptions &options)
     orb_glass_top_image.unload();
     orb_front_image.unload();
     status_icons_image.unload();
+    weather_icons_image.unload();
     floor_cutin.shutdown();
     hud_state.modern.shutdown();
     images.shutdown();

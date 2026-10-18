@@ -3,7 +3,7 @@
     ボクセル HD2D の配布物を作る（Windows・x64）。
 
 .DESCRIPTION
-    画面（HengbandHd2d.exe）と 10 本のコア、要る DLL、素材とデータを 1 つの箱へ入れて zip にする。
+    画面（HengbandHd2d.exe）と 11 本のコア、要る DLL、素材とデータを 1 つの箱へ入れて zip にする。
     案内は日本語（はじめに.txt）と英語（README.txt）の 2 つを入れる。
 
     **上流の `Build-Windows-Release-Package.ps1` とは別物である。**あちらは 2D の
@@ -59,7 +59,7 @@ if ($Rebuild) {
     # ソリューション全体ではなく、**詰めるプロジェクトだけ**を組み直す。ソリューションには上流そのままの
     # Hengband.exe（Hengband.vcxproj。配布物には入らない）も入っていて、3.0.2.5 の取り込みでファイル一覧が
     # 古くなったまま組めなくなっていた（2026-10-06）。配布に要らない物の失敗で配布を止めない。
-    $targets = if ($WithoutCores) { 'Rebuild' } else { (@('HengbandHd2d', 'HengbandCore', 'TangbandCore', 'GensobandCore', 'SilCore', 'FroxCore') | ForEach-Object { "${_}:Rebuild" }) -join ';' }
+    $targets = if ($WithoutCores) { 'Rebuild' } else { (@('HengbandHd2d', 'HengbandCore', 'TangbandCore', 'GensobandCore', 'TobandCore', 'SilCore', 'FroxCore') | ForEach-Object { "${_}:Rebuild" }) -join ';' }
     & $msbuild $project "/t:$targets" /p:Configuration=Release /p:Platform=x64 /p:HengbandHd2dEditor=0 /m:2 /v:minimal
     if ($LASTEXITCODE -ne 0) { throw '組み立てに失敗しました' }
     if (-not $WithoutCores) {
@@ -78,7 +78,7 @@ if ($Rebuild) {
 # 開発用UIの実行ファイルを配布物へコピーしない。
 
 # --- 詰めるもの ---------------------------------------------------------------
-# 画面（x64）と 10 本のコア（Win32）。**コアは単体では動かない**（画面が子として起こす）。
+# 画面（x64）と 11 本のコア（Win32）。**コアは単体では動かない**（画面が子として起こす）。
 # 画面。箱の直下に置く（遊ぶときに起動するのはこれ）。
 $executables = @(
     'HengbandHd2d.exe'
@@ -92,6 +92,7 @@ $coreExecutables = @(
     'HengbandCore.exe',   # 変愚蛮怒
     'TangbandCore.exe',   # 短愚蛮怒
     'GensobandCore.exe',  # 幻想蛮怒
+    'TobandCore.exe',     # TOband
     'SilCore.exe',        # Sil-Q
     'FroxCore.exe',       # FroxComposband
     'Rogue2Core.exe',     # RogueClone2
@@ -116,7 +117,7 @@ $libraries = @(
 # `tools/build_android_hd2d_assets.py` の `LIB_SKIP_DIRS` で塞いである。
 $dataDirs = @(
     'assets/audio', 'assets/fonts', 'assets/fx', 'assets/lang', 'assets/ui', 'assets/voxel',
-    'lib', 'tangband/lib', 'gensoband/lib', 'silq/lib', 'frox/lib',
+    'lib', 'tangband/lib', 'gensoband/lib', 'toband/lib', 'silq/lib', 'frox/lib',
     # **訳の層は `lib` の外にある**（2026-08-25 に足した）。ここまでが 1 組で、
     # 入れ忘れると**遊べはするが全部英語（Sil-Q・Frox）／日本語（幻想）に戻る**
     # ——コアは訳が無ければ原文へ落ちる作りなので、**落ちも警告も出ない**。
@@ -126,6 +127,7 @@ $dataDirs = @(
     'gensoband/lib-en', 'gensoband/lang/en',
     # 実行時に接続コードが読むタイルと対応表。原画・原作ソースは含めない。
     'gensoband/assets/slab',
+    'toband/assets/slab',
     'silq/assets/slab',
     'frox/assets/slab'
 )
@@ -160,7 +162,8 @@ New-Item -ItemType Directory -Force $stage | Out-Null
 # license texts.  Copy the exact upstream files rather than maintaining a second
 # hand-edited copy in the UI repository.
 if (-not $WithoutCores) {
-    $rogueUpstream = Join-Path (Split-Path $root -Parent) 'roguelike-cores\upstream'
+    # 原作の置き場。worktree から組むときは HENGBAND_UPSTREAM_ROOT で指す（prepare.py と同じ決まり）。
+    $rogueUpstream = if ($env:HENGBAND_UPSTREAM_ROOT) { $env:HENGBAND_UPSTREAM_ROOT } else { Join-Path (Split-Path $root -Parent) 'roguelike-cores\upstream' }
     $licenseDir = Join-Path $stage 'licenses'
     New-Item -ItemType Directory -Force $licenseDir | Out-Null
     foreach ($spec in @(
@@ -180,7 +183,33 @@ if (-not $WithoutCores) {
     $umoriaLicense = Join-Path $root 'umoria\data\LICENSE'
     if (-not (Test-Path -LiteralPath $umoriaLicense)) { throw "Umoria license is missing: $umoriaLicense（python tools/umoria/build_windows.py を先に）" }
     Copy-Item -LiteralPath $umoriaLicense -Destination (Join-Path $licenseDir 'Umoria-LICENSE.txt')
+    # TOband（LICENSE §1.3）。原作の使用許諾（jlicense.txt。原作は EUC-JP なので UTF-8 に写す）・readme_angband・
+    # クエストのマップの元になった NetHack の使用許諾。Linux の詰め（build_linux_package.py）と同じ 3 つ。
+    $tobandUpstream = Join-Path $rogueUpstream 'toband'
+    foreach ($spec in @(
+        @{ Rel = 'readme_angband'; Name = 'Toband-readme_angband.txt'; Euc = $false },
+        @{ Rel = 'lib\file\nethack-license.txt'; Name = 'Toband-nethack-license.txt'; Euc = $false },
+        @{ Rel = 'lib\help\jlicense.txt'; Name = 'Toband-jlicense.txt'; Euc = $true }
+    )) {
+        $src = Join-Path $tobandUpstream $spec.Rel
+        if (-not (Test-Path -LiteralPath $src)) { throw "TOband license is missing: $src" }
+        $dst = Join-Path $licenseDir $spec.Name
+        if ($spec.Euc) {
+            $text = [IO.File]::ReadAllText($src, [Text.Encoding]::GetEncoding(51932))
+            [IO.File]::WriteAllText($dst, $text, (New-Object Text.UTF8Encoding($false)))
+        } else {
+            Copy-Item -LiteralPath $src -Destination $dst
+        }
+    }
 }
+
+# 使用許諾の文書。実行時ライブラリ（.dll）は -WithoutCores でも入るので、GPL v2 の全文とライブラリの原文は常に入れる。
+# RogueClone2 は原作の配布条件 (2)「すべてのドキュメントを付属させること」のため、原作の資料を licenses\RogueClone2 に添える
+# （コアを入れるときだけ）。作り方は tools/package/license_docs.py（Linux・Android の配布物と共通）。
+$licenseDocsArgs = @('tools/package/license_docs.py', '--dest', (Join-Path $stage 'licenses'), '--windows-runtime')
+if ($WithoutCores) { $licenseDocsArgs += '--no-rogue2' } else { $licenseDocsArgs += @('--upstream', $rogueUpstream) }
+& python @licenseDocsArgs
+if ($LASTEXITCODE -ne 0) { throw '使用許諾の文書の作成に失敗しました（tools/package/license_docs.py）' }
 
 foreach ($f in ($executables + $libraries)) {
     $binary = Join-Path $UiBinaryDir $f
@@ -284,13 +313,13 @@ if (-not $WithoutCores) {
 
 # 新UIのアイテムは実行時にボクセル板を描くため、タイル画像をコピーしない。
 # コアデータ内の旧2Dタイルも配布ステージから除く。
-$legacyTileDirs = @('lib/xtra/graf','tangband/lib/xtra/graf','gensoband/lib/xtra/graf','silq/lib/xtra/graf','frox/lib/xtra/graf')
+$legacyTileDirs = @('lib/xtra/graf','tangband/lib/xtra/graf','gensoband/lib/xtra/graf','toband/lib/xtra/graf','silq/lib/xtra/graf','frox/lib/xtra/graf')
 foreach ($relative in $legacyTileDirs) {
     $tileDir = Join-Path $stage $relative
     if (Test-Path -LiteralPath $tileDir) { Assert-PackagePath $tileDir; Remove-Item -LiteralPath $tileDir -Recurse -Force }
 }
 
-foreach ($file in @('gensoband/tilework/mapping.csv', 'silq/tilework/terrain_map.csv',
+foreach ($file in @('gensoband/tilework/mapping.csv', 'toband/tilework/mapping.csv', 'silq/tilework/terrain_map.csv',
                      'frox/tilework/terrain_map.csv', 'frox/tilework/mapping.csv')) {
     $destination = Join-Path $stage $file
     New-Item -ItemType Directory -Force (Split-Path -Parent $destination) | Out-Null
@@ -316,7 +345,7 @@ foreach ($backup in @(Get-ChildItem -LiteralPath $stage -Directory -Recurse -For
 # `Compress-Archive` が空のものを詰めないので**箱から消える**。`frox` の `user` は
 # コアが**在ることを求める**（`fc_validate_dir(ANGBAND_DIR_USER, 1)`）ので、
 # 消えると配布物が起動しない。
-$playedDirs = @('lib', 'tangband/lib', 'gensoband/lib', 'silq/lib', 'frox/lib')
+$playedDirs = @('lib', 'tangband/lib', 'gensoband/lib', 'toband/lib', 'silq/lib', 'frox/lib')
 foreach ($sub in ($playedDirs | ForEach-Object { "$_/save"; "$_/user"; "$_/apex"; "$_/bone"; "$_/data" })) {
     $p = Join-Path $stage $sub
     Assert-PackagePath $p
@@ -361,7 +390,7 @@ $notes = @"
     入っていないと、ウィンドウが出る前に終了します。
 
 入っているもの
-  画面 1 つと、10 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria）。
+  画面 1 つと、11 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria）。
   セーブデータは各ゲームの lib\save（Angband は箱の直下の angband\save、Umoria は umoria）に書き込まれます。
 
 設定
@@ -375,7 +404,7 @@ English
   See README.txt.
 "@
 if ($WithoutCores) {
-    $notes = $notes.Replace('画面 1 つと、10 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria）。', '画面とインポート用コンパイラーを同梱しています。ゲームコアの実行ファイルは含みません。')
+    $notes = $notes.Replace('画面 1 つと、11 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria）。', '画面とインポート用コンパイラーを同梱しています。ゲームコアの実行ファイルは含みません。')
     $notes = $notes.Replace('ゲーム本体（コア）の exe は cores\ の中にあります。画面側から起動されるので、', '取り込んだコアはアプリ専用の保存先に登録されます。画面側から起動されるので、')
     $notes += "`r`n初回は「コアをインポート」から対応版の原作ソース ZIP を選択して、ビルド・登録してください。`r`n"
 }
@@ -400,7 +429,7 @@ Requirements
     Without it, the program exits before a window appears.
 
 What is included
-  One screen and ten games (Hengband, Tangband, Gensoband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria).
+  One screen and eleven games (Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria).
   Save files are written to each game's lib\save directory (Angband: angband\save next to this folder; Umoria: umoria).
 
 Settings
@@ -416,11 +445,11 @@ Japanese
   See はじめに.txt.
 "@
 if ($WithoutCores) {
-    $notesEn = $notesEn.Replace('One screen and ten games (Hengband, Tangband, Gensoband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria).', 'The UI and import compiler are included. Game core executables are not included.')
+    $notesEn = $notesEn.Replace('One screen and eleven games (Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria).', 'The UI and import compiler are included. Game core executables are not included.')
     $notesEn = $notesEn.Replace('The game core executables are in cores\. They are started by the screen side,', 'Imported cores are stored in application data. They are started by the UI,')
     $notesEn += "`r`nChoose Import core, select an original source ZIP for a supported version, then build and register it.`r`n"
 }
-if (-not $IncludeCompiler) { $notesEn += "`r`nThis package includes ten prebuilt cores. Core import and compilation are not included.`r`n" }
+if (-not $IncludeCompiler) { $notesEn += "`r`nThis package includes eleven prebuilt cores. Core import and compilation are not included.`r`n" }
 $notesEn += "`r`nTile images are not included. Shop, inventory and item-selection icons render the existing voxel board assets.`r`n"
 $notesEnPath = Join-Path $stage 'README.txt'
 [System.IO.File]::WriteAllText($notesEnPath, $notesEn, (New-Object System.Text.UTF8Encoding $true))

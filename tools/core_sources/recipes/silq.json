@@ -466,13 +466,13 @@
       "encoding": "utf8",
       "text": "\n"
     },
+    "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170": {
+      "encoding": "utf8",
+      "text": "#include \"sq_lang_c.h\" //SQ: japanese layer\n"
+    },
     "1262bc894d81d796fd779b9548c74fef52043966e47c5c3666d0c6266c026fe7": {
       "encoding": "utf8",
       "text": "\n    sq_locate_shifted = FALSE;\n"
-    },
-    "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1": {
-      "encoding": "utf8",
-      "text": "#include \"sq_lang_c.h\" //SQ: japanese layer (docs/SILQ_JA_DESIGN.md 4)\n"
     },
     "1a36c14629617317fa35592a8ab163aca9474161344cc208b7a09fdd1a0001af": {
       "encoding": "utf8",
@@ -534,10 +534,6 @@
       "encoding": "utf8",
       "text": "                "
     },
-    "3bb3c8672b1cf05ae25e9d4ffd6ee84d44ff4f3f1e3914342615f035e9bd9a92": {
-      "encoding": "cp932",
-      "text": "        }\n\n        /*\n         * 左右で頁を送る／戻す（利用者の指示 2026-08-25\n         * 「マニュアルは左右でページ送り戻りとして」）。\n         *\n         * 上流は 4 と 6 を使っていない（8/2 が 1 行、9/3 が 1 頁、7/1 が端）。\n         * パッドの十字は 4/6 で届くので、ここへ足すだけで手が届く。\n         * 上下（8/2）は 1 行送りのまま残す。読み返すときに要る。\n         */\n"
-    },
     "3dd4522391268fa244b4566f62349e5dc0208a0a68d558ff3412d4edf61bf84d": {
       "encoding": "utf8",
       "text": "        //SQ: site #12 - \"Song of \" is a prefix only in english (see xtra1.c prt_song)\n        Term_putstr(col + 5, 11 + mod, -1, TERM_L_BLUE, //SQ:\n            format(\"%11s\", buf + (sq_lang_enabled() ? 0 : 8))); //SQ:\n"
@@ -565,6 +561,10 @@
     "53f85d869e1bd849996eddff85992635d3f111281820d9c49bffd99b5d310287": {
       "encoding": "utf8",
       "text": "            if (sq_is_sjis_lead((unsigned char)ch)) //SQ: site #23\n            { //SQ:\n                char trail; //SQ:\n                inkey_base = TRUE; //SQ: see askfor_aux(): without it the byte is macro-mapped\n                trail = inkey(); //SQ:\n                if (((k + 2) <= (len - 1)) && sq_is_sjis_trail((unsigned char)trail)) //SQ:\n                { //SQ:\n                    buf[k++] = ch; //SQ:\n                    buf[k++] = trail; //SQ:\n                } //SQ:\n                else //SQ:\n                { //SQ:\n                    "
+    },
+    "57e4b9f094105f5a7c50c65088b1376eab231a54f9f68037ec8474d082f54d80": {
+      "encoding": "utf8",
+      "text": "/*\n * //SQ: Android also gets the WINDOWS-like configuration (2026-08-21).\n * With SET_UID on, safe_setuid_grab() in util.c calls setregid(), and the\n * Android seccomp filter kills the whole process with SIGSYS (measured on\n * an emulator: \"Fatal signal 31 (SIGSYS) ... syscall 114\"). Android is a\n * single-user sandbox per app, so none of what SET_UID buys us applies.\n *\n */\n#if !defined(WINDOWS) && !defined(__ANDROID__)\n"
     },
     "593fc97894140623096ca9db7154422d4044cddbfc95ad40daa785f9b9342cfa": {
       "encoding": "utf8",
@@ -597,6 +597,10 @@
     "6d22526ccff85fd839a07cada42cd18e02e2386993d33f682d852234d84adf1f": {
       "encoding": "utf8",
       "text": "), //SQ:\n"
+    },
+    "709d5b716bebc878f0acc1617896d65030a7bd9d1140c3780adce3a54ec08b67": {
+      "encoding": "utf8",
+      "text": "\n/* SQ: the adapter's text-input flag (site #18). Declared here rather than via\n * sq_shim.h so that silq/src never sees an adapter header - same practice as\n * gensoband/src. */\nextern void sq_text_input_set(int active); //SQ:\n"
     },
     "70f8b2fe6cced663aaae16e6ed1896659ec14f346934f3eed655eb3490a46a02": {
       "encoding": "utf8",
@@ -678,10 +682,6 @@
       "encoding": "utf8",
       "text": ")"
     },
-    "bc85d93a07932fc5b84490e93aaa1bc83f7ec6c2c3eda4cf9408f65311961b50": {
-      "encoding": "utf8",
-      "text": "/*\n * //SQ: Android also gets the WINDOWS-like configuration (2026-08-21).\n * With SET_UID on, safe_setuid_grab() in util.c calls setregid(), and the\n * Android seccomp filter kills the whole process with SIGSYS (measured on\n * an emulator: \"Fatal signal 31 (SIGSYS) ... syscall 114\"). Android is a\n * single-user sandbox per app, so none of what SET_UID buys us applies.\n * See docs/ANDROID_HD2D_PORT.md 2b.4.\n */\n#if !defined(WINDOWS) && !defined(__ANDROID__)\n"
-    },
     "c63af04a614343941b1710c96b7fe27f5819e4af3433ede1bcf9f8dc266cadf1": {
       "encoding": "utf8",
       "text": "\n    //SQ: W1 - raise it for the whole wait; the ui drops the IME everywhere else\n    sq_text_input_set(1); //SQ:\n"
@@ -718,9 +718,9 @@
       "encoding": "utf8",
       "text": "        len = sq_clip(s, len); //SQ: site #5 - never cut a 2-byte char in half\n        if (sq_cp932_text() && (len <= 0)) //SQ: the width cannot hold one char; let it stick out\n            len = 2; //SQ:\n\n"
     },
-    "e49f8e1f1257972c771b831bb15d0f823a26a8b3295ae3b42c0b1d306ab47802": {
-      "encoding": "utf8",
-      "text": "        sq_help_manual_hint(); //SQ: japanese manual (docs/SILQ_JA_DESIGN.md 8.6)\n"
+    "e3b3a066a75f69cec9be83bb520002404b36c2277b99ac8e95be27269f6fadca": {
+      "encoding": "cp932",
+      "text": "        }\n\n        /*\n         * 左右で頁を送る／戻す（要望は\n         * 「マニュアルは左右でページ送り戻りとして」）。\n         *\n         * 上流は 4 と 6 を使っていない（8/2 が 1 行、9/3 が 1 頁、7/1 が端）。\n         * パッドの十字は 4/6 で届くので、ここへ足すだけで手が届く。\n         * 上下（8/2）は 1 行送りのまま残す。読み返すときに要る。\n         */\n"
     },
     "e764e0f0894acc7b3b188588d42846a560a77852679716abef89c8b22ac7cb33": {
       "encoding": "utf8",
@@ -730,10 +730,6 @@
       "encoding": "utf8",
       "text": " //SQ: site #11 - the digits are patched into text[5..9] afterwards, so the japanese must be 10 bytes too"
     },
-    "e97b569251501cccc3523b368f78b1a0ac9bff8307e67651f1c7e1077b984c81": {
-      "encoding": "utf8",
-      "text": "\n/* SQ: the adapter's text-input flag (site #18). Declared here rather than via\n * sq_shim.h so that silq/src never sees an adapter header - same practice as\n * gensoband/src. See docs/SILQ_HD2D_GAPS.md 5.4 (W1). */\nextern void sq_text_input_set(int active); //SQ:\n"
-    },
     "e9dcf7f9b87e8937ca56592fe857f674e0181d2799eccf0bd76c8d926df72fbe": {
       "encoding": "utf8",
       "text": "        if (!sq_cp932_text()) //SQ: this overwrites a byte; that splits a 2-byte char\n            t[--split] = ' '; //SQ: (english only, and only for ascii saves)\n"
@@ -741,6 +737,10 @@
     "eb7d5c39941acb52fa0feab2fe5e505e36c80c298c5f8ed3d6939ccc327b9f37": {
       "encoding": "utf8",
       "text": "/*\n * TRUE while do_cmd_locate() is running (the HD2D adapter reads this).\n *\n * The 3D screen builds its view window around the player, so a shifted panel\n * is invisible to it: pressing a direction changed p_ptr->wy/wx and nothing\n * moved on screen.  Guessing from \"is the player outside the panel?\" is not\n * enough -- on a wide floor the player often stays inside after a shift.\n * The command itself is the only thing that knows, so it says so.\n */\nbool sq_locate_shifted = FALSE;\n\n"
+    },
+    "ebff257a215853b0b343dc68ca80a148c636bebb7c0b4b778757a942d55f5c44": {
+      "encoding": "utf8",
+      "text": "        sq_help_manual_hint(); //SQ: japanese manual (Japanese layer)\n"
     },
     "f57764fea54b9f7068bd5c340ffe7ea9b3820df988c3c939e7bb371655cac6fe": {
       "encoding": "utf8",
@@ -951,7 +951,7 @@
       "newline": "crlf"
     },
     "files.c": {
-      "sha256": "7b2488da1c29ecaaf6e3048ec744901754daa0d4001088dee8b22db8b1296e09",
+      "sha256": "98f769a64ad3d96745c6d24fe191cd15739aee03d23c93de434aef12d1701d19",
       "operations": [
         [
           "copy",
@@ -961,7 +961,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -1157,7 +1157,7 @@
         ],
         [
           "add",
-          "3bb3c8672b1cf05ae25e9d4ffd6ee84d44ff4f3f1e3914342615f035e9bd9a92"
+          "e3b3a066a75f69cec9be83bb520002404b36c2277b99ac8e95be27269f6fadca"
         ],
         [
           "copy",
@@ -1203,7 +1203,7 @@
         ],
         [
           "add",
-          "e49f8e1f1257972c771b831bb15d0f823a26a8b3295ae3b42c0b1d306ab47802"
+          "ebff257a215853b0b343dc68ca80a148c636bebb7c0b4b778757a942d55f5c44"
         ],
         [
           "copy",
@@ -1525,7 +1525,7 @@
       "newline": "crlf"
     },
     "h-config.h": {
-      "sha256": "55bb62065e4e823b6b0afdb39a4ac308803cb4cfde80f03bfb678346fcf590db",
+      "sha256": "1188a7027f9292e278ead7b93969e38c1f149ac772d2f6ea3a695cf8b573b3a5",
       "operations": [
         [
           "copy",
@@ -1535,7 +1535,7 @@
         ],
         [
           "add",
-          "bc85d93a07932fc5b84490e93aaa1bc83f7ec6c2c3eda4cf9408f65311961b50"
+          "57e4b9f094105f5a7c50c65088b1376eab231a54f9f68037ec8474d082f54d80"
         ],
         [
           "copy",
@@ -1619,7 +1619,7 @@
       "newline": "crlf"
     },
     "load.c": {
-      "sha256": "1d2ca5c3145b26c7389a05d773dd1d509d28d12aa521a4efd2554f5c41e920d1",
+      "sha256": "49161244cf0328bcc966612e41e914b9a9dcf38bb2b17557bc67452d4acc8318",
       "operations": [
         [
           "copy",
@@ -1629,7 +1629,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -1759,7 +1759,7 @@
       "newline": "crlf"
     },
     "monster1.c": {
-      "sha256": "d945691bd733560df05f99d34dc2e92ff8355bcb7f046daff09d7605023987bc",
+      "sha256": "dd0ed26e16702fcd04da68098da223dc9119f638c587ff8df464ab022dd24fea",
       "operations": [
         [
           "copy",
@@ -1769,7 +1769,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -1811,7 +1811,7 @@
       "newline": "crlf"
     },
     "monster2.c": {
-      "sha256": "9ff95f33435516b0f31647acc2fff9e0810adef823ad106af53d7ba5a8ee0be0",
+      "sha256": "4065c74f7209836460f6b835d29e2bbb9287c437155f3b35134e45dafe587e4f",
       "operations": [
         [
           "copy",
@@ -1821,7 +1821,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -1855,7 +1855,7 @@
       "newline": "crlf"
     },
     "object1.c": {
-      "sha256": "8082f396d5c0b49e8314586d06609f8908e4a6892ec137b0e16f818692b47202",
+      "sha256": "33511842f2c146a97d70f5181e37aa5a73871b09d57b85d3334bebc009aa6424",
       "operations": [
         [
           "copy",
@@ -1865,7 +1865,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -1935,7 +1935,7 @@
       "newline": "crlf"
     },
     "save.c": {
-      "sha256": "bf176ba3a9332f47cf591f2a9033454953b2cf76afd394966582b66bdbf05399",
+      "sha256": "7a90eaf7382566e74772b41a8c3201d61b4bcdef54c58678158e0c540c983523",
       "operations": [
         [
           "copy",
@@ -1945,7 +1945,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -2039,7 +2039,7 @@
       "newline": "crlf"
     },
     "util.c": {
-      "sha256": "d902cb2ee3b6f9b72faf5b8a6308e6037c55831fb148fd1c6c3b53fc02df0c18",
+      "sha256": "e54f8ba0c4a32a1e0197a25fe7fe0c390025e6731fe02991c607f7671854ee2e",
       "operations": [
         [
           "copy",
@@ -2049,7 +2049,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -2291,7 +2291,7 @@
         ],
         [
           "add",
-          "e97b569251501cccc3523b368f78b1a0ac9bff8307e67651f1c7e1077b984c81"
+          "709d5b716bebc878f0acc1617896d65030a7bd9d1140c3780adce3a54ec08b67"
         ],
         [
           "copy",
@@ -2489,7 +2489,7 @@
       "newline": "crlf"
     },
     "xtra1.c": {
-      "sha256": "ddc6d2672a6dc3901219bd9354373217fd2ce30cc0c8c1be22772b2f73f23b37",
+      "sha256": "002964b3fea1a3700d9acd99d09a09dc939bcb0b6eb51ce715ffc715e340315c",
       "operations": [
         [
           "copy",
@@ -2499,7 +2499,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -2663,7 +2663,7 @@
       "newline": "crlf"
     },
     "z-form.c": {
-      "sha256": "8cc6181cf72e1e6738c1d4f58dcc7482292df1b56918cff039311a174603bf91",
+      "sha256": "12f7804cec7a00f646f627c848305f28841b2275e30eb98ae15a670190bc3330",
       "operations": [
         [
           "copy",
@@ -2673,7 +2673,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",
@@ -2741,7 +2741,7 @@
       "newline": "crlf"
     },
     "z-term.c": {
-      "sha256": "5c83819ba03f98ed3f787a694f4446243aa95febf2633fec4f0637a78f6f16d5",
+      "sha256": "f959104dd09033ca7058b7c024f7912a266351b9ce6d88dd0cbe5fa7610436d2",
       "operations": [
         [
           "copy",
@@ -2751,7 +2751,7 @@
         ],
         [
           "add",
-          "12fae34d6873080507653f84a763cb73e784b9377fe3504aaae7097e602abff1"
+          "0fd24f497d080ece2b020b477821120b14de1d299218097ed3c7c1bce5735170"
         ],
         [
           "copy",

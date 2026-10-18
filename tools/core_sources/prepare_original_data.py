@@ -6,8 +6,10 @@
 
     angband/lib/{gamedata,customize,screens,help}   <- Angband 4.2.6 の lib/ の同名ディレクトリ
     rogue2/mesg                                     <- RogueClone2 の mesg_J（日本語のメッセージ表）
+    toband/lib/{edit,file,help,pref,xtra/sound,...}  <- TOband の lib/。原作は EUC-JP なので CP932 に写す
+                                                      （フォントと画像は写さない）
 
-コミットは `manifest.json` の `angband` と `rogue2` の項に書いてある固定版。
+コミットは `manifest.json` の `angband`・`rogue2`・`toband` の項に書いてある固定版。
 原作のリポジトリは `prepare.py` と同じく既定で `../roguelike-cores/upstream/`
 （`--upstream` か `HENGBAND_UPSTREAM_ROOT` で変えられる）。原作の作業ツリーは見ず、
 固定コミットのオブジェクトを `core.autocrlf=false` で読む（改行は原作のコミットのまま LF）。
@@ -33,6 +35,17 @@ UI_ROOT = HERE.parent.parent
 DEFAULT_UPSTREAM = UI_ROOT.parent / "roguelike-cores" / "upstream"
 
 ANGBAND_LIB_DIRS = ("gamedata", "customize", "screens", "help")
+# TOband の lib/ のうち写さない物（フォント・画像・曲の置き場。設計 §1 制約 6）
+TOBAND_SKIP = ("lib/xtra/font/", "lib/xtra/graf/", "lib/xtra/music/")
+
+
+def convert(data: bytes, kind: str) -> bytes:
+    if kind == "raw":
+        return data
+    if kind == "eucjp-cp932":
+        # 写せない字は止める（黙って置き換えない）。ASCII だけの物はそのまま同じになる
+        return data.decode("euc_jp").encode("cp932")
+    raise SystemExit("未知の変換: " + kind)
 
 
 def git(repo: Path, *args: str) -> bytes:
@@ -53,9 +66,9 @@ def list_files(repo: Path, commit: str, prefix: str) -> list[str]:
     return [p for p in out.decode("utf-8").split("\0") if p]
 
 
-def plan(upstream: Path) -> list[tuple[Path, Path, str, str]]:
-    """(原作のリポジトリ, 書き込み先, コミット, 原作内のパス) の一覧。"""
-    items: list[tuple[Path, Path, str, str]] = []
+def plan(upstream: Path) -> list[tuple[Path, Path, str, str, str]]:
+    """(原作のリポジトリ, 書き込み先, コミット, 原作内のパス, 変換) の一覧。変換は "raw" か "eucjp-cp932"。"""
+    items: list[tuple[Path, Path, str, str, str]] = []
     repo = upstream / "angband"
     commit = pinned_commit("angband")
     for sub in ANGBAND_LIB_DIRS:
@@ -65,10 +78,16 @@ def plan(upstream: Path) -> list[tuple[Path, Path, str, str]]:
         for path in files:
             if path.rsplit("/", 1)[-1] == "Makefile":
                 continue  # 原作の autotools 用で、遊ぶのにも組むのにも使わない
-            items.append((repo, UI_ROOT / "angband" / path, commit, path))
+            items.append((repo, UI_ROOT / "angband" / path, commit, path, "raw"))
     repo = upstream / "rogue2"
     commit = pinned_commit("rogue2")
-    items.append((repo, UI_ROOT / "rogue2" / "mesg", commit, "mesg_J"))
+    items.append((repo, UI_ROOT / "rogue2" / "mesg", commit, "mesg_J", "raw"))
+    repo = upstream / "toband"
+    commit = pinned_commit("toband")
+    for path in list_files(repo, commit, "lib"):
+        if path.startswith(TOBAND_SKIP):
+            continue
+        items.append((repo, UI_ROOT / "toband" / path, commit, path, "eucjp-cp932"))
     return items
 
 
@@ -79,13 +98,13 @@ def main() -> int:
     parser.add_argument("--check", action="store_true", help="写し済みで固定版と一致するか確かめるだけ（書かない）")
     args = parser.parse_args()
     upstream = args.upstream.resolve()
-    for name in ("angband", "rogue2"):
+    for name in ("angband", "rogue2", "toband"):
         if not (upstream / name).is_dir():
             raise SystemExit(f"原作のリポジトリがありません: {upstream / name}（--upstream か HENGBAND_UPSTREAM_ROOT で指定）")
 
     written = same = missing = differ = 0
-    for repo, dest, commit, path in plan(upstream):
-        data = git(repo, "show", f"{commit}:{path}")
+    for repo, dest, commit, path, kind in plan(upstream):
+        data = convert(git(repo, "show", f"{commit}:{path}"), kind)
         if dest.is_file():
             current = dest.read_bytes()
             if current == data:

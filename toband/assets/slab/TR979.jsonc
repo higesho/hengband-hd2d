@@ -1,0 +1,30 @@
+// TR979 — プレハブ定義（設計書 §7）。`TR979.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// タイル TR979 をボクセルの板にしたもの（tools/voxel/tile_to_slab.py）。一辺 64 / 厚み 4 / flat / 由来 px(そのまま)
+{
+  "name": "TR979",
+  "voxels_per_cell": 64,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 0.0
+    }
+  ],
+  "variants": []
+}

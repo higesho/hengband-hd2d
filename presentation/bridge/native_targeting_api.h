@@ -126,6 +126,11 @@ void hb_target_candidate_look(int id,int x,int y,int distance,int ticks,int orde
 void hb_target_extra(int key,const char *text_label,int enabled);
 // Says why the last extra operation did nothing (shown where the "reason" of the toolbar is).
 void hb_target_notice(const char *text);
+// The small popup at the cursor (TOband). Called by the core's read-only preview callback once per cursor position:
+// `hb_target_info_span` appends coloured text (a TERM_COLOR 0..15) to the current line, `hb_target_info_newline` starts the next
+// line. Ignored outside a preview. The text is translated like every other core string.
+void hb_target_info_span(int color,const char *text);
+void hb_target_info_newline(void);
 void hb_target_status(int can_confirm,int reason,int distance,const char *name,int stochastic,int effect_known);
 void hb_target_path_begin(int possible);
 void hb_target_path_cell(int x,int y);

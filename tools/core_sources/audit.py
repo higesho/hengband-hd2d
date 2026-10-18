@@ -9,7 +9,7 @@ import leak_scan
 import pch_safety_check
 from prepare import UI_ROOT, DEFAULT_UPSTREAM, prepare, HERE
 
-ORIGINAL_TREES = ('src', 'gensoband/src', 'silq/src', 'frox/src', 'hengband-3.0.2.4-Beta')
+ORIGINAL_TREES = ('src', 'gensoband/src', 'silq/src', 'frox/src', 'toband/src', 'hengband-3.0.2.4-Beta')
 
 
 def main():

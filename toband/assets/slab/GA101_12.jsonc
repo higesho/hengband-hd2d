@@ -1,0 +1,30 @@
+// GA101_12 — プレハブ定義（設計書 §7）。`GA101_12.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// タイル GA101_12 をボクセルの板にしたもの（tools/voxel/tile_to_slab.py）。一辺 64 / 厚み 4 / flat / 由来 px(そのまま)
+{
+  "name": "GA101_12",
+  "voxels_per_cell": 64,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 0.0
+    }
+  ],
+  "variants": []
+}

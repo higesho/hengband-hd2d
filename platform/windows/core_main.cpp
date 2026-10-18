@@ -84,6 +84,7 @@
 #include "core/stuff-handler.h" //!< `handle_stuff()`（言語切替の描き直しをキー待ちの間に済ませる）
 #include "io/signal-handlers.h"
 #include "locale/language-switcher.h"
+#include "floor/floor-save.h" //!< clear_saved_floor_files()（緊急保存のあとに階の一時ファイルを消す）
 #include "save/save.h"
 #include "system/angband-system.h"
 #include "system/redrawing-flags-updater.h" //!< 言語切替時の全面描き直し
@@ -489,6 +490,12 @@ std::atomic<bool> g_panic_saving{ false };
 
     const bool saved = save_player(p_ptr, SaveType::CLOSE_GAME);
     std::fprintf(stderr, "[core] shutdown save %s\n", saved ? "succeeded" : "FAILED");
+    // 階の一時ファイル（<セーブ>.Fnn）を消す。原作の普通の終了（core/game-closer.cpp）は保存のあとに
+    // これを呼ぶが、ここはそこを通らないので、ダンジョンの中で畳むと残り、次の起動で
+    // 「古いテンポラリ・ファイルが残っています」の問いで止まっていた。
+    if (saved) {
+        clear_saved_floor_files(p_ptr);
+    }
     if(!saved){g_exit_code.store(1);if(requested)send_fatal("Could not save the game while closing. The previous save has been retained.");}
     quit("");
 

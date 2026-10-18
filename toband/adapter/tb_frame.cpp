@@ -1,0 +1,1847 @@
+﻿/*!
+ * @file tb_frame.cpp
+ * @brief `tb_frame.h` の実装。
+ *
+ * ## 漢字の扱い（設計 §3.1・V1）
+ * 旧 z-term に漢字属性は**無い**（`z-term.h` に KANJI 系のフラグが無い）。
+ * 2 バイト文字は**2 つのセルに割れて**入っており、`Term_putstr` が
+ * `iskanji()` を見ながら 1 バイトずつ置いている。だからミラーを組む側が
+ * **CP932 の先行バイトで走査して 2 セルを 1 文字に結合してから** UTF-8 化する。
+ * 結合しないで 1 セルずつ変換すると、全角がすべて `??` になる。
+ *
+ * ## 色 span（設計 §4 の term_mirror 行）
+ * 1 行 1 色に落とすと**1 行に何色も出る画面が潰れる**（変愚で実際に潰れた:
+ * 色見本の行が行頭の色に染まって見えなくなった。`game_frame.h:97-105`）。
+ * ここでは属性の変わり目ごとに区間を切り、行全体を隙間なく覆う。
+ */
+
+#include "tb_frame.h"
+#include "bridge/native_targeting_runtime.h"
+
+#include "tb_lang_c.h"
+#include "tb_manifest.h"
+#include "tb_shim.h"
+#include "tb_sub_panels.h"
+#include "tb_menu.h"
+#include "tb_text.h"
+
+#include "frame/cell_feature_bits.h"
+#include "bridge/named_attack_fx_glue.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <vector>
+
+namespace tb {
+
+namespace {
+
+/* ============================================================ 画面側からの申告 */
+
+//! 視界の既定。`ui_state` が来るまでのぶん（HD2D は必ず送ってくる）。
+int g_view_w = 47;
+int g_view_h = 22;
+//! 視界の上限。桁違いの値が来ても走査量が爆発しないようにする。
+constexpr int kMaxView = 200;
+bool g_camera_follow_player = false;
+const TileManifest *g_manifest = nullptr;
+
+//! 主 Term の最大寸法。`tb_term_row` の受け皿の大きさを決めるだけの上限。
+constexpr int kMaxCols = 256;
+//! 画面側へ運ぶメッセージの本数。変愚の `presentation_bridge.cpp:95` と同じ 8。
+constexpr int kMessageLines = 8;
+//! 1 本のメッセージの上限（コアの `MESSAGE_BUF` はもっと長いが、運ぶのはこれで足りる）。
+constexpr int kMessageBytes = 1024;
+
+/*!
+ * @brief セル 1 行（SJIS バイト＋属性）→ UTF-8 の 1 行＋色 span。
+ * @param cells 文字のバイト列
+ * @param attrs 属性
+ * @param count セル数
+ * @param out_spans 色 span（UTF-8 のバイト位置。行全体を隙間なく覆う）
+ * @return UTF-8 の行
+ */
+std::string row_to_utf8(const char *cells, const unsigned char *attrs, int count,
+    std::vector<TermColorSpan> &out_spans)
+{
+    out_spans.clear();
+
+    /*
+     * 末尾の空白は落とす。**色ごと落とす**ので span も短くなる。
+     * 落とさないと、どの行も 80 桁ぶんの空白と span を運ぶことになり、
+     * 27 行 × 毎フレームで効いてくる（v1 §10 の「小さく保つ」）。
+     */
+    int end = count;
+    while ((end > 0) && (cells[end - 1] == ' ')) {
+        --end;
+    }
+    if (end <= 0) {
+        return std::string();
+    }
+
+    std::string text;
+    int x = 0;
+    while (x < end) {
+        const unsigned char attr = attrs[x];
+
+        /* 同じ属性が続くあいだを 1 塊にする。漢字は 2 セルまとめて取る。 */
+        std::string chunk;
+        while (x < end) {
+            if (attrs[x] != attr) {
+                break;
+            }
+            const auto lead = static_cast<unsigned char>(cells[x]);
+            if (is_sjis_lead(lead) && ((x + 1) < end)) {
+                /*
+                 * 2 セル 1 文字。**属性は先行バイト側を採る**——後続バイトの
+                 * セルにも同じ属性が入っているのが普通だが、違っていても
+                 * 文字を割ってはいけない。
+                 */
+                chunk.push_back(cells[x]);
+                chunk.push_back(cells[x + 1]);
+                x += 2;
+                continue;
+            }
+            chunk.push_back(cells[x]);
+            x += 1;
+        }
+
+        std::string utf8 = sjis_to_utf8(chunk);
+        if (utf8.empty() && !chunk.empty()) {
+            /* 変換できない塊（切れた漢字など）。**行を落とさず**空白で埋める。 */
+            utf8.assign(chunk.size(), ' ');
+        }
+
+        TermColorSpan span;
+        span.begin = static_cast<int>(text.size());
+        span.len = static_cast<int>(utf8.size());
+        span.color = attr;
+        if (span.len > 0) {
+            out_spans.push_back(span);
+        }
+        text += utf8;
+    }
+
+    return text;
+}
+
+/*!
+ * @brief **地図を消さずに重ねただけのメニュー**なら、写しを箱の行だけへ刈り込む。
+ * @return 刈り込んだ（＝重ねのメニューだった）か
+ *
+ * @details `util.c:4561` の `inkey_from_menu()` は `screen_save()` で `character_icky` を
+ * 上げてから、**地図の上へ `+----` の箱を `put_str` するだけ**である。写しをそのまま
+ * 積むと 80×24 に地図が載ったまま画面へ出て、立体の代わりに字の地図が見える
+ * （気づいたこと 2026-09-01「幻想のコマンドメニューにもコアのマップが移りこんでる」。
+ * Frox で先に直したのと同じ穴。`frox/adapter/fc_frame.cpp` と同じ手当てである）。
+ *
+ * @note **持ち物・店・一覧は刈り込まない。** あれらはコアが地図を消してから描くので、
+ * 写しは全面のままでよい（箱の行が無いのでここは偽を返す）。
+ */
+//! 重ねのメニューの箱 1 つ（Term の行と桁）。
+struct MenuBox {
+    int top{ 0 };
+    int bottom{ 0 };
+    int left{ 0 };
+    int right{ 0 };
+};
+
+/*!
+ * @brief Term から `+----+` の箱を**全部**見つける。
+ * @details 小メニューへ入ると箱が 2 つになり、**位置がずれる**（親は 13〜19 行、
+ * 小メニューは 15〜21 行で右へも下へもはみ出す。2026-09-02 に実測）。
+ * 1 つ目の箱の桁で切ると小メニューの右が落ち、隙間に地図が残る。
+ *
+ * **桁は生のセルから数える**——写しは UTF-8 で、CP932 でも 1 バイト＝1 桁だからここで採る。
+ * 同じ左右を持つ行どうしを 1 つの箱にまとめる（上辺と下辺）。
+ */
+static bool find_menu_boxes(std::vector<MenuBox> &out)
+{
+    int cols = 0;
+    int rows = 0;
+    if (tb_term_size(&cols, &rows) != TB_OK) {
+        return false;
+    }
+    char cells[kMaxCols];
+    unsigned char attrs[kMaxCols];
+    /*
+     * **左の桁で束ねる。**`(左, 右)` の対で束ねると、下辺が別の箱に上書きされている
+     * ときに別物と見なされ、箱が 1 行に潰れる（小メニューを開くと親の下辺が
+     * 隠れる。2026-09-02 に実測して踏んだ）。
+     */
+    for (int y = 0; y < rows; ++y) {
+        std::memset(cells, ' ', sizeof(cells));
+        std::memset(attrs, 1, sizeof(attrs));
+        const int n = tb_term_row(y, cells, attrs, kMaxCols);
+        if (n <= 0) {
+            continue;
+        }
+        for (int x = 0; (x + 2) < n; ++x) {
+            if ((cells[x] != '+') || (cells[x + 1] != '-') || (cells[x + 2] != '-')) {
+                continue;
+            }
+            bool merged = false;
+            for (auto &box : out) {
+                if (box.left == x) {
+                    box.bottom = y;
+                    merged = true;
+                    break;
+                }
+            }
+            if (merged) {
+                continue;
+            }
+            /*
+             * **右端は上辺から採る。**下辺は別の箱に上書きされていることがあるが、
+             * 上辺は必ず塞がれていない（後から開く箱は下へずれる）。
+             */
+            int right = -1;
+            for (int rx = x + 1; rx < n; ++rx) {
+                if (cells[rx] == '+') {
+                    right = rx;
+                    break;
+                }
+                if ((cells[rx] != '-') && (cells[rx] != ' ')) {
+                    break; //!< 罫が途切れた。ここは箱の上辺ではない
+                }
+            }
+            if (right > x) {
+                out.push_back(MenuBox{ y, y, x, right });
+            }
+        }
+    }
+    return !out.empty();
+}
+
+//! CP932 の 2 バイト字の頭か。**桁を潰すときは 2 桁まとめて**潰す（半分だけ消すと化ける）。
+static bool cp932_lead(unsigned char c)
+{
+    return ((c >= 0x81u) && (c <= 0x9Fu)) || ((c >= 0xE0u) && (c <= 0xFCu));
+}
+
+static bool crop_mirror_to_menu_box(GameFrame &frame)
+{
+    std::vector<MenuBox> boxes;
+    if (!find_menu_boxes(boxes)) {
+        return false;
+    }
+    //! 箱をまとめて囲む矩形。**箱が 2 つ以上でも右と下を落とさない。**
+    int top = boxes.front().top;
+    int bottom = boxes.front().bottom;
+    int left = boxes.front().left;
+    int right = boxes.front().right;
+    for (const auto &box : boxes) {
+        top = (std::min)(top, box.top);
+        bottom = (std::max)(bottom, box.bottom);
+        left = (std::min)(left, box.left);
+        right = (std::max)(right, box.right);
+    }
+    if ((bottom <= top) || (right <= left)) {
+        return false;
+    }
+    const int width = (right - left) + 1;
+
+    char cells[kMaxCols];
+    unsigned char attrs[kMaxCols];
+    std::vector<TermMirrorLine> box_lines;
+    box_lines.reserve(static_cast<std::size_t>((bottom - top) + 1));
+    for (int y = top; y <= bottom; ++y) {
+        std::memset(cells, ' ', sizeof(cells));
+        std::memset(attrs, 1, sizeof(attrs));
+        const int got = tb_term_row(y, cells, attrs, kMaxCols);
+        if (got <= left) {
+            continue;
+        }
+        /*
+         * **どの箱にも入らないマスは空白にする。** 箱がずれて重なると、
+         * 囲む矩形の隅に地図が残る（`#~~.....` が出ていた）。
+         * 2 バイト字は**2 桁まとめて**潰す——半分だけ消すと化ける。
+         */
+        for (int x = left; (x <= right) && (x < got); ++x) {
+            bool inside = false;
+            for (const auto &box : boxes) {
+                if ((y >= box.top) && (y <= box.bottom) && (x >= box.left) && (x <= box.right)) {
+                    inside = true;
+                    break;
+                }
+            }
+            if (inside) {
+                if (cp932_lead(static_cast<unsigned char>(cells[x]))) {
+                    ++x; //!< 頭が生きているなら尾も生かす
+                }
+                continue;
+            }
+            if (cp932_lead(static_cast<unsigned char>(cells[x])) && ((x + 1) < got)) {
+                cells[x + 1] = ' ';
+                attrs[x + 1] = 1;
+            }
+            cells[x] = ' ';
+            attrs[x] = 1;
+        }
+        const int take = (std::min)(width, got - left);
+        TermMirrorLine line;
+        line.source_row = y;
+        line.text_utf8 = row_to_utf8(cells + left, attrs + left, take, line.color_spans);
+        line.color = line.color_spans.empty() ? 1 : line.color_spans.front().color;
+        box_lines.push_back(std::move(line));
+    }
+    if (box_lines.size() < 2) {
+        return false;
+    }
+    frame.menu_term_lines.swap(box_lines);
+    /*
+     * **カーソルも一緒にずらす。** `menu_term_curs_row` は Term の行番号ではなく
+     * `menu_term_lines` の**添字**で、`fill_term_mirror()` は「捨てるようにしたら
+     * 必ずここも直す」と書いてある——ここがその「必ず」である。
+     * 囲む矩形の外に居たカーソルは**消す**（-1）。写しに無い所を指させない。
+     */
+    if (frame.menu_term_curs_row >= 0) {
+        const int row = frame.menu_term_curs_row;
+        const int col = frame.menu_term_curs_col;
+        if ((row >= top) && (row <= bottom) && (col >= left) && (col <= right)) {
+            frame.menu_term_curs_row = row - top;
+            frame.menu_term_curs_col = col - left;
+        } else {
+            frame.menu_term_curs_col = -1;
+            frame.menu_term_curs_row = -1;
+        }
+    }
+    return true;
+}
+
+/* ============================================================ 重ねの画面の写し（基準との差） */
+
+/*!
+ * @name 地図だけだった最後の Term（基準）と、その差分で作る写し
+ * @details 原作 `close_game()`（`files.c`）のセーブの表示は、`screen_save()` も `Term_clear()` も
+ * 通さず **地図の上へ 1 行出すだけ**である。写しを Term の全面にすると、地図の行と
+ * 左の状態列がそのまま窓の本文に入る（遊びのテスト 1 周目の F-toband-05。修-26）。
+ * 変愚の橋渡し（`presentation_bridge.cpp` の `refresh_float_menu_baseline`・
+ * `cell_is_float_menu_content`）と同じく、**直前まで地図だけだった Term** を覚えておき、
+ * 画面を消さずに重ねたものは**変わったセルだけ**を写しに残す。
+ *
+ * 左の状態列を読む `fill_status_col()` は Term を直に読む（icky の間は直前の値）ので、
+ * この基準とは関係しない。
+ * @{
+ */
+//! Term 1 枚ぶんのセル（行優先。文字は CP932 のバイト、属性はコアの色）。
+struct TermGrid {
+    int cols{ 0 };
+    int rows{ 0 };
+    std::vector<char> cells;
+    std::vector<unsigned char> attrs;
+
+    void reset(int c, int r)
+    {
+        cols = c;
+        rows = r;
+        cells.assign(static_cast<std::size_t>(c) * static_cast<std::size_t>(r), ' ');
+        attrs.assign(static_cast<std::size_t>(c) * static_cast<std::size_t>(r), 1);
+    }
+    bool empty() const { return (cols <= 0) || (rows <= 0); }
+    std::size_t at(int x, int y) const { return (static_cast<std::size_t>(y) * static_cast<std::size_t>(cols)) + static_cast<std::size_t>(x); }
+};
+
+//! 地図だけだった最後の Term。
+TermGrid g_term_baseline;
+
+//! 基準の字のあるセルのうち、この割合（%）以上が変わっていたら、画面を消して描き直した全面の画とみなす。
+constexpr int kOwnedScreenPercent = 85;
+
+//! 主 Term を丸ごと読む。
+bool read_term_grid(TermGrid &out)
+{
+    int cols = 0;
+    int rows = 0;
+    if (tb_term_size(&cols, &rows) != TB_OK) {
+        return false;
+    }
+    cols = (std::min)(cols, kMaxCols - 1);
+    if ((cols <= 0) || (rows <= 0)) {
+        return false;
+    }
+    out.reset(cols, rows);
+
+    char cells[kMaxCols];
+    unsigned char attrs[kMaxCols];
+    for (int y = 0; y < rows; ++y) {
+        std::memset(cells, ' ', sizeof(cells));
+        std::memset(attrs, 1, sizeof(attrs));
+        const int n = tb_term_row(y, cells, attrs, kMaxCols);
+        if (n < 0) {
+            return false;
+        }
+        const int take = (std::min)(n, cols);
+        std::memcpy(&out.cells[out.at(0, y)], cells, static_cast<std::size_t>(take));
+        std::memcpy(&out.attrs[out.at(0, y)], attrs, static_cast<std::size_t>(take));
+    }
+    return true;
+}
+
+//! 基準の `(x, y)` と文字か色が違うか。
+bool grid_cell_differs(const TermGrid &base, const TermGrid &cur, int x, int y)
+{
+    const std::size_t i = base.at(x, y);
+    return (base.cells[i] != cur.cells[i]) || (base.attrs[i] != cur.attrs[i]);
+}
+
+/*!
+ * @brief 地図の上に重ねただけの画なら、基準と同じセルを空白にする。
+ * @param base 地図だけだった最後の Term
+ * @param cur いまの Term（重ねだと分かれば、変わっていないセルを空白にして返す）
+ * @return 重ねだった（変わっていないセルを空白にした）か。偽なら `cur` は触らない
+ *
+ * @details 偽を返す場合：基準が無い・大きさが違う・基準が空、または
+ * **基準の字のあるセルの大部分（`kOwnedScreenPercent`）が変わっている**とき。
+ * 後者は店・建物・一覧のように、画面を消してから全面を描き直した画である。
+ * こういう画は、背景と同じ字（`.` や `#`）が偶然同じ桁に来ても本文なので、差分で消してはいけない。
+ * 画面の消去は `Term_clear()` のほかに `clear_from(0)`（行ごとの `Term_erase`）でも起こり、
+ * アダプタからは後者を捕まえられないので、**消去の呼び出しではなく結果の割合**で見る。
+ *
+ * 2 バイト字は 2 セルまとめて扱う（半分だけ消すと化ける）。
+ */
+bool overlay_over_baseline(const TermGrid &base, TermGrid &cur)
+{
+    if (base.empty() || (base.cols != cur.cols) || (base.rows != cur.rows)) {
+        return false;
+    }
+    int drawn = 0;
+    int changed = 0;
+    for (int y = 0; y < base.rows; ++y) {
+        for (int x = 0; x < base.cols; ++x) {
+            const char c = base.cells[base.at(x, y)];
+            if ((c == ' ') || (c == '\0')) {
+                continue;
+            }
+            ++drawn;
+            if (grid_cell_differs(base, cur, x, y)) {
+                ++changed;
+            }
+        }
+    }
+    if ((drawn == 0) || ((changed * 100) >= (drawn * kOwnedScreenPercent))) {
+        return false;
+    }
+
+    for (int y = 0; y < cur.rows; ++y) {
+        int x = 0;
+        while (x < cur.cols) {
+            const bool pair = cp932_lead(static_cast<unsigned char>(cur.cells[cur.at(x, y)])) && ((x + 1) < cur.cols);
+            const int width = pair ? 2 : 1;
+            bool keep = false;
+            for (int k = 0; k < width; ++k) {
+                keep = keep || grid_cell_differs(base, cur, x + k, y);
+            }
+            if (!keep) {
+                for (int k = 0; k < width; ++k) {
+                    cur.cells[cur.at(x + k, y)] = ' ';
+                    cur.attrs[cur.at(x + k, y)] = 1;
+                }
+            }
+            x += width;
+        }
+    }
+    return true;
+}
+
+//! 地図が出ているフレームの Term を基準に覚える。
+void remember_term_baseline()
+{
+    (void)read_term_grid(g_term_baseline);
+}
+
+//! 基準を捨てる（前のキャラクターの地図を持ち越さない）。
+void forget_term_baseline()
+{
+    g_term_baseline = TermGrid();
+}
+/*! @} */
+
+void fill_term_mirror(GameFrame &frame)
+{
+    TermGrid grid;
+    if (!read_term_grid(grid)) {
+        return;
+    }
+    const int rows = grid.rows;
+
+    /*
+     * 地図が生きている間の重ね（原作 `close_game()` のセーブの表示など）は、基準との差だけを残す。
+     * 題名・誕生・死亡（`pre_game_menu`）は Term 全面が本文なので素通し。
+     */
+    if (!frame.pre_game_menu && ((tb_screen_flags() & TB_SCREEN_DUNGEON) != 0)) {
+        (void)overlay_over_baseline(g_term_baseline, grid);
+    }
+
+    frame.menu_term_lines.clear();
+    frame.menu_term_lines.reserve(static_cast<std::size_t>(rows));
+
+    for (int y = 0; y < rows; ++y) {
+        const char *cells = &grid.cells[grid.at(0, y)];
+        const unsigned char *attrs = &grid.attrs[grid.at(0, y)];
+
+        TermMirrorLine line;
+        line.source_row = y;
+        line.text_utf8 = row_to_utf8(cells, attrs, grid.cols, line.color_spans);
+        /* `color` は `color_spans` が空のときだけ使われる（`game_frame.h:115`）。 */
+        line.color = line.color_spans.empty() ? 1 : line.color_spans.front().color;
+        frame.menu_term_lines.push_back(std::move(line));
+    }
+
+    /*
+     * カーソル。**`menu_term_curs_row` は `menu_term_lines` の添字**であって
+     * Term の行番号ではない（`game_frame.h:470-479`）。ここは空行も捨てずに
+     * 全行を積んでいるので、両者は一致する。捨てるようにしたら**必ずここも直す**。
+     * @note 2026-09-01 に `crop_mirror_to_menu_box()` が捨てるようになったので、
+     *       あちらで添字をずらしている。**刈り込みを増やすときは同じ手当てを忘れない。**
+     */
+    int cx = 0;
+    int cy = 0;
+    int visible = 0;
+    if ((tb_term_cursor(&cx, &cy, &visible) == TB_OK) && visible && (cy >= 0)
+        && (cy < static_cast<int>(frame.menu_term_lines.size()))) {
+        frame.menu_term_curs_col = cx;
+        frame.menu_term_curs_row = cy;
+    } else {
+        frame.menu_term_curs_col = -1;
+        frame.menu_term_curs_row = -1;
+    }
+}
+
+/* ================================ 左の状態列と最下段（P4。K-28 / K-32 / K-33） */
+
+/*!
+ * @name コアの左フレームを MainMap の左へ写す
+ * @details TOband は主 Term の**左 12 桁**に種族・称号・レベル・経験値・クラスレベル・
+ * 所持金・装備記号・能力値・AC・HP・SP・騎乗・状態・空腹・日付・ダンジョン名を描き続けている
+ * （`xtra1.c` の `prt_frame_basic` / `prt_frame_extra`）。
+ * **表示を組み直さず、その区画をそのまま読む**（設計 §8 の P4 行）。
+ *
+ * 桁の根拠は `defines.h` の **`COL_MAP = 12`**（`ROW_MAP = 0`）。地図は列 12 から描かれるので、
+ * 列 0〜11 は左フレームの専有である。変愚の 13、幻想蛮怒の 20 とは違う。
+ * TOband は左フレームの下（`ROW_DUNGEON = 22` の先）にエレメントなどを 12 桁より広く描く
+ * 行があるが、M0 では 12 桁で切る（専用の HUD は M1 以降。設計 §4）。
+ *
+ * 行の範囲は 1〜`rows-2`。行 0 はメッセージ行、最下行はステータスバーで横いっぱい
+ * （`ROW_STATBAR = -1`）。
+ * @{
+ */
+//! 左フレームの桁数（`COL_MAP = 12`。TOband の `defines.h`。変愚の 13、幻想蛮怒の 20 とは違う）。
+constexpr int kStatusColCells = 12;
+//! 階層が書かれている桁数（`COL_DEPTH = -9`。`prt_depth` は `wid + COL_DEPTH` から書く）。
+constexpr int kDepthCells = 9;
+
+/*!
+ * @name 直前に読めた値
+ * @details `redraw_stuff()` は `character_icky` の間**左フレームを更新しない**
+ * （`xtra1.c:12325`）。店や一覧を開いている間の Term は本文で塗り潰されているので、
+ * そのときは直前に読めた値を使い回す（変愚 `presentation_bridge.cpp:737-742` と同じ手）。
+ * @{
+ */
+std::vector<SubPanelLine> g_status_col_cache;
+std::vector<TermTextRun> g_bottom_row_cache;
+SubPanelLine g_depth_cache;
+/*! @} */
+
+/*!
+ * @brief セル 1 個ぶんを空白とみなすか。
+ * @details 空白・未書き込み（`\0`）のほかに**制御文字**（`< 0x20` と `0x7F`）も空白にする。
+ *
+ * これは **地図が左フレームへはみ出してくる**ため（実測 2026-08-17 / P4）。
+ * ゲーム中の Term を 1 桁ずつ見ると、桁 17〜19 に `0x7F`（色 TERM_SLATE）が並び、
+ * そのまま桁 20 以降の地図へ続いている。**読み込み中の画面には無く、地図が出てから
+ * 現れる**ので出どころは地図側である。変愚の bridge も同じ形の穴を
+ * `is_graphic_tile_attr()` で塞いでいる（`presentation_bridge.cpp:775`
+ * 「地図のタイルが入り込む桁は空白にする」）。あちらは絵タイルなので属性で分かるが、
+ * こちらは ASCII なので**文字**で見分ける——左フレームの項目はすべて印字文字なので、
+ * 制御文字を落として困るものは無い。
+ * @note SJIS の 2 バイト目は `0x40`〜`0x7E` と `0x80`〜`0xFC` で、**`0x7F` を含まない**。
+ * だからこの判定で漢字の後続バイトを空白に取り違えることはない。
+ */
+bool cell_is_blank(char c)
+{
+    const auto u = static_cast<unsigned char>(c);
+    return (u == ' ') || (u < 0x20) || (u == 0x7F);
+}
+
+/*!
+ * @brief 桁 `[x0, x1)` を UTF-8 の 1 行にする（漢字は 2 セル結合。`row_to_utf8` と同じ規則）。
+ * @param trim_left 行頭の空白も落とすか。**左フレームでは落とさない**——
+ * 1 行に複数の項目が決まった桁で並ぶ（`ROW_HUNGRY` 23 桁 0 ／ `COL_STATE` 4 ／
+ * `COL_MOVESTATE` 9）ので、左を詰めると空腹が無いときに状態が空腹の位置へ滑る。
+ * 階層（`%7s` の右詰め）だけは両端を落とす。
+ * @return 行の色は**最初の非空白**セルの色（`SubPanelLine` は 1 行 1 色）。
+ */
+SubPanelLine span_to_line(const char *cells, const unsigned char *attrs, int n, int x0, int x1,
+    bool trim_left)
+{
+    SubPanelLine out;
+    const int begin = (std::max)(0, x0);
+    int end = (std::min)(x1, n);
+
+    /* 末尾の空白は落とす（運ぶ量を減らす。`row_to_utf8` と同じ判断）。 */
+    while ((end > begin) && cell_is_blank(cells[end - 1])) {
+        --end;
+    }
+    if (end <= begin) {
+        return out;
+    }
+
+    std::string sys;
+    bool color_found = false;
+    for (int x = begin; x < end; ++x) {
+        const auto lead = static_cast<unsigned char>(cells[x]);
+        if (!color_found && !cell_is_blank(cells[x])) {
+            out.color = attrs[x];
+            color_found = true;
+        }
+        if (is_sjis_lead(lead) && ((x + 1) < end)) {
+            sys.push_back(cells[x]);
+            sys.push_back(cells[x + 1]);
+            ++x;
+            continue;
+        }
+        if (is_sjis_lead(lead)) {
+            /* 区画の端で漢字が割れた。**半端なバイトは運ばない**（化けさせない）。 */
+            sys.push_back(' ');
+            continue;
+        }
+        sys.push_back(cell_is_blank(cells[x]) ? ' ' : cells[x]);
+    }
+
+    if (trim_left) {
+        const std::size_t head = sys.find_first_not_of(' ');
+        sys = (head == std::string::npos) ? std::string() : sys.substr(head);
+        while (!sys.empty() && (sys.back() == ' ')) {
+            sys.pop_back();
+        }
+    }
+
+    out.text_utf8 = sjis_to_utf8(sys);
+    if (out.text_utf8.empty() && !sys.empty()) {
+        out.text_utf8.assign(sys.size(), ' ');
+    }
+    return out;
+}
+
+/*!
+ * @brief 最下行（ステータスバー）を**同じ色が続く区間ごと**に切って桁とともに積む（K-32）。
+ * @details この行は桁と色の両方に意味がある——左に状態異常・空腹・休息（`prt_status`。
+ * `COL_STATBAR = 0`〜`MAX_COL_STATBAR = -26`）、右端の決まった桁に速度・学習・階層
+ * （`COL_SPEED = -24` / `COL_STUDY = -13` / `COL_DEPTH = -8`）。1 行 1 色に潰すと両方落ちる。
+ * @param depth_begin ここから右は積まない（階層は K-33 で右下へ出すので二重にしない）
+ */
+void row_to_runs(const char *cells, const unsigned char *attrs, int n, int depth_begin,
+    std::vector<TermTextRun> &out)
+{
+    out.clear();
+    const int end = (std::min)(n, depth_begin);
+
+    std::string sys;
+    int run_col = 0;
+    unsigned char run_color = 1;
+
+    const auto flush = [&]() {
+        while (!sys.empty() && (sys.back() == ' ')) {
+            sys.pop_back();
+        }
+        if (sys.empty()) {
+            return;
+        }
+        TermTextRun run;
+        run.col = run_col;
+        run.color = run_color;
+        run.text_utf8 = sjis_to_utf8(sys);
+        if (run.text_utf8.empty()) {
+            run.text_utf8.assign(sys.size(), ' ');
+        }
+        out.push_back(std::move(run));
+        sys.clear();
+    };
+
+    for (int x = 0; x < end; ++x) {
+        const auto lead = static_cast<unsigned char>(cells[x]);
+        const unsigned char color = attrs[x];
+
+        if (cell_is_blank(cells[x])) {
+            /* 空白 2 桁以上で区切る（1 桁の空白は語の間なので run に含める）。 */
+            if (!sys.empty() && ((x + 1) < end) && cell_is_blank(cells[x + 1])) {
+                flush();
+                continue;
+            }
+            if (!sys.empty()) {
+                sys.push_back(' ');
+            }
+            continue;
+        }
+
+        if (sys.empty()) {
+            run_col = x;
+            run_color = color;
+        } else if (color != run_color) {
+            flush();
+            run_col = x;
+            run_color = color;
+        }
+
+        if (is_sjis_lead(lead) && ((x + 1) < end)) {
+            /* 2 セル 1 文字。**属性は先行バイト側**を採る（文字を割らない）。 */
+            sys.push_back(cells[x]);
+            sys.push_back(cells[x + 1]);
+            ++x;
+            continue;
+        }
+        if (is_sjis_lead(lead)) {
+            break; // 区画の端で割れた漢字。半端なバイトは運ばない
+        }
+        sys.push_back(cells[x]);
+    }
+    flush();
+}
+
+/*!
+ * @brief 左の状態列（K-28）・最下段（K-32）・階層（K-33）をまとめて写す。
+ * @details 読む相手の判断（icky なら直前の値）が同じなので 1 か所に置く。
+ */
+void fill_status_col(GameFrame &frame)
+{
+    frame.status_col_lines.clear();
+    //! 桁数は**コアが申告する**（画面側に数を持たせない。`game_frame.h` の `status_col_cols`）。
+    //! 変愚の 13 ではなく `COL_MAP` の 12 である。申告しないと地名が桁で切れる。
+    frame.status_col_cols = kStatusColCells;
+    frame.bottom_row_runs.clear();
+    frame.bottom_row_cols = 0;
+    frame.depth = SubPanelLine{};
+
+    const int screen = tb_screen_flags();
+    if (((screen & TB_SCREEN_GENERATED) == 0) || ((screen & TB_SCREEN_DUNGEON) == 0)
+        || ((screen & TB_SCREEN_DEAD) != 0)) {
+        /*
+         * @ がまだ無い（オープニング・誕生）／もう無い（死亡）。Term の左端は本文なので
+         * 読まない。死亡を混ぜてあるのは、墓碑の画を状態列として拾わないため
+         * （画面側は `pre_game_menu` で全面ミラーに切り替わるので出はしないが、
+         * **古い値を持ち越さない**ほうが後で読む人に嘘をつかない）。
+         */
+        g_status_col_cache.clear();
+        g_bottom_row_cache.clear();
+        g_depth_cache = SubPanelLine{};
+        return;
+    }
+
+    int cols = 0;
+    int rows = 0;
+    if (tb_term_size(&cols, &rows) != TB_OK) {
+        return;
+    }
+    cols = (std::min)(cols, kMaxCols - 1);
+    if ((cols <= kDepthCells) || (rows <= 2)) {
+        return;
+    }
+    frame.bottom_row_cols = cols;
+
+    /*
+     * icky の間はコアが左フレームを更新していない（`xtra1.c:12325`）ので、
+     * **その画を読まずに**直前の値を使う。ゲーム中のフレームでは毎回読み直す。
+     */
+    if ((screen & (TB_SCREEN_ICKY | TB_SCREEN_XTRA)) == 0) {
+        char cells[kMaxCols];
+        unsigned char attrs[kMaxCols];
+
+        std::vector<SubPanelLine> lines;
+        for (int y = 1; y <= (rows - 2); ++y) {
+            std::memset(cells, ' ', sizeof(cells));
+            std::memset(attrs, 1, sizeof(attrs));
+            const int n = tb_term_row(y, cells, attrs, kMaxCols);
+            if (n < 0) {
+                continue;
+            }
+            lines.push_back(span_to_line(cells, attrs, n, 0, kStatusColCells, false));
+        }
+        while (!lines.empty() && lines.back().text_utf8.empty()) {
+            lines.pop_back();
+        }
+        frame.status_col_lines = std::move(lines);
+
+        std::memset(cells, ' ', sizeof(cells));
+        std::memset(attrs, 1, sizeof(attrs));
+        const int n = tb_term_row(rows - 1, cells, attrs, kMaxCols);
+        if (n > 0) {
+            row_to_runs(cells, attrs, n, cols - kDepthCells, frame.bottom_row_runs);
+            frame.depth = span_to_line(cells, attrs, n, cols - kDepthCells, cols, true);
+        }
+
+        g_status_col_cache = frame.status_col_lines;
+        g_bottom_row_cache = frame.bottom_row_runs;
+        g_depth_cache = frame.depth;
+        return;
+    }
+
+    frame.status_col_lines = g_status_col_cache;
+    frame.bottom_row_runs = g_bottom_row_cache;
+    frame.depth = g_depth_cache;
+}
+/*! @} */
+
+void fill_hud(GameFrame &frame)
+{
+    tb_hud_data data{};
+    if (tb_read_hud(&data) != TB_OK) {
+        return;
+    }
+
+    /*
+     * 名前の行は Term を通らず `player_name` をそのまま読む（修-25 / F-toband-406）。英語層が生きているときは、
+     * **カタログに載っている名前＝ユニーククラスの標準の名前**（`博麗　霊夢` → `Reimu Hakurei`）だけを英語にする。
+     * 遊ぶ人が付けた名前は載っていないので `tb_tr` が原文を返し、日本語のまま残る（設計 §2.2）。
+     */
+    const char *hud_name = data.name;
+    if (tb_lang_enabled()) {
+        const char *translated = tb_tr(data.name);
+        if (translated && translated[0]) {
+            hud_name = translated;
+        }
+    }
+    frame.hud.name = sjis_to_utf8(hud_name, std::strlen(hud_name));
+    frame.hud.hp = data.hp;
+    frame.hud.hp_max = data.hp_max;
+    frame.hud.sp = data.sp;
+    frame.hud.sp_max = data.sp_max;
+    frame.hud.gold = static_cast<int>(data.gold);
+    frame.hud.level = data.level;
+    frame.hud.depth = data.depth;
+
+    /*
+     * `status_line` は変愚の `fill_hud`（`presentation_bridge.cpp:122-125`）と
+     * **同じ形**にする。画面側が同じ読み方をするので、形を割らない。
+     * **ASCII だけで組む**（設計 §3.1: プロトコルへ出すリテラルは ASCII）。
+     */
+    char status[128];
+    std::snprintf(status, sizeof(status), "HP %d/%d  SP %d/%d  LEV %d",
+        frame.hud.hp, frame.hud.hp_max, frame.hud.sp, frame.hud.sp_max, frame.hud.level);
+    frame.hud.status_line = status;
+
+    /*
+     * 現在地と階層は**コアの文言のまま**運ぶ（`prt_depth()` と同じ字面）。
+     * ここで組み直すと画面側と食い違うので、日本語は SJIS → UTF-8 の変換だけ。
+     */
+    frame.hud.right_top_lines.clear();
+    if (data.place[0] != '\0') {
+        frame.hud.right_top_lines.push_back(sjis_to_utf8(data.place, std::strlen(data.place)));
+    }
+    if (data.depth_text[0] != '\0') {
+        frame.hud.right_top_lines.push_back(sjis_to_utf8(data.depth_text, std::strlen(data.depth_text)));
+    }
+}
+
+void fill_messages(GameFrame &frame)
+{
+    const int num = tb_message_count();
+    const int take = (std::min)(kMessageLines, (num > 0) ? num : 0);
+
+    frame.messages.clear();
+    frame.messages.reserve(static_cast<std::size_t>(take));
+
+    char buf[kMessageBytes];
+    for (int age = take - 1; age >= 0; --age) {
+        const int n = tb_message_text(age, buf, static_cast<int>(sizeof(buf)));
+        if (n <= 0) {
+            continue;
+        }
+        MessageEvent ev{};
+        ev.seq = static_cast<uint32_t>(frame.messages.size());
+        ev.color = 1;
+        /*
+         * **伝言は Term を通らない。** ここはコアの伝言リングを直に読む道で、
+         * `Term_addstr()` のフック #1 は 1 度も通らない（設計 §5 #4 の
+         * 「Term 経由で足りる」は伝言には当たらなかった。E3 の通しで判った）。
+         * だから引くのはここである——`msg_print()` の素の文言はこれで英語になる。
+         *
+         * `msg_format()` の文言は既に組み上がっているので、ここでは引けない
+         * （書式はフック #2、`%s` の中身は #3 が先に引いている）。
+         * 引けなければ日本語のまま返り、`--report-untranslated` が拾う（制約 4）。
+         */
+        const char *text = tb_tr(buf);
+        ev.text_utf8 = sjis_to_utf8(text, std::strlen(text));
+        if (ev.text_utf8.empty()) {
+            continue;
+        }
+        frame.messages.push_back(std::move(ev));
+    }
+}
+
+/* ================================================ 色表とカーソル（M1 / S6・S2） */
+
+//! 画面側の `ui_state.cursor_mode`。**既定は真**——コアを起こさない検査は握手を
+//! 通らないので、既定を偽にすると検査だけカーソルの無い世界になる（設計 §6.3 と同じ理由）。
+bool g_cursor_mode = true;
+
+/*!
+ * @brief コアの色表を `frame.term_palette` へ（S6）。
+ * @details 変愚の `fill_term_palette()`（`presentation_bridge.cpp:1018`）と同じ形。
+ * 読めなかったときは**既定のまま置く**（`TermPalette` の初期値＝変愚の色）。
+ * 嘘の色で塗るより、前と同じ絵のほうが害が小さい。
+ */
+void fill_term_palette(GameFrame &frame)
+{
+    unsigned char rgb[16 * 3] = { 0 };
+    if (tb_read_palette(rgb, static_cast<int>(sizeof(rgb))) < 0) {
+        return;
+    }
+    for (std::size_t i = 0; i < frame.term_palette.rgb.size(); ++i) {
+        frame.term_palette.rgb[i][0] = rgb[i * 3 + 0];
+        frame.term_palette.rgb[i][1] = rgb[i * 3 + 1];
+        frame.term_palette.rgb[i][2] = rgb[i * 3 + 2];
+    }
+}
+
+/* ==================================================================== 地図（P3） */
+
+/*!
+ * @brief `TB_FEAT_*`（C の境界）→ `CELL_FEAT_*`（画面側）。
+ * @details **表をここ 1 か所に置く。** 値を揃えて素通しにすると、どちらかの並びが
+ * 変わったときに黙って別の意味になる（壁が扉になる類の壊れ方で、絵を見るまで分からない）。
+ */
+uint16_t translate_feature_flags(unsigned short tb_bits)
+{
+    static const struct {
+        unsigned short from;
+        uint16_t to;
+    } kTable[] = {
+        { TB_FEAT_WALL, CELL_FEAT_WALL },
+        { TB_FEAT_DOOR, CELL_FEAT_DOOR },
+        { TB_FEAT_DOOR_OPEN, CELL_FEAT_DOOR_OPEN },
+        { TB_FEAT_STAIRS, CELL_FEAT_STAIRS },
+        { TB_FEAT_PERMANENT, CELL_FEAT_PERMANENT },
+        { TB_FEAT_TREE, CELL_FEAT_TREE },
+        { TB_FEAT_WATER, CELL_FEAT_WATER },
+        { TB_FEAT_LAVA, CELL_FEAT_LAVA },
+        { TB_FEAT_GLOW, CELL_FEAT_GLOW },
+        { TB_FEAT_PLAYER, CELL_FEAT_PLAYER },
+        { TB_FEAT_KNOWN, CELL_FEAT_KNOWN },
+        { TB_FEAT_PASSABLE, CELL_FEAT_PASSABLE },
+        { TB_FEAT_RUBBLE, CELL_FEAT_RUBBLE },
+        { TB_FEAT_ROOM, CELL_FEAT_ROOM },
+        { TB_FEAT_GLOWING, CELL_FEAT_GLOWING },
+        { TB_FEAT_SHAFT, CELL_FEAT_SHAFT },
+    };
+
+    unsigned bits = 0u;
+    for (const auto &row : kTable) {
+        if ((tb_bits & row.from) != 0) {
+            bits |= row.to;
+        }
+    }
+    return static_cast<uint16_t>(bits);
+}
+
+//! `TB_MM_*` → `MinimapKind`。理由は `translate_feature_flags` と同じ。
+uint8_t translate_minimap_kind(unsigned char tb_kind)
+{
+    switch (tb_kind) {
+    case TB_MM_FLOOR:
+        return static_cast<uint8_t>(MinimapKind::Floor);
+    case TB_MM_WALL:
+        return static_cast<uint8_t>(MinimapKind::Wall);
+    case TB_MM_DOOR:
+        return static_cast<uint8_t>(MinimapKind::Door);
+    case TB_MM_STAIRS:
+        return static_cast<uint8_t>(MinimapKind::Stairs);
+    case TB_MM_ITEM:
+        return static_cast<uint8_t>(MinimapKind::Item);
+    case TB_MM_MONSTER:
+        return static_cast<uint8_t>(MinimapKind::Monster);
+    case TB_MM_PLAYER:
+        return static_cast<uint8_t>(MinimapKind::Player);
+    case TB_MM_MOUNTAIN:
+        return static_cast<uint8_t>(MinimapKind::Mountain);
+    default:
+        return static_cast<uint8_t>(MinimapKind::Unknown);
+    }
+}
+
+/*!
+ * @brief @ の絵の索引。**職業×性別 → クラス → 種族 → `@` の板**の 4 段（ （幻想蛮怒）` §5）。
+ * @details 職業×性別は M1 で足した段（新しい絵は職業ごとに男女を描き分けた）。番号は `2000 + クラス×2 + 性別`
+ * （性別は原作の SEX_FEMALE=0・SEX_MALE=1。`tools/toband/build_mapping.py` と対）。
+ * @details 幻想蛮怒は**クラスが人物**なので、クラスを先に見る。一般クラス（戦士・メイジ…）は
+ * クラスの絵を持たないので種族へ落ちる。種族の絵も無ければ受け皿の `@` の板に落ちて、
+ * **絵を 1 枚も入れていない状態が従来どおりになる**（M0 と同じ見え方）。
+ * 種族の id を `1000 +` でずらすのは、クラスと種族が同じ `P` の番号空間を分け合うためである。
+ *
+ * **受け皿は `P,0` ではなく `P,9999`。**`0` は戦士のクラス番号なので、そこに `@` を置くと
+ * 戦士だけクラスの絵を持てなくなる（`build_mapping.py` の P 行の注記と対になっている。
+ * **片方だけ変えると @ が地形に化ける**——受け皿が引けないと `resolve_tile_index` が
+ * そのまま床の索引を返すためで、実測で 1 度踏んだ）。
+ * @note 誕生前（`tb_player_kind` が `TB_ERR_STATE`）も受け皿を返す。
+ */
+uint16_t player_tile_index()
+{
+    constexpr uint16_t fallback_id = 9999; // `@` の板。build_mapping.py と対
+
+    int pclass = -1;
+    int prace = -1;
+    if (tb_player_kind(&pclass, &prace) == TB_OK) {
+        int psex = -1;
+        if ((pclass >= 0) && (tb_player_sex(&psex) == TB_OK) && (psex >= 0) && (psex <= 1)) {
+            if (const uint16_t by_class_sex = g_manifest->lookup('P', static_cast<uint16_t>(2000 + (pclass * 2) + psex))) {
+                return by_class_sex;
+            }
+        }
+        if (pclass >= 0) {
+            if (const uint16_t by_class = g_manifest->lookup('P', static_cast<uint16_t>(pclass))) {
+                return by_class;
+            }
+        }
+        if (prace >= 0) {
+            if (const uint16_t by_race = g_manifest->lookup('P', static_cast<uint16_t>(1000 + prace))) {
+                return by_race;
+            }
+        }
+    }
+    return g_manifest->lookup('P', fallback_id);
+}
+
+/*!
+ * @brief 実体 → 目録索引（設計 §5.1）。優先順は変愚の `resolve_tile_index` と同じ。
+ * @details @ ＞ 見えている敵 ＞（未視認なら 0）＞ 照らされた床の物 ＞ 地形。
+ * R/K/F は mapping.csv が全数を持っているので、**未登録で 0 に落ちるのは
+ * 未視認のマスだけ**である（ASCII 板が受け皿になっている。§5.2-3）。
+ */
+/*!
+ * @brief TOband の地形番号（`FEAT_*`）を、画面へ送る（変愚の）地形の番号へ移す。
+ *
+ * @details 幻想蛮怒のコアは、立体の細別を引く表（`terrain_prefabs.jsonc`）の番号が変愚と
+ * 食い違う 227〜240 を予約帯へ逃がす名寄せをここで持っていた。TOband の `FEAT_*` は
+ * 変愚 1.5.1 系の 1 バイトの番号（0x00〜0xCC。`defines.h`）で、0〜194 は変愚と同じ並びだが、
+ * 195 以降（入口・ツンドラ・空・深い海・転移門・トラップ・デネブの店・カオスゲート）は
+ * 変愚の同じ番号と別の地形である（変愚の 195 は鏡、200 は開いたガラスの扉）。
+ * 直さないと立体の規則が別の地形のものを引く。
+ *
+ * 表は `mapping.csv` の F 行の `hb_id` が持つ（`tools/toband/build_mapping.py` が英名と
+ * `manual_overrides.csv` から作る。設計 §5）。表が読めていない・行が無い番号は素通しにする。
+ */
+uint16_t align_terrain_id(uint16_t tb_id)
+{
+    if (g_manifest == nullptr) {
+        return tb_id;
+    }
+    return g_manifest->terrain_alias(tb_id);
+}
+
+uint16_t resolve_tile_index(const tb_map_cell &cell)
+{
+    if (g_manifest == nullptr) {
+        return 0;
+    }
+    if ((cell.feature_flags & TB_FEAT_PLAYER) != 0) {
+        if (const uint16_t pt = player_tile_index()) {
+            return pt;
+        }
+    }
+    if (cell.monster_id != 0) {
+        /*
+         * ランダムユニークとルーンウェポンは、中身が生成のたびに変わる枠なので、絵を引く番号をコアが決める
+         * （`tb_monster_art_id`。ランダムユニークは中身に近い既存のモンスター、ルーンウェポンは武器の種類ごとの絵）。
+         * アストラルモードの祖先の体は、その種族のプレイヤーの絵（`P`、`1000 + 種族`。無ければ `@` の板）。
+         * 引けなければ（絵の表に無ければ）ルーンウェポンは従来の絵（TRW1〜3）、それも無ければ原作の番号で引き直す。
+         */
+        const int art_id = tb_monster_art_id(cell.monster_id);
+        if (art_id != cell.monster_id) {
+            if ((art_id >= TB_ART_PLAYER_RACE_BASE) && (art_id < TB_ART_PLAYER_RACE_BASE + 1000)) {
+                const int race = art_id - TB_ART_PLAYER_RACE_BASE;
+                if (const uint16_t rt = g_manifest->lookup('P', static_cast<uint16_t>(1000 + race))) {
+                    return rt;
+                }
+                if (const uint16_t ft = g_manifest->lookup('P', 9999)) {
+                    return ft; // 種族の絵が無い祖先は `@` の板（player_tile_index の受け皿と同じ）
+                }
+            } else if (const uint16_t at = g_manifest->lookup('R', art_id)) {
+                return at;
+            }
+            const int fallback_id = tb_monster_art_fallback_id(cell.monster_id);
+            if ((fallback_id != cell.monster_id) && (fallback_id != art_id)) {
+                if (const uint16_t ft = g_manifest->lookup('R', fallback_id)) {
+                    return ft;
+                }
+            }
+        }
+        if (const uint16_t mt = g_manifest->lookup('R', cell.monster_id)) {
+            return mt;
+        }
+    }
+    if ((cell.feature_flags & TB_FEAT_KNOWN) == 0) {
+        return 0; // 未視認。真っ暗（地形を漏らさない）
+    }
+    if ((cell.light_level >= 2) && (cell.object_id != 0)) {
+        /*
+         * 正体の分からないアイテム。`object_unaware_category`
+         * は `tb_shim.c` の `tb_unaware_category()` が既に判定済み（0 = 対象外）。
+         */
+        if (cell.object_unaware_category != 0) {
+            const auto category = static_cast<presentation::UnawareItemCategory>(cell.object_unaware_category);
+            if (const uint16_t ut = g_manifest->lookup_unaware_representative(category)) {
+                return ut;
+            }
+        }
+        if (const uint16_t ot = g_manifest->lookup('K', cell.object_id)) {
+            return ot;
+        }
+    }
+    return g_manifest->lookup('F', cell.terrain_id);
+}
+
+void fill_map(GameFrame &frame)
+{
+    int floor_w = 0;
+    int floor_h = 0;
+    if (tb_floor_size(&floor_w, &floor_h) != TB_OK) {
+        return; // 階がまだ無い（誕生画面・オープニング）
+    }
+
+    int px = 0;
+    int py = 0;
+    if (tb_player_pos(&px, &py) != TB_OK) {
+        return;
+    }
+    frame.player_gx = px;
+    frame.player_gy = py;
+
+    const int view_w = (std::min)((std::max)(g_view_w, 1), kMaxView);
+    const int view_h = (std::min)((std::max)(g_view_h, 1), kMaxView);
+    frame.view_w = view_w;
+    frame.view_h = view_h;
+
+    int center_x = px;
+    int center_y = py;
+    /*
+     * 位置の確認（`L`。原作の `do_cmd_locate()`）の最中は、見ている区画の中心へカメラを向ける
+     * （修-64。決めたこと 2026-10-12）。原作は区画（`panel_row_min`/`panel_col_min`）だけを動かし
+     * @ は動かさないので、追従のままでは十字キーを押しても 3D の絵が動かない。
+     * `GameFrame::camera_detached`（「コアが @ から離れた所を見ている」）を立てる。手本は Angband・Sil-Q・Umoria。
+     */
+    frame.camera_detached = (tb_locate_panel_center(&center_x, &center_y) != 0);
+    int ox = center_x - (view_w / 2);
+    int oy = center_y - (view_h / 2);
+    /*
+     * 追従しない設定のときだけ階の端で丸める（変愚の `Bridge::capture` と同じ）。
+     * HD2D は 1 点透視で可視帯が奥へ深く、丸めると @ が画面内を泳ぐので追従が既定。
+     * はみ出したマスは `tb_read_map` が空白で返すので走査も描画も壊れない。
+     */
+    if (!g_camera_follow_player) {
+        const int max_ox = (std::max)(0, floor_w - view_w);
+        const int max_oy = (std::max)(0, floor_h - view_h);
+        ox = (std::max)(0, (std::min)(ox, max_ox));
+        oy = (std::max)(0, (std::min)(oy, max_oy));
+    }
+    frame.cam_x = ox + (view_w / 2);
+    frame.cam_y = oy + (view_h / 2);
+
+    std::vector<tb_map_cell> raw(static_cast<std::size_t>(view_w) * static_cast<std::size_t>(view_h));
+    const int n = tb_read_map(ox, oy, view_w, view_h, raw.data(), static_cast<int>(raw.size()));
+    if (n <= 0) {
+        return;
+    }
+
+    frame.cells.reserve(static_cast<std::size_t>(n));
+    //! プレイヤの光源で照らされているマス（`cells` と同じ並び、1 マス 1 ビット、下位ビットから）。
+    //! 送るかどうかは光源の種類（`fill_floor_and_lighting` が決める）。
+    std::vector<uint8_t> player_lit((static_cast<std::size_t>(n) + 7) / 8, 0);
+    for (int i = 0; i < n; ++i) {
+        const tb_map_cell &src = raw[static_cast<std::size_t>(i)];
+        //! エレメントスコープ中の色つきの四角（原作の `map_info()` の色。`tb_read_map` が 1〜16 で渡す）。
+        if (src.elem_tint != 0) {
+            frame.element_scope.push_back(
+                ElementScopeCell{ src.gx, src.gy, static_cast<uint8_t>(src.elem_tint - 1) });
+        }
+        if (src.lit_by_player != 0) {
+            player_lit[static_cast<std::size_t>(i) / 8] = static_cast<uint8_t>(
+                player_lit[static_cast<std::size_t>(i) / 8] | (1u << (static_cast<unsigned>(i) % 8)));
+        }
+        MapCellView cell{};
+        cell.gx = src.gx;
+        cell.gy = src.gy;
+        //! **番号を名寄せしてから送る**（`align_terrain_id`。設計 §2.4）。
+        //! 2D の板は `resolve_tile_index` が**生の番号**で引くので、そちらは動かない。
+        cell.terrain_id = align_terrain_id(src.terrain_id);
+        cell.feature_flags = translate_feature_flags(src.feature_flags);
+        cell.monster_id = src.monster_id;
+        cell.monster_slot = src.monster_slot;
+        cell.object_id = src.object_id;
+        cell.light_level = src.light_level;
+        cell.fg_color = src.fg_color;
+        cell.bg_color = src.bg_color;
+        cell.ascii_fallback = src.ascii;
+        cell.tile_index = resolve_tile_index(src);
+        /* `under_tile_index` は 0 固定・`graf_*` は -1 固定（設計 §4 の表）。 */
+        frame.cells.push_back(cell);
+    }
+    frame.lighting.player_lit = std::move(player_lit);
+
+    /* ミニマップ（階の全域）。`cells` は視界ぶんしかないので別に運ぶ。 */
+    std::vector<unsigned char> kinds(static_cast<std::size_t>(floor_w) * static_cast<std::size_t>(floor_h));
+    const int written = tb_read_minimap(kinds.data(), static_cast<int>(kinds.size()));
+    if (written == static_cast<int>(kinds.size())) {
+        frame.minimap.width = floor_w;
+        frame.minimap.height = floor_h;
+        frame.minimap.player_gx = px;
+        frame.minimap.player_gy = py;
+        frame.minimap.kinds.resize(kinds.size());
+        for (std::size_t i = 0; i < kinds.size(); ++i) {
+            frame.minimap.kinds[i] = translate_minimap_kind(kinds[i]);
+        }
+    }
+}
+
+/*!
+ * @brief 階の素性と光（`FloorIdentity` / `LightingState`）。
+ * @details HD2D は `floor` で見た目の種を安定させ（同じ階へ戻ると同じ絵）、
+ * `lighting` で昼夜の方向光を作る。**空だと町の意匠が出入りのたびに入れ替わる。**
+ */
+void fill_floor_and_lighting(GameFrame &frame)
+{
+    tb_floor_info info{};
+    if (tb_read_floor_info(&info) != TB_OK) {
+        frame.lighting.player_lit.clear();
+        return;
+    }
+
+    frame.floor.dungeon_id = info.dungeon_id;
+    frame.floor.dun_level = info.dun_level;
+    frame.floor.kind = info.kind;
+    frame.floor.town_id = info.town_id;
+    frame.floor.wild_mode = (info.wild_mode != 0);
+    /*
+     * `generated_turn` は **0 のまま**にする。変愚ではこれで「作り直された同じ階」を
+     * 見分けるが、幻想蛮怒の階に「作られた turn」を持つ欄が無い。0 に倒すと
+     * 「同じ dungeon_id・同じ階は毎回同じ絵」になる——現実変容の後も前の見た目が
+     * 残るという穴はあるが、**毎回違う絵になるより害が小さい**（設計 §10 の後段）。
+     */
+    if (info.place_name[0] != '\0') {
+        frame.floor.place_name_utf8 = sjis_to_utf8(info.place_name, std::strlen(info.place_name));
+    }
+
+    frame.lighting.day_minute = info.day_minute;
+    frame.lighting.daytime = (info.daytime != 0);
+    frame.lighting.light_radius = info.light_radius;
+    //! 光源の種類。0（光が無い）なら照らされたマスも送らない（画面側は従来の絵のまま）。
+    frame.lighting.light_kind = static_cast<uint8_t>(info.light_kind);
+    if (frame.lighting.light_kind == 0) {
+        frame.lighting.player_lit.clear();
+    }
+}
+
+} // namespace
+
+/*!
+ * @brief かかっている状態・常時の効果のアイコン（`GameFrame::status_effects`）。
+ * @details 取り方は `tb_shim.c` の `tb_read_status_effects`（原作の `prt_status()` の旗・左下と左の状態欄に出た字・C 画面の表）。
+ * 名前の文字は原作が画面へ出す字（CP932 か英語）なので UTF-8 にする。
+ * 載せるのはキャラクターがいるあいだだけ。載せるものが無ければ空のまま（線にも出ない）。
+ */
+static void fill_status_effects(GameFrame &frame)
+{
+    static tb_status_effect rows[TB_STATUS_MAX];
+
+    frame.status_effects.clear();
+    const int n = tb_read_status_effects(rows, TB_STATUS_MAX);
+    if (n <= 0) {
+        return;
+    }
+    frame.status_effects.reserve(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        const tb_status_effect &src = rows[i];
+        if ((src.kind < 0) || (src.kind > static_cast<int>(kStatusEffectKindMax))) {
+            continue;
+        }
+        StatusEffectView v{};
+        v.key = src.key;
+        v.label_utf8 = sjis_to_utf8(src.label, std::strlen(src.label));
+        v.amount_utf8 = src.amount;
+        v.kind = static_cast<StatusEffectKind>(src.kind);
+        frame.status_effects.push_back(std::move(v));
+    }
+}
+
+/*!
+ * @brief 天候（`GameFrame::weather`）。
+ * @details 原作の `weather[]`（雨・風・気温。0〜15）の生の値を、読んだまま運ぶ（`tb_read_weather`）。
+ * キャラクターがいるあいだだけ申告する。段への丸め・雨と雪の見分けは画面側がやる。
+ */
+static void fill_weather(GameFrame &frame)
+{
+    int values[3] = { 0, 0, 0 };
+    frame.weather = WeatherState{};
+    if (tb_read_weather(values) == 0) {
+        return;
+    }
+    frame.weather.declared = true;
+    frame.weather.rain = static_cast<uint8_t>(values[0]);
+    frame.weather.wind = static_cast<uint8_t>(values[1]);
+    frame.weather.temp = static_cast<uint8_t>(values[2]);
+}
+
+void set_view_size(int w, int h)
+{
+    if (w > 0) {
+        g_view_w = w;
+    }
+    if (h > 0) {
+        g_view_h = h;
+    }
+}
+
+void set_camera_follow_player(bool follow)
+{
+    g_camera_follow_player = follow;
+}
+
+void set_cursor_mode(bool enabled)
+{
+    g_cursor_mode = enabled;
+}
+
+void apply_cursor_mode()
+{
+    tb_apply_cursor_mode(g_cursor_mode ? 1 : 0);
+}
+
+void set_tile_manifest(const TileManifest *manifest)
+{
+    g_manifest = manifest;
+}
+
+//! ゲーム前画面の選択肢（`set_pregame_choices`）。ゲームスレッドだけが触る。
+std::vector<MenuChoice> g_pregame_choices;
+
+void set_pregame_choices(const std::vector<MenuChoice> &choices)
+{
+    g_pregame_choices = choices;
+}
+
+/* ============================================ 戦闘の見せ場（M1 / S10・R4） */
+
+/*!
+ * @brief 溜まっている見せ場を汲んで `frame.combat_fx` へ移す。
+ * @details **汲んだら消す**（`tb_fx_take`）。消さずに番号で照合する作りにすると、
+ * 同じ縁を何度も拾って演出が止まらない（変愚の `TeleportFx::burst` と同じ罠）。
+ */
+void fill_combat_fx(GameFrame &frame)
+{
+    tb_fx_event raw[TB_FX_MAX];
+    const int n = tb_fx_take(raw, TB_FX_MAX);
+
+    frame.combat_fx.clear();
+    if (n <= 0) {
+        return;
+    }
+    frame.combat_fx.reserve(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        const tb_fx_event &e = raw[i];
+        //! 飛道（kind 2）は `projections` が受け持つ（二重に出さない）。命中の火花（kind 0/1）だけ残す。
+        if (e.kind == 2) {
+            continue;
+        }
+        CombatFxEvent fx{};
+        fx.kind = static_cast<CombatFxKind>(e.kind);
+        //! 束にするのは C 側（`GF_*` を読めるのはあちら）。番号は `CombatFxElement` と同じ。
+        fx.element = static_cast<CombatFxElement>(tb_fx_element_of(e.typ));
+        fx.y = static_cast<std::int16_t>(e.y);
+        fx.x = static_cast<std::int16_t>(e.x);
+        fx.src_y = static_cast<std::int16_t>(e.src_y);
+        fx.src_x = static_cast<std::int16_t>(e.src_x);
+        /*
+         * 強さは**割合**（かすり傷で画面を真っ赤にしないため）。
+         * 分母 0 はコア側で潰してあるが、ここでも 1 に倒しておく。
+         */
+        const float den = (e.den > 0) ? static_cast<float>(e.den) : 1.f;
+        float v = static_cast<float>(e.num) / den;
+        v = (v < 0.f) ? 0.f : ((v > 1.f) ? 1.f : v);
+        fx.intensity = v;
+        frame.combat_fx.push_back(fx);
+    }
+}
+
+/* ============================================ 魔法・投射物の効果（projections / missiles） */
+
+/*!
+ * @brief 溜まっている魔法・矢弾の効果を `frame.projections`・`frame.missiles` へ移す（`named_attack_fx.h`）。**汲んだら空になる**。
+ * @details 矢弾は 1 歩ごとに仮置きされ、命令待ち（`tb_awaiting_command()`＝動きの終わり）で確定する。
+ * 入力待ちの 10ms ごとのフレームで、飛行中の 1 発が途中で割れないようにするため。
+ */
+void fill_attack_fx(GameFrame &frame)
+{
+    attack_fx::glue::take_into(frame, tb_awaiting_command() != 0);
+}
+
+/* ============================================ 周囲の地形の内訳（環境音の層） */
+
+/*!
+ * @brief 周囲の内訳を `frame.surroundings` へ写す。
+ * @details 数えるのは C 側（`tb_read_surroundings`）——地形の意味を知っているのは
+ * `f_info` を読めるあちらだけである。ここは写すだけ。
+ *
+ * **`radius` が 0 なら「数えていない」**（ゲーム前・階が無い）。画面側は
+ * `valid()` が偽の内訳を層に使わず、土台 1 本だけで鳴らす
+ * （`presentation/frame/game_frame.h` の `SurroundingsView::valid`）。
+ */
+void fill_surroundings(GameFrame &frame)
+{
+    frame.surroundings = SurroundingsView{};
+
+    tb_surroundings s{};
+    if (tb_read_surroundings(&s) != TB_OK) {
+        return;
+    }
+    auto &out = frame.surroundings;
+    out.grass = s.grass;
+    out.tree = s.tree;
+    out.dirt = s.dirt;
+    out.swamp = s.swamp;
+    out.water = s.water;
+    out.deep_water = s.deep_water;
+    out.lava = s.lava;
+    out.rock = s.rock;
+    out.glass = s.glass;
+    out.wall = s.wall;
+    out.radius = s.radius;
+    out.counted = s.counted;
+}
+
+/* ==================================================================== 効果音 */
+
+/*!
+ * @brief 溜まっている音を汲んで `frame.sounds` へ移す。
+ * @details **汲んだら消す**（`tb_sound_take`）。音は状態ではなく一度きりの出来事で、
+ * 載ったその 1 枚を逃すと二度と来ない。
+ *
+ * **画面側が鳴らすときしか溜まらない。**そうでないときは `tb_audio.c` が
+ * winmm で鳴らしていて、ここは常に 0 件で通る（§2.2）。
+ *
+ * `heard_*` と `path` は載せない——音の道のりを数えていないので 0 のままにする。
+ * 画面側は 0 を「計算していない」と読んで実際のマスと直線距離へ落ちる
+ * （`presentation/frame/sound_event.h` の約束）。**コア名の分岐は生えない。**
+ */
+void fill_sounds(GameFrame &frame)
+{
+    tb_sound_event raw[32];
+    const int n = tb_sound_take(raw, 32);
+
+    frame.sounds.clear();
+    if (n <= 0) {
+        return;
+    }
+    frame.sounds.reserve(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        const tb_sound_event &e = raw[i];
+        if (e.name[0] == '\0') {
+            continue;
+        }
+        SoundEvent s{};
+        s.name = e.name;
+        s.y = static_cast<std::int16_t>(e.y);
+        s.x = static_cast<std::int16_t>(e.x);
+        frame.sounds.push_back(std::move(s));
+    }
+}
+
+//! 見る `l` のポップアップの材料：原作が Term の行 0 に出している説明（`target_set_aux()` の 1 行）の字と色を、そのまま色つきの字にする。
+//! 原作は段（モンスター・物・地形）ごとに 1 行を出し、空白などで次の段へ進むので、行 0 を写せばポップアップも段に合う。
+//! 末尾の操作の案内（最後の `[` から後ろ。`[r思 …]` など）と、続きの待ちの印は入れない。見つからなければ空。
+static std::vector<TargetingInfoLine> look_info_from_row0()
+{
+    char text[512];
+    unsigned char attr[512];
+    std::vector<TargetingInfoLine> lines;
+    const int n = tb_term_row(0, text, attr, static_cast<int>(sizeof(text)));
+    if (n <= 0) {
+        return lines;
+    }
+    //! 2 バイト字は 2 セル（先行バイトの色を使う）。最後の 1 バイトの `[` を SJIS の字の切れ目で探す。
+    const auto lead_byte = [](unsigned char c) { return ((c >= 0x81) && (c <= 0x9f)) || ((c >= 0xe0) && (c <= 0xfc)); };
+    int last_bracket = -1;
+    for (int i = 0; i < n; ++i) {
+        if (lead_byte(static_cast<unsigned char>(text[i])) && (i + 1 < n)) {
+            ++i;
+        } else if (text[i] == '[') {
+            last_bracket = i;
+        }
+    }
+    int end = (last_bracket >= 0) ? last_bracket : n;
+    while ((end > 0) && (text[end - 1] == ' ')) {
+        --end;
+    }
+    int begin = 0;
+    while ((begin < end) && (text[begin] == ' ')) {
+        ++begin;
+    }
+    TargetingInfoLine line;
+    int i = begin;
+    while (i < end) {
+        const int width = (lead_byte(static_cast<unsigned char>(text[i])) && (i + 1 < end)) ? 2 : 1;
+        const int color = attr[i] & 0x0f;
+        if (line.spans.empty() || (line.spans.back().color != color)) {
+            line.spans.push_back(TargetingInfoSpan{ std::string(), color });
+        }
+        line.spans.back().text += sjis_to_utf8(&text[i], static_cast<std::size_t>(width));
+        i += width;
+    }
+    //! 続きの待ちの印は説明ではない。
+    if (!line.spans.empty()) {
+        std::string &tail = line.spans.back().text;
+        for (const char *marker : { "-more-", reinterpret_cast<const char *>(u8"-続く-") }) {
+            const std::string m(marker);
+            if ((tail.size() >= m.size()) && (tail.compare(tail.size() - m.size(), m.size(), m) == 0)) {
+                tail.erase(tail.size() - m.size());
+            }
+        }
+        while (!tail.empty() && (tail.back() == ' ')) {
+            tail.pop_back();
+        }
+        if (tail.empty()) {
+            line.spans.pop_back();
+        }
+    }
+    if (!line.spans.empty()) {
+        lines.push_back(std::move(line));
+    }
+    return lines;
+}
+
+/*!
+ * @brief 見る `l` の帯が出ている間、カーソルのマスのポップアップ（`TargetingState::info`）を載せる。
+ * @details 見る `l` は原作の問い（`target_set_interactive()`）を画面が帯にしたもので、狙いの画面（`hb_target_*`）を通らない。
+ * そこで Frox の移動先のカーソル（`apply_travel_cursor`）と同じく、入力を受けない `preview_only` の狙いの状態に載せる。
+ * カーソルのマスは Term のカーソル（原作は `move_cursor_relative()` で動かす）から求める。中身は原作が行 0 に出している字と色そのもの
+ * （段の切り替えも原作のまま）。帯が無いとき・カーソルが地図の外のときは何もしない。
+ */
+void apply_look_cursor_info(GameFrame &frame)
+{
+    if (frame.targeting.active || frame.targeting.preview_only) {
+        return;
+    }
+    const std::string &head = frame.prompt.text_utf8;
+    if ((head.rfind(reinterpret_cast<const char *>(u8"見る: "), 0) != 0) && (head.rfind("Look: ", 0) != 0)) {
+        return;
+    }
+    int gx = 0;
+    int gy = 0;
+    int floor_w = 0;
+    int floor_h = 0;
+    if ((tb_cursor_cave_cell(&gx, &gy) == 0) || (tb_floor_size(&floor_w, &floor_h) != TB_OK)) {
+        return;
+    }
+    std::vector<TargetingInfoLine> lines = look_info_from_row0();
+    if (lines.empty() || (gx >= floor_w) || (gy >= floor_h)) {
+        return;
+    }
+    TargetingState &t = frame.targeting;
+    t = TargetingState{};
+    t.preview_only = true;
+    t.scope = 1;
+    t.revision = 1;
+    t.width = floor_w;
+    t.height = floor_h;
+    t.mode = "point";
+    t.kind = "neutral";
+    t.selected = TargetingPoint{ gx, gy };
+    t.source = t.selected;
+    t.info = std::move(lines);
+}
+
+GameFrame capture_frame(unsigned long long frame_id)
+{
+    GameFrame frame;
+    frame.frame_id = frame_id;
+
+    /*
+     * メニューの判定（P3。P2 は真をべた書きしていた）。
+     *
+     * - `menu_open` … 「Term ミラーを前に出す」。全画面の別画面（店・建物・一覧）と、
+     *   @ がまだ／もう無い場面。`character_icky` は**計数器**なので非 0 で見る
+     *   （`tb_screen_flags` の注記）。`character_xtra`（再計算中）も混ぜるのは
+     *   `main-win.c:2805` が「いま普通の地図ではない」の判定にそう使っているから。
+     * - `pre_game_menu` … 「本文を全面に出す」。@ がまだ無い／死んだとき
+     *   （`game_frame.h:397-399`）。変愚の `frame.pre_game_menu = !character_generated || is_dead`
+     *   と同じ形にしてある。
+     *
+     * @ が出来る前は `menu_open` を必ず立てる。ここを落とすと `init_angband` の
+     * 進捗や `-more-` 待ちが**画面に 1 文字も出ないまま固まる**（変愚が Android で
+     * 実際に踏んだ穴。`presentation_bridge.cpp:3151-3160`）。
+     */
+    const int screen = tb_screen_flags();
+    const bool generated = (screen & TB_SCREEN_GENERATED) != 0;
+    const bool dead = (screen & TB_SCREEN_DEAD) != 0;
+    frame.menu_open = !generated || dead || ((screen & (TB_SCREEN_ICKY | TB_SCREEN_XTRA)) != 0)
+        || ((screen & TB_SCREEN_DUNGEON) == 0);
+    frame.pre_game_menu = !generated || dead;
+    frame.game_over = dead; //!< 死亡・引退のあとの画面。題と phase を誕生と分ける（修-10）。
+    /*
+     * 地図が出ているフレームの Term を基準に覚える（`fill_term_mirror()` が、画面を消さずに
+     * 重ねただけの画の差分を取る相手）。ゲーム前・死亡では前のキャラクターの地図を捨てる。
+     */
+    if (frame.pre_game_menu) {
+        forget_term_baseline();
+    } else if (!frame.menu_open) {
+        remember_term_baseline();
+    }
+    presentation::apply_native_targeting_frame(frame);
+    frame.awaiting_command = (tb_awaiting_command() != 0);
+    /*
+     * `title_screen`（K-47）は「タイトル画を敷いてよい間」。幻想蛮怒には
+     * オープニングの宣言口が無いので、**@ が出来るまで**をそれとみなす。
+     */
+    frame.title_screen = !generated;
+
+    /*
+     * Term ミラーは **`menu_open` のときだけ**積む（`game_frame.h:468`
+     * 「icky 中の Term 全文ミラー（menu_open 時のみ Bridge が充填）」）。
+     *
+     * **毎フレーム積んではいけない。**画面側の `frame_shows_map()`
+     * （`hd2d/ui/game_hud.cpp:639`）は `menu_term_lines.empty()` だけを見ており、
+     * 積んであると「いま地図ではない」と判断して**立体を 1 枚も描かず**
+     * Term の写しを窓に出す。P3 の実機で実際にそうなった——HUD もミニマップも
+     * 正しいのに地図だけが出ず、原因がコア側にあるように見えた。
+     * 中身が空でもキーが立てば同じなので、**判定の後に積む**形にしてある。
+     */
+    if (frame.menu_open) {
+        fill_term_mirror(frame);
+        /*
+         * **地図が生きている間の重ねのメニューだけ**刈り込む（2026-09-01）。
+         * 題名・誕生・死亡と、地図がまだ無い間は素通し。
+         */
+        frame.menu_over_map = generated && !dead && ((screen & TB_SCREEN_DUNGEON) != 0)
+            && crop_mirror_to_menu_box(frame);
+        /*
+         * ゲーム前画面（タイトル＋セーブ選択。P5）の選択肢。アダプタが自分で
+         * 描いた画面の分だけを宣言で載せる（Term からの自動抽出は持たない）。
+         * 画面側のカーソル層（矢印・パッド・クリック）がこれで動く。
+         */
+        frame.menu_choices = g_pregame_choices;
+    }
+
+    /*
+     * 色表（S6）と操作ヒント（S8）。どちらも 1 フレームぶんの費用がほぼ無い
+     * （色は 48 バイトで、既定と同じ間は codec が省く）。**毎フレーム積む**——
+     * `&` と pref の `V:` で遊んでいる最中に変わる。
+     *
+     * ヒントの文言は変愚（`presentation_bridge.cpp:3155`）と同じにする。**幻想蛮怒だけ
+     * 別の言い回しにしない**——同じ画面の同じ場所に出る同じ意味の文字だから。
+     * この TU の日本語リテラルは CP932 で焼かれる（設計 §3.1）ので `sjis_to_utf8` を通す。
+     */
+    fill_term_palette(frame);
+    {
+        static const char kHint[] = "移動:十字/L  Select/F10:機能  A:決定  B:戻る";
+        //! **英語ならカタログで引く**（フック #33）。この行は画面の下端に出るだけで
+        //! Term を通らない。訳は変愚の英語（`presentation_bridge.cpp`）と同じ字にする。
+        const char *hint = tb_tr(kHint); //GB: english layer #33
+        frame.controller_hint = sjis_to_utf8(hint, std::strlen(hint));
+    }
+
+    fill_hud(frame);
+    /*
+     * 左の状態列・最下段・階層（P4）。**`menu_open` に関わらず毎回積む。**
+     * 画面側は地図を出しているフレームでしか使わない（`game_hud.cpp:746` は
+     * `frame_shows_map()` の後ろ）が、icky の 1 フレームで空にすると
+     * メニューを閉じた直後の 1 枚だけ列が消える。中身の判断は `fill_status_col` が持つ。
+     */
+    fill_status_col(frame);
+    /*
+     * サブパネル 7 枚（S1）。**`menu_open` に関わらず毎回積む**——状態列と同じで、
+     * メニューの 1 フレームで空にすると閉じた直後の 1 枚だけ枠が消える。
+     * 中身はコアが `handle_stuff()` で描いたものをそのまま読む。
+     */
+    fill_sub_panels(frame);
+    /*
+     * 文字入力（S5・R2）。コアが**自由文字入力の待ち**に入っている間だけ立つ
+     * ——`askfor_aux()` と、それを通らない自前ループ 3 つ（自動拾いエディタ本体・
+     * その検索文字列・生い立ちの編集）を `tb_text_input_set` で囲んである。
+     * **これが無いと日本語が 1 文字も打てない**
+     * ——画面側は非 ASCII をこの旗のときだけ送る（`hd2d_app.cpp:11086`）。
+     */
+    frame.text_input_active = (tb_text_input_active() != 0);
+    /*
+     * 自動拾いエディタの検索語（`autopick.c:3553` の `get_string_for_search()`）は、`askfor_aux()` を通らない自前のループで、
+     * 旗が立たない（`tb_native_util.c` が包むのは `get_string()` と `askfor()`）。そのため入力欄が出ず、日本語も打てなかった。
+     * 行 0 に描かれる問い（`検索(^I:持ち物 ^L:破壊された物): `／英語の枝は `Search key(^I:inven ^L:destroyed): `）の頭で見分ける。
+     */
+    if (!frame.text_input_active && !frame.menu_term_lines.empty() && frame.menu_term_lines.front().source_row == 0) {
+        const std::string &row0 = frame.menu_term_lines.front().text_utf8;
+        if (row0.compare(0, std::strlen("Search key(^I:inven ^L:destroyed):"), "Search key(^I:inven ^L:destroyed):") == 0
+            || row0.compare(0, std::strlen(reinterpret_cast<const char *>(u8"検索(^I:持ち物 ^L:破壊された物):")),
+                   reinterpret_cast<const char *>(u8"検索(^I:持ち物 ^L:破壊された物):")) == 0) {
+            frame.text_input_active = true;
+        }
+    }
+    /*
+     * カーソルとプロンプト（S2 後半・S4）。
+     *
+     * `fill_core_cursor()` はミラーの `》` を探す。ミラーが空（＝ゲーム中）なら
+     * 何も見つからないので、ゲーム前画面の宣言（`g_pregame_choices`）とは
+     * ぶつからない——あちらは `menu_choices`、こちらは `menu_core_cursors` で器も別。
+     *
+     * `fill_row0_prompt()` は **`menu_open` に関わらず**呼ぶ。`[y/n]` と数値入力は
+     * icky にならないので、ゲーム中の地図の上に行 0 だけで出てくる。
+     */
+    const bool core_has_cursor = fill_core_cursor(frame);
+    //! コアのカーソルで選ぶ名指しのメニュー（ガンナーの技術メニュー）は、行ごとの選択肢にする（窓が行を並べられるように）。
+    if (core_has_cursor) {
+        fill_cursor_menu_choices(frame);
+    }
+    /*
+     * 店・建物・品物選びの選択肢（R3）。**コアがカーソルを持っている画面では作らない**
+     * ——二重のカーソルになる。ゲーム前画面（`g_pregame_choices`）が既に入っているときも
+     * 触らない（`menu_choices` が空かどうかで見る）。
+     */
+    if (!core_has_cursor && frame.menu_choices.empty()) {
+        fill_store_menu_choices(frame);
+    }
+    fill_row0_prompt(frame);
+    /*
+     * 戦闘の見せ場（S10 / R4）。**汲んだら消える**ので、capture を省いたフレームがあっても
+     * 縁は落ちない（次の capture でまとめて出る）。溜まっているうちは`tb_change_digest()` が
+     * 動くようにしてある（`tb_null_term.c`）ので、画が変わらなくても門を越える。
+     */
+    fill_combat_fx(frame);
+    fill_attack_fx(frame); //!< 
+    /* 効果音。見せ場と同じく汲んだら消える。 */
+    fill_sounds(frame);
+    /* 周囲の地形の内訳（環境音の層）。 */
+    fill_surroundings(frame);
+    fill_messages(frame);
+    fill_status_effects(frame); //!<。名前は原作が画面へ出す字
+    fill_weather(frame); //!<。原作の weather[] を読むだけ
+    fill_map(frame);
+    fill_floor_and_lighting(frame);
+
+    /*
+     * `inkey_flag` is the core's normal-command boundary, but the frame has
+     * richer knowledge after the prompt/menu/text adapters above have run.
+     * Never advertise a top-level command wait while a child input owns the
+     * same frame; otherwise A/Enter can reopen the root command menu over it.
+     */
+    if (frame.menu_open || frame.pre_game_menu || frame.text_input_active
+        || frame.numeric.active || !frame.prompt.choices.empty()) {
+        frame.awaiting_command = false;
+    }
+
+    presentation::apply_native_targeting_frame(frame);
+    return frame;
+}
+
+int term_mirror_baseline_selftest()
+{
+    int failed = 0;
+    const auto check = [&](bool ok, const char *what) {
+        if (ok) {
+            return;
+        }
+        std::fprintf(stderr, "[toband] term mirror baseline selftest FAIL: %s\n", what);
+        ++failed;
+    };
+    const auto put = [](TermGrid &g, int x, int y, const char *s) {
+        for (; *s != '\0'; ++s, ++x) {
+            g.cells[g.at(x, y)] = *s;
+            g.attrs[g.at(x, y)] = 2;
+        }
+    };
+    const auto row_text = [](const TermGrid &g, int y) {
+        return std::string(&g.cells[g.at(0, y)], static_cast<std::size_t>(g.cols));
+    };
+    const auto make_map = [&](TermGrid &g) {
+        g.reset(40, 8);
+        put(g, 0, 1, "HP 10");
+        for (int y = 1; y < 7; ++y) {
+            put(g, 8, y, "....#.....#.....#.....#");
+        }
+    };
+
+    {
+        //! 地図の上に 1 行だけ重ねた画（close_game のセーブの表示）。地図と状態列は消え、重ねた字は残る。
+        TermGrid base;
+        make_map(base);
+        TermGrid cur = base;
+        put(cur, 0, 0, "Saving...");
+        const bool overlay = overlay_over_baseline(base, cur);
+        check(overlay, "overlay line is recognized as an overlay");
+        check(row_text(cur, 0).compare(0, 9, "Saving...") == 0, "overlay line is kept");
+        check(row_text(cur, 1).find_first_not_of(' ') == std::string::npos, "map and status column cells are blanked");
+        check(row_text(cur, 3).find_first_not_of(' ') == std::string::npos, "map row is blanked");
+    }
+    {
+        //! 画面を消して描き直した全面の画。背景と同じ字が同じ桁に来ても本文として残る。
+        TermGrid base;
+        make_map(base);
+        TermGrid cur;
+        cur.reset(40, 8);
+        put(cur, 0, 0, "Store");
+        put(cur, 8, 3, "....#");
+        const TermGrid expect = cur;
+        const bool overlay = overlay_over_baseline(base, cur);
+        check(!overlay, "cleared full screen is not an overlay");
+        check(cur.cells == expect.cells, "cleared full screen keeps cells equal to the map");
+    }
+    {
+        //! 2 バイト字は 2 セルまとめて扱う。片方でも変わっていれば両方残し、変わっていなければ両方消す。
+        TermGrid base;
+        make_map(base);
+        const char lead = static_cast<char>(0x83);
+        base.cells[base.at(0, 2)] = lead;
+        base.cells[base.at(1, 2)] = static_cast<char>(0x41);
+        base.cells[base.at(4, 2)] = lead;
+        base.cells[base.at(5, 2)] = static_cast<char>(0x41);
+        TermGrid cur = base;
+        cur.cells[cur.at(5, 2)] = static_cast<char>(0x42);
+        const bool overlay = overlay_over_baseline(base, cur);
+        check(overlay, "2-byte case is an overlay");
+        check((cur.cells[cur.at(0, 2)] == ' ') && (cur.cells[cur.at(1, 2)] == ' '), "unchanged 2-byte character is blanked as a pair");
+        check((cur.cells[cur.at(4, 2)] == lead) && (cur.cells[cur.at(5, 2)] == static_cast<char>(0x42)),
+            "2-byte character with a changed trail byte is kept as a pair");
+    }
+    {
+        //! 基準が無い・大きさが違うときは触らない。
+        TermGrid base;
+        TermGrid cur;
+        make_map(cur);
+        const TermGrid expect = cur;
+        check(!overlay_over_baseline(base, cur), "no baseline: not an overlay");
+        TermGrid other;
+        other.reset(41, 8);
+        put(other, 8, 1, "....#");
+        check(!overlay_over_baseline(other, cur), "different size: not an overlay");
+        check(cur.cells == expect.cells, "cells are untouched when the baseline does not apply");
+    }
+    return failed;
+}
+
+bool attack_fx_ready()
+{
+    return attack_fx::glue::ready(tb_awaiting_command() != 0);
+}
+
+} // namespace tb
+
+/* ==================================================================== 魔法・投射物の効果（C から呼ばれる入口。`tb_shim.c`） */
+
+extern "C" void tb_named_fx_projection(int origin, int shape, const char *attr, int rad, int src_y, int src_x, int impact_y,
+    int impact_x, int flags, const int *path, int path_n, const int *area, int area_n)
+{
+    attack_fx::glue::projection(&attack_fx::toband_look_name, origin, shape, attr, rad, src_y, src_x, impact_y, impact_x, flags,
+        path, path_n, area, area_n);
+}
+
+extern "C" void tb_named_fx_missile_step(int first, int kind, int item_id, const char *brand, int src_y, int src_x, int y, int x)
+{
+    attack_fx::glue::missile_step(first, kind, item_id, brand, src_y, src_x, y, x);
+}
+
+extern "C" void tb_named_fx_missile_hit(void)
+{
+    attack_fx::glue::missile_hit();
+}
+
+extern "C" void tb_named_fx_missile_returns(void)
+{
+    attack_fx::glue::missile_returns();
+}

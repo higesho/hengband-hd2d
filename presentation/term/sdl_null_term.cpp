@@ -5,6 +5,7 @@
 #include "term/sdl_null_term.h"
 
 #include "audio/sdl_win_audio.h"
+#include "bridge/hengband_test_monster_act.h"
 #include "bridge/presentation_bridge.h"
 #include "core/realtime-clock.h"
 #include "core/special-internal-keys.h"
@@ -515,6 +516,8 @@ errr SdlNullTerm::on_event(int wait)
             }
         }
         for (;;) {
+            // 検査用（環境変数 `HD2D_TEST_MONSTER_ACT` が無ければ即座に戻る）。敵の行動の指定。コマンド待ちのときだけ働く。
+            poll_test_monster_act(player_);
             // 死亡プロンプト等、inky 待ち中も Term ミラーを再描画する。
             if (seam_.present && bridge_ != nullptr) {
                 if (seam_.before_capture) {

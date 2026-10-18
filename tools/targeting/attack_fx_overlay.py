@@ -1,6 +1,6 @@
-"""攻撃の視覚効果の観測の呼び出しを、幻想蛮怒・Frox・Sil-Q の原作ソースへ足す。
+"""攻撃の視覚効果の観測の呼び出しを、幻想蛮怒・Frox・Sil-Q・TOband の原作ソースへ足す。
 
-決めたこと 2026-10-11。記録するだけで、原作の変数・乱数・画面には触れない。
+2026-10-11（HUD を各コアへ広げる作業の一部）。記録するだけで、原作の変数・乱数・画面には触れない。
 足す行はどれも「アダプタの関数を 1 回呼ぶ」だけで（`{extern ...; 関数(...);}` の 1 行）、原作の行は変えない・消さない。
 場所は行ハッシュ（line_anchor.py）で決め、原作の文は quote しない。関数の中の 1 件だけに効くよう、探す範囲を関数の本体に絞る。
 
@@ -8,6 +8,7 @@
   * 幻想蛮怒 gensoband/adapter/gb_shim.c の gb_fx_*
   * Frox     frox/adapter/fc_shim.c の fc_fx_*
   * Sil-Q    silq/adapter/sq_shim.c の sq_fx_*
+  * TOband   toband/adapter/tb_shim.c の tb_fx_*（2026-10-17。幻想蛮怒と同じ書き足し）
 積む先は presentation/bridge/named_attack_fx.h（属性を名前で積む記録の置き場）。
 
 挿入の場所（幻想蛮怒・Frox の project() は同じ作りなので同じ行ハッシュ・同じ呼び出しで当たる）:
@@ -70,6 +71,9 @@ H = {
     's_if_hit_comment': '98958bcd84d4',  # /* If it hit */
     's_if_hit_comment_throw': '768207ec5650',  # /* If it hit... */
     's_advance': 'f34463d69325',         # /* Advance */
+    # TOband（変愚蛮怒 1.x 系の平屋の C。幻想蛮怒に近い作り）
+    't_fire_hit': '13de0023700e',        # if (test_hit_fire(chance - cur_dis, ac, m_ptr->ml))（射撃と投擲に 1 つずつ）
+    't_return_loop': '86fb73b1f368',     # for (i = cur_dis-1;i>0;i--)（投擲の戻り）
 }
 
 
@@ -234,4 +238,51 @@ def silq_cmd2(raw):
 
     text = _edit_function(text, r'^void do_cmd_fire\(int quiver\)', fire, 'silq do_cmd_fire')
     text = _edit_function(text, r'^void do_cmd_throw\(bool automatic\)', throw, 'silq do_cmd_throw')
+    return _join(text, newline)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# TOband（2026-10-17）
+# ---------------------------------------------------------------------------------------------------------------------
+def toband_project(raw):
+    """TOband の spells1.c の project()。範囲（gx/gy）が決まった直後、「爆発の無い場合を飛ばす」手前に 1 行。
+    TOband には GF_SEEKER・GF_SUPER_RAY が無く、project() の途中で戻る分岐も無いので、挿入はここ 1 か所だけ。
+    着弾点は「爆発の中心を保存」した y2・x2、始点は y1・x1。"""
+    text, newline = _split(raw)
+    hook = ('\t{extern void tb_fx_note_projection(int,int,int,int,int,int,int,int,int,int,int,const u16b *,int,const byte *,'
+            'const byte *,int);tb_fx_note_projection(who,y1,x1,y2,x2,typ,rad,(int)flg,blind,breath,jump,path_g,path_n,gy,gx,grids);}')
+
+    def edit(body):
+        return anchor.insert_before(body, H['speed_comment'], hook, 'toband attack effect projection site')
+
+    return _join(_edit_function(text, r'^bool project\(int who, int rad, int y, int x, int dam, int typ, u32b flg, int mod_elem_mode\)',
+                                edit, 'toband project()'), newline)
+
+
+def toband_cmd2(raw):
+    """TOband の cmd2.c：射撃（do_cmd_fire_aux）と投擲（do_cmd_throw_aux）。
+    1 歩ごとは「新しい位置を保存する」手前に置く（その時点では y・x が前の位置、新しい位置は射撃が ny・nx、投擲が ny[cur_dis-1]・nx[cur_dis-1]）。"""
+    text, newline = _split(raw)
+
+    def fire(body):
+        body = anchor.insert_before(
+            body, H['g_save_loc'],
+            '\t\t\t{extern void tb_fx_shot(int,int,int,int,int,const object_type *,const object_type *,int);'
+            'tb_fx_shot(cur_dis,ny,nx,y,x,q_ptr,j_ptr,shot_flgs);}', 'toband fire step site')
+        return anchor.insert_after(body, [H['t_fire_hit'], _h('{'), H['fear_decl']],
+                                   '\t\t\t\t\t{extern void tb_fx_hit(void);tb_fx_hit();}', 'toband fire hit site')
+
+    def throw(body):
+        body = anchor.insert_before(
+            body, H['g_save_loc'],
+            '\t\t{extern void tb_fx_throw(int,int,int,int,int,const object_type *);'
+            'tb_fx_throw(cur_dis,ny[cur_dis-1],nx[cur_dis-1],y,x,q_ptr);}', 'toband throw step site')
+        body = anchor.insert_after(body, [H['t_fire_hit'], _h('{'), H['fear_decl']],
+                                   '\t\t\t\t{extern void tb_fx_hit(void);tb_fx_hit();}', 'toband throw hit site')
+        return anchor.insert_before(body, H['t_return_loop'],
+                                    '\t\t\t\t{extern void tb_fx_throw_return(void);tb_fx_throw_return();}', 'toband throw return site')
+
+    text = _edit_function(text, r'^bool do_cmd_fire_aux\(int item, object_type \*j_ptr, int shot_flgs, int x_to_h, int x_to_d, int penetrate, bool direct\)',
+                          fire, 'toband do_cmd_fire_aux')
+    text = _edit_function(text, r'^bool do_cmd_throw_aux\(int mult, u16b mode, int chosen_item\)', throw, 'toband do_cmd_throw_aux')
     return _join(text, newline)

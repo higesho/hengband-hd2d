@@ -19,6 +19,7 @@ additional terms.
 | --- | --- | --- |
 | 変愚蛮怒・短愚蛮怒・幻想蛮怒・FroxComposband、画面（`hd2d/`）、共通コード（`presentation/` `platform/`）、アダプタ、ツール | Moria / Angband 使用許諾（営利目的の配布を認めない） | §1 |
 | Angband・Umoria のコアに組み込まれる、この派生版の作者のコード（`angband/adapter/` `umoria/adapter/` と、それらが組み込む `presentation/` `platform/` のファイル） | §1 に加えて GPL v2 以降でも提供 | §7 |
+| TOband（`toband/`） | §1 と同じ Moria / Angband 使用許諾＋変愚蛮怒の追加条項。クエスト「ブリュンヒルド強奪」のマップは NetHack General Public License | §1.3 |
 | Sil-Q | GPL v2 または Angband 使用許諾 | §2 |
 | Angband 4.2.6 | GPL v2（原作の二重許諾から GPL v2 を選ぶ） | §3 |
 | Umoria 5.7 系 | GPL v3 | §4 |
@@ -80,6 +81,20 @@ and Umoria:      Copyright (c) 1989 James E. Wilson
                               岸康司、TeO、怒涛の暇人(金光寛峯)、VOLKO(城戸イサム)
 ```
 
+
+### 1.3 TOband（`toband/`）
+
+TOband は変愚蛮怒を元にした派生版で、§1 の Moria / Angband 使用許諾と §1.1 の変愚蛮怒の追加条項に従います。
+TOband の著作権と使用許諾の原文は原作の `lib/help/jlicense.txt` で、配布物では
+`licenses/Toband-jlicense.txt`（UTF-8 に写したもの）と `toband/lib/help/jlicense.txt` に入っています。
+原作の `readme_angband` も `licenses/Toband-readme_angband.txt` として添えます。
+
+- (3) のスコアの送信は、原作の `report.c` を組まず、何もしない `report_score()`（`toband/adapter/tb_report_stub.c`）
+  に置き換えて外しています。
+- クエスト「ブリュンヒルド強奪」のマップは NetHack 3.6 の `castle.des` が元です。そのため NetHack General
+  Public License が掛かります。原文は `toband/lib/file/nethack-license.txt` と `licenses/Toband-nethack-license.txt` にあります。
+- 原作の中の商標の記載（オウガバトルシリーズの登録商標の権利者）も `jlicense.txt` のまま残しています。
+
 ---
 
 ## 2. Sil-Q（`silq/`）
@@ -98,8 +113,9 @@ Angband は GNU GPL v2 と Angband 使用許諾のどちらかを選べる二重
 `angband/LICENSE.md` にあります（原作の `copying.rst` の写しです）。
 
 - この派生版は、Angband のコア（`AngbandCore.exe`）を **GPL v2 を選んで**配布します。
-- GPL v2 の全文は `silq/LICENSE.md`（「GNU General Public License (GPL)」の節）か
-  <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html> にあります。
+- GPL v2 の全文は `third_party/licenses/GPL-2.0.txt` にあり、配布物には `licenses/GPL-2.0.txt` として入ります。
+  `silq/LICENSE.md`（「GNU General Public License (GPL)」の節）か
+  <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html> にもあります。
 - 原作の記載は、派生版でも二重の表記を残すことを勧めています。そのため `angband/LICENSE.md`
   をそのまま置いています。
 - Angband のソースと、ゲームデータ（`lib/gamedata` など）はこのリポジトリに含めません。
@@ -153,8 +169,9 @@ RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ�
 
 - RogueClone2 のソースと日本語のメッセージ表（`rogue2/mesg`）はこのリポジトリに含めません。
   用意する手順は §8 にあります。
-- 原作の `README` `COPYING` `AUTHORS` など、原作に付いているドキュメントの扱いは、
-  上の (2) に関わります。
+- 原作の `README` `COPYING` `AUTHORS` など、原作に付いているドキュメントは、上の (2) に従って
+  配布物に添えます（`licenses/RogueClone2/`。原作は EUC-JP なので UTF-8 に写しています。
+  作り方は `tools/package/license_docs.py`）。
 
 ---
 

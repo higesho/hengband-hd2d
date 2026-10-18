@@ -914,10 +914,6 @@
       "encoding": "utf8",
       "text": "\t\t\t\t/* loop */;\r\n\r\n\t\t\tbreak;\r\n\t\t}\r\n\r\n\t\tdefault:\r\n\t\t{\r\n"
     },
-    "065f977e9f5bb4f19b623b4f439493816f1a4107a82253ada04bafdc4c386c17": {
-      "encoding": "cp932",
-      "text": "kanji ? \"|X切\" : \"|XS\"); //GB: english layer #21 - the roman abbreviations are the english ones (docs/GENSOBAND_EN_DESIGN.md 5)"
-    },
     "06a16a5f4d388502aba75e5cc3d62a0383c96eb3e9f45f5ef7494574a349ac76": {
       "encoding": "cp932",
       "text": "trnfmt(buf, sizeof(buf), \"%sに降り立った。\", map_name());  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
@@ -929,10 +925,6 @@
     "07049284c79055f5ece9695b626665513baf4c01006ddda476287b96ed0942d7": {
       "encoding": "utf8",
       "text": "\r\n}\r\n\r\n//v1.1.59\r\n"
-    },
-    "0709564c93550216a4cbac4c4de8d7ae632c8ce468009ac36830307143b8ee14": {
-      "encoding": "cp932",
-      "text": "/*GB: 戦闘の見せ場（`docs/GENSOBAND_SYSTEM_ACCEPT.md` S10 / R4）。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_monster_hit(int y, int x, int dam, int max_hp); //GB:\n"
     },
     "0741eb5bf371fcfcbf25bfe8e21ef17859fbab0355096cc2b1cc1c958c1aa94d": {
       "encoding": "utf8",
@@ -974,6 +966,10 @@
       "encoding": "utf8",
       "text": "\t\tbreak;\r\n\r\n\tdefault:\r\n\t\tbreak;\r\n\r\n"
     },
+    "08506963a83fd13621f00ec9e7a1e52226508f9f1f8ae6e7b0aa8c87ab82f714": {
+      "encoding": "utf8",
+      "text": "\n\tgb_object_desc_en_fix(buf, o_ptr, mode); //GB: english layer #6 - rebuild the JP grammar into English\n"
+    },
     "0875415e7d8f34028dbf2bab033f06e25a31bd34fbe0b1c67497dc2280291514": {
       "encoding": "utf8",
       "text": "#endif\r\n\t\t\t\t}\r\n"
@@ -981,6 +977,10 @@
     "087a091e134647bc7d03fcddc47b4c7e007453f3532ea415239f0d13709135c4": {
       "encoding": "utf8",
       "text": "#endif\r\n\t}\r\n\r\n\telse\r\n\t{\r\n"
+    },
+    "088dc478d980b9f0bb54163fbe861e2b1d0196c834bde67931bbe4fc3b9e8ea0": {
+      "encoding": "cp932",
+      "text": "/*GB: 戦闘の見せ場。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_set_pending(int typ); //GB:\n"
     },
     "08e850ef878a8e9d13900df60d281737fc6c065673e6421a4f41f176c90a0611": {
       "encoding": "utf8",
@@ -1169,10 +1169,6 @@
     "118c2c1e661e6e957fb7496868f3b3aa17c731d60fc3eff07426bc69862f5985": {
       "encoding": "utf8",
       "text": "\t{\r\n\t\tint i;\r\n"
-    },
-    "11c17eaa506516140aef0b8c392b6e574baadb2f0387c370e1f11e44d14c9ffa": {
-      "encoding": "utf8",
-      "text": "#include \"gb_lang_c.h\" //GB: english layer (docs/GENSOBAND_EN_DESIGN.md 5)\n\r\n\r\n"
     },
     "12311841aad867fa2a38d53dd721691d7370588d28062f4f226700a6f926d6b5": {
       "encoding": "utf8",
@@ -1438,6 +1434,10 @@
       "encoding": "utf8",
       "text": "{\r\n\tva_list vp;\r\n\r\n"
     },
+    "1e55f8682b9486b657ee1ea1582cd658b0732b89928ccbb09da08c0b16eec5f4": {
+      "encoding": "utf8",
+      "text": " //GB: english layer #9 - open help.hlp instead of thelp.hlp"
+    },
     "1e67e9fa1ed1377efdafe7f04dff0d3094fd2f709121a659cd483ce18a67504c": {
       "encoding": "utf8",
       "text": "\r\n\t\t\tstr = u;\r\n\r\n"
@@ -1606,10 +1606,6 @@
       "encoding": "utf8",
       "text": ", d_info[select_dungeon].mindepth, max_dlv[select_dungeon]);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it\r\n#else\r\n"
     },
-    "2807ffc8359cc44228354d3b058c488eedb4efa8f46f2fc7ec3efacde9d4952b": {
-      "encoding": "utf8",
-      "text": "\t//GB: english layer #28 - the upstream english shape. #3 looks the %s up, so the\n\t//GB: personality title (a seikaku_info entry, already in the catalog) turns english\n\t//GB: (docs/GENSOBAND_EN_DESIGN.md 5).\n\tif (gb_lang_enabled())\n\t\tstrnfmt(tmp, sizeof(tmp), \"%s %s\",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name);\n\telse "
-    },
     "282d147ec46e5264ce2363c2184e1c506a16f9f9aafb86f7736ea5b37fc34fac": {
       "encoding": "utf8",
       "text": ",rp_ptr->title);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
@@ -1690,10 +1686,6 @@
       "encoding": "utf8",
       "text": "\t\t\t}\r\n\r\n\t\t\told = TRUE;\r\n\t\t}\r\n\t\tif (gb_lang_enabled())\r\n\t\t{\r\n"
     },
-    "2b053783260ee891f3e4e4f837bc1984c7d2ebf0cca9f7692ffbe9b0542522ea": {
-      "encoding": "utf8",
-      "text": "\t//GB: english layer #28 - the upstream english shape (the 4th place; the other\n\t//GB: three are in files.c). #3 looks the %s up, so the personality title\n\t//GB: (a seikaku_info entry, already in the catalog) turns english\n\t//GB: (docs/GENSOBAND_EN_DESIGN.md 5).\n\tif (gb_lang_enabled())\n\t\tstrnfmt(tmp, sizeof(tmp), \"%s %s\",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name);\n"
-    },
     "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9": {
       "encoding": "utf8",
       "text": "\t"
@@ -1733,10 +1725,6 @@
     "2deb0b243f9b9cd14cf7e9b0394576a8c00411bf32c1914c9b46c9a9ca85b5a1": {
       "encoding": "utf8",
       "text": "\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\t\t\t}\r\n"
-    },
-    "2e1b06ecf7d236fd486246fddaf938230ce4d9dcc7a8fffabd09a540f3663f2b": {
-      "encoding": "utf8",
-      "text": " //GB: english layer #9 - open help.hlp instead of thelp.hlp (docs/GENSOBAND_EN_DESIGN.md 5)"
     },
     "2e4bf8fcb764e9a8c5828a202424bb9bd96cb8c7c6e36416e066f62285110728": {
       "encoding": "utf8",
@@ -1906,6 +1894,10 @@
       "encoding": "utf8",
       "text": "{\r\n\tint d = 0;\r\n\r\n"
     },
+    "34df30763bcbfec179e723a2d71f116103e4e0f83a4c13cd3d85821fb1bc6c52": {
+      "encoding": "utf8",
+      "text": "#include \"gb_lang_c.h\" //GB: english layer\r\n\r\n"
+    },
     "35195a676139556cfa729e509a26a69ee1e36c30eca7249fb4716daca6b9c92f": {
       "encoding": "utf8",
       "text": "\t\tif (gb_lang_enabled())\n\t\t{\n\t\ts2 = \"on \";\n\t\t}\n\t\telse\n\t\t{\n"
@@ -1990,6 +1982,10 @@
       "encoding": "utf8",
       "text": ";\nstatic char KEY_FIRST_EN[] = \"first\";\nstatic char KEY_SECOND_EN[] = \"second\";\nstatic char KEY_THIRD_EN[] = \"third\";\nstatic char KEY_FOURTH_EN[] = \"fourth\";\nstatic char KEY_ITEMS_EN[] = \"items\";\nstatic char KEY_WEAPONS_EN[] = \"weapons\";\nstatic char KEY_FAVORITE_WEAPONS_EN[] = "
     },
+    "3980fc3355729da153625937ad3b89aee040004109c34a46d63b7316e49f62ae": {
+      "encoding": "cp932",
+      "text": "kanji && o_ptr->name2 == EGO_BODY_POVERTY) ADD_INSC(\";貧\"); //GB: english layer #21 - the roman abbreviations are the english ones"
+    },
     "3a03fe74f00bdb6639d2a2e8267cba95ce5e833413a751282efb879256a746d2": {
       "encoding": "utf8",
       "text": "\t*s++ = '[';\r\n\r\n"
@@ -2066,6 +2062,10 @@
       "encoding": "utf8",
       "text": ", sym[0], sym[class_list_len-1]); //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
     },
+    "3e54324322b0955be42cce85cd86e32590bfff17748d213307e14008f46fd739": {
+      "encoding": "utf8",
+      "text": "\ts = gb_tr_addstr(s, &n); //GB: english layer #1 - every string reaches the screen here\n\n"
+    },
     "3e579c2789076bb79e59ae444cf606058f5520168cd1fab060487157f7b28379": {
       "encoding": "utf8",
       "text": ", race_info[p_ptr->prace].title); //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
@@ -2089,10 +2089,6 @@
     "3f58b3f314eb180a5323dd444f44706998400fa33c20c1f74c8ab251716c23a9": {
       "encoding": "utf8",
       "text": "\r\n}\r\n"
-    },
-    "3f94061a091de54943a286e355dfc54b1db63b03914cf19910ac54774d4956ae": {
-      "encoding": "utf8",
-      "text": "\t\t//GB: english layer #29 - the banner is written into the user pref file and\n\t\t//GB: then shown in the autopick editor (docs/GENSOBAND_EN_DESIGN.md 5)\n\t\tgb_"
     },
     "3fdf49337e760c780a1d85ec3ad8eb3b7a8c85d0200eaf0aca602f0259720a0b": {
       "encoding": "utf8",
@@ -2194,10 +2190,6 @@
       "encoding": "utf8",
       "text": "#ifdef JP\r\n"
     },
-    "43a5a27b0e66982e667f9d22dcf20fa327aebabde3f2c76a9335a138dc36aec0": {
-      "encoding": "utf8",
-      "text": "NSOBAND_EN_DESIGN.md 5)"
-    },
     "43d4e85c117c5ab71dca22abdb48dc2c3e60b8a7ba68daddff7bd8e650ca0672": {
       "encoding": "utf8",
       "text": "\r\n\r\n\r\n#endif\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"
@@ -2209,6 +2201,10 @@
     "44aa49c79e3adbf7000333e4b993e59734f7f97979508928f4c5950fe8a4e8c9": {
       "encoding": "utf8",
       "text": "\t\t\t *\r\n"
+    },
+    "44adf7310bbb22031f83f382338547cf759b4452fb89ed9b9a2557b4c3c4cc1f": {
+      "encoding": "utf8",
+      "text": "\tif (gb_lang_enabled()) strcpy(out_string, tmp); //GB: english layer #14 - keep the roman letters\n\telse "
     },
     "44d51cac2ae69327b3f31fac5bb665bcf01a632ed85f1d94fc88ca1b6b615856": {
       "encoding": "utf8",
@@ -2278,6 +2274,10 @@
       "encoding": "utf8",
       "text": ", buf);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
     },
+    "4770bd0dd5b11ab5e8bbca6e253b7410bd504ba0877ff7d7f9dea76852376664": {
+      "encoding": "utf8",
+      "text": "\t\t//GB: english layer #37 - the shop and owner names live in a table, and the keys are bare words\n\t\tcptr store_name = gb_lang_enabled()\n\t\t\t? new_store_name_en[p_ptr->town_num][cur_store_num]\n\t\t\t: new_store_name[p_ptr->town_num][cur_store_num];\n\t\tcptr owner_name = gb_lang_enabled()\n\t\t\t? new_store_owner_name_en[p_ptr->town_num][cur_store_num]\n\t\t\t: new_store_owner_name[p_ptr->town_num][cur_store_num];\n"
+    },
     "48002e2ad710c727e3dc04109035f51fb72f5c75fdf259d2fc8b0e704cc0a641": {
       "encoding": "utf8",
       "text": ", //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
@@ -2334,17 +2334,9 @@
       "encoding": "utf8",
       "text": "#endif\r\n\t}\r\n\telse\r\n\t{\r\n#ifdef JP\r\n"
     },
-    "4a56cdf9289abe5085fd1b39ee4c59c5868277349421b3eded4ab6d6b0e33b5f": {
-      "encoding": "utf8",
-      "text": "!gb_lang_enabled(); //GB: english layer #21 - the roman abbreviations are the english ones (docs/G"
-    },
     "4a5701adf36733a99d6b254b4107d21833e37716e861badb6ae4b715dc6f74c3": {
       "encoding": "utf8",
       "text": "\t\treturn 1;\r\n"
-    },
-    "4a591c1f3edc5e9db13614cfaccc9851595244d58cebd5c86b315a0614f392f2": {
-      "encoding": "cp932",
-      "text": "\t//GB: english layer #30 - compile the upstream english branch too and pick at run\n\t//GB: time. describe_autopick() glues the sentence together in japanese word order\n\t//GB: (`全ての` + body + `を` + `拾う。`), so the finished line never matches a key.\n\t//GB: (docs/GENSOBAND_EN_DESIGN.md 5)\n\tif (!gb_lang_enabled())\n\t{\n"
     },
     "4aa6060731a15818a316d19f994815832c996aee3b431c63b212f25d5de9f612": {
       "encoding": "cp932",
@@ -2398,13 +2390,13 @@
       "encoding": "utf8",
       "text": "\t\t\t\t}\n"
     },
+    "4dd9c069d26597643620c1e43b82f3b52ff3c35b02f47604855e48e8fe6fd497": {
+      "encoding": "cp932",
+      "text": "kanji ? \"|X切\" : \"|XS\"); //GB: english layer #21 - the roman abbreviations are the english ones"
+    },
     "4ddc5ca63a55941d4c740a44a090edb457390a56d5424a8426b80baf25eefc63": {
       "encoding": "cp932",
       "text": "trnfmt(name_total, sizeof(name_total), \"%s偶像\", adj);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
-    },
-    "4e06786c048a6a0f8cd0bae9870d7fb8449ffa0d34880c004b9006b5ba0749b2": {
-      "encoding": "cp932",
-      "text": "/*GB: 戦闘の見せ場（`docs/GENSOBAND_SYSTEM_ACCEPT.md` S10 / R4）。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_set_pending(int typ); //GB:\n"
     },
     "4e4e75af4592914543b02bc7c5ab26a8369145f5492d0a192c91a3eaf3564639": {
       "encoding": "utf8",
@@ -2413,10 +2405,6 @@
     "4e55d581f4b6c4a55b929cdd575d368157809acccd3bec6b2f9b93ef51b9f661": {
       "encoding": "utf8",
       "text": "\t\t\t\tlen += 2;\r\n\t\t\t}\r\n\t\t\telse\r\n\t\t\t{\r\n"
-    },
-    "4e60f247796fe5bd5be777f7f5e0a179dfab615c2a462bd9fe03ff1f61c23bd0": {
-      "encoding": "cp932",
-      "text": "/*GB: 戦闘の見せ場（`docs/GENSOBAND_SYSTEM_ACCEPT.md` S10 / R4）。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_player_hit(int damage, int mhp, int melee); //GB:\n"
     },
     "4e71c97c840f9cfa607f79c396cceee9d05291dbe915039db43dfe44d24ed5af": {
       "encoding": "utf8",
@@ -2434,9 +2422,13 @@
       "encoding": "utf8",
       "text": "\t\t{\r\n\t\t\tbreak;\r\n\t\t}\r\n\r\n\r\n"
     },
-    "4f76d63425670d2f9fd84cabe4029b6ce9e8489aab12fd6bdc7ea80599c8c07e": {
+    "4f7a1914b746ebfef2f59e5c35e35cc638869ae3b23fc66efd52bafd6964fac3": {
+      "encoding": "cp932",
+      "text": "\t//GB: english layer #30 - compile the upstream english branch too and pick at run\n\t//GB: time. describe_autopick() glues the sentence together in japanese word order\n\t//GB: (`全ての` + body + `を` + `拾う。`), so the finished line never matches a key.\n\t//GB: (English layer)\n\tif (!gb_lang_enabled())\n\t{\n"
+    },
+    "4f86d1ab7d4298f7e720195d9fe6dda829499396f5985bfae5c5202af0832216": {
       "encoding": "utf8",
-      "text": "\n#include \"gb_lang_c.h\" //GB: english layer (docs/GENSOBAND_EN_DESIGN.md 5)\n"
+      "text": "\n//GB: english layer #26 - the english keywords must live in the JP build too.\n//GB: `pickpref_filename()` (#17) hands the english sample lib/pref/pickpref.prf to\n//GB: the english mode, but MATCH_KEY only ever knew the japanese table, so not one\n//GB: rule parsed. GBK() picks the table at run time (English layer).\nstatic char KEY_ALL_EN[] = \"all\";\nstatic char KEY_UNAWARE_EN[] = \"unaware\";\nstatic char KEY_UNIDENTIFIED_EN[] = "
     },
     "4f9587d36395642acfa60573811ff300065402a92feb57627157170892bba9dc": {
       "encoding": "utf8",
@@ -2514,10 +2506,6 @@
       "encoding": "utf8",
       "text": "\t{\r\n\t\tint n = 0;\r\n\r\n"
     },
-    "54d2500864d8aa694e9a659159fd5f198ecd215281374b39792e3d06d33dce5d": {
-      "encoding": "cp932",
-      "text": "kanji && o_ptr->name1 == ART_GRIMOIRE_OF_MARISA) ADD_INSC(\"符\"); //GB: english layer #21 - the roman abbreviations are the english ones (docs/GENSOBAND_EN_DESIGN.md 5)"
-    },
     "54e4b7538bb6b14773276d0f241e8fad6c22b2296dcdf81594afd0da565bc4aa": {
       "encoding": "cp932",
       "text": "\n\tgb_fx_set_pending(typ); //GB: 次の命中はこの属性\n"
@@ -2529,6 +2517,10 @@
     "5590d637e11e39a7d120e586611fefd20f1a357aa3dd523298aea38f3a5f4f4d": {
       "encoding": "utf8",
       "text": "\t\t\tpos = i;\r\n\r\n"
+    },
+    "559d70ec0bd13fb62014f83ab8912dfe0212540b201cd25aafeb3b8ee9c251dc": {
+      "encoding": "utf8",
+      "text": "!gb_lang_enabled(); //GB: english layer #21 - the roman abbreviations are the english ones"
     },
     "55cdf58b3864f9316bd98b9156577a86cc06c8a66d2c4d4cca140a4dac314497": {
       "encoding": "cp932",
@@ -2678,6 +2670,10 @@
       "encoding": "utf8",
       "text": "\r\n\t\tcase '\\n':\r\n\t\tcase '\\r':\r\n"
     },
+    "5f77714a6ba0eda39cf8362227b391451c352b4332e3f674d2676ab5b40979a0": {
+      "encoding": "utf8",
+      "text": "#include \"gb_lang_c.h\" //GB: english layer\n\r\n\r\n/*\r\n"
+    },
     "5fbe23ab8cd45ff59aad4352366083f62ff92204be02df323e50ab5195a0abb1": {
       "encoding": "utf8",
       "text": ",o_ptr->dd,o_ptr->ds,((o_ptr->to_d < 0)? \"\":\"+\"),o_ptr->to_d, project_desc,timeout);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
@@ -2722,6 +2718,10 @@
       "encoding": "utf8",
       "text": "#endif\r\n\telse\r\n#ifdef JP\r\n"
     },
+    "6305bf9ab60f17299d5eeb3c22025225d6c85978af8816ab2c0c08d305588ff8": {
+      "encoding": "cp932",
+      "text": "}\r\n\r\n//GB: english layer #27 - the race words are shared keys. `人間` is also the player's\r\n//GB: race name (`race_info[].title`), a knowledge-menu group (`cmd4.c`), a detect message\r\n//GB: (`spells2.c`) and an item card, so the leading space belongs to THIS sentence, not to\r\n//GB: the word. Emit it here and keep the catalog words bare\r\n//GB: (English layer).\r\nstatic void gb_roff_kind(byte attr, cptr str)\r\n{\r\n\tif (gb_lang_enabled()) hooked_roff(\" \");\r\n\thook_c_roff(attr, str);\r\n}\r\n\r\n\r\n/*\r\n"
+    },
     "63109e717511b73c5741431a72c694c1c52c9bd171f9e04305a786e8a363f18d": {
       "encoding": "utf8",
       "text": "trnfmt(o_name, sizeof(o_name),"
@@ -2742,10 +2742,6 @@
       "encoding": "utf8",
       "text": "\t\t\t\treturn (0);\r\n\t\t\t}\r\n\r\n"
     },
-    "638f179002b82664d3382fc11c2f34bfcad5121cdf0afd5e9c2fb7b3ea42a768": {
-      "encoding": "cp932",
-      "text": "/*GB: 戦闘の見せ場（`docs/GENSOBAND_SYSTEM_ACCEPT.md` S10 / R4）。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_set_pending(int typ); //GB:\nextern void gb_fx_bolt(int src_y, int src_x, int y, int x, int typ); //GB:\n"
-    },
     "63a389db00b9dee0bbbafa26224d2b5607ef26f6fcf449f116f1d4ba695ed9ef": {
       "encoding": "utf8",
       "text": "#endif\r\n*/\r\n\r\n#ifdef JP\r\n"
@@ -2765,10 +2761,6 @@
     "64aee570e55166c59fcd85576245f96c48da0b10df79da6a05e602bb3998065a": {
       "encoding": "utf8",
       "text": "\r\n\t\t/* Intro */\r\n\t\tif (breath)\r\n\t\t{\r\n\t\t\tif (gb_lang_enabled())\r\n\t\t\t{\r\n"
-    },
-    "64c891047d72034b832430ef453e40702df65e79c9c9d8dc9ea3fcb964eea862": {
-      "encoding": "utf8",
-      "text": "\tfile_name = gb_lang_file(file_name); //GB: english layer #8 - open the english twin of \"_j\" files (docs/GENSOBAND_EN_DESIGN.md 5)\n"
     },
     "64d7aa2d426fc2bb4b9aef6c8ff74f4ab2495eae68dfaca81707613d9fbfdb04": {
       "encoding": "utf8",
@@ -2797,6 +2789,10 @@
     "666d142264de1f916fcfd62c156cea87a98b475de6d24449d4dc9442a533fb5b": {
       "encoding": "utf8",
       "text": "trnfmt(ppp, sizeof(ppp), "
+    },
+    "66adee69c22490beb3e6decd0654fc27661ca75b1fd1e7eb1bba919f39c6af26": {
+      "encoding": "utf8",
+      "text": "{\r\n\tint x, y;\r\n\r\n\tint w, h;\r\n\r\n\tcptr s;\r\n\r\n\tstr = gb_tr(str); //GB: english layer #5 - monster recall is drawn char by char, so it never reaches #1\r\n"
     },
     "6725207e6ebd35e152be11f6eb0b965904261a7e842a692527dee86cf0c17bba": {
       "encoding": "utf8",
@@ -2834,6 +2830,10 @@
       "encoding": "utf8",
       "text": "\t\t\tprice /= 3;\r\n\t\t}\r\n\r\n"
     },
+    "69913cf9fea71501ff8ebf96b2e80886c21e1fe3f986d1aed1c997f8e83666c2": {
+      "encoding": "cp932",
+      "text": " へ ANGBAND_DIR_USER が飛び、\n *      init2.c:184 が展開できないまま「required directory is missing」で止まる。\n *   2. util.c の safe_setuid_grab() が setregid を呼び、Android の seccomp が\n *      SIGSYS でプロセスごと殺す（Sil-Q 側で実測）。\n * どちらも「Windows と同じ構成」にすれば消える。\n */\n"
+    },
     "69bd9b4648f6c8bd2178e36f143e4fa580422dae973860a46f31074223d1e220": {
       "encoding": "utf8",
       "text": "\t\t\t\t\t{\r\n\t\t\t\t\t\ttx = xx;\r\n\t\t\t\t\t\tty = yy;\r\n\r\n\t\t\t\t\t}\r\n\t\t\t\t}\r\n\t\t\t}\r\n\r\n\t\t\tif (cnt)\r\n\t\t\t{\r\n"
@@ -2853,10 +2853,6 @@
     "6a9726280102b864ca4933c5bc6a67bd1d430edbc0667eda4638e211b445cdc5": {
       "encoding": "utf8",
       "text": "\r\n\r\n}\r\n\r\n\r\n//v1.1.91\r\n"
-    },
-    "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4": {
-      "encoding": "utf8",
-      "text": "#include \"gb_lang_c.h\" //GB: english layer (docs/GENSOBAND_EN_DESIGN.md 5)\n"
     },
     "6ac863f40057aa1e74a8fe7ca3a69d70174f13c332a6a923d1e25162053c5cf6": {
       "encoding": "utf8",
@@ -2978,10 +2974,6 @@
       "encoding": "utf8",
       "text": "\t\t\t{\r\n\t\t\t\t*s++ = ' ';\r\n\t\t\t}\r\n\r\n"
     },
-    "6fdf7ab44dcf1bce1528af4b8c113a28650c3af4d714f85bfd2b6f12ff459374": {
-      "encoding": "utf8",
-      "text": "#ifdef JP\n\t//GB: english layer #28 - the upstream english shape. #3 looks the %s up, so the\n\t//GB: personality title (a seikaku_info entry, already in the catalog) turns english\n\t//GB: (docs/GENSOBAND_EN_DESIGN.md 5).\n\tif (gb_lang_enabled())\n\t\tstrnfmt(tmp, sizeof(tmp), \"%s %s\",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name);\n"
-    },
     "703165c8087b7c7591da99307ee20302955bd7b551b4dfb610e7e04c7a300eaf": {
       "encoding": "cp932",
       "text": "/*GB: 画面側へ「いま自由文字入力の待ちだ」を伝える口。実体は adapter/gb_shim.c。\r\n     ここに extern を書いてヘッダを増やさない（設計書 §7 の許可列挙）。*/\r\nextern void gb_text_input_set(int active); //GB:\r\n\r\n"
@@ -3057,6 +3049,10 @@
     "74c876f69062ec80034fbb8508e878a3f31d87781f448696bdfc87c97f836c50": {
       "encoding": "utf8",
       "text": ",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name, tmp);\n\telse "
+    },
+    "74ceb902c439eab9de7c9b5e8d2f47d60444165ea7e4d5812cf3a69f55956cab": {
+      "encoding": "cp932",
+      "text": "/*GB: 戦闘の見せ場。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_monster_hit(int y, int x, int dam, int max_hp); //GB:\n"
     },
     "75456fb0d08b9e0fe7818a8420a66ad71af7a049b85a514e5d2e19bc28512345": {
       "encoding": "utf8",
@@ -3214,10 +3210,6 @@
       "encoding": "utf8",
       "text": "\t\t\tchar c;\r\n\r\n"
     },
-    "7d0a4b0d67a6ec8d3e3bbbc5f43a0aa831ac37271f7762cc93ed0e7ea372b9a0": {
-      "encoding": "utf8",
-      "text": "\ts = gb_tr_addstr(s, &n); //GB: english layer #1 - every string reaches the screen here (docs/GENSOBAND_EN_DESIGN.md 5)\n\n"
-    },
     "7d1d7b1d33de9d82e994597d3a570081dfae9fb0a271d023c0a51483a0ae313c": {
       "encoding": "utf8",
       "text": "t, so #2/#3 never see this for"
@@ -3294,6 +3286,10 @@
       "encoding": "utf8",
       "text": "\t\tm[j] = 0;\r\n\r\n"
     },
+    "7fbe7464db092faae16abc07de6c9aca526d62ff182c33b535e3561bc2bc5491": {
+      "encoding": "cp932",
+      "text": "\n\t/*\n\t * GB: english layer #35 - **同じ段で日本語の名も試す**（GR-09）。\n\t * 英語の見本 pickpref.prf は必ず在るので、既定まで落ちてからでは\n\t * プレイヤーが日本語で書いた picktype-<名前>.prf に永久に届かない。\n\t * 日本語のときは NULL が返るので通らない。\n\t */\n\tif ((0 > err) && ((other = gb_other_pickpref_filename(PT_WITH_PNAME)) != NULL))\n\t{\n\t\tmy_strcpy(buf, other, sizeof(buf));\n"
+    },
     "7ffa54903669786896e8dec0573feb22027f6256e6b9ae51a9962918df530ebb": {
       "encoding": "utf8",
       "text": "\t\t\treturn;\r\n\t}\r\n"
@@ -3350,17 +3346,9 @@
       "encoding": "utf8",
       "text": "\treturn (0);\r\n}\r\n\r\n/*\r\n"
     },
-    "826ed751ee2280e44050da84381de80d62f43ad615a594c609b9f83628c9ab5c": {
-      "encoding": "utf8",
-      "text": "\tif (gb_lang_enabled()) strcpy(out_string, tmp); //GB: english layer #14 - keep the roman letters (docs/GENSOBAND_EN_DESIGN.md 5)\n\telse "
-    },
     "82700aa5d0b6f0cdc341da6055a24fe2c41ed4b89cd71268206986547c2093e1": {
       "encoding": "utf8",
       "text": "\t\t}\r\n"
-    },
-    "82b3fbd9e3faa58d485d3427e1569c6c3e8710296881e7c18f68873b5229e1dc": {
-      "encoding": "cp932",
-      "text": "#ifdef JP\n/*GB: english layer #31 - the same rows in english. **the short label is a bare\n * single kanji**, so it cannot be a catalog key (it would collide with the\n * element names). the upstream `#else` table above has neither the same rows nor\n * the same order (gensoband added 60+), so it cannot be used either.\n * (docs/GENSOBAND_EN_DESIGN.md 5) */\nstatic const struct { cptr sstr; cptr lstr; } bar_en[] = {\n\t{\"Ts\", \"Tsuyoshi\"},            /* つ つよし */\n\t{\"Ha\", \"Halluc\"},              /* 幻 幻覚 */\n\t{\"Bl\", \"Blind\"},               /* 盲 盲目 */\n\t{\"Pa\", \"Paralyzed\"},           /* 痺 麻痺 */\n\t{\"Cf\", \"Confused\"},            /* 乱 混乱 */\n\t{\"Po\", \"Poisoned\"},            /* 毒 毒 */\n\t{\"Af\", \"Afraid\"},              /* 恐 恐怖 */\n\t{\"Lv\", \"Levit\"},               /* 浮 浮遊 */\n\t{\"Rf\", \"Reflect\"},             /* 反 反射 */\n\t{\"Pw\", \"PassWall\"},            /* 壁 壁抜け */\n\t{\"Wr\", \"Wraith\"},              /* 幽 幽体 */\n\t{\"Ev\", \"PrtEvl\"},              /* 邪 防邪 */\n\t{\"Kw\", \"Kawarimi\"},            /* 変 変わり身 */\n\t{\"Md\", \"MgcArm\"},              /* 魔 魔法鎧 */\n\t{\"Da\", \"DeadAura\"},            /* 死 死霊オーラ */\n\t{\"Pd\", \"PhysDef\"},             /* 壁 物理防御 */\n\t{\"Ms\", \"MltShdw\"},             /* 分 分身 */\n\t{\"Rm\", \"ResMag\"},              /* 防 魔法防御 */\n\t{\"Ul\", \"Ultima\"},              /* 究 究極 */\n\t{\"Iv\", \"Invuln\"},              /* 無 無敵 */\n\t{\"IA\", \"ImmAcid\"},             /* 酸 酸免疫 */\n\t{\"Ac\", \"Acid\"},                /* 酸 耐酸 */\n\t{\"IE\", \"ImmElec\"},             /* 電 電免疫 */\n\t{\"El\", \"Elec\"},                /* 電 耐電 */\n\t{\"IF\", \"ImmFire\"},             /* 火 火免疫 */\n\t{\"Fi\", \"Fire\"},                /* 火 耐火 */\n\t{\"IC\", \"ImmCold\"},             /* 冷 冷免疫 */\n\t{\"Co\", \"Cold\"},                /* 冷 耐冷 */\n\t{\"Ps\", \"Pois\"},                /* 毒 耐毒 */\n\t{\"Nt\", \"Nthr\"},                /* 獄 耐地獄 */\n\t{\"Ti\", \"Time\"},                /* 時 耐時間 */\n\t{\"Sh\", \"ShardAura\"},           /* 片 破片オーラ */\n\t{\"AF\", \"FireAura\"},            /* オ 火オーラ */\n\t{\"Bw\", \"BarrierWave\"},         /* 壁 障壁波動 */\n\t{\"Hy\", \"HolyAura\"},            /* 聖 聖オーラ */\n\t{\"Rv\", \"Revenge\"},             /* 目 復讐 */\n\t{\"Bs\", \"Bless\"},               /* 祝 祝福 */\n\t{\"He\", \"Hero\"},                /* 勇 勇 */\n\t{\"Br\", \"Berserk\"},             /* 狂 狂乱 */\n\t{\"bF\", \"BladeFire\"},           /* 火 魔剣火 */\n\t{\"bC\", \"BladeCold\"},           /* 冷 魔剣冷 */\n\t{\"bE\", \"BladeElec\"},           /* 電 魔剣電 */\n\t{\"bA\", \"BladeAcid\"},           /* 酸 魔剣酸 */\n\t{\"bP\", \"BladePois\"},           /* 毒 魔剣毒 */\n\t{\"Cb\", \"ConfBlow\"},            /* 乱 混乱打撃 */\n\t{\"SI\", \"SeeInvis\"},            /* 視 透明視 */\n\t{\"Te\", \"Telepathy\"},           /* テ テレパシ */\n\t{\"Rg\", \"Regen\"},               /* 回 回復 */\n\t{\"If\", \"Infra\"},               /* 赤 赤外 */\n\t{\"St\", \"Stealth\"},             /* 隠 隠密 */\n\t{\"SS\", \"SuperStlth\"},          /* 隠 超隠密 */\n\t{\"Rc\", \"Recall\"},              /* 帰 帰還 */\n\t{\"Al\", \"AlterReal\"},           /* 現 現実変容 */\n\t{\"Hb\", \"Hibernate\"},           /* 眠 冬眠 */\n\t{\"Si\", \"Silence\"},             /* 静 静寂 */\n\t{\"Si\", \"Silence\"},             /* 静 静寂 */\n\t{\"Dm\", \"DrainMana\"},           /* 吸 魔力吸収 */\n\t{\"SW\", \"SakuyaWorld\"},         /* 時 咲夜の世界 */\n\t{\"Hi\", \"HinaDoll\"},            /* 雛 呪いの雛人形 */\n\t{\"Bd\", \"Boundary\"},            /* 境 境界操作 */\n\t{\"Oc\", \"OptCamo\"},             /* 光 光学迷彩 */\n\t{\"Sp\", \"SpecImm\"},             /* 免 特殊免疫 */\n\t{\"MW\", \"MistWheel\"},           /* 車 霧の車輪 */\n\t{\"Cr\", \"CrownShots\"},          /* 弾 神々の弾冠 */\n\t{\"Or\", \"OrbitTrap\"},           /* 月 公転周期の罠 */\n\t{\"Mr\", \"Mirror\"},              /* 反 反射鏡 */\n\t{\"Nm\", \"Nameless\"},            /* 純 名もなき技 */\n\t{\"Wa\", \"Water\"},               /* 水 耐水 */\n\t{\"Dk\", \"DarkSign\"},            /* 月 闇符 */\n\t{\"Ch\", \"Chaos\"},               /* 沌 耐混沌 */\n\t{\"Tb\", \"TeleBlock\"},           /* 縛 テレポ阻害 */\n\t{\"Eh\", \"Enhance\"},             /* 強 強化 */\n\t{\"Rr\", \"ReactHeal\"},           /* 回 反応回復 */\n\t{\"Rd\", \"Radar\"},               /* 感 レーダー */\n\t{\"Mb\", \"MagicBlade\"},          /* 魔 魔剣 */\n\t{\"Dr\", \"Dark\"},                /* 暗 耐暗黒 */\n\t{\"Um\", \"UnionDark\"},           /* 闇 闇融和 */\n\t{\"Lk\", \"Luck\"},                /* 運 幸運 */\n\t{\"Fs\", \"Foresee\"},             /* 予 予知 */\n\t{\"Sd\", \"SendBack\"},            /* 送 送還術 */\n\t{\"Cl\", \"SharpClaws\"},          /* 爪 爪強化 */\n\t{\"Fm\", \"FastMove\"},            /* 駆 高速移動 */\n\t{\"Fo\", \"Force\"},               /* 理 理力 */\n\t{\"Mn\", \"ResMad\"},              /* 狂 耐狂気 */\n\t{\"Kd\", \"KamiDesc\"},            /* 神 神降ろし */\n\t{\"bV\", \"BladeSeer\"},           /* 予 予見魔剣 */\n\t{\"bW\", \"BladeWarp\"},           /* 歪 歪曲魔剣 */\n\t{\"bS\", \"BladeStr\"},            /* 武 強化魔剣 */\n\t{\"bX\", \"BladeChaos\"},          /* 沌 混沌魔剣 */\n\t{\"Kk\", \"Kaioken\"},             /* 界 界王拳 */\n\t{\"Ai\", \"Aim\"},                 /* 狙 照準 */\n\t{\"Bg\", \"WardGuard\"},           /* 防 結界ガード */\n\t{\"Dn\", \"DrainMagic\"},          /* 奪 魔力奪取 */\n\t{\"Pt\", \"Petrify\"},             /* 像 石像化 */\n\t{\"Sv\", \"Salvation\"},           /* 救 救済 */\n\t{\"Sk\", \"Sharpness\"},           /* 切 切れ味 */\n\t{\"Sq\", \"Squander\"},            /* 富 散財 */\n\t{\"Mf\", \"MoneyBane\"},           /* 禍 財禍 */\n\t{\"BD\", \"RearDoor\"},            /* 扉 後戸の力 */\n\t{\"Tp\", \"TempEffect\"},          /* 特 特殊一時効果 */\n\t{\"Pf\", \"Performer\"},           /* 芸 無縁の芸能者 */\n\t{\"Wt\", \"Weighted\"},            /* 重 加重 */\n\t{\"Bu\", \"BuyOff\"},              /* 金 買収 */\n\t{\"Lu\", \"DeathLamp\"},           /* 誘 死出の誘蛾灯 */\n\t{\"Df\", \"DrunkFist\"},           /* 酔 酔拳 */\n\t{\"Pc\", \"PierceCold\"},          /* 貫 冷気耐性貫通 */\n\t{\"SF\", \"StlthForest\"},         /* 森 超隠密(森) */\n\t{\"Gl\", \"Gluttony\"},            /* 喰 暴食 */\n\t{\"An\", \"Antipathy\"},           /* 怒 反感 */\n\t{\"Am\", \"AmpStone\"},            /* 増 異変石増幅 */\n\t{\"Ct\", \"Counter\"},             /* 反 カウンター */\n\t{\"Lx\", \"LifeExplode\"},         /* 爆 生命爆発 */\n\t{\"Hc\", \"HirariCloth\"},         /* 布 ひらり布 */\n\t{\"Fg\", \"Forget\"},              /* 忘 忘却 */\n\t{\"NM\", \"NoMove\"},              /* 縛 移動禁止 */\n\t{\"Tt\", \"TransTrap\"},           /* 送 移送の罠 */\n\t{\"Vd\", \"Void\"},                /* 無 虚無の力 */\n\t{\"Be\", \"Bees\"},                /* 蜂 蜂の護衛 */\n\t{\"Hd\", \"Hide\"},                /* 隠 潜伏 */\n\t{\"Bp\", \"ResBlast\"},            /* 防 爆風防御 */\n\t{\"Hl\", \"Halt\"},                /* 停 停止 */\n"
     },
     "82d26f4af6b3ff150cf1492d8fdda8d2f65021998d45ae424c287430ababa0e3": {
       "encoding": "utf8",
@@ -3389,10 +3377,6 @@
     "8374d3bdc09b119b8b0db82f62fa1fa091362a0481e0b3ae0729c2ad15c55ea6": {
       "encoding": "utf8",
       "text": "\t\t\t{\r\n\t\t\t\tchar next;\r\n\r\n"
-    },
-    "83996c9aeed88c69ca8bc56fde578d608134550f0baf8cf9310e50cba766a1df": {
-      "encoding": "utf8",
-      "text": "#include \"gb_lang_c.h\" //GB: english layer (docs/GENSOBAND_EN_DESIGN.md 5)\r\n\r\n"
     },
     "83eae7e6a4d3c71bcc96328c519fba2941ee486968a6d6322fb08ceb44e3efd6": {
       "encoding": "utf8",
@@ -3473,6 +3457,10 @@
     "887dabaa0b240146e78b518d1ce131137efdd103c21e2782141c3d1a377c66e0": {
       "encoding": "utf8",
       "text": "\t\t    "
+    },
+    "889dd8f49b901fc475ebb7b096a853d0f08eb10ec5e38e4e19d4ecf178c0bcaf": {
+      "encoding": "utf8",
+      "text": "\t//GB: english layer #28 - the upstream english shape (the 4th place; the other\n\t//GB: three are in files.c). #3 looks the %s up, so the personality title\n\t//GB: (a seikaku_info entry, already in the catalog) turns english\n\t//GB: (English layer).\n\tif (gb_lang_enabled())\n\t\tstrnfmt(tmp, sizeof(tmp), \"%s %s\",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name);\n"
     },
     "88d7becaca3e5c63665f564be9402bc05473e571cc723dd2610c00b6a808e152": {
       "encoding": "utf8",
@@ -3617,10 +3605,6 @@
     "905a3be36a6e85e3790a8710a8422ed53bdee71019cbf1875d119f336f968b4b": {
       "encoding": "utf8",
       "text": "*/\r\n"
-    },
-    "9099525a8f1fb1985d173e8c1c22193b95ecfba84c4efae69b2843771599dc71": {
-      "encoding": "utf8",
-      "text": "\n\tgb_object_desc_en_fix(buf, o_ptr, mode); //GB: english layer #6 - rebuild the JP grammar into English (docs/GENSOBAND_EN_DESIGN.md 5)\n"
     },
     "90e47e2c6436ce1841e44d6676fae73316bde7f692b8eda3b73f1f3bf10e3e0b": {
       "encoding": "utf8",
@@ -3770,10 +3754,6 @@
       "encoding": "utf8",
       "text": "trnfmt(out_desc, sizeof(out_desc),"
     },
-    "98390b54de97cf32203d49bb0edd743d80e03eaaaa17d587bff62b9daa2e257a": {
-      "encoding": "cp932",
-      "text": "}\r\n\r\n//GB: english layer #27 - the race words are shared keys. `人間` is also the player's\r\n//GB: race name (`race_info[].title`), a knowledge-menu group (`cmd4.c`), a detect message\r\n//GB: (`spells2.c`) and an item card, so the leading space belongs to THIS sentence, not to\r\n//GB: the word. Emit it here and keep the catalog words bare\r\n//GB: (docs/GENSOBAND_EN_DESIGN.md 5).\r\nstatic void gb_roff_kind(byte attr, cptr str)\r\n{\r\n\tif (gb_lang_enabled()) hooked_roff(\" \");\r\n\thook_c_roff(attr, str);\r\n}\r\n\r\n\r\n/*\r\n"
-    },
     "984bffbc5fb4a6f2d567aecb0b584f1b6f80ac070b07a4eb926d60817b58c8e5": {
       "encoding": "utf8",
       "text": "\t\t\treturn;\r\n\t\t}\r\n\r\n\t}\r\n\r\n"
@@ -3793,10 +3773,6 @@
     "996838cb37f12117611c42d10219b34d24d70b293d90118389f4ce3c0fb82ac5": {
       "encoding": "utf8",
       "text": "\tif (fail)\r\n\t{\r\n"
-    },
-    "996bd615b7acacd587fc85342927db1bf082656f0c4176dc376ad93c0485a798": {
-      "encoding": "utf8",
-      "text": "{\r\n\tint x, y;\r\n\r\n\tint w, h;\r\n\r\n\tcptr s;\r\n\r\n\tstr = gb_tr(str); //GB: english layer #5 - monster recall is drawn char by char, so it never reaches #1 (docs/GENSOBAND_EN_DESIGN.md 5)\r\n"
     },
     "9a078e43bf1777fec86bb608fbca42be7df757204b3b716b0fc60832f111eba9": {
       "encoding": "utf8",
@@ -3914,6 +3890,10 @@
       "encoding": "utf8",
       "text": "\t\t}\r\n\t\tif (!gb_lang_enabled())\r\n\t\t{\r\n"
     },
+    "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc": {
+      "encoding": "utf8",
+      "text": "#include \"gb_lang_c.h\" //GB: english layer\n"
+    },
     "a18b38fdd5e462eed8f26d57bdfeadb66836981e298f58536059e4f38526e70e": {
       "encoding": "utf8",
       "text": "\t\t}\r\n\r\n\t\tcase 0x7F:\r\n"
@@ -3965,10 +3945,6 @@
     "a529754c2f16c70621f1c730ef578e4d33fe5af346373d921e8ca47358e928c3": {
       "encoding": "utf8",
       "text": "{\r\n\tint j, P;\r\n\r\n"
-    },
-    "a57241ba74857f3a409726811c7354b097b16ec92bba36a315ef280c9fd20da7": {
-      "encoding": "utf8",
-      "text": "#include \"gb_lang_c.h\" //GB: english layer (docs/GENSOBAND_EN_DESIGN.md 5)\n\r\n\r\n/*\r\n"
     },
     "a57f257f383926626001a39e0cba67b2086abc19dce3416c92ae28868cfeb304": {
       "encoding": "utf8",
@@ -4094,9 +4070,9 @@
       "encoding": "cp932",
       "text": "trnfmt(tmp, sizeof(tmp), \"いくつ付加しますか？ (1-%d): \", limit);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
     },
-    "aba4bbdc0f3e447cb22c42484f80b6428981d9a471c622c6a4a83fa83fd5a0c3": {
+    "ab7fec487c4fbd3b2789fe323e6e678703e96b757e19e6d67a86a7651cabcbd3": {
       "encoding": "utf8",
-      "text": "\r\n#endif\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\t\t}\r\n\r\n\r\n#ifdef JP\r\n\t\t//GB: english layer #13 - build the whole sentence in the upstream english shape.\r\n\t\t//GB: scraps of english mixed into the japanese frame dropped the spaces\r\n\t\t//GB: (`She flies.  Shefire an arrow.`). docs/GENSOBAND_EN_DESIGN.md 5\r\n\t\tif (gb_lang_enabled())\r\n\t\t{\r\n\t\t\tif (!r) "
+      "text": "#include \"gb_lang_c.h\" //GB: english layer\n\r\n\r\n"
     },
     "abbcd0665daef866e855cc54bdf37c1276954241733012115bf317ab6c3d324c": {
       "encoding": "utf8",
@@ -4157,10 +4133,6 @@
     "aea52d27230b89ca1b732866afbe137a98e65100049a56b3293def8d5fe7dda0": {
       "encoding": "utf8",
       "text": "\r\n\r\n\r\n"
-    },
-    "aed0f44631a6ac31781fff95174bf1f615815f6acc1c25696a27d4aa5c5e48eb": {
-      "encoding": "utf8",
-      "text": "\n//GB: english layer #26 - the english keywords must live in the JP build too.\n//GB: `pickpref_filename()` (#17) hands the english sample lib/pref/pickpref.prf to\n//GB: the english mode, but MATCH_KEY only ever knew the japanese table, so not one\n//GB: rule parsed. GBK() picks the table at run time (docs/GENSOBAND_EN_DESIGN.md 5).\nstatic char KEY_ALL_EN[] = \"all\";\nstatic char KEY_UNAWARE_EN[] = \"unaware\";\nstatic char KEY_UNIDENTIFIED_EN[] = "
     },
     "af0d9aa26393606b75ac3bb961971db5beb2178d4c5f925cc54fc0d1068e14ee": {
       "encoding": "utf8",
@@ -4237,10 +4209,6 @@
     "b234432ce5aa22a057c2e17ff675c4447c19d3022300ce010a4a4cb28d1694c5": {
       "encoding": "utf8",
       "text": ",temp);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
-    },
-    "b24b8eeef518507fa5f9187a8f32f90d2ac6b1de1d930b3d618550accdaa26ef": {
-      "encoding": "cp932",
-      "text": "\n\t/*\n\t * GB: english layer #35 - **同じ段で日本語の名も試す**（GR-09）。\n\t * 英語の見本 pickpref.prf は必ず在るので、既定まで落ちてからでは\n\t * 利用者が日本語で書いた picktype-<名前>.prf に永久に届かない。\n\t * 日本語のときは NULL が返るので通らない。\n\t */\n\tif ((0 > err) && ((other = gb_other_pickpref_filename(PT_WITH_PNAME)) != NULL))\n\t{\n\t\tmy_strcpy(buf, other, sizeof(buf));\n"
     },
     "b2909f39f9c7c3853345007fd7c9df3f36a536b0c0fe0ca4e911b83ff87cb0c2": {
       "encoding": "utf8",
@@ -4362,10 +4330,6 @@
       "encoding": "cp932",
       "text": "\tgb_roff_kind(TERM_L_WHITE, \"人間\"); //GB: english layer #27\r\n}\r\n\t\r\n"
     },
-    "b814711777a112e47ea0bf8e4e603746fd14953b0a2d6fb4fbb5caf41b374abf": {
-      "encoding": "cp932",
-      "text": " へ ANGBAND_DIR_USER が飛び、\n *      init2.c:184 が展開できないまま「required directory is missing」で止まる。\n *   2. util.c の safe_setuid_grab() が setregid を呼び、Android の seccomp が\n *      SIGSYS でプロセスごと殺す（Sil-Q 側で実測）。\n * どちらも「Windows と同じ構成」にすれば消える。docs/ANDROID_HD2D_PORT.md 2b.4\n */\n"
-    },
     "b824cd35e0d20305d6ce26ebe75b02cef6318adf83f8653ed97abd95d11bbccf": {
       "encoding": "utf8",
       "text": "\t\tstr += 2;\r\n\r\n"
@@ -4385,6 +4349,10 @@
     "b922d3f40da56445030db1ad5d11d0842cdd051b318bc863af0fb3cbc0e95787": {
       "encoding": "utf8",
       "text": "  //GB: english layer #36 - plain sprintf skips vstrnfmt, so #2/#3 never see this format"
+    },
+    "b93863eda6d9b32501d8dcc9eeabf0cdbb788d1837bb88509ccfcd0f34e1af58": {
+      "encoding": "utf8",
+      "text": "\t//GB: english layer #28 - the upstream english shape. #3 looks the %s up, so the\n\t//GB: personality title (a seikaku_info entry, already in the catalog) turns english\n\t//GB: (English layer).\n\tif (gb_lang_enabled())\n\t\tstrnfmt(tmp, sizeof(tmp), \"%s %s\",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name);\n\telse "
     },
     "b9b4c88069f6c08ba156086ac1e77b353461d3f96ca7e8654ee255f944de62d3": {
       "encoding": "utf8",
@@ -4414,6 +4382,10 @@
       "encoding": "utf8",
       "text": ")"
     },
+    "ba95d405028e495453a5717c65e2e848fabe509000875586c8a4c75e1c5870f2": {
+      "encoding": "utf8",
+      "text": "\r\n#endif\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\t\t}\r\n\r\n\r\n#ifdef JP\r\n\t\t//GB: english layer #13 - build the whole sentence in the upstream english shape.\r\n\t\t//GB: scraps of english mixed into the japanese frame dropped the spaces\r\n\t\t//GB: (`She flies.  Shefire an arrow.`). English layer\r\n\t\tif (gb_lang_enabled())\r\n\t\t{\r\n\t\t\tif (!r) "
+    },
     "ba965f2c7f73e5800eb119f5f37d946bf26a559c1d8da1321c3660ecf6767a98": {
       "encoding": "utf8",
       "text": "\t\tbreak;\r\n\t}\r\n\r\n"
@@ -4434,9 +4406,17 @@
       "encoding": "utf8",
       "text": "  //GB: english layer #36 - the #else branch is compiled out of the JP build"
     },
+    "bbdb924bd0c920870c7f03d12b3710a21cb041964b311fa2029a02da62308193": {
+      "encoding": "cp932",
+      "text": "/*GB: 戦闘の見せ場。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_player_hit(int damage, int mhp, int melee); //GB:\n"
+    },
     "bbe5e3690f73c01c78c1765a9e97e267186e0fed73b6453736b6e870220d48a5": {
       "encoding": "cp932",
       "text": "gb_tr(\"%3d-劣る\"), x); //GB: english layer #15 - look the format up before sprintf fills it in"
+    },
+    "bbfc7a15dde45604ac4406cd5b59383da6548c390bdc801bb96a7dc245e29950": {
+      "encoding": "utf8",
+      "text": "\n#include \"gb_lang_c.h\" //GB: english layer\n"
     },
     "bc059cae0c1828dd96a4463241940c8d03c25b7842588bb1cebeb778a3d5e582": {
       "encoding": "utf8",
@@ -4445,6 +4425,18 @@
     "bc64a7638cc8a681ad7cb1d71e49d1a5dd1384a9408538c4df37ce3c1088c507": {
       "encoding": "utf8",
       "text": ";\nstatic char KEY_SHIELDS_EN[] = \"shields\";\nstatic char KEY_BOWS_EN[] = \"bows\";\nstatic char KEY_RINGS_EN[] = \"rings\";\nstatic char KEY_AMULETS_EN[] = \"amulets\";\nstatic char KEY_SUITS_EN[] = \"suits\";\nstatic char KEY_CLOAKS_EN[] = \"cloaks\";\nstatic char KEY_HELMS_EN[] = \"helms\";\nstatic char KEY_GLOVES_EN[] = \"gloves\";\nstatic char KEY_BOOTS_EN[] = \"boots\";\nstatic char KEY_SWEETS_EN[] = \"sweets\";\nstatic char KEY_SOFTDRINKS_EN[] = \"soft drinks\";\nstatic char KEY_ITEMCARDS_EN[] = \"cards\";\n\n"
+    },
+    "bcad996544ad99edb5313bce89b62e4a84fe2a078018a3fc5f98ced3f059cb52": {
+      "encoding": "utf8",
+      "text": "\tfile_name = gb_lang_file(file_name); //GB: english layer #8 - open the english twin of \"_j\" files\n"
+    },
+    "bcbdf813662a3b378f64bada53831eaf4174315768ddfdfef5ad8d3e692aa633": {
+      "encoding": "utf8",
+      "text": "\t\t//GB: english layer #29 - the banner is written into the user pref file and\n\t\t//GB: then shown in the autopick editor (English layer)\n\t\tgb_"
+    },
+    "bcfa4475b1390101867ebbc2380691c85fd81accf61f2f444f6202f159dff9d0": {
+      "encoding": "utf8",
+      "text": "\n\tfmt = gb_tr_fmt(fmt); //GB: english layer #2 - translate the format itself, not the result\n"
     },
     "bd05d29dad58997b39afa268786971ad7e23e87946b45cb36a2fa05fa5b7a379": {
       "encoding": "utf8",
@@ -4533,10 +4525,6 @@
     "c1dc2ab111435742caecb388dc738453e79b92fda5c88a7b6822db4c9074cace": {
       "encoding": "utf8",
       "text": "\r\n\r\n#ifdef JP\r\n"
-    },
-    "c24cc8d4bdec882422f8b7ac8383610a10800b5980b29624c7dc4021bec2f7bb": {
-      "encoding": "utf8",
-      "text": "\n\tfmt = gb_tr_fmt(fmt); //GB: english layer #2 - translate the format itself, not the result (docs/GENSOBAND_EN_DESIGN.md 5)\n"
     },
     "c25417eb8bb6d3437b2b3d092600ee18de9a427650c53943cc57a9b95a290da2": {
       "encoding": "utf8",
@@ -4750,6 +4738,10 @@
       "encoding": "utf8",
       "text": ", lvl * 2);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
     },
+    "cd7f831c47875d1f446f5eabfd5fb5479ed838174183e546d0b95eacf2bd5a43": {
+      "encoding": "cp932",
+      "text": "kanji && o_ptr->name1 == ART_GRIMOIRE_OF_MARISA) ADD_INSC(\"符\"); //GB: english layer #21 - the roman abbreviations are the english ones"
+    },
     "cdc5a50e177be8f3b6862fdf5345f53e83e750e7e66d0148b0f8a65e6632dedf": {
       "encoding": "utf8",
       "text": "\t\t\t//}\r\n"
@@ -4837,6 +4829,10 @@
     "d1e50e44c84fc89787407fb4d782549303f945e3ced3e929586f92571526ca56": {
       "encoding": "utf8",
       "text": "\r\n\t\t\t\treturn ret;\r\n\t\t\t}\r\n"
+    },
+    "d1eda0ab2430889b9d7b802e2978a5da9930b96cb0d0528a79c97df52a13c9c6": {
+      "encoding": "cp932",
+      "text": "/*GB: 戦闘の見せ場。\n     実体は adapter/gb_shim.c。ここに extern を書いてヘッダを増やさない\n     （設計書 §7 の許可列挙）。*/\nextern void gb_fx_set_pending(int typ); //GB:\nextern void gb_fx_bolt(int src_y, int src_x, int y, int x, int typ); //GB:\n"
     },
     "d29352eb6100b8ba8f80a29160a2be020b301fde1e3b604f3386874c79c22e78": {
       "encoding": "utf8",
@@ -5018,6 +5014,10 @@
       "encoding": "utf8",
       "text": ",I2A(i+1), kata_shurui[i].desc, kata_shurui[i].info);  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
     },
+    "dbedd0a5028ac39e44bff470d13c4528c94f414b61b19ca59b2209915f143620": {
+      "encoding": "cp932",
+      "text": "#ifdef JP\n/*GB: english layer #31 - the same rows in english. **the short label is a bare\n * single kanji**, so it cannot be a catalog key (it would collide with the\n * element names). the upstream `#else` table above has neither the same rows nor\n * the same order (gensoband added 60+), so it cannot be used either.\n * (English layer) */\nstatic const struct { cptr sstr; cptr lstr; } bar_en[] = {\n\t{\"Ts\", \"Tsuyoshi\"},            /* つ つよし */\n\t{\"Ha\", \"Halluc\"},              /* 幻 幻覚 */\n\t{\"Bl\", \"Blind\"},               /* 盲 盲目 */\n\t{\"Pa\", \"Paralyzed\"},           /* 痺 麻痺 */\n\t{\"Cf\", \"Confused\"},            /* 乱 混乱 */\n\t{\"Po\", \"Poisoned\"},            /* 毒 毒 */\n\t{\"Af\", \"Afraid\"},              /* 恐 恐怖 */\n\t{\"Lv\", \"Levit\"},               /* 浮 浮遊 */\n\t{\"Rf\", \"Reflect\"},             /* 反 反射 */\n\t{\"Pw\", \"PassWall\"},            /* 壁 壁抜け */\n\t{\"Wr\", \"Wraith\"},              /* 幽 幽体 */\n\t{\"Ev\", \"PrtEvl\"},              /* 邪 防邪 */\n\t{\"Kw\", \"Kawarimi\"},            /* 変 変わり身 */\n\t{\"Md\", \"MgcArm\"},              /* 魔 魔法鎧 */\n\t{\"Da\", \"DeadAura\"},            /* 死 死霊オーラ */\n\t{\"Pd\", \"PhysDef\"},             /* 壁 物理防御 */\n\t{\"Ms\", \"MltShdw\"},             /* 分 分身 */\n\t{\"Rm\", \"ResMag\"},              /* 防 魔法防御 */\n\t{\"Ul\", \"Ultima\"},              /* 究 究極 */\n\t{\"Iv\", \"Invuln\"},              /* 無 無敵 */\n\t{\"IA\", \"ImmAcid\"},             /* 酸 酸免疫 */\n\t{\"Ac\", \"Acid\"},                /* 酸 耐酸 */\n\t{\"IE\", \"ImmElec\"},             /* 電 電免疫 */\n\t{\"El\", \"Elec\"},                /* 電 耐電 */\n\t{\"IF\", \"ImmFire\"},             /* 火 火免疫 */\n\t{\"Fi\", \"Fire\"},                /* 火 耐火 */\n\t{\"IC\", \"ImmCold\"},             /* 冷 冷免疫 */\n\t{\"Co\", \"Cold\"},                /* 冷 耐冷 */\n\t{\"Ps\", \"Pois\"},                /* 毒 耐毒 */\n\t{\"Nt\", \"Nthr\"},                /* 獄 耐地獄 */\n\t{\"Ti\", \"Time\"},                /* 時 耐時間 */\n\t{\"Sh\", \"ShardAura\"},           /* 片 破片オーラ */\n\t{\"AF\", \"FireAura\"},            /* オ 火オーラ */\n\t{\"Bw\", \"BarrierWave\"},         /* 壁 障壁波動 */\n\t{\"Hy\", \"HolyAura\"},            /* 聖 聖オーラ */\n\t{\"Rv\", \"Revenge\"},             /* 目 復讐 */\n\t{\"Bs\", \"Bless\"},               /* 祝 祝福 */\n\t{\"He\", \"Hero\"},                /* 勇 勇 */\n\t{\"Br\", \"Berserk\"},             /* 狂 狂乱 */\n\t{\"bF\", \"BladeFire\"},           /* 火 魔剣火 */\n\t{\"bC\", \"BladeCold\"},           /* 冷 魔剣冷 */\n\t{\"bE\", \"BladeElec\"},           /* 電 魔剣電 */\n\t{\"bA\", \"BladeAcid\"},           /* 酸 魔剣酸 */\n\t{\"bP\", \"BladePois\"},           /* 毒 魔剣毒 */\n\t{\"Cb\", \"ConfBlow\"},            /* 乱 混乱打撃 */\n\t{\"SI\", \"SeeInvis\"},            /* 視 透明視 */\n\t{\"Te\", \"Telepathy\"},           /* テ テレパシ */\n\t{\"Rg\", \"Regen\"},               /* 回 回復 */\n\t{\"If\", \"Infra\"},               /* 赤 赤外 */\n\t{\"St\", \"Stealth\"},             /* 隠 隠密 */\n\t{\"SS\", \"SuperStlth\"},          /* 隠 超隠密 */\n\t{\"Rc\", \"Recall\"},              /* 帰 帰還 */\n\t{\"Al\", \"AlterReal\"},           /* 現 現実変容 */\n\t{\"Hb\", \"Hibernate\"},           /* 眠 冬眠 */\n\t{\"Si\", \"Silence\"},             /* 静 静寂 */\n\t{\"Si\", \"Silence\"},             /* 静 静寂 */\n\t{\"Dm\", \"DrainMana\"},           /* 吸 魔力吸収 */\n\t{\"SW\", \"SakuyaWorld\"},         /* 時 咲夜の世界 */\n\t{\"Hi\", \"HinaDoll\"},            /* 雛 呪いの雛人形 */\n\t{\"Bd\", \"Boundary\"},            /* 境 境界操作 */\n\t{\"Oc\", \"OptCamo\"},             /* 光 光学迷彩 */\n\t{\"Sp\", \"SpecImm\"},             /* 免 特殊免疫 */\n\t{\"MW\", \"MistWheel\"},           /* 車 霧の車輪 */\n\t{\"Cr\", \"CrownShots\"},          /* 弾 神々の弾冠 */\n\t{\"Or\", \"OrbitTrap\"},           /* 月 公転周期の罠 */\n\t{\"Mr\", \"Mirror\"},              /* 反 反射鏡 */\n\t{\"Nm\", \"Nameless\"},            /* 純 名もなき技 */\n\t{\"Wa\", \"Water\"},               /* 水 耐水 */\n\t{\"Dk\", \"DarkSign\"},            /* 月 闇符 */\n\t{\"Ch\", \"Chaos\"},               /* 沌 耐混沌 */\n\t{\"Tb\", \"TeleBlock\"},           /* 縛 テレポ阻害 */\n\t{\"Eh\", \"Enhance\"},             /* 強 強化 */\n\t{\"Rr\", \"ReactHeal\"},           /* 回 反応回復 */\n\t{\"Rd\", \"Radar\"},               /* 感 レーダー */\n\t{\"Mb\", \"MagicBlade\"},          /* 魔 魔剣 */\n\t{\"Dr\", \"Dark\"},                /* 暗 耐暗黒 */\n\t{\"Um\", \"UnionDark\"},           /* 闇 闇融和 */\n\t{\"Lk\", \"Luck\"},                /* 運 幸運 */\n\t{\"Fs\", \"Foresee\"},             /* 予 予知 */\n\t{\"Sd\", \"SendBack\"},            /* 送 送還術 */\n\t{\"Cl\", \"SharpClaws\"},          /* 爪 爪強化 */\n\t{\"Fm\", \"FastMove\"},            /* 駆 高速移動 */\n\t{\"Fo\", \"Force\"},               /* 理 理力 */\n\t{\"Mn\", \"ResMad\"},              /* 狂 耐狂気 */\n\t{\"Kd\", \"KamiDesc\"},            /* 神 神降ろし */\n\t{\"bV\", \"BladeSeer\"},           /* 予 予見魔剣 */\n\t{\"bW\", \"BladeWarp\"},           /* 歪 歪曲魔剣 */\n\t{\"bS\", \"BladeStr\"},            /* 武 強化魔剣 */\n\t{\"bX\", \"BladeChaos\"},          /* 沌 混沌魔剣 */\n\t{\"Kk\", \"Kaioken\"},             /* 界 界王拳 */\n\t{\"Ai\", \"Aim\"},                 /* 狙 照準 */\n\t{\"Bg\", \"WardGuard\"},           /* 防 結界ガード */\n\t{\"Dn\", \"DrainMagic\"},          /* 奪 魔力奪取 */\n\t{\"Pt\", \"Petrify\"},             /* 像 石像化 */\n\t{\"Sv\", \"Salvation\"},           /* 救 救済 */\n\t{\"Sk\", \"Sharpness\"},           /* 切 切れ味 */\n\t{\"Sq\", \"Squander\"},            /* 富 散財 */\n\t{\"Mf\", \"MoneyBane\"},           /* 禍 財禍 */\n\t{\"BD\", \"RearDoor\"},            /* 扉 後戸の力 */\n\t{\"Tp\", \"TempEffect\"},          /* 特 特殊一時効果 */\n\t{\"Pf\", \"Performer\"},           /* 芸 無縁の芸能者 */\n\t{\"Wt\", \"Weighted\"},            /* 重 加重 */\n\t{\"Bu\", \"BuyOff\"},              /* 金 買収 */\n\t{\"Lu\", \"DeathLamp\"},           /* 誘 死出の誘蛾灯 */\n\t{\"Df\", \"DrunkFist\"},           /* 酔 酔拳 */\n\t{\"Pc\", \"PierceCold\"},          /* 貫 冷気耐性貫通 */\n\t{\"SF\", \"StlthForest\"},         /* 森 超隠密(森) */\n\t{\"Gl\", \"Gluttony\"},            /* 喰 暴食 */\n\t{\"An\", \"Antipathy\"},           /* 怒 反感 */\n\t{\"Am\", \"AmpStone\"},            /* 増 異変石増幅 */\n\t{\"Ct\", \"Counter\"},             /* 反 カウンター */\n\t{\"Lx\", \"LifeExplode\"},         /* 爆 生命爆発 */\n\t{\"Hc\", \"HirariCloth\"},         /* 布 ひらり布 */\n\t{\"Fg\", \"Forget\"},              /* 忘 忘却 */\n\t{\"NM\", \"NoMove\"},              /* 縛 移動禁止 */\n\t{\"Tt\", \"TransTrap\"},           /* 送 移送の罠 */\n\t{\"Vd\", \"Void\"},                /* 無 虚無の力 */\n\t{\"Be\", \"Bees\"},                /* 蜂 蜂の護衛 */\n\t{\"Hd\", \"Hide\"},                /* 隠 潜伏 */\n\t{\"Bp\", \"ResBlast\"},            /* 防 爆風防御 */\n\t{\"Hl\", \"Halt\"},                /* 停 停止 */\n"
+    },
     "dbf5038032da1c1621fdbd5a2067a5ab16c57f8ffb715fd7c78e31892a065583": {
       "encoding": "utf8",
       "text": "\t\tbody_str = \"souvenirs\";\n"
@@ -5166,6 +5166,10 @@
       "encoding": "utf8",
       "text": "{\r\n\tint j;\r\n"
     },
+    "e5cdee7f1d138c1ea91f54cc0211153c3b0d210300bdc9c7662aca6c59d1bca0": {
+      "encoding": "utf8",
+      "text": "\n\tgb_monster_desc_en_fix(desc, m_ptr, mode); //GB: english layer #7 - articles and pronouns\n"
+    },
     "e5d0efed545ebba9df48039e10367c66a8454de44146d5588d008b5f1f9adb73": {
       "encoding": "cp932",
       "text": "gb_lang_enabled() ? \"tried\" : \"未判明\");  //GB: english layer #36 - the #else branch is compiled out of the JP build"
@@ -5286,10 +5290,6 @@
       "encoding": "utf8",
       "text": "{\r\n\tcptr name;\r\n\tbyte cmd;\r\n\tbool fin;\r\n"
     },
-    "eba7fc07817d32f6256a41f3d021cc18e6102d3f96faae1e5e7e53aa3000e443": {
-      "encoding": "utf8",
-      "text": "\n\tgb_monster_desc_en_fix(desc, m_ptr, mode); //GB: english layer #7 - articles and pronouns (docs/GENSOBAND_EN_DESIGN.md 5)\n"
-    },
     "ebb3d2e6a0ef7fae98e04974756dab7b084f4ae36991a38d02eb558f0107591d": {
       "encoding": "cp932",
       "text": "\t\tgb_text_input_set(1); //GB: 来歴の編集も自由文字入力\n"
@@ -5313,6 +5313,10 @@
     "ec734e729ba4f4be4959d0004458f6fe06ededaf9652e7db0396790fd7459f4f": {
       "encoding": "utf8",
       "text": "\t\t\tn++;\r\n\t\t\t\r\n\t\t\t\r\n\t\t\t/*\r\n"
+    },
+    "ecb96b382db8244e445857fe9f4a0e83f116e036e71556b6a61940dffafaa3d3": {
+      "encoding": "utf8",
+      "text": "\t\t\t\targ = gb_tr_arg(arg); //GB: english layer #3 - \"%s\" fragments reach no other hook\n\n"
     },
     "ecc6e0587dc7ce3d8b165c1eb27fca6420b4276b175b8ce7f02031cbe32aad5f": {
       "encoding": "utf8",
@@ -5349,10 +5353,6 @@
     "ee91f5becab6f5aa1a10425dccbc9fe2f1e5104cb551721ef753269ae0b0e5ff": {
       "encoding": "utf8",
       "text": "\t\telse\r\n\t\t{\r\n\t\t\tif (gb_lang_enabled())\r\n\t\t\t{\r\n"
-    },
-    "ee96ed894f340a5097ac2b610298d334eb9a569f5addc5570ee40881bd09a688": {
-      "encoding": "utf8",
-      "text": "\t\t//GB: english layer #37 - the shop and owner names live in a table, and the keys are bare words (docs/GENSOBAND_EN_DESIGN.md 5)\n\t\tcptr store_name = gb_lang_enabled()\n\t\t\t? new_store_name_en[p_ptr->town_num][cur_store_num]\n\t\t\t: new_store_name[p_ptr->town_num][cur_store_num];\n\t\tcptr owner_name = gb_lang_enabled()\n\t\t\t? new_store_owner_name_en[p_ptr->town_num][cur_store_num]\n\t\t\t: new_store_owner_name[p_ptr->town_num][cur_store_num];\n"
     },
     "ee99baca840a845f7c178852b63bbbb294cd8f4f6f68629ba176ce2186bcc773": {
       "encoding": "utf8",
@@ -5546,14 +5546,6 @@
       "encoding": "utf8",
       "text": "\r\n}\r\n\r\n"
     },
-    "f96f8b11e9c44f480e7b02cc957d0d169ac4ca66d8a310fd118d0ca16b8a57fb": {
-      "encoding": "utf8",
-      "text": "\t\t\t\targ = gb_tr_arg(arg); //GB: english layer #3 - \"%s\" fragments reach no other hook (docs/GENSOBAND_EN_DESIGN.md 5)\n\n"
-    },
-    "f9ae46a95194e936cdff9581cbac360ad8aea1cac9113d78da928b1b0630d86d": {
-      "encoding": "cp932",
-      "text": "kanji && o_ptr->name2 == EGO_BODY_POVERTY) ADD_INSC(\";貧\"); //GB: english layer #21 - the roman abbreviations are the english ones (docs/GENSOBAND_EN_DESIGN.md 5)"
-    },
     "f9b66e2d4413c64b4c5a0bdffb856aed199fcd4c83877210c622b8498bf5a0a1": {
       "encoding": "cp932",
       "text": ", streq(p_ptr->died_from, \"Seppuku\") ? \"切腹\" : \"引退\");  //GB: english layer #18 - strnfmt runs through vstrnfmt, so #2/#3 translate it"
@@ -5673,6 +5665,10 @@
     "fe75d8b4b10b52882f16351b0ed6b554fddba68a1acf5c3f29c612002d655866": {
       "encoding": "utf8",
       "text": "\ts16b *dun;\r\n\r\n"
+    },
+    "fe98f11edff5ac15121668241a2f3e7288812bd03ce73e771dbdcb6a8691150f": {
+      "encoding": "utf8",
+      "text": "#ifdef JP\n\t//GB: english layer #28 - the upstream english shape. #3 looks the %s up, so the\n\t//GB: personality title (a seikaku_info entry, already in the catalog) turns english\n\t//GB: (English layer).\n\tif (gb_lang_enabled())\n\t\tstrnfmt(tmp, sizeof(tmp), \"%s %s\",\n\t\t\t(p_ptr->psex == SEX_MALE) ? ap_ptr->title : ap_ptr->f_title, player_name);\n"
     },
     "feada2599dae3931fd1f601f68c2a978ebf8d9d209dc1862e4dc3c1f7e329968": {
       "encoding": "utf8",
@@ -5825,7 +5821,7 @@
       "newline": "crlf"
     },
     "autopick.c": {
-      "sha256": "72e1b65a7477add93bc2a7b3098c3ef7a1d592a59ad2e2c05bd000fd9d1236d9",
+      "sha256": "e7a95c630af6a3fe2af2f6341017715ed1f75aa532a160a7651f621dd5dc4df7",
       "operations": [
         [
           "copy",
@@ -5835,7 +5831,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -5845,7 +5841,7 @@
         ],
         [
           "add",
-          "aed0f44631a6ac31781fff95174bf1f615815f6acc1c25696a27d4aa5c5e48eb"
+          "4f86d1ab7d4298f7e720195d9fe6dda829499396f5985bfae5c5202af0832216"
         ],
         [
           "copy",
@@ -6105,7 +6101,7 @@
         ],
         [
           "add",
-          "b24b8eeef518507fa5f9187a8f32f90d2ac6b1de1d930b3d618550accdaa26ef"
+          "7fbe7464db092faae16abc07de6c9aca526d62ff182c33b535e3561bc2bc5491"
         ],
         [
           "copy",
@@ -6173,7 +6169,7 @@
         ],
         [
           "add",
-          "4a591c1f3edc5e9db13614cfaccc9851595244d58cebd5c86b315a0614f392f2"
+          "4f7a1914b746ebfef2f59e5c35e35cc638869ae3b23fc66efd52bafd6964fac3"
         ],
         [
           "copy",
@@ -6319,7 +6315,7 @@
         ],
         [
           "add",
-          "3f94061a091de54943a286e355dfc54b1db63b03914cf19910ac54774d4956ae"
+          "bcbdf813662a3b378f64bada53831eaf4174315768ddfdfef5ad8d3e692aa633"
         ],
         [
           "copy",
@@ -6403,7 +6399,7 @@
       "newline": "crlf"
     },
     "birth.c": {
-      "sha256": "c69837951e7a7140f98851bc1299e7f2008ab6ce8eb5527000d660262ff84dd4",
+      "sha256": "64d1f868cd0de8e9f7216e7c84449263cee59578e611cfa40ef13818beff37c2",
       "operations": [
         [
           "copy",
@@ -6413,7 +6409,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -8313,7 +8309,7 @@
         ],
         [
           "add",
-          "2b053783260ee891f3e4e4f837bc1984c7d2ebf0cca9f7692ffbe9b0542522ea"
+          "889dd8f49b901fc475ebb7b096a853d0f08eb10ec5e38e4e19d4ecf178c0bcaf"
         ],
         [
           "copy",
@@ -9755,7 +9751,7 @@
       "newline": "crlf"
     },
     "bldg.c": {
-      "sha256": "c3df2e1af2386f5e00b791d5e7da4304bd12ad6ae07df90aed92439fb051081f",
+      "sha256": "45e1b73d93eb2ab273f2fc0ab7ff8e480abe4a94dd56615a0236d0668e4ff61d",
       "operations": [
         [
           "copy",
@@ -9765,7 +9761,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -10427,7 +10423,7 @@
       "newline": "crlf"
     },
     "cmd3.c": {
-      "sha256": "9c1e7a65b633e635257de3dd75a8bba1653fba1cc61fd28c96af135e54bf52d0",
+      "sha256": "163bf7156f7e4a4da9495438fdf6885992566915487cef42446a57e0117bbfc5",
       "operations": [
         [
           "copy",
@@ -10437,7 +10433,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -10851,7 +10847,7 @@
       "newline": "crlf"
     },
     "cmd4.c": {
-      "sha256": "11ddb9c6509bfe826bb0ba1f338bef90b90faa5f27d32599019215dbaf4f843f",
+      "sha256": "f59aebef24f11849fb9f8d4642125d4359ad4d9901479f6c677bb3b04257f41f",
       "operations": [
         [
           "copy",
@@ -10861,7 +10857,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -13283,7 +13279,7 @@
       "newline": "crlf"
     },
     "cmd5.c": {
-      "sha256": "0e780adff5b9e12577f82a26702db9faf3dd5a2902319e2067122f95ef50a3c4",
+      "sha256": "9bed3ddf79c232bdc9f2c5d8294afc7240a500a90b615ad7de8729464d538624",
       "operations": [
         [
           "copy",
@@ -13293,7 +13289,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -13505,7 +13501,7 @@
       "newline": "crlf"
     },
     "cmd6.c": {
-      "sha256": "11b32c3aa0bd819dbc14e547b16c579a392813bd8698f8e14ddfa6926cfc3103",
+      "sha256": "2f8ab694bcd172765256836a5a6c82c99c7d13a33a9f4fc506601678f8ed7e75",
       "operations": [
         [
           "copy",
@@ -13515,7 +13511,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -13799,7 +13795,7 @@
       "newline": "crlf"
     },
     "effects.c": {
-      "sha256": "b124205e40ad2a57a4499c2c3bd3295d6d260c3358b310879b1ca43bcbb05e55",
+      "sha256": "e7dacdd374a337f159e4451fdc161ab5550b75a008796e8f3decc26ddab7ff53",
       "operations": [
         [
           "copy",
@@ -13819,7 +13815,7 @@
         ],
         [
           "add",
-          "4e60f247796fe5bd5be777f7f5e0a179dfab615c2a462bd9fe03ff1f61c23bd0"
+          "bbdb924bd0c920870c7f03d12b3710a21cb041964b311fa2029a02da62308193"
         ],
         [
           "copy",
@@ -13953,7 +13949,7 @@
       "newline": "crlf"
     },
     "files.c": {
-      "sha256": "f2d68e12b65cd19e0f3320ef56496f860449ce57907998d6dce71f1b43eba05d",
+      "sha256": "601ed4374383735aff8c8197c2442f011cb1f680b929de48e2e489e05059008a",
       "operations": [
         [
           "copy",
@@ -13963,7 +13959,7 @@
         ],
         [
           "add",
-          "4f76d63425670d2f9fd84cabe4029b6ce9e8489aab12fd6bdc7ea80599c8c07e"
+          "bbfc7a15dde45604ac4406cd5b59383da6548c390bdc801bb96a7dc245e29950"
         ],
         [
           "copy",
@@ -14203,7 +14199,7 @@
         ],
         [
           "add",
-          "6fdf7ab44dcf1bce1528af4b8c113a28650c3af4d714f85bfd2b6f12ff459374"
+          "fe98f11edff5ac15121668241a2f3e7288812bd03ce73e771dbdcb6a8691150f"
         ],
         [
           "copy",
@@ -14329,7 +14325,7 @@
         ],
         [
           "add",
-          "2807ffc8359cc44228354d3b058c488eedb4efa8f46f2fc7ec3efacde9d4952b"
+          "b93863eda6d9b32501d8dcc9eeabf0cdbb788d1837bb88509ccfcd0f34e1af58"
         ],
         [
           "copy",
@@ -16409,7 +16405,7 @@
         ],
         [
           "add",
-          "2e1b06ecf7d236fd486246fddaf938230ce4d9dcc7a8fffabd09a540f3663f2b"
+          "1e55f8682b9486b657ee1ea1582cd658b0732b89928ccbb09da08c0b16eec5f4"
         ],
         [
           "copy",
@@ -16459,7 +16455,7 @@
         ],
         [
           "add",
-          "6fdf7ab44dcf1bce1528af4b8c113a28650c3af4d714f85bfd2b6f12ff459374"
+          "fe98f11edff5ac15121668241a2f3e7288812bd03ce73e771dbdcb6a8691150f"
         ],
         [
           "copy",
@@ -16735,7 +16731,7 @@
         ],
         [
           "add",
-          "64c891047d72034b832430ef453e40702df65e79c9c9d8dc9ea3fcb964eea862"
+          "bcad996544ad99edb5313bce89b62e4a84fe2a078018a3fc5f98ced3f059cb52"
         ],
         [
           "copy",
@@ -16747,7 +16743,7 @@
       "newline": "crlf"
     },
     "flavor.c": {
-      "sha256": "6098aa40efd4758420fb1f14cc5b2414b87473f39ccd9b4b5328c70bfa8037ab",
+      "sha256": "a89af11d68779cf4b4989267c691b667fe35402ba55dd3c6bb6e45fbce658e51",
       "operations": [
         [
           "copy",
@@ -16757,7 +16753,7 @@
         ],
         [
           "add",
-          "4f76d63425670d2f9fd84cabe4029b6ce9e8489aab12fd6bdc7ea80599c8c07e"
+          "bbfc7a15dde45604ac4406cd5b59383da6548c390bdc801bb96a7dc245e29950"
         ],
         [
           "copy",
@@ -16777,7 +16773,7 @@
         ],
         [
           "add",
-          "826ed751ee2280e44050da84381de80d62f43ad615a594c609b9f83628c9ab5c"
+          "44adf7310bbb22031f83f382338547cf759b4452fb89ed9b9a2557b4c3c4cc1f"
         ],
         [
           "copy",
@@ -16807,7 +16803,7 @@
         ],
         [
           "add",
-          "54d2500864d8aa694e9a659159fd5f198ecd215281374b39792e3d06d33dce5d"
+          "cd7f831c47875d1f446f5eabfd5fb5479ed838174183e546d0b95eacf2bd5a43"
         ],
         [
           "copy",
@@ -16817,7 +16813,7 @@
         ],
         [
           "add",
-          "f9ae46a95194e936cdff9581cbac360ad8aea1cac9113d78da928b1b0630d86d"
+          "3980fc3355729da153625937ad3b89aee040004109c34a46d63b7316e49f62ae"
         ],
         [
           "copy",
@@ -16827,7 +16823,7 @@
         ],
         [
           "add",
-          "065f977e9f5bb4f19b623b4f439493816f1a4107a82253ada04bafdc4c386c17"
+          "4dd9c069d26597643620c1e43b82f3b52ff3c35b02f47604855e48e8fe6fd497"
         ],
         [
           "copy",
@@ -16837,17 +16833,7 @@
         ],
         [
           "add",
-          "4a56cdf9289abe5085fd1b39ee4c59c5868277349421b3eded4ab6d6b0e33b5f"
-        ],
-        [
-          "copy",
-          "i00031",
-          27300,
-          1
-        ],
-        [
-          "add",
-          "43a5a27b0e66982e667f9d22dcf20fa327aebabde3f2c76a9335a138dc36aec0"
+          "559d70ec0bd13fb62014f83ab8912dfe0212540b201cd25aafeb3b8ee9c251dc"
         ],
         [
           "copy",
@@ -16897,17 +16883,7 @@
         ],
         [
           "add",
-          "4a56cdf9289abe5085fd1b39ee4c59c5868277349421b3eded4ab6d6b0e33b5f"
-        ],
-        [
-          "copy",
-          "i00031",
-          75305,
-          1
-        ],
-        [
-          "add",
-          "43a5a27b0e66982e667f9d22dcf20fa327aebabde3f2c76a9335a138dc36aec0"
+          "559d70ec0bd13fb62014f83ab8912dfe0212540b201cd25aafeb3b8ee9c251dc"
         ],
         [
           "copy",
@@ -16987,7 +16963,7 @@
         ],
         [
           "add",
-          "9099525a8f1fb1985d173e8c1c22193b95ecfba84c4efae69b2843771599dc71"
+          "08506963a83fd13621f00ec9e7a1e52226508f9f1f8ae6e7b0aa8c87ab82f714"
         ],
         [
           "copy",
@@ -17071,7 +17047,7 @@
       "newline": "crlf"
     },
     "h-config.h": {
-      "sha256": "f86bc5f5b23a5bb5d5b420590f47c4589aab3a396db9ef94ba89946992fd7bfd",
+      "sha256": "67395e0873b48eb609ed0b4fca9986e58fba67eac1fd76392a55d30fe64f7e9b",
       "operations": [
         [
           "copy",
@@ -17091,7 +17067,7 @@
         ],
         [
           "add",
-          "b814711777a112e47ea0bf8e4e603746fd14953b0a2d6fb4fbb5caf41b374abf"
+          "69913cf9fea71501ff8ebf96b2e80886c21e1fe3f986d1aed1c997f8e83666c2"
         ],
         [
           "copy",
@@ -17171,7 +17147,7 @@
       "newline": "crlf"
     },
     "hissatsu.c": {
-      "sha256": "cc20659f069cf1522ea3e5d4b4a898dd0379c1717e3e9150da64994c33cee448",
+      "sha256": "046cf9c206c55729a8e1a72c37e4dc4f8487f93e2d072ae3e7f09523ea8f122a",
       "operations": [
         [
           "copy",
@@ -17181,7 +17157,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -17447,7 +17423,7 @@
       "newline": "crlf"
     },
     "melee1.c": {
-      "sha256": "d30f308ae1f16eff8f7ec59f060f29a7801d253316e837da8a1ee785f5b7431d",
+      "sha256": "b9b5d585ff29d33219f1aa1eda4a6b0826603a5073d83f394ae6b7dbea62e1f2",
       "operations": [
         [
           "copy",
@@ -17457,7 +17433,7 @@
         ],
         [
           "add",
-          "4e06786c048a6a0f8cd0bae9870d7fb8449ffa0d34880c004b9006b5ba0749b2"
+          "088dc478d980b9f0bb54163fbe861e2b1d0196c834bde67931bbe4fc3b9e8ea0"
         ],
         [
           "copy",
@@ -17491,7 +17467,7 @@
       "newline": "crlf"
     },
     "mind.c": {
-      "sha256": "781a67904aa7c413c77a63288f4e5021182e696bf47db8c7bdc5c190da4ea851",
+      "sha256": "adbccd336a267bd5921624665f756bf92caeef3654b5b254be346136268d9648",
       "operations": [
         [
           "copy",
@@ -17501,7 +17477,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -17605,7 +17581,7 @@
       "newline": "crlf"
     },
     "monster1.c": {
-      "sha256": "1f1546e364cea0fcf64424a77eac687f918236ef40f11bf1fdda939e26cc83d6",
+      "sha256": "c8e6af061e24175aabdb4acfd2320c2164340eb0a3cbe6a8631cbf86141aa19d",
       "operations": [
         [
           "copy",
@@ -17711,7 +17687,7 @@
         ],
         [
           "add",
-          "a57241ba74857f3a409726811c7354b097b16ec92bba36a315ef280c9fd20da7"
+          "5f77714a6ba0eda39cf8362227b391451c352b4332e3f674d2676ab5b40979a0"
         ],
         [
           "add",
@@ -18479,7 +18455,7 @@
         ],
         [
           "add",
-          "98390b54de97cf32203d49bb0edd743d80e03eaaaa17d587bff62b9daa2e257a"
+          "6305bf9ab60f17299d5eeb3c22025225d6c85978af8816ab2c0c08d305588ff8"
         ],
         [
           "add",
@@ -38529,7 +38505,7 @@
         ],
         [
           "add",
-          "aba4bbdc0f3e447cb22c42484f80b6428981d9a471c622c6a4a83fa83fd5a0c3"
+          "ba95d405028e495453a5717c65e2e848fabe509000875586c8a4c75e1c5870f2"
         ],
         [
           "copy",
@@ -48196,7 +48172,7 @@
       ]
     },
     "monster2.c": {
-      "sha256": "d2cca4416c893674cc95e11538d249516b7c8d8d370034a7c7862ccd9cc0a5e9",
+      "sha256": "db2279b4def662605d9227be8df845625de647999b7de0d473c69ae600e2d2f0",
       "operations": [
         [
           "copy",
@@ -48206,7 +48182,7 @@
         ],
         [
           "add",
-          "4f76d63425670d2f9fd84cabe4029b6ce9e8489aab12fd6bdc7ea80599c8c07e"
+          "bbfc7a15dde45604ac4406cd5b59383da6548c390bdc801bb96a7dc245e29950"
         ],
         [
           "copy",
@@ -48276,7 +48252,7 @@
         ],
         [
           "add",
-          "eba7fc07817d32f6256a41f3d021cc18e6102d3f96faae1e5e7e53aa3000e443"
+          "e5cdee7f1d138c1ea91f54cc0211153c3b0d210300bdc9c7662aca6c59d1bca0"
         ],
         [
           "copy",
@@ -48312,7 +48288,7 @@
       "newline": "crlf"
     },
     "mspells3.c": {
-      "sha256": "cf83655578cd747fca045a2e4d17dc4daf607d1afefc8ee8d8ad7d835f27d6f9",
+      "sha256": "c95b17e76b74aeea5eea01637d43a8f8e75a8eea3eabf3114f9b341426d1daae",
       "operations": [
         [
           "copy",
@@ -48322,7 +48298,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -48364,7 +48340,7 @@
       "newline": "crlf"
     },
     "mutation.c": {
-      "sha256": "257c164b6a40d90d75ef7a647a9576139382b8128b36f6832c8df61df19b4eca",
+      "sha256": "9604ad2f0e5a7edee87dfe8e7a2f13c63de3f19b6c3f5b97b22b4995a6701742",
       "operations": [
         [
           "copy",
@@ -48374,7 +48350,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -49456,7 +49432,7 @@
       "newline": "crlf"
     },
     "new_class_power.c": {
-      "sha256": "c3ff00c677872c1ae4c4f49885f8bb0188c3f4bb1a92a6f1418a22ed4b1eb780",
+      "sha256": "bc295d0e86c43d0b890257b1c91c548d3dd3d1807aeea03a596d0b6c609ffe0e",
       "operations": [
         [
           "copy",
@@ -49466,7 +49442,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -49570,7 +49546,7 @@
       "newline": "crlf"
     },
     "object1.c": {
-      "sha256": "eecb61efa3942ff7ecca4f2e38dbbb77802e26d5a8424a7dcbbe105ea2eccfd7",
+      "sha256": "260ba349dfe84c1b94859f8389464d16b3d1eda26cea71a674bea06d045b7079",
       "operations": [
         [
           "copy",
@@ -49580,7 +49556,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -50372,7 +50348,7 @@
       "newline": "crlf"
     },
     "object2.c": {
-      "sha256": "0dae2bf4ee6a42b052ecf511e1fa4c10a7402f455bb232a1edddf98d5ea2e19a",
+      "sha256": "460ff1e0ae06f766f102bbcf13e00200fa91e759a39a1216350c85cd86195013",
       "operations": [
         [
           "copy",
@@ -50382,7 +50358,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -50434,7 +50410,7 @@
       "newline": "crlf"
     },
     "racial.c": {
-      "sha256": "6518ab771bd454dba94e3bde85533a538fa3336206d17cb1a64f5f8baee516f4",
+      "sha256": "58ab4122de2495f4b9e021c37a46e01c0fef9549cfcf724b6e88a871512350be",
       "operations": [
         [
           "copy",
@@ -50444,7 +50420,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -50860,7 +50836,7 @@
       "newline": "crlf"
     },
     "scores.c": {
-      "sha256": "ebad30f03bde2eb4f799c382d1dab9079fb3aff8a7ba98c78e0bd809daf9420f",
+      "sha256": "8244d644be869c7a882840fdd5f9974a5dd6671ef07f229e8dc04a7ec093b733",
       "operations": [
         [
           "copy",
@@ -50870,7 +50846,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -51334,7 +51310,7 @@
       "newline": "crlf"
     },
     "spells1.c": {
-      "sha256": "26b184d5188dfcb1bcb276380e512e9f3531cee05ddd94c63e744dc19c337bf6",
+      "sha256": "22c09f42b330be34ec41b71a73e4af339c24bd600f0c1ef1a5e3fdbf0ed78825",
       "operations": [
         [
           "copy",
@@ -51344,7 +51320,7 @@
         ],
         [
           "add",
-          "638f179002b82664d3382fc11c2f34bfcad5121cdf0afd5e9c2fb7b3ea42a768"
+          "d1eda0ab2430889b9d7b802e2978a5da9930b96cb0d0528a79c97df52a13c9c6"
         ],
         [
           "copy",
@@ -51818,7 +51794,7 @@
       "newline": "crlf"
     },
     "spells3.c": {
-      "sha256": "566e5e2574bbe50304e59a91230771f5ddbbd50e4a6df8ecf93e3f9f2f717824",
+      "sha256": "2439227d7c564f45ac777c471d4c757749797e7d4130a1e22dea82e8731b13c7",
       "operations": [
         [
           "copy",
@@ -51924,7 +51900,7 @@
         ],
         [
           "add",
-          "83996c9aeed88c69ca8bc56fde578d608134550f0baf8cf9310e50cba766a1df"
+          "34df30763bcbfec179e723a2d71f116103e4e0f83a4c13cd3d85821fb1bc6c52"
         ],
         [
           "copy",
@@ -126247,7 +126223,7 @@
       ]
     },
     "store.c": {
-      "sha256": "dcd7f5105faa77ded0425c95d4488afafae9a781e8bac70b42c724c5b6f5a1eb",
+      "sha256": "fb34f2e82c7aa11402aec6edf70b82dab974781f995e52eda0b5e5792407d9f5",
       "operations": [
         [
           "copy",
@@ -126257,7 +126233,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -126277,7 +126253,7 @@
         ],
         [
           "add",
-          "ee96ed894f340a5097ac2b610298d334eb9a569f5addc5570ee40881bd09a688"
+          "4770bd0dd5b11ab5e8bbca6e253b7410bd504ba0877ff7d7f9dea76852376664"
         ],
         [
           "copy",
@@ -126499,7 +126475,7 @@
       "newline": "crlf"
     },
     "util.c": {
-      "sha256": "597fbd600f6547ab9fabef71de6bd015f676201f7a90cd7c3bfde314d326e3dd",
+      "sha256": "cd92b4261003f0333b1f26682def8c09b9b1448c91dd8d0728ab562d3e789e15",
       "operations": [
         [
           "copy",
@@ -126605,7 +126581,7 @@
         ],
         [
           "add",
-          "11c17eaa506516140aef0b8c392b6e574baadb2f0387c370e1f11e44d14c9ffa"
+          "ab7fec487c4fbd3b2789fe323e6e678703e96b757e19e6d67a86a7651cabcbd3"
         ],
         [
           "copy",
@@ -153663,7 +153639,7 @@
         ],
         [
           "add",
-          "996bd615b7acacd587fc85342927db1bf082656f0c4176dc376ad93c0485a798"
+          "66adee69c22490beb3e6decd0654fc27661ca75b1fd1e7eb1bba919f39c6af26"
         ],
         [
           "add",
@@ -174817,7 +174793,7 @@
       "newline": "crlf"
     },
     "xtra1.c": {
-      "sha256": "dc841fcb96c9da8b8312953fe4eb5ba763f439fa261fe52f25a7f5ea72760d21",
+      "sha256": "fb7236a404ff3dbaf1b7fbeed1373be746d1bef3424d714799a9568706665322",
       "operations": [
         [
           "copy",
@@ -174827,7 +174803,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -174837,7 +174813,7 @@
         ],
         [
           "add",
-          "82b3fbd9e3faa58d485d3427e1569c6c3e8710296881e7c18f68873b5229e1dc"
+          "dbedd0a5028ac39e44bff470d13c4528c94f414b61b19ca59b2209915f143620"
         ],
         [
           "copy",
@@ -174969,7 +174945,7 @@
       "newline": "crlf"
     },
     "xtra2.c": {
-      "sha256": "f33c783f9db12cdc203e424f5a0bbf0bd612673ee61bd811840e46b0cb5147a2",
+      "sha256": "9eb676fc6adbcbd35288ab23c6421bdac9631b4a2c7247e0d945b2597bbf57e1",
       "operations": [
         [
           "copy",
@@ -174979,7 +174955,7 @@
         ],
         [
           "add",
-          "6aa5f21b238a06b8b08cc45ecadfe937186cb947afc01ba74728e1edaa2ef8c4"
+          "a15e8310bdf3452d68a5daa7e4090d3d401a69a8fc29abd662df52087cbcf9bc"
         ],
         [
           "copy",
@@ -174989,7 +174965,7 @@
         ],
         [
           "add",
-          "0709564c93550216a4cbac4c4de8d7ae632c8ce468009ac36830307143b8ee14"
+          "74ceb902c439eab9de7c9b5e8d2f47d60444165ea7e4d5812cf3a69f55956cab"
         ],
         [
           "copy",
@@ -175897,7 +175873,7 @@
       "newline": "crlf"
     },
     "z-form.c": {
-      "sha256": "ff58776efc1e0738bd4f438feb8e984f4f896b780636d692711382fb63ca5532",
+      "sha256": "0f25157e0274eb187b2d83103a2a89ba8b32ffb808e865ff13b988ac4f74dc48",
       "operations": [
         [
           "copy",
@@ -175907,7 +175883,7 @@
         ],
         [
           "add",
-          "4f76d63425670d2f9fd84cabe4029b6ce9e8489aab12fd6bdc7ea80599c8c07e"
+          "bbfc7a15dde45604ac4406cd5b59383da6548c390bdc801bb96a7dc245e29950"
         ],
         [
           "copy",
@@ -175917,7 +175893,7 @@
         ],
         [
           "add",
-          "c24cc8d4bdec882422f8b7ac8383610a10800b5980b29624c7dc4021bec2f7bb"
+          "bcfa4475b1390101867ebbc2380691c85fd81accf61f2f444f6202f159dff9d0"
         ],
         [
           "copy",
@@ -175927,7 +175903,7 @@
         ],
         [
           "add",
-          "f96f8b11e9c44f480e7b02cc957d0d169ac4ca66d8a310fd118d0ca16b8a57fb"
+          "ecb96b382db8244e445857fe9f4a0e83f116e036e71556b6a61940dffafaa3d3"
         ],
         [
           "copy",
@@ -175975,7 +175951,7 @@
       "newline": "crlf"
     },
     "z-term.c": {
-      "sha256": "febd9a58a38aee3dfd5f407f9d5e47bb274344735b52c41ce57e46cd5b05331d",
+      "sha256": "02d897f1bf9d140ddd570976ab64e8fc4008808926fa49df319017f10fb8adb4",
       "operations": [
         [
           "copy",
@@ -175985,7 +175961,7 @@
         ],
         [
           "add",
-          "4f76d63425670d2f9fd84cabe4029b6ce9e8489aab12fd6bdc7ea80599c8c07e"
+          "bbfc7a15dde45604ac4406cd5b59383da6548c390bdc801bb96a7dc245e29950"
         ],
         [
           "copy",
@@ -175995,7 +175971,7 @@
         ],
         [
           "add",
-          "7d0a4b0d67a6ec8d3e3bbbc5f43a0aa831ac37271f7762cc93ed0e7ea372b9a0"
+          "3e54324322b0955be42cce85cd86e32590bfff17748d213307e14008f46fd739"
         ],
         [
           "copy",

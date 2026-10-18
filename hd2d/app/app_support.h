@@ -96,6 +96,13 @@ inline const TextColor kDimColor{ 0.55f, 0.60f, 0.70f, 1.f };
 /*! @brief `HD2D_DAY_MINUTE` で時刻を固定する（検査を昼夜で揺らさないため）。-1 なら固定しない。 */
 int forced_day_minute();
 
+/*!
+ * @brief `HD2D_FORCE_WEATHER=雨,風,気温`（0〜15 の整数 3 つ）で天候を差し替える（検査と見本の絵のため）。
+ * @details `HD2D_FORCE_TIME` と同じ立場の口で、**コアには一切影響しない**。コアが天候を申告したときだけ効く
+ * （申告の無いコアは差し替えない）。指定が無い・読めないときは false。
+ */
+bool forced_weather(WeatherState &out);
+
 /*! @brief 夜のあいだだけ灯りを点ける係数（0=昼・1=夜）。 */
 float lamp_night_factor(const LightingState &light);
 

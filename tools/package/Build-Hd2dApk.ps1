@@ -52,7 +52,7 @@ if (-not $SkipAssets) {
 
 # --- CP932 の変換ツリーを先に更新する（2026-08-29 に足した）-------------------
 #
-#  旧 C の 3 コア（幻想蛮怒・Sil-Q・Frox）は `android/build-src-sjis/` の変換ツリーを組む。
+#  旧 C の 4 コア（幻想蛮怒・Sil-Q・Frox・TOband）は `android/build-src-sjis/` の変換ツリーを組む。
 #  CMake は**組む最中**にも更新する（`hb_transcode_sjis`）が、**ninja は走り始めの
 #  時刻で staleness を決めている**ので、その回では新しい中身が使われない。
 #
@@ -64,6 +64,8 @@ Write-Output 'CP932 の変換ツリーを更新しています…'
 $sjisTrees = @(
     @{ From = 'gensoband/src';     To = 'gensoband/src';     Enc = 'cp932'; Ext = '.c,.h,.inl' },
     @{ From = 'gensoband/adapter'; To = 'gensoband/adapter'; Enc = 'utf8';  Ext = '.c,.cpp,.h,.inl,.inc' },
+    @{ From = 'toband/src';        To = 'toband/src';        Enc = 'cp932'; Ext = '.c,.h,.inl' },
+    @{ From = 'toband/adapter';    To = 'toband/adapter';    Enc = 'utf8';  Ext = '.c,.cpp,.h,.inl,.inc' },
     @{ From = 'silq/adapter';      To = 'silq/adapter';      Enc = 'utf8';  Ext = '.c,.cpp,.h,.inl,.inc' },
     @{ From = 'frox/adapter';      To = 'frox/adapter';      Enc = 'utf8';  Ext = '.c,.cpp,.h,.inl,.inc' }
 )
@@ -126,7 +128,7 @@ if ($LASTEXITCODE -ne 0) { throw 'APK のアセット・SDK 検査に失敗し�
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $apk))
 try {
-    $coreLibraries = @('libhengcore.so','libtangcore.so','libgensocore.so','libsilcore.so','libfroxcore.so','librogue2core.so','librogue36core.so','librogue54core.so','libangbandcore.so','libumoriacore.so')
+    $coreLibraries = @('libhengcore.so','libtangcore.so','libgensocore.so','libsilcore.so','libfroxcore.so','librogue2core.so','librogue36core.so','librogue54core.so','libangbandcore.so','libumoriacore.so','libtobandcore.so')
     # libopenal.so は画面側の音。
     # libmain.so が DT_NEEDED で引くので、入れ忘れると起動時に落ちる。
     $libraries = @('libmain.so', 'libopenal.so')

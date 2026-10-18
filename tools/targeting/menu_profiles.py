@@ -69,7 +69,7 @@ def self_effect_call(source,call,owner,core,helpers,numeric=None):
         radius=None
         if core=='heng' and len(args) in (3,4) and args[1]=='player_ptr->get_position()' and (len(args)==3 or args[3]=='0'):
             radius=numeric.expand(args[2])
-        elif core in ('frox','genso') and len(args)==3 and args[:2]==['py','px']:
+        elif core in ('frox','genso','toband') and len(args)==3 and args[:2]==['py','px']:
             radius=numeric.expand(args[2])
         if radius is not None:return f'hb_target_profile_effect(NATIVE_SHAPE_QUAKE,0,{radius},0,0,1,0,0)'
     if name=='destroy_area':
@@ -77,6 +77,7 @@ def self_effect_call(source,call,owner,core,helpers,numeric=None):
         if core=='heng' and len(args)==5 and args[1:3]==['player_ptr->y','player_ptr->x'] and args[4]=='false':expression=args[3]
         elif core=='frox' and len(args)==4 and args[:2]==['py','px']:expression=args[2]
         elif core=='genso' and len(args)==6 and args[:2]==['py','px'] and args[3:] in (['FALSE','FALSE','FALSE'],['FALSE','TRUE','FALSE']):expression=args[2]
+        elif core=='toband' and len(args)==3 and args[:2]==['py','px']:expression=args[2]
         if expression is not None:
             radius=numeric.expand(expression)
             if radius is not None:return f'hb_target_profile_effect(NATIVE_SHAPE_DESTRUCTION,0,{radius},0,0,0,0,0)'
@@ -105,8 +106,9 @@ def self_effect_call(source,call,owner,core,helpers,numeric=None):
         radius=numeric.expand(args[3])
         if radius is None:return None
         args=list(args);args[3]=radius
-        return effect_code(name,args,lambda value:numeric(value))
-    if name=='project' and (len(args)==7 or core=='genso' and len(args)==8 and args[7]=='-1') and args[0]=='0' and args[2:4]==['py','px']:
+        return effect_code(name,args,lambda value:numeric(value),core=core if core=='toband' else None)
+    toband_project=core=='toband' and len(args)==8 and args[7].startswith('MODIFY_ELEM_MODE_')
+    if name=='project' and (len(args)==7 or core=='genso' and len(args)==8 and args[7]=='-1' or toband_project) and args[0]=='0' and args[2:4]==['py','px']:
         element=args[5];radius=numeric.expand(args[1]);flags=resolve_flags(args[6],numeric)
         if not element.startswith('GF_') or element[3:] not in ELEMENTS or radius is None or flags is None:return None
         return f'hb_target_profile_effect(NATIVE_SHAPE_BALL,{element},{radius},0,{flags},0,0,0)'+effect_kind(element)
@@ -129,7 +131,7 @@ def function_regions(source,owner,parameter):
     return result
 
 def injections(source,core,helpers,path_name=''):
-    if core not in ('frox','genso','heng'):return [],[]
+    if core not in ('frox','genso','heng','toband'):return [],[]
     edits=[];audit=[];books=[]
     for match in (HENG_SIGNATURE if core=='heng' else SIGNATURE).finditer(source.mask):
         returned,name,parameters=match.groups()
@@ -163,10 +165,12 @@ def injections(source,core,helpers,path_name=''):
         edits.append((owner[0]+1,owner[0]+1,code))
         audit.append({'site':site,'core':core,'function':name,'callback':bool(callback),'book':bool(book),'cases':entries})
     # The realm dispatcher also bypasses its ordinary global/preamble writes.
-    dispatcher=next((f for f in source.functions if f[2]==('exe_spell' if core=='heng' else 'do_spell')),None)
+    # TOband の do_spell() は仲間の呪文の対象の切り替えを包んだ薄い関数で、領域の振り分けは中の do_spell_aux()（static）にある。
+    # 計画の合図の記号は、メニュー側（tb_targeting_menu.inl）が見る外向きの do_spell で出す。
+    dispatcher=next((f for f in source.functions if f[2]==('exe_spell' if core=='heng' else 'do_spell_aux' if core=='toband' else 'do_spell')),None)
     if dispatcher:
         if core!='frox':
-            name=dispatcher[2]
+            name='do_spell' if core=='toband' else dispatcher[2]
             dispatch=source.mask[dispatcher[0]+1:dispatcher[1]]
             # Only direct native realm calls enter the private mode. The Genso
             # bard error branch and invalid-realm messages remain normal-only.

@@ -61,6 +61,22 @@ def staging_directory(parent):
             if stage.resolve().parent!=parent.resolve() or not stage.name.startswith('.core-prepare-'):raise ValueError('Unexpected staging cleanup path')
             shutil.rmtree(stage)
 
+def reconstruct(upstream,source,result):
+    """Write one core's reconstructed sources under result/<output> and verify them."""
+    originals=original_files(upstream,source)
+    recipe=json.loads(recipe_path(source).read_text(encoding='utf8'))
+    files=materialize(recipe,lambda archive,path:originals[path] if archive=='source' else (_ for _ in ()).throw(ValueError('Unexpected source archive')))
+    if files.keys()!=source['files'].keys():raise ValueError('Reconstruction file list mismatch')
+    target=(result/source['output']).resolve()
+    if not target.is_relative_to(result.resolve()):raise ValueError('Unsafe source output root')
+    target.mkdir(parents=True)
+    for name,data in files.items():
+        path=(target/name).resolve()
+        if not path.is_relative_to(target.resolve()):raise ValueError('Unsafe source output path')
+        path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
+    verify_core(target,source)
+    return target
+
 def prepare(upstream,output,verify_only=False):
     upstream,output=Path(upstream).resolve(),Path(output).resolve()
     if output==upstream or output.is_relative_to(upstream) or output.is_relative_to(UI_ROOT.resolve()):raise ValueError('Prepared sources must be outside the UI and upstream source directories')
@@ -73,11 +89,25 @@ def prepare(upstream,output,verify_only=False):
         # prepared tree with only a stale marker.  Verify every file before
         # refreshing that marker; any unrecorded/generated-source edit still
         # fails closed and is never overwritten here.
+        # A newly added core (its output folder does not exist yet) is
+        # reconstructed into staging and moved in; existing cores are only
+        # verified and never touched.
+        missing=[s for s in manifest['sources'] if not (output/s['output']).exists()]
         try:
-            for source in manifest['sources']:verify_core(output/source['output'],source)
+            for source in manifest['sources']:
+                if source not in missing:verify_core(output/source['output'],source)
         except (ValueError,OSError) as exc:
             if verify_only:raise ValueError('No matching prepared sources: '+str(output)) from exc
             raise ValueError('Output already exists and does not match the current source manifest; choose a new empty output path: '+str(output)) from exc
+        if missing and verify_only:raise ValueError('No matching prepared sources: '+str(output))
+        for source in missing:
+            with staging_directory(output.parent) as stage:
+                target=reconstruct(upstream,source,stage/'result')
+                final=(output/source['output']).resolve()
+                if not final.is_relative_to(output.resolve()):raise ValueError('Unsafe source output root')
+                final.parent.mkdir(parents=True,exist_ok=True);target.rename(final)
+            verify_core(final,source)
+            print(source['name']+': added '+str(len(source['files']))+' files',flush=True)
         marker.write_text(json.dumps({'schema':2,'fingerprint':fingerprint,'baseline':manifest['baseline']},indent=2)+'\n',encoding='utf8',newline='\n')
         print('Prepared sources verified; refreshed marker:',output);return
     if verify_only:raise ValueError('No matching prepared sources: '+str(output))
@@ -85,19 +115,8 @@ def prepare(upstream,output,verify_only=False):
     with staging_directory(output.parent) as stage:
         result=stage/'result';result.mkdir()
         for source in manifest['sources']:
-            originals=original_files(upstream,source)
-            recipe=json.loads(recipe_path(source).read_text(encoding='utf8'))
-            files=materialize(recipe,lambda archive,path:originals[path] if archive=='source' else (_ for _ in ()).throw(ValueError('Unexpected source archive')))
-            if files.keys()!=source['files'].keys():raise ValueError('Reconstruction file list mismatch')
-            target=(result/source['output']).resolve()
-            if not target.is_relative_to(result.resolve()):raise ValueError('Unsafe source output root')
-            target.mkdir(parents=True)
-            for name,data in files.items():
-                path=(target/name).resolve()
-                if not path.is_relative_to(target.resolve()):raise ValueError('Unsafe source output path')
-                path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
-            verify_core(target,source)
-            print(source['name']+': '+str(len(files))+' files match the baseline',flush=True)
+            reconstruct(upstream,source,result)
+            print(source['name']+': '+str(len(source['files']))+' files match the baseline',flush=True)
         (result/'.prepared.json').write_text(json.dumps({'schema':2,'fingerprint':fingerprint,'baseline':manifest['baseline']},indent=2)+'\n',encoding='utf8',newline='\n')
         result.rename(output)
     print('Prepared sources:',output)

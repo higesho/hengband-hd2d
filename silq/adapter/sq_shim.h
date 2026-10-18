@@ -828,6 +828,12 @@ void sq_player_identity_remove_name(const char *save_name);
  */
 int sq_awaiting_command(void);
 
+/*! 検査用：敵の行動の指定。環境変数 HD2D_TEST_MONSTER_ACT が無ければ何もしない（sq_shim.c の註釈）。 */
+void sq_test_monster_act_poll(void);
+
+/*! 検査用：止めている敵の energy を置き直す（hold。sq_shim.c の註釈）。止めている敵が無ければすぐ戻る。 */
+void sq_test_monster_hold_tick(void);
+
 /*!
  * @brief いまのキー配置の番号（原作 `request_command()` と同じ決め方。2026-10-07）。
  * @return `KEYMAP_MODE_SIL`(0)・`SIL_HJKL`(1)・`ANGBAND`(2)・`ANGBAND_HJKL`(3)。

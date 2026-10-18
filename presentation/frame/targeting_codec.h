@@ -25,6 +25,11 @@ inline nlohmann::json encode_targeting(const TargetingState &s) {
     for(const auto &m:s.markers)out["markers"].push_back(J::array({m.id,m.point.x,m.point.y,m.creature,m.selected,m.affected,m.valid}));
     // Only when the core offers extras, so every other core's wire bytes stay as they were.
     if(!s.extras.empty()){out["extras"]=J::array();for(const auto &e:s.extras)out["extras"].push_back(J::array({e.key,e.label,e.enabled}));}
+    // The cursor popup (TOband). One array per line, each span [colour, text]. Only when the core sends one.
+    if(!s.info.empty()){
+        out["info"]=J::array();
+        for(const auto &line:s.info){J spans=J::array();for(const auto &sp:line.spans)spans.push_back(J::array({sp.color,sp.text}));out["info"].push_back(std::move(spans));}
+    }
     return out;
 }
 inline bool decode_targeting(const nlohmann::json &j,TargetingState &out,std::string &error) {
@@ -79,6 +84,14 @@ inline bool decode_targeting(const nlohmann::json &j,TargetingState &out,std::st
         if(j.contains("extras")){
             array(j["extras"],32);
             for(const auto &v:j["extras"]){array(v,3);if(v.size()!=3)throw std::runtime_error("invalid extra");TargetingExtra e;e.key=integer(v[0],1,126);if(e.key>26&&e.key<33)throw std::runtime_error("invalid extra key");e.label=string(v[1],256);e.enabled=boolean(v[2]);s.extras.push_back(std::move(e));}
+        }
+        if(j.contains("info")){
+            array(j["info"],8);
+            for(const auto &line:j["info"]){
+                array(line,16);TargetingInfoLine l;
+                for(const auto &v:line){array(v,2);if(v.size()!=2)throw std::runtime_error("invalid info span");TargetingInfoSpan sp;sp.color=integer(v[0],0,15);sp.text=string(v[1],512);l.spans.push_back(std::move(sp));}
+                s.info.push_back(std::move(l));
+            }
         }
         if(s.active&&selected!=1)throw std::runtime_error("exactly one selected marker required");
         if(s.preview_only&&(selected||s.can_confirm))throw std::runtime_error("menu preview cannot select or confirm a target");

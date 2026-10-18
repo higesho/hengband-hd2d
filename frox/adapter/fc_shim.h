@@ -946,6 +946,9 @@ int fc_object_defined(int k_idx);
 
 int fc_awaiting_command(void);
 
+/*! 検査用：敵の行動の指定。環境変数 HD2D_TEST_MONSTER_ACT が無ければ何もしない（fc_shim.c の注釈）。 */
+void fc_test_monster_act_poll(void);
+
 /*!
  * @brief 地表の広域の地図の確認画面（`do_cmd_world_map()`。`<` で開く）が出ているか。
  *

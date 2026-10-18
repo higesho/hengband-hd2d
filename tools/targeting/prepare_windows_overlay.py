@@ -25,7 +25,8 @@ import time
 
 
 SOURCE_DIRS = ("src", "tangband/src", "gensoband/src", "frox/src", "silq/src",
-               "umoria/patched-src", "rogue36/patched-src", "rogue54/patched-src", "rogue2/patched-src")
+               "umoria/patched-src", "rogue36/patched-src", "rogue54/patched-src", "rogue2/patched-src",
+               "toband/src")
 SOURCE_SUFFIXES = {".c", ".cc", ".cpp", ".h", ".hpp", ".inl", ".inc"}
 
 

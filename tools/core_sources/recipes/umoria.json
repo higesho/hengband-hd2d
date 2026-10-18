@@ -546,10 +546,6 @@
       "encoding": "utf8",
       "text": "    }\n"
     },
-    "69511ed5b39f7c3097769b131c4f245ce031d500e1a20b2b2189a055015aea2c": {
-      "encoding": "utf8",
-      "text": "    if (!umoria_build_town_from_map()) { // HD2D: the fixed town map (docs/UMORIA_TOWN_DESIGN.md)\n"
-    },
     "69b3873a8c49264bd32cc1c7f9577f00b127508acfd2a5d019d4c7bbfccb3161": {
       "encoding": "utf8",
       "text": "            umoria_command_input_active = false;\n"
@@ -565,6 +561,10 @@
     "f8ebf575f89d9cffc998ffc1df36f3acc18815a021c240819d561ee3cbf41bc4": {
       "encoding": "utf8",
       "text": "            umoria_command_input_active = true; // HD2D: the frame tells the UI a command is awaited\n"
+    },
+    "fdc6688e1238a124b587ba8e39e6905905ceeb293140e4541f14f53a97e800f8": {
+      "encoding": "utf8",
+      "text": "    if (!umoria_build_town_from_map()) { // HD2D: the fixed town map\n"
     }
   },
   "files": {
@@ -891,7 +891,7 @@
       "newline": "crlf"
     },
     "dungeon_generate.cpp": {
-      "sha256": "c77cfe4c9537b6629ad627c496a0b45e0f54552574f9cd96b7924bfbb9c47ccd",
+      "sha256": "feed4a0c23a09d23f5e0c6e0df30381b9647c5df58062b4c1b740f1a0c3e22ab",
       "operations": [
         [
           "copy",
@@ -901,7 +901,7 @@
         ],
         [
           "add",
-          "69511ed5b39f7c3097769b131c4f245ce031d500e1a20b2b2189a055015aea2c"
+          "fdc6688e1238a124b587ba8e39e6905905ceeb293140e4541f14f53a97e800f8"
         ],
         [
           "copy",

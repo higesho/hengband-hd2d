@@ -344,6 +344,7 @@ inline void apply_options(const std::vector<std::string> &args, AppOptions &opti
         } else if (opt.starts_with(kTurnArg)) {
             const int turn = std::atoi(std::string(opt.substr(kTurnArg.size())).c_str());
             options.camera_turn = ((turn % hd2d::kViewTurnCount) + hd2d::kViewTurnCount) % hd2d::kViewTurnCount; //!< 0..7（1 段 45°）。範囲外は黙って丸める
+            options.camera_turn_given = true; //!< コアの申告（`default_view_turn`）より強い
         } else if (opt == kOriginalArg) {
             options.original_panel = true;
         } else if (opt.starts_with(kEntityArg)) {

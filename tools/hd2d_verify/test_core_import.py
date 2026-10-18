@@ -57,7 +57,7 @@ def main():
             assert hashlib.sha256(Path(data['path']).read_bytes()).hexdigest()==data['sha256']
             print('PASS: source ZIP compiled and registered through the UI',flush=True)
             send_request(inbox,{'key':'Escape'},30)
-            previous=['HengbandCore.exe','TangbandCore.exe','GensobandCore.exe']
+            previous=['HengbandCore.exe','TangbandCore.exe','TobandCore.exe','GensobandCore.exe']
             count=sum((app/name).is_file() or (app/'cores'/name).is_file() for name in previous)
             for _ in range(count):send_request(inbox,{'key':'Down'},30)
             send_request(inbox,{'key':'Enter'},30)

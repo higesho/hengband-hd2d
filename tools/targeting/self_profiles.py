@@ -24,10 +24,12 @@ def scatter_plan(source,start,end,owner,core):
         if not literal_flags(flags):return None
         return ['AttributeType::LITE_WEAK','4',flags,'1']
     if args!=['&y','&x','py','px','4','0']:return None
-    if len(project)!=(8 if core=='genso' else 7) or project[:4]!=['0','0','y','x'] or project[5]!='GF_LITE_WEAK':return None
+    if len(project)!=(7 if core=='frox' else 8) or project[:4]!=['0','0','y','x'] or project[5]!='GF_LITE_WEAK':return None
     if core=='genso' and project[7]!='-1':return None
+    if core=='toband' and not project[7].startswith('MODIFY_ELEM_MODE_'):return None
     if not literal_flags(project[6]):return None
-    return ['GF_LITE_WEAK','4',project[6],'0']
+    # 最後の 1 が、scatter() が視線（los）を要求するかどうか。幻想蛮怒は projectable、TOband は los()（cave.c の scatter）。
+    return ['GF_LITE_WEAK','4',project[6],'1' if core=='toband' else '0']
 
 def scatter_code(args,core):
     element,radius,flags,los=args

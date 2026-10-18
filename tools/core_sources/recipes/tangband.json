@@ -16169,10 +16169,6 @@
       "encoding": "utf8",
       "text": "u"
     },
-    "0c0d4925c04944acacbf4ab785564a441c0038727fe20bf0fbb1f42114a23536": {
-      "encoding": "utf8",
-      "text": "    /*!\n     * @details 町の名前は WildernessDefinition.txt の `W:J:` / `W:E:` の**両方**を読んで\n     * 言語別に持ち、`get_name()` が実行時に選ぶ。読むときの言語で片方だけ選ぶと、\n     * ゲーム中に言語を切り替えても町の名前だけ起動時の言語のまま凍る\n     * （地上カットインが英語のままになった。2026-08-16 の利用者の報告）。\n     */\n    std::string town_name_ja;\n    std::string town_name_en;\n    //!< 辺境の地の別名. 荒野なしオプションがONの時はこれを町の名前として表示する.\n    std::string town_alias_ja;\n    std::string town_alias_en;\n"
-    },
     "0c5c68772fdb38f5af664ab1a3b761b2a2c8e6677c0e2f3a99a49f4c7addca42": {
       "encoding": "utf8",
       "text": "static std::vector<std::string_view> build_magic_explanations()\n{\n    return {\n"
@@ -16180,10 +16176,6 @@
     "0c6479cc230440fd41e8224218679698559d2893bd67b4380afab811b38a55aa": {
       "encoding": "utf8",
       "text": "                }\n"
-    },
-    "0cca86726e21121bdc5cdcca11a3ce173fa65257934c30e3f092705a91334202": {
-      "encoding": "utf8",
-      "text": "    /*\n     * 飛道の見せ場（docs/REALTIME_MODE_DESIGN.md §8）。**1 発につき 1 個**だけ積み、\n     * 撃った升と着弾側だけを渡す。コアが 1 コマずつ描いて待つ下の演出は、リアルタイムでは\n     * 待ちがそのまま世界を止めるので当てにできない——**間を作るのは画面側の役目**にする。\n     */\n    if (!is_blind && !(flag & PROJECT_HIDE) && (path_g.path_num() > 0)) {\n        CombatFeedback::get_instance().record_bolt(\n            pos_source.y, pos_source.x, path_g.back().y, path_g.back().x, typ);\n    }\n\n"
     },
     "0ceb44a0b5ff26a05597e2b49a215c5c7efa822293dff28ed4410c78c1052759": {
       "encoding": "utf8",
@@ -16268,10 +16260,6 @@
     "115c86b4a85d791c29286a0cf9053d195322779733432ecc4872471291911d4f": {
       "encoding": "utf8",
       "text": "column_of("
-    },
-    "11810b42744e9a7f657e50f4d90dd0a79b08e637dfbab64e8796241a8103e32c": {
-      "encoding": "utf8",
-      "text": "    /*\n     * リアルタイムのとき、**この小窓の裏では世界が進む**（docs/REALTIME_MODE_DESIGN.md §7）。\n     * 選んでいる間にモンスターが動き、殴られ、死ぬこともある。\n     * 一覧は 1 刻みごとに書き直される（下の `SPECIAL_KEY_REDRAW`）ので、\n     * 裏で持ち物が増減しても**画面と中身がずれたまま選ぶことはない**\n     * （利用者の指示 2026-08-12「所持品と足元のアイテムはターン毎に書き換える形でよい」）。\n     */\n    RealtimePromptScope realtime_prompt_scope;\n"
     },
     "119f84374973ab7e73c0cae736cb9777af5049c6ef5b3ceaf80e195ccaefcdf3": {
       "encoding": "utf8",
@@ -16565,6 +16553,10 @@
       "encoding": "utf8",
       "text": "}\n\ninline tl::optional<std::string> utf8_to_sys(std::string_view utf8_str)\n{\n    return tl::make_optional<std::string>(utf8_str);\n}\n\n#else\n\n"
     },
+    "20279dc6837da6e0a2b7eaca589a0b895cb2d482b7db737b9ae11d264a0c9200": {
+      "encoding": "utf8",
+      "text": "            } else if (player_ptr->resting == 0 && RealtimeClock::get_instance().is_enabled()) {\n                /*\n                 * 残り回数も「全快まで」の印（負）も無いのに休んでいる。**終わらない休息**で、\n                 * 抜ける道が disturb しか無い（下の「全快まで」の判定は負のときしか見ない）。\n                 * `action` はセーブに書かれるが `resting` は書かれないので、休息中の自動セーブを\n                 * 読むとここへ落ちる。リアルタイムでは連続行動に拍が付かないため、\n                 * CPU 速度で休み続けて**餓死する**。\n                 * リアルタイムが有効なときだけ取り消す。\n                 */\n"
+    },
     "20660a8d8d29a5af38a2e21c65f9e1d9b4f07fce54bf8692878f3aa146dec766": {
       "encoding": "utf8",
       "text": "\n                    t += tail_bytes;\n"
@@ -16632,6 +16624,10 @@
     "2373e3679ad3f34e36cf308699b9653a65b8c71bc1b6652302fa099047d909d8": {
       "encoding": "utf8",
       "text": "COLOR_MAS"
+    },
+    "237deecaa52dbf4aeb3d0af612fa7f1aa2bcdf2769a6ab0d138e272336dd6014": {
+      "encoding": "utf8",
+      "text": "\n        /*\n         * リアルタイム: 1 刻みを実時間へ合わせる（設計書 §4）。\n         * `TERM_XTRA_DELAY` では**駄目**。あれは寝るだけで描画しないので、刻みまるごと画面が固まる。\n         * 連続行動（走る・休む・旅）の間は早送りのまま。中断は既存の disturb が見る（§9）。\n         *\n         * **`can_wait_realtime_command` ではない。** あれは「入力を待ってよいか」なので、\n         * 麻痺・朦朧の間は偽になる。それで拍を止めると、行動できない間だけ世界が CPU 速度で\n         * 走り、1 秒で数万ターン進んで餓死する。\n         */\n        if (can_pace_realtime_world(player_ptr)) {\n            term_xtra(TERM_XTRA_RT_PACE, 0);\n        }\n"
     },
     "24210aae5e9462f4b25b058589c9a5582f8e798abb7e67fbf56aa3ca35f6af10": {
       "encoding": "utf8",
@@ -16825,10 +16821,6 @@
       "encoding": "utf8",
       "text": "\n    /*\n     * タイルの列は**1 セル 1 バイト**（バイトがタイル番号）。\n     * 文字の列は**1 セル 1 桁**で、全角は 2 セルを使う。\n     * 特殊文字としてMSBが立っている可能性があるが、\n     * その場合attrのMSBも立っているのでこれで識別する。\n     */\n    const auto is_tile = (a & AF_TILE1) != 0;\n\n"
     },
-    "2e733d0540353126881f33a12542d5cbb7a13b2276f49c3869931dd07f11e893": {
-      "encoding": "utf8",
-      "text": "    /*\n     * 近接打撃の属性を宣言してから当てる（docs/REALTIME_MODE_DESIGN.md §8）。\n     * `mbe_info[効果].explode_type` が「素手なら `MONSTER_MELEE`、炎の爪なら `FIRE`」を持っている。\n     * この先の `take_hit` は引数で受け取れないので、こうして渡すしかない。\n     */\n    auto &feedback = CombatFeedback::get_instance();\n    feedback.set_pending_attribute(mbe_info[enum2i(this->effect)].explode_type);\n"
-    },
     "2e7539a93b1310e9e1e36919aa8eeced6535545a65f4a2a22aa07ef849cc2925": {
       "encoding": "utf8",
       "text": "    } };\n}\n\nconst i18n::LocalizedTable<std::array<martial_arts, MAX_MA>> ma_blows(build_ma_blows);\n"
@@ -17021,9 +17013,9 @@
       "encoding": "utf8",
       "text": "    //! 桁は**文字ごと**に進める（かつては 1 バイト 1 桁で回していた）。\n    for (std::size_t pos = 0; pos < s.size();) {\n        const auto bytes = text::char_bytes(s, pos);\n        if (bytes == 0) {\n            break;\n        }\n\n"
     },
-    "37dbcaa67bf93266dcb92b06b6dc8f31a5fa0b60e41e8db4be796cd4c33ee8b5": {
+    "37cf28b65f871e5bdc438fa88aede5f3f829f929861f71fd4ea007426e2106e1": {
       "encoding": "utf8",
-      "text": "    }\n\n    /*\n     * 連続行動はセーブに**中途半端にしか残らない**。`action` は書かれる（`player-writer.cpp`）が、\n     * 走る・旅・回数指定・休む残り回数（`resting`）は書かれない。そのまま再開すると\n     * 「終わらない休息」「勝手に再開する釣り」になり、どちらも `continuous_action_running` が\n     * 真なので**リアルタイムの拍が付かない**。CPU 速度で走り続けて餓死する\n     * （利用者の報告 2026-08-16）。リアルタイムが有効なときだけ、読んだ側で取り消す。\n     * 無効（ターン制）のときは原作どおり休息・釣りが続く（利用者の指示 2026-10-03）。\n     */\n    if (load_game && RealtimeClock::get_instance().is_enabled() && ((player_ptr->action == ACTION_REST) || (player_ptr->action == ACTION_FISH))) {\n"
+      "text": "            }\n\n            /*\n             * リアルタイム: この 1 行動ぶんの拍を引き直す。\n             * **ここでしか分からない 3 つ**が揃うのがこの場所だけである——\n             * 素のコスト（`energy_use`）・揺らいだ実コスト（`energy_need`）・いまの速度。\n             */\n            {\n                const auto per_tick = std::max<int>(1, speed_to_energy(player_ptr->pspeed));\n                const auto remaining = std::max<int>(0, player_ptr->energy_need);\n                const auto ticks = (remaining + per_tick - 1) / per_tick; // 切り上げ\n                RealtimeClock::get_instance().begin_action_stretch(ticks, per_tick, player_ptr->energy_use);\n"
     },
     "37e8205281d04e17db20df3516e9d15fda061edb7a1f9472dfcd38bba358b251": {
       "encoding": "utf8",
@@ -17141,10 +17133,6 @@
       "encoding": "utf8",
       "text": "static std::vector<std::shared_ptr<ISmithInfo>> build_smith_info_table()\n{\n    return {\n"
     },
-    "3cdb676a74d7f62d8a8c7ea580d78526ac9fa90847c4f1f499572147570a5480": {
-      "encoding": "utf8",
-      "text": "    /*\n     * `HENGBAND_FORCE_SPEED=+10` で速度を**上書き**する（検証用。docs/REALTIME_MODE_DESIGN.md §13）。\n     * リアルタイムの「加速が実時間に効くか」を測るのに、加速つきのキャラクターが要る。\n     * 永続する加速は装備でしか作れず、検証用のセーブを台本で組むのは当てにならなかったので、\n     * **どのセーブでも即座に加速を試せる口**をこちらに用意した。\n     * @note 環境変数でしか入らないので、普通に遊ぶ限り 1 度も通らない。値は**加速の段**\n     * （`+10` で 2.0 倍・`+20` で 3.0 倍。`speed_to_energy` の表を参照）。\n     */\n    if (const auto *const forced = std::getenv(\"HENGBAND_FORCE_SPEED\"); forced != nullptr) {\n        const auto bonus = std::atoi(forced);\n        player_ptr->pspeed = static_cast<int16_t>(std::clamp(110 + bonus, 1, 199));\n    }\n"
-    },
     "3d34b8b19f8e35ae137158ac2800ed45ff7f82f03683fc7d77ce77a9fc9f956f": {
       "encoding": "utf8",
       "text": ", hour, min, note_level.data(), dungeon.name.data(), max_level);\n            } else {\n                fprintf(fff, "
@@ -17224,6 +17212,10 @@
     "405c6ca1471eed4731263e9fd8a4868abadf96acbd16b29ec141c5843f96c9c6": {
       "encoding": "utf8",
       "text": "    }\n\n    constexpr bool operator!=(const TermChar &other) const\n    {\n"
+    },
+    "40b814ccefa8ee9c313c139466b4ea37f6d13bd7a088c2265c3c2d6ac66521aa": {
+      "encoding": "utf8",
+      "text": "\n/*!\n * @file realtime-clock.h\n * @brief リアルタイムモードの状態\n * @details\n * コアが持つのは「入っているか」「1 刻みが何 ms か」「いま見送ったか」の 3 つだけ。\n * **実時間を測るのはコアではない。** 締切そのもの（次の刻みが何時か）は Term 側が持つ。\n * `src/` に SDL を持ち込まないための分担で、コアは `TERM_XTRA_RT_*` を打つだけ。\n *\n * 芯は「見送り」（設計書 §3）。入力が無いまま締切が来たら、**エネルギーを消費せずに**\n * プレイヤーの行動機会を 1 回見送る。「その場に留まる」キーの注入で代用すると\n * エネルギーを食うので、加速が実時間に効かなくなる。ここは退化しても見た目では分からない。\n */\n\n"
     },
     "40f06e3d838d28c9f64fff0f1126feee151374eb9377a5b560dc06ce46c3e3a7": {
       "encoding": "utf8",
@@ -17312,6 +17304,10 @@
     "45310fcd143345adfa4d935d18a5b308b3b7b1a8cb95b5512e9e6ac5f3b82c4c": {
       "encoding": "utf8",
       "text": "        if (wide_tail) {\n            /* 全角文字の右半分 */\n            wide_tail = false;\n"
+    },
+    "45399d96016961dfbde24887a480999de1bc5d3c29d1c3af968e6146366bb24c": {
+      "encoding": "utf8",
+      "text": "        /*\n         * リアルタイム: 見送りはここで必ず畳む。\n         *\n         * 見送りは「**行動できる**のに 1 回流す」ものである。エネルギーが残っている間は\n         * そもそも行動できないので、見送りではない。落とし忘れると次の輪で詰む——\n         * 上の `is_holding()` が溜めるのを止め、ここが即返るので、\n         * **`set_holding(false)` を置いてある下の行へ二度と届かない**。\n         * エネルギーは減りも溜まりもせず、プレイヤーは永久に行動できなくなる。\n         *\n         * 実際に入る道: 見送りの最中に麻痺・朦朧が入ると、コアが勝手に 100 消費する\n         * （下の `set_player_turn_energy(100)`）。以後、世界だけが進んで**餓死する**\n         * （実際に起きた不具合）。飢えれば気絶＝麻痺なので、一度嵌ると自励する。\n         */\n        RealtimeClock::get_instance().set_holding(false);\n"
     },
     "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1": {
       "encoding": "utf8",
@@ -17421,10 +17417,6 @@
       "encoding": "utf8",
       "text": "#ifdef TANGBAND\n    int powers = randint1(5) + 5;\n    while (one_in_(2) || one_in_(2) || one_in_(2)) {\n#else\n"
     },
-    "49f1a7a13f133288f64098fb414bb1c95a35d8f4f91b83ce7a16739f0f10982e": {
-      "encoding": "utf8",
-      "text": "    /*\n     * **本家差分**: 刻み終わった合図（利用者の指示 2026-08-15）。\n     *\n     * 本家は確定しても何も言わない。対になる `do_cmd_uninscribe` は `銘を消した。` を\n     * 出すのに、刻む側だけ無い——しかも向こうの見出しには元 Angband 由来の宿題\n     * `XXX Mention item (when done)?` がそのまま残っている（本家も足りないと自認している）。\n     * 手応えがアイテム名に付く `{…}` しか無いので、**持ち物を出していない画面では\n     * 何も起きていないように見える**。HD2D で「銘の入力は Enter を 2 回押す」という\n     * 報告になったのはこれが半分で、残り半分は IME が 1 回目の Enter を変換の確定に\n     * 使っていたためだった（コアは confirm 1 回で閉じることを実測済み）。\n     *\n     * 起きたことをそのまま言う。空の銘で確定するのは**消したのと同じ**であり\n     * （`describe_flavor` は空の銘を 1 文字も描かない）、元から銘が無ければ\n     * **何も起きていない**ので黙る。文言は本家の `銘を消した。` と `%sに銘を刻む。` に\n     * 合わせ、新しい言い回しを作らない。\n     *\n     * **本家が同じことをしたら、ここを消すこと。** 気づく道は 3 つある。\n     *   1. 上の `do_cmd_uninscribe` の見出しから `XXX Mention item (when done)?` が消える\n     *   2. 版を上げたときの 3-way マージがここで衝突する（手順は\n     *      `docs/HANDOFF_FULL_STATUS.md` §39.1）\n     *   3. 素通りしても**メッセージが 2 行出る**ので遊べば分かる\n     * 当方の意図的な挙動追加は `git grep -n \"本家差分:\" -- src/` で洗い出せる。\n     */\n    if (!input_inscription->empty()) {\n        msg_print(_F(\"銘を刻んだ。\", \"Inscription added.\"));\n    } else if (!initial_inscription.empty()) {\n        msg_print(_F("
-    },
     "4a2495322fb8148713ed345a864e28c8c2547d6028f14ae0c1ae2ad7e44b11f0": {
       "encoding": "utf8",
       "text": "static std::map<AutopickKey, std::string_view> build_autopick_keys()\n{\n    return {\n"
@@ -17468,6 +17460,10 @@
     "4b6d6dd6fc3c4c1f7aa0cea331002639e7fa13d7fd4b21f1196f0944b1a55f31": {
       "encoding": "utf8",
       "text": "static std::array<concptr, PARSE_ERROR_MAX> build_err_str()\n{\n    return { {\n            nullptr,\n"
+    },
+    "4c37f1a7602b6180673669c9aabf0c8041fa26fcb46f24d1d562a0487c3f6bdc": {
+      "encoding": "utf8",
+      "text": "    /*\n     * 遠隔・呪文・ブレスの属性は**ここでしか分からない**。\n     * この先の `take_hit` へは引数で渡せないので、先に宣言しておく。\n     * 使われなかった宣言は次の被弾まで残らない（`record_player_hit` が消費する）。\n     */\n    CombatFeedback::get_instance().set_pending_attribute(attribute);\n"
     },
     "4c80c92f8243360111a5c813d8f58f25bbb8f77090398be872361b35790656df": {
       "encoding": "utf8",
@@ -17853,9 +17849,9 @@
       "encoding": "utf8",
       "text": "        /*\n         * 選んだ範囲を文字列にする。**桁数とバイト数は一致しない**ので\n         * （UTF-8 の漢字は 3 バイトで 2 桁）、先に組んでから確保する。\n         * かつては 1 セル 1 バイトだったので `(dx + 3) * dy` で足りていた。\n         */\n        std::string clipped;\n        clipped.reserve(static_cast<size_t>(dx + 2) * dy * TermChar::MAX_BYTES);\n        for (auto i = 0; i < dy; i++) {\n            const auto &row_c = data[0].t.scr->c[oy + i];\n            const auto &row_a = data[0].t.scr->a[oy + i];\n            for (auto j = 0; j < dx; j++) {\n                const auto col = ox + j;\n                const auto &cell = row_c[col];\n\n                /* 全角の左半分が範囲の外にある。半分だけでは字にならないので空白にする */\n                if (cell.is_wide_tail()) {\n"
     },
-    "5ef92fe1ce103a4f1816cda06aee3f2b4f9a240f62c7e7be670920e7ce3985ae": {
+    "5ed9fba882c83d60dc72b265387f9fedde39972f3d3a4a4329a98b71a7cb3124": {
       "encoding": "utf8",
-      "text": " * @brief 見送っている間も進み続けるべきものを進める（設計書 §4-2）\n * @details 見送りは `process_player` を**途中で抜ける**ので、この先にあるものが動かない。\n * 世界は進んでいるのに画面と拍だけ止まる、という食い違いが出るため、2 つだけ手当てする。\n *\n * 1. **世界の拍**。「1 行動ぶんの持ち時間 ÷ 刻み数」で決まるが、見送り中は行動が起きないので\n *    引き直す機会が無い。放っておくと「立ち止まっている間だけ世界が通常速度、動いた瞬間に\n *    スローになる」というちぐはぐな見え方になる。\n * 2. **時刻の表示**。`print_time()` はこの関数より後ろにあり、見送り中は 1 度も通らない。\n *    世界は進んでいるので**数字だけ止まって見え、動いた瞬間に飛ぶ**\n *    （利用者の報告 2026-08-13「立ち止まると時計が進まなくなり、動くと一気に進む」）。\n *    明るさは Bridge が毎フレーム `extract_date_time()` から出しているので連続しており、\n *    **数字と明るさが食い違う**という分かりにくい形で出ていた。\n */\nstatic void update_realtime_while_holding(PlayerType *player_ptr)\n{\n    RealtimeClock::get_instance().update_idle_tempo(speed_to_energy(player_ptr->pspeed));\n"
+      "text": "    /*!\n     * @details 町の名前は WildernessDefinition.txt の `W:J:` / `W:E:` の**両方**を読んで\n     * 言語別に持ち、`get_name()` が実行時に選ぶ。読むときの言語で片方だけ選ぶと、\n     * ゲーム中に言語を切り替えても町の名前だけ起動時の言語のまま凍る\n     * （地上カットインが英語のままになった）。\n     */\n    std::string town_name_ja;\n    std::string town_name_en;\n    //!< 辺境の地の別名. 荒野なしオプションがONの時はこれを町の名前として表示する.\n    std::string town_alias_ja;\n    std::string town_alias_en;\n"
     },
     "5f16d2d552ad1e96b064faa233272f8790f0000e6e837185f7e52ac146d841c8": {
       "encoding": "utf8",
@@ -17945,6 +17941,10 @@
       "encoding": "utf8",
       "text": "    //! セルは文字を丸ごと持つ（`term/term-char.h`）ので、`len` 桁ぶんを繋いでバイト列にする。\n    std::string cursor_chars;\n    for (auto i = 0; i < len; ++i) {\n        cursor_chars.append(game_term->scr->c[y][x + i].view());\n    }\n"
     },
+    "64f5838e054f007c2c1fb709febe1457bd044da24afe9633cd55e160a76cf8ae": {
+      "encoding": "utf8",
+      "text": "\n/*!\n * @brief 世界を 1 刻みだけ進める\n * @return まだ続けてよければ true。死んだ・階を出た・終わったなら false\n * @details `process_dungeon` の周回のうち**モンスターと世界の分だけ**を取り出したもの。\n * プレイヤーの行動（`process_player`）は含まない——呼ぶのはプレイヤーが小窓で\n * 手を止めている最中で、その行動はまだ決まっていないからである。\n * @attention **再入してはいけない。** モンスターの攻撃が `-more-` を出し、その入力待ちから\n * また呼ばれると際限がなくなる。歯止めは `RealtimeClock::is_stepping_world()`。\n */\nbool advance_world_one_tick(PlayerType *player_ptr);\n"
+    },
     "6536d287ebe13339db22ea8bdb8f7fff9715cfdd8a763daddf0d8a87f6d7d428": {
       "encoding": "utf8",
       "text": "/*!\n * @file language-switcher.h\n * @brief いまの言語と、日英ひと組の文字列を選ぶ `_()`。\n *\n * ## なぜここに言語の状態があるか\n * `_()` は**実行時に選ぶ**（実行時多言語化の第 3 段）。よって `is_japanese()` が要る。\n * この header は `system/angband.h` から**木のほぼ全部**へ入るので、\n * ここに `fmt` を持ち込むわけにはいかない。**言語の状態だけ**を置き、\n * 書式文字列の器（`_F()` / `i18n::format()`）は `locale/localized-format.h` に分けてある。\n *\n * ## 使い分け\n * ```\n * prt(_(\"ようこそ\", \"Welcome\"), 1, 2);                   // ← ただの文字列。実行時に選ぶ\n * msg_print(_F("
@@ -17968,6 +17968,10 @@
     "659e1d7dad498ea8704ebb04645d3a44429893ea480fee51b251a25a49f777c6": {
       "encoding": "utf8",
       "text": "           /*"
+    },
+    "65c659fbc24c634053d5fd95b5e3eaee0b2205c6d89f733016b48db98073d684": {
+      "encoding": "utf8",
+      "text": "    /*\n     * `now_damaged` のときだけ `auto_more` を効かせないのは、**殴られたことに気づかせる**ため\n     * （`take_hit` がそのときだけ旗を立てる）。ターン制ならそれでよい。\n     *\n     * リアルタイムではこれが致命的になる。被弾のたびに世界が止まり、小窓の裏で殴られたときは\n     * **誰も見ていない `-more-` で全部が固まる**。\n     * 気づかせる役目は画面のフラッシュ（§8）が引き受けるので、こちらでは止めない。\n     */\n    const auto stops_for_damage = player_ptr->now_damaged && !RealtimeClock::get_instance().is_enabled();\n    if (auto_more && !stops_for_damage) {\n"
     },
     "65c74c15a686187bb6bbf9958f494fc6b80068034a659a9ad44991b08c58f2d2": {
       "encoding": "utf8",
@@ -18041,10 +18045,6 @@
       "encoding": "utf8",
       "text": "),\n"
     },
-    "692afca31b7c96e085954fb63e802000d9c83d568f538556e655bc997cbf914c": {
-      "encoding": "utf8",
-      "text": "/*\n * リアルタイムモード（docs/REALTIME_MODE_DESIGN.md）。どちらも optional。\n *\n * 返値が無い（term_xtra は void）ので、結果は RealtimeClock 側の状態で受け取る。\n * 未対応の term は何もしないため、`is_holding()` は false のままになり、\n * コアはそのまま従来どおりの「入力が来るまで待つ」へ落ちる。**未対応＝ターン制**で安全。\n */\n#define TERM_XTRA_RT_INPUT 21 /* Realtime: wait for a command until the tick deadline (optional) */\n#define TERM_XTRA_RT_PACE 22 /* Realtime: pace one tick against the wall clock (optional) */\n"
-    },
     "698ba878b1b665f07728b6a38b3c7f7af8cf30f91d2ae06518df5a765b8bc1a8": {
       "encoding": "utf8",
       "text": "\nnamespace text {\n\nnamespace utf8 {\n\n/*!\n * @brief UTF-8 の 1 バイト目から、その文字のバイト数を出す。\n * @details 内部が UTF-8 になったときのための道。**いまは使われない**\n * （`JP` のときは SJIS / EUC で答えるため）が、切り替えを 1 行で済ませるために\n * 先に書いておく。壊れた並びは 1 バイト扱いにして先へ進める。\n */\nstd::size_t bytes_from_lead(unsigned char lead)\n{\n    if (lead < 0x80) {\n        return 1;\n    }\n    if ((lead & 0xe0) == 0xc0) {\n        return 2;\n    }\n    if ((lead & 0xf0) == 0xe0) {\n        return 3;\n    }\n    if ((lead & 0xf8) == 0xf0) {\n        return 4;\n    }\n    return 1; //!< 継続バイトや不正な先頭。止まらせない\n}\n\n/*!\n * @brief UTF-8 の符号位置が全角か。\n * @details 東アジアの全角（CJK・かな・全角記号・ハングル）を 2 桁とする。\n * キリル・ギリシャ・ラテン拡張は**2 バイトだが 1 桁**——ここが SJIS と決定的に違う。\n */\nbool utf8_is_wide(char32_t cp)\n{\n    return ((cp >= 0x1100) && (cp <= 0x115f)) // ハングル字母\n        || ((cp >= 0x2e80) && (cp <= 0x303e)) // CJK 部首・記号\n        || ((cp >= 0x3041) && (cp <= 0x33ff)) // かな・注音・ハングル互換・囲み\n        || ((cp >= 0x3400) && (cp <= 0x4dbf)) // CJK 拡張 A\n        || ((cp >= 0x4e00) && (cp <= 0x9fff)) // CJK 統合漢字\n        || ((cp >= 0xa000) && (cp <= 0xa4cf)) // イ文字\n        || ((cp >= 0xac00) && (cp <= 0xd7a3)) // ハングル音節\n        || ((cp >= 0xf900) && (cp <= 0xfaff)) // CJK 互換漢字\n        || ((cp >= 0xfe30) && (cp <= 0xfe6f)) // CJK 互換形・小字形\n        || ((cp >= 0xff00) && (cp <= 0xff60)) // 全角英数・記号\n        || ((cp >= 0xffe0) && (cp <= 0xffe6)) // 全角通貨記号\n        || ((cp >= 0x20000) && (cp <= 0x3fffd)); // CJK 拡張 B 以降\n}\n\nchar32_t utf8_codepoint(std::string_view str, std::size_t pos, std::size_t len)\n{\n    const auto at = [&](std::size_t i) { return static_cast<unsigned char>(str[pos + i]); };\n    switch (len) {\n    case 2:\n        return static_cast<char32_t>(((at(0) & 0x1f) << 6) | (at(1) & 0x3f));\n    case 3:\n        return static_cast<char32_t>(((at(0) & 0x0f) << 12) | ((at(1) & 0x3f) << 6) | (at(2) & 0x3f));\n    case 4:\n        return static_cast<char32_t>(((at(0) & 0x07) << 18) | ((at(1) & 0x3f) << 12)\n            | ((at(2) & 0x3f) << 6) | (at(3) & 0x3f));\n    default:\n        return static_cast<char32_t>(at(0));\n    }\n}\n\nstd::size_t char_bytes(std::string_view str, std::size_t pos)\n{\n    if (pos >= str.size()) {\n        return 0;\n    }\n    //! 末尾で切れていたら残りだけ返す（範囲の外を読ませない）。\n    return std::min(bytes_from_lead(static_cast<unsigned char>(str[pos])), str.size() - pos);\n}\n\nint char_columns(std::string_view str, std::size_t pos)\n{\n    const auto len = char_bytes(str, pos);\n    if (len == 0) {\n        return 0;\n    }\n    return utf8_is_wide(utf8_codepoint(str, pos, len)) ? 2 : 1;\n}\n\nint display_width(std::string_view str)\n{\n    int width = 0;\n    std::size_t pos = 0;\n    while (pos < str.size()) {\n        width += char_columns(str, pos);\n        const auto step = char_bytes(str, pos);\n        pos += (step == 0) ? 1 : step;\n    }\n    return width;\n}\n\n} // namespace utf8\n\nnamespace {\n\n/*!\n * @brief 内部の符号化が UTF-8 か。\n * @details **切り替えるのは build のほう**（`UTF8` を定義する。`SJIS` / `EUC` と排他）。\n * `if` で分けて `#ifdef` にしないのは、**両方の道を常にコンパイルさせる**ため。\n * 片方を前処理で消すと、使っていない側が腐っても気づけない（切り替えた瞬間に初めて\n * 壊れているのが判る、という一番困る形になる）。定数なので最適化で片側は消える。\n * @note `UTF8` を定義するときは**ソースの実行文字コードも UTF-8 にする**こと\n * （MSVC の `/execution-charset:utf-8`）。リテラルが SJIS のままだと辻褄が合わない。\n */\n#if !defined(JP)\nconstexpr bool kInternalIsUtf8 = true; //!< 英語版は ASCII のみ＝ UTF-8 の部分集合\n#elif defined(UTF8)\nconstexpr bool kInternalIsUtf8 = true;\n#else\nconstexpr bool kInternalIsUtf8 = false; //!< SJIS（Windows）／ EUC（Unix）\n#endif\n\n//! SJIS / EUC で、この 1 バイト目から始まる文字のバイト数。\nstd::size_t legacy_bytes(std::string_view str, std::size_t pos)\n{\n#ifdef JP\n    const auto lead = static_cast<unsigned char>(str[pos]);\n    //! 末尾で切れていたら 1 バイト扱いにする（範囲の外を読ませない）。\n    if (iskanji(lead) && ((pos + 1) < str.size())) {\n        return 2;\n    }\n#else\n    (void)str;\n    (void)pos;\n#endif\n    return 1;\n}\n\n"
@@ -18100,10 +18100,6 @@
     "6bc3d3feed63b76375fd5f7cc156d71ceed6580298c2052bb22f9bd5957b05c1": {
       "encoding": "utf8",
       "text": "            i += bytes;\n"
-    },
-    "6c48dd3e8365e729b33a29a55922d7f09453618f9baea722b359f03545fb17a9": {
-      "encoding": "utf8",
-      "text": "    /*\n     * `now_damaged` のときだけ `auto_more` を効かせないのは、**殴られたことに気づかせる**ため\n     * （`take_hit` がそのときだけ旗を立てる）。ターン制ならそれでよい。\n     *\n     * リアルタイムではこれが致命的になる。被弾のたびに世界が止まり、小窓の裏で殴られたときは\n     * **誰も見ていない `-more-` で全部が固まる**（docs/REALTIME_MODE_DESIGN.md §8 の囲み）。\n     * 気づかせる役目は画面のフラッシュ（§8）が引き受けるので、こちらでは止めない。\n     */\n    const auto stops_for_damage = player_ptr->now_damaged && !RealtimeClock::get_instance().is_enabled();\n    if (auto_more && !stops_for_damage) {\n"
     },
     "6cb5d854b31a8d254e0fc2f8c5610d5486dd5d71fa0623b3039647c46ff0bccb": {
       "encoding": "utf8",
@@ -18281,6 +18277,10 @@
       "encoding": "utf8",
       "text": "            //! 1 文字ずつ、その文字の桁数だけ進める（かつては 1 バイト 1 桁で回していた）。\n            const std::string_view sv(str, len);\n"
     },
+    "778a6387f550affaf5a29048f274b61051c3983710a263eb565829f131f2eff2": {
+      "encoding": "utf8",
+      "text": " * @brief 見送っている間も進み続けるべきものを進める（設計書 §4-2）\n * @details 見送りは `process_player` を**途中で抜ける**ので、この先にあるものが動かない。\n * 世界は進んでいるのに画面と拍だけ止まる、という食い違いが出るため、2 つだけ手当てする。\n *\n * 1. **世界の拍**。「1 行動ぶんの持ち時間 ÷ 刻み数」で決まるが、見送り中は行動が起きないので\n *    引き直す機会が無い。放っておくと「立ち止まっている間だけ世界が通常速度、動いた瞬間に\n *    スローになる」というちぐはぐな見え方になる。\n * 2. **時刻の表示**。`print_time()` はこの関数より後ろにあり、見送り中は 1 度も通らない。\n *    世界は進んでいるので**数字だけ止まって見え、動いた瞬間に飛ぶ**\n *    （報告は「立ち止まると時計が進まなくなり、動くと一気に進む」）。\n *    明るさは Bridge が毎フレーム `extract_date_time()` から出しているので連続しており、\n *    **数字と明るさが食い違う**という分かりにくい形で出ていた。\n */\nstatic void update_realtime_while_holding(PlayerType *player_ptr)\n{\n    RealtimeClock::get_instance().update_idle_tempo(speed_to_energy(player_ptr->pspeed));\n"
+    },
     "77f91ce929ed2700fddc559d7187d8d2b5d21dd588718f909a045bd6802ce3e9": {
       "encoding": "utf8",
       "text": "    /*\n     * 1 バイトで書けない文字の**頭の位置**を集める。英語版では 1 文字 = 1 バイトなので\n     * 空の集合が返る（旧 `#else` 側と同じ）。\n     * @note 受け取った側は「2 バイトぶん動く」と決め打っている所がまだある\n     * （`core/asking-player.cpp` の編集カーソル）。そこは入力読み取りの巡で直す。\n     */\n"
@@ -18325,6 +18325,10 @@
       "encoding": "utf8",
       "text": ".data()"
     },
+    "794d466f7441ff017dd30446f83eeb17cefe102dba28e7713189a78674817c5a": {
+      "encoding": "utf8",
+      "text": "/*!\n * @brief `=`→`w`（ウィンドウフラグの画面）で `g_window_flags` が変えられた回数。\n *\n * @details 分割構成の画面（`presentation/term/sdl_sub_window_terms.cpp`）が\n * 「**プレイヤーが意図して変えた**」を見分けるために読む。フラグそのものの差分では\n * 見分けられない——`toggle_inventory_equipment()`（床の品物を選ぶたび・店・Ctrl-I）が\n * 所持品と装備品を入れ替え、セーブの読み込みも配列を丸ごと書くので、\n * 差が出たからといってプレイヤーが触ったとは限らない（実際、歩いただけで振動した）。\n *\n * **増やすのは `do_cmd_options_win()` を出るときの 1 か所だけ。**\n */\nextern unsigned int g_window_flags_generation;\n"
+    },
     "798bacf40c4dfe7325e9b826eda88b57f984f9331c7e5d8a86ebe034dde54ef6": {
       "encoding": "utf8",
       "text": "static std::vector<flag_desc> build_brand_flags_desc()\n{\n    return {\n"
@@ -18352,6 +18356,10 @@
     "7baf65a2918e3397da15dbe034a463ac40965f24ca8ac71bdf4aa0bb2973cf19": {
       "encoding": "utf8",
       "text": "#ifndef TANGBAND\n"
+    },
+    "7be6cfc2b93bd647b50a6c2a7b49b8ae92e321611d7062fd9510bbafff81fabe": {
+      "encoding": "utf8",
+      "text": "    /*\n     * リアルタイムのとき、**この小窓の裏では世界が進む**。\n     * 選んでいる間にモンスターが動き、殴られ、死ぬこともある。\n     * 一覧は 1 刻みごとに書き直される（下の `SPECIAL_KEY_REDRAW`）ので、\n     * 裏で持ち物が増減しても**画面と中身がずれたまま選ぶことはない**\n     * （要望は「所持品と足元のアイテムはターン毎に書き換える形でよい」）。\n     */\n    RealtimePromptScope realtime_prompt_scope;\n"
     },
     "7c6be3e20ab720257e6507dd7a22d2036b715b267fb97132a17d6c92c6622637": {
       "encoding": "utf8",
@@ -18408,6 +18416,10 @@
     "7e88ab98bd5cfdcd31da3284b313edae883477412d36fd9932cc6794080c3e2a": {
       "encoding": "utf8",
       "text": "L(\"ヘルプ(?)\", \"Help(out-of-date)(?)\"), '?', true }, { _L(\"再描画(^r)\", \"Redraw(^r)\"), KTRL('R'), true }, { _L"
+    },
+    "7eafeaed70f2f34fbc7aa46cd35987f02e36f5200a69931e619b8b333bba005c": {
+      "encoding": "utf8",
+      "text": "    /*\n     * **固定長へ書き戻す版は使えない。**あちらは `buflen` に収まることを前提にしており、\n     * ここは `line_buf.size()`（＝行そのものの長さ）を渡していた。内部が UTF-8 の build では\n     * SJIS の行を読むと必ず伸びるので、行の数だけ「文字コードの変換に失敗しました」が出る\n     * （実際の画面で 43 回。旧 SJIS 版が書いた `.prf` を読んだとき）。\n     */\n    line_buf = guess_convert_to_internal_encoding(line_buf);\n"
     },
     "7ecbea378755f6ba0ed4ea2291667e1f9056b7b528c4cce1bc9a57e463ab4b4f": {
       "encoding": "utf8",
@@ -18469,6 +18481,14 @@
       "encoding": "utf8",
       "text": "#include \"locale/localized-format.h\"\n#include \"locale/text-encoding.h\"\n"
     },
+    "814b38422e0d66a3667f2058b20ab5045380926f9abaa52e9140e19064e377a2": {
+      "encoding": "utf8",
+      "text": "    /*\n     * 飛道の見せ場。**1 発につき 1 個**だけ積み、\n     * 撃った升と着弾側だけを渡す。コアが 1 コマずつ描いて待つ下の演出は、リアルタイムでは\n     * 待ちがそのまま世界を止めるので当てにできない——**間を作るのは画面側の役目**にする。\n     */\n    if (!is_blind && !(flag & PROJECT_HIDE) && (path_g.path_num() > 0)) {\n        CombatFeedback::get_instance().record_bolt(\n            pos_source.y, pos_source.x, path_g.back().y, path_g.back().x, typ);\n    }\n\n"
+    },
+    "818a86201ecb721f2ee119e98a16f3436cb6f4c81cac5b85f52fccb9ba5fdd59": {
+      "encoding": "utf8",
+      "text": "\nclass RealtimeClock {\npublic:\n    static RealtimeClock &get_instance();\n\n    RealtimeClock(const RealtimeClock &) = delete;\n    RealtimeClock &operator=(const RealtimeClock &) = delete;\n\n    bool is_enabled() const;\n    void set_enabled(bool enables);\n\n    //! 1 行動（通常速度で 10 刻み）あたりの秒数。プレイヤーに見せるのはこちら。\n    double get_seconds_per_turn() const;\n    void set_seconds_per_turn(double seconds);\n\n    /*!\n     * @brief 1 刻みの実時間（ms）。Term 側が締切を作るのに使う。\n     * @details **固定値ではない。** 行動するたびに引き直される（`begin_action_stretch`）。\n     * 揺らぎと速度差を**世界の拍**へ逃がすことで、自分の足取りを一定に保つため。\n     */\n    int get_ms_per_tick() const;\n\n    /*!\n     * @brief 速さの振れ幅（プレイヤーの設定）。**自分の行動間隔がここまでしか変わらない。**\n     * @details 1.0 = 自分の間隔は常に一定で、速度差は全部**世界の拍**に出る（加速＝世界がスロー）。\n     * 大きくすると自分も速くなるが、その分だけ操作の拍が変わる。**はみ出た分は必ず世界へ載る**ので、\n     * どれを選んでも**ゲームの有利不利は 1 ビットも変わらない**（相対の倍率が保存される）。\n     */\n    double get_self_speed_span() const;\n    void set_self_speed_span(double span);\n\n    /*!\n     * @brief 1 回の行動が終わった。次に動けるまでの区間の拍を引き直す。\n     * @param ticks_until_ready 次に動けるまでの刻み数（1 以上）\n     * @param energy_per_tick 1 刻みで溜まるエネルギー（`speed_to_energy(pspeed)`）\n     * @param energy_use その行動の**素の**コスト（100 が普通。揺らぎを掛ける前）\n     * @details ここが「揺らぎの行き先を変える」肝である。持ち時間は**揺らぎの無い予定**から\n     * 決め、実際にかかった刻み数で割る。こうすると足取りは揃い、揺らぎは世界の拍へ移る。\n     */\n    void begin_action_stretch(int ticks_until_ready, int energy_per_tick, int energy_use);\n\n    /*!\n     * @brief 見送っている間の拍を引き直す（行動が起きないので実刻み数が無いとき）\n     * @param energy_per_tick 1 刻みで溜まるエネルギー（`speed_to_energy(pspeed)`）\n     * @details `begin_action_stretch` と違い**刻み数を整数へ丸めない**。\n     * 丸めると速度によって拍がずれる（+20 で 3.33 刻みを 4 と数えて 2 割速くなった）。\n     * 実際に行動しているときは carry があるので平均は合うが、こちらには carry が無い。\n     */\n    void update_idle_tempo(int energy_per_tick);\n\n    /*!\n     * @brief 直前の行動機会を見送ったか\n     * @details `process_player` はこれを見て、エネルギーを溜めずに戻る。\n     */\n    bool is_holding() const;\n    void set_holding(bool holds);\n\n    /*!\n     * @name 小窓の裏進行（設計書 §7）\n     * @details 「いま開いている小窓は裏で世界を進めてよいか」（白名簿）と、\n     * 「いま進めている最中か」（再入の歯止め）の 2 つ。\n     * **白名簿は既定で閉じている。** 開けるのは、裏で世界が動いても壊れないと\n     * 確かめた小窓だけ（いまは持ち物・装備・足元の選択）。\n     * @{\n     */\n    bool is_prompt_background_allowed() const;\n    void set_prompt_background_allowed(bool allows);\n\n    /*!\n     * @brief プレイヤーが「小窓の裏でも進める」を選んでいるか（`hd2d.cfg` の `realtime_prompt`）\n     * @details 白名簿（`prompt_background_allowed`）と**両方**が立ったときだけ裏で進む。\n     * 白名簿は「その小窓なら壊れない」という技術の話、こちらは「そう遊びたい」という好みの話で、\n     * 別のものである。混ぜると、危ない小窓まで設定 1 つで開いてしまう。\n     */\n    bool is_prompt_background_wanted() const;\n    void set_prompt_background_wanted(bool wants);\n\n    bool is_stepping_world() const;\n    void set_stepping_world(bool steps);\n    /*! @} */\n\n    /*!\n     * @brief 締切を張り直させる\n     * @details ロード直後・階の移動・小窓から戻った直後など、実時間が大きく飛んだとき。\n     * 張り直さないと、飛んだぶんを取り返そうとして早送りが暴発する。\n     */\n    void request_resync();\n    bool consume_resync();\n\nprivate:\n    RealtimeClock() = default;\n\n    bool enabled{ false };\n    double seconds_per_turn{ 1.0 };\n    bool holding{ false };\n    bool resync{ true };\n    bool prompt_background_allowed{ false };\n    bool prompt_background_wanted{ true };\n    //! 速さの振れ幅。既定 2.0 ＝ 自分は最速でも 2 倍まで。残りは世界の拍へ。\n    double self_speed_span{ 2.0 };\n    //! いまの区間の 1 刻み（ms）。0 なら「まだ引いていない」＝設定どおりの拍。\n    int ms_per_tick_now{ 0 };\n    bool stepping_world{ false };\n};\n\n/*!\n * @brief 小窓の間だけ裏進行を許す入れ物（設計書 §7・壁 5 の白名簿）\n * @details 抜けるときに必ず元へ戻すためのもの。**入れ子で使っても壊れない**ように\n * 前の値を覚えて戻す（選択の中からさらに選択が開くことがある）。\n */\nclass RealtimePromptScope {\npublic:\n    RealtimePromptScope();\n    ~RealtimePromptScope();\n    RealtimePromptScope(const RealtimePromptScope &) = delete;\n    RealtimePromptScope &operator=(const RealtimePromptScope &) = delete;\n\nprivate:\n    bool previous;\n};\n\n/*!\n * @brief いま世界の拍を実時間へ合わせてよい場面か\n * @details 下の `can_wait_realtime_command` と**別物である**。あちらは\n * 「コマンド待ちに締切を付けてよいか」、こちらは「`game_turn++` の周回を実時間へ載せてよいか」。\n *\n * **1 つにまとめてはいけない。** まとめると「プレイヤーが行動できない間だけ世界が\n * CPU 速度で走る」という穴が開く。麻痺・朦朧がその口で、1 秒で数万ターン進むため、\n * 満腹からでも消化が追いついて**餓死する**。\n * 麻痺は「入力を待てない」だけであって、「世界を止めてよい」でも「早送りしてよい」でもない。\n *\n * 偽になるのは、**世界の進み方そのものが別物になる場面**だけ——闘技場（自前の進行）・\n * 時止め（世界が止まっている）・連続行動（走る/休む/旅は早送りのまま。設計書 §9 決定 7）。\n */\nbool can_pace_realtime_world(PlayerType *player_ptr);\n\n/*!\n * @brief いまリアルタイムの締切で入力を待ってよい場面か\n * @details コマンド待ち（「何をしますか」）のときだけ真。連続行動中・麻痺中・闘技場・\n * 時止め中・キーマップ展開中は偽。ここを広げると、毎ターン処理（騎乗・気・無双の消費）が\n * 見送りのたびに二重取りになる。\n */\nbool can_wait_realtime_command(PlayerType *player_ptr);\n"
+    },
     "81a97541b43bb49de6aa5f7cfd3c596befc7515b16909be91150e4b3baa8b3b6": {
       "encoding": "utf8",
       "text": ", 20, 1, 2, 35 },\n    { "
@@ -18505,10 +18525,6 @@
       "encoding": "utf8",
       "text": "    {\n        return this->get().end();\n    }\n\n    auto cbegin() const\n    {\n        return this->get().cbegin();\n    }\n\n    auto cend() const\n    {\n        return this->get().cend();\n    }\n\n"
     },
-    "834cf8d34b6016001ecbe374818382951e4a7a5419137e6e3c3bc9e24340cb19": {
-      "encoding": "utf8",
-      "text": "            /*\n             * **利用者がここで変えた**ことを外へ知らせる（`option-flags.h`）。\n             * 押した瞬間に上げること——この画面を出るときに `old_flags` と比べる形にすると、\n             * 分割構成では**取りこぼす**。あちらは capture のたびにサブウインドウの\n             * フラグを設定どおりに戻すので、この画面を開いている間に戻され、\n             * 出るころには差が消えている（実際に消えていた。2026-08-19）。\n             */\n            ++g_window_flags_generation;\n"
-    },
     "835c8952705025dad091e345a7e707f8f5c6d01359aab1b9cd83f2bc6dc4aa4d": {
       "encoding": "utf8",
       "text": "static std::array<concptr, MAX_COMMENT_7A> build_comment_7a()\n{\n    return { {\n"
@@ -18544,10 +18560,6 @@
     "84540bb0cb0db7282cd4998c188e33016ef8b8f3af0663dd1b1b474bb93f49f4": {
       "encoding": "utf8",
       "text": "            } },\n    };\n}\n\nconst i18n::LocalizedTable<who_word_definition> Who::words(build_words);\n"
-    },
-    "846739bde8357264ff95be36fe1b3f9aed42d8e8ca976f2d047dfbe6048e6ece": {
-      "encoding": "utf8",
-      "text": "/*!\n * @brief 小窓の裏で世界が 1 刻み進んだ合図（docs/REALTIME_MODE_DESIGN.md §7）\n * @details 押されたキーではない。**入力待ちのループに「一覧を書き直して待ち直せ」と伝える**ための札で、\n * これを見た小窓は選択を進めずに `continue` する（利用者の指示「所持品と足元のアイテムは\n * ターン毎に書き換える形でよい」）。受け取り方を知らない小窓では**裏進行そのものを許さない**\n * （`RealtimeClock::is_prompt_background_allowed`）ので、迷子の札が流れ込むことはない。\n */\n#define SPECIAL_KEY_REDRAW 251\n"
     },
     "8481bdea6c0ff3b3c81c90a274bf8c2774956a5c897fea8457948a1d4b2c2940": {
       "encoding": "utf8",
@@ -18640,6 +18652,10 @@
     "8a8cc102e61648f08412fdd3de5ed23cf5dead9c8ac7d5ecd6ccd9f3c3198eca": {
       "encoding": "utf8",
       "text": "        \"m:Mold\",\n        \"n:Naga\",\n        \"o:Orc\",\n"
+    },
+    "8aad2962264fa7406c4c652d1f7a7387c7e6d29630ec7e527a5a7412fac72f7d": {
+      "encoding": "utf8",
+      "text": "    }\n\n    /*\n     * 被弾の見せ場を書き留める。\n     * 属性は `affect_player` か `MonsterAttackPlayer` が先に宣言している。無ければ\n     * `DAMAGE_ATTACK` を近接（＝物理）と見なす。**引数は増やさない**（呼び出しが 166 か所ある）。\n     */\n    CombatFeedback::get_instance().record_player_hit(player_ptr, damage, damage_type == DAMAGE_ATTACK);\n    // `HENGBAND_FX_LOG` を指したときだけ。「演出が出ない」の切り分けは**まずここが鳴るか**から。\n    if (std::getenv(\"HENGBAND_FX_LOG\") != nullptr) {\n        std::fprintf(stderr, \"[fx] take_hit dam=%d type=%d\\n\", damage, damage_type);\n"
     },
     "8afbf753d6f5146f1983bdbcb1444afc68636b380b78555bab4c23ae3ad95d0c": {
       "encoding": "utf8",
@@ -18825,10 +18841,6 @@
       "encoding": "utf8",
       "text": "        if ((splits.size() == 8) && (splits[0] == \"W\") && ((splits[1] == \"J\") || (splits[1] == \"E\"))) {\n            /*!\n             * @details `W:J:` と `W:E:` の**両方**を読んで言語別に納める（実行時多言語化）。\n             * 読むときの言語で片方だけ選ぶと（以前は `_(\"J\", \"E\")` で絞っていた）、\n             * この解析は起動時に 1 回しか走らないため、ゲーム中に言語を切り替えても\n             * 町の名前だけ凍ったままになる。\n             */\n"
     },
-    "94665c0e11e030050c3ed629129f7b338cdf5fa8525f83cff67e5c3f4fbd85fa": {
-      "encoding": "utf8",
-      "text": "    }\n\n    /*\n     * 被弾の見せ場を書き留める（docs/REALTIME_MODE_DESIGN.md §8）。\n     * 属性は `affect_player` か `MonsterAttackPlayer` が先に宣言している。無ければ\n     * `DAMAGE_ATTACK` を近接（＝物理）と見なす。**引数は増やさない**（呼び出しが 166 か所ある）。\n     */\n    CombatFeedback::get_instance().record_player_hit(player_ptr, damage, damage_type == DAMAGE_ATTACK);\n    // `HENGBAND_FX_LOG` を指したときだけ。「演出が出ない」の切り分けは**まずここが鳴るか**から。\n    if (std::getenv(\"HENGBAND_FX_LOG\") != nullptr) {\n        std::fprintf(stderr, \"[fx] take_hit dam=%d type=%d\\n\", damage, damage_type);\n"
-    },
     "946d1483b798e03572511045b268c6925f44bd6f1c6f7d5d0398fc394574d737": {
       "encoding": "utf8",
       "text": "L(\"拾う(g)\", "
@@ -18856,6 +18868,10 @@
     "952393a170329b3fa1d58175b97917064719992c4c072cd68aa06d354045970e": {
       "encoding": "utf8",
       "text": ", 30, 10, 11, 80 },\n    { "
+    },
+    "9534808878c682860bf5e8193536f0e1cdc1f024db6bb2abd04bb57b740bfa0f": {
+      "encoding": "utf8",
+      "text": "/*\n * リアルタイムモード。どちらも optional。\n *\n * 返値が無い（term_xtra は void）ので、結果は RealtimeClock 側の状態で受け取る。\n * 未対応の term は何もしないため、`is_holding()` は false のままになり、\n * コアはそのまま従来どおりの「入力が来るまで待つ」へ落ちる。**未対応＝ターン制**で安全。\n */\n#define TERM_XTRA_RT_INPUT 21 /* Realtime: wait for a command until the tick deadline (optional) */\n#define TERM_XTRA_RT_PACE 22 /* Realtime: pace one tick against the wall clock (optional) */\n"
     },
     "953cb18aed994a2d27bdbd49df57cd4cac81f550c3caa35be0aa62f8419e7cb2": {
       "encoding": "utf8",
@@ -18913,6 +18929,10 @@
       "encoding": "utf8",
       "text": "static std::array<concptr, F_LIT_MAX> build_lighting_level_str()\n{\n    return { {\n"
     },
+    "98f442af1c439ed012da4d6b8c481e57e1c007b98a095932dc6fc3dbe8f6a690": {
+      "encoding": "utf8",
+      "text": "    }\n\n    /*\n     * 当てた側の見せ場。**見えている相手だけ**——\n     * 姿の見えない相手に閃きを出すと、暗闇でモンスターの居場所が丸見えになる。\n     * 属性は `attribute_flags` の先頭から採る（複数立つのは斬撃＋炎のような複合）。\n     */\n"
+    },
     "99910b6448190be120bbda92e9c32807b3230a2ff7b9c9df1978fa78c253dfbd": {
       "encoding": "utf8",
       "text": "), _("
@@ -18928,10 +18948,6 @@
     "9a00d497ee4ccf655a9eb63aa4570bc1d2a12ea707a8529dc31b982ac7fd09bd": {
       "encoding": "utf8",
       "text": "const i18n::LocalizedTable<std::vector<std::string_view>> magic_subinfo(build_magic_subinfo);\n\nstatic std::vector<std::string_view> build_technic_subinfo()\n{\n    return {\n"
-    },
-    "9a0d47888786bd70866af8b311093942ca60d989e6a401d58d6c41c2afc8afda": {
-      "encoding": "utf8",
-      "text": "            } else if (player_ptr->resting == 0 && RealtimeClock::get_instance().is_enabled()) {\n                /*\n                 * 残り回数も「全快まで」の印（負）も無いのに休んでいる。**終わらない休息**で、\n                 * 抜ける道が disturb しか無い（下の「全快まで」の判定は負のときしか見ない）。\n                 * `action` はセーブに書かれるが `resting` は書かれないので、休息中の自動セーブを\n                 * 読むとここへ落ちる。リアルタイムでは連続行動に拍が付かないため、\n                 * CPU 速度で休み続けて**餓死する**（利用者の報告 2026-08-16）。\n                 * リアルタイムが有効なときだけ取り消す（利用者の指示 2026-10-03）。\n                 */\n"
     },
     "9a349bbd1a21104f051e34b2c8a9e70cc7fbb50bc19a67781f2a140c386d9438": {
       "encoding": "utf8",
@@ -18969,13 +18985,13 @@
       "encoding": "utf8",
       "text": ", MAX_INSULTS>>"
     },
-    "9bcdbd1e9978e260bf0de9d505c077617633042c8dabbd7453c0cc87ed1390d6": {
-      "encoding": "utf8",
-      "text": "\n/*!\n * @file realtime-clock.h\n * @brief リアルタイムモードの状態（正本: docs/REALTIME_MODE_DESIGN.md）\n * @details\n * コアが持つのは「入っているか」「1 刻みが何 ms か」「いま見送ったか」の 3 つだけ。\n * **実時間を測るのはコアではない。** 締切そのもの（次の刻みが何時か）は Term 側が持つ。\n * `src/` に SDL を持ち込まないための分担で、コアは `TERM_XTRA_RT_*` を打つだけ。\n *\n * 芯は「見送り」（設計書 §3）。入力が無いまま締切が来たら、**エネルギーを消費せずに**\n * プレイヤーの行動機会を 1 回見送る。「その場に留まる」キーの注入で代用すると\n * エネルギーを食うので、加速が実時間に効かなくなる。ここは退化しても見た目では分からない。\n */\n\n"
-    },
     "9c737f03cada260737d05c7e455935d95838cb37a392e24f32e6e65bbcf624b0": {
       "encoding": "utf8",
       "text": "COLOR_MASK 0x0f //!< 色だけを取り出す（旧 `AF_KANJIC`）"
+    },
+    "9c870e54b9b15b143c12bce9e81d7cdb018aa1281a449d6fdd634cda9b357ce8": {
+      "encoding": "utf8",
+      "text": "            /*\n             * **プレイヤーがここで変えた**ことを外へ知らせる（`option-flags.h`）。\n             * 押した瞬間に上げること——この画面を出るときに `old_flags` と比べる形にすると、\n             * 分割構成では**取りこぼす**。あちらは capture のたびにサブウインドウの\n             * フラグを設定どおりに戻すので、この画面を開いている間に戻され、\n             * 出るころには差が消えている（実際に消えていた。2026-08-19）。\n             */\n            ++g_window_flags_generation;\n"
     },
     "9cd8f7c89560b7a9f1b3f85f7cc5d0fe2048d9e0de31e704ac1b3eb089c6a30a": {
       "encoding": "utf8",
@@ -19061,10 +19077,6 @@
       "encoding": "utf8",
       "text": "    } else {\n            item_name = str_tolower(artifact.build_full_name());\n"
     },
-    "a1511bb1b4f36e2cd6782d419862505f681dadf35decd9c5d7089e9ac6a03a1b": {
-      "encoding": "utf8",
-      "text": "    /*\n     * **固定長へ書き戻す版は使えない。**あちらは `buflen` に収まることを前提にしており、\n     * ここは `line_buf.size()`（＝行そのものの長さ）を渡していた。内部が UTF-8 の build では\n     * SJIS の行を読むと必ず伸びるので、行の数だけ「文字コードの変換に失敗しました」が出る\n     * （利用者の画面で 43 回。旧 SJIS 版が書いた `.prf` を読んだとき）。\n     */\n    line_buf = guess_convert_to_internal_encoding(line_buf);\n"
-    },
     "a1fce4363854ff888cff4b8e7875d600c2682390412a8cf79b37d0b11148b0fa": {
       "encoding": "utf8",
       "text": "y"
@@ -19132,6 +19144,10 @@
     "a4411c7049bc42f11ffcfc7f7138c338922671530102932beefd030fa20d7059": {
       "encoding": "utf8",
       "text": ", 25, 17, 18, 40 },\n    { "
+    },
+    "a45ac42944aa05803f46fa0679d104a4b9332bf56f6ccb6b18f951ad579811d4": {
+      "encoding": "utf8",
+      "text": "    }\n\n    /*\n     * 連続行動はセーブに**中途半端にしか残らない**。`action` は書かれる（`player-writer.cpp`）が、\n     * 走る・旅・回数指定・休む残り回数（`resting`）は書かれない。そのまま再開すると\n     * 「終わらない休息」「勝手に再開する釣り」になり、どちらも `continuous_action_running` が\n     * 真なので**リアルタイムの拍が付かない**。CPU 速度で走り続けて餓死する\n     * （実際に起きた不具合）。リアルタイムが有効なときだけ、読んだ側で取り消す。\n     * 無効（ターン制）のときは原作どおり休息・釣りが続く。\n     */\n    if (load_game && RealtimeClock::get_instance().is_enabled() && ((player_ptr->action == ACTION_REST) || (player_ptr->action == ACTION_FISH))) {\n"
     },
     "a4676088e867baee01a4517283b927606ecbf23f1126fb220911286de4e9d43d": {
       "encoding": "utf8",
@@ -19357,10 +19373,6 @@
       "encoding": "utf8",
       "text": "    };\n}\n\nconst i18n::LocalizedTable<std::vector<flag_desc>> immune_flags_desc(build_immune_flags_desc);\n"
     },
-    "b090098f12ce3432442c82bd9a8425fc5609d3593ff7871a43190476d23a1a54": {
-      "encoding": "utf8",
-      "text": "    }\n\n    /*\n     * 当てた側の見せ場（docs/REALTIME_MODE_DESIGN.md §8）。**見えている相手だけ**——\n     * 姿の見えない相手に閃きを出すと、暗闇でモンスターの居場所が丸見えになる。\n     * 属性は `attribute_flags` の先頭から採る（複数立つのは斬撃＋炎のような複合）。\n     */\n"
-    },
     "b0a977bc911a7ee8020dc1a335998d9375cdddabadbaf14e412cba4861cf4311": {
       "encoding": "utf8",
       "text": "        }\n\n        en = en_it->get<std::string>();\n"
@@ -19413,13 +19425,13 @@
       "encoding": "utf8",
       "text": "        const auto bytes = text::char_bytes(sv, seek_pos);\n        if (seek_pos + bytes > end) {\n            break; //!< その文字が終わりを跨ぐ。半分だけ取らない\n"
     },
-    "b2d1f7d3bb909d78e5c0827fe84f78f0f17ed70bf8755e12deac9118d9f21cd1": {
-      "encoding": "utf8",
-      "text": "            /*\n             * **2 度目以降のコマンド待ちもここで締め切る**（docs/REALTIME_MODE_DESIGN.md §3）。\n             * この `while` は「エネルギーが残っている限り」回るので、小窓を取り消したときのように\n             * 行動が空振りすると 2 周目に入る。関数の頭の締切だけだと 2 周目は素の待ちに落ち、\n             * **小窓から抜けたのに世界が止まったまま**になる（利用者の報告 2026-08-12）。\n             */\n            if (can_wait_realtime_command(player_ptr)) {\n                auto &clock = RealtimeClock::get_instance();\n                clock.set_holding(false);\n                term_xtra(TERM_XTRA_RT_INPUT, 0);\n                if (clock.is_holding()) {\n                    update_realtime_while_holding(player_ptr);\n                    break; // 見送り。エネルギーは使わない（頭の締切が次を引き受ける）\n                }\n            }\n\n"
-    },
     "b2eacf6a6355d80e0fbbf391c0f6f283fdbe4d442ab9c08f2d5b3152121f9edd": {
       "encoding": "utf8",
       "text": "            x1 = x;\n        }\n        x2 = x;\n"
+    },
+    "b30f415dab3eddc280bbda293976dbc1e4d87fb58cad2ca8786b15b3b072d3be": {
+      "encoding": "utf8",
+      "text": "    /*\n     * **本家差分**: 刻み終わった合図。\n     *\n     * 本家は確定しても何も言わない。対になる `do_cmd_uninscribe` は `銘を消した。` を\n     * 出すのに、刻む側だけ無い——しかも向こうの見出しには元 Angband 由来の宿題\n     * `XXX Mention item (when done)?` がそのまま残っている（本家も足りないと自認している）。\n     * 手応えがアイテム名に付く `{…}` しか無いので、**持ち物を出していない画面では\n     * 何も起きていないように見える**。HD2D で「銘の入力は Enter を 2 回押す」という\n     * 報告になったのはこれが半分で、残り半分は IME が 1 回目の Enter を変換の確定に\n     * 使っていたためだった（コアは confirm 1 回で閉じることを実測済み）。\n     *\n     * 起きたことをそのまま言う。空の銘で確定するのは**消したのと同じ**であり\n     * （`describe_flavor` は空の銘を 1 文字も描かない）、元から銘が無ければ\n     * **何も起きていない**ので黙る。文言は本家の `銘を消した。` と `%sに銘を刻む。` に\n     * 合わせ、新しい言い回しを作らない。\n     *\n     * **本家が同じことをしたら、ここを消すこと。** 気づく道は 3 つある。\n     *   1. 上の `do_cmd_uninscribe` の見出しから `XXX Mention item (when done)?` が消える\n     *   2. 版を上げたときの 3-way マージがここで衝突する（版の取り込み手順を参照\n     *      のこと）\n     *   3. 素通りしても**メッセージが 2 行出る**ので遊べば分かる\n     * 当方の意図的な挙動追加は `git grep -n \"本家差分:\" -- src/` で洗い出せる。\n     */\n    if (!input_inscription->empty()) {\n        msg_print(_F(\"銘を刻んだ。\", \"Inscription added.\"));\n    } else if (!initial_inscription.empty()) {\n        msg_print(_F("
     },
     "b32735387e4098680fcc322e75a5da571e0ce12b4018e89acde4963a4af6f2a1": {
       "encoding": "utf8",
@@ -19829,14 +19841,6 @@
       "encoding": "utf8",
       "text": ", \"Look(l/x)\"), 'l', true }, { _L("
     },
-    "c6797893950a9cc43d31ad96c14383605d6a03ebf2ff17684565a3707b763fcc": {
-      "encoding": "utf8",
-      "text": "\n/*!\n * @brief 世界を 1 刻みだけ進める（docs/REALTIME_MODE_DESIGN.md §7 の裏進行）\n * @return まだ続けてよければ true。死んだ・階を出た・終わったなら false\n * @details `process_dungeon` の周回のうち**モンスターと世界の分だけ**を取り出したもの。\n * プレイヤーの行動（`process_player`）は含まない——呼ぶのはプレイヤーが小窓で\n * 手を止めている最中で、その行動はまだ決まっていないからである。\n * @attention **再入してはいけない。** モンスターの攻撃が `-more-` を出し、その入力待ちから\n * また呼ばれると際限がなくなる。歯止めは `RealtimeClock::is_stepping_world()`。\n */\nbool advance_world_one_tick(PlayerType *player_ptr);\n"
-    },
-    "c69c07fe954f0deda128b26ff4b5e143d6ae80619ba9de64358f2b2d1e78db97": {
-      "encoding": "utf8",
-      "text": "\nclass RealtimeClock {\npublic:\n    static RealtimeClock &get_instance();\n\n    RealtimeClock(const RealtimeClock &) = delete;\n    RealtimeClock &operator=(const RealtimeClock &) = delete;\n\n    bool is_enabled() const;\n    void set_enabled(bool enables);\n\n    //! 1 行動（通常速度で 10 刻み）あたりの秒数。利用者に見せるのはこちら。\n    double get_seconds_per_turn() const;\n    void set_seconds_per_turn(double seconds);\n\n    /*!\n     * @brief 1 刻みの実時間（ms）。Term 側が締切を作るのに使う。\n     * @details **固定値ではない。** 行動するたびに引き直される（`begin_action_stretch`）。\n     * 揺らぎと速度差を**世界の拍**へ逃がすことで、自分の足取りを一定に保つため。\n     */\n    int get_ms_per_tick() const;\n\n    /*!\n     * @brief 速さの振れ幅（利用者の設定）。**自分の行動間隔がここまでしか変わらない。**\n     * @details 1.0 = 自分の間隔は常に一定で、速度差は全部**世界の拍**に出る（加速＝世界がスロー）。\n     * 大きくすると自分も速くなるが、その分だけ操作の拍が変わる。**はみ出た分は必ず世界へ載る**ので、\n     * どれを選んでも**ゲームの有利不利は 1 ビットも変わらない**（相対の倍率が保存される）。\n     */\n    double get_self_speed_span() const;\n    void set_self_speed_span(double span);\n\n    /*!\n     * @brief 1 回の行動が終わった。次に動けるまでの区間の拍を引き直す。\n     * @param ticks_until_ready 次に動けるまでの刻み数（1 以上）\n     * @param energy_per_tick 1 刻みで溜まるエネルギー（`speed_to_energy(pspeed)`）\n     * @param energy_use その行動の**素の**コスト（100 が普通。揺らぎを掛ける前）\n     * @details ここが「揺らぎの行き先を変える」肝である。持ち時間は**揺らぎの無い予定**から\n     * 決め、実際にかかった刻み数で割る。こうすると足取りは揃い、揺らぎは世界の拍へ移る。\n     */\n    void begin_action_stretch(int ticks_until_ready, int energy_per_tick, int energy_use);\n\n    /*!\n     * @brief 見送っている間の拍を引き直す（行動が起きないので実刻み数が無いとき）\n     * @param energy_per_tick 1 刻みで溜まるエネルギー（`speed_to_energy(pspeed)`）\n     * @details `begin_action_stretch` と違い**刻み数を整数へ丸めない**。\n     * 丸めると速度によって拍がずれる（+20 で 3.33 刻みを 4 と数えて 2 割速くなった）。\n     * 実際に行動しているときは carry があるので平均は合うが、こちらには carry が無い。\n     */\n    void update_idle_tempo(int energy_per_tick);\n\n    /*!\n     * @brief 直前の行動機会を見送ったか\n     * @details `process_player` はこれを見て、エネルギーを溜めずに戻る。\n     */\n    bool is_holding() const;\n    void set_holding(bool holds);\n\n    /*!\n     * @name 小窓の裏進行（設計書 §7）\n     * @details 「いま開いている小窓は裏で世界を進めてよいか」（白名簿）と、\n     * 「いま進めている最中か」（再入の歯止め）の 2 つ。\n     * **白名簿は既定で閉じている。** 開けるのは、裏で世界が動いても壊れないと\n     * 確かめた小窓だけ（いまは持ち物・装備・足元の選択）。\n     * @{\n     */\n    bool is_prompt_background_allowed() const;\n    void set_prompt_background_allowed(bool allows);\n\n    /*!\n     * @brief 利用者が「小窓の裏でも進める」を選んでいるか（`hd2d.cfg` の `realtime_prompt`）\n     * @details 白名簿（`prompt_background_allowed`）と**両方**が立ったときだけ裏で進む。\n     * 白名簿は「その小窓なら壊れない」という技術の話、こちらは「そう遊びたい」という好みの話で、\n     * 別のものである。混ぜると、危ない小窓まで設定 1 つで開いてしまう。\n     */\n    bool is_prompt_background_wanted() const;\n    void set_prompt_background_wanted(bool wants);\n\n    bool is_stepping_world() const;\n    void set_stepping_world(bool steps);\n    /*! @} */\n\n    /*!\n     * @brief 締切を張り直させる\n     * @details ロード直後・階の移動・小窓から戻った直後など、実時間が大きく飛んだとき。\n     * 張り直さないと、飛んだぶんを取り返そうとして早送りが暴発する。\n     */\n    void request_resync();\n    bool consume_resync();\n\nprivate:\n    RealtimeClock() = default;\n\n    bool enabled{ false };\n    double seconds_per_turn{ 1.0 };\n    bool holding{ false };\n    bool resync{ true };\n    bool prompt_background_allowed{ false };\n    bool prompt_background_wanted{ true };\n    //! 速さの振れ幅。既定 2.0 ＝ 自分は最速でも 2 倍まで。残りは世界の拍へ。\n    double self_speed_span{ 2.0 };\n    //! いまの区間の 1 刻み（ms）。0 なら「まだ引いていない」＝設定どおりの拍。\n    int ms_per_tick_now{ 0 };\n    bool stepping_world{ false };\n};\n\n/*!\n * @brief 小窓の間だけ裏進行を許す入れ物（設計書 §7・壁 5 の白名簿）\n * @details 抜けるときに必ず元へ戻すためのもの。**入れ子で使っても壊れない**ように\n * 前の値を覚えて戻す（選択の中からさらに選択が開くことがある）。\n */\nclass RealtimePromptScope {\npublic:\n    RealtimePromptScope();\n    ~RealtimePromptScope();\n    RealtimePromptScope(const RealtimePromptScope &) = delete;\n    RealtimePromptScope &operator=(const RealtimePromptScope &) = delete;\n\nprivate:\n    bool previous;\n};\n\n/*!\n * @brief いま世界の拍を実時間へ合わせてよい場面か\n * @details 下の `can_wait_realtime_command` と**別物である**。あちらは\n * 「コマンド待ちに締切を付けてよいか」、こちらは「`game_turn++` の周回を実時間へ載せてよいか」。\n *\n * **1 つにまとめてはいけない。** まとめると「プレイヤーが行動できない間だけ世界が\n * CPU 速度で走る」という穴が開く。麻痺・朦朧がその口で、1 秒で数万ターン進むため、\n * 満腹からでも消化が追いついて**餓死する**（利用者の報告 2026-08-16）。\n * 麻痺は「入力を待てない」だけであって、「世界を止めてよい」でも「早送りしてよい」でもない。\n *\n * 偽になるのは、**世界の進み方そのものが別物になる場面**だけ——闘技場（自前の進行）・\n * 時止め（世界が止まっている）・連続行動（走る/休む/旅は早送りのまま。設計書 §9 決定 7）。\n */\nbool can_pace_realtime_world(PlayerType *player_ptr);\n\n/*!\n * @brief いまリアルタイムの締切で入力を待ってよい場面か\n * @details コマンド待ち（「何をしますか」）のときだけ真。連続行動中・麻痺中・闘技場・\n * 時止め中・キーマップ展開中は偽。ここを広げると、毎ターン処理（騎乗・気・無双の消費）が\n * 見送りのたびに二重取りになる。\n */\nbool can_wait_realtime_command(PlayerType *player_ptr);\n"
-    },
     "c6addd04354306b420b2efb7ff13e9eca2eb2e5b68685651bd2d7765a02d4048": {
       "encoding": "utf8",
       "text": "#endif /* !UTF8 */\n\nstd::string convert_to_internal_encoding(std::string_view str, CharacterEncoding &from)\n{\n    if (from == CharacterEncoding::UNKNOWN) {\n        from = detect_character_encoding(str);\n    }\n\n    constexpr auto to = internal_character_encoding();\n    if ((from == to) || (from == CharacterEncoding::UNKNOWN) || (from == CharacterEncoding::US_ASCII)) {\n"
@@ -20053,6 +20057,10 @@
       "encoding": "utf8",
       "text": "), '{', true }, { _L"
     },
+    "cf3f75c6d08445ff920322c0cfe8d1853e825fe8f97758b58053180db68f9ebc": {
+      "encoding": "utf8",
+      "text": "    /*\n     * 近接打撃の属性を宣言してから当てる。\n     * `mbe_info[効果].explode_type` が「素手なら `MONSTER_MELEE`、炎の爪なら `FIRE`」を持っている。\n     * この先の `take_hit` は引数で受け取れないので、こうして渡すしかない。\n     */\n    auto &feedback = CombatFeedback::get_instance();\n    feedback.set_pending_attribute(mbe_info[enum2i(this->effect)].explode_type);\n"
+    },
     "cf6af88998260fb31fcfe728c0e22c6180f19d193e050bea71477e771dbe7a0b": {
       "encoding": "utf8",
       "text": ", ge_ptr->s1, item_name.data(), ge_ptr->s2, ge_ptr->s3, ge_ptr->info)\n        : format("
@@ -20213,10 +20221,6 @@
       "encoding": "utf8",
       "text": "            for (std::size_t b = 0; b < bytes; b++) {\n                player_ptr->base_name[k++] = player_ptr->name[i + b];\n            }\n            i += static_cast<int>(bytes) - 1;\n            continue;\n        }\n\n        //! `iskana` は JP でしか定義されない（`system/h-config.h`）ので、両方を見て囲む。\n#if defined(JP) && defined(SJIS)\n        if (iskana(c)) {\n            //! 半角かなは 1 バイト 1 桁。そのまま通す\n"
     },
-    "d662f7bd4410d8a637f4c10ce0917455df05b55d220637680ace399a6b216afa": {
-      "encoding": "utf8",
-      "text": "\n        /*\n         * リアルタイム: 1 刻みを実時間へ合わせる（設計書 §4）。\n         * `TERM_XTRA_DELAY` では**駄目**。あれは寝るだけで描画しないので、刻みまるごと画面が固まる。\n         * 連続行動（走る・休む・旅）の間は早送りのまま。中断は既存の disturb が見る（§9）。\n         *\n         * **`can_wait_realtime_command` ではない。** あれは「入力を待ってよいか」なので、\n         * 麻痺・朦朧の間は偽になる。それで拍を止めると、行動できない間だけ世界が CPU 速度で\n         * 走り、1 秒で数万ターン進んで餓死する（利用者の報告 2026-08-16）。\n         */\n        if (can_pace_realtime_world(player_ptr)) {\n            term_xtra(TERM_XTRA_RT_PACE, 0);\n        }\n"
-    },
     "d6881ec37b154a9dd91509726e2b376983a4fbc931c0d30067fcd0ecf5e1c2de": {
       "encoding": "utf8",
       "text": "#ifdef TANGBAND\n        if ((this->power > 2) || one_in_(5)) {\n#else\n"
@@ -20289,10 +20293,6 @@
       "encoding": "utf8",
       "text": "t<std::size_t>"
     },
-    "d973dbc4ebf7e2deb9ea93d212a036163f03659274fc5ac30d47b4ec137f63c4": {
-      "encoding": "utf8",
-      "text": "/*!\n * @brief `=`→`w`（ウィンドウフラグの画面）で `g_window_flags` が変えられた回数。\n *\n * @details 分割構成の画面（`presentation/term/sdl_sub_window_terms.cpp`）が\n * 「**利用者が意図して変えた**」を見分けるために読む。フラグそのものの差分では\n * 見分けられない——`toggle_inventory_equipment()`（床の品物を選ぶたび・店・Ctrl-I）が\n * 所持品と装備品を入れ替え、セーブの読み込みも配列を丸ごと書くので、\n * 差が出たからといって利用者が触ったとは限らない（実際、歩いただけで振動した）。\n *\n * **増やすのは `do_cmd_options_win()` を出るときの 1 か所だけ。**\n */\nextern unsigned int g_window_flags_generation;\n"
-    },
     "d9f0f80682bd0e8fd789dfb38740a11acc2328f09b793b0c3a7161db0bcd0f3f": {
       "encoding": "utf8",
       "text": "L(\"システム(!)\", \"System(!)\"), '!', true }, { _L(\"\", \"\"), 0, false }, { _L(\"\", \"\"), 0, false }, { _L(\"\", \"\")"
@@ -20316,6 +20316,10 @@
     "da3fcf6abc7bf3e361dcedb219bbc70bba1782f9a724be559be623a5e109ab91": {
       "encoding": "utf8",
       "text": "void print(std::FILE *file, LocalizedFormatString<std::type_identity_t<Args>...> format_string, Args &&...args)\n{\n    fmt::vprint(file, format_string.get(), fmt::make_format_args(args...));\n}\n\n//! `fmt::println()` の日英版。\n"
+    },
+    "da62524dfb3edaf1e7aef563bb5c3dcca3b4473abfd3326153c15d67bcf9696f": {
+      "encoding": "utf8",
+      "text": "    /*\n     * `HENGBAND_FORCE_SPEED=+10` で速度を**上書き**する（検証用）。\n     * リアルタイムの「加速が実時間に効くか」を測るのに、加速つきのキャラクターが要る。\n     * 永続する加速は装備でしか作れず、検証用のセーブを台本で組むのは当てにならなかったので、\n     * **どのセーブでも即座に加速を試せる口**をこちらに用意した。\n     * @note 環境変数でしか入らないので、普通に遊ぶ限り 1 度も通らない。値は**加速の段**\n     * （`+10` で 2.0 倍・`+20` で 3.0 倍。`speed_to_energy` の表を参照）。\n     */\n    if (const auto *const forced = std::getenv(\"HENGBAND_FORCE_SPEED\"); forced != nullptr) {\n        const auto bonus = std::atoi(forced);\n        player_ptr->pspeed = static_cast<int16_t>(std::clamp(110 + bonus, 1, 199));\n    }\n"
     },
     "da66e5021f3fef43ada735bd210ab313d91a63cb23ed5a3e6adf7525f6a08352": {
       "encoding": "utf8",
@@ -20369,10 +20373,6 @@
       "encoding": "utf8",
       "text": "static std::map<MonsterAbilityType, const monster_power> build_monster_powers()\n{\n    return {\n"
     },
-    "dc5f2a39b7a0916ccfb44735dc60228d82355b654fe470a9ba3eebff78093656": {
-      "encoding": "utf8",
-      "text": "            }\n\n            /*\n             * リアルタイム: この 1 行動ぶんの拍を引き直す（docs/REALTIME_MODE_DESIGN.md §4-2）。\n             * **ここでしか分からない 3 つ**が揃うのがこの場所だけである——\n             * 素のコスト（`energy_use`）・揺らいだ実コスト（`energy_need`）・いまの速度。\n             */\n            {\n                const auto per_tick = std::max<int>(1, speed_to_energy(player_ptr->pspeed));\n                const auto remaining = std::max<int>(0, player_ptr->energy_need);\n                const auto ticks = (remaining + per_tick - 1) / per_tick; // 切り上げ\n                RealtimeClock::get_instance().begin_action_stretch(ticks, per_tick, player_ptr->energy_use);\n"
-    },
     "dc8ef0da20f7377dc026d9ec0973f21fcde332f5045cc95411f821c09da36d94": {
       "encoding": "utf8",
       "text": "                        out_val.append(fmt::format("
@@ -20393,10 +20393,6 @@
       "encoding": "utf8",
       "text": " TermChar"
     },
-    "dd7205f4c45514405cbe9b81efcf4c50062ea82cbe5aefca5bfbd2b959161d3f": {
-      "encoding": "utf8",
-      "text": "        /*\n         * リアルタイム: 見送りはここで必ず畳む。\n         *\n         * 見送りは「**行動できる**のに 1 回流す」ものである。エネルギーが残っている間は\n         * そもそも行動できないので、見送りではない。落とし忘れると次の輪で詰む——\n         * 上の `is_holding()` が溜めるのを止め、ここが即返るので、\n         * **`set_holding(false)` を置いてある下の行へ二度と届かない**。\n         * エネルギーは減りも溜まりもせず、プレイヤーは永久に行動できなくなる。\n         *\n         * 実際に入る道: 見送りの最中に麻痺・朦朧が入ると、コアが勝手に 100 消費する\n         * （下の `set_player_turn_energy(100)`）。以後、世界だけが進んで**餓死する**\n         * （利用者の報告 2026-08-16）。飢えれば気絶＝麻痺なので、一度嵌ると自励する。\n         */\n        RealtimeClock::get_instance().set_holding(false);\n"
-    },
     "dd8014949c290ca216b9d4ed0a5b5513a6b5307b206632b57039759053d02d1e": {
       "encoding": "utf8",
       "text": ", 20, 10, 11, 55 },\n    { "
@@ -20404,14 +20400,6 @@
     "ddb09280c54c13404e99786919943b0840c76592ad6426ace0fc46c9878e3b00": {
       "encoding": "utf8",
       "text": "#endif\n}\n\nstd::string euc_to_internal(std::string_view str)\n{\n    auto from = CharacterEncoding::EUC_JP;\n    return convert_to_internal_encoding(str, from);\n}\n"
-    },
-    "dddb665eae1ce08f9573b95f9944191e82d9d15ba4b139a969eccb17651c81e9": {
-      "encoding": "utf8",
-      "text": "\n/*!\n * @file combat-feedback.h\n * @brief 戦闘の見せ場をコアが書き留める場所（docs/REALTIME_MODE_DESIGN.md §8）\n * @details\n * リアルタイムでは目が地図に張り付くので、メッセージが 1 行増えるだけでは\n * **被弾にも命中にも気づけない**。ましてや小窓の裏で殴られているときは誰も読んでいない。\n * そこで「何が・どこで・どの属性で起きたか」だけをここに積み、**見た目は画面側が決める**\n * （必守制約 6: ui はコアに触らない／コアは見た目を知らない）。\n *\n * ## 属性はここに来る前に宣言する\n * `take_hit` の呼び出しは 166 か所あるので引数は増やせない。代わりに\n * 「次に起きる被弾はこの属性」を先に置いてもらう（`set_pending_attribute`）。\n * 宣言する場所は 2 つだけで全部覆える:\n * - 遠隔・呪文・ブレス … `affect_player`（`AttributeType` を既に受け取っている）\n * - 近接打撃 … `MonsterAttackPlayer`（`mbe_info[効果].explode_type`）\n * 宣言が無ければ「物理」に落ちる。罠・落下・毒・飢餓はそれでよい。\n *\n * ## 溜めっぱなしにしない\n * 積むのはコア、汲むのは `Bridge::capture`。**`capture` は入力待ちの間も 10ms ごとに回る**\n * ので、汲んだら消す（`take_events`）。消さずに `serial` で照合する作りにすると、\n * 同じ縁を何度も拾って点滅し続ける（`TeleportFx::burst` と同じ罠）。\n */\n\n"
-    },
-    "ddfd9a155fc4c18493cea52517195b56bbe8edd67081635bce49f7ac36485aeb": {
-      "encoding": "utf8",
-      "text": "    /*\n     * 遠隔・呪文・ブレスの属性は**ここでしか分からない**（docs/REALTIME_MODE_DESIGN.md §8）。\n     * この先の `take_hit` へは引数で渡せないので、先に宣言しておく。\n     * 使われなかった宣言は次の被弾まで残らない（`record_player_hit` が消費する）。\n     */\n    CombatFeedback::get_instance().set_pending_attribute(attribute);\n"
     },
     "de0b48e0c3693c21285af7d7e4757a6ed186e7d480db6dca5ba883eb2dfbdf50": {
       "encoding": "utf8",
@@ -20592,6 +20580,10 @@
     "e70aa75f25340298e9995ca915b28d6e88134c67d2aa5e76f3709d830e30ee41": {
       "encoding": "utf8",
       "text": "        if (from == CharacterEncoding::SHIFT_JIS) {\n            sjis2euc(work.data()); //!< 同上\n            return work;\n        }\n"
+    },
+    "e71ea59bef2dc8765ab9e195192569fcc0545c885c83c6ec098add8ae7958e4b": {
+      "encoding": "utf8",
+      "text": "\n/*!\n * @file combat-feedback.h\n * @brief 戦闘の見せ場をコアが書き留める場所\n * @details\n * リアルタイムでは目が地図に張り付くので、メッセージが 1 行増えるだけでは\n * **被弾にも命中にも気づけない**。ましてや小窓の裏で殴られているときは誰も読んでいない。\n * そこで「何が・どこで・どの属性で起きたか」だけをここに積み、**見た目は画面側が決める**\n * （必守制約 6: ui はコアに触らない／コアは見た目を知らない）。\n *\n * ## 属性はここに来る前に宣言する\n * `take_hit` の呼び出しは 166 か所あるので引数は増やせない。代わりに\n * 「次に起きる被弾はこの属性」を先に置いてもらう（`set_pending_attribute`）。\n * 宣言する場所は 2 つだけで全部覆える:\n * - 遠隔・呪文・ブレス … `affect_player`（`AttributeType` を既に受け取っている）\n * - 近接打撃 … `MonsterAttackPlayer`（`mbe_info[効果].explode_type`）\n * 宣言が無ければ「物理」に落ちる。罠・落下・毒・飢餓はそれでよい。\n *\n * ## 溜めっぱなしにしない\n * 積むのはコア、汲むのは `Bridge::capture`。**`capture` は入力待ちの間も 10ms ごとに回る**\n * ので、汲んだら消す（`take_events`）。消さずに `serial` で照合する作りにすると、\n * 同じ縁を何度も拾って点滅し続ける（`TeleportFx::burst` と同じ罠）。\n */\n\n"
     },
     "e725e1755897a9b9200f46375f96e733ec62881db628bb4890d57b770f4c7d88": {
       "encoding": "utf8",
@@ -20949,6 +20941,10 @@
       "encoding": "utf8",
       "text": "std::s"
     },
+    "f8bbbee0096eb24489efabac2c5ab709d315d7d20bb296c7e7d19d167fcf846f": {
+      "encoding": "utf8",
+      "text": "/*!\n * @brief 小窓の裏で世界が 1 刻み進んだ合図\n * @details 押されたキーではない。**入力待ちのループに「一覧を書き直して待ち直せ」と伝える**ための札で、\n * これを見た小窓は選択を進めずに `continue` する（要望は「所持品と足元のアイテムは\n * ターン毎に書き換える形でよい」）。受け取り方を知らない小窓では**裏進行そのものを許さない**\n * （`RealtimeClock::is_prompt_background_allowed`）ので、迷子の札が流れ込むことはない。\n */\n#define SPECIAL_KEY_REDRAW 251\n"
+    },
     "f8e1c422807b92e75b1d9da74a6dd87a653701c1f5811f74c7f8fc629fc9edb5": {
       "encoding": "utf8",
       "text": "text::display_width("
@@ -21012,6 +21008,10 @@
     "fc1e9a46c89c2c73b7bae128c22d2d1231028c068595ca084274ad08bae11aa5": {
       "encoding": "utf8",
       "text": "i18n::print(fff, _F"
+    },
+    "fc249f19f02d897bc18987805ca4c0994c3672874570fbc5e0954c1038d564ac": {
+      "encoding": "utf8",
+      "text": "            /*\n             * **2 度目以降のコマンド待ちもここで締め切る**。\n             * この `while` は「エネルギーが残っている限り」回るので、小窓を取り消したときのように\n             * 行動が空振りすると 2 周目に入る。関数の頭の締切だけだと 2 周目は素の待ちに落ち、\n             * **小窓から抜けたのに世界が止まったまま**になる。\n             */\n            if (can_wait_realtime_command(player_ptr)) {\n                auto &clock = RealtimeClock::get_instance();\n                clock.set_holding(false);\n                term_xtra(TERM_XTRA_RT_INPUT, 0);\n                if (clock.is_holding()) {\n                    update_realtime_while_holding(player_ptr);\n                    break; // 見送り。エネルギーは使わない（頭の締切が次を引き受ける）\n                }\n            }\n\n"
     },
     "fcb5f40df9be6bae66c1d77a6c15968866a9e6cbd7314ca432b019d17392f6f4": {
       "encoding": "utf8",
@@ -38356,7 +38356,7 @@
       ]
     },
     "cmd-io/cmd-gameoption.cpp": {
-      "sha256": "2529c62a7f2a4bf45df8524d5a4cf4a8910475124a7ae2afd0f4ef9aed655913",
+      "sha256": "a2e2dd262af03bfb318497a946156b3b6a25748d62289f7396f16b8720b112bb",
       "operations": [
         [
           "copy",
@@ -38612,7 +38612,7 @@
         ],
         [
           "add",
-          "834cf8d34b6016001ecbe374818382951e4a7a5419137e6e3c3bc9e24340cb19"
+          "9c870e54b9b15b143c12bce9e81d7cdb018aa1281a449d6fdd634cda9b357ce8"
         ],
         [
           "copy",
@@ -41952,7 +41952,7 @@
       ]
     },
     "cmd-item/cmd-item.cpp": {
-      "sha256": "6d4ceeb751ce0903f046c73d7ec3a8484afdc451b6de3d1c7813897a9cce8411",
+      "sha256": "25fe794e2d92298cc3690350a314b956723b54ec4e0115c7a779e59d226e971d",
       "operations": [
         [
           "copy",
@@ -42090,7 +42090,7 @@
         ],
         [
           "add",
-          "49f1a7a13f133288f64098fb414bb1c95a35d8f4f91b83ce7a16739f0f10982e"
+          "b30f415dab3eddc280bbda293976dbc1e4d87fb58cad2ca8786b15b3b072d3be"
         ],
         [
           "copy",
@@ -44238,7 +44238,7 @@
       ]
     },
     "core/combat-feedback.h": {
-      "sha256": "26b79230dd6669d492c6141c5ca5feedfe90241d7bebf5ee5f85e89a49ca9aac",
+      "sha256": "691802524110df9d7e8f3a0ca925b7b6da454c61c7a2cc55546f7ec7a612081f",
       "operations": [
         [
           "copy",
@@ -44248,7 +44248,7 @@
         ],
         [
           "add",
-          "dddb665eae1ce08f9573b95f9944191e82d9d15ba4b139a969eccb17651c81e9"
+          "e71ea59bef2dc8765ab9e195192569fcc0545c885c83c6ec098add8ae7958e4b"
         ],
         [
           "copy",
@@ -44605,7 +44605,7 @@
       ]
     },
     "core/player-processor.cpp": {
-      "sha256": "d77eb13712c95d0f14c09c18104f18197f9ef80764726a5921ecc29f65b57d59",
+      "sha256": "bd7192383a985ac6f256575182b6f9397e695ba0033c09198407da5353de40dc",
       "operations": [
         [
           "copy",
@@ -44635,7 +44635,7 @@
         ],
         [
           "add",
-          "5ef92fe1ce103a4f1816cda06aee3f2b4f9a240f62c7e7be670920e7ce3985ae"
+          "778a6387f550affaf5a29048f274b61051c3983710a263eb565829f131f2eff2"
         ],
         [
           "copy",
@@ -44699,7 +44699,7 @@
         ],
         [
           "add",
-          "dd7205f4c45514405cbe9b81efcf4c50062ea82cbe5aefca5bfbd2b959161d3f"
+          "45399d96016961dfbde24887a480999de1bc5d3c29d1c3af968e6146366bb24c"
         ],
         [
           "copy",
@@ -44745,7 +44745,7 @@
         ],
         [
           "add",
-          "9a0d47888786bd70866af8b311093942ca60d989e6a401d58d6c41c2afc8afda"
+          "20279dc6837da6e0a2b7eaca589a0b895cb2d482b7db737b9ae11d264a0c9200"
         ],
         [
           "copy",
@@ -44761,7 +44761,7 @@
         ],
         [
           "add",
-          "b2d1f7d3bb909d78e5c0827fe84f78f0f17ed70bf8755e12deac9118d9f21cd1"
+          "fc249f19f02d897bc18987805ca4c0994c3672874570fbc5e0954c1038d564ac"
         ],
         [
           "copy",
@@ -44771,7 +44771,7 @@
         ],
         [
           "add",
-          "dc5f2a39b7a0916ccfb44735dc60228d82355b654fe470a9ba3eebff78093656"
+          "37cf28b65f871e5bdc438fa88aede5f3f829f929861f71fd4ea007426e2106e1"
         ],
         [
           "copy",
@@ -44982,7 +44982,7 @@
       ]
     },
     "core/realtime-clock.h": {
-      "sha256": "34b6bfe5de1e74298ce5cfbee19a9178861a827f7858d08ced21a15209ae2dbf",
+      "sha256": "4a240fbfa25100191480ceaa764a2b9187dcba1cd326632602da6505785c21e4",
       "operations": [
         [
           "copy",
@@ -44992,7 +44992,7 @@
         ],
         [
           "add",
-          "9bcdbd1e9978e260bf0de9d505c077617633042c8dabbd7453c0cc87ed1390d6"
+          "40b814ccefa8ee9c313c139466b4ea37f6d13bd7a088c2265c3c2d6ac66521aa"
         ],
         [
           "copy",
@@ -45002,7 +45002,7 @@
         ],
         [
           "add",
-          "c69c07fe954f0deda128b26ff4b5e143d6ae80619ba9de64358f2b2d1e78db97"
+          "818a86201ecb721f2ee119e98a16f3436cb6f4c81cac5b85f52fccb9ba5fdd59"
         ]
       ]
     },
@@ -45859,7 +45859,7 @@
       ]
     },
     "core/special-internal-keys.h": {
-      "sha256": "4b6c658c731b3bb85ecb7942a61468fa4f4d3adb9d836b0b14f7797ea0f9afeb",
+      "sha256": "c8abdcc771b5a6b368da2a8609e40d8628556af6a58e515621fcf0ce9f390c31",
       "operations": [
         [
           "copy",
@@ -45869,7 +45869,7 @@
         ],
         [
           "add",
-          "846739bde8357264ff95be36fe1b3f9aed42d8e8ca976f2d047dfbe6048e6ece"
+          "f8bbbee0096eb24489efabac2c5ab709d315d7d20bb296c7e7d19d167fcf846f"
         ]
       ]
     },
@@ -46006,7 +46006,7 @@
       ]
     },
     "dungeon/dungeon-processor.cpp": {
-      "sha256": "a59e4724d27ef53ee18cf1e01873e457fb2a7a82525f4865c0c944c241a0d769",
+      "sha256": "b5ec444a27884893ec893e6616a0a6f33c958d0ba719c09af744d733ce808519",
       "operations": [
         [
           "copy",
@@ -46440,7 +46440,7 @@
         ],
         [
           "add",
-          "37dbcaa67bf93266dcb92b06b6dc8f31a5fa0b60e41e8db4be796cd4c33ee8b5"
+          "a45ac42944aa05803f46fa0679d104a4b9332bf56f6ccb6b18f951ad579811d4"
         ],
         [
           "copy",
@@ -46456,7 +46456,7 @@
         ],
         [
           "add",
-          "d662f7bd4410d8a637f4c10ce0917455df05b55d220637680ace399a6b216afa"
+          "237deecaa52dbf4aeb3d0af612fa7f1aa2bcdf2769a6ab0d138e272336dd6014"
         ],
         [
           "copy",
@@ -46467,7 +46467,7 @@
       ]
     },
     "dungeon/dungeon-processor.h": {
-      "sha256": "8a302b7b1bd1b42694e8b92c8a961bf0fc4279f5546ac20493425febbc9f8eed",
+      "sha256": "0c1d1f016f0795fec336fd3edadf9161e5aec8b8cb92b5ab132c16f6d81c1e84",
       "operations": [
         [
           "copy",
@@ -46477,7 +46477,7 @@
         ],
         [
           "add",
-          "c6797893950a9cc43d31ad96c14383605d6a03ebf2ff17684565a3707b763fcc"
+          "64f5838e054f007c2c1fb709febe1457bd044da24afe9633cd55e160a76cf8ae"
         ]
       ]
     },
@@ -47822,7 +47822,7 @@
       ]
     },
     "effect/effect-player.cpp": {
-      "sha256": "041576f844feefdb006cb85cbcb5e5862bfd08b8e45546e6c80fcecf766abf78",
+      "sha256": "6a3e8d277bba938f904291055d3423d9d704fb1c5e2140cd9f2a113fb1535008",
       "operations": [
         [
           "copy",
@@ -47842,7 +47842,7 @@
         ],
         [
           "add",
-          "ddfd9a155fc4c18493cea52517195b56bbe8edd67081635bce49f7ac36485aeb"
+          "4c37f1a7602b6180673669c9aabf0c8041fa26fcb46f24d1d562a0487c3f6bdc"
         ],
         [
           "copy",
@@ -47874,7 +47874,7 @@
       ]
     },
     "effect/effect-processor.cpp": {
-      "sha256": "f5778b2a34390696e371b7376d38ecbffd5afc0d5abad09a3174ff1f50394e69",
+      "sha256": "4b676646288a508688bcac13401959cb8e0f364d4c2273ea39bb2cab3fbdb192",
       "operations": [
         [
           "copy",
@@ -47894,7 +47894,7 @@
         ],
         [
           "add",
-          "0cca86726e21121bdc5cdcca11a3ce173fa65257934c30e3f092705a91334202"
+          "814b38422e0d66a3667f2058b20ab5045380926f9abaa52e9140e19064e377a2"
         ],
         [
           "copy",
@@ -56050,7 +56050,7 @@
       ]
     },
     "game-option/option-flags.h": {
-      "sha256": "0d396f2841f3c227722d294e78a08c019ba1f6de78cec05218cb134eb25631a6",
+      "sha256": "5927f9b5a1f26614612ac1972a2f15f8277c5d08efaa84cd17125ef61fd45125",
       "operations": [
         [
           "copy",
@@ -56060,7 +56060,7 @@
         ],
         [
           "add",
-          "d973dbc4ebf7e2deb9ea93d212a036163f03659274fc5ac30d47b4ec137f63c4"
+          "794d466f7441ff017dd30446f83eeb17cefe102dba28e7713189a78674817c5a"
         ],
         [
           "copy",
@@ -61430,7 +61430,7 @@
       ]
     },
     "inventory/floor-item-getter.cpp": {
-      "sha256": "a474f4b39ba964c1541113124ff81a7aee387a457cad09e8cc66d5dbf1ce098b",
+      "sha256": "f28a3137e61c9f210aee15d15a40646c25351d27a2dca6d5be56a5f4fe70bd62",
       "operations": [
         [
           "copy",
@@ -61466,7 +61466,7 @@
         ],
         [
           "add",
-          "11810b42744e9a7f657e50f4d90dd0a79b08e637dfbab64e8796241a8103e32c"
+          "7be6cfc2b93bd647b50a6c2a7b49b8ae92e321611d7062fd9510bbafff81fabe"
         ],
         [
           "copy",
@@ -88075,7 +88075,7 @@
       ]
     },
     "monster-attack/monster-attack-player.cpp": {
-      "sha256": "870aa1709d8f068e79f845d50250b47da2bba40f0ac4f6ec3e7963007b213493",
+      "sha256": "cbe7640205e0e21627e54258680f89b9c67934b3d4cf699b6fea616c35aac64e",
       "operations": [
         [
           "copy",
@@ -88095,7 +88095,7 @@
         ],
         [
           "add",
-          "2e733d0540353126881f33a12542d5cbb7a13b2276f49c3869931dd07f11e893"
+          "cf3f75c6d08445ff920322c0cfe8d1853e825fe8f97758b58053180db68f9ebc"
         ],
         [
           "copy",
@@ -91289,7 +91289,7 @@
       ]
     },
     "monster/monster-damage.cpp": {
-      "sha256": "0b3b0c065ef3ea0813ad00df23f6a443244da8d3a91d687229fab135755a9f26",
+      "sha256": "e74d52560e7332b76c3363d21641607bd0fb4581d0c39f1d9227fbb85c4f0c49",
       "operations": [
         [
           "copy",
@@ -91309,7 +91309,7 @@
         ],
         [
           "add",
-          "b090098f12ce3432442c82bd9a8425fc5609d3593ff7871a43190476d23a1a54"
+          "98f442af1c439ed012da4d6b8c481e57e1c007b98a095932dc6fc3dbe8f6a690"
         ],
         [
           "copy",
@@ -112497,7 +112497,7 @@
       ]
     },
     "player/player-damage.cpp": {
-      "sha256": "53978e811324391279a7b3e9a798f6a38e78ca1c979ad4dad1e7530fb78f1aa0",
+      "sha256": "0496d8657a0c2b111fe8999927427b53e89743ae6715b92aeeaf6f375804636b",
       "operations": [
         [
           "copy",
@@ -112599,7 +112599,7 @@
         ],
         [
           "add",
-          "94665c0e11e030050c3ed629129f7b338cdf5fa8525f83cff67e5c3f4fbd85fa"
+          "8aad2962264fa7406c4c652d1f7a7387c7e6d29630ec7e527a5a7412fac72f7d"
         ],
         [
           "copy",
@@ -113522,7 +113522,7 @@
       ]
     },
     "player/player-status.cpp": {
-      "sha256": "f08d75eff8fab061bca9046a3f8063dc3dbf8ff372c3ca547a11ef4b5c8ab467",
+      "sha256": "41a41ee5fd285e2e653a7556a9e02813b37ae27bdf5fbcd629295bb9ae2484d5",
       "operations": [
         [
           "copy",
@@ -113550,7 +113550,7 @@
         ],
         [
           "add",
-          "3cdb676a74d7f62d8a8c7ea580d78526ac9fa90847c4f1f499572147570a5480"
+          "da62524dfb3edaf1e7aef563bb5c3dcca3b4473abfd3326153c15d67bcf9696f"
         ],
         [
           "copy",
@@ -137229,7 +137229,7 @@
       ]
     },
     "system/floor/town-info.h": {
-      "sha256": "a7f9a69987a8c2f6a3e0b9ce03aafdbe36f9f0b2f6d3f0e341b51b0cb6442b99",
+      "sha256": "0453d05e8355b011a7f16dba5dc46d7d68d27a466ae0a8ee1bff80f90526f8ff",
       "operations": [
         [
           "copy",
@@ -137249,7 +137249,7 @@
         ],
         [
           "add",
-          "0c0d4925c04944acacbf4ab785564a441c0038727fe20bf0fbb1f42114a23536"
+          "5ed9fba882c83d60dc72b265387f9fedde39972f3d3a4a4329a98b71a7cb3124"
         ],
         [
           "copy",
@@ -144978,7 +144978,7 @@
       ]
     },
     "term/z-term.h": {
-      "sha256": "8cbfbbfe5fe6a7ff82d1ed9f244e43581df4b722c08572c0157ad0ad396568a4",
+      "sha256": "7bceb12277e5d99bfd90e93ce1d7ab8fec0643d7ae158dc3bc4fe47ec7deb50e",
       "operations": [
         [
           "copy",
@@ -145048,7 +145048,7 @@
         ],
         [
           "add",
-          "692afca31b7c96e085954fb63e802000d9c83d568f538556e655bc997cbf914c"
+          "9534808878c682860bf5e8193536f0e1cdc1f024db6bb2abd04bb57b740bfa0f"
         ],
         [
           "copy",
@@ -145477,7 +145477,7 @@
       ]
     },
     "util/angband-files.cpp": {
-      "sha256": "e891f4d728d8fb18a0fedc097f02d6b55961fd5a30a73190331f7b9628ffcf26",
+      "sha256": "cf515790b8233bfdf240c8a68cf32e79c5abe4e6ce22fff95bc9ef803004cecf",
       "operations": [
         [
           "copy",
@@ -145497,7 +145497,7 @@
         ],
         [
           "add",
-          "a1511bb1b4f36e2cd6782d419862505f681dadf35decd9c5d7089e9ac6a03a1b"
+          "7eafeaed70f2f34fbc7aa46cd35987f02e36f5200a69931e619b8b333bba005c"
         ],
         [
           "copy",
@@ -150070,7 +150070,7 @@
       ]
     },
     "view/display-messages.cpp": {
-      "sha256": "2c5f9c7368557f94d647f65d20892a4e8205b8eaa3b8064d42874c8fb318c0f7",
+      "sha256": "f77e473fc1cbca91434a7c282b7fbaa9f6500576b472e35ad74032e3154a6df1",
       "operations": [
         [
           "add",
@@ -150094,7 +150094,7 @@
         ],
         [
           "add",
-          "6c48dd3e8365e729b33a29a55922d7f09453618f9baea722b359f03545fb17a9"
+          "65c659fbc24c634053d5fd95b5e3eaee0b2205c6d89f733016b48db98073d684"
         ],
         [
           "copy",

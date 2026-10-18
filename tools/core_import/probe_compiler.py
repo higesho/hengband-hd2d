@@ -23,7 +23,7 @@ ROGUE54_C = ['vers.c', 'extern.c', 'armor.c', 'chase.c', 'command.c', 'daemon.c'
              'wizard.c', 'xcrypt.c']
 ANGBAND_ADAPTER_C = ['an_bootstrap.c', 'an_null_term.c', 'an_wiz_stats_stub.c', 'an_map_shim.c', 'an_native_inventory.c',
                      'an_text_hooks.c', 'an_pad_shim.c', 'an_ui_shim.c', 'an_targeting.c', 'an_town_rng.c', 'an_town_map.c',
-                     'an_profile.c', 'an_fx.c', 'an_wide.c', 'an_name_ja.c', 'an_lore_ja.c']
+                     'an_profile.c', 'an_fx.c', 'an_test_monster_act.c', 'an_wide.c', 'an_name_ja.c', 'an_lore_ja.c']
 # 原作のファイル名の一覧は tools/angband/build_windows.py と同じ（149 本。main.c と main-*.c は組まない）。
 ANGBAND_CORE_C = [
     "buildid.c",

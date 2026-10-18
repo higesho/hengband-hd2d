@@ -1075,6 +1075,14 @@ const char *gb_last_error(void);
 void gb_shutdown_and_quit(void);
 
 int gb_awaiting_command(void);
+/*!
+ * @brief 検査用：環境変数 `HD2D_TEST_MONSTER_ACT` の命令ファイルがあれば読んで、敵に魔法・直接攻撃をさせる。
+ * 敵を指定のマスへ動かす `place`、敵の番を飛ばす `hold` もある。複数行の命令は上から順に、1 回の命令待ちで全部実行する。
+ * @return 待っているコアを起こすキー（死亡・階の移動のとき ESC）。要らなければ 0
+ * @details 命令待ちのときだけ働く。環境変数が無ければ何もしない。命令・条件は `gb_shim.c` の同名の節に書いた。
+ */
+int gb_test_monster_act_poll(void);
+
 
 #ifdef __cplusplus
 }

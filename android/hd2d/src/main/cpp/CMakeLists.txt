@@ -25,6 +25,7 @@
 #    libgensocore.so … 幻想蛮怒のコア
 #    libsilcore.so   … Sil-Q のコア
 #    libfroxcore.so  … FroxComposband のコア
+#    libtobandcore.so … TOband のコア
 #    librogue2core.so … RogueClone2 のコア
 #    librogue36core.so … Rogue 3.6.4 のコア
 #    librogue54core.so … Rogue 5.4.4 のコア
@@ -388,9 +389,21 @@ set(HB_SJIS_DIR "${HB_CORE_SOURCE_ROOT}/android-sjis")
 set(HB_SJIS_TREES
     "gensoband/src|gensoband/src|cp932|.c,.h,.inl"
     "gensoband/adapter|gensoband/adapter|utf8|.c,.cpp,.h,.inl,.inc"
+    "toband/src|toband/src|cp932|.c,.h,.inl"
+    "toband/adapter|toband/adapter|utf8|.c,.cpp,.h,.inl,.inc"
     "silq/adapter|silq/adapter|utf8|.c,.cpp,.h,.inl,.inc"
     "frox/adapter|frox/adapter|utf8|.c,.cpp,.h,.inl,.inc"
 )
+
+#! 元の準備済みソース（`HB_TARGET_ORIGINAL_ROOT`）から直に写す木。
+#! `HB_CORE_SOURCE_ROOT` は狙いの上書き（tools/targeting。`targeting-sources`）を指している。
+#! TOband の上書き（`overlay.py` の `build_toband`）が出来ていれば、その `toband/src` を写す。
+#! 出来ていない間（上書きが toband を扱わない版）は、元の `toband/src` を写す（狙いの計装は入らない）。
+if(EXISTS "${HB_CORE_SOURCE_ROOT}/toband/src/angband.h")
+    set(HB_SJIS_ORIGINAL_ROOT_TREES "")
+else()
+    set(HB_SJIS_ORIGINAL_ROOT_TREES "toband/src")
+endif()
 
 # 段取り前に 1 回走らせる。**glob より先でなければならない**（無い木は glob できない）。
 foreach(spec ${HB_SJIS_TREES})
@@ -400,7 +413,11 @@ foreach(spec ${HB_SJIS_TREES})
     list(GET parts 2 from_enc)
     list(GET parts 3 exts)
     if(from_dir MATCHES "/src$")
-        set(from_path "${HB_CORE_SOURCE_ROOT}/${from_dir}")
+        if(from_dir IN_LIST HB_SJIS_ORIGINAL_ROOT_TREES)
+            set(from_path "${HB_TARGET_ORIGINAL_ROOT}/${from_dir}")
+        else()
+            set(from_path "${HB_CORE_SOURCE_ROOT}/${from_dir}")
+        endif()
     else()
         set(from_path "${HB_ROOT}/${from_dir}")
     endif()
@@ -430,7 +447,11 @@ foreach(spec ${HB_SJIS_TREES})
     list(GET parts 2 from_enc)
     list(GET parts 3 exts)
     if(from_dir MATCHES "/src$")
-        set(from_path "${HB_CORE_SOURCE_ROOT}/${from_dir}")
+        if(from_dir IN_LIST HB_SJIS_ORIGINAL_ROOT_TREES)
+            set(from_path "${HB_TARGET_ORIGINAL_ROOT}/${from_dir}")
+        else()
+            set(from_path "${HB_CORE_SOURCE_ROOT}/${from_dir}")
+        endif()
     else()
         set(from_path "${HB_ROOT}/${from_dir}")
     endif()
@@ -441,7 +462,7 @@ foreach(spec ${HB_SJIS_TREES})
 endforeach()
 add_custom_target(hb_transcode_sjis ALL
     ${HB_SJIS_COMMANDS}
-    COMMENT "[hengband-hd2d] CP932 の変換ツリーを更新（幻想蛮怒・Sil-Q）"
+    COMMENT "[hengband-hd2d] CP932 の変換ツリーを更新（幻想蛮怒・TOband・Sil-Q・Frox）"
     VERBATIM)
 
 #! 線の符号化と入力の翻訳。**この 4 つだけ**が新旧で共有される（vcxproj と同じ並び）。
@@ -513,6 +534,49 @@ hengband_legacy_config(gensocore
     "${HB_SJIS_DIR}/gensoband/src" "${HB_SJIS_DIR}/gensoband/adapter")
 # vcxproj と同じ（`WINDOWS` と `WIN32` は当然こちらには無い）。
 target_compile_definitions(gensocore PRIVATE JP SJIS)
+
+# ---- TOband
+#
+# 原作は変愚蛮怒 1.x 系の平屋の C で、幻想蛮怒と同じ組み方をする。原作ソースは書き換えず、
+# 組み立ての指定だけで吸う（設計 §1 制約 1）。正本は VisualStudio/TobandCore/TobandCore.vcxproj
+# と platform/linux/CMakeLists.txt の TobandCore。
+#   - `main*.c`・`maid-x11.c` は入口と X11/DIB なので組まない
+#   - `report.c` は作者のサーバーへスコアを送る（設計 §1 制約 5）ので組まず、
+#     アダプタの `tb_report_stub.c` が代わりを持つ
+#   - `bldg.c` は `party.h` を読まずに party 系の関数を呼ぶので、この 1 本にだけ
+#     `angband.h` と `party.h` を差し込む（vcxproj の ForcedIncludeFiles と同じ）
+file(GLOB HB_TB_SRC CONFIGURE_DEPENDS "${HB_SJIS_DIR}/toband/src/*.c")
+set(HB_TB_EXCLUDE
+    ${HB_LEGACY_EXCLUDE}
+    "/main-[a-z]+\.c$"
+    "/report\.c$"
+)
+foreach(pat ${HB_TB_EXCLUDE})
+    list(FILTER HB_TB_SRC EXCLUDE REGEX "${pat}")
+endforeach()
+#! `store.c` は単独では組まない。アダプタの `tb_native_store.c` が丸ごと取り込む（幻想蛮怒の `gb_native_store.c` と同じ）
+list(FILTER HB_TB_SRC EXCLUDE REGEX "/store\\.c$")
+#! `util.c`・`birth.c` も単独では組まない。アダプタの `tb_native_util.c`・`tb_native_birth.c` が丸ごと取り込む
+#! （新しい画面へ文字入力の待ちを知らせる旗を立てるため。原作は書き換えない）
+list(FILTER HB_TB_SRC EXCLUDE REGEX "/util\\.c$")
+list(FILTER HB_TB_SRC EXCLUDE REGEX "/birth\\.c$")
+file(GLOB HB_TB_ADAPTER_SRC CONFIGURE_DEPENDS
+    "${HB_SJIS_DIR}/toband/adapter/*.c" "${HB_SJIS_DIR}/toband/adapter/*.cpp")
+list(LENGTH HB_TB_SRC HB_TB_COUNT)
+message(STATUS "[hengband-hd2d] toband sources = ${HB_TB_COUNT}")
+
+add_library(tobandcore SHARED ${HB_TB_SRC} ${HB_TB_ADAPTER_SRC} ${HB_LEGACY_SHARED_SRC})
+hengband_legacy_config(tobandcore
+    "${HB_SJIS_DIR}/toband/src" "${HB_SJIS_DIR}/toband/adapter")
+target_compile_definitions(tobandcore PRIVATE JP SJIS)
+# 64 ビットの罠: 原作の h-type.h は Alpha でしか L64 を立てず、LP64（arm64-v8a・x86_64）では
+# `u32b` が 64 ビットの unsigned long になる。幻想蛮怒は stdint の型を使うので要らないが、
+# TOband は定義で同じ結果にする（Linux の TobandCore と同じ。設計 §9 の M3）。
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    target_compile_definitions(tobandcore PRIVATE L64)
+endif()
+set_source_files_properties("${HB_SJIS_DIR}/toband/src/bldg.c"
+    PROPERTIES COMPILE_OPTIONS "-include;angband.h;-include;party.h")
 
 # ---- Sil-Q
 #
@@ -731,7 +795,7 @@ set(HB_AN_ADAPTER_C_FILES
     an_bootstrap.c an_null_term.c an_wiz_stats_stub.c an_map_shim.c
     an_native_inventory.c an_text_hooks.c an_pad_shim.c an_ui_shim.c
     an_targeting.c an_town_rng.c an_town_map.c an_profile.c an_fx.c
-    an_wide.c an_name_ja.c an_lore_ja.c)
+    an_test_monster_act.c an_wide.c an_name_ja.c an_lore_ja.c)
 
 set(HB_AN_CORE_SRC)
 foreach(name IN LISTS HB_AN_CORE_FILES)

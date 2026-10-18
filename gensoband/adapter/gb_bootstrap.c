@@ -512,6 +512,16 @@ void gb_shutdown_and_quit(void)
         saved = save_player();
         fprintf(stderr, "[gensoband] forced save %s\n", saved ? "succeeded" : "FAILED");
         fflush(stderr);
+
+        /*
+         * 階の一時ファイル（<セーブ>.Fnn）を消す。原作の普通の終了（`files.c` の `close_game()`）は
+         * 保存のあとにこれを呼ぶが、強制保存はそこを通らないので、ダンジョンの中で畳むと残り、
+         * 次の起動で「古いテンポラリ・ファイルが残っています」の問いで止まっていた（2026-10-16。
+         * TOband で見つけた。 ）。
+         */
+        if (saved) {
+            clear_saved_floor_files();
+        }
     } else {
         fprintf(stderr, "[gensoband] nothing to save (character_generated=%d)\n",
             character_generated ? 1 : 0);

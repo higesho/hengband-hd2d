@@ -383,6 +383,9 @@ static errr an_term_event(int wait)
         an_present_pending = 0;
         an_fresh_burst_open = 0;
 
+        /* 検査用：敵の行動の指定（環境変数が無ければ何もしない）。キーを Term へ積む直前に変える。 */
+        an_test_monster_act_poll();
+
         if (an_drain_keys_into_term()) {
             return 0;
         }

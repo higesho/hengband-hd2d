@@ -325,6 +325,17 @@ void UiProbe::overlays(std::vector<ProbeOverlay> overlays, int drawn)
     this->touched_ = true;
 }
 
+void UiProbe::element_scope(std::vector<ProbeScopeCell> cells, int drawn)
+{
+    if (!this->enabled_) {
+        return;
+    }
+    this->cur_.has_element_scope = true;
+    this->cur_.element_scope = std::move(cells);
+    this->cur_.element_scope_drawn = drawn;
+    this->touched_ = true;
+}
+
 void UiProbe::entities(std::vector<ProbeEntity> entities, int rings_drawn)
 {
     if (!this->enabled_) {
@@ -352,6 +363,16 @@ void UiProbe::time_state(const ProbeTimeState &state)
     }
     this->cur_.time_state = state;
     this->cur_.time_state.present = true;
+    this->touched_ = true;
+}
+
+void UiProbe::weather(const ProbeWeather &weather)
+{
+    if (!this->enabled_) {
+        return;
+    }
+    this->cur_.weather = weather;
+    this->cur_.weather.present = true;
     this->touched_ = true;
 }
 
@@ -742,6 +763,15 @@ std::string UiProbe::snapshot_json(std::string_view poll_phase, std::string_view
             }
             map["overlays"] = std::move(overlays);
             map["overlays_drawn"] = f.overlays_drawn;
+            // エレメントスコープ（TOband）。コアが四角を送ったフレームだけ出る。
+            if (f.has_element_scope) {
+                Json scope_cells = Json::array();
+                for (const ProbeScopeCell &c : f.element_scope) {
+                    scope_cells.push_back(Json::array({ c.gx, c.gy, c.color, c.rgb[0], c.rgb[1], c.rgb[2] }));
+                }
+                map["element_scope"] = Json{ { "drawn", f.element_scope_drawn }, { "cells", std::move(scope_cells) },
+                    { "cell_format", "[gx, gy, TERM_COLOR, r, g, b]" } };
+            }
             Json entities = Json::array();
             for (const ProbeEntity &e : f.entities) {
                 Json j = Json{ { "gx", e.gx }, { "gy", e.gy }, { "kind", e.kind }, { "id", e.id } };
@@ -763,6 +793,14 @@ std::string UiProbe::snapshot_json(std::string_view poll_phase, std::string_view
         if (f.time_state.present) {
             map["time"] = Json{ { "day_minute", f.time_state.day_minute }, { "daytime", f.time_state.daytime },
                 { "night_factor", f.time_state.night_factor } };
+        }
+        // 天候（コアが申告したときだけ）。画面が描いている量・風で流れた量・昼の割合。
+        if (f.weather.present) {
+            map["weather"] = Json{ { "rain", f.weather.rain }, { "wind", f.weather.wind }, { "temp", f.weather.temp },
+                { "rain_amount", f.weather.rain_amount }, { "snow_amount", f.weather.snow_amount },
+                { "wind_x", f.weather.wind_x }, { "wind_y", f.weather.wind_y }, { "right_x", f.weather.right_x },
+                { "right_y", f.weather.right_y }, { "icon", f.weather.icon }, { "dust_amount", f.weather.dust_amount },
+                { "daylight", f.weather.daylight } };
         }
     }
     out["map"] = std::move(map);

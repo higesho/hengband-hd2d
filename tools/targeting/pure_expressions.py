@@ -9,6 +9,8 @@ DECLARATION=re.compile(r'\b(?:const\s+)?(?:int|s16b|s32b|byte|auto|POSITION|PERC
 LOCAL_DECLARATIONS=re.compile(r'\b(?:const\s+)?(?:int|s16b|s32b|byte|auto|POSITION|PERCENTAGE|PLAYER_LEVEL)\s+([^;{}]+);')
 ASSIGNMENT=re.compile(r'(?<![\w>.])\b(\w+)\s*=(?!=)\s*([^;{}]+);')
 FIELDS=re.compile(r'\b(?:p_ptr|player_ptr)\s*->\s*(?:lev|pclass|chp|mhp|csp|msp)\b')
+# TOband は呪文の技量と能力値を party_spell_caster()（仲間が唱える間はその人）から読む。読むだけの関数で、フィールドを返す。
+FIELDS_TOBAND=re.compile(r'\b(?:p_ptr|player_ptr)\s*->\s*(?:lev|pclass|chp|mhp|csp|msp)\b|\bparty_spell_caster\s*\(\s*\)\s*->\s*(?:magic_exp|stat_use)\s*\[[^\]]*\]')
 # These native display functions take their numeric inputs by value. Their
 # signatures are in cmd-action/cmd-spell.h, tracked with the source overlay.
 HENG_VALUE_CALLS={'info_damage','info_range','info_power','info_radius'}
@@ -21,16 +23,17 @@ class NumericScope:
         self.known_inputs=known_inputs
         self.literal_prefixes=literal_prefixes
         self.calls={'MIN','MAX','ABS'}
+        self.fields=FIELDS_TOBAND if core=='toband' else FIELDS
         if core=='frox':self.calls.update(('spell_power','device_power','spell_cap','beam_chance'))
         if core=='genso':self.calls.update(('calc_spell_caster_level','beam_chance'))
 
     def __call__(self,expression,seen=frozenset()):
         if '++' in expression or '--' in expression or re.search(r'(?<![=!<>])=(?!=)',expression):return False
         tail=re.sub(r'\s+','',self.source.mask[self.query:self.until])
-        for field in FIELDS.finditer(expression):
+        for field in self.fields.finditer(expression):
             name=re.escape(re.sub(r'\s+','',field.group()))
             if re.search(name+r'(?:\+\+|--|[+*/%&|^\-]?=(?!=))|(?:\+\+|--|&)'+name,tail):return False
-        text=FIELDS.sub('0',expression)
+        text=self.fields.sub('0',expression)
         if self.core=='heng':
             text=text.replace('std::min','MIN').replace('std::max','MAX').replace('std::abs','ABS')
             # spells-diceroll.cpp reads only the player's class and level.
@@ -114,7 +117,7 @@ class NumericScope:
 
     def expand(self,expression):
         if not self(expression):return None
-        fields=list(FIELDS.finditer(expression))
+        fields=list(self.fields.finditer(expression))
         def replace(match):
             if any(field.start()<=match.start()<field.end() for field in fields):return match.group()
             declaration=self.local_declaration(match.group())

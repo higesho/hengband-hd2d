@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  TobandCore.vcxproj ── TOband コア側の実行ファイル。
+
+ （§2 配置 / §3.3 組み立て / §4 アダプタ / §8 P3）
+
+  中身は `$(HengbandTargetingOverlayRoot)\toband\src`（CP932 に写した原作に、`tools/targeting` の
+  上書きが書き足したもの）の C と `toband/adapter/` だけ。変愚側の `src/`・`hd2d/` は 1 本も入れない。
+  書き足しは、状態のアイコンの観測（xtra1.c の prt_status() に 1 行・files.c の末尾に読み取りの関数 1 つ）・
+  攻撃の効果の観測（spells1.c・cmd2.c）・狙いの画面の計装（xtra2.c の入力の関数ほか。
+  決めたこと 2026-10-17）。原作の行は変えない・消さない。
+  すべて同じ上書きの枝に足す（`tools/targeting/overlay.py` の `build_toband`）。幻想蛮怒と同じ流れ（`GensobandCore.vcxproj`）。
+  狙いの受け口（`toband/adapter/tb_targeting*.inl`）は xtra2.c の末尾から取り込まれる（ここには並べない）。
+
+  ## ビルド定義
+  `WINDOWS;JP;SJIS;_CRT_SECURE_NO_WARNINGS;WIN32`・マルチバイト・SDL チェックなし・
+  警告 4244;4996;4101 無効・`winmm.lib` と `wsock32.lib`。サブシステムは CONSOLE。
+
+  ## コンパイル除外（設計 §3.3）
+  `main*.c`・`maid-x11.c`・`report.c`。入口と描画はアダプタが持ち、スコア送信
+  （`report.c`）は組まずに `tb_report_stub.c` の何もしない `report_score()` で受ける。
+  `main-win.c` を外して宙に浮く記号は `tb_win_stubs.c` が受ける。
+
+  ## `bldg.c` だけの強制 include（設計 §3.3）
+  `bldg.c` は `party.h` を読まずに `party_can_dark_contract` ほかを呼ぶ（C4013 で
+  返り値を int と読む恐れ）。`bldg.c` だけに `angband.h` と `party.h` を差し込む。
+
+  ## 文字コード
+  原作の写しは CP932、`toband/adapter/` は UTF-8（BOM 付き）。MSVC は BOM のあるファイル
+  だけ UTF-8 と読むので、コンパイラへの文字コード指定は足さないこと（幻想蛮怒と同じ）。
+
+  ## 構成は Win32 だけ宣言する
+  Hengband.sln 側で x64 を Win32 へ写す（HengbandCore.vcxproj と同じやり方）。
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}</ProjectGuid>
+    <RootNamespace>TobandCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="..\CoreSources.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <TobandSourceRoot Condition="'$(TobandSourceRoot)'==''">$(HengbandTargetingOverlayRoot)\toband\src</TobandSourceRoot>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- 成果物はリポジトリ直下（HengbandCore.exe と同格・同じ場所。設計 §2）。 -->
+    <OutDir>..\..\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <TargetName>TobandCore</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WINDOWS;JP;SJIS;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--
+        並びが効く。**`toband\src` を先頭に置く**こと。後ろの `presentation` /
+        `external-lib` は共用 TU（frame_codec ほか）のためだけに要るもので、
+        同名の頭文字（`types.h` 等）があっても写しが勝つようにしておく。
+      -->
+      <AdditionalIncludeDirectories>$(TobandSourceRoot);..\..\toband\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!-- 窓は持たない。stdout がプロトコル、stderr がログ（v1 §1.1）。 -->
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WINDOWS;JP;SJIS;_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SDLCheck>false</SDLCheck>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DisableSpecificWarnings>4244;4996;4101;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!--
+        並びが効く。**`toband\src` を先頭に置く**こと。後ろの `presentation` /
+        `external-lib` は共用 TU（frame_codec ほか）のためだけに要るもので、
+        同名の頭文字（`types.h` 等）があっても写しが勝つようにしておく。
+      -->
+      <AdditionalIncludeDirectories>$(TobandSourceRoot);..\..\toband\adapter;..\..\presentation;..\..\platform;$(HengbandCoreSourceRoot)\src\external-lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <!-- 共用 TU（`presentation/frame`）は C++20 で書かれている。C の写しには影響しない。 -->
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>winmm.lib;wsock32.lib;dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <!--
+    TOband 本体の C（原作の写し）。除外は main*.c・maid-x11.c・report.c（設計 §3.3）。
+  -->
+  <ItemGroup>
+    <ClCompile Include="$(TobandSourceRoot)\artifact.c" />
+    <ClCompile Include="$(TobandSourceRoot)\autopick.c" />
+    <ClCompile Include="$(TobandSourceRoot)\bldg.c">
+      <ForcedIncludeFiles>angband.h;party.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="$(TobandSourceRoot)\cave.c" />
+    <ClCompile Include="$(TobandSourceRoot)\cmd1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\cmd2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\cmd3.c" />
+    <ClCompile Include="$(TobandSourceRoot)\cmd4.c" />
+    <ClCompile Include="$(TobandSourceRoot)\cmd5.c" />
+    <ClCompile Include="$(TobandSourceRoot)\cmd6.c" />
+    <ClCompile Include="$(TobandSourceRoot)\do-spell.c" />
+    <ClCompile Include="$(TobandSourceRoot)\dungeon.c" />
+    <ClCompile Include="$(TobandSourceRoot)\effects.c" />
+    <ClCompile Include="$(TobandSourceRoot)\element.c" />
+    <ClCompile Include="$(TobandSourceRoot)\files.c" />
+    <ClCompile Include="$(TobandSourceRoot)\flavor.c" />
+    <ClCompile Include="$(TobandSourceRoot)\floors.c" />
+    <ClCompile Include="$(TobandSourceRoot)\generate.c" />
+    <ClCompile Include="$(TobandSourceRoot)\grid.c" />
+    <ClCompile Include="$(TobandSourceRoot)\init1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\init2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\japanese.c" />
+    <ClCompile Include="$(TobandSourceRoot)\load.c" />
+    <ClCompile Include="$(TobandSourceRoot)\melee1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\melee2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\monster1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\monster2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\mspells1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\mspells2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\mutation.c" />
+    <ClCompile Include="$(TobandSourceRoot)\obj_kind.c" />
+    <ClCompile Include="$(TobandSourceRoot)\object1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\object2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\party.c" />
+    <ClCompile Include="$(TobandSourceRoot)\racial.c" />
+    <ClCompile Include="$(TobandSourceRoot)\random-unique.c" />
+    <ClCompile Include="$(TobandSourceRoot)\rooms.c" />
+    <ClCompile Include="$(TobandSourceRoot)\save.c" />
+    <ClCompile Include="$(TobandSourceRoot)\scores.c" />
+    <ClCompile Include="$(TobandSourceRoot)\spells1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\spells2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\spells3.c" />
+    <ClCompile Include="$(TobandSourceRoot)\streams.c" />
+    <ClCompile Include="$(TobandSourceRoot)\tables.c" />
+    <ClCompile Include="$(TobandSourceRoot)\variable.c" />
+    <ClCompile Include="$(TobandSourceRoot)\wild.c" />
+    <ClCompile Include="$(TobandSourceRoot)\wizard1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\wizard2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\xtra1.c" />
+    <ClCompile Include="$(TobandSourceRoot)\xtra2.c" />
+    <ClCompile Include="$(TobandSourceRoot)\z-form.c" />
+    <ClCompile Include="$(TobandSourceRoot)\z-rand.c" />
+    <ClCompile Include="$(TobandSourceRoot)\z-term.c" />
+    <ClCompile Include="$(TobandSourceRoot)\z-util.c" />
+    <ClCompile Include="$(TobandSourceRoot)\z-virt.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_report_stub.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_native_store.c" />
+    <!-- util.c・birth.c は単独では組まない。アダプタの tb_native_util.c・tb_native_birth.c が取り込む（文字入力の旗。tb_native_store.c と同じ作り）。 -->
+    <ClCompile Include="..\..\toband\adapter\tb_native_util.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_native_birth.c" />
+  </ItemGroup>
+  <!--
+    アダプタ（新規コード。設計 §3）。C の皮と C++ の芯。
+
+    ## `/source-charset:utf-8` が C++ 側にだけ付いている理由（P2）
+    共用 TU（`presentation/`）とそのヘッダは **UTF-8 だが BOM が無い**。
+    BOM が無いファイルは MSVC が ACP（932）として読むので、日本語コメントが
+    化けるだけでなく、**先行バイトが直後の `*/` を食ってコメントが閉じない**
+    ことがある。だから「presentation のヘッダを include する TU」にだけ
+    `/source-charset:utf-8` を付ける。
+
+    `/execution-charset` は**付けない**（設計 §3.1）。実行時は ACP のままなので、
+    - C の TU（`tb_*.c`）の日本語リテラル → CP932 ＝ コアの内部コードと同じ
+    - C++ の TU の日本語リテラル → CP932 なので、**線に乗せる前に
+      `tb::sjis_to_utf8()` を通す**（プロトコルは UTF-8）
+    という分担になる。`toband/src` の写し（SJIS・BOM 無し）には何も付けない。
+  -->
+  <ItemGroup>
+    <ClCompile Include="..\..\toband\adapter\tb_bootstrap.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_audio.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_null_term.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_shim.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_sub_terms.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_win_stubs.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_text.cpp" />
+    <ClCompile Include="..\..\toband\adapter\tb_frame.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_manifest.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_pad_commands.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_sub_panels.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_menu.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_birth_stats.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_window_extras.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_crash.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_main.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\toband\adapter\tb_lang.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <!--
+    変愚と**同一ファイル**の共用 TU（設計 §1 制約 3・§8 P2）。
+    ここは 1 バイトも改変しない。`frame_codec` はプロトコル v1 の frame を、
+    `protocol_messages` は制御メッセージを、`protocol_transport` は長さ枠を、
+    `input_event_adapter` は抽象入力（v1 §8.3）をキーバイト列へ展開する。
+    どれも `frame/` のヘッダと nlohmann しか見ないので、コアに依らない。
+  -->
+  <ItemGroup>
+    <!--
+      Windows API の代役をまとめた層（`platform/portable/legacy_os.cpp`）。
+      **Windows でもここを通す**——中身は各アダプタに在ったものの写しで、
+      平台の分岐をあの 1 ファイルへ閉じ込めるためだけに切り出した
+。BOM 無しの UTF-8 なので上と同じ扱い。
+      `cp932.cpp` は**足さない**: あれは Windows 以外の変換の実体で、
+      こちらは `MultiByteToWideChar` を使うため 1 行も要らない。
+    -->
+    <ClCompile Include="..\..\platform\portable\legacy_os.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClInclude Include="..\..\platform\portable\legacy_os.h" />
+    <ClInclude Include="..\..\platform\portable\legacy_os_c.h" />
+    <ClCompile Include="..\..\presentation\bridge\native_targeting_runtime.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\frame_codec.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_messages.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\frame\protocol_transport.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\input_event_adapter.cpp">
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(TobandSourceRoot)\angband.h" />
+    <ClInclude Include="$(TobandSourceRoot)\defines.h" />
+    <ClInclude Include="$(TobandSourceRoot)\elementtips.h" />
+    <ClInclude Include="$(TobandSourceRoot)\externs.h" />
+    <ClInclude Include="$(TobandSourceRoot)\generate.h" />
+    <ClInclude Include="$(TobandSourceRoot)\grid.h" />
+    <ClInclude Include="$(TobandSourceRoot)\gunnertips.h" />
+    <ClInclude Include="$(TobandSourceRoot)\h-basic.h" />
+    <ClInclude Include="$(TobandSourceRoot)\h-config.h" />
+    <ClInclude Include="$(TobandSourceRoot)\h-define.h" />
+    <ClInclude Include="$(TobandSourceRoot)\h-system.h" />
+    <ClInclude Include="$(TobandSourceRoot)\h-type.h" />
+    <ClInclude Include="$(TobandSourceRoot)\init.h" />
+    <ClInclude Include="$(TobandSourceRoot)\party-effects.h" />
+    <ClInclude Include="$(TobandSourceRoot)\party-fields.h" />
+    <ClInclude Include="$(TobandSourceRoot)\party.h" />
+    <ClInclude Include="$(TobandSourceRoot)\random-unique-data.h" />
+    <ClInclude Include="$(TobandSourceRoot)\random-unique-fields.h" />
+    <ClInclude Include="$(TobandSourceRoot)\random-unique-symbols.h" />
+    <ClInclude Include="$(TobandSourceRoot)\rooms.h" />
+    <ClInclude Include="$(TobandSourceRoot)\streams.h" />
+    <ClInclude Include="$(TobandSourceRoot)\types.h" />
+    <ClInclude Include="$(TobandSourceRoot)\z-config.h" />
+    <ClInclude Include="$(TobandSourceRoot)\z-form.h" />
+    <ClInclude Include="$(TobandSourceRoot)\z-rand.h" />
+    <ClInclude Include="$(TobandSourceRoot)\z-term.h" />
+    <ClInclude Include="$(TobandSourceRoot)\z-util.h" />
+    <ClInclude Include="$(TobandSourceRoot)\z-virt.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_shim.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_text.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_lang.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_lang_c.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_frame.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_manifest.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_pad_commands.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_sub_panels.h" />
+    <ClInclude Include="..\..\toband\adapter\tb_menu.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

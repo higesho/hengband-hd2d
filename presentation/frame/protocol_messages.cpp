@@ -179,6 +179,14 @@ std::string encode_hello_ack(const HelloAckMessage &message)
         }
         out["asset_roots"] = std::move(roots);
     }
+    // 設計 §6.2（TOband だけが申告する。0 = 申告なし → キーごと出ない）。
+    if (message.default_view_turn != 0) {
+        out["default_view_turn"] = message.default_view_turn;
+    }
+    // 設計 §6.3（地面の凹凸。0 = 申告なし → キーごと出ない）。
+    if (message.ground_relief != 0) {
+        out["ground_relief"] = message.ground_relief;
+    }
     return dump_wire(out);
 }
 
@@ -228,6 +236,16 @@ bool decode_hello_ack(const std::string &json_text, HelloAckMessage &out, std::s
     if ((roots != parsed.end()) && roots->is_object()) {
         take_string(*roots, "graf", work.asset_root_graf);
         take_string(*roots, "slab", work.asset_root_slab);
+    }
+    take_int(parsed, "default_view_turn", work.default_view_turn);
+    // 0〜7 の外は申告なし（0）に戻す。
+    if ((work.default_view_turn < 0) || (work.default_view_turn > 7)) {
+        work.default_view_turn = 0;
+    }
+    take_int(parsed, "ground_relief", work.ground_relief);
+    // 0〜6 の外は申告なし（0）に戻す。
+    if ((work.ground_relief < 0) || (work.ground_relief > 6)) {
+        work.ground_relief = 0;
     }
     out = std::move(work);
     return true;

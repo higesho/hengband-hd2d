@@ -69,6 +69,21 @@ struct HelloAckMessage {
      * ui 側（`SlabLibrary`）は［申告された置き場 → 既定の置き場］の 2 段で探す。
      */
     std::string asset_root_slab;
+    /*!
+     * @brief 既定の視点の向き（`camera_turn`。0〜7。45 度刻み）。
+     * @details で足したキー（**追加だけ**なので v1 の互換規則内。版は上げない）。
+     * 0 = 申告なし（キーごと省略される）。送らない古いコアは 0 のままで、見え方は 1 ビットも変わらない。
+     * 画面側は起動時の `camera_turn` をこの値で始める（`--turn=` を指定したときはそちらが勝つ。
+     * 回転は cfg に保存しない）。範囲外の値は decode が 0 に戻す。
+     */
+    int default_view_turn{ 0 };
+    /*!
+     * @brief 地面の凹凸の最大の高さ（ボクセル。0〜6。1 ボクセル＝1/32 マス）。
+     * @details で足したキー（**追加だけ**。版は上げない）。0 = 申告なし（キーごと省略）。
+     * 画面は床のマスごとに 0〜この値を引いて地面と実体を持ち上げる（`hd2d/world/terrain_view.h` の
+     * `set_ground_relief_voxels`）。ゲームの上では平面のまま。範囲外の値は decode が 0 に戻す。
+     */
+    int ground_relief{ 0 };
 };
 
 //! core → ui（v1 §4.2）。送信後にプロセスを終える。

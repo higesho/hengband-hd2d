@@ -15,6 +15,7 @@ if(HENGBAND_BUILD_CORES)
         "${HB_TARGET_ORIGINAL_ROOT}/tangband/src/*.cpp" "${HB_TARGET_ORIGINAL_ROOT}/tangband/src/*.h"
         "${HB_TARGET_ORIGINAL_ROOT}/frox/src/*.c" "${HB_TARGET_ORIGINAL_ROOT}/frox/src/*.h"
         "${HB_TARGET_ORIGINAL_ROOT}/gensoband/src/*.c" "${HB_TARGET_ORIGINAL_ROOT}/gensoband/src/*.h"
+        "${HB_TARGET_ORIGINAL_ROOT}/toband/src/*.c" "${HB_TARGET_ORIGINAL_ROOT}/toband/src/*.h"
         "${HB_TARGET_ORIGINAL_ROOT}/silq/src/*.c" "${HB_TARGET_ORIGINAL_ROOT}/silq/src/*.h"
         "${HB_TARGET_ORIGINAL_ROOT}/umoria/patched-src/*.cpp" "${HB_TARGET_ORIGINAL_ROOT}/umoria/patched-src/*.h"
         "${HB_TARGET_ORIGINAL_ROOT}/rogue36/patched-src/*.c" "${HB_TARGET_ORIGINAL_ROOT}/rogue36/patched-src/*.h"

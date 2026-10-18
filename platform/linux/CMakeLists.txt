@@ -148,7 +148,14 @@ endif()
 
 # Converted copies belong to this build; the verified original input stays untouched.
 set(HB_SJIS "${CMAKE_BINARY_DIR}/legacy-src")
-foreach(spec "gensoband/src|cp932|${HB_CORE_SOURCE_ROOT}/gensoband/src" "gensoband/adapter|utf8|${HB_ROOT}/gensoband/adapter" "silq/adapter|utf8|${HB_ROOT}/silq/adapter" "frox/adapter|utf8|${HB_ROOT}/frox/adapter")
+# TOband is read from the targeting overlay once tools/targeting handles it; until then
+# the overlay has no toband/, so the verified original tree is used directly (no edits either way).
+if(EXISTS "${HB_CORE_SOURCE_ROOT}/toband/src")
+    set(HB_TOBAND_SOURCE "${HB_CORE_SOURCE_ROOT}/toband/src")
+else()
+    set(HB_TOBAND_SOURCE "${HB_TARGET_ORIGINAL_ROOT}/toband/src")
+endif()
+foreach(spec "gensoband/src|cp932|${HB_CORE_SOURCE_ROOT}/gensoband/src" "gensoband/adapter|utf8|${HB_ROOT}/gensoband/adapter" "toband/src|cp932|${HB_TOBAND_SOURCE}" "toband/adapter|utf8|${HB_ROOT}/toband/adapter" "silq/adapter|utf8|${HB_ROOT}/silq/adapter" "frox/adapter|utf8|${HB_ROOT}/frox/adapter")
     string(REPLACE "|" ";" parts "${spec}")
     list(GET parts 0 dest)
     list(GET parts 1 encoding)
@@ -177,6 +184,28 @@ file(GLOB GB_ADAPTER CONFIGURE_DEPENDS "${HB_SJIS}/gensoband/adapter/*.c" "${HB_
 add_executable(GensobandCore ${GB} ${GB_ADAPTER} ${HB_LEGACY_SHARED})
 hb_legacy(GensobandCore "${HB_SJIS}/gensoband/src" "${HB_SJIS}/gensoband/adapter")
 target_compile_definitions(GensobandCore PRIVATE JP SJIS)
+# TOband (`TobandCore`,  section 3.3). The CP932 copy of the original is
+# converted like gensoband's. The original is never edited; everything below is build settings.
+hb_legacy_sources(TB "${HB_SJIS}/toband/src")
+# report.c sends the score to the fork author's server (constraint 5); tb_report_stub.c replaces it.
+list(FILTER TB EXCLUDE REGEX "/report\\.c$")
+# store.c is not built alone: tb_native_store.c includes it (same as gb_native_store.c above).
+list(FILTER TB EXCLUDE REGEX "/store\\.c$")
+# util.c and birth.c are not built alone either: tb_native_util.c and tb_native_birth.c include them
+# (they raise the text-input flag for the new UI; the original is not edited).
+list(FILTER TB EXCLUDE REGEX "/util\\.c$")
+list(FILTER TB EXCLUDE REGEX "/birth\\.c$")
+file(GLOB TB_ADAPTER CONFIGURE_DEPENDS "${HB_SJIS}/toband/adapter/*.c" "${HB_SJIS}/toband/adapter/*.cpp")
+# The original's own warnings are silenced; the adapter's are kept (design section 3: no silencing there).
+set_source_files_properties(${TB} PROPERTIES COMPILE_OPTIONS "-w")
+add_executable(TobandCore ${TB} ${TB_ADAPTER} ${HB_LEGACY_SHARED})
+hb_legacy(TobandCore "${HB_SJIS}/toband/src" "${HB_SJIS}/toband/adapter")
+# L64: the original's h-type.h sets it only on Alpha, so on LP64 u32b would become 64 bits.
+# Gensoband avoids this with stdint types; TOband gets the same result from the definition.
+target_compile_definitions(TobandCore PRIVATE JP SJIS L64)
+# bldg.c calls party.h functions without including party.h (design section 3.3; same as the
+# ForcedIncludeFiles of TobandCore.vcxproj).
+set_source_files_properties("${HB_SJIS}/toband/src/bldg.c" PROPERTIES COMPILE_OPTIONS "-w;-include;angband.h;-include;party.h")
 hb_legacy_sources(SQ "${HB_CORE_SOURCE_ROOT}/silq/src")
 list(FILTER SQ EXCLUDE REGEX "/cmd3\\.c$")
 file(GLOB SQ_ADAPTER CONFIGURE_DEPENDS "${HB_SJIS}/silq/adapter/*.c" "${HB_SJIS}/silq/adapter/*.cpp")
@@ -226,6 +255,7 @@ set(HB_ANGBAND_ADAPTER_C
     "${HB_ROOT}/angband/adapter/an_town_map.c"
     "${HB_ROOT}/angband/adapter/an_profile.c"
     "${HB_ROOT}/angband/adapter/an_fx.c"
+    "${HB_ROOT}/angband/adapter/an_test_monster_act.c"
     "${HB_ROOT}/angband/adapter/an_wide.c"
     "${HB_ROOT}/angband/adapter/an_name_ja.c"
     "${HB_ROOT}/angband/adapter/an_lore_ja.c")

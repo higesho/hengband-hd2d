@@ -210,6 +210,8 @@ const char *an_core_version(void); /*!< "4.2.6" */
 
 /*! `inkey_flag` が真かつ `screen_save_depth == 0`（設計 §6.2）。 */
 int an_awaiting_command(void);
+/*! 検査用：敵の行動の指定。環境変数 HD2D_TEST_MONSTER_ACT が無ければ何もしない（an_fx.c の註釈）。 */
+void an_test_monster_act_poll(void);
 /*! AH-23 の検査専用（`an_main.cpp` の実体を参照）。通常運用では誰も呼ばない。 */
 unsigned long long an_debug_current_frame_id(void);
 /*! `screen_save_depth > 0` または `character_generated` が偽（設計 §6.2）。 */

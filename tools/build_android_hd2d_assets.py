@@ -198,6 +198,13 @@ LEGACY_TREES = (
     "frox/lib-ja",               # 作成した日本語 edit（M1 J3。生成物）
     "frox/lang/ja",              # 訳文カタログ（fc_lang が実行時に読む）
     "frox/assets/slab",          # 実体の板 473 枚（fc_main の asset_roots.slab）
+    # --- TOband（の M3）
+    # コアが実行時に読むのは toband/lib・toband/assets/slab（asset_roots.slab）・
+    # toband/tilework/mapping.csv の 3 つだけ（tb_main.cpp・tb_manifest.cpp）。
+    # tilework/64・ascii・terrain_* の画像は読まないので入れない。
+    # 使用許諾の文書（lib/help/jlicense.txt・lib/file/nethack-license.txt）は lib に入っている。
+    "toband/lib",
+    "toband/assets/slab",
 )
 
 #: 木の外にある 1 枚もの。目録そのものなので、これが無いと絵が 1 枚も出ない。
@@ -206,6 +213,7 @@ LEGACY_FILES = (
     "silq/tilework/terrain_map.csv",
     "frox/tilework/terrain_map.csv",
     "frox/tilework/mapping.csv",
+    "toband/tilework/mapping.csv",
     "rogue2/mesg",
 )
 
@@ -349,8 +357,8 @@ def main() -> int:
     extract_entries.append((tile_mapping_dst.relative_to(OUT).as_posix(), tile_mapping_dst.stat().st_size))
 
     # ---- タイル画像は配布しない。以前の生成物が残っていても素材束から除く。
-    for relative in ("tilework/sfc","gensoband/tilework/64","gensoband/tilework/ascii","silq/tilework/128","frox/tilework/64",
-                     "lib/xtra/graf","gensoband/lib/xtra/graf","silq/lib/xtra/graf","frox/lib/xtra/graf"):
+    for relative in ("tilework/sfc","gensoband/tilework/64","gensoband/tilework/ascii","silq/tilework/128","frox/tilework/64","toband/tilework/64","toband/tilework/ascii",
+                     "lib/xtra/graf","gensoband/lib/xtra/graf","silq/lib/xtra/graf","frox/lib/xtra/graf","toband/lib/xtra/graf"):
         stale=OUT/relative
         if stale.exists():shutil.rmtree(stale)
 
@@ -410,7 +418,7 @@ def main() -> int:
 
     # ---- 旧 C の 3 コア（幻想蛮怒・Sil-Q・Frox）のデータ（そのまま写して、展開する）
     legacy_files = collect_legacy_files()
-    log(f"幻想蛮怒 / Sil-Q / Frox から {len(legacy_files)} ファイル")
+    log(f"幻想蛮怒 / Sil-Q / Frox / TOband から {len(legacy_files)} ファイル")
     for dst in legacy_files:
         rel = dst.relative_to(OUT)
         extract_entries.append((rel.as_posix(), dst.stat().st_size))
@@ -501,6 +509,18 @@ def main() -> int:
     if not args.without_rogue_licenses:
         rogue_license_files = copy_rogue_legacy_licenses()
         log(f"Rogue 3.6 / 5.4 license files: {len(rogue_license_files)}")
+    # GPL v2 の全文（Angband を GPL v2 で配る）・Angband の使用許諾・同梱する SDL 系と FreeType の原文・
+    # RogueClone2 の原作の資料（配布条件 (2)）。Windows・Linux の配布物と同じ作り方（tools/package/license_docs.py）。
+    sys.path.insert(0, str(Path(__file__).resolve().parent / "package"))
+    import license_docs
+    licenses_out = OUT / "assets" / "licenses"
+    android_docs = license_docs.copy_gpl(licenses_out)
+    android_docs += license_docs.copy_windows_runtime(
+        licenses_out, ["SDL2", "SDL2_image", "SDL2_ttf", "freetype"], subdir="third-party")
+    copy_if_changed(REPO / "angband" / "LICENSE.md", licenses_out / "Angband-LICENSE.md")
+    if not args.without_rogue_licenses:
+        android_docs += license_docs.copy_rogue2_docs(licenses_out)
+    log(f"license documents: {len(android_docs) + 1}")
 
     # 同梱コンパイラーのヘッダー・パッチ・接続 SDK。実行ファイルは jniLibs へ別途配置する。
     import_kit = REPO / "android/core-import-kit"

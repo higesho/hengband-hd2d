@@ -718,6 +718,114 @@ void apply_terrain_model_replacements(TerrainView &out,const TerrainMemory *memo
     apply_global_terrain_models(out,memory,library,models);
 }
 
+namespace {
+
+//! コアが申告した地面の凹凸の最大の高さ（ボクセル）。0 = 凹凸なし（ほかのコアはずっと 0）。
+int g_ground_relief_voxels = 0;
+//! 申告の上限。TOband の地面の板の厚み 8 ボクセルより小さく（持ち上げても下にすき間が空かない）。
+constexpr int kMaxGroundRelief = 6;
+
+/*!
+ * @brief マスごとの地面の凹凸（TOband の要件 6「地面はマスごとに多少の凹凸。ゲームとしては平面」）。
+ *
+ * @details 部屋と通路の床のマス（壁・扉・階段・水と溶岩は除く）ごとに、マスの種から
+ * 0〜最大のボクセル数を引き、**そのマスに根元のあるもの**（地面の板・小物・木。z が低いもの）を
+ * 同じだけ持ち上げる。TOband の地面の板は厚み 8 ボクセルで最大 6 なので、隣の低いマスとの間に隙間は空かない
+ * （前は町の道の板が厚み 2 で、3 持ち上げると下に背景が見えた。2026-10-17）。
+ * 建物・壁のマスは動かさない（マスごとに上げると建物の根元ががたつく）。
+ */
+void apply_ground_relief(const FloorMeaning &meaning, const TerrainMemory *memory, const PrefabLibrary *library,
+    TerrainView &out)
+{
+    const int relief = ground_relief_voxels();
+    if ((relief <= 0) || (meaning.width <= 0) || (meaning.height <= 0)) {
+        return;
+    }
+    constexpr float kVoxel = 1.f / 32.f;
+    const auto w = static_cast<std::size_t>(meaning.width);
+    out.ground_lift.assign(w * static_cast<std::size_t>(meaning.height), 0.f);
+    for (int gy = 0; gy < meaning.height; ++gy) {
+        for (int gx = 0; gx < meaning.width; ++gx) {
+            const auto at = (static_cast<std::size_t>(gy) * w) + static_cast<std::size_t>(gx);
+            const auto role = static_cast<CellRole>(meaning.roles[at]);
+            if ((role != CellRole::RoomFloor) && (role != CellRole::CorridorFloor)) {
+                continue;
+            }
+            if (liquid_kind(memory, gx, gy) >= 0) {
+                continue; //!< 水面と溶岩は平らなまま（段のある水面は不自然）
+            }
+            const std::uint64_t h = mix64(cell_seed(gx, gy, meaning.identity) ^ 0x72656c696566ull);
+            out.ground_lift[at] = static_cast<float>(h % static_cast<std::uint64_t>(relief + 1)) * kVoxel;
+        }
+    }
+    //! 根元がそのマスにある低いもの（地面・小物・木の根元）だけ持ち上げる。建物の高い部品は動かさない。
+    constexpr float kRootZ = 0.15f;
+    /*
+     * 持ち上げたマスの下に**土の色の台**を敷く。地面の板には薄いもの（変愚の草地の板など。厚み 1〜2 ボクセル）が
+     * 混じっていて、持ち上げると板の下に背景が見えた（2026-10-17）。台は板の側面より 0.002 マス内側に置くので、
+     * 厚い板の側面があればそちらが手前に出て、台は見えない。
+     */
+    std::vector<InstanceData> skirts;
+    for (int gy = 0; gy < meaning.height; ++gy) {
+        for (int gx = 0; gx < meaning.width; ++gx) {
+            const float lift = out.ground_lift[(static_cast<std::size_t>(gy) * w) + static_cast<std::size_t>(gx)];
+            if (lift <= 0.f) {
+                continue;
+            }
+            InstanceData skirt;
+            skirt.x = static_cast<float>(gx) + 0.002f;
+            skirt.y = static_cast<float>(gy) + 0.002f;
+            skirt.z = -0.02f;
+            skirt.sx = 0.996f;
+            skirt.sy = 0.996f;
+            skirt.sz = lift + 0.01f;
+            skirt.r = 0.36f;
+            skirt.g = 0.31f;
+            skirt.b = 0.23f;
+            skirts.push_back(skirt);
+        }
+    }
+    const auto lift_of = [&out](float x, float y) {
+        return out.ground_lift_at(static_cast<int>(std::floor(x)), static_cast<int>(std::floor(y)));
+    };
+    for (auto &slab : out.slabs) {
+        slab.z += lift_of(slab.x + 0.5f, slab.y + 0.5f);
+    }
+    for (auto &box : out.boxes) {
+        if (box.z <= kRootZ) {
+            box.z += lift_of(box.x + (box.sx * 0.5f), box.y + (box.sy * 0.5f));
+        }
+    }
+    if (library != nullptr) {
+        for (std::size_t i = 0; i < out.lib.size(); ++i) {
+            const LibraryEntry &entry = library->entry(static_cast<int>(i));
+            for (auto &inst : out.lib[i]) {
+                if (inst.z <= kRootZ) {
+                    inst.z += lift_of(inst.x + entry.anchor_x + 0.01f, inst.y + entry.anchor_y + 0.01f);
+                }
+            }
+        }
+    }
+    out.boxes.insert(out.boxes.end(), skirts.begin(), skirts.end()); //!< 台は持ち上げない（上の走査の後に足す）
+}
+
+} // namespace
+
+void set_ground_relief_voxels(int voxels)
+{
+    g_ground_relief_voxels = std::clamp(voxels, 0, kMaxGroundRelief);
+}
+
+int ground_relief_voxels()
+{
+    //! 見比べ用の上書き（`HD2D_GROUND_RELIEF=0..6`）。無ければコアの申告。
+    static const int forced = []() {
+        const char *v = std::getenv("HD2D_GROUND_RELIEF");
+        return ((v != nullptr) && (*v != '\0')) ? std::clamp(std::atoi(v), 0, kMaxGroundRelief) : -1;
+    }();
+    return (forced >= 0) ? forced : g_ground_relief_voxels;
+}
+
 void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, TerrainView &out,
     const TerrainMemory *memory, const PrefabLibrary *library, const TownPlan *town, float night, float wall_inset,
     bool black_unknown, PropLatch *latch, bool fps_wall_upper, bool fps_ceiling, bool blocks_only,
@@ -756,6 +864,7 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
     //! 視線の遮り（P10 レビュー 4）。フロア全域ぶん確保して 0 で埋め直す。
     out.occluder_w = meaning.width;
     out.occluder_h = meaning.height;
+    out.ground_lift.clear(); //!< 地面の凹凸（申告があるときだけ最後に埋める。`apply_ground_relief`）
     out.occluder_z.assign(
         static_cast<std::size_t>(std::max(0, meaning.width)) * static_cast<std::size_t>(std::max(0, meaning.height)),
         0.f);
@@ -1482,10 +1591,27 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
          */
         townset.entrance = styled("house_entrance");
         townset.ground = styled("yard_ground");
-        townset.well = library->find("well");
-        townset.cart = library->find("cart");
-        townset.flowerbed = library->find("flowerbed");
-        townset.haystack = library->find("haystack");
+        /*
+         * 全町に散らす共通の小物。**町の接尾辞つきの `town_<名前>` があればそれ**、無ければ基の名前
+         * （2026-10-17。TOband の町は絵を流用しない決まりなので、`tools/toband/gen_to_town.py` が
+         * `town_well_tob` などを作る）。`styled("well")` にしないのは、`well_ang`・`cart_out` のように
+         * 町ごとの小物の表のために作った同名の素材が既にあり、それを拾うと他のコアの町が変わるため。
+         * `town_well_*`・`town_cart_*`・`town_flowerbed_*`・`town_haystack_*` は TOband のものしか無いので、
+         * 他のコアは 1 ボクセルも動かない。
+         */
+        const auto common_prop = [library, &style](const char *stem) {
+            if (style.suffix[0] != '\0') {
+                const int index = library->find(std::string("town_") + stem + style.suffix);
+                if (index >= 0) {
+                    return index;
+                }
+            }
+            return library->find(stem);
+        };
+        townset.well = common_prop("well");
+        townset.cart = common_prop("cart");
+        townset.flowerbed = common_prop("flowerbed");
+        townset.haystack = common_prop("haystack");
         townset.tower = styled("watchtower");
         /*
          * 門（2026-08-17。こう決めた——「門と看板を意匠から外す規則は変愚だけの話。
@@ -6410,6 +6536,9 @@ void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, Ter
     }
     if(!blocks_only) apply_terrain_model_replacements(out,memory,library,models);
     vary_terrain_models(out,meaning.identity);
+    if (!blocks_only) {
+        apply_ground_relief(meaning, memory, use_lib ? library : nullptr, out);
+    }
 }
 
 namespace {

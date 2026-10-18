@@ -3030,3 +3030,847 @@ int gb_status_selftest(char *err, int cap, int *checked)
 #undef GB_ST_FAIL
     return fails;
 }
+
+/* ============================================================ 検査用：敵の行動を指定する入口 */
+
+/*
+ * ## これは何か
+ *
+ * 攻撃の効果（ブレス・ボルト・ボール・直接攻撃）の検査は、敵が魔法を撃つまで休んで待つので長くかかり、
+ * くじ運で結果も揺れる。そこで、**検査のときだけ効く**入口を足す。環境変数 `HD2D_TEST_MONSTER_ACT` に
+ * 命令ファイルのパスが入っているときだけ働き、無ければ何もしない（普段の遊び・配布物には効かない）。
+ *
+ * コアが**プレイヤーの次のキーを読むとき**（命令待ち。`gb_awaiting_command()` が真）に、その
+ * ファイルがあれば読み、**先にファイルを消して**（消せなければ名前を `.done` へ変える。どちらもできなければ
+ * 実行しない）から、命令を**上から順に、1 回の命令待ちの中で全部**実行する（その間ゲームの時間は進めない）。
+ * 結果は 1 行ずつ標準エラーへ出す:
+ *
+ *   [test-monster-act] ok <命令の全文>
+ *   [test-monster-act] fail <理由>
+ *   [test-monster-act] skip <命令の全文>    ... 手前の行が fail したので実行しなかった行
+ *   [test-monster-act] info <補足>
+ *
+ * 途中で fail したら、残りの行は実行せず、行ごとに skip を出す。空行と `#` で始まる行は読み飛ばす（何も出さない）。
+ * 命令ファイルは**別の名前で書いてから改名して**置くこと（書きかけを読まない）。空のファイルは読まない。
+ * 大きさは 16 KB まで。
+ *
+ * ## 命令（1 行 1 命令。空白区切り。`nearest` は見えているいちばん近い敵対の敵）
+ *
+ *   cast <魔法の名前> [nearest|<m_idx>]  指定の敵（省略時は nearest）に、その魔法をプレイヤーへ向けていま撃たせる
+ *   melee [nearest|<m_idx>]               指定の敵に、いまプレイヤーへ直接攻撃させる（隣にいるときだけ）
+ *   place <nearest|<m_idx>> <dx> <dy>     指定の敵を、プレイヤーの位置から (dx, dy) ずれたマスへ動かす（時間は使わない）。
+ *                                         マスが地図の外・敵が入れない地形・ほかの敵やプレイヤーがいる・乗っている馬は fail。
+ *                                         動かしたあとの見え方・距離・光の更新は、原作が敵を動かすときと同じ関数で行う（`gbt_place()`）。
+ *                                         `info place m_idx=… r_idx=… from=x,y to=x,y player=x,y turn=…` を出す（nearest が誰だったかが分かる）
+ *   hold <nearest|<m_idx>|all> on|off     on の間、その敵は自分の番に行動しない（動かない・魔法を撃たない・殴らない）。
+ *                                         入口から命じた cast・melee・place は働く。off で元に戻す。実装は下の「hold」の節
+ *                                         `info hold … state=on|off saved=<止める前の energy_need> now=<直近の置き直しの直前に見えていた値>
+ *                                         turn=<ゲームターン> pos=x,y player=x,y` を出す。止めている敵に `hold <id> on` をもう一度命じると、
+ *                                         状態を読むだけ（止めた時点の値は変わらない）
+ *
+ * 魔法の名前は原作の旗の名前から `RF4_`・`RF5_`・`RF6_`・`RF9_` を外したもの（`BR_FIRE`・`BO_COLD`・`MISSILE` など）。
+ * 大文字小文字は区別しない。知らない名前は fail。
+ *
+ * ## どうやって必ず撃たせるか（原作 `mspells1.c` の `make_attack_spell()` は書き換えない）
+ *
+ * 原作は `make_attack_spell()` の中で、種族（`r_info`）の魔法の旗からくじ引きで 1 つ選ぶ。そこで呼ぶ直前に
+ * その種族の次の 4 つだけを一時的に変え、**呼んだらすぐ元の値へ戻す**（`gbt_race_restore()`。戻したあと読み直して
+ * 照合し、食い違えば fail にする）。乱数と乱数の種には触れない。
+ *
+ *   1. `flags4`・`flags5`・`flags6`・`flags9`  … 指定の 1 つだけを立てる（ほかは 0）
+ *   2. `freq_spell`                            … 100（`no_inate` を立てるくじ `randint0(100) >= freq_spell * 2` を必ず外す）
+ *   3. `flags2` の `RF2_STUPID`                … 立てる。原作の STUPID の扱いは「選ぶとき無作為（＝旗が 1 つなら必ずそれ）」
+ *      「失敗率 0」「学習による除外（`remove_bad_spells`）をしない」「味方に当たるボルトの除外・召喚の除外をしない」
+ *      「魔法を封じる状態でも撃つ」。くじ運に左右される分岐をまとめて外すためのもの
+ *   4. `m_ptr->mflag` の `MFLAG_NICE`          … 下ろす（出たばかりの敵は、プレイヤーが 1 歩動くまで魔法を撃たない旗）。
+ *      呼んだあと、元から立っていたなら立て直す
+ *
+ * 命令待ちの中（`inkey()` の待ちの途中）から呼ぶので、原作の「モンスターの番」と同じ状態になるよう整える:
+ *   * `inkey_flag` を偽にして呼ぶ（モンスターの番では偽。真のままだと、途中の `-続く-` を待つフレームが
+ *     「命令待ち」として送られ、矢弾の記録が早く確定する）。**呼んだあと元の値へ戻す**。入れ子の `inkey()` は
+ *     終わりに `inkey_base`・`inkey_xtra`・`inkey_flag`・`inkey_scan` を全部偽にするので、4 つとも保存して戻す
+ *   * 呼んだあと `notice_stuff()`・`handle_stuff()`（体力などの再描画）と `Term_fresh()`（フレームを送る）
+ *   * プレイヤーが死んだ・階を離れる（`is_dead`・`leaving`）ときは、待っているコアを起こすために
+ *     ESC を 1 つ返す（原作はこの場合、プレイヤーの番の終わりでループを抜ける）
+ *
+ * ## 呼ぶ前に調べて fail にするもの（くじ運に左右されず、魔法が出ない／失敗する状態）
+ *   * 敵が狂戦士（`MON_BERSERK`）・混乱・敵対でない（ペット・友好）・プレイヤーに射線が通らない・射程（`MAX_RANGE`）の外
+ *   * `ARIYA_STOP`（有耶「時の止まった」の状態）
+ *   * 魔法（`spell_is_inate()` が偽のもの）で、反魔法の洞窟・黙らせる床・`MFLAG_NO_SPELL`・朦朧・恐怖・魔法力低下・
+ *     SUPER_SHION・女苑のプラックピジョン（失敗率を足す状態）のとき。呼ぶと「呪文を唱えようとしたが失敗した」になりうる
+ *
+ * 職業ごとの打ち消し（ヘックスの反魔法バリア・メルランのハッピーライブ・魔理沙の吸収・送還術 ほか）は調べない。
+ * 検査のキャラクターが該当する職業のときは、撃たない（`ok` なのに効果が出ない）ことがある。
+ */
+
+#define GBT_SLOT_4 3 /* RF4 = spell 番号 96〜 */
+#define GBT_SLOT_5 4 /* RF5 = 128〜 */
+#define GBT_SLOT_6 5 /* RF6 = 160〜 */
+#define GBT_SLOT_9 6 /* RF9 = 192〜 */
+#define GBT_SPELL(w, n) { #n, GBT_SLOT_##w, RF##w##_##n }
+
+typedef struct {
+    const char *name;
+    int slot;
+    u32b bit;
+} gbt_spell_def;
+
+static const gbt_spell_def gbt_spells[] = {
+    GBT_SPELL(4, SHRIEK),
+    GBT_SPELL(4, DANMAKU),
+    GBT_SPELL(4, DISPEL),
+    GBT_SPELL(4, ROCKET),
+    GBT_SPELL(4, SHOOT),
+    GBT_SPELL(4, BR_HOLY),
+    GBT_SPELL(4, BR_HELL),
+    GBT_SPELL(4, BR_AQUA),
+    GBT_SPELL(4, BR_ACID),
+    GBT_SPELL(4, BR_ELEC),
+    GBT_SPELL(4, BR_FIRE),
+    GBT_SPELL(4, BR_COLD),
+    GBT_SPELL(4, BR_POIS),
+    GBT_SPELL(4, BR_NETH),
+    GBT_SPELL(4, BR_LITE),
+    GBT_SPELL(4, BR_DARK),
+    GBT_SPELL(4, WAVEMOTION),
+    GBT_SPELL(4, BR_SOUN),
+    GBT_SPELL(4, BR_CHAO),
+    GBT_SPELL(4, BR_DISE),
+    GBT_SPELL(4, BR_NEXU),
+    GBT_SPELL(4, BR_TIME),
+    GBT_SPELL(4, BR_INER),
+    GBT_SPELL(4, BR_GRAV),
+    GBT_SPELL(4, BR_SHAR),
+    GBT_SPELL(4, BR_PLAS),
+    GBT_SPELL(4, BA_FORCE),
+    GBT_SPELL(4, BR_MANA),
+    GBT_SPELL(4, SPECIAL2),
+    GBT_SPELL(4, BR_NUKE),
+    GBT_SPELL(4, BA_CHAO),
+    GBT_SPELL(4, BR_DISI),
+    GBT_SPELL(5, BA_ACID),
+    GBT_SPELL(5, BA_ELEC),
+    GBT_SPELL(5, BA_FIRE),
+    GBT_SPELL(5, BA_COLD),
+    GBT_SPELL(5, BA_POIS),
+    GBT_SPELL(5, BA_NETH),
+    GBT_SPELL(5, BA_WATE),
+    GBT_SPELL(5, BA_MANA),
+    GBT_SPELL(5, BA_DARK),
+    GBT_SPELL(5, DRAIN_MANA),
+    GBT_SPELL(5, MIND_BLAST),
+    GBT_SPELL(5, BRAIN_SMASH),
+    GBT_SPELL(5, CAUSE_1),
+    GBT_SPELL(5, CAUSE_2),
+    GBT_SPELL(5, CAUSE_3),
+    GBT_SPELL(5, CAUSE_4),
+    GBT_SPELL(5, BO_ACID),
+    GBT_SPELL(5, BO_ELEC),
+    GBT_SPELL(5, BO_FIRE),
+    GBT_SPELL(5, BO_COLD),
+    GBT_SPELL(5, BA_LITE),
+    GBT_SPELL(5, BO_NETH),
+    GBT_SPELL(5, BO_WATE),
+    GBT_SPELL(5, BO_MANA),
+    GBT_SPELL(5, BO_PLAS),
+    GBT_SPELL(5, BO_ICEE),
+    GBT_SPELL(5, MISSILE),
+    GBT_SPELL(5, SCARE),
+    GBT_SPELL(5, BLIND),
+    GBT_SPELL(5, CONF),
+    GBT_SPELL(5, SLOW),
+    GBT_SPELL(5, HOLD),
+    GBT_SPELL(6, HASTE),
+    GBT_SPELL(6, HAND_DOOM),
+    GBT_SPELL(6, HEAL),
+    GBT_SPELL(6, INVULNER),
+    GBT_SPELL(6, BLINK),
+    GBT_SPELL(6, TPORT),
+    GBT_SPELL(6, WORLD),
+    GBT_SPELL(6, SPECIAL),
+    GBT_SPELL(6, TELE_TO),
+    GBT_SPELL(6, TELE_AWAY),
+    GBT_SPELL(6, TELE_LEVEL),
+    GBT_SPELL(6, PSY_SPEAR),
+    GBT_SPELL(6, DARKNESS),
+    GBT_SPELL(6, TRAPS),
+    GBT_SPELL(6, FORGET),
+    GBT_SPELL(6, COSMIC_HORROR),
+    GBT_SPELL(6, S_KIN),
+    GBT_SPELL(6, S_CYBER),
+    GBT_SPELL(6, S_MONSTER),
+    GBT_SPELL(6, S_MONSTERS),
+    GBT_SPELL(6, S_ANT),
+    GBT_SPELL(6, S_SPIDER),
+    GBT_SPELL(6, S_HOUND),
+    GBT_SPELL(6, S_HYDRA),
+    GBT_SPELL(6, S_ANGEL),
+    GBT_SPELL(6, S_DEMON),
+    GBT_SPELL(6, S_UNDEAD),
+    GBT_SPELL(6, S_DRAGON),
+    GBT_SPELL(6, S_HI_UNDEAD),
+    GBT_SPELL(6, S_HI_DRAGON),
+    GBT_SPELL(6, S_AMBERITES),
+    GBT_SPELL(6, S_UNIQUE),
+    GBT_SPELL(9, FIRE_STORM),
+    GBT_SPELL(9, ICE_STORM),
+    GBT_SPELL(9, THUNDER_STORM),
+    GBT_SPELL(9, ACID_STORM),
+    GBT_SPELL(9, TOXIC_STORM),
+    GBT_SPELL(9, BA_POLLUTE),
+    GBT_SPELL(9, BA_DISI),
+    GBT_SPELL(9, BA_HOLY),
+    GBT_SPELL(9, BA_METEOR),
+    GBT_SPELL(9, BA_DISTORTION),
+    GBT_SPELL(9, PUNISH_1),
+    GBT_SPELL(9, PUNISH_2),
+    GBT_SPELL(9, PUNISH_3),
+    GBT_SPELL(9, PUNISH_4),
+    GBT_SPELL(9, BO_HOLY),
+    GBT_SPELL(9, GIGANTIC_LASER),
+    GBT_SPELL(9, BO_SOUND),
+    GBT_SPELL(9, S_ANIMAL),
+    GBT_SPELL(9, BEAM_LITE),
+    GBT_SPELL(9, SONICWAVE),
+    GBT_SPELL(9, HELLFIRE),
+    GBT_SPELL(9, HOLYFIRE),
+    GBT_SPELL(9, FINALSPARK),
+    GBT_SPELL(9, TORNADO),
+    GBT_SPELL(9, DESTRUCTION),
+    GBT_SPELL(9, S_DEITY),
+    GBT_SPELL(9, S_HI_DEMON),
+    GBT_SPELL(9, S_KWAI),
+    GBT_SPELL(9, TELE_APPROACH),
+    GBT_SPELL(9, TELE_HI_APPROACH),
+    GBT_SPELL(9, MAELSTROM),
+    GBT_SPELL(9, ALARM),
+};
+
+/*! 触る項目をまとめて保存する入れ物（`gbt_race_restore()` で戻す）。 */
+typedef struct {
+    u32b flags2;
+    u32b flags4;
+    u32b flags5;
+    u32b flags6;
+    u32b flags9;
+    byte freq_spell;
+} gbt_race_save;
+
+static const char gbt_tag[] = "[test-monster-act]";
+static char gbt_why[160];
+
+static u32b *gbt_word(monster_race *r_ptr, int slot)
+{
+    switch (slot) {
+    case GBT_SLOT_4: return &r_ptr->flags4;
+    case GBT_SLOT_5: return &r_ptr->flags5;
+    case GBT_SLOT_6: return &r_ptr->flags6;
+    default: return &r_ptr->flags9;
+    }
+}
+
+static int gbt_stricmp(const char *a, const char *b)
+{
+    for (;; a++, b++) {
+        int ca = (unsigned char)*a;
+        int cb = (unsigned char)*b;
+
+        if ((ca >= 'a') && (ca <= 'z')) ca -= 'a' - 'A';
+        if ((cb >= 'a') && (cb <= 'z')) cb -= 'a' - 'A';
+        if (ca != cb) return ca - cb;
+        if (ca == 0) return 0;
+    }
+}
+
+static const gbt_spell_def *gbt_find_spell(const char *name)
+{
+    size_t i;
+
+    for (i = 0; i < sizeof(gbt_spells) / sizeof(gbt_spells[0]); i++) {
+        if (gbt_stricmp(gbt_spells[i].name, name) == 0) return &gbt_spells[i];
+    }
+    return NULL;
+}
+
+static void gbt_race_save_take(gbt_race_save *s, const monster_race *r_ptr)
+{
+    s->flags2 = r_ptr->flags2;
+    s->flags4 = r_ptr->flags4;
+    s->flags5 = r_ptr->flags5;
+    s->flags6 = r_ptr->flags6;
+    s->flags9 = r_ptr->flags9;
+    s->freq_spell = r_ptr->freq_spell;
+}
+
+static int gbt_race_same(const gbt_race_save *s, const monster_race *r_ptr)
+{
+    return (s->flags2 == r_ptr->flags2) && (s->flags4 == r_ptr->flags4) && (s->flags5 == r_ptr->flags5) &&
+           (s->flags6 == r_ptr->flags6) && (s->flags9 == r_ptr->flags9) && (s->freq_spell == r_ptr->freq_spell);
+}
+
+/*! 元へ戻して、読み直して照合する。照合できたら 1。 */
+static int gbt_race_restore(const gbt_race_save *s, monster_race *r_ptr)
+{
+    r_ptr->flags2 = s->flags2;
+    r_ptr->flags4 = s->flags4;
+    r_ptr->flags5 = s->flags5;
+    r_ptr->flags6 = s->flags6;
+    r_ptr->flags9 = s->flags9;
+    r_ptr->freq_spell = s->freq_spell;
+    return gbt_race_same(s, r_ptr);
+}
+
+static int gbt_fail(const char *fmt, const char *arg)
+{
+    if (arg != NULL) {
+        snprintf(gbt_why, sizeof(gbt_why), fmt, arg);
+    } else {
+        snprintf(gbt_why, sizeof(gbt_why), "%s", fmt);
+    }
+    return 0;
+}
+
+/*! 見えていて敵対している、いちばん近い敵（同じ距離なら番号が小さいほう）。無ければ 0。 */
+static int gbt_nearest_monster(void)
+{
+    int i;
+    int best = 0;
+
+    for (i = 1; i < m_max; i++) {
+        monster_type *m_ptr = &m_list[i];
+
+        if (!m_ptr->r_idx || !m_ptr->ml || !is_hostile(m_ptr)) continue;
+        if (!best || (m_ptr->cdis < m_list[best].cdis)) best = i;
+    }
+    return best;
+}
+
+/*! 対象の指定（省略・`nearest`・番号）を番号へ。解けなければ 0 を返し `gbt_why` に理由を入れる。 */
+static int gbt_resolve_target(const char *tok)
+{
+    int idx;
+    const char *p;
+
+    if ((tok == NULL) || (gbt_stricmp(tok, "nearest") == 0)) {
+        idx = gbt_nearest_monster();
+        if (!idx) (void)gbt_fail("no-visible-hostile-monster", NULL);
+        return idx;
+    }
+    for (p = tok; *p; p++) {
+        if ((*p < '0') || (*p > '9')) {
+            (void)gbt_fail("bad-target %s", tok);
+            return 0;
+        }
+    }
+    idx = atoi(tok);
+    if ((idx < 1) || (idx >= m_max) || !m_list[idx].r_idx) {
+        (void)gbt_fail("no-such-monster %s", tok);
+        return 0;
+    }
+    return idx;
+}
+
+/*! 反魔法の洞窟（`make_attack_spell()` の `in_no_magic_dungeon` と同じ式）。 */
+static int gbt_in_no_magic_dungeon(void)
+{
+    return ((d_info[dungeon_type].flags1 & DF1_NO_MAGIC) && dun_level &&
+            (!p_ptr->inside_quest || is_fixed_quest_idx(p_ptr->inside_quest)))
+               ? 1
+               : 0;
+}
+
+/*! 指定の敵に、指定の魔法を撃たせる。撃たせたら 1。 */
+static int gbt_cast(int m_idx, const gbt_spell_def *sp)
+{
+    monster_type *m_ptr = &m_list[m_idx];
+    const int r_idx = m_ptr->r_idx;
+    monster_race *r_ptr = &r_info[r_idx];
+    gbt_race_save save;
+    const u32b nice0 = m_ptr->mflag & MFLAG_NICE;
+    const bool inkey_flag0 = inkey_flag;
+    const bool inkey_base0 = inkey_base;
+    const bool inkey_xtra0 = inkey_xtra;
+    const bool inkey_scan0 = inkey_scan;
+    int spell_no = 0;
+    int k;
+    int cast;
+    int restored;
+
+    for (k = 0; k < 32; k++) {
+        if (sp->bit == (1UL << k)) spell_no = 32 * sp->slot + k;
+    }
+    if (!spell_no) return gbt_fail("bad-spell-table", NULL);
+
+    if (MON_BERSERK(m_ptr)) return gbt_fail("monster-berserk", NULL);
+    if (MON_CONFUSED(m_ptr)) return gbt_fail("monster-confused", NULL);
+    if (!is_hostile(m_ptr)) return gbt_fail("monster-not-hostile", NULL);
+    if (ARIYA_STOP) return gbt_fail("ariya-stop", NULL);
+    if (m_ptr->cdis > MAX_RANGE) return gbt_fail("out-of-range", NULL);
+    if (!projectable(m_ptr->fy, m_ptr->fx, py, px)) return gbt_fail("not-projectable", NULL);
+    if (!spell_is_inate((u16b)spell_no)) {
+        /* 魔法は、失敗率に足される状態があると「失敗した」になりうる（STUPID でも 0 に戻らない） */
+        if (gbt_in_no_magic_dungeon()) return gbt_fail("magic-blocked:no-magic-dungeon", NULL);
+        if (p_ptr->silent_floor) return gbt_fail("magic-blocked:silent-floor", NULL);
+        if (m_ptr->mflag & MFLAG_NO_SPELL) return gbt_fail("magic-blocked:monster-no-spell", NULL);
+        if (MON_STUNNED(m_ptr)) return gbt_fail("magic-may-fail:monster-stunned", NULL);
+        if (MON_MONFEAR(m_ptr)) return gbt_fail("magic-may-fail:monster-afraid", NULL);
+        if (MON_DEC_MAG(m_ptr)) return gbt_fail("magic-may-fail:monster-dec-mag", NULL);
+        if (SUPER_SHION) return gbt_fail("magic-may-fail:super-shion", NULL);
+        if ((p_ptr->pclass == CLASS_JYOON) && p_ptr->tim_general[0]) return gbt_fail("magic-may-fail:pluck-pigeon", NULL);
+    }
+
+    /* ---- 一時的に整える（ここから `gbt_race_restore()` までの間に return しない） ---- */
+    gbt_race_save_take(&save, r_ptr);
+    r_ptr->flags4 = 0L;
+    r_ptr->flags5 = 0L;
+    r_ptr->flags6 = 0L;
+    r_ptr->flags9 = 0L;
+    *gbt_word(r_ptr, sp->slot) = sp->bit;
+    r_ptr->freq_spell = 100;
+    r_ptr->flags2 |= RF2_STUPID;
+    m_ptr->mflag &= ~MFLAG_NICE;
+    inkey_flag = FALSE;
+
+    cast = make_attack_spell(m_idx, 0) ? 1 : 0;
+
+    restored = gbt_race_restore(&save, r_ptr);
+    if (m_ptr->r_idx == r_idx) m_ptr->mflag |= nice0;
+    notice_stuff();
+    handle_stuff();
+    inkey_flag = inkey_flag0;
+    inkey_base = inkey_base0;
+    inkey_xtra = inkey_xtra0;
+    inkey_scan = inkey_scan0;
+    Term_fresh();
+    /* ---- 戻した ---- */
+
+    /* 呼ぶ前と戻したあとの値を並べて出す（検査が外から見比べる）。形は flags2/flags4/flags5/flags6/flags9/freq_spell の順 */
+    fprintf(stderr, "%s info restore race=%d restored=%d before=%08lx/%08lx/%08lx/%08lx/%08lx/%d after=%08lx/%08lx/%08lx/%08lx/%08lx/%d m_idx=%d\n",
+            gbt_tag, r_idx, restored, (unsigned long)save.flags2, (unsigned long)save.flags4, (unsigned long)save.flags5,
+            (unsigned long)save.flags6, (unsigned long)save.flags9, (int)save.freq_spell, (unsigned long)r_ptr->flags2,
+            (unsigned long)r_ptr->flags4, (unsigned long)r_ptr->flags5, (unsigned long)r_ptr->flags6, (unsigned long)r_ptr->flags9,
+            (int)r_ptr->freq_spell, m_idx);
+    if (!restored) return gbt_fail("race-flags-not-restored", NULL);
+    if (!cast) return gbt_fail("make_attack_spell-returned-false", NULL);
+    return 1;
+}
+
+/*! 指定の敵に、プレイヤーへ直接攻撃させる。攻撃させたら 1。 */
+static int gbt_melee(int m_idx)
+{
+    monster_type *m_ptr = &m_list[m_idx];
+    monster_race *r_ptr = &r_info[m_ptr->r_idx];
+    const bool inkey_flag0 = inkey_flag;
+    const bool inkey_base0 = inkey_base;
+    const bool inkey_xtra0 = inkey_xtra;
+    const bool inkey_scan0 = inkey_scan;
+    int hit;
+
+    if (distance(m_ptr->fy, m_ptr->fx, py, px) > 1) return gbt_fail("not-adjacent", NULL);
+    if (!is_hostile(m_ptr)) return gbt_fail("monster-not-hostile", NULL);
+    if (r_ptr->flags1 & RF1_NEVER_BLOW) return gbt_fail("never-blow", NULL);
+    if (d_info[dungeon_type].flags1 & DF1_NO_MELEE) return gbt_fail("no-melee-dungeon", NULL);
+
+    inkey_flag = FALSE;
+    hit = make_attack_normal(m_idx) ? 1 : 0;
+    notice_stuff();
+    handle_stuff();
+    inkey_flag = inkey_flag0;
+    inkey_base = inkey_base0;
+    inkey_xtra = inkey_xtra0;
+    inkey_scan = inkey_scan0;
+    Term_fresh();
+
+    if (!hit) return gbt_fail("make_attack_normal-returned-false", NULL);
+    return 1;
+}
+
+/* ---- 入口を呼ぶ間、入れ子の `inkey()` が書き換える状態を保存して戻す ---- */
+
+typedef struct {
+    bool flag;
+    bool base;
+    bool xtra;
+    bool scan;
+} gbt_inkey_state;
+
+static void gbt_inkey_save(gbt_inkey_state *s)
+{
+    s->flag = inkey_flag;
+    s->base = inkey_base;
+    s->xtra = inkey_xtra;
+    s->scan = inkey_scan;
+}
+
+static void gbt_inkey_load(const gbt_inkey_state *s)
+{
+    inkey_flag = s->flag;
+    inkey_base = s->base;
+    inkey_xtra = s->xtra;
+    inkey_scan = s->scan;
+}
+
+/* ---- 整数の引数 ---- */
+
+static int gbt_parse_int(const char *s, int *out)
+{
+    char *end;
+    long v;
+
+    if ((s == NULL) || (*s == '\0')) return 0;
+    v = strtol(s, &end, 10);
+    if ((*end != '\0') || (v < -1000L) || (v > 1000L)) return 0;
+    *out = (int)v;
+    return 1;
+}
+
+/* ---- place：敵をプレイヤーからずれたマスへ動かす ---- */
+
+/*!
+ * 指定の敵を、プレイヤーの位置から (dx, dy) ずれたマスへ動かす。時間は使わない。動かせたら 1。
+ *
+ * 位置を書き換えるときに原作が呼んでいるものと同じ並びで更新する（`melee2.c` の `process_monster()` の移動、
+ * `spells3.c` の `teleport_away()`）: 旧マスの `m_idx` を 0・新マスへ `m_idx`・`fy`/`fx`・`reset_target()`・
+ * `update_mon(m_idx, TRUE)`（見え方と `cdis` を更新）・旧マスと新マスの `lite_spot()`・光や闇を持つ敵なら `PU_MON_LITE`。
+ * 立てるか否かは原作の `monster_can_enter()`（プレイヤーや別の敵がいるマス・敵が入れない地形を断る）で決める。
+ */
+static int gbt_place(int m_idx, int dx, int dy)
+{
+    monster_type *m_ptr = &m_list[m_idx];
+    monster_race *r_ptr = &r_info[m_ptr->r_idx];
+    const int oy = m_ptr->fy;
+    const int ox = m_ptr->fx;
+    const int ny = py + dy;
+    const int nx = px + dx;
+    gbt_inkey_state ink;
+
+    if (p_ptr->wild_mode) return gbt_fail("wild-mode", NULL);
+    if (!in_bounds(ny, nx)) return gbt_fail("out-of-bounds", NULL);
+    if (p_ptr->riding == m_idx) return gbt_fail("monster-is-riding", NULL);
+    if ((ny != oy) || (nx != ox)) {
+        if (player_bold(ny, nx)) return gbt_fail("occupied-by-player", NULL);
+        if (cave[ny][nx].m_idx) return gbt_fail("occupied-by-monster", NULL);
+        if (!monster_can_enter(ny, nx, r_ptr, 0)) return gbt_fail("terrain-not-enterable", NULL);
+
+        gbt_inkey_save(&ink);
+        cave[oy][ox].m_idx = 0;
+        cave[ny][nx].m_idx = (s16b)m_idx;
+        m_ptr->fy = (byte)ny;
+        m_ptr->fx = (byte)nx;
+        reset_target(m_ptr);
+        update_mon(m_idx, TRUE);
+        lite_spot(oy, ox);
+        lite_spot(ny, nx);
+        if (r_ptr->flags7 & (RF7_LITE_MASK | RF7_DARK_MASK)) p_ptr->update |= PU_MON_LITE;
+        notice_stuff();
+        handle_stuff();
+        gbt_inkey_load(&ink);
+        Term_fresh();
+    }
+    fprintf(stderr, "%s info place m_idx=%d r_idx=%d from=%d,%d to=%d,%d player=%d,%d turn=%ld\n", gbt_tag, m_idx, (int)m_ptr->r_idx, ox, oy,
+            nx, ny, px, py, (long)turn);
+    return 1;
+}
+
+/* ---- hold：敵の番を飛ばす ---- */
+
+/*
+ * 原作 `process_monsters()` は、敵ごとに毎ゲームターン `energy_need` から速度ぶんを引き、0 以下になった敵だけ
+ * `process_monster()` を呼ぶ（動く・魔法を撃つ・殴るはすべてその中）。そこで、止める敵の `energy_need` を
+ * 命令待ちのたびに `GBT_HOLD_ENERGY` に置き直す。1 回の命令待ちの間にゲームターンが進んでも 0 以下にならない
+ * （プレイヤーが休憩で 80 ターン進んでも足りる量）。止める前の値を覚え、`off` で戻す。
+ * 入口から命じた `cast`・`melee`・`place` は `energy_need` を見ないので働く。
+ * 眠らせる・状態異常を足すといった、画面に出る副作用のある手は使わない。
+ *
+ * 止まるのは**自分の番の行動**だけである。原作は眠りの経過・状態異常の経過を `process_monsters_mtimed()` で
+ * 別に進めるので、止めている敵でも、眠っていれば目を覚まし得る（「〜が目を覚ました。」のメッセージが出る）。
+ * 目を覚ましても番は来ないので、動かない・魔法を撃たない・殴らないことは変わらない。
+ */
+#define GBT_HOLD_ENERGY 30000
+
+typedef struct {
+    s16b r_idx;   /* 止めた時点の種族（死んだ・変わったかの照合） */
+    u16b token;   /* 止めた時点の mon_random_number（同じ番号に別の敵が入ったかの照合） */
+    s16b saved;   /* 止める前の energy_need */
+    s16b seen;    /* 直近の置き直しの直前に見えていた energy_need（止まっていたかの証拠） */
+    byte held;
+} gbt_hold_slot;
+
+static gbt_hold_slot *gbt_hold = NULL;
+static int gbt_hold_hi = 0;       /* 止めたことのある最大の m_idx */
+static int gbt_hold_all = 0;      /* `hold all on` の間 1 */
+static long gbt_hold_key = -1L;   /* 記録した階の識別 */
+
+static long gbt_floor_key(void)
+{
+    return ((long)dun_level << 20) | ((long)(dungeon_type & 0xFF) << 12) | ((long)(p_ptr->inside_quest & 0x3FF) << 2) |
+           (p_ptr->inside_arena ? 1L : 0L);
+}
+
+static int gbt_hold_alloc(void)
+{
+    if (gbt_hold == NULL) gbt_hold = (gbt_hold_slot *)calloc((size_t)max_m_idx + 1, sizeof(gbt_hold_slot));
+    return gbt_hold != NULL;
+}
+
+static void gbt_hold_take(int i)
+{
+    monster_type *m_ptr = &m_list[i];
+    gbt_hold_slot *h = &gbt_hold[i];
+
+    h->held = 1;
+    h->r_idx = m_ptr->r_idx;
+    h->token = m_ptr->mon_random_number;
+    h->saved = m_ptr->energy_need;
+    h->seen = m_ptr->energy_need;
+    if (i > gbt_hold_hi) gbt_hold_hi = i;
+}
+
+/*! 同じ敵のままなら、止める前の値へ戻す。記録は外す。 */
+static void gbt_hold_release(int i)
+{
+    monster_type *m_ptr = &m_list[i];
+    gbt_hold_slot *h = &gbt_hold[i];
+
+    if (h->held && m_ptr->r_idx && (m_ptr->r_idx == h->r_idx) && (m_ptr->mon_random_number == h->token)) {
+        m_ptr->energy_need = h->saved;
+    }
+    h->held = 0;
+}
+
+/*! 止めている敵の `energy_need` を置き直す。死んだ・別の敵に替わった・階を移った敵は記録から外す。 */
+static void gbt_hold_sync(void)
+{
+    int i;
+    int top;
+    const long key = gbt_floor_key();
+
+    if (gbt_hold == NULL) {
+        if (!gbt_hold_all || !gbt_hold_alloc()) return;
+    }
+    if (key != gbt_hold_key) {
+        /* 階を移った（敵の一覧が作り直された）。記録を捨てる。元の値は戻さない（敵ごと無くなっている） */
+        memset(gbt_hold, 0, ((size_t)max_m_idx + 1) * sizeof(gbt_hold_slot));
+        gbt_hold_hi = 0;
+        gbt_hold_key = key;
+    }
+    top = (m_max > gbt_hold_hi + 1) ? m_max : gbt_hold_hi + 1;
+    if (top > (int)max_m_idx) top = max_m_idx;
+    for (i = 1; i < top; i++) {
+        monster_type *m_ptr = &m_list[i];
+        gbt_hold_slot *h = &gbt_hold[i];
+
+        if (h->held && (!m_ptr->r_idx || (m_ptr->r_idx != h->r_idx) || (m_ptr->mon_random_number != h->token))) h->held = 0;
+        if (!h->held && gbt_hold_all && m_ptr->r_idx) gbt_hold_take(i);
+        if (h->held) {
+            h->seen = m_ptr->energy_need;
+            m_ptr->energy_need = GBT_HOLD_ENERGY;
+        }
+    }
+}
+
+/*! `hold <nearest|m_idx|all> on|off`。成功したら 1。 */
+static int gbt_hold_cmd(const char *target, const char *mode)
+{
+    int on;
+    int idx;
+    int i;
+    int n = 0;
+
+    if (mode == NULL) return gbt_fail("hold-needs-target-and-on-off", NULL);
+    if (gbt_stricmp(mode, "on") == 0) {
+        on = 1;
+    } else if (gbt_stricmp(mode, "off") == 0) {
+        on = 0;
+    } else {
+        return gbt_fail("bad-hold-mode %s", mode);
+    }
+    if (!gbt_hold_alloc()) return gbt_fail("out-of-memory", NULL);
+    if (gbt_hold_key != gbt_floor_key()) gbt_hold_sync(); /* 階が変わっていたら先に捨てる */
+
+    if (gbt_stricmp(target, "all") == 0) {
+        gbt_hold_all = on;
+        if (on) {
+            gbt_hold_sync();
+        } else {
+            for (i = 1; i <= gbt_hold_hi && i < (int)max_m_idx; i++) {
+                if (gbt_hold[i].held) {
+                    gbt_hold_release(i);
+                    n++;
+                }
+            }
+        }
+        for (i = 1; on && (i <= gbt_hold_hi) && (i < (int)max_m_idx); i++) n += gbt_hold[i].held ? 1 : 0;
+        fprintf(stderr, "%s info hold all state=%s count=%d turn=%ld\n", gbt_tag, on ? "on" : "off", n, (long)turn);
+        return 1;
+    }
+
+    idx = gbt_resolve_target(target);
+    if (!idx) return 0;
+    if (on) {
+        if (!gbt_hold[idx].held) {
+            gbt_hold_take(idx);
+            m_list[idx].energy_need = GBT_HOLD_ENERGY;
+        }
+    } else {
+        if (gbt_hold_all) return gbt_fail("hold-all-is-on", NULL);
+        if (!gbt_hold[idx].held) return gbt_fail("not-held", NULL);
+        gbt_hold[idx].seen = m_list[idx].energy_need;
+        gbt_hold_release(idx);
+        fprintf(stderr, "%s info hold m_idx=%d r_idx=%d state=off saved=%d now=%d turn=%ld pos=%d,%d player=%d,%d\n", gbt_tag, idx,
+                (int)m_list[idx].r_idx, (int)m_list[idx].energy_need, (int)gbt_hold[idx].seen, (long)turn, (int)m_list[idx].fx,
+                (int)m_list[idx].fy, px, py);
+        return 1;
+    }
+    fprintf(stderr, "%s info hold m_idx=%d r_idx=%d state=on saved=%d now=%d turn=%ld pos=%d,%d player=%d,%d\n", gbt_tag, idx,
+            (int)m_list[idx].r_idx, (int)gbt_hold[idx].saved, (int)gbt_hold[idx].seen, (long)turn, (int)m_list[idx].fx, (int)m_list[idx].fy, px,
+            py);
+    return 1;
+}
+
+/*! 命令 1 行を実行する。結果を標準エラーへ出す。成功したら 1。 */
+static int gbt_run_line(char *line)
+{
+    char *tok[4];
+    int ntok = 0;
+    char *p = line;
+    char full[160];
+    int ok = 0;
+    int idx;
+
+    snprintf(full, sizeof(full), "%s", line);
+    while (*p && (ntok < 4)) {
+        while ((*p == ' ') || (*p == '\t')) p++;
+        if (!*p) break;
+        tok[ntok++] = p;
+        while (*p && (*p != ' ') && (*p != '\t')) p++;
+        if (*p) *p++ = '\0';
+    }
+    if (!ntok) return 1;
+
+    gbt_why[0] = '\0';
+    if (!character_dungeon || !p_ptr->playing || p_ptr->is_dead || p_ptr->leaving) {
+        (void)gbt_fail("player-not-in-play", NULL);
+    } else if (gbt_stricmp(tok[0], "cast") == 0) {
+        const gbt_spell_def *sp;
+
+        if (ntok < 2) {
+            (void)gbt_fail("cast-needs-spell-name", NULL);
+        } else if ((sp = gbt_find_spell(tok[1])) == NULL) {
+            (void)gbt_fail("unknown-spell %s", tok[1]);
+        } else if ((idx = gbt_resolve_target((ntok >= 3) ? tok[2] : NULL)) != 0) {
+            ok = gbt_cast(idx, sp);
+        }
+    } else if (gbt_stricmp(tok[0], "melee") == 0) {
+        if ((idx = gbt_resolve_target((ntok >= 2) ? tok[1] : NULL)) != 0) {
+            ok = gbt_melee(idx);
+        }
+    } else if (gbt_stricmp(tok[0], "place") == 0) {
+        int dx = 0;
+        int dy = 0;
+
+        if (ntok < 4) {
+            (void)gbt_fail("place-needs-target-dx-dy", NULL);
+        } else if (!gbt_parse_int(tok[2], &dx) || !gbt_parse_int(tok[3], &dy)) {
+            (void)gbt_fail("bad-offset %s", tok[2]);
+        } else if ((idx = gbt_resolve_target(tok[1])) != 0) {
+            ok = gbt_place(idx, dx, dy);
+        }
+    } else if (gbt_stricmp(tok[0], "hold") == 0) {
+        if (ntok < 3) {
+            (void)gbt_fail("hold-needs-target-and-on-off", NULL);
+        } else {
+            ok = gbt_hold_cmd(tok[1], tok[2]);
+        }
+    } else {
+        (void)gbt_fail("unknown-command %s", tok[0]);
+    }
+
+    if (ok) {
+        fprintf(stderr, "%s ok %s\n", gbt_tag, full);
+    } else {
+        fprintf(stderr, "%s fail %s\n", gbt_tag, gbt_why);
+    }
+    fflush(stderr);
+    return ok;
+}
+
+/*!
+ * @brief 命令ファイルがあれば読んで実行する（`host_next_key()` から、命令待ちのときだけ呼ばれる）。
+ * @return 待っているコアを起こすキー（死亡・階の移動のとき ESC）。要らなければ 0
+ */
+int gb_test_monster_act_poll(void)
+{
+    static int checked = 0;
+    static const char *path = NULL;
+    static int busy = 0;
+    static int broken = 0;
+    char text[16384];
+    char moved[1100];
+    size_t n;
+    FILE *fp;
+    char *line;
+    char *next;
+    int skipping = 0;
+    int too_big;
+
+    if (!checked) {
+        path = getenv("HD2D_TEST_MONSTER_ACT");
+        if ((path != NULL) && (path[0] == '\0')) path = NULL;
+        checked = 1;
+    }
+    if ((path == NULL) || busy || broken) return 0;
+    if (!gb_awaiting_command() || !character_dungeon || !p_ptr->playing) return 0;
+
+    /* 止めている敵の番を飛ばす（命令待ちのたびに置き直す） */
+    gbt_hold_sync();
+
+    fp = fopen(path, "rb");
+    if (fp == NULL) return 0;
+    n = fread(text, 1, sizeof(text) - 1, fp);
+    too_big = (n == sizeof(text) - 1) && (fgetc(fp) != EOF);
+    fclose(fp);
+    if (n == 0) return 0; /* 空（書きかけ）は読まない */
+    text[n] = '\0';
+
+    /* 先に消す。消せなければ名前を変える。どちらもできなければ、同じ命令を繰り返さないよう実行しない */
+    if (remove(path) != 0) {
+        snprintf(moved, sizeof(moved), "%s.done", path);
+        (void)remove(moved);
+        if (rename(path, moved) != 0) {
+            fprintf(stderr, "%s fail cannot-consume-command-file\n", gbt_tag);
+            fflush(stderr);
+            broken = 1;
+            return 0;
+        }
+    }
+    if (too_big) {
+        fprintf(stderr, "%s fail command-file-too-large\n", gbt_tag);
+        fflush(stderr);
+        return 0;
+    }
+
+    /* 上から順に、1 回の命令待ちの中で全部実行する（ゲームの時間は進めない）。fail した行より後は実行せず skip を出す。
+     * 空行と `#` で始まる行は読み飛ばす */
+    busy = 1;
+    for (line = text; line != NULL && *line; line = next) {
+        char *p;
+
+        next = strchr(line, '\n');
+        if (next != NULL) *next++ = '\0';
+        n = strlen(line);
+        while ((n > 0) && ((line[n - 1] == '\r') || (line[n - 1] == ' ') || (line[n - 1] == '\t'))) line[--n] = '\0';
+        p = line;
+        while ((*p == ' ') || (*p == '\t')) p++;
+        if ((*p == '\0') || (*p == '#')) continue;
+        if (skipping) {
+            fprintf(stderr, "%s skip %s\n", gbt_tag, p);
+            fflush(stderr);
+            continue;
+        }
+        if (!gbt_run_line(p)) skipping = 1;
+    }
+    busy = 0;
+
+    return (p_ptr->is_dead || p_ptr->leaving) ? ESCAPE : 0;
+}

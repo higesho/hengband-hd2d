@@ -776,6 +776,25 @@ int forced_day_minute()
     return ((minutes % 1440) + 1440) % 1440;
 }
 
+bool forced_weather(WeatherState &out)
+{
+    const char *const raw = std::getenv("HD2D_FORCE_WEATHER");
+    if ((raw == nullptr) || (raw[0] == '\0')) {
+        return false;
+    }
+    int rain = 0;
+    int wind = 0;
+    int temp = 0;
+    if (std::sscanf(raw, "%d,%d,%d", &rain, &wind, &temp) != 3) {
+        return false;
+    }
+    out.declared = true;
+    out.rain = static_cast<std::uint8_t>(std::clamp(rain, 0, kWeatherMaxValue));
+    out.wind = static_cast<std::uint8_t>(std::clamp(wind, 0, kWeatherMaxValue));
+    out.temp = static_cast<std::uint8_t>(std::clamp(temp, 0, kWeatherMaxValue));
+    return true;
+}
+
 TextColor from_term_color(std::uint8_t index, float alpha)
 {
     const RgbColor rgb = term_color_to_rgb(index);

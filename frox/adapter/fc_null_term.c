@@ -339,6 +339,9 @@ static errr fc_term_event(int wait)
          */
         fc_present();
 
+        /* 検査用：敵の行動の指定（環境変数が無ければ何もしない）。キーを Term へ積む直前に変える。 */
+        fc_test_monster_act_poll();
+
         if (fc_drain_keys_into_term()) {
             return 0;
         }

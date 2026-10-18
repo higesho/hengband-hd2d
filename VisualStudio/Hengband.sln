@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SilCore", "SilCore\SilCore.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FroxCore", "FroxCore\FroxCore.vcxproj", "{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D07}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TobandCore", "TobandCore\TobandCore.vcxproj", "{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82CF9010-9443-4FFF-ADF0-0D3E81C732CC}"
 	ProjectSection(SolutionItems) = preProject
 		..\.clang-format = ..\.clang-format
@@ -88,6 +90,16 @@ Global
 		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D07}.Release|Win32.Build.0 = Release|Win32
 		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D07}.Release|x64.ActiveCfg = Release|Win32
 		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D07}.Release|x64.Build.0 = Release|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Debug|Win32.Build.0 = Debug|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Debug|x64.ActiveCfg = Debug|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Debug|x64.Build.0 = Debug|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.English-Debug|Win32.ActiveCfg = Debug|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.English-Release|Win32.ActiveCfg = Release|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Release|Win32.ActiveCfg = Release|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Release|Win32.Build.0 = Release|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Release|x64.ActiveCfg = Release|Win32
+		{7E2A1C40-2B6E-4E7D-9C31-0C4F1B5A9D08}.Release|x64.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

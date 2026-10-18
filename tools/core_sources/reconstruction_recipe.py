@@ -42,7 +42,7 @@ def build(archives, targets, preferred, transforms=None):
         for path,raw in sorted(paths.items()):
             data=canonical(raw)
             kinds=['raw']
-            if transforms.get(archive)=='cp932-c' and Path(path).suffix in ('.c','.h'):kinds.append('cp932-c')
+            if transforms.get(archive) in ('cp932-c','eucjp-cp932') and Path(path).suffix in ('.c','.h'):kinds.append(transforms[archive])
             for kind in kinds:
                 key=f'i{len(defs):05d}'
                 body=variant(data,kind)
@@ -51,7 +51,7 @@ def build(archives, targets, preferred, transforms=None):
     planner=Planner(inputs);files={};usage={}
     for name,target in sorted(targets.items()):
         archive,path=preferred.get(name,('source',name))
-        kind='cp932-c' if (archive,path,'cp932-c') in keys else 'raw'
+        kind=next((k for k in ('cp932-c','eucjp-cp932') if (archive,path,k) in keys),'raw')
         key=keys.get((archive,path,kind))
         if key is None:
             key=next((k for (a,p,t),k in keys.items() if p==path and t==kind),None)

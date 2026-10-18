@@ -922,7 +922,8 @@ void default_sub_panel_kinds(const std::string &core_name, int out[kUiSubPanels]
     const int *src = kHengband;
     if (core_name == "silq") {
         src = kSilq;
-    } else if (core_name == "gensoband") {
+    } else if ((core_name == "gensoband") || (core_name == "toband")) {
+        //! TOband も同じ（旧 z-term の `window_flag` で、番号の表が幻想蛮怒と同じ。`toband/adapter/tb_sub_terms.c`）。
         src = kGensoband;
     } else if (core_name == "frox") {
         src = kFrox;
@@ -957,7 +958,7 @@ void default_sub_split(const std::string &core_name, SubSplit &out)
      * **右列の仕切りは変愚だけ違う**（上を厚く。`8,6`）。
      * 短愚も同じ（決めたことで変愚に合わせる）。
      */
-    const bool heng_family = !(silq || frox) && (core_name != "gensoband");
+    const bool heng_family = !(silq || frox) && (core_name != "gensoband") && (core_name != "toband");
     out.right_h20[0] = heng_family ? 8 : kSubRightH20Default[0];
     for (int i = 1; i < (kSubRightMax - 1); ++i) {
         out.right_h20[i] = kSubRightH20Default[i];

@@ -316,7 +316,9 @@ License as published by the Free Software Foundation; version 2 of the License.
 This program is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-The full text of the GNU General Public License, version 2 is at
+The full text of the GNU General Public License, version 2 is included in this
+distribution as licenses/GPL-2.0.txt (Windows and Linux packages; in the Android
+package assets/licenses/GPL-2.0.txt). It is also at
 https://www.gnu.org/licenses/old-licenses/gpl-2.0.html (and in silq/LICENSE.md
 of the source repository).
 
@@ -346,10 +348,99 @@ OpenAL32.dll on Windows (built by vcpkg) and lib/<abi>/libopenal.so in the
 Android APK (built from the release tarball by android/hd2d/src/main/cpp/CMakeLists.txt).
 You may replace that library with your own build of OpenAL Soft.
 Source: https://github.com/kcat/openal-soft/archive/1.25.1.tar.gz
-Full license text: COPYING in the OpenAL Soft source; in the Android APK it is
-assets/licenses/OpenAL-Soft-COPYING.txt.
+Full license text (the whole GNU Library General Public License v2, plus the
+pffft notice): COPYING in the OpenAL Soft source; licenses/windows-runtime/openal-soft.txt
+in the Windows package; licenses/OpenAL-Soft-COPYING.txt in the Linux package; in the
+Android APK it is assets/licenses/OpenAL-Soft-COPYING.txt.
 It bundles {fmt} 11.2.0 (MIT license) and parts under BSD-3-Clause
 (see BSD-3Clause and LICENSE-pffft in the OpenAL Soft source).
+
+---------------------------------------------------------
+
+Runtime libraries shipped as DLLs in the Windows package
+
+The screen (HengbandHd2d.exe) needs the DLLs below, which are built by vcpkg
+and shipped unmodified beside it. (The game cores need none of them.) The
+version of each is the vcpkg port version installed on the build machine on
+2026-10-18; the DLL files are byte-identical (SHA-256) to those in vcpkg's bin folder.
+The exact copyright notice and licence text of each library is included in
+the package as licenses/windows-runtime/<name>.txt, copied unchanged from
+vcpkg's share/<port>/copyright. You may replace any of these DLLs with your
+own build of the same library.
+
+SDL2 2.32.10 (SDL2.dll) - zlib licence
+https://www.libsdl.org/
+Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+Licence text: licenses/windows-runtime/SDL2.txt
+
+SDL2_image 2.8.12 (SDL2_image.dll) - zlib licence
+https://github.com/libsdl-org/SDL_image
+Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+Licence text: licenses/windows-runtime/SDL2_image.txt
+
+SDL2_ttf 2.24.0 (SDL2_ttf.dll) - zlib licence
+https://github.com/libsdl-org/SDL_ttf
+Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+Licence text: licenses/windows-runtime/SDL2_ttf.txt
+
+FreeType 2.14.3 (freetype.dll) - The FreeType Project LICENSE (FTL), chosen from
+the dual licence FTL / GNU General Public License v2
+https://freetype.org/
+Copyright 1996-2002, 2006 by David Turner, Robert Wilhelm, and Werner Lemberg.
+This software is based in part on the work of the FreeType Team.
+Licence text (LICENSE.TXT, FTL.TXT and the GPL v2 option):
+licenses/windows-runtime/freetype.txt
+
+libpng 1.6.58 (libpng16.dll) - PNG Reference Library License version 2
+http://www.libpng.org/pub/png/libpng.html
+Copyright (c) 1995-2026 The PNG Reference Library Authors.
+Copyright (c) 2018-2026 Cosmin Truta.
+Copyright (c) 2000-2002, 2004, 2006-2018 Glenn Randers-Pehrson.
+Copyright (c) 1996-1997 Andreas Dilger.
+Copyright (c) 1995-1996 Guy Eric Schalnat, Group 42, Inc.
+Licence text: licenses/windows-runtime/libpng.txt
+
+zlib 1.3.2 (z.dll) - zlib licence
+https://zlib.net/
+Copyright (C) 1995-2026 Jean-loup Gailly and Mark Adler
+Licence text: licenses/windows-runtime/zlib.txt
+
+bzip2 / libbzip2 1.0.8 (bz2.dll) - bzip2 licence (BSD-style)
+https://sourceware.org/bzip2/
+Copyright (C) 1996-2019 Julian R Seward. All rights reserved.
+Licence text: licenses/windows-runtime/bzip2.txt
+
+Brotli 1.2.0 (brotlidec.dll, brotlicommon.dll) - MIT
+https://github.com/google/brotli
+Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors.
+Licence text: licenses/windows-runtime/brotli.txt
+
+JsonCpp 1.9.6 (jsoncpp.dll) - Public Domain, or the MIT License where public
+domain is not recognised (your choice)
+https://github.com/open-source-parsers/jsoncpp
+Copyright (c) 2007-2010 Baptiste Lepilleur and The JsonCpp Authors
+Licence text: licenses/windows-runtime/jsoncpp.txt
+
+OpenAL Soft 1.25.1 (OpenAL32.dll) - GNU Library General Public License v2
+(LGPL-2.0-or-later). See the OpenAL Soft entry above.
+Licence text (full COPYING, and the pffft notice): licenses/windows-runtime/openal-soft.txt
+
+{fmt} 12.1.0 (fmt.dll) - MIT, with an optional exception for object code
+https://github.com/fmtlib/fmt
+Copyright (c) 2012 - present, Victor Zverovich and {fmt} contributors
+(OpenAL32.dll depends on fmt.dll.)
+Licence text: licenses/windows-runtime/fmt.txt
+
+OpenXR loader 1.1.59 (openxr_loader.dll) - Apache License 2.0
+https://github.com/KhronosGroup/OpenXR-SDK
+Copyright The Khronos Group Inc. and contributors
+Licence text: licenses/windows-runtime/openxr-loader.txt
+
+The Android package does not contain these DLLs. It builds SDL2, SDL2_image,
+SDL2_ttf (with the FreeType it bundles) and SDL2_mixer from source and ships the
+SDL2, SDL2_image, SDL2_ttf and FreeType texts above as
+assets/licenses/third-party/*.txt. The Linux package lists the copyright files of
+the system libraries it ships under licenses/linux-runtime.
 
 ---------------------------------------------------------
 
@@ -383,6 +474,22 @@ https://github.com/dungeons-of-moria/umoria, together with this project's
 recipes and adapters, which tools/core_sources/prepare.py combines into the
 source that is compiled. See LICENSE section 8 and README.md ("Original
 sources") in the source repository https://github.com/higesho/hengband-hd2d.
+
+---------------------------------------------------------
+
+TOband (R3, tag r3-20261016) - Moria/Angband licence and Hengband terms;
+quest maps under the NetHack General Public License
+https://github.com/rmgames0-eng/Toband2-PR10-fork
+
+TOband is a variant of Hengband. Its copyright and licence text is the
+upstream lib/help/jlicense.txt (Japanese), distributed as
+licenses/Toband-jlicense.txt (converted to UTF-8) and toband/lib/help/jlicense.txt,
+with the upstream readme_angband as licenses/Toband-readme_angband.txt.
+The map of the quest "Brunhild" is derived from NetHack 3.6 castle.des and is
+covered by the NetHack General Public License (Copyright 1989 M. Stephenson),
+distributed as licenses/Toband-nethack-license.txt and
+toband/lib/file/nethack-license.txt. The score report of the upstream build
+(report.c) is not compiled into this distribution.
 
 ---------------------------------------------------------
 
@@ -635,6 +742,10 @@ distributed source or executable. The original author of Rogue Clone, Timothy
 Stoehr, additionally requests that the comments at the top of the source be
 kept, that it be stated that he is the original author, and that no personal
 profit be made from the source.
+
+The upstream documents (README, COPYING, AUTHORS, NEWS, INSTALL, rogue.doc, man/rogue.man
+and the documents under doc/) are attached to this distribution unchanged in content, as
+licenses/RogueClone2/ (converted from EUC-JP to UTF-8 where needed), to meet condition (2).
 
 --- COPYING (original, Japanese) ---
 

@@ -3041,7 +3041,7 @@ int run_ui_check(const AppOptions &options)
             const struct {
                 const char *core;
                 const int *want;
-            } kWantKinds[] = { { "gensoband", want_genso }, { "frox", want_frox },
+            } kWantKinds[] = { { "gensoband", want_genso }, { "toband", want_genso }, { "frox", want_frox },
                 { "tangband", want_heng } };
             for (const auto &row : kWantKinds) {
                 default_sub_panel_kinds(row.core, got);
@@ -3066,6 +3066,7 @@ int run_ui_check(const AppOptions &options)
                     { "hengband", 3, 2, 8 }, //!< 右列の上を厚く（手元の設定）
                     { "tangband", 3, 2, 8 }, //!< 変愚に合わせる（同じ指示）
                     { "gensoband", 3, 2, 6 },
+                    { "toband", 3, 2, 6 }, //!< 幻想蛮怒と同じ（旧 z-term の表）
                     { "frox", 4, 2, 6 },
                     { "silq", 4, 3, 6 },
                 };
@@ -3542,7 +3543,7 @@ int run_ui_check(const AppOptions &options)
                  * **変愚・短愚・幻想・Frox は同じ並びである**（2026-09-01 に 3 コアから
                  * 採った字が 1 つも違わなかった）。同じ表を返すことを押さえる。
                  */
-                for (const char *core : { "tangband", "gensoband", "frox" }) {
+                for (const char *core : { "tangband", "gensoband", "toband", "frox" }) {
                     PadBinds same;
                     (void)apply_default_pad_binds(same, table, core);
                     for (const auto &want : kWant) {
@@ -5932,7 +5933,7 @@ int run_status_hud_check(const AppOptions &options)
         };
         //! 握手の `core_name` と、選ばれる素材の組（変愚と知らないコアは空 = `assets/ui/hud/` 直下）。
         static const CoreCase kCores[] = {
-            { "hengband", "" }, { "tangband", "tangband" }, { "gensoband", "gensoband" }, { "silq", "silq" },
+            { "hengband", "" }, { "tangband", "tangband" }, { "gensoband", "gensoband" }, { "toband", "toband" }, { "silq", "silq" },
             { "frox", "frox" }, { "angband", "angband" }, { "Umoria", "umoria" }, { "Rogue 3.6", "rogue36" },
             { "Rogue 5.4", "rogue54" }, { "RogueClone2", "rogue2" },
         };

@@ -1,0 +1,139 @@
+# toband/tilework/feature_tiles.csv — TOband の地形番号 → 地形タイル（tools/toband/gen_to_features.py が作るプレハブ）
+# ground＝床・object＝床の上に置く物・object_ew＝東西に通り抜ける所の物・structure＝壁やブロック（assets/voxel/terrain_prefabs.jsonc の列と同じ意味）。・sign＝看板（これを持つ行が町の店・建物の入口になる）
+# 2026-10-17 に作成。草地・草むらに草の株（tb_*_grass）は載せない（気づいたこと「ツブツブが気持ち悪さを呼ぶ」）。
+# ゲームへの割り当てはまだ（tb_frame の align_terrain_id は変愚の番号へ寄せたまま）。
+# 床（1・2）と花崗岩・永久岩の壁（56〜63）は空にしてある——ここに材を書くと、ダンジョンの意匠と町の組み立てが効かない（2026-10-17）。
+feat,ja,ground,object,object_ew,structure,sign,note
+0,未知の地形,,,,,,未知の地形。描かない
+1,床,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+2,隠れたトラップ,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+3,回避の彫像,tb_glyph,,,,,
+4,開いたドア,tb_floor,tb_door_open,tb_door_open_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+5,壊れたドア,tb_floor,tb_door_broken,tb_door_broken_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+6,上り階段,tb_floor,tb_stairs_up_obj,,,,
+7,下り階段,tb_stairs_down,,,,,
+8,クエスト入口,tb_stairs_down_quest,,,,,クエスト入口
+9,クエスト出口,tb_floor,tb_stairs_up_quest_obj,,,,クエスト出口
+10,クエスト下り階段,tb_stairs_down_qlevel,,,,,
+11,クエスト上がり階段,tb_floor,tb_stairs_up_qlevel_obj,,,,
+12,街の出口,tb_town_exit,,,,,
+13,上り坑道,tb_jihada,tb_shaft_up_obj,,,,
+14,下り坑道,tb_shaft_down,,,,,
+16,トラップ・ドア,tb_trapdoor,,,,,
+17,落とし穴,tb_pit,,,,,
+18,落とし穴,tb_pit,,,,,
+19,落とし穴,tb_pit,,,,,
+20,邪悪なルーン,tb_rune_evil,,,,,
+21,奇妙なルーン,tb_rune_strange,,,,,
+22,焦げた場所,tb_scorch,,,,,
+23,焦げた場所,tb_scorch,,,,,
+24,ダーツ・トラップ,tb_trap_dart,,,,,
+25,ダーツ・トラップ,tb_trap_dart,,,,,
+26,ダーツ・トラップ,tb_trap_dart,,,,,
+27,ダーツ・トラップ,tb_trap_dart,,,,,
+28,ガス・トラップ,tb_trap_gas,,,,,
+29,ガス・トラップ,tb_trap_gas,,,,,
+30,ガス・トラップ,tb_trap_gas,,,,,
+31,ガス・トラップ,tb_trap_gas,,,,,
+32,ドア,tb_floor,tb_door_closed,tb_door_closed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+33,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+34,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+35,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+36,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+37,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+38,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+39,鍵のかかったドア,tb_floor,tb_door_locked,tb_door_locked_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+40,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+41,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+42,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+43,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+44,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+45,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+46,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+47,くさびが打たれたドア,tb_floor,tb_door_jammed,tb_door_jammed_ew,,,ドア（枠と扉の物。変愚と同じ組み立て）
+48,隠しドア,,,,tb_granite_blk,,隠しドアは花崗岩の壁に見える
+49,岩石,tb_floor,tb_rubble_obj,,,,
+50,溶岩の鉱脈,,,,tb_magma_blk,,
+51,石英の鉱脈,,,,tb_quartz_blk,,
+52,溶岩の鉱脈(隠された財宝を含有),,,,tb_magma_blk,,
+53,石英の鉱脈(隠された財宝を含有),,,,tb_quartz_blk,,
+54,財宝を含有した溶岩の鉱脈,,,,tb_magma_gold_blk,,
+55,財宝を含有した石英の鉱脈,,,,tb_quartz_gold_blk,,
+56,花崗岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+57,花崗岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+58,花崗岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+59,花崗岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+60,永久岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+61,永久岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+62,永久岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+63,永久岩の壁,,,,,,床と壁は画面の役割の既定で描く（ダンジョンの意匠と町の組み立てが材を決める。tools/toband/gen_to_dungeon.py）
+64,爆発ルーン,tb_rune_explode,,,,,
+74,雑貨屋,tb_michi,arch_tob,arch_tob_ew,,tb_sign_barrel,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+75,防具屋,tb_michi,arch_tob,arch_tob_ew,,tb_sign_shield,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+76,武器専門店,tb_michi,arch_tob,arch_tob_ew,,tb_sign_sword,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+77,寺院,tb_michi,arch_tob,arch_tob_ew,,tb_sign_holy,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+78,錬金術の店,tb_michi,arch_tob,arch_tob_ew,,tb_sign_flask,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+79,魔法の店,tb_michi,arch_tob,arch_tob_ew,,tb_sign_star,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+80,ブラック・マーケット,tb_michi,arch_tob,arch_tob_ew,,tb_sign_coin,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+81,我が家,tb_michi,arch_tob,arch_tob_ew,,tb_sign_house,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+82,書店,tb_michi,arch_tob,arch_tob_ew,,tb_sign_book,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+83,深い水,tb_mizuumi,,,,,
+84,浅い水の流れ,tb_kawa,,,,,
+85,深い溶岩溜り,tb_yogan,,,,,
+86,浅い溶岩の流れ,tb_lava_shallow,,,,,
+87,暗い穴,tb_pit_dark,,,,,
+88,砂地,tb_sunachi,,,,,
+89,草地,tb_kusachi,,,,,
+90,コンパクトルーン,tb_rune_compact,,,,,
+91,警報装置,tb_trap_alarm,,,,,
+92,開門スイッチ,tb_trap_switch,,,,,
+93,花,tb_flower,,,,,
+94,草むら,tb_kusamura,,,,,
+95,博物館,tb_michi,arch_tob,arch_tob_ew,,tb_sign_urn,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+96,木,tb_kusachi,tb_tree_obj_01|tb_tree_obj_02|tb_tree_obj_03|tb_tree_obj_04|tb_tree_obj_05|tb_tree_obj_06|tb_tree_obj_07|tb_tree_obj_08,,,,
+97,山脈,,,,tb_mountain_blk,,
+128,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+129,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+130,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+131,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+132,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+133,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+134,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+135,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+136,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+137,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+138,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+139,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+140,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+141,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+142,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+143,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+144,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+145,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+146,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+147,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+148,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+149,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+150,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+151,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+152,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+153,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+154,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+155,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+156,煉獄の祭壇,tb_michi,tb_altar_obj,,,tb_sign_plain,煉獄の祭壇（祭壇の物と看板）
+157,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+158,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+159,建物,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+192,街,tb_kusachi,tb_town_obj,,,,荒野の地図の街
+193,ダンジョンへの入口,tb_jihada,tb_dungeon_entrance_obj,,,,
+194,沼地,tb_shicchi,,,,,
+195,ダンジョンへの入口,tb_jihada,tb_dungeon_entrance_obj,,,,
+196,未知の地形 (未感知),,,,,,未知の地形。描かない
+197,氷原,tb_hyogen,,,,,
+198,空中,tb_air,,,,,
+199,深海,tb_umi,,,,,
+200,間隙,tb_gate_void,,,,,
+201,ハルマゲドン・トラップ,tb_armageddon,,,,,
+202,ピラニア・トラップ,tb_piranha,,,,,
+203,デネブの店,tb_michi,arch_tob,arch_tob_ew,,tb_sign_plain,店・建物の入口（門と看板。建物そのものは町の組み立てが _tob の部品で作る）
+204,カオスゲート,tb_gate_chaos,,,,,

@@ -1074,6 +1074,12 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4820;4514;4710;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
+    <ClCompile Include="..\..\presentation\bridge\hengband_test_monster_act.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles />
+      <AdditionalOptions>/source-charset:utf-8 /execution-charset:utf-8</AdditionalOptions>
+      <AdditionalIncludeDirectories>..\..\presentation;..\..\platform\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="..\..\presentation\bridge\modern_store.cpp" />
     <ClCompile Include="..\..\presentation\bridge\presentation_bridge.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -1209,6 +1215,7 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClInclude Include="..\..\presentation\frame\frame_codec_check.h" />
     <ClInclude Include="..\..\presentation\frame\protocol_transport.h" />
     <ClInclude Include="..\..\presentation\frame\protocol_messages.h" />
+    <ClInclude Include="..\..\presentation\bridge\hengband_test_monster_act.h" />
     <ClInclude Include="..\..\presentation\bridge\presentation_bridge.h" />
     <ClInclude Include="..\..\presentation\bridge\asset_manifest_builder.h" />
     <ClInclude Include="..\..\presentation\bridge\input_event_adapter.h" />

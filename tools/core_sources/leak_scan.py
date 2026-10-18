@@ -28,6 +28,7 @@ ALLOWLIST = {
     'gensoband/adapter/gb_null_term.c': (LINES_LIMIT - 1, 8, 'enum の case ラベルが原作と同じ並びになる（実装が同じ列挙を処理するため）'),
     'hd2d/ui/game_pad.cpp': (LINES_LIMIT - 1, 8, 'enum の case ラベルが原作と同じ並びになる'),
     'angband/adapter/an_lore_ja.c': (150, 6, '原作の API 呼び出しを使った再実装で、散在する一致が多い'),
+    'frox/adapter/fc_shim.c': (60, 6, '原作の API の決まった書き方（m_ptr = &m_list[m_idx] や p_ptr->update |= PU_MON_LITE など）が散在して一致する。続けて一致するのは最長 2 行（2026-10-18、検査用の敵の行動の入口を足して 33 → 42 行）'),
 }
 
 

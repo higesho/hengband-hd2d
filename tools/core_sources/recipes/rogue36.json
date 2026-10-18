@@ -381,6 +381,10 @@
       "encoding": "utf8",
       "text": "\t    }\n"
     },
+    "709e8eb2a8569b85add9d8e04c727fa08b58342d1dd93b7d329971821a394743": {
+      "encoding": "utf8",
+      "text": "    /* HD2D: 音の出来事（`rogue_hitpoint_warn`）。HP が最大の 1/4 以下へ落ちた\n       瞬間だけ 1 回鳴らす。 */\n    {\n        static int hd2d_hp_warned = 0;\n        if (max_hp > 0 && pstats.s_hpt * 4 <= max_hp) {\n            if (!hd2d_hp_warned) { rl_sound_push(\"rogue_hitpoint_warn\", hero.y, hero.x); hd2d_hp_warned = 1; }\n        } else {\n            hd2d_hp_warned = 0;\n        }\n    }\n"
+    },
     "70cd0ce852e1175c030134836f45b1d8e8b07af065615afaf14cea148719bd20": {
       "encoding": "utf8",
       "text": "    rl_sound_push(\"rogue_zap\", hero.y, hero.x);\n"
@@ -528,10 +532,6 @@
     "d0ba42040b501ee6910be825ed05920759c54537b625889d2cd5381e4e0785e1": {
       "encoding": "utf8",
       "text": "    if (!hd2d_gated)\n\tdraw(win);\n"
-    },
-    "d35df1ccf781f994703753e92b1ddf22cf03b9ad766db442bca7791ae427da34": {
-      "encoding": "utf8",
-      "text": "    /* HD2D: 音の出来事（`rogue_hitpoint_warn`）。HP が最大の 1/4 以下へ落ちた\n       瞬間だけ 1 回鳴らす（`docs/AUDIO_DESIGN.md` §4.2）。 */\n    {\n        static int hd2d_hp_warned = 0;\n        if (max_hp > 0 && pstats.s_hpt * 4 <= max_hp) {\n            if (!hd2d_hp_warned) { rl_sound_push(\"rogue_hitpoint_warn\", hero.y, hero.x); hd2d_hp_warned = 1; }\n        } else {\n            hd2d_hp_warned = 0;\n        }\n    }\n"
     },
     "d8f07a6d4759713d9790b05c6bf673559888434df3be7983d66df67bc3bc3cfb": {
       "encoding": "utf8",
@@ -985,7 +985,7 @@
       ]
     },
     "io.c": {
-      "sha256": "7852bad63b4875e1344f07be5b7e4ff276579c89ca4e7b9586a8128203062b73",
+      "sha256": "62e5c75a22090aab293894f150a627f704a21bc17d2b9088ad84d66bed75a997",
       "operations": [
         [
           "copy",
@@ -1005,7 +1005,7 @@
         ],
         [
           "add",
-          "d35df1ccf781f994703753e92b1ddf22cf03b9ad766db442bca7791ae427da34"
+          "709e8eb2a8569b85add9d8e04c727fa08b58342d1dd93b7d329971821a394743"
         ],
         [
           "copy",

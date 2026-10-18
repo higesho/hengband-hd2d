@@ -739,6 +739,8 @@ int host_next_key()
             g_has_last_digest=false;
         }
     }
+    /* 検査用（環境変数 HD2D_TEST_MONSTER_ACT が無ければ何もしない）。命令ファイルがあれば敵に魔法・直接攻撃をさせる。 */
+    if(const int wake=gb_test_monster_act_poll())return wake;
     std::lock_guard<std::mutex> lock(g_inbox_mutex);
     if (g_key_queue.empty()) {
         return 0;

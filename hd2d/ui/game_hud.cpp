@@ -1384,6 +1384,71 @@ bool drag_divider(int at_px, int origin_px, int block_px, int n, int count, int 
     return true;
 }
 
+/*!
+ * @brief 左のステータス欄の天候（アイコンと、雨・風・気温の値）。 
+ * @param body 状態欄の本文の矩形（字の倍率を掛けた後の座標）
+ * @param used_lines すでに字が並んでいる行数（天候はその下に置く）
+ * @details コアが天候を申告したときだけ描く（`frame.weather.declared`）。アイコンは 3 行ぶんの高さの正方形、
+ * 横に「雨 8」「風 3」「気温 9」の 3 行。気温の字の色は原作の `prt_weather()` と同じ（段 0 が薄い赤・1 が黄・2 が白・3 が水色）。
+ * 置く場所は**状態欄の最後の字の 1 行下**。入りきらなければ描かない（枠の外へは描かない）。
+ * アイコンは画像なので、先に下敷き（`paint`）を流してから描く（下敷きは後でまとめて流れるため、流さないと下敷きの下に隠れる）。
+ */
+void draw_weather_status(UiPaint &paint, TextOverlay &text, const RectPx &body, int cell_h, int used_lines,
+    const GameFrame &frame, const OrbHudImages &images, float scale, int theme)
+{
+    const WeatherState &w = frame.weather;
+    if (!w.declared || body.empty()) {
+        return;
+    }
+    const int block_h = cell_h * 3;
+    const int y0 = body.y + ((used_lines + 1) * cell_h);
+    if ((y0 + block_h) > (body.y + body.h)) {
+        return;
+    }
+    const int icon_size = block_h;
+    if (images.has_weather_icons()) {
+        paint.flush();
+        MenuImageScaleScope image_scope(*images.painter, nullptr, scale);
+        const UiImage &sheet = *images.weather_icons;
+        const int cell = std::max(1, sheet.width() / kWeatherIconCount);
+        const int icon = std::clamp(weather_icon_index(w), 0, kWeatherIconCount - 1);
+        const float tw = static_cast<float>(sheet.width());
+        const float th = static_cast<float>(sheet.height());
+        //! 半画素だけ内側から取る（縮めたとき隣のセルが縁に混ざらない）。
+        const float u0 = (static_cast<float>(icon * cell) + 0.5f) / tw;
+        const float u1 = (static_cast<float>((icon + 1) * cell) - 0.5f) / tw;
+        images.painter->draw_region(sheet, RectPx{ body.x, y0, icon_size, icon_size }, u0, 0.5f / th, u1,
+            (static_cast<float>(cell) - 0.5f) / th, 1.f);
+    }
+    const struct {
+        const char *key;
+        int value;
+        std::uint8_t color;
+    } rows[3] = {
+        { "hd2d.ui.weather.rain", w.rain, 1 },
+        { "hd2d.ui.weather.wind", w.wind, 1 },
+        { "hd2d.ui.weather.temp", w.temp, static_cast<std::uint8_t>((w.temp_level() == 0) ? 12 : (w.temp_level() == 1) ? 11 : (w.temp_level() == 2) ? 1 : 14) },
+    };
+    int label_w = 0;
+    for (const auto &row : rows) {
+        label_w = std::max(label_w, text.measure(i18n::tr(row.key)));
+    }
+    const int tx = body.x + icon_size + std::max(2, text.cell_w() / 2);
+    const int right = body.x + body.w;
+    for (int i = 0; i < 3; ++i) {
+        const int y = y0 + (i * cell_h);
+        const std::string label = i18n::tr(rows[i].key);
+        const TextColor color = text_from_term_color(rows[i].color, 1.f, theme);
+        text.draw(tx, y, label, color, right - tx);
+        char value[16];
+        std::snprintf(value, sizeof(value), "%2d", rows[i].value);
+        const int vx = tx + label_w + std::max(2, text.cell_w() / 2);
+        if (vx < right) {
+            text.draw(vx, y, value, color, right - vx);
+        }
+    }
+}
+
 } // namespace
 
 bool drag_grip(const UiLayout &layout, int grip, int x, int y, SubSplit &split)
@@ -1517,6 +1582,13 @@ void draw_game_ui(UiPaint &paint, TextOverlay &text, const UiLayout &layout,
         const auto logical=panel_logical_layout(layout,scope.scale,text);
         const UiProbeLayer probe_layer("status");
         draw_text_grid(text,panel_body(logical.status_col,logical.cell_w),std::string(),frame.status_col_lines,logical.cell_h,state.window_theme);
+        //! 天候（コアが申告したときだけ。TOband）。状態欄の最後の字の 1 行下にアイコンと値を置く。
+        if (frame.weather.declared) {
+            static const OrbHudImages no_weather_images{};
+            draw_weather_status(paint, text, panel_body(logical.status_col, logical.cell_w), logical.cell_h,
+                static_cast<int>(frame.status_col_lines.size()), frame,
+                (backdrops != nullptr) ? backdrops->orb : no_weather_images, scope.scale, state.window_theme);
+        }
     }
 
     // --- サブパネル 5 枚 ---

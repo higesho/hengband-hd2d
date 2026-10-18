@@ -50,6 +50,19 @@ struct TargetingExtra {
     bool enabled{true};
     bool operator==(const TargetingExtra &) const = default;
 };
+// A short coloured text the core attaches to the cursor cell (TOband: the element values of the grid and the
+// element of the monster on it, exactly what the original prints on the first line of its look/target prompt).
+// The UI draws it as a small popup at the lower right of the cursor. `color` is a TERM_COLOR (0..15), converted
+// with the frame's colour table. Other cores never send any, so `info` stays empty and nothing changes for them.
+struct TargetingInfoSpan {
+    std::string text;
+    int color{1};
+    bool operator==(const TargetingInfoSpan &) const = default;
+};
+struct TargetingInfoLine {
+    std::vector<TargetingInfoSpan> spans;
+    bool operator==(const TargetingInfoLine &) const = default;
+};
 struct TargetingState {
     bool active{};
     bool preview_only{}; // A highlighted native menu action; accepts no aiming input.
@@ -69,5 +82,7 @@ struct TargetingState {
     std::vector<TargetingAreaCell> area;
     std::vector<TargetingMarker> markers;
     std::vector<TargetingExtra> extras;
+    // The popup at the cursor (see TargetingInfoLine). Empty = no popup.
+    std::vector<TargetingInfoLine> info;
     bool operator==(const TargetingState &) const = default;
 };

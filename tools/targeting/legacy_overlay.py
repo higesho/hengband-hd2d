@@ -6,6 +6,8 @@ import line_anchor as anchor
 H={
     'genso_target_set':'091d0251c710','genso_tgt_pt':'fdb05aedc7f0','heng_target_set':'0c3109a0f107',
     'heng_point_target':'8578fd904816','sil_target_set':'233e56e0583e','open_brace':'021fb596db81',
+    # TOband の xtra2.c の tgt_pt(int *x_ptr, int *y_ptr, bool allow_player) の宣言の行（幻想蛮怒は引数が 2 つ）
+    'toband_tgt_pt':'83ce3a6b3418',
 }
 def after_header(text,key,new,what):
     """Insert `new` right after the function header line named by H[key] and its opening brace."""
@@ -30,6 +32,33 @@ def genso_xtra(source):
     text=after_header(text,'genso_target_set','    if (hb_target_enabled() && !(mode & TARGET_LOOK)) {\n        int dir;hb_target_profile_begin("genso:standalone-target");hb_target_profile_plain(NATIVE_TARGET_NEUTRAL);\n        return _gb_choose_target(mode,0,&dir,NULL,NULL);\n    }','Genso target_set')
     text=after_header(text,'genso_tgt_pt','    if (hb_target_enabled()) {int dir;return _gb_choose_target(0,0,&dir,x_ptr,y_ptr);}','Genso tgt_pt')
     text+='\n#include "gb_targeting_geometry.inl"\n#include "gb_targeting_path.generated.inl"\n#include "gb_targeting.inl"\n#include "gb_targeting_menu.inl"\n'
+    return text.replace('\n',newline).encode('latin1')
+
+def toband_xtra(source):
+    """TOband の入力の関数に「狙いの画面」の入口を足す（幻想蛮怒の genso_xtra と同じ範囲。2026-10-17）。
+
+    get_aim_dir・get_rep_dir・get_rep_dir2・get_hack_dir の `while (!dir)` を `else while (!dir)` に替え、
+    その手前に新しい画面を呼ぶ分岐を足す（原作の確認・混乱・繰り返しの後ろの処理はそのまま残る）。
+    target_set・tgt_pt の頭にも分岐を足す。末尾に受け口（toband/adapter の .inl）を取り込む。
+    tgt_pt は TOband だけ第 3 引数 allow_player があり、偽なら自分のマスは選べない。"""
+    newline='\r\n' if b'\r\n' in source else '\n'
+    text=source.decode('latin1').replace('\r\n','\n')
+    def once(old,new):
+        nonlocal text
+        if text.count(old)!=1:raise ValueError('TOband hook changed: '+old[:90])
+        text=text.replace(old,new,1)
+    once('#include "angband.h"','#include "angband.h"\n#include "bridge/native_targeting_api.h"\nstatic int _tb_choose_target(int mode,int eight_way,int *direction,int *x,int *y);\nstatic int _tb_target_movement_pending(void);\nstatic int _tb_target_forbid_self=0;')
+    for name,signature,eight in [('get_aim_dir','int *dp',0),('get_rep_dir','int *dp, bool under',2),('get_rep_dir2','int *dp',1),('get_hack_dir','int *dp',0)]:
+        start=text.index('bool '+name+'('+signature+')\n{');stop=text.index('\n}',start)
+        section=text[start:stop];old='\twhile (!dir)'
+        if section.count(old)!=1:raise ValueError('TOband input loop changed: '+name)
+        mode='under ? 2 : 1' if eight==2 else str(eight)
+        condition='(!dir || dir == 5)' if not eight else '!dir'
+        hook=f'\tif (hb_target_enabled() && {condition} && !_tb_target_movement_pending())\n\t{{\n\t\tif (!_tb_choose_target(TARGET_KILL,{mode},&dir,NULL,NULL)) dir=0;\n\t}}\n\telse while (!dir)'
+        text=text[:start]+section.replace(old,hook)+text[stop:]
+    text=after_header(text,'genso_target_set','    if (hb_target_enabled() && !(mode & TARGET_LOOK)) {\n        int dir;hb_target_profile_begin("toband:standalone-target");hb_target_profile_plain(NATIVE_TARGET_NEUTRAL);\n        return _tb_choose_target(mode,0,&dir,NULL,NULL);\n    }','TOband target_set')
+    text=after_header(text,'toband_tgt_pt','    if (hb_target_enabled()) {int dir;_tb_target_forbid_self=!allow_player;return _tb_choose_target(0,0,&dir,x_ptr,y_ptr);}','TOband tgt_pt')
+    text+='\n#include "tb_targeting_geometry.inl"\n#include "tb_targeting_path.generated.inl"\n#include "tb_targeting.inl"\n#include "tb_targeting_menu.inl"\n'
     return text.replace('\n',newline).encode('latin1')
 
 def heng_cpp(source,kind):

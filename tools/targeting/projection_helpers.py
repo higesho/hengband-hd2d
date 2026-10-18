@@ -73,7 +73,8 @@ class ProjectionHelpers:
 
 def load_helpers(root,core):
     helpers=ProjectionHelpers()
-    paths=sorted((root/'src/spell-kind').glob('*.cpp')) if core=='heng' else [root/('frox/src/spells2.c' if core=='frox' else 'gensoband/src/spells2.c')]
+    spells2={'frox':'frox/src/spells2.c','toband':'toband/src/spells2.c'}.get(core,'gensoband/src/spells2.c')
+    paths=sorted((root/'src/spell-kind').glob('*.cpp')) if core=='heng' else [root/spells2]
     if core=='heng':paths.append(root/'src/spell/spells-status.cpp')
     for path in paths:helpers.read(path)
     if core=='heng':

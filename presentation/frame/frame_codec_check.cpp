@@ -29,6 +29,8 @@
 #include "frame/frame_codec_check.h"
 
 #include "frame/frame_codec.h"
+#include "frame/protocol_messages.h"
+#include "frame/targeting_codec.h"
 
 #include <nlohmann/json.hpp>
 
@@ -429,6 +431,12 @@ GameFrame make_synthetic_frame()
         f.status_effects.push_back(s);
     }
 
+    // ---- weather。申告あり・全部の値を 0 から外す ----
+    f.weather.declared = true;
+    f.weather.rain = 11;
+    f.weather.wind = 6;
+    f.weather.temp = 9;
+
     // ---- 攻撃の視覚効果。全欄を既定から外す ----
     {
         ProjectionFx p{};
@@ -458,6 +466,10 @@ GameFrame make_synthetic_frame()
         m.return_path = { { 7, 9, 0 }, { 7, 8, 0 } };
         f.missiles.push_back(m);
     }
+
+    // ---- element_scope（TOband のエレメントスコープ。追加だけの欄）。先頭は全欄が既定から外れた要素 ----
+    f.element_scope.push_back(ElementScopeCell{ 32767, -3, 9 });
+    f.element_scope.push_back(ElementScopeCell{ 0, 12, 15 });
 
     return f;
 }
@@ -537,11 +549,13 @@ const std::vector<std::string> &expected_paths()
         "lighting.day_minute", "lighting.daytime", "lighting.light_radius", "lighting.light_kind",
         "lighting.memory_dim", "lighting.player_lit_b64",
         "status_effects[].k", "status_effects[].l", "status_effects[].a", "status_effects[].t",
+        "weather.rain", "weather.wind", "weather.temp",
         "projections[].seq", "projections[].o", "projections[].s", "projections[].at", "projections[].r",
         "projections[].sy", "projections[].sx", "projections[].iy", "projections[].ix", "projections[].f",
         "projections[].p[][]", "projections[].a[][]",
         "missiles[].seq", "missiles[].o", "missiles[].k", "missiles[].it", "missiles[].br", "missiles[].sy",
         "missiles[].sx", "missiles[].h", "missiles[].p[][]", "missiles[].rp[][]",
+        "element_scope[][]",
     };
     return paths;
 }
@@ -798,6 +812,146 @@ int run_frame_codec_smoke()
             ++failed;
         } else {
             say("  PASS status_effects の知らない kind を 1 件だけ捨てる");
+        }
+    }
+
+    // 8b) weather（追加だけの欄）。
+    //     申告なしは鍵ごと出ない（古いコアと同じバイト列）／申告ありは 0 でも 3 つとも書く／往復／範囲外は 0〜15 に丸める／型違いは拒否。
+    {
+        GameFrame none{};
+        GameFrame zero{};
+        zero.weather.declared = true; // 快晴・凪・暑い（全部 0）でも「申告あり」は残る
+        GameFrame back_none{};
+        GameFrame back_zero{};
+        GameFrame clamped{};
+        GameFrame wrong{};
+        std::string e;
+        const std::string enc_none = encode_game_frame(none);
+        const std::string enc_zero = encode_game_frame(zero);
+        const bool ok = (enc_none.find("weather") == std::string::npos)
+            && (enc_zero.find("\"weather\":{\"rain\":0,\"temp\":0,\"wind\":0}") != std::string::npos)
+            && decode_game_frame(enc_none, back_none, e) && !back_none.weather.declared
+            && decode_game_frame(enc_zero, back_zero, e) && back_zero.weather.declared && (back_zero.weather.rain == 0)
+            && decode_game_frame("{\"t\":\"frame\",\"weather\":{\"rain\":99,\"wind\":-3,\"temp\":7}}", clamped, e)
+            && clamped.weather.declared && (clamped.weather.rain == 15) && (clamped.weather.wind == 0)
+            && (clamped.weather.temp == 7)
+            && !decode_game_frame("{\"t\":\"frame\",\"weather\":[1]}", wrong, e)
+            && !decode_game_frame("{\"t\":\"frame\",\"weather\":{\"rain\":\"x\"}}", wrong, e);
+        // 段の丸めは原作の `weather_level(v) = v / 4` と同じ。気温の段が 2 以上なら雨は雪。
+        WeatherState w;
+        w.declared = true;
+        w.rain = 8;
+        w.temp = 7;
+        const bool rain = (weather_precipitation(w).kind == Precipitation::Rain);
+        w.temp = 8;
+        const bool snow = (weather_precipitation(w).kind == Precipitation::Snow);
+        w.rain = 7;
+        const bool clear = (weather_precipitation(w).kind == Precipitation::None);
+        w.rain = 12;
+        w.wind = 12;
+        const bool storm = weather_is_storm(w) && (weather_precipitation(w).heavy == 3);
+        if (!ok || !rain || !snow || !clear || !storm) {
+            say("  FAIL weather: 往復・省略・丸め・降る物の判定のどれかが違う (%s) ok=%d rain=%d snow=%d clear=%d storm=%d",
+                e.c_str(), ok, rain, snow, clear, storm);
+            ++failed;
+        } else {
+            say("  PASS weather: 申告なしは鍵ごと出ない・0 でも申告あり・範囲外は丸める・雨/雪/暴風の判定");
+        }
+    }
+
+    // 9) hello_ack.default_view_turn（設計 TOBAND_CORE_DESIGN §6.2。追加だけの欄）。
+    //    0 は省略（古いコアと同じバイト列）／1〜7 は往復／欄の無い古い hello_ack は 0／範囲外は 0 に戻す。
+    {
+        HelloAckMessage ack{};
+        ack.core_name = "toband";
+        const std::string without = encode_hello_ack(ack);
+        ack.default_view_turn = 1;
+        const std::string with_turn = encode_hello_ack(ack);
+        HelloAckMessage back0{};
+        HelloAckMessage back1{};
+        HelloAckMessage legacy{};
+        HelloAckMessage out_of_range{};
+        std::string e;
+        const bool ok = (without.find("default_view_turn") == std::string::npos)
+            && (with_turn.find("\"default_view_turn\":1") != std::string::npos)
+            && decode_hello_ack(without, back0, e) && (back0.default_view_turn == 0)
+            && decode_hello_ack(with_turn, back1, e) && (back1.default_view_turn == 1)
+            && (back1.core_name == "toband")
+            && decode_hello_ack("{\"t\":\"hello_ack\",\"protocol\":1,\"core_name\":\"hengband\"}", legacy, e)
+            && (legacy.default_view_turn == 0)
+            && decode_hello_ack("{\"t\":\"hello_ack\",\"default_view_turn\":9}", out_of_range, e)
+            && (out_of_range.default_view_turn == 0);
+        bool all_turns = true;
+        for (int turn = 1; turn <= 7; ++turn) {
+            HelloAckMessage a{};
+            a.default_view_turn = turn;
+            HelloAckMessage b{};
+            if (!decode_hello_ack(encode_hello_ack(a), b, e) || (b.default_view_turn != turn)) {
+                all_turns = false;
+            }
+        }
+        if (!ok || !all_turns) {
+            say("  FAIL hello_ack.default_view_turn: 往復・省略・古い相手・範囲外のどれかが違う");
+            ++failed;
+        } else {
+            say("  PASS hello_ack.default_view_turn: 0 は省略／1〜7 は往復／無い欄は 0／範囲外は 0");
+        }
+    }
+    // 10) hello_ack.ground_relief（設計 TOBAND_CORE_DESIGN §6.3。追加だけの欄）。
+    {
+        HelloAckMessage ack;
+        const std::string without = encode_hello_ack(ack);
+        ack.ground_relief = 3;
+        const std::string with_relief = encode_hello_ack(ack);
+        HelloAckMessage back0;
+        HelloAckMessage back1;
+        HelloAckMessage legacy;
+        HelloAckMessage out_of_range;
+        std::string e;
+        const bool ok = (without.find("ground_relief") == std::string::npos)
+            && (with_relief.find("\"ground_relief\":3") != std::string::npos)
+            && decode_hello_ack(without, back0, e) && (back0.ground_relief == 0)
+            && decode_hello_ack(with_relief, back1, e) && (back1.ground_relief == 3)
+            && decode_hello_ack("{\"t\":\"hello_ack\"}", legacy, e) && (legacy.ground_relief == 0)
+            && decode_hello_ack("{\"t\":\"hello_ack\",\"ground_relief\":9}", out_of_range, e)
+            && (out_of_range.ground_relief == 0);
+        if (!ok) {
+            say("  FAIL hello_ack.ground_relief: 往復・省略・古い相手・範囲外のどれかが違う");
+            ++failed;
+        } else {
+            say("  PASS hello_ack.ground_relief: 0 は省略／3 は往復／無い欄は 0／範囲外は 0");
+        }
+    }
+
+    // 11) 狙いの状態の info（カーソルのマスのポップアップ。TOband。追加だけの欄）。
+    //     空なら鍵ごと出ない（他のコアと同じバイト列）／色つきの字は往復／範囲外の色は撥ねる。
+    {
+        TargetingState t{};
+        t.preview_only = true;
+        t.scope = 1;
+        t.revision = 1;
+        t.width = 10;
+        t.height = 10;
+        const std::string without = encode_targeting(t).dump();
+        t.info.push_back(TargetingInfoLine{ { TargetingInfoSpan{ "(火+02,", 12 }, TargetingInfoSpan{ "水+00)", 1 } } });
+        t.info.push_back(TargetingInfoLine{ { TargetingInfoSpan{ "ゴブリン 風", 9 } } });
+        const json with_info = encode_targeting(t);
+        TargetingState info_back{};
+        TargetingState info_back0{};
+        std::string e;
+        json bad = with_info;
+        bad["info"][0][0][0] = 16;
+        TargetingState rejected{};
+        const bool ok = (without.find("\"info\"") == std::string::npos)
+            && with_info.contains("info")
+            && decode_targeting(json::parse(without), info_back0, e) && info_back0.info.empty()
+            && decode_targeting(with_info, info_back, e) && (info_back.info == t.info) && (info_back == t)
+            && !decode_targeting(bad, rejected, e);
+        if (!ok) {
+            say("  FAIL targeting.info: 省略・往復・範囲外のどれかが違う (%s)", e.c_str());
+            ++failed;
+        } else {
+            say("  PASS targeting.info: 空は省略／色つきの字は往復／範囲外の色は撥ねる");
         }
     }
 

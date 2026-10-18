@@ -957,12 +957,15 @@ void afx_style_checks(const AfxCheck &check)
                 attack_fx::kGensobandAliases, sizeof(attack_fx::kGensobandAliases) / sizeof(attack_fx::kGensobandAliases[0]), "gensoband");
             scan(attack_fx::kSilqOwnLooks, sizeof(attack_fx::kSilqOwnLooks) / sizeof(attack_fx::kSilqOwnLooks[0]), attack_fx::kSilqAliases,
                 sizeof(attack_fx::kSilqAliases) / sizeof(attack_fx::kSilqAliases[0]), "silq");
+            // TOband は専用の見た目が無く、寄せる表だけ（寄せ先がすべて変愚の名前＝登録表にあること）。
+            scan(nullptr, 0, attack_fx::kTobandAliases, sizeof(attack_fx::kTobandAliases) / sizeof(attack_fx::kTobandAliases[0]), "toband");
             check(bad.empty(), "寄せる表: コア名が重ならず、専用の見た目と寄せ先（変愚の名前）がすべて登録表にある" + bad);
             check((std::string(attack_fx::frox_look_name("storm")) == "fc_storm") && (std::string(attack_fx::frox_look_name("arrow")) == "missile")
                     && (std::string(attack_fx::frox_look_name("fire")) == "fire") && (std::string(attack_fx::gensoband_look_name("tornado")) == "gb_tornado")
                     && (std::string(attack_fx::gensoband_look_name("punish_3")) == "cause_3") && (std::string(attack_fx::gensoband_look_name("pois")) == "pois")
                     && (std::string(attack_fx::silq_look_name("web")) == "sq_web") && (std::string(attack_fx::silq_look_name("boulder")) == "shards")
-                    && (std::string(attack_fx::silq_look_name("acid")) == "acid"),
+                    && (std::string(attack_fx::silq_look_name("acid")) == "acid") && (std::string(attack_fx::toband_look_name("pure_wind")) == "force")
+                    && (std::string(attack_fx::toband_look_name("old_drain")) == "hypodynamia") && (std::string(attack_fx::toband_look_name("fire")) == "fire"),
                 "寄せる表: コア名 → 見た目の名前の引き方（専用 → 寄せ先 → そのまま）");
         }
         check((fx_find_style("inertial") != nullptr) && (fx_find_style("inertia") == nullptr) && (fx_find_style("INERTIAL") != nullptr),

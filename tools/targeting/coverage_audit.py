@@ -5,7 +5,8 @@ from profile_inventory import audit
 
 def build(sources,overlay):
     result={}
-    for core,folder,filename in [('frox','frox/src','profiles.json'),('genso','gensoband/src','genso-profiles.json'),('heng','src','heng-profiles.json'),('sil','silq/src','sil-profiles.json')]:
+    for core,folder,filename in [('frox','frox/src','profiles.json'),('genso','gensoband/src','genso-profiles.json'),('heng','src','heng-profiles.json'),('sil','silq/src','sil-profiles.json'),
+                                 ('toband','toband/src','toband-profiles.json')]:
         profiles=json.loads((overlay/filename).read_text(encoding='utf8'))
         indexed={p['site'].removeprefix('movement:'):p for p in profiles}
         rows=audit(sources/folder)

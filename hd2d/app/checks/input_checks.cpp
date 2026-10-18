@@ -395,7 +395,7 @@ int run_pad_check(const AppOptions &options)
             { '>', "階段を下りる" }, { 's', "探す" }, { 'T', "穴を掘る" }, { 'z', "ロッドを振る" }, { 'A', "始動する" },
             { 'o', "開ける" }, { 'c', "閉じる" }, { 'a', "魔法棒で狙う" }, { 'u', "杖を使う" }, { 'S', "探索モード" },
             { 'v', "投げる" }, { 'm', "使う" } });
-        for (const char *core : { "hengband", "tangband", "gensoband", "frox" }) {
+        for (const char *core : { "hengband", "tangband", "gensoband", "toband", "frox" }) {
             check_core(core, hengband_family,
                 { { PadInput::X, 0, 'g', 0, "X(拾う)" }, { PadInput::Y, 0, 'f', 0, "Y(撃つ)" },
                     { PadInput::LeftShoulder, 0, '<', 0, "LB(階段を上る)" },
@@ -529,7 +529,8 @@ int run_pad_check(const AppOptions &options)
             bool changes; //!< 前の版と今の版の既定が違う（＝移し替えで中身が変わる）
         };
         const MigrateCase migrate_cases[] = { { "hengband", &hengband_family, false }, { "tangband", &hengband_family, false },
-            { "gensoband", &hengband_family, false }, { "frox", &hengband_family, false }, { "silq", &silq_table, true },
+            { "gensoband", &hengband_family, false }, { "toband", &hengband_family, false },
+            { "frox", &hengband_family, false }, { "silq", &silq_table, true },
             { "Umoria", &umoria, false }, { "angband", &angband, true }, { "Rogue 3.6", &rogue36, true },
             { "Rogue 5.4", &rogue54, true }, { "RogueClone2", &rogue2, true } };
         for (const MigrateCase &mc : migrate_cases) {
@@ -819,7 +820,7 @@ int run_pad_check(const AppOptions &options)
             fail("斜め移動限定に名前（ui_action_label）が無い");
         }
         const std::vector<PadCommand> none_commands;
-        for (const char *const core : { "hengband", "tangband", "gensoband", "frox", "silq", "angband", "Umoria", "Rogue 3.6", "Rogue 5.4",
+        for (const char *const core : { "hengband", "tangband", "gensoband", "toband", "frox", "silq", "angband", "Umoria", "Rogue 3.6", "Rogue 5.4",
                  "RogueClone2" }) {
             PadBinds fresh;
             (void)apply_default_pad_binds(fresh, none_commands, core);
@@ -1468,6 +1469,8 @@ int run_sdl_input_check()
             { "tangband", "rogue", '.', { ',' }, false, true },
             { "gensoband", "original", '.', { '.' }, false, true },
             { "gensoband", "rogue", '.', { ',' }, false, true },
+            { "toband", "original", '.', { '.' }, false, true },
+            { "toband", "rogue", '.', { ',' }, false, true },
             { "frox", "original", '.', { '.' }, false, true },
             { "frox", "rogue", '.', { ',' }, false, true },
             { "silq", "original", '.', { '.' }, false, true },
@@ -1557,7 +1560,17 @@ int run_sdl_input_check()
         check(batch.input.events.size() == 1 && batch.input.events[0].e == "move" && batch.input.events[0].dx == 1
             && !state.pending_run.active, "Run falls back to a plain move when no aim screen opens");
         // 4 方向と斜め（テンキー。NumLock 切）も同じ形（普通のキーで読むコアで見る）
-        set_run_commands(run_cases[14]);
+        //! 表の並びは番号で引かない（2026-10-18、TOband の 2 行を途中に足して 14 番が Umoria にずれ、
+        //! 「Rogue 3.6 の f で走る」を確かめるはずが別のコアの行で落ちた）。コアの名前で引く。
+        const auto run_case_of = [&](const char *core) -> const RunCase & {
+            for (const RunCase &c : run_cases) {
+                if (std::string(c.core) == core) {
+                    return c;
+                }
+            }
+            return run_cases[0];
+        };
+        set_run_commands(run_case_of("Rogue 3.6"));
         pump({key(SDLK_UP, KMOD_SHIFT)});
         check(batch.input.events.size() == 2 && batch.input.events[0].chr == "f" && batch.input.events[1].dy == -1
             && batch.input.events[1].dx == 0, "Shift+Up runs north");
@@ -3086,7 +3099,7 @@ int run_core_link_check()
         std::fprintf(stderr, "[core-link-check] HENGBAND_DATA_ROOT=%s\n", temp_root.string().c_str());
     }
     bool warmed_up = false;
-    for (const char *name : {"HengbandCore.exe", "TangbandCore.exe", "GensobandCore.exe", "SilCore.exe", "FroxCore.exe", "Rogue2Core.exe", "Rogue36Core.exe", "Rogue54Core.exe"}) {
+    for (const char *name : {"HengbandCore.exe", "TangbandCore.exe", "GensobandCore.exe", "TobandCore.exe", "SilCore.exe", "FroxCore.exe", "Rogue2Core.exe", "Rogue36Core.exe", "Rogue54Core.exe"}) {
         for (int attempt = 0; attempt < 2; ++attempt) {
             CoreLink link;
             CoreLinkOptions options;

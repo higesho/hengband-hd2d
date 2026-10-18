@@ -280,6 +280,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\render\scene_look.cpp" />
     <ClCompile Include="..\..\hd2d\render\leaf_detail.cpp" />
     <ClCompile Include="..\..\hd2d\render\dust_motes.cpp" />
+    <ClCompile Include="..\..\hd2d\render\weather_fx.cpp" />
     <ClCompile Include="..\..\hd2d\render\attack_fx_view.cpp" />
     <ClCompile Include="..\..\hd2d\render\voxel_fx.cpp" />
     <ClCompile Include="..\..\hd2d\render\voxel_fx_renderer.cpp" />
@@ -364,6 +365,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\render\scene_look.h" />
     <ClInclude Include="..\..\hd2d\render\leaf_detail.h" />
     <ClInclude Include="..\..\hd2d\render\dust_motes.h" />
+    <ClInclude Include="..\..\hd2d\render\weather_fx.h" />
     <ClInclude Include="..\..\hd2d\render\attack_fx_view.h" />
     <ClInclude Include="..\..\hd2d\render\voxel_fx.h" />
     <ClInclude Include="..\..\hd2d\render\voxel_fx_renderer.h" />

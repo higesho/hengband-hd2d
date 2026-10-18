@@ -59,6 +59,8 @@ CORE_C_FILES = [
 ADAPTER_C_FILES = ["an_bootstrap.c", "an_null_term.c", "an_wiz_stats_stub.c", "an_map_shim.c",
                     "an_native_inventory.c", "an_text_hooks.c", "an_pad_shim.c", "an_ui_shim.c",
                     "an_targeting.c", "an_town_rng.c", "an_town_map.c", "an_profile.c", "an_fx.c",
+                    # 検査用：敵の行動の指定（環境変数 HD2D_TEST_MONSTER_ACT が無ければ何もしない）。
+                    "an_test_monster_act.c",
                     # （日本語層）: 全角 2 セル・名前の組み立て。
                     "an_wide.c", "an_name_ja.c", "an_lore_ja.c"]
 

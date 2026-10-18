@@ -1851,17 +1851,9 @@
     }
   },
   "additions": {
-    "000c236add825983ecddde1776e3362a0eddbecb992ad2603c70fdcf05326917": {
-      "encoding": "utf8",
-      "text": "\r\n#include \"fc_lang_c.h\" //FC: japanese layer (docs/FROX_JA_DESIGN.md 4)\n"
-    },
     "013f349458b590d95fc43254fcdf40072021a7dad95d7101f5194f94dd313072": {
       "encoding": "utf8",
       "text": " //FC: #66"
-    },
-    "0161a811a7c7bf9bb7d9a654819ec473a35d614ba0a34399461be3b9119551f4": {
-      "encoding": "utf8",
-      "text": "        //FC: #53 MENU_TEXT is a power/group name. sprintf() never reaches\n        //FC: vstrnfmt(), so look it up here (docs/FROX_JA_DESIGN.md 8.54).\n        sprintf(temp, \"  %c) %s\", keys[i], fc_spell_name(var_get_string(&text))); //FC: #53\n"
     },
     "01713263fee329d1cdf265e4a18d63a5441709df3cd8ffc751967691856182e2": {
       "encoding": "utf8",
@@ -1875,6 +1867,14 @@
       "encoding": "utf8",
       "text": "\n"
     },
+    "01fe850728b05b34dd9c2721e06b8d7af810cf2f82a177a409c87829e9cfabbd": {
+      "encoding": "utf8",
+      "text": "        //FC: the moon phrase is glued onto a message that is built at run\n        //FC: time, so cmsg_print()'s fc_tr() can never match the whole\n        //FC: string. Look the fragment up here instead\n        //FC: (Japanese layer #48).\n        strcat(desc, fc_tr(werewolf_moon_message())); //FC:\n"
+    },
+    "024e059ed1c2010f88c2ebcccab06ac296acc6f59c9af3142caa1e0373ba5e09": {
+      "encoding": "utf8",
+      "text": "                if (fc_mon_list_header(buf, sizeof(buf), 0, mode == MON_LIST_SUBWINDOW,\n                                       0, list->ct_los ? 1 : 0,\n                                       info_ptr->ct_total, info_ptr->ct_awake)) //FC: japanese: same shape as #22 (Japanese layer #23)\n                    ; //FC: buf is filled\n                else "
+    },
     "0270a0e951072dde1817bb182b7a29f3f1ae3c7b094f6077cefbac1029e9b573": {
       "encoding": "utf8",
       "text": " fc_tr_fmt("
@@ -1887,13 +1887,13 @@
       "encoding": "utf8",
       "text": ", fc_tr(get_race()->subname)); //FC: #87\n"
     },
+    "03abfe880340a9faa2fbfee9896094f896c247d37edd8110db6dcdc63f3af96a": {
+      "encoding": "utf8",
+      "text": "    //FC: japanese builds the name from scratch (Japanese layer)\n    if (fc_monster_desc_ja(desc, m_ptr, mode)) return;\n\n"
+    },
     "043a718774c572bd8a25adbeb1bfcd5c0256ae11cecf9f9c3f925d0e52beaf89": {
       "encoding": "utf8",
       "text": "s"
-    },
-    "0444cfc683cd2abefe22f3426b077cb928062d808d1824d9956ea2dc4eb3f64c": {
-      "encoding": "utf8",
-      "text": "    //FC: these go into a %s of a translated frame, so the bare words would\n    //FC: stay english in the middle of a japanese sentence\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #65).\n    case MACRO_UI_SCOPE_KEYMAPS: return fc_tr(\"keymaps\"); //FC:\n    case MACRO_UI_SCOPE_MACROS: return fc_tr(\"macros\"); //FC:\n    default: return fc_tr("
     },
     "044a9e50c1bd3091ed5edb27fce3136a691fb92d00e80924f1a74d0351105bf3": {
       "encoding": "utf8",
@@ -1910,10 +1910,6 @@
     "04da012cd3d186a6cd800f5c737a4063ccdf404f641f59c4dfc7af158d075ff5": {
       "encoding": "utf8",
       "text": "fc_bar_short(bar[i].lstr, "
-    },
-    "04f2f48b236cb1df65a9db6b1d8c8a318f8913ee421dfbe74e72b9100fdf8512": {
-      "encoding": "utf8",
-      "text": "            //FC: japanese layer (docs/FROX_JA_DESIGN.md 4, insertion point #42)\n            cptr action_name = fc_bldg_action(bldg->act_names[i]);\n"
     },
     "04f6c1432ccf867d729039bb6921aaa1494a95c200b9014dbbff80dedc2377b5": {
       "encoding": "utf8",
@@ -1946,10 +1942,6 @@
     "05d982ee3c27bc056bdea86c4cbb3824f7a05a4f60377a4482234dee0da71be0": {
       "encoding": "utf8",
       "text": "            char killer[MAX_NLEN + 24]; //FC: #114 the japanese cause does not fit an initialiser\n\n            my_strcpy(killer, fc_tr("
-    },
-    "06f761f05225a920c69602c27bfb69bf5f6a011441ffd56d8c95af4760a3eb67": {
-      "encoding": "utf8",
-      "text": "    //FC: DO NOT wrap this one in fc_spell_name(). The name is the key of the\n    //FC: spell statistics map, and that map is written to and read from the save\n    //FC: file (spell_stats_on_save / _on_load above). Translating it here would\n    //FC: split every character's spell counts across languages\n    //FC: (docs/FROX_JA_DESIGN.md 8.50 #2). Display sites are wrapped instead.\n"
     },
     "0715e634ed821b666fc279cf8ff8f07c0cf196ac25f9e3d706c1964d5d97ff17": {
       "encoding": "utf8",
@@ -1987,6 +1979,10 @@
       "encoding": "utf8",
       "text": "        //FC: #54 look the name up before it goes into the colour tag: the\n        //FC: composed string would key on the colour too (FROX_JA_DESIGN.md 8.55).\n        fc_spell_name(res_name(res)) //FC: #54\n"
     },
+    "0e4ae8aa92bc59d446d3a7b8cb99fd6be4f7fac081cd540d0e6bc18f172416e2": {
+      "encoding": "utf8",
+      "text": "\r\n#include \"fc_lang_c.h\" //FC: japanese layer\n"
+    },
     "0edac6eb7dc58cd8b3f4e885b17949fccaa5c9dca24370e8d9b75eb2ded40004": {
       "encoding": "utf8",
       "text": " + killer_start"
@@ -1999,6 +1995,10 @@
       "encoding": "utf8",
       "text": "comes"
     },
+    "11da314e5a6eb55150ee97997486e5143f4e76ab1f2c368ff89552cfd2381ca5": {
+      "encoding": "utf8",
+      "text": "        //FC: the pack markers are glued on as bytes, so no catalogue hook sees\n        //FC: them (Japanese layer #32).\n"
+    },
     "1244938627de50e31173b2c8db42773fd8c517c0f465467547be034171b9960a": {
       "encoding": "utf8",
       "text": "            //FC: same as the town above (#33) -- the quotes move in japanese, so\n            //FC: the whole shape is the key, not the "
@@ -2006,6 +2006,10 @@
     "12876f7c0660420d3257f2a84104ede4f18520a2b48883ce416c99dcab2e10f2": {
       "encoding": "utf8",
       "text": "as "
+    },
+    "129f65779d744c41bf5a7d54eb9bfc92180c10e9f28e136235b0d27725e68694": {
+      "encoding": "utf8",
+      "text": "        //FC: a japanese line has no spaces, so every non-kinsoku character is a\n        //FC: break point. Guarded by fc_cp932_text() so english keeps breaking on\n        //FC: spaces alone (Japanese layer #49).\n        else if (fc_cp932_text() && !kinsoku)\n"
     },
     "12a00151914c25822a2cc9d18b05f4558ae1bca4b284eba5f741d0c1e27ef62b": {
       "encoding": "utf8",
@@ -2031,10 +2035,6 @@
       "encoding": "utf8",
       "text": "    //FC: #50 display only. get_spell_stat_name() and get_spell_spoiler_name()\n    //FC: below must NOT be wrapped: their results are save file keys\n    //FC: (spell_stats_aux str_map and power_labels[]).\n    sprintf(buf, \"%s\", fc_spell_name(var_get_string(&v))); //FC: #50\n"
     },
-    "15d2ead689b270a6b34db2c024ccc9b5fbfc7a42f1b533066aafd50e7ca82118": {
-      "encoding": "utf8",
-      "text": "        {\n            //FC: the line above is glued byte by byte, so the finished string\n            //FC: carries the item name and no catalogue key can match it.\n            //FC: hand the pieces over and let the japanese layer use a format\n            //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #38).\n            char fc_buf[MAX_NLEN + 64];\n            if (fc_obj_carry_msg(fc_buf, sizeof(fc_buf), name,\n                    obj->loc.where == INV_EQUIP, obj->loc.where == INV_QUIVER,\n                    show_slot ? slot_label(obj->loc.slot) : 0))\n                msg_print(fc_buf);\n            else\n"
-    },
     "1628b6eaf2b793aabd26f23bee599f6d8279816fbe5ada2c7c6f2e98be598cd7": {
       "encoding": "utf8",
       "text": "%s\"."
@@ -2059,6 +2059,10 @@
       "encoding": "utf8",
       "text": " //FC: #89 string_append_s() never reaches vstrnfmt()"
     },
+    "1962b1289f97976d3476941d7b473e9b04d6ab639f5b206b56f20a5d307a21bd": {
+      "encoding": "utf8",
+      "text": "            //FC: a CP932 trail byte can be 0x7E, the pluralizer: mi is 83 7E.\n            //FC: copy both bytes at the lead so the loop never reads a trail\n            //FC: byte as '~' (Japanese layer #18).\n            if (fc_is_sjis_lead((unsigned char)*s) && s[1])\n            {\n"
+    },
     "1a0f564ddc6039457b2fb26b3d6a316c15eba20a886449847c3210c35821a693": {
       "encoding": "utf8",
       "text": "    "
@@ -2079,10 +2083,6 @@
       "encoding": "utf8",
       "text": "\"resistance\", "
     },
-    "1abb557f8601a30df102c0e899bcf480114d335d889c5d2b40cb97f0c3c5fd0e": {
-      "encoding": "utf8",
-      "text": "                char ja[200]; //FC: japanese: the english plural is built from arguments (docs/FROX_JA_DESIGN.md 4 #22)\n                if (fc_mon_list_header(ja, sizeof(ja), 1, mode == MON_LIST_SUBWINDOW,\n                                       mode == MON_LIST_PROBING, 0,\n                                       info_ptr->ct_los, info_ptr->ct_awake)) //FC:\n                    c_put_str(TERM_WHITE, ja, rect.y + i, rect.x); //FC:\n                else "
-    },
     "1ad385616b76fe1508cb18850cd5581c5bff3f903334248a18bb3f03cb9b0eb5": {
       "encoding": "utf8",
       "text": "%+3d"
@@ -2099,9 +2099,17 @@
       "encoding": "utf8",
       "text": " //FC: #76"
     },
+    "1c993504ab5128b7de493e07db92cf476148f365248605178f2d2731b40ee4d0": {
+      "encoding": "utf8",
+      "text": "    //FC: translate the template BEFORE $CASTER/$TARGET are substituted -- once the\n    //FC: monster name is inside, msg_print() below can no longer look the line up\n    //FC: (Japanese layer #45).\n    msg = fc_tr(msg); //FC: #45\n"
+    },
     "1d1d155e75844591220d5531a5590a387a99b16852b4407d020f775252c510ae": {
       "encoding": "utf8",
       "text": "particle"
+    },
+    "1d239addbd5ca77c3765918e984a0c2f92ea40f449adeb66c0744c252efe5889": {
+      "encoding": "utf8",
+      "text": "    pos = fc_tr(text); //FC: look a doc literal up in the catalog, tags included (Japanese layer #12)\n\n"
     },
     "1dbec52cc084f40bfc4f19ffae4491c64cf24facd87f3c2f1178773981ea1654": {
       "encoding": "utf8",
@@ -2110,10 +2118,6 @@
     "1e8a105dbcab2f5d6b30a670c0ff91942f4db62401e669331037101e94198250": {
       "encoding": "utf8",
       "text": "                    "
-    },
-    "1f5c788eaf1d81c6fa11c9bd32ca9403de96f7373af0613b13a279a580c2a914": {
-      "encoding": "utf8",
-      "text": "    pos = fc_tr(text); //FC: look a doc literal up in the catalog, tags included (docs/FROX_JA_DESIGN.md 4 #12)\n\n"
     },
     "20366e061e46ee3fdc619ba5785a4fc8a0f32f38eaac43f9e26eb3bd017195ec": {
       "encoding": "utf8",
@@ -2139,6 +2143,10 @@
       "encoding": "utf8",
       "text": " //FC: #9 - a whole character"
     },
+    "23a45be83c73fa27ebefb7a684f1c8160beedbc303c5099199fe7f1c33c5f09b": {
+      "encoding": "utf8",
+      "text": "    //FC: DO NOT wrap this one in fc_spell_name(). The name is the key of the\n    //FC: spell statistics map, and that map is written to and read from the save\n    //FC: file (spell_stats_on_save / _on_load above). Translating it here would\n    //FC: split every character's spell counts across languages\n    //FC: (Japanese layer #2). Display sites are wrapped instead.\n"
+    },
     "23ec4e9d8312c043a8217a99cf94ba602205d8c6e8ad8d434ffab9a3e4385947": {
       "encoding": "utf8",
       "text": ", o_name, which, count);\n"
@@ -2146,14 +2154,6 @@
     "252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111": {
       "encoding": "utf8",
       "text": "f"
-    },
-    "256f46484489458f1de2b53e1ba3c7446afd6190c173b3a010053d10fd570b5e": {
-      "encoding": "utf8",
-      "text": "        //FC: clear all the way down, not just 16 rows. This screen is drawn on\n        //FC: top of whatever was there (the options root, reached with `=` then\n        //FC: `P`), and the rows below the box kept showing its `(B)` and `(N)`\n        //FC: entries -- which this prompt does not accept, so the cursor layer\n        //FC: correctly refuses to go there and the screen looks broken\n        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #40).\n        Term_clear_rect(rect(0, row, Term->wid, Term->hgt - row)); //FC:\n"
-    },
-    "25a6e896342789f10bf6e9bbdc31311fa8c739f05be5a87be2df7bc754691d00": {
-      "encoding": "utf8",
-      "text": "            //FC: tab names are bare words (\"Home\" \"Museum\" \"Quiver\"), so the\n            //FC: shop table (docs/FROX_JA_DESIGN.md 4, insertion point #34).\n            //FC: names with no entry stay English (constraint 4).\n            fc_shop(inv_name(tab->inv))); //FC:\n"
     },
     "25ce459197af3bd0ee7490ac12b636d929bc951873e57af15480a583c4807460": {
       "encoding": "utf8",
@@ -2187,6 +2187,14 @@
       "encoding": "utf8",
       "text": "), sizeof wrath_reason); //FC: #114\n"
     },
+    "288f182bcf7084060e905d332eec4e7750cc97c74c454f4fac5e5a464694f772": {
+      "encoding": "utf8",
+      "text": "            //FC: #84 sprintf() does not pass through vstrnfmt(), so the format\n            //FC: has to be looked up here (Japanese layer).\n            sprintf(prompt, fc_tr_fmt(\"Really replace %s with %s? \"), r_name + r_ptr2->name, r_name + r_ptr1->name); //FC: #84\n"
+    },
+    "29b67319cc38c0e7618fae40c321d2481b2d2465622bafbc22fc0c3df89b0076": {
+      "encoding": "utf8",
+      "text": "//FC: japanese monster spell names run up to 30 bytes (= 30 columns), and the name\n//FC: starts in column 4, so it reaches column 34. z-doc.c rolls a <tab:N> back when\n//FC: the cursor already passed it, which would eat the tail of the name. Move the\n//FC: column right while japanese is on (Japanese layer #55).\nstatic cptr _cost_tab(void) { return fc_lang_enabled() ? \"<tab:38>\" : \"<tab:30>\"; } //FC: #55\n\n"
+    },
     "29e666d1e6792d80882b67ab0fc9a7a146f2c8eb5b94c0f9fc101d5ce14bbb54": {
       "encoding": "utf8",
       "text": "fc_shop_owner("
@@ -2211,6 +2219,10 @@
       "encoding": "utf8",
       "text": " //FC: #66 - bare words in a %s"
     },
+    "30a236b06eb5e42d7869be56ce4f159bdf7c8944a1be34de9bd79c99a106cec5": {
+      "encoding": "utf8",
+      "text": "    if (!fc_doc_vprintf(s, fmt, vp)) //FC: japanese: expand via vstrnfmt so the format and its args hit the catalog (Japanese layer #13)\n"
+    },
     "31217752ac3e335a3c662bf8bfde35a51194193592c152d3e3240ef3f48206b5": {
       "encoding": "utf8",
       "text": ", fc_tr(name), amt);\n"
@@ -2218,10 +2230,6 @@
     "31b92123b92ab8a321a8596d17584dfac331d7abb2a8593623dae09472cfd43c": {
       "encoding": "utf8",
       "text": "cor(\"a bizarr"
-    },
-    "320f2e3c9b0c81b50f6c766876f82243a20de20eb95e22fc02a5321b3d15ac9a": {
-      "encoding": "utf8",
-      "text": "//FC: japanese monster spell names run up to 30 bytes (= 30 columns) and the name\n//FC: starts in column 0, so it reaches column 30. z-doc.c rolls a <tab:N> back once\n//FC: the cursor passed it, which would eat the tail of the name. The tag cannot move\n//FC: inside the translation (a changed tag is rejected on load), so it rides in as a\n//FC: %s argument and the column is picked here (docs/FROX_JA_DESIGN.md 8.57 #55).\nstatic cptr _blue_col_num(void) { return fc_lang_enabled() ? \"<tab:33>\" : \"<tab:27>\"; } //FC: #55\nstatic cptr _blue_col_cast(void) { return fc_lang_enabled() ? \"<tab:67>\" : \"<tab:56>\"; } //FC: #55\n\n"
     },
     "32ebb1abcc1c601ceb9c4e3c4faba0caa5b85bb98c4f1e6612c40faa528a91c9": {
       "encoding": "utf8",
@@ -2247,13 +2255,13 @@
       "encoding": "utf8",
       "text": " "
     },
+    "36becb84129096430ee750d86f00f04a423c328b88fc7f9360570a2e900d6a96": {
+      "encoding": "utf8",
+      "text": "    //FC: the feeling word (game_inscriptions[], tables.c) is a bare argument,\n    //FC: so fc_tr_arg() will not look it up. Use the decoration table, which\n    //FC: already carries these ten words (Japanese layer #43).\n"
+    },
     "38113c36d1f8eb3558d5868d285a7ddcba11128374fd2f13537255c351ea8c2f": {
       "encoding": "utf8",
       "text": "                "
-    },
-    "3825c45e39975affd3ae4fe2af656a0aef3168c7e250d89233a10d22bba83d37": {
-      "encoding": "utf8",
-      "text": "//FC: japanese monster spell names run up to 30 bytes (= 30 columns), and the name\n//FC: starts in column 4, so it reaches column 34. z-doc.c rolls a <tab:N> back when\n//FC: the cursor already passed it, which would eat the tail of the name. Move the\n//FC: column right while japanese is on (docs/FROX_JA_DESIGN.md 8.57 #55).\nstatic cptr _cost_tab(void) { return fc_lang_enabled() ? \"<tab:38>\" : \"<tab:30>\"; } //FC: #55\n\n"
     },
     "38b3f7efdfffc2e1d69422854f27f03d289355c49eea84bf3fd2f421228d8527": {
       "encoding": "utf8",
@@ -2278,6 +2286,10 @@
     "3a53d08e0f4541bf65489e8911c1bb0e3bcd36fc171fece28c9dd02fbb7f3575": {
       "encoding": "utf8",
       "text": " : \"You are %d%% vulnerable to %s.\")"
+    },
+    "3a55e695e22118714ac5e0630d8f45489f0a813dfa4749a090ac900ad823228f": {
+      "encoding": "utf8",
+      "text": "        //FC: \"Home\" / \"Museum\" -- the shop table, not the general catalogue\n        //FC: (Japanese layer #34).\n        (doc_width(doc) - 10)/2, \"\", fc_shop(inv_name(context->inv))); //FC:\n"
     },
     "3ac1ecbd2220c6757eb9f289fee88c4068c6791c5b0affef7644e77adfc97b45": {
       "encoding": "utf8",
@@ -2311,6 +2323,10 @@
       "encoding": "utf8",
       "text": ", multicase[num], seiha ? '!' : ' ', d_name + d_info[i].name, max_dlv[i]);\n"
     },
+    "3e73b9f33ee0a2ca7b7aa9e2b9f835f40cb9def98dbc288064977955f54e4164": {
+      "encoding": "utf8",
+      "text": "    //FC: japanese builds the name from scratch (Japanese layer)\n    if (fc_object_desc_ja(buf, o_ptr, (unsigned long)mode)) return;\n\n"
+    },
     "3ed31ae5f2dc0c45c34cb5846d3233ae3ea84819c536358eb0d28e749d0a1857": {
       "encoding": "utf8",
       "text": " \"%s\", fc_tr("
@@ -2334,6 +2350,10 @@
     "3f8bad13b1e3224165ef7f65668e9dfd75b6a8a16167eb65f66b6dd69a2c7c13": {
       "encoding": "utf8",
       "text": " //FC: #57 - one frame per word, so japanese can reorder"
+    },
+    "3faf2da982b7ab1276130c8897114d416dd52b9a85e8698f1acc29d0db4b1b96": {
+      "encoding": "utf8",
+      "text": "            //FC: tab names are bare words (\"Home\" \"Museum\" \"Quiver\"), so the\n            //FC: shop table (Japanese layer #34).\n            //FC: names with no entry stay English (constraint 4).\n            fc_shop(inv_name(tab->inv))); //FC:\n"
     },
     "3fdf49337e760c780a1d85ec3ad8eb3b7a8c85d0200eaf0aca602f0259720a0b": {
       "encoding": "utf8",
@@ -2367,10 +2387,6 @@
       "encoding": "utf8",
       "text": ";"
     },
-    "43eb64bff9390758856b90c9a6a9c287edc3be32944dd6c1349accc24660275a": {
-      "encoding": "utf8",
-      "text": "        //FC: the pack markers are glued on as bytes, so no catalogue hook sees\n        //FC: them (docs/FROX_JA_DESIGN.md 4, insertion point #32).\n"
-    },
     "440f3041c89adee0f2ad780704bcc0efae1bdb30f8d77dc455a2f6c823b87ca0": {
       "encoding": "utf8",
       "text": "fm"
@@ -2387,10 +2403,6 @@
       "encoding": "utf8",
       "text": ", _cost_tab()"
     },
-    "46dbc8fc2808da576e32fc9f06700dd1c96fed3068dd8954915634c88d0fd5f1": {
-      "encoding": "utf8",
-      "text": "            //FC: #54 roff_to_buf() takes the string raw, so neither fc_tr_fmt()\n            //FC: nor fc_tr_arg() reaches it (docs/FROX_JA_DESIGN.md 8.55).\n            roff_to_buf(fc_tr(spell->desc), 80-13, desc, sizeof(desc)); //FC: #54\n"
-    },
     "478ad4fbcbb88d4b4d5f5ed69ad1b9e3ad490156b572387cbe15dcedbe852292": {
       "encoding": "utf8",
       "text": ", \"\"); //FC: #53\n"
@@ -2403,13 +2415,13 @@
       "encoding": "utf8",
       "text": ", (int)strlen(fc_tr(_art_types[i].name)))"
     },
+    "4990f4ec551097fa1c5b7538a43535db316f5f5f94be786dae31213b66facf0b": {
+      "encoding": "utf8",
+      "text": "    //FC: both fall into a bare snprintf below, so #1 never sees them\n    //FC: (Japanese layer #62).\n    cptr town = note->town_id ? town_name(note->town_id) : fc_tr("
+    },
     "49d883a41c61ff8e6fc6f1b0a770a8abbccf6e756b19be443f47c007380c39cf": {
       "encoding": "utf8",
       "text": "_col_fmt_nomax("
-    },
-    "4a28fb501d08113cc42549fe75b8a87bb1110d91b4101c30d53e16ac4cd02d4f": {
-      "encoding": "utf8",
-      "text": "                if (fc_mon_list_header(buf, sizeof(buf), 0, mode == MON_LIST_SUBWINDOW,\n                                       0, list->ct_los ? 1 : 0,\n                                       info_ptr->ct_total, info_ptr->ct_awake)) //FC: japanese: same shape as #22 (docs/FROX_JA_DESIGN.md 4 #23)\n                    ; //FC: buf is filled\n                else "
     },
     "4a441a54659511c9a8e7631aaebc701b2639617853e71b40a414fb6237a7865c": {
       "encoding": "utf8",
@@ -2427,17 +2439,9 @@
       "encoding": "utf8",
       "text": ";\n            cptr _moga_at;\n            _moga_line = fc_tr(_moga_line); /*FC:*/\n            c_put_str(TERM_L_GREEN, _moga_line, row + 14, 2);\n            _moga_at = strstr(_moga_line, \"[y]\"); /*FC:*/\n            if (_moga_at) c_put_str(TERM_ORANGE, \"y\", row + 14, 2 + (int)(_moga_at - _moga_line) + 1); /*FC:*/\n            _moga_at = strstr(_moga_line, \"[_]\"); /*FC:*/\n            if (_moga_at) c_put_str(TERM_ORANGE, \"_\", row + 14, 2 + (int)(_moga_at - _moga_line) + 1); /*FC:*/\n            _moga_at = strstr(_moga_line, \"[n/Esc]\"); /*FC:*/\n            if (_moga_at)\n            {\n                c_put_str(TERM_ORANGE, \"n\", row + 14, 2 + (int)(_moga_at - _moga_line) + 1); /*FC:*/\n                c_put_str(TERM_ORANGE, \"Esc\", row + 14, 2 + (int)(_moga_at - _moga_line) + 3); /*FC:*/\n            }\n        }\n"
     },
-    "4da8c408bfb26f7a247175df3eca8fd6f9430110bb8b050d465dcb0f1a06c646": {
-      "encoding": "utf8",
-      "text": "    //FC: translate the template BEFORE $CASTER/$TARGET are substituted -- once the\n    //FC: monster name is inside, msg_print() below can no longer look the line up\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #45).\n    msg = fc_tr(msg); //FC: #45\n"
-    },
     "4e3663e4800cead41c2b1aace2c558dc71c67836740742f334e86bd9e32de6df": {
       "encoding": "utf8",
       "text": "killer_col + "
-    },
-    "4e3c867adc52ad5980473c2c2870b7084bf07e8d42fb333f4926db8597033c50": {
-      "encoding": "utf8",
-      "text": "    //FC: the owner name is a bare char* in _types[], so no catalogue hook sees\n    //FC: it. 30 of the 241 names are bare words (\"Grug\" \"Angel\" \"Vile\"), so they\n    //FC: live in their own table, not the general catalogue\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #36).\n"
     },
     "503c69230e0d9545c0ade6b81443bee97c5498ee42e999beb03d87fe10b41459": {
       "encoding": "utf8",
@@ -2463,10 +2467,6 @@
       "encoding": "utf8",
       "text": " fit an initialiser"
     },
-    "51c0063de4ce4f82d802f98d62469f9c63398a446ac01e9e0edbca8f46e49f44": {
-      "encoding": "utf8",
-      "text": " \"empty\" \"tried\" \"unseen\") and the ten feelings\n    //FC: in game_inscriptions[] (tables.c). They are bare words, so they are\n    //FC: looked up in the decoration table, not the general catalogue\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #31).\n    text = fc_decor(text); //FC:\n"
-    },
     "52aa16aedbfbd8a46ea0f9de21fa805a0019922622983db8e1091d725e017736": {
       "encoding": "utf8",
       "text": "        /*FC: #92 the essence name is a bare word, which fc_tr_arg() skips\n         * outside a doc; look it up here so the absorb message is japanese too. */\n        msg_format("
@@ -2482,6 +2482,10 @@
     "5432a6edd20626c3fc0f329194215792495d254a328c2161bfee13bdba1c06a3": {
       "encoding": "utf8",
       "text": ", (int)strlen(fc_tr(feature_group_text[i])))"
+    },
+    "545636272e3c356769f1f0a28f7ff661f68d0b7dc7f655734da7f2932add4755": {
+      "encoding": "utf8",
+      "text": "        //FC: japanese wraps by character, not by word (Japanese layer #49).\n        //FC: Both flags stay 0 while the japanese layer is asleep, so the english\n        //FC: path below is bit for bit the one that was here before.\n        int kanji = fc_cp932_text() && (fc_char_bytes(str + read_pt) == 2); //FC: #49\n        int kinsoku = kanji ? fc_roff_kinsoku(str + read_pt) : 0; //FC: #49\n"
     },
     "546fa75d4bb3f13dbb99f3d7dd7e4d8bd2e6cc56d57e7dd7a77f509141ebda4e": {
       "encoding": "utf8",
@@ -2499,17 +2503,21 @@
       "encoding": "utf8",
       "text": "            { const char *fc_pf = fc_tr(proficiency); if (fc_pf != proficiency) strncpy(proficiency, fc_pf, 4); } //FC: proficiency abbreviation ([Un] -> its japanese, 4 bytes in CP932)\n"
     },
+    "557806114efaf238e69d693ffd0fd8bea498d29f31c16e70bebe6d8582190627": {
+      "encoding": "utf8",
+      "text": "\n#include \"fc_lang_c.h\" //FC: japanese layer\n"
+    },
     "55f55e0bce2d54ca7f4549497212954d3115e320df22d214058243886ca20d1e": {
       "encoding": "utf8",
       "text": "fc_lang_enabled() ? \"\" : ("
     },
+    "5623ed1a780f900e7f88dca0ba3b4471b1714bb30a18e1442b636aa92146a72b": {
+      "encoding": "utf8",
+      "text": "        //FC: shop names are bare words, so they come from the shop table\n        //FC: (Japanese layer #35). The building\n        //FC: names below come from lib/edit/t_*.txt and are still English.\n        bldg = fc_shop(_dungeon_notes_store_name(_dungeon_notes_store_subtype(note->building_subtype))); //FC:\n"
+    },
     "5766d9bc2818c09b76e7ace8ef11ddfda02dfe3016e0c6b525cf6e7823abef93": {
       "encoding": "utf8",
       "text": "so "
-    },
-    "57a2cce0ea450434355d2098448c529a58ac715e190cae19f946b293df911527": {
-      "encoding": "utf8",
-      "text": " becomes \"% no <potion>\" in japanese,\n    //FC: so the '%' and '#' markers move (docs/FROX_JA_DESIGN.md 4, #25).\n    basenm = fc_tr_basenm(basenm);\n\n"
     },
     "57c1f67cf99ac083c32c3c1fd5695b7f35248a17947c1cd893c28f8450995bf7": {
       "encoding": "utf8",
@@ -2519,17 +2527,9 @@
       "encoding": "utf8",
       "text": "col"
     },
-    "58bbff5fe8144ec7ac1a4bac1663910aa26077b6ff67e3a75ff0123faaabc643": {
-      "encoding": "utf8",
-      "text": "    if (!fc_doc_vprintf(s, fmt, vp)) //FC: japanese: expand via vstrnfmt so the format and its args hit the catalog (docs/FROX_JA_DESIGN.md 4 #13)\n"
-    },
     "59aa546adb90947ef1c4697a20be2b1e87025aca7c798ca77db6d99645952f73": {
       "encoding": "utf8",
       "text": "    //FC: #111 monster_desc() appends the translated tag, so strip that form\n    cptr suffix = fc_tr(\" (Foe)\"); //FC: #111\n"
-    },
-    "5b8086f487e14d3bdc95c6e134c6c1b1eaa79c7d68f84b91f8eba312a6dabb2c": {
-      "encoding": "utf8",
-      "text": "    //FC: raise the text-input flag for the whole wait: the ui only opens the IME\n    //FC: and only sends non-ascii bytes while it is up. Lowering it everywhere\n    //FC: else keeps 2-byte chars out of the command loop, where the core would\n    //FC: read them as two commands (docs/FROX_JA_DESIGN.md 4, insertion point #9).\n    fc_text_input_set(1);\n"
     },
     "5c5edb255de12c56bca0ce0bfff64a62cf51908b46a23fb44281527d266c3224": {
       "encoding": "utf8",
@@ -2538,6 +2538,10 @@
     "5cee42a1fbd19714451d3209cb04eadd88345b59aa7496b610946c1db04794a8": {
       "encoding": "utf8",
       "text": "); //FC:\n"
+    },
+    "5e85fe63fe80ceace2b4e080001e74a5fb0368af34299becdccdba3e6c9e152a": {
+      "encoding": "utf8",
+      "text": "/*\n * //FC: Android also gets the WINDOWS-like configuration (2026-08-25).\n * With SET_UID on, safe_setuid_grab() in util.c calls setuid(), and the\n * Android seccomp filter kills the whole process with SIGSYS (measured on\n * the hb35 emulator: \"seccomp prevented call to disallowed x86_64 system\n * call 105\", from init_saved_floors() right after \"start a new game\").\n * Android is a single-user sandbox per app, so nothing SET_UID buys us\n * applies. gensoband and silq carry the same one-line change.\n *\n */\n"
     },
     "5f4f27b01e8498d9fc08d54d65a90afae26a0d8875d3201eaf828ac6fa2b7cb3": {
       "encoding": "utf8",
@@ -2562,10 +2566,6 @@
     "6160b3cff97e24710c07ed7326149a46c5785df409b3c5c5c535ca67be93bc82": {
       "encoding": "utf8",
       "text": "                            msg_format(\"One of your %s %s stolen!\",\n                               "
-    },
-    "6206a58458babdc79c56f48f3cefc25ba074fbe755be3f369771a7de80dd27c5": {
-      "encoding": "utf8",
-      "text": "    //FC: the shop heading is the one place the shop type name reaches the\n    //FC: screen. It is a bare word (\"Home\" \"Temple\" \"Museum\"), so it is looked\n    //FC: up in the shop table, not the general catalogue\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #34).\n    cptr     type_name = fc_shop(shop->type->name); //FC:\n    int      ct = strlen(type_name) + 10; /* "
     },
     "620f8d6517e6f50a8154a37d407b952aa8a75101c8dfeada07df7533c765d19e": {
       "encoding": "utf8",
@@ -2611,10 +2611,6 @@
       "encoding": "utf8",
       "text": " //FC: #56"
     },
-    "66f409805688a124d527cf6a5114104823f7460cf162611fcae80ab63b1b9933": {
-      "encoding": "utf8",
-      "text": "        //FC: a japanese line has no spaces, so every non-kinsoku character is a\n        //FC: break point. Guarded by fc_cp932_text() so english keeps breaking on\n        //FC: spaces alone (docs/FROX_JA_DESIGN.md 8.50 #49).\n        else if (fc_cp932_text() && !kinsoku)\n"
-    },
     "670af646a34cdc2a616874dc29d30abc2b5523cc091c081c25a2e51079484b9c": {
       "encoding": "utf8",
       "text": "         "
@@ -2647,17 +2643,25 @@
       "encoding": "utf8",
       "text": " //FC: #75"
     },
+    "6af027e46c1db8123df6b0a57393a26a7ffd7f5cff9e3b7e7abefcdadc01bd61": {
+      "encoding": "utf8",
+      "text": "        {\n            //FC: the line above is glued byte by byte, so the finished string\n            //FC: carries the item name and no catalogue key can match it.\n            //FC: hand the pieces over and let the japanese layer use a format\n            //FC: (Japanese layer #38).\n            char fc_buf[MAX_NLEN + 64];\n            if (fc_obj_carry_msg(fc_buf, sizeof(fc_buf), name,\n                    obj->loc.where == INV_EQUIP, obj->loc.where == INV_QUIVER,\n                    show_slot ? slot_label(obj->loc.slot) : 0))\n                msg_print(fc_buf);\n            else\n"
+    },
     "6b0d688e77176b821a4c265edc3a59602babd2d282022cf3e7801957b776bf24": {
       "encoding": "utf8",
       "text": "fc_lang_enabled() ? \"\" : "
+    },
+    "6bed0eb9c5ea919ea428683ca9aac178492b46433acd331e99a7c17a5179a5e1": {
+      "encoding": "utf8",
+      "text": "    //FC: the shop heading is the one place the shop type name reaches the\n    //FC: screen. It is a bare word (\"Home\" \"Temple\" \"Museum\"), so it is looked\n    //FC: up in the shop table, not the general catalogue\n    //FC: (Japanese layer #34).\n    cptr     type_name = fc_shop(shop->type->name); //FC:\n    int      ct = strlen(type_name) + 10; /* "
     },
     "6bfb1b4fb961cb0b71691449dfd752594f49f913a684e368d87384393950a4aa": {
       "encoding": "utf8",
       "text": "fprintf(fp, \" %+3d"
     },
-    "6c11587084dc1ed229f54bddaed45cacd5a5525b84f111248b7f5d55d4612f50": {
+    "6d25c38ba5aace515d2e82c682e1f775be1496f11aef80c7c3e49d2253d44640": {
       "encoding": "utf8",
-      "text": "    //FC: japanese builds the name from scratch (docs/FROX_JA_DESIGN.md 6.3)\n    if (fc_object_desc_ja(buf, o_ptr, (unsigned long)mode)) return;\n\n"
+      "text": "    //FC: these go into a %s of a translated frame, so the bare words would\n    //FC: stay english in the middle of a japanese sentence\n    //FC: (Japanese layer #65).\n    case MACRO_UI_SCOPE_KEYMAPS: return fc_tr(\"keymaps\"); //FC:\n    case MACRO_UI_SCOPE_MACROS: return fc_tr(\"macros\"); //FC:\n    default: return fc_tr("
     },
     "6dba3209de56392c3e3308059249158cb3028c4e40638d871cacb3888ed17c51": {
       "encoding": "utf8",
@@ -2670,10 +2674,6 @@
     "6de53319e42a9627ea348c4f1a4d09f0fb9e82acbee8dc75eba7212d000253f5": {
       "encoding": "utf8",
       "text": "    //FC: #87 \"Shoggoth\" is a bare word, and fc_tr_arg() only looks bare words\n    //FC: up inside a doc. This one goes to the message line (8.67).\n    msg_format("
-    },
-    "6e233dcc7da72d3624a0df46f23ec94a42eb49302be4df1794d409ac58838867": {
-      "encoding": "utf8",
-      "text": "    //FC: DO NOT wrap this one in fc_spell_name(). The name is the key of the\n    //FC: spell statistics map, and that map is written to the save file\n    //FC: (docs/FROX_JA_DESIGN.md 8.51). Display sites are wrapped instead.\n"
     },
     "6e4075f8d27edaa1ab5856c9686f49a0d6e5d98485e7d88501c80d06518086d5": {
       "encoding": "utf8",
@@ -2699,9 +2699,9 @@
       "encoding": "utf8",
       "text": "fc_t"
     },
-    "72bb059d2658d3302eb237e26e7c0c2448c85b02601ed49f6d036c0c7ea3b65f": {
+    "726604d70af756d5b1adf3aa65a71b377231097947d8355653bf07f661ffac91": {
       "encoding": "utf8",
-      "text": "        //FC: the moon phrase is glued onto a message that is built at run\n        //FC: time, so cmsg_print()'s fc_tr() can never match the whole\n        //FC: string. Look the fragment up here instead\n        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #48).\n        strcat(desc, fc_tr(werewolf_moon_message())); //FC:\n"
+      "text": "#include \"fc_lang_c.h\" //FC: japanese layer\n//FC: #119 every fputs()/fprintf(fp, ...) frame in this file is wrapped in\n//FC: fc_tr(); init_help_files() writes these 13 books at start-up, so the\n//FC: frames never pass through vstrnfmt() and no other hook can see them.\n//FC: The four .csv writers are left alone on purpose (design 8.75 4).\n"
     },
     "76110014c9b7c1584ef03a074ddf56ea008efd4b417ba4098438d3caad6f8b03": {
       "encoding": "utf8",
@@ -2710,10 +2710,6 @@
     "772309b9031601c1bd1fabab6604e964c538be95e04fb2129e70f80b5207a20a": {
       "encoding": "utf8",
       "text": "                trail = inkey();\n                if (fc_is_sjis_trail((unsigned char)trail))\n                {\n"
-    },
-    "779ae7c6585e20c9e4aaeec7a4fc5884787be552ffad586ebd6bd7ad555709e6": {
-      "encoding": "utf8",
-      "text": "\n#include \"fc_lang_c.h\" //FC: japanese layer (docs/FROX_JA_DESIGN.md 4)\n"
     },
     "7817bb812e82168bd48fe1ea6783078d42be37e8db9bdaafdac5c45804aca64f": {
       "encoding": "utf8",
@@ -2726,10 +2722,6 @@
     "7864351ba27b7b3fb5ce7f98fda0b71f0b91740c9f0f717b37653d1825b06d11": {
       "encoding": "utf8",
       "text": "                            "
-    },
-    "78826f4a17dddd8b48384c6322265a080c3e7d85821a8da6daaeac06a7dd378a": {
-      "encoding": "utf8",
-      "text": "    i = fc_ref_index(name); //FC: lib-ja refs are numeric (docs/FROX_JA_DESIGN.md 6.2)\n    if (i) return i; //FC: 0 unless japanese is on, so english is untouched\n"
     },
     "78a759686f2a6806ed89d742c74215f7207fd1aeab6a2c83188e1ecc8b4d1f43": {
       "encoding": "utf8",
@@ -2783,9 +2775,17 @@
       "encoding": "utf8",
       "text": "\"sust\", "
     },
+    "7d24a1dbfed4eb10b01571f3cefeba23cd76dbe23b72c3b4122e78f4846f042d": {
+      "encoding": "utf8",
+      "text": "                //FC: #83 sprintf() never reaches vstrnfmt(), so the word has to\n                //FC: be looked up here (Japanese layer).\n                else sprintf(buf[i], \"%s\", fc_tr(\"    Max\")); //FC: #83\n"
+    },
     "7d2ca357da5d0fc39656db1acbb24972fe42c18516a32ae86feef80f3ec9c770": {
       "encoding": "utf8",
       "text": "            fc_text_input_set(0); //FC: #9\n"
+    },
+    "7d68cedb59649f4ed2eddb802d4d52bdaf0f225a5f7445fc1c8dd376b14eeaca": {
+      "encoding": "utf8",
+      "text": "            //FC: japanese layer (insertion point #42)\n            cptr action_name = fc_bldg_action(bldg->act_names[i]);\n"
     },
     "7dea04e70bf9f5918daba9931770e4b18b1e174d9673ec344378ca0f7b4195ec": {
       "encoding": "utf8",
@@ -2803,6 +2803,10 @@
       "encoding": "utf8",
       "text": " //FC: #69"
     },
+    "7fdc6d596d9a1d2e1f325f7455f1303d75f5256d2ee52ea0f645e325b299cb11": {
+      "encoding": "utf8",
+      "text": "    //FC: snprintf is the C one, so neither the format hook (#2) nor the\n    //FC: argument hook (#3) sees this, and the finished line carries the\n    //FC: owner name so the display sink (#1) cannot match it either.\n    //FC: the data files stay english on purpose -- line 4486 below tells\n    //FC: buildings apart by their english name\n    //FC: (Japanese layer #42).\n    if (!fc_bldg_header(tmp_str, sizeof(tmp_str), bldg->owner_name, bldg->owner_race, bldg->name))\n"
+    },
     "803cb601088e82362b0f3ad69fc9c084edd52c35368ca447aff62123d7ad88b4": {
       "encoding": "utf8",
       "text": "ll_n"
@@ -2810,10 +2814,6 @@
     "8042016d85178eeadb65ddb1070e0f1afc6b205391f438c718de80d7f8b92fd3": {
       "encoding": "utf8",
       "text": "            }\n            else\n"
-    },
-    "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8": {
-      "encoding": "utf8",
-      "text": "#include \"fc_lang_c.h\" //FC: japanese layer (docs/FROX_JA_DESIGN.md 4)\n"
     },
     "80d0cf8688b2cbd0cf84631fdfb0f922be1348d07c3fd0fc39ce95ffad67c0d4": {
       "encoding": "utf8",
@@ -2835,10 +2835,6 @@
       "encoding": "utf8",
       "text": " //FC: #100 sprintf() never reaches vstrnfmt()"
     },
-    "8414e2c1d95324de1beb78b414ae71f1302bdabd125cd58e4c71c24cb4120697": {
-      "encoding": "utf8",
-      "text": "        //FC: shop names are bare words, so they come from the shop table\n        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #35). The building\n        //FC: names below come from lib/edit/t_*.txt and are still English.\n        bldg = fc_shop(_dungeon_notes_store_name(_dungeon_notes_store_subtype(note->building_subtype))); //FC:\n"
-    },
     "844dd569dbc3d27036d64ba49ece955d715f8706495dc1dbae494bc3a89aef49": {
       "encoding": "utf8",
       "text": ", fc_spell_name(_group_choice)); //FC: #53\n        strnfmt(heading, sizeof(heading), "
@@ -2855,10 +2851,6 @@
       "encoding": "utf8",
       "text": "/*\n * FC: #123 One inscription abbreviation. The key is qualified by the table\n * it came from: \"St\" is the strength bonus in flag_insc_plus but the stun\n * brand in flag_insc_brand, and \"Lv\" is levitation in flag_insc_misc but\n * slay-living in flag_insc_kill. A bare code cannot be looked up.\n *\n * They live in the `F:` table, which exists for exactly this reason -- keys\n * that are bare words and would collide in the general catalogue.\n */\nstatic cptr _insc_abbrev(cptr tag, cptr code)\n{\n    char key[64];\n    cptr ja;\n\n    if (!fc_lang_enabled()) return code;\n    if (strlen(tag) + strlen(code) + 8 >= sizeof(key)) return code;\n    sprintf(key, \"insc.%s.%s\", tag, code);\n    ja = fc_frame_label(key);\n    /* fc_frame_label() hands the key straight back when it is not in the\n     * table, and that key is this stack buffer -- never return it. */\n    return (ja == key) ? code : ja;\n}\n\n"
     },
-    "8526b98003cd129fdbf27458df36713403479284d392a0c27a3bb9e290a24bdf": {
-      "encoding": "utf8",
-      "text": "    //FC: the object prompt draws its own window on top of whatever is behind it,\n    //FC: and the shop keeps its command row in the mirror underneath. The screen\n    //FC: has to know the core is asking for an item, or the cursor layer keeps\n    //FC: offering those commands (docs/FROX_JA_DESIGN.md 4, insertion point #37).\n    fc_obj_prompt_scope(1); //FC:\n"
-    },
     "861120ea674751d2b1fbb00d7f3f3f17da9c5406977a242ab0bbbad9c663e249": {
       "encoding": "utf8",
       "text": " //FC: #99"
@@ -2874,10 +2866,6 @@
     "8870d0c6d86ee677fad9cbf9bf17aaaab941695f6d43f736d5892340a1c2a41f": {
       "encoding": "utf8",
       "text": "(name)"
-    },
-    "88edaf5bd377b555a6d1b67a7e581006cbd1b79ccf12a209813db5f1ebe8b8ab": {
-      "encoding": "utf8",
-      "text": "/*\n * //FC: Android also gets the WINDOWS-like configuration (2026-08-25).\n * With SET_UID on, safe_setuid_grab() in util.c calls setuid(), and the\n * Android seccomp filter kills the whole process with SIGSYS (measured on\n * the hb35 emulator: \"seccomp prevented call to disallowed x86_64 system\n * call 105\", from init_saved_floors() right after \"start a new game\").\n * Android is a single-user sandbox per app, so nothing SET_UID buys us\n * applies. gensoband and silq carry the same one-line change.\n * See docs/ANDROID_HD2D_PORT.md 2b.4 and docs/FROX_HD2D_GAPS.md FH-07.\n */\n"
     },
     "8a331fdde7032f33a71e1b2e257d80166e348e00fcb17914f48bdb57a1c63007": {
       "encoding": "utf8",
@@ -2899,6 +2887,10 @@
       "encoding": "utf8",
       "text": "        "
     },
+    "8b8631901cd306fa532fea53fcfeb9fdf9674b061baa20daf802c36992d1ee14": {
+      "encoding": "utf8",
+      "text": "        //FC: clear all the way down, not just 16 rows. This screen is drawn on\n        //FC: top of whatever was there (the options root, reached with `=` then\n        //FC: `P`), and the rows below the box kept showing its `(B)` and `(N)`\n        //FC: entries -- which this prompt does not accept, so the cursor layer\n        //FC: correctly refuses to go there and the screen looks broken\n        //FC: (Japanese layer #40).\n        Term_clear_rect(rect(0, row, Term->wid, Term->hgt - row)); //FC:\n"
+    },
     "8bc2d373d21bdee577aab38bb147a334b9517f2c3361c05a73661bd22a4e86ac": {
       "encoding": "utf8",
       "text": "            if (kanji && !kinsoku)\n                /* nothing */ ; //FC: #49 - a 2-byte char may sit at the line end\n            else\n"
@@ -2911,21 +2903,17 @@
       "encoding": "utf8",
       "text": ", o_name);\n"
     },
-    "8cba08fccf0e3eb2973b928d3d52a9d4fed90e977a9747445216ce59f57544f1": {
-      "encoding": "utf8",
-      "text": "    //FC: japanese builds the name from scratch (docs/FROX_JA_DESIGN.md 6.3)\n    if (fc_monster_desc_ja(desc, m_ptr, mode)) return;\n\n"
-    },
     "8cf9844e838211084b1ccc3baa0f6930d8b5a0223b1f7fd305166d599a293bd8": {
       "encoding": "utf8",
       "text": "        //FC: #86 the curse name is a bare word ("
     },
-    "8d6df5e3b289746058015126ba936582ef7e2672b2ee84ad53262f48171c17fc": {
-      "encoding": "utf8",
-      "text": "    //FC: the encoding mark rides in sf_system (docs/FROX_JA_DESIGN.md 4, #30).\n    //FC: it has to be noted BEFORE any human text is read; the message log\n    //FC: (msg_on_load) is the first such field, a few lines below.\n    fc_save_enc_note((unsigned long)sf_system); //FC:\n"
-    },
     "8db339c17d4cc54e70c4fcfecb611bb9e7d363f25b18e0923a1d306cc95924e5": {
       "encoding": "utf8",
       "text": "                    }\n"
+    },
+    "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c": {
+      "encoding": "utf8",
+      "text": "#include \"fc_lang_c.h\" //FC: japanese layer\n"
     },
     "8de665d925cbd8389406d3a63cffa2ee62b295a5f43a41052cd56cb307f0b3bb": {
       "encoding": "utf8",
@@ -3003,13 +2991,13 @@
       "encoding": "utf8",
       "text": "\n    /*\n     * FC: #122 A japanese name has no plural form. None of the tests below\n     * match it, so the fallback would append an \"s\" (\"3 <name>s\").\n     * Test the bytes, not the language: english names still reach us while\n     * playing in japanese, and those should still be pluralised.\n     */\n    {\n"
     },
-    "964d28ea90dfad40756cf6358e4aaa85fc03560d780f5c168822d0b379601e17": {
-      "encoding": "utf8",
-      "text": "    i = fc_ref_index(name); //FC: lib-ja refs are numeric (docs/FROX_JA_DESIGN.md 4 #16)\n    if (i) return i; //FC: 0 unless japanese is on, so english is untouched\n"
-    },
     "96b332703c29e513c89c513d35cbe25fdf2d012c9bba68a8b90cdead0f630971": {
       "encoding": "utf8",
       "text": ", sizeof(choose_prompt))"
+    },
+    "9725b4e238063ef6108cb8ddb2ec28cd8c2ffd3a0b4f944a28ff34733379faab": {
+      "encoding": "utf8",
+      "text": "    //FC: DO NOT wrap this one in fc_spell_name(). The name is the key of the\n    //FC: spell statistics map, and that map is written to the save file\n    //FC: (Japanese layer). Display sites are wrapped instead.\n"
     },
     "972a429382b2e14718e0e37b0570a8a1702991fcd8498cd84060a8bf4f05017b": {
       "encoding": "utf8",
@@ -3031,9 +3019,9 @@
       "encoding": "utf8",
       "text": "\"plus\", "
     },
-    "9b48afaa776c7053bed8b74920227712d251753f91a94236a3a758ddcd73ec92": {
+    "9c40a44cca03dd8903909219258961071eabdbb157673353afca5485370627b5": {
       "encoding": "utf8",
-      "text": " //FC: the caption is built with a bare sprintf, so #2 never sees this format (docs/FROX_JA_DESIGN.md 4 #21)"
+      "text": " \"empty\" \"tried\" \"unseen\") and the ten feelings\n    //FC: in game_inscriptions[] (tables.c). They are bare words, so they are\n    //FC: looked up in the decoration table, not the general catalogue\n    //FC: (Japanese layer #31).\n    text = fc_decor(text); //FC:\n"
     },
     "9c9543d367f05b8e46173c2af826225905743ecb29d08fb68f72ceaf36d200cd": {
       "encoding": "utf8",
@@ -3051,6 +3039,10 @@
       "encoding": "utf8",
       "text": "            s = string_copy_s(fc_tr_s);\n        }\n    }\n"
     },
+    "9d274d06dd5be12e64946abf25b498dfded6ee1a1793e3b915a7f8de12db04b2": {
+      "encoding": "utf8",
+      "text": "    //FC: #54 the five below carry their colour tag, so they are E: keys; the\n    //FC: table name below is an M: key and must be looked up BEFORE it goes\n    //FC: into the tag (Japanese layer).\n"
+    },
     "9d5b40c654886ef03bb8c26bcf666a8a6de9973bd660125db5f911badebc3c22": {
       "encoding": "utf8",
       "text": "            //FC: chest and trap labels, same as the markers above (#32).\n            t = object_desc_str(t, fc_decor(\" (empty)\")); //FC:\n"
@@ -3067,13 +3059,13 @@
       "encoding": "utf8",
       "text": "%s\", fc_tr(\""
     },
+    "9dd4541c177112b87801bb68ad096210685c875548c759d22de08a0fa7760341": {
+      "encoding": "utf8",
+      "text": "    //FC: #54 Look the effect up BEFORE the damage is appended below: afterwards\n    //FC: the string reads \"Shatter (19d15)\" and no catalogue key can match it\n    //FC: (Japanese layer).\n    {\n        cptr fc_tr_s = fc_tr(string_buffer(s));\n        if (fc_tr_s != string_buffer(s))\n        {\n"
+    },
     "9f4ec340207585614a8099250cd1439c22ef34bf5b64309199ed0309202263a5": {
       "encoding": "utf8",
       "text": "\"aura\", "
-    },
-    "a00b0181fccd8ced2ed7dcbaffa456631baf881b10168272dcb4bb8d837e3138": {
-      "encoding": "utf8",
-      "text": "        //FC: roff_to_buf() takes the string raw - it is not vstrnfmt(), so neither\n        //FC: #2 nor #3 sees it. Look the description up here (#5 fc_tr, general E:\n        //FC: table); roff_to_buf() itself was taught to keep 2-byte characters whole\n        //FC: (util.c, #49). docs/FROX_JA_DESIGN.md 8.50\n        roff_to_buf(fc_tr(do_spell(use_realm, spell, SPELL_DESC)), 62, temp, sizeof(temp)); //FC: #49\n"
     },
     "a17dc1652cfb217aed919bcb13aa7ec4c2d43dc85b8c5070f480988c61e2408e": {
       "encoding": "utf8",
@@ -3083,13 +3075,9 @@
       "encoding": "utf8",
       "text": "y"
     },
-    "a23e1f6908b816c0d8e3f654f93dc7faa80f4d2e1485523de38c2965d05f2b70": {
+    "a2c79b4078556de4090fea245b62241eedcb8738f94b72917743896d1546579e": {
       "encoding": "utf8",
-      "text": "                //FC: #83 sprintf() never reaches vstrnfmt(), so the word has to\n                //FC: be looked up here (docs/FROX_JA_DESIGN.md 8.67).\n                else sprintf(buf[i], \"%s\", fc_tr(\"    Max\")); //FC: #83\n"
-    },
-    "a27c687c2c7b614247f626d14b0106c55f43dba934a6e5fafe4c553d174bf077": {
-      "encoding": "utf8",
-      "text": "        fc_tr_fmt( //FC: string_alloc_format calls vsnprintf, so #2 never sees this format (docs/FROX_JA_DESIGN.md 4 #24)\n"
+      "text": "    /*FC: the breath line is assembled here, so #45 (which looks the finished\n     *FC: template up) can no longer find it -- translate the format and the\n     *FC: attribute name separately (Japanese layer #46). */\n"
     },
     "a3611f379ea67678585373b430c2cd96d561546d828cc5bd2ddb026a6b93b01f": {
       "encoding": "utf8",
@@ -3131,9 +3119,13 @@
       "encoding": "utf8",
       "text": "64"
     },
-    "a6c667ebe05e47ff1813796b6281a7c8125c4d035d1799ebbe31f3706ed21ad1": {
+    "a6b2d44f0d396984ae3b5d942069bdaf4f52029f05a90d8908dc581de50c5b99": {
       "encoding": "utf8",
-      "text": "                    //FC: same as #18/#19 -- a CP932 trail byte can be '~'\n                    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #20).\n                    if (fc_is_sjis_lead((unsigned char)*t) && t[1])\n                    {\n"
+      "text": " //FC: the caption is built with a bare sprintf, so #2 never sees this format (Japanese layer #21)"
+    },
+    "a740f4c321a7dfc6343d80cb931f37b54a2e279b1fd0aad4c29563cd3c0be09e": {
+      "encoding": "utf8",
+      "text": "    i = fc_ref_index(name); //FC: lib-ja refs are numeric (Japanese layer #17)\n    if (i) return i; //FC: 0 unless japanese is on, so english is untouched\n"
     },
     "a74727884464d8e82f70b9c411663aaa02568bcd07413facaa83ad5097d2a135": {
       "encoding": "utf8",
@@ -3187,10 +3179,6 @@
       "encoding": "utf8",
       "text": "l"
     },
-    "acbd47fbcd5398258c692c255a8ddf2520ca4f76313b725c55f0e615bdb17166": {
-      "encoding": "utf8",
-      "text": "        //FC: a CP932 trail byte can be '~' (0x7E: mi) or ']' (0x5D: zo).\n        //FC: copy both bytes at the lead so neither is read as a marker\n        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #19).\n        if (fc_is_sjis_lead((unsigned char)*src) && src[1])\n        {\n            *t++ = *src++;\n"
-    },
     "ad0695e56e696dc1312be86ea3373e907b81e1b62db11f3770a8e5c874788b40": {
       "encoding": "utf8",
       "text": ")), fc_spell_name(fc_tr(race_ptr->subname))); //FC: #"
@@ -3231,21 +3219,21 @@
       "encoding": "utf8",
       "text": "    //FC: the rating is built with a bare sprintf, so no insertion point sees\n    //FC: it; look it up in the frame table here (design 4, #27).\n    if (birth_hack) sprintf(buf, "
     },
+    "aed4c66ad394f49852e4aa61dc381ad743f9f1059ef36aeb74006c09675ca341": {
+      "encoding": "utf8",
+      "text": "    //FC: the encoding mark rides in sf_system (Japanese layer #30).\n    //FC: it has to be noted BEFORE any human text is read; the message log\n    //FC: (msg_on_load) is the first such field, a few lines below.\n    fc_save_enc_note((unsigned long)sf_system); //FC:\n"
+    },
     "af3ae532fdad13110c82c6c4bc76088e642060bc88cf5751bf1ccec7ca86c448": {
       "encoding": "utf8",
       "text": "#include \"fc_lang_c.h\" /*FC: insertion point #40 (fc_tr)*/\n"
     },
-    "af57c8b70b69b6bbfcd41f69b697542b730c6321c085f75809a8a963139355da": {
-      "encoding": "utf8",
-      "text": "    //FC: snprintf is the C one, so neither the format hook (#2) nor the\n    //FC: argument hook (#3) sees this, and the finished line carries the\n    //FC: owner name so the display sink (#1) cannot match it either.\n    //FC: the data files stay english on purpose -- line 4486 below tells\n    //FC: buildings apart by their english name\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #42).\n    if (!fc_bldg_header(tmp_str, sizeof(tmp_str), bldg->owner_name, bldg->owner_race, bldg->name))\n"
-    },
-    "af793b9860422fdb8e07ed444249b2e77f39e7fce8231f0933fb8db9c297c8a0": {
-      "encoding": "utf8",
-      "text": "    //FC: both fall into a bare snprintf below, so #1 never sees them\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #62).\n    cptr town = note->town_id ? town_name(note->town_id) : fc_tr("
-    },
     "afbdf7ad5c0d895dd82ece35f25d49519352930f60324be4209abf0182447f01": {
       "encoding": "utf8",
       "text": " //FC: #91 the rune inscription is glued onto the name, like game_inscriptions[]"
+    },
+    "b024b07031fc004d225a32615888e4ddee6de0b99ce1ddd03e516fab592c4965": {
+      "encoding": "utf8",
+      "text": "                    //FC: same as #18/#19 -- a CP932 trail byte can be '~'\n                    //FC: (Japanese layer #20).\n                    if (fc_is_sjis_lead((unsigned char)*t) && t[1])\n                    {\n"
     },
     "b0f397c08f06b3562bbcdf9f0cce7e25246df916195230e8774b7508be5abf06": {
       "encoding": "utf8",
@@ -3255,13 +3243,9 @@
       "encoding": "utf8",
       "text": " //FC: #80"
     },
-    "b188c3c096f2ad5a6fdd6335c8f5e59d8b4323b78932c52a613d1aac4b4e02c4": {
+    "b29c1ab365de9d8653f7796e8019110793f1e3319fa19f21ae41329e15544b45": {
       "encoding": "utf8",
-      "text": "    //FC: #54 Look the effect up BEFORE the damage is appended below: afterwards\n    //FC: the string reads \"Shatter (19d15)\" and no catalogue key can match it\n    //FC: (docs/FROX_JA_DESIGN.md 8.55).\n    {\n        cptr fc_tr_s = fc_tr(string_buffer(s));\n        if (fc_tr_s != string_buffer(s))\n        {\n"
-    },
-    "b35dff5b8d6ea91db5fadf185a70e0b325b60c51d86d338d0901abfa4a498874": {
-      "encoding": "utf8",
-      "text": "    /*FC: the breath line is assembled here, so #45 (which looks the finished\n     *FC: template up) can no longer find it -- translate the format and the\n     *FC: attribute name separately (docs/FROX_JA_DESIGN.md 4, point #46). */\n"
+      "text": " becomes \"% no <potion>\" in japanese,\n    //FC: so the '%' and '#' markers move (Japanese layer #25).\n    basenm = fc_tr_basenm(basenm);\n\n"
     },
     "b3e32b43e5efd3475c33f49596861d5785fe0fa4021df77020f67202d4e8437a": {
       "encoding": "utf8",
@@ -3278,6 +3262,14 @@
     "b5fc8a953955e82f6711ed67fce1b4d590fdc8d5f73ffb30fffcbdeac3aeb8e4": {
       "encoding": "utf8",
       "text": ", s"
+    },
+    "b61a531ef5000b9fdc1a31a79504e55f087f533dc82441cf6fb65877919bb131": {
+      "encoding": "utf8",
+      "text": "    //FC: raise the text-input flag for the whole wait: the ui only opens the IME\n    //FC: and only sends non-ascii bytes while it is up. Lowering it everywhere\n    //FC: else keeps 2-byte chars out of the command loop, where the core would\n    //FC: read them as two commands (Japanese layer #9).\n    fc_text_input_set(1);\n"
+    },
+    "b6407d15cbaf0c2fa6c15cff589c656054bad5e269ecac09a2d9fae18085c156": {
+      "encoding": "utf8",
+      "text": "//FC: japanese monster spell names run up to 30 bytes (= 30 columns) and the name\n//FC: starts in column 0, so it reaches column 30. z-doc.c rolls a <tab:N> back once\n//FC: the cursor passed it, which would eat the tail of the name. The tag cannot move\n//FC: inside the translation (a changed tag is rejected on load), so it rides in as a\n//FC: %s argument and the column is picked here (Japanese layer #55).\nstatic cptr _blue_col_num(void) { return fc_lang_enabled() ? \"<tab:33>\" : \"<tab:27>\"; } //FC: #55\nstatic cptr _blue_col_cast(void) { return fc_lang_enabled() ? \"<tab:67>\" : \"<tab:56>\"; } //FC: #55\n\n"
     },
     "b671883caaf6e4ab20ec1109c3d6bc996f24085a0469bea6f6c4ac244e161adb": {
       "encoding": "utf8",
@@ -3306,6 +3298,10 @@
     "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee": {
       "encoding": "utf8",
       "text": ")"
+    },
+    "ba9eb3a4db53518bd0b5b40e072a59a262c3506ed1ff1aa129707d3614c11822": {
+      "encoding": "utf8",
+      "text": "        //FC: roff_to_buf() takes the string raw - it is not vstrnfmt(), so neither\n        //FC: #2 nor #3 sees it. Look the description up here (#5 fc_tr, general E:\n        //FC: table); roff_to_buf() itself was taught to keep 2-byte characters whole\n        //FC: (util.c, #49). Japanese layer\n        roff_to_buf(fc_tr(do_spell(use_realm, spell, SPELL_DESC)), 62, temp, sizeof(temp)); //FC: #49\n"
     },
     "bafbc06d2633a75a784bd4d91364469dc5b73fbbea218dc090934583770ffad3": {
       "encoding": "utf8",
@@ -3367,6 +3363,10 @@
       "encoding": "utf8",
       "text": "t(fc_tr_fm"
     },
+    "c38e6e5b4b77eb71a0fef61d09230b78bcdbfaae9a3153586a6c0756e4ad2b20": {
+      "encoding": "utf8",
+      "text": "    //FC: the object prompt draws its own window on top of whatever is behind it,\n    //FC: and the shop keeps its command row in the mirror underneath. The screen\n    //FC: has to know the core is asking for an item, or the cursor layer keeps\n    //FC: offering those commands (Japanese layer #37).\n    fc_obj_prompt_scope(1); //FC:\n"
+    },
     "c3aa95ba2e0f59e8b057cd6a667ce454e7b148f975c547ea496b3657a6e606c7": {
       "encoding": "utf8",
       "text": "string_ptr kaupunki_apu = string_alloc_format(fc_decor(\"in %s\"), kaupunki_nimi); //FC:"
@@ -3386,10 +3386,6 @@
     "c5b750fe1ae55e67667ceea6fff24f543fce113db15c3723504db8d0481335fd": {
       "encoding": "utf8",
       "text": " //FC: #108"
-    },
-    "c689bb7e52834046c3bcdd28c17c05def97716d226aa023a1e147722549a56fa": {
-      "encoding": "utf8",
-      "text": "        //FC: \"Home\" / \"Museum\" -- the shop table, not the general catalogue\n        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #34).\n        (doc_width(doc) - 10)/2, \"\", fc_shop(inv_name(context->inv))); //FC:\n"
     },
     "c69622a0d7010d97ede41d84b7ff3bc20eacf5bdc967c5426a6de43cf009bc18": {
       "encoding": "utf8",
@@ -3415,9 +3411,9 @@
       "encoding": "utf8",
       "text": "            //FC: accept a CP932 two-byte character (#9). isprint() is locale\n            //FC: dependent and rejects 0x80+, so the lead byte used to fall into\n            //FC: bell() - and bell() flushes the queue, so the trailing byte went\n            //FC: with it. Read the trail right here for the same reason, with\n            //FC: inkey_base so it does not go through macro/keymap processing.\n            //FC: Both bytes must fit, so the buffer never ends mid-character.\n            if (fc_is_sjis_lead((unsigned char)c) && ((pos + 2) <= len))\n            {\n                char trail;\n"
     },
-    "cad627c2406c36f1f575b506c138bb83e9a0c5e410e9a17ee9e3989dbdcbc122": {
+    "cb7957364e5d2441d9b132a0e7f427459e524f32fa31eccac4d2e3ccab866d45": {
       "encoding": "utf8",
-      "text": "//FC: japanese spell names run up to 20 bytes (fc_check_ja.py enforces that limit),\n//FC: and %-*.*s counts bytes - a 12 byte cut lands inside a 2-byte character and\n//FC: prints a broken glyph. Widen the column instead of clipping, so the name stays\n//FC: readable; the row grows from 53 to 61 columns only while japanese is on\n//FC: (docs/FROX_JA_DESIGN.md 8.50 #49).\n#define _SPELL_SUBWINDOW_NAME_W (fc_lang_enabled() ? 20 : _SPELL_SUBWINDOW_NAME_WIDTH) //FC: #49\n"
+      "text": "                char ja[200]; //FC: japanese: the english plural is built from arguments (Japanese layer #22)\n                if (fc_mon_list_header(ja, sizeof(ja), 1, mode == MON_LIST_SUBWINDOW,\n                                       mode == MON_LIST_PROBING, 0,\n                                       info_ptr->ct_los, info_ptr->ct_awake)) //FC:\n                    c_put_str(TERM_WHITE, ja, rect.y + i, rect.x); //FC:\n                else "
     },
     "cba7df83df39d8eaa93576ac583f0ea0b5313ddc1c02400aa736a82305c0a065": {
       "encoding": "utf8",
@@ -3426,6 +3422,10 @@
     "cbecd5cb63c876bcd3ccdc8a149aa7e10ac9f1e0dfb7197c04639dc8076089aa": {
       "encoding": "utf8",
       "text": "            fc_text_input_set(0); /*FC: nested item selector owns input now */\n"
+    },
+    "cc7a8ab9cdb97ad54af63dffebfb3db4ab2744366b9a837b259ca72fea9de57d": {
+      "encoding": "utf8",
+      "text": "            /*FC: the device effect name is a bare `char *` from the switch in\n             *FC: do_effect() (devices.c) and is sprintf'd into the object name,\n             *FC: so neither fc_tr_fmt() nor fc_tr_arg() ever sees it -- the pack\n             *FC: showed `staff: Nothing`. Look it up where it is printed\n             *FC: (Japanese layer #47). */\n"
     },
     "cc7a8bfe5b972a3d08f90e96077c6d387799e4f4cc72877039234a2d25c0bca2": {
       "encoding": "utf8",
@@ -3443,13 +3443,13 @@
       "encoding": "utf8",
       "text": "_st"
     },
-    "cf84540361ca1b3c0f1da2cfe82634c627ae710398d76760f27a63fbfadef2d9": {
+    "ce2f2ff49e8e5b1f21ee4391785b1ed6549ea84179c6bf0443efa013845ef14d": {
       "encoding": "utf8",
-      "text": "            /*FC: the device effect name is a bare `char *` from the switch in\n             *FC: do_effect() (devices.c) and is sprintf'd into the object name,\n             *FC: so neither fc_tr_fmt() nor fc_tr_arg() ever sees it -- the pack\n             *FC: showed `staff: Nothing`. Look it up where it is printed\n             *FC: (docs/FROX_JA_DESIGN.md 4, insertion point #47). */\n"
+      "text": "    i = fc_ref_index(name); //FC: lib-ja refs are numeric (Japanese layer)\n    if (i) return i; //FC: 0 unless japanese is on, so english is untouched\n"
     },
-    "cf9512d8543eb62eebc69009258782b50c2f16ac660fbfcdce9e6d82d2a0eb3e": {
+    "ce99a64b6048806e5de2358e48ecca2496b3291c166ad7d0b03ba655e4c42bdd": {
       "encoding": "utf8",
-      "text": "            //FC: #84 sprintf() does not pass through vstrnfmt(), so the format\n            //FC: has to be looked up here (docs/FROX_JA_DESIGN.md 8.67).\n            sprintf(prompt, fc_tr_fmt(\"Really replace %s with %s? \"), r_name + r_ptr2->name, r_name + r_ptr1->name); //FC: #84\n"
+      "text": "        //FC: a CP932 trail byte can be '~' (0x7E: mi) or ']' (0x5D: zo).\n        //FC: copy both bytes at the lead so neither is read as a marker\n        //FC: (Japanese layer #19).\n        if (fc_is_sjis_lead((unsigned char)*src) && src[1])\n        {\n            *t++ = *src++;\n"
     },
     "d000237fd6b1f0d5bf372ed6624c7ab5100b39d285a7a6cad5e225180495601d": {
       "encoding": "utf8",
@@ -3459,9 +3459,9 @@
       "encoding": "utf8",
       "text": "        for (p = Name; *p != 0; ++p)\n        {\n            if ((unsigned char)*p >= 0x80) return; //FC: #122\n        }\n    }\n"
     },
-    "d08a3d5e3e60e23150cbfc21ad583a9b5be8cba2a596228d82b6df0ca2d648e7": {
+    "d08bfa066a6336a682b3790ccb407fddc48c30b117406feee2fe7f865b182121": {
       "encoding": "utf8",
-      "text": "    //FC: sf_system is written and never used, so the encoding mark rides there\n    //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #29). 0 stays \"ascii\".\n    sf_system = (u32b)fc_save_enc_mark(); //FC: was: sf_system = 0L;\n"
+      "text": "    i = fc_ref_index(name); //FC: lib-ja refs are numeric (Japanese layer #16)\n    if (i) return i; //FC: 0 unless japanese is on, so english is untouched\n"
     },
     "d19d302ffbf8c5e106209d93f386144088ce5b3f24a2de0f0c08d6bab810675d": {
       "encoding": "utf8",
@@ -3495,9 +3495,9 @@
       "encoding": "utf8",
       "text": "e is glued "
     },
-    "d52bcf0166c9973f7427bb20b08f079b4452ac1afbe00b199f39a60b28e5ce20": {
+    "d3d2305cd4b76d89334aec5c629d0dcd672857d462c79b472eebb85bf3b4bb6a": {
       "encoding": "utf8",
-      "text": "            //FC: a CP932 trail byte can be 0x7E, the pluralizer: mi is 83 7E.\n            //FC: copy both bytes at the lead so the loop never reads a trail\n            //FC: byte as '~' (docs/FROX_JA_DESIGN.md 4, insertion point #18).\n            if (fc_is_sjis_lead((unsigned char)*s) && s[1])\n            {\n"
+      "text": "        fc_tr_fmt( //FC: string_alloc_format calls vsnprintf, so #2 never sees this format (Japanese layer #24)\n"
     },
     "d54e0249318a32982746913997a1cf490cc7eb5e9c13251552b35b64002326cf": {
       "encoding": "utf8",
@@ -3522,10 +3522,6 @@
     "daa185492cd607d44c9a852c52d1f227631e7f40c163bd15a3d4ec2a71abf1d0": {
       "encoding": "utf8",
       "text": " //FC: #107 strcat() copies bytes; the translation is the same 5 bytes wide"
-    },
-    "db4e5878e5429f3427b776165927fefe3e61004663f1ed00532899e9451cb6df": {
-      "encoding": "utf8",
-      "text": "#include \"fc_lang_c.h\" //FC: japanese layer (docs/FROX_JA_DESIGN.md 4)\n//FC: #119 every fputs()/fprintf(fp, ...) frame in this file is wrapped in\n//FC: fc_tr(); init_help_files() writes these 13 books at start-up, so the\n//FC: frames never pass through vstrnfmt() and no other hook can see them.\n//FC: The four .csv writers are left alone on purpose (design 8.75 4).\n"
     },
     "dba2689311e441c6268972603abbd4fc583bbcb71c88a1a1eb5024b59b41f7b0": {
       "encoding": "utf8",
@@ -3579,10 +3575,6 @@
       "encoding": "utf8",
       "text": " prefix.\n            tehtava_apu = string_alloc_format( //FC:\n                fc_decor((origin == ORIGIN_QUEST_REWARD) ? \"the quest '%s'\" : \"in the quest '%s'\"), //FC:\n                lyhytnimi(q, &nimi)); //FC:\n            strcpy(paikka_text, string_buffer(tehtava_apu)); //FC:\n            string_free(tehtava_apu); //FC:\n"
     },
-    "e2541df8c4f08de4ec7a0c8a4cdae48d3e47c8bf4c96f67c63fe0b73de291467": {
-      "encoding": "utf8",
-      "text": "    i = fc_ref_index(name); //FC: lib-ja refs are numeric (docs/FROX_JA_DESIGN.md 4 #17)\n    if (i) return i; //FC: 0 unless japanese is on, so english is untouched\n"
-    },
     "e2e0b846c90dd1446afb0306ab3581be48e5cd644ea6d3d971bdd9dbd7f90da1": {
       "encoding": "utf8",
       "text": "        msg_format("
@@ -3619,17 +3611,17 @@
       "encoding": "utf8",
       "text": "        }\n"
     },
-    "e743cdd5a2f81e3c24a33769c90825f210b1dfd9f0fc3055a2ea5b45cc0e6d3e": {
+    "e79529fd9610871b5e14331ad70cd4c047ef0db9368e68204055f211ab5785d4": {
       "encoding": "utf8",
-      "text": "        //FC: japanese wraps by character, not by word (docs/FROX_JA_DESIGN.md 8.50 #49).\n        //FC: Both flags stay 0 while the japanese layer is asleep, so the english\n        //FC: path below is bit for bit the one that was here before.\n        int kanji = fc_cp932_text() && (fc_char_bytes(str + read_pt) == 2); //FC: #49\n        int kinsoku = kanji ? fc_roff_kinsoku(str + read_pt) : 0; //FC: #49\n"
-    },
-    "e78850efd0b0ced5da70ad64a2c340883c6ef590acc9821714b6abf7d19b83fe": {
-      "encoding": "utf8",
-      "text": ") rides in as an\n                        //FC: argument, and a bare word is never looked up as one.\n                        //FC: let the japanese layer key on the resolved sentence\n                        //FC: (docs/FROX_JA_DESIGN.md 4, insertion point #39).\n                        char fc_buf[MAX_NLEN + 64];\n                        if (fc_slay_msg(fc_buf, sizeof(fc_buf), o_name,\n                                _slay.is_slay, _slay.kill_desc))\n                            msg_print(fc_buf);\n                        else\n"
+      "text": "        //FC: #53 MENU_TEXT is a power/group name. sprintf() never reaches\n        //FC: vstrnfmt(), so look it up here (Japanese layer).\n        sprintf(temp, \"  %c) %s\", keys[i], fc_spell_name(var_get_string(&text))); //FC: #53\n"
     },
     "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683": {
       "encoding": "utf8",
       "text": "6"
+    },
+    "e88bd0f11e90570291ed39419ce331fc9511304002125ef3c3f4e6b88a86f195": {
+      "encoding": "utf8",
+      "text": "//FC: japanese spell names run up to 20 bytes (fc_check_ja.py enforces that limit),\n//FC: and %-*.*s counts bytes - a 12 byte cut lands inside a 2-byte character and\n//FC: prints a broken glyph. Widen the column instead of clipping, so the name stays\n//FC: readable; the row grows from 53 to 61 columns only while japanese is on\n//FC: (Japanese layer #49).\n#define _SPELL_SUBWINDOW_NAME_W (fc_lang_enabled() ? 20 : _SPELL_SUBWINDOW_NAME_WIDTH) //FC: #49\n"
     },
     "e983f41d3fa4f50b55a4279a4f71879dc96a2b0247176d22ca1966ad0dab6c49": {
       "encoding": "utf8",
@@ -3639,13 +3631,17 @@
       "encoding": "utf8",
       "text": " //FC: #105 object_desc_str() copies bytes, so nothing looks this up"
     },
-    "eb44716cfd7dec94283489f0ea1f537630db7632582c77c90ee6199eab4f873f": {
+    "ec0906582b348220a6fc1c5cb44b317ab3bd6515f65d94e9ee421b9e6d239dd9": {
       "encoding": "utf8",
-      "text": "    //FC: the feeling word (game_inscriptions[], tables.c) is a bare argument,\n    //FC: so fc_tr_arg() will not look it up. Use the decoration table, which\n    //FC: already carries these ten words (docs/FROX_JA_DESIGN.md 4, #43).\n"
+      "text": "    //FC: sf_system is written and never used, so the encoding mark rides there\n    //FC: (Japanese layer #29). 0 stays \"ascii\".\n    sf_system = (u32b)fc_save_enc_mark(); //FC: was: sf_system = 0L;\n"
     },
     "edb9a1fbf1599ce823ca1ada3a8f1d82cc1c0bb4fcb0751cf078022f1ba2f714": {
       "encoding": "utf8",
       "text": "), sizeof(browse_prompt)); //FC: #53\n"
+    },
+    "ef24de77b74598fbce2697c44f90366643ed1cbe8198a3d79fa48e80de993641": {
+      "encoding": "utf8",
+      "text": "    //FC: the owner name is a bare char* in _types[], so no catalogue hook sees\n    //FC: it. 30 of the 241 names are bare words (\"Grug\" \"Angel\" \"Vile\"), so they\n    //FC: live in their own table, not the general catalogue\n    //FC: (Japanese layer #36).\n"
     },
     "efcdd2417a8783117e725760aa48c5d2dd68561d25474c1e5fbc6f0df0aa85f2": {
       "encoding": "utf8",
@@ -3654,6 +3650,10 @@
     "f0a1df63412dff8333eec3195efbac2df1a6b8deec1e82ff568ac283b7773ce1": {
       "encoding": "utf8",
       "text": " //FC: #67 - the column has to hold the translated label, and never shrinks below the english width (the \"Group\" and \"Name\" headings are placed for that)"
+    },
+    "f0f1ffbf477b2ea47d9d0d7aa535a32bf16d9a8b622e251b01dedab8849704e5": {
+      "encoding": "utf8",
+      "text": "//FC: (Japanese layer #33). Japanese carries"
     },
     "f1bad32e6a3dfb6c5205be22442c6915cb874b8afdf9ee0c8b92b3ceab6c8fa4": {
       "encoding": "utf8",
@@ -3675,10 +3675,6 @@
       "encoding": "utf8",
       "text": "                //FC: same as above: the kind name is already \"#no sekizou\" (#26).\n                sprintf(tmp_val2, \"%s%s\",\n                        fc_lang_enabled() ? \"\" : (is_a_vowel(*t) ? \"an \" : \"a \"), t);\n"
     },
-    "f3dffce8336ea9760700b4fd18826e1cc217c7c56817c46f3c1ace88753b8b2f": {
-      "encoding": "utf8",
-      "text": "    //FC: #54 the five below carry their colour tag, so they are E: keys; the\n    //FC: table name below is an M: key and must be looked up BEFORE it goes\n    //FC: into the tag (docs/FROX_JA_DESIGN.md 8.55).\n"
-    },
     "f4550e81dc89a47fdd8e0d9ebd99af44e20d0b456ee8739e931c198df8f4d95e": {
       "encoding": "utf8",
       "text": "            {\n                fc_text_input_set(0); /*FC: custom search editor */\n"
@@ -3686,6 +3682,10 @@
     "f56f7dd515833ea8799607506ce4bc51d92b5d76164f28a541842e1d7fc33617": {
       "encoding": "utf8",
       "text": "    {\n        //FC: #115 translate the element, not the chaos patron of the same spelling\n        cptr any = \"Random\";\n        return fc_lang_enabled() ? fc_spell_name(any) : any; //FC: #115\n    }\n"
+    },
+    "f58d2f6469f32a39e1ecd0c9316d13d7e7267e77b95e77a7f66195453195bc44": {
+      "encoding": "utf8",
+      "text": "            //FC: #54 roff_to_buf() takes the string raw, so neither fc_tr_fmt()\n            //FC: nor fc_tr_arg() reaches it (Japanese layer).\n            roff_to_buf(fc_tr(spell->desc), 80-13, desc, sizeof(desc)); //FC: #54\n"
     },
     "f5c67da2e55ad988ad1a701f667ad04508c06262b1854c28f45890f503903880": {
       "encoding": "utf8",
@@ -3698,6 +3698,10 @@
     "f684c73cba75b2ba0b6833f62a8fa8af6b8a2d3711b775d52596105f4917e38d": {
       "encoding": "utf8",
       "text": "%s"
+    },
+    "f7452a09a524686dfb8430ffbc1a0b57be70b9b42cda69777bcbe439a48e108e": {
+      "encoding": "utf8",
+      "text": ") rides in as an\n                        //FC: argument, and a bare word is never looked up as one.\n                        //FC: let the japanese layer key on the resolved sentence\n                        //FC: (Japanese layer #39).\n                        char fc_buf[MAX_NLEN + 64];\n                        if (fc_slay_msg(fc_buf, sizeof(fc_buf), o_name,\n                                _slay.is_slay, _slay.kill_desc))\n                            msg_print(fc_buf);\n                        else\n"
     },
     "f75b8da35847e6bb5ae16ea45810f3eb2da9f0928b6231258b25f81c23d648ea": {
       "encoding": "utf8",
@@ -3739,10 +3743,6 @@
       "encoding": "utf8",
       "text": "        if (kanji) //FC: #49 - the trail byte goes with its lead\n        {\n            tbuf[write_pt++] = ch[1];\n            line_len++;\n            read_pt++;\n        }\n"
     },
-    "faf36dd33b7433156be67bbae0d63f37681675d7347dc31a7db5fea8da1d2e26": {
-      "encoding": "utf8",
-      "text": "//FC: (docs/FROX_JA_DESIGN.md 4, insertion point #33). Japanese carries"
-    },
     "fb8e20fc2e4c3f248c60c39bd652f3c1347298bb977b8b4d5903b85055620603": {
       "encoding": "utf8",
       "text": "ab"
@@ -3778,7 +3778,7 @@
   },
   "files": {
     "alky.c": {
-      "sha256": "6d499a804f5bec58c6d7aed5df386f170ae84163c9ab93ae727e7f39a52f2f4b",
+      "sha256": "e63a1771e2220f59539f56c7024b03ac7db1987bf78a6140dc2f9fdd514556eb",
       "operations": [
         [
           "copy",
@@ -3788,7 +3788,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -4194,7 +4194,7 @@
       ]
     },
     "autopick.c": {
-      "sha256": "e04ec23689764588750b40cc25b0fd99c5d2089d1cab1e2d40f5f0bb5e0e4bd8",
+      "sha256": "f1c439084a7655c16ad90d234bd7f346cd66e7137380b4a389890b7742e2a8ec",
       "operations": [
         [
           "copy",
@@ -4214,7 +4214,7 @@
         ],
         [
           "add",
-          "256f46484489458f1de2b53e1ba3c7446afd6190c173b3a010053d10fd570b5e"
+          "8b8631901cd306fa532fea53fcfeb9fdf9674b061baa20daf802c36992d1ee14"
         ],
         [
           "copy",
@@ -4402,7 +4402,7 @@
       ]
     },
     "bldg.c": {
-      "sha256": "def8f264ae939c00055c233f1c307621af39fba01b5c003bd0955d4f1e1b5a0d",
+      "sha256": "ab1273b5e4c639329b862d411e12d5fcb896dc59cfa173d0145aaa905245340e",
       "operations": [
         [
           "copy",
@@ -4412,7 +4412,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -4422,7 +4422,7 @@
         ],
         [
           "add",
-          "af57c8b70b69b6bbfcd41f69b697542b730c6321c085f75809a8a963139355da"
+          "7fdc6d596d9a1d2e1f325f7455f1303d75f5256d2ee52ea0f645e325b299cb11"
         ],
         [
           "add",
@@ -4482,7 +4482,7 @@
         ],
         [
           "add",
-          "04f2f48b236cb1df65a9db6b1d8c8a318f8913ee421dfbe74e72b9100fdf8512"
+          "7d68cedb59649f4ed2eddb802d4d52bdaf0f225a5f7445fc1c8dd376b14eeaca"
         ],
         [
           "copy",
@@ -5755,7 +5755,7 @@
       ]
     },
     "bluemage.c": {
-      "sha256": "2ce6189d826e6ec8464595acb5ebea9168c4c3b541a4ab2ce6778efd54d1066c",
+      "sha256": "d86087ea5c8023eca76b8eb14c2e8d5babb7bdc60cb566d6aac393aac258d817",
       "operations": [
         [
           "copy",
@@ -5765,7 +5765,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -5775,7 +5775,7 @@
         ],
         [
           "add",
-          "320f2e3c9b0c81b50f6c766876f82243a20de20eb95e22fc02a5321b3d15ac9a"
+          "b6407d15cbaf0c2fa6c15cff589c656054bad5e269ecac09a2d9fae18085c156"
         ],
         [
           "copy",
@@ -5968,7 +5968,7 @@
       ]
     },
     "chaoswar.c": {
-      "sha256": "44039b01fba852dab42ad53bd7ec57e9a6e8e183c8812ba16aba116ce5094d86",
+      "sha256": "b34c98d496119ce3613cb372c9023b5881358c11e910ebc0f683890e16d2b024",
       "operations": [
         [
           "copy",
@@ -5978,7 +5978,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -6062,7 +6062,7 @@
       ]
     },
     "cmd2.c": {
-      "sha256": "8b186d0ec5a869524eb3fb0abe0e006ac1c64244b5f7dd7ac1453c2c65d08583",
+      "sha256": "044000be446452853d003126207b7e419300c712d2815428ca9318975bb645d3",
       "operations": [
         [
           "copy",
@@ -6072,7 +6072,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -6093,7 +6093,7 @@
       ]
     },
     "cmd3.c": {
-      "sha256": "4802c1de8dee52b87924d420b13987acbf0dc7b58359b7f72e4340d67502c232",
+      "sha256": "b865a7c0bdfc47cef9a7b2c3609270c5d0848fc182a33c79e09d1bc1d0cca81d",
       "operations": [
         [
           "copy",
@@ -6103,7 +6103,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -6303,7 +6303,7 @@
         ],
         [
           "add",
-          "1abb557f8601a30df102c0e899bcf480114d335d889c5d2b40cb97f0c3c5fd0e"
+          "cb7957364e5d2441d9b132a0e7f427459e524f32fa31eccac4d2e3ccab866d45"
         ],
         [
           "copy",
@@ -6333,7 +6333,7 @@
         ],
         [
           "add",
-          "4a28fb501d08113cc42549fe75b8a87bb1110d91b4101c30d53e16ac4cd02d4f"
+          "024e059ed1c2010f88c2ebcccab06ac296acc6f59c9af3142caa1e0373ba5e09"
         ],
         [
           "copy",
@@ -6494,7 +6494,7 @@
       ]
     },
     "cmd4.c": {
-      "sha256": "7f468eaf911020a494bd503d706df6b44e5c9bd4195086404b51ea2e05ec3604",
+      "sha256": "c783a8728aea56e9434cbf3834d1900ea332951db58a024c60a840d5b29c1b33",
       "operations": [
         [
           "copy",
@@ -6504,7 +6504,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -6514,7 +6514,7 @@
         ],
         [
           "add",
-          "af793b9860422fdb8e07ed444249b2e77f39e7fce8231f0933fb8db9c297c8a0"
+          "4990f4ec551097fa1c5b7538a43535db316f5f5f94be786dae31213b66facf0b"
         ],
         [
           "copy",
@@ -6544,7 +6544,7 @@
         ],
         [
           "add",
-          "8414e2c1d95324de1beb78b414ae71f1302bdabd125cd58e4c71c24cb4120697"
+          "5623ed1a780f900e7f88dca0ba3b4471b1714bb30a18e1442b636aa92146a72b"
         ],
         [
           "copy",
@@ -6834,7 +6834,7 @@
         ],
         [
           "add",
-          "0444cfc683cd2abefe22f3426b077cb928062d808d1824d9956ea2dc4eb3f64c"
+          "6d25c38ba5aace515d2e82c682e1f775be1496f11aef80c7c3e49d2253d44640"
         ],
         [
           "copy",
@@ -7984,7 +7984,7 @@
         ],
         [
           "add",
-          "72bb059d2658d3302eb237e26e7c0c2448c85b02601ed49f6d036c0c7ea3b65f"
+          "01fe850728b05b34dd9c2721e06b8d7af810cf2f82a177a409c87829e9cfabbd"
         ],
         [
           "copy",
@@ -7995,7 +7995,7 @@
       ]
     },
     "cmd5.c": {
-      "sha256": "24e5d86fe5d106aecc7f3077ba960dc74fe6de0670b869dbf02ec7196fb78648",
+      "sha256": "7d2c9109a922b45c0a7cadae192e19914ee4f653b8e648525fb44c66682cf902",
       "operations": [
         [
           "copy",
@@ -8005,7 +8005,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -8245,7 +8245,7 @@
         ],
         [
           "add",
-          "a00b0181fccd8ced2ed7dcbaffa456631baf881b10168272dcb4bb8d837e3138"
+          "ba9eb3a4db53518bd0b5b40e072a59a262c3506ed1ff1aa129707d3614c11822"
         ],
         [
           "copy",
@@ -8297,7 +8297,7 @@
       ]
     },
     "combat.c": {
-      "sha256": "2fbdfb3348e70e0c887772acc7a2412f12d27c2c1117e5c9231d94523ab74f59",
+      "sha256": "d7b6a643a81c10aa38a924c2bc3d829b2e50c760bad5313554e7ef25fbd4c9c6",
       "operations": [
         [
           "copy",
@@ -8307,7 +8307,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -8327,7 +8327,7 @@
         ],
         [
           "add",
-          "e78850efd0b0ced5da70ad64a2c340883c6ef590acc9821714b6abf7d19b83fe"
+          "f7452a09a524686dfb8430ffbc1a0b57be70b9b42cda69777bcbe439a48e108e"
         ],
         [
           "add",
@@ -8366,7 +8366,7 @@
       ]
     },
     "corny.c": {
-      "sha256": "c3178a7b30c773877c9671fdfa22716c01fd08c006df08ab5e8a0342aef98415",
+      "sha256": "7695a863ff167e29d89c363be980d02e1ee53ae1d54fa8c15902b9894663bacb",
       "operations": [
         [
           "copy",
@@ -8386,7 +8386,7 @@
         ],
         [
           "add",
-          "000c236add825983ecddde1776e3362a0eddbecb992ad2603c70fdcf05326917"
+          "0e4ae8aa92bc59d446d3a7b8cb99fd6be4f7fac081cd540d0e6bc18f172416e2"
         ],
         [
           "copy",
@@ -8533,7 +8533,7 @@
       ]
     },
     "doppelganger.c": {
-      "sha256": "6af74ca3602366a815212628be8ee79f53c8df3ee5751ca8973171f2cc4ee150",
+      "sha256": "c171a0b82750fe496550c95ab7939ebd6833d71163a6a14d4b0a5b42f5fb28ba",
       "operations": [
         [
           "copy",
@@ -8543,7 +8543,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -8674,7 +8674,7 @@
       ]
     },
     "duelist.c": {
-      "sha256": "c1ee585a0aaea9d5563f11d6d82d66178b54515e577bb0eeebab23f59f0c7caa",
+      "sha256": "0540b6f291288ce57a02d18f32ab2b31226f133ac1b7ee48eaef6de4fa2aea6e",
       "operations": [
         [
           "copy",
@@ -8684,7 +8684,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -8705,7 +8705,7 @@
       ]
     },
     "dungeon.c": {
-      "sha256": "b55ee1ab26eb39b5953ef85f1a9746a58cac47beaa120eecd4835ea555bc5333",
+      "sha256": "7b6bab455323cd32ca53be2bbdad7c74efe1f1bae4c4e934b19f52b1056ffb9a",
       "operations": [
         [
           "copy",
@@ -8715,7 +8715,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -8725,7 +8725,7 @@
         ],
         [
           "add",
-          "eb44716cfd7dec94283489f0ea1f537630db7632582c77c90ee6199eab4f873f"
+          "36becb84129096430ee750d86f00f04a423c328b88fc7f9360570a2e900d6a96"
         ],
         [
           "copy",
@@ -8886,7 +8886,7 @@
       ]
     },
     "effects.c": {
-      "sha256": "4eae3778326c79af856eff032faacfd4b700f8c6d24633276faba78705e796da",
+      "sha256": "b2f3fb4e0339c573f42401e29ce962af6612ef76b9f6de1651ab7ce62542c7ed",
       "operations": [
         [
           "copy",
@@ -8906,7 +8906,7 @@
         ],
         [
           "add",
-          "000c236add825983ecddde1776e3362a0eddbecb992ad2603c70fdcf05326917"
+          "0e4ae8aa92bc59d446d3a7b8cb99fd6be4f7fac081cd540d0e6bc18f172416e2"
         ],
         [
           "copy",
@@ -9159,7 +9159,7 @@
       ]
     },
     "files.c": {
-      "sha256": "78a71748ea15eaed0e9c52d352b2786fdf75b04a527c8d0b4036cd414570e08a",
+      "sha256": "9b417e66d12e80afa1a77ff81d5083ee16547fdd0b5327188cc2b11281bdd308",
       "operations": [
         [
           "copy",
@@ -9179,7 +9179,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -9420,7 +9420,7 @@
       ]
     },
     "flavor.c": {
-      "sha256": "07d2f46d3fde45b746f8963141f9a5074718ac20ccd0f7a9a2070f9055d452c2",
+      "sha256": "d01c2647c322cf5945f05c5b0f3668fd1c9e0fa9d5bca2ef1b4c621f7a47a17a",
       "operations": [
         [
           "copy",
@@ -9430,7 +9430,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -9500,7 +9500,7 @@
         ],
         [
           "add",
-          "51c0063de4ce4f82d802f98d62469f9c63398a446ac01e9e0edbca8f46e49f44"
+          "9c40a44cca03dd8903909219258961071eabdbb157673353afca5485370627b5"
         ],
         [
           "copy",
@@ -9640,7 +9640,7 @@
         ],
         [
           "add",
-          "6c11587084dc1ed229f54bddaed45cacd5a5525b84f111248b7f5d55d4612f50"
+          "3e73b9f33ee0a2ca7b7aa9e2b9f835f40cb9def98dbc288064977955f54e4164"
         ],
         [
           "copy",
@@ -9770,7 +9770,7 @@
         ],
         [
           "add",
-          "57a2cce0ea450434355d2098448c529a58ac715e190cae19f946b293df911527"
+          "b29c1ab365de9d8653f7796e8019110793f1e3319fa19f21ae41329e15544b45"
         ],
         [
           "copy",
@@ -9780,7 +9780,7 @@
         ],
         [
           "add",
-          "43eb64bff9390758856b90c9a6a9c287edc3be32944dd6c1349accc24660275a"
+          "11da314e5a6eb55150ee97997486e5143f4e76ab1f2c368ff89552cfd2381ca5"
         ],
         [
           "copy",
@@ -9970,7 +9970,7 @@
         ],
         [
           "add",
-          "d52bcf0166c9973f7427bb20b08f079b4452ac1afbe00b199f39a60b28e5ce20"
+          "1962b1289f97976d3476941d7b473e9b04d6ab639f5b206b56f20a5d307a21bd"
         ],
         [
           "copy",
@@ -10026,7 +10026,7 @@
         ],
         [
           "add",
-          "cf84540361ca1b3c0f1da2cfe82634c627ae710398d76760f27a63fbfadef2d9"
+          "cc7a8ab9cdb97ad54af63dffebfb3db4ab2744366b9a837b259ca72fea9de57d"
         ],
         [
           "copy",
@@ -10796,7 +10796,7 @@
         ],
         [
           "add",
-          "a6c667ebe05e47ff1813796b6281a7c8125c4d035d1799ebbe31f3706ed21ad1"
+          "b024b07031fc004d225a32615888e4ddee6de0b99ce1ddd03e516fab592c4965"
         ],
         [
           "copy",
@@ -10823,7 +10823,7 @@
       ]
     },
     "floors.c": {
-      "sha256": "9b48e43f2d67daacd87975c903401a9f2658038488ca257103e919d43b5ec025",
+      "sha256": "51fce0c663e6e3c84117079c15a742ecd4e99d6ed8a4ca90b21531ad51aedc4b",
       "operations": [
         [
           "copy",
@@ -10833,7 +10833,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11049,7 +11049,7 @@
       ]
     },
     "graymage.c": {
-      "sha256": "51c98ac23811592890c69862c12e55e43964614018e78fbdd18165b22c1d789a",
+      "sha256": "78a8ab062966de2137cd42c3a27f25bf99d465acce8ec1deb572db884ee4277c",
       "operations": [
         [
           "copy",
@@ -11059,7 +11059,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11393,7 +11393,7 @@
       ]
     },
     "h-config.h": {
-      "sha256": "30b1cf1e1bc6da86bf253484801bea81787e2d9439d3d44aaa326a0aa481c846",
+      "sha256": "90c40535e2791cf19e45015e36d57b5d692b64b6103fd964a944f37a4aa6839b",
       "operations": [
         [
           "copy",
@@ -11403,7 +11403,7 @@
         ],
         [
           "add",
-          "88edaf5bd377b555a6d1b67a7e581006cbd1b79ccf12a209813db5f1ebe8b8ab"
+          "5e85fe63fe80ceace2b4e080001e74a5fb0368af34299becdccdba3e6c9e152a"
         ],
         [
           "copy",
@@ -11467,7 +11467,7 @@
       ]
     },
     "hex.c": {
-      "sha256": "85b612182f4fb46de2624f95741b3bac3def09933665056386d9adb375452206",
+      "sha256": "48b2b28f95d7f453e194a52dc88bdabba1976e658cad24804138617679599b3d",
       "operations": [
         [
           "copy",
@@ -11477,7 +11477,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11540,7 +11540,7 @@
       ]
     },
     "hissatsu.c": {
-      "sha256": "1152f22d1ddf45ab25398245372f42292b06042267fd1ca2fe1c24045b9471a5",
+      "sha256": "86af433e6a2c8e1d306ea74767c8c4cc399eb04f4230d6c38fa9d1fdfd26a815",
       "operations": [
         [
           "copy",
@@ -11550,7 +11550,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11651,7 +11651,7 @@
       ]
     },
     "home.c": {
-      "sha256": "e9a0294f875ad00cdb5d0af0c67904f3c834895e2c168ff30e6645d170a17ef4",
+      "sha256": "e89f666bc98441b6a1d485faacc1c9ae2959823a6fa02c6917ad9260607aa980",
       "operations": [
         [
           "copy",
@@ -11661,7 +11661,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11671,7 +11671,7 @@
         ],
         [
           "add",
-          "c689bb7e52834046c3bcdd28c17c05def97716d226aa023a1e147722549a56fa"
+          "3a55e695e22118714ac5e0630d8f45489f0a813dfa4749a090ac900ad823228f"
         ],
         [
           "copy",
@@ -11753,7 +11753,7 @@
       ]
     },
     "igor.c": {
-      "sha256": "856aff839b70606dcd784a6fabad57a108f96324530dde6979b22e830bebd04d",
+      "sha256": "f158982d96f4346db6386ac9e8835830c8884e30bf68e435269c982faad66024",
       "operations": [
         [
           "copy",
@@ -11763,7 +11763,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11825,7 +11825,7 @@
       ]
     },
     "init1.c": {
-      "sha256": "d94a06ad32022559273c689f859ebce28875291424bca7c0e8cc530a908b9108",
+      "sha256": "3cfb05eaeddbafac82a03f3dddc5810fe0717a8ea445e005abc778dbca6deab4",
       "operations": [
         [
           "copy",
@@ -11835,7 +11835,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11845,7 +11845,7 @@
         ],
         [
           "add",
-          "78826f4a17dddd8b48384c6322265a080c3e7d85821a8da6daaeac06a7dd378a"
+          "ce2f2ff49e8e5b1f21ee4391785b1ed6549ea84179c6bf0443efa013845ef14d"
         ],
         [
           "copy",
@@ -11855,7 +11855,7 @@
         ],
         [
           "add",
-          "964d28ea90dfad40756cf6358e4aaa85fc03560d780f5c168822d0b379601e17"
+          "d08bfa066a6336a682b3790ccb407fddc48c30b117406feee2fe7f865b182121"
         ],
         [
           "copy",
@@ -11865,7 +11865,7 @@
         ],
         [
           "add",
-          "e2541df8c4f08de4ec7a0c8a4cdae48d3e47c8bf4c96f67c63fe0b73de291467"
+          "a740f4c321a7dfc6343d80cb931f37b54a2e279b1fd0aad4c29563cd3c0be09e"
         ],
         [
           "copy",
@@ -11909,7 +11909,7 @@
       ]
     },
     "inv.c": {
-      "sha256": "43d2d14d79d9834a77457c479cb8b8c7f34c38217ba3b8e234f96ddd6fa9a1a5",
+      "sha256": "4885fcea13b35d7151b816dad89314811b5b3abc0a9b2a4f61de21e15def83f6",
       "operations": [
         [
           "copy",
@@ -11919,7 +11919,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11973,7 +11973,7 @@
       ]
     },
     "load.c": {
-      "sha256": "cb8df92e3b7adb07a4f60ba2f72b527f3a5d07f67afbae041dc31f8a28f3449e",
+      "sha256": "ad3ad18c8d4779f6fa6347fdc511497379d2c34db1b414666073d8aff5b5f553",
       "operations": [
         [
           "copy",
@@ -11983,7 +11983,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -11993,7 +11993,7 @@
         ],
         [
           "add",
-          "8d6df5e3b289746058015126ba936582ef7e2672b2ee84ad53262f48171c17fc"
+          "aed4c66ad394f49852e4aa61dc381ad743f9f1059ef36aeb74006c09675ca341"
         ],
         [
           "copy",
@@ -12015,7 +12015,7 @@
       ]
     },
     "magic_eater.c": {
-      "sha256": "64ec251d20f1db3f82d1fdbfbab397cc79dc709a0e1a69e0394121c03d6a498d",
+      "sha256": "eb7198e2b3744b0c70c9bedc09f7f9241dca1d4f675ccc774842f33d876331bb",
       "operations": [
         [
           "copy",
@@ -12025,7 +12025,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -12636,7 +12636,7 @@
       ]
     },
     "menu.c": {
-      "sha256": "0fdc836cd96542bca3453f2cf11395aaaaf28489df9d73a2311b3c15aa6fe317",
+      "sha256": "de07a20044106283a9f828ca514d4036d169fd9d046702160745149eed3a531a",
       "operations": [
         [
           "copy",
@@ -12646,7 +12646,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -12686,7 +12686,7 @@
         ],
         [
           "add",
-          "0161a811a7c7bf9bb7d9a654819ec473a35d614ba0a34399461be3b9119551f4"
+          "e79529fd9610871b5e14331ad70cd4c047ef0db9368e68204055f211ab5785d4"
         ],
         [
           "copy",
@@ -12818,7 +12818,7 @@
       ]
     },
     "message.c": {
-      "sha256": "94fbba06698469372b45d2957fe815acdebbe2d2d3e8ac184314e566aa610f64",
+      "sha256": "c0a83488626760b238c93749ee48a8e6dde5420d592492339cea3ae9725e826e",
       "operations": [
         [
           "copy",
@@ -12828,7 +12828,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -12904,7 +12904,7 @@
       ]
     },
     "mon_info.c": {
-      "sha256": "09fb8afa804770e0f9179a5e2095c8152163dc6a74d5984eacc10f63724e0616",
+      "sha256": "50840fb97d645e97c271ca3102506706e1a93c980e99ec4ad9028beb734d2ef5",
       "operations": [
         [
           "copy",
@@ -12914,7 +12914,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -12944,7 +12944,7 @@
         ],
         [
           "add",
-          "b188c3c096f2ad5a6fdd6335c8f5e59d8b4323b78932c52a613d1aac4b4e02c4"
+          "9dd4541c177112b87801bb68ad096210685c875548c759d22de08a0fa7760341"
         ],
         [
           "copy",
@@ -12965,7 +12965,7 @@
       ]
     },
     "monk.c": {
-      "sha256": "d8ec1f82ef36ae3473fdbf403500bd55b054dc677cde158d93411e79cd166a68",
+      "sha256": "de688f74ff3f9ed2562dd75b096c7e3862a35ade6e37dfa716d4c12382129003",
       "operations": [
         [
           "copy",
@@ -12975,7 +12975,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -13036,7 +13036,7 @@
       ]
     },
     "monspell.c": {
-      "sha256": "5d88b016cb22fa72b410f751ba1dab709b3da459dff32be62d16660d7b82c9a6",
+      "sha256": "2801f263a6434936d0dfd262ad32adfc1577ad39ae3ac50f8c9030e9500eea94",
       "operations": [
         [
           "copy",
@@ -13046,7 +13046,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -13396,7 +13396,7 @@
         ],
         [
           "add",
-          "b35dff5b8d6ea91db5fadf185a70e0b325b60c51d86d338d0901abfa4a498874"
+          "a2c79b4078556de4090fea245b62241eedcb8738f94b72917743896d1546579e"
         ],
         [
           "copy",
@@ -14136,7 +14136,7 @@
         ],
         [
           "add",
-          "4da8c408bfb26f7a247175df3eca8fd6f9430110bb8b050d465dcb0f1a06c646"
+          "1c993504ab5128b7de493e07db92cf476148f365248605178f2d2731b40ee4d0"
         ],
         [
           "copy",
@@ -14146,7 +14146,7 @@
         ],
         [
           "add",
-          "3825c45e39975affd3ae4fe2af656a0aef3168c7e250d89233a10d22bba83d37"
+          "29b67319cc38c0e7618fae40c321d2481b2d2465622bafbc22fc0c3df89b0076"
         ],
         [
           "copy",
@@ -14366,7 +14366,7 @@
       ]
     },
     "monster2.c": {
-      "sha256": "1dbdb4c5d3092032f8fe473d565bc6717b781d2d26d946d004fd3bb550b41dc9",
+      "sha256": "161afa23c32cd84561437b1bb312ac5340817a41f1ecec78bf8dff0e776a4075",
       "operations": [
         [
           "copy",
@@ -14376,7 +14376,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -14386,7 +14386,7 @@
         ],
         [
           "add",
-          "8cba08fccf0e3eb2973b928d3d52a9d4fed90e977a9747445216ce59f57544f1"
+          "03abfe880340a9faa2fbfee9896094f896c247d37edd8110db6dcdc63f3af96a"
         ],
         [
           "copy",
@@ -14830,7 +14830,7 @@
       ]
     },
     "mut.c": {
-      "sha256": "c315174f3c3eca633641fa1111a9b83c4a8ab9388ac6a9b78a57800a991fd84a",
+      "sha256": "25147feca2e31a715b432693a9f510a4f7cd7cd34a625520b13a345e25503dd5",
       "operations": [
         [
           "copy",
@@ -14840,7 +14840,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -14967,7 +14967,7 @@
       ]
     },
     "obj.c": {
-      "sha256": "7e418ebaaccfcc60a14fd04369c6266b8ec83a5654caf55bbbe67fa722f05d00",
+      "sha256": "d2b199b2f87a1015fc27a40a1b1e0a41f283947bcdbc2aaa8e3b9bf481124ad7",
       "operations": [
         [
           "copy",
@@ -14977,7 +14977,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -14987,7 +14987,7 @@
         ],
         [
           "add",
-          "15d2ead689b270a6b34db2c024ccc9b5fbfc7a42f1b533066aafd50e7ca82118"
+          "6af027e46c1db8123df6b0a57393a26a7ffd7f5cff9e3b7e7abefcdadc01bd61"
         ],
         [
           "add",
@@ -15015,7 +15015,7 @@
         ],
         [
           "add",
-          "a27c687c2c7b614247f626d14b0106c55f43dba934a6e5fafe4c553d174bf077"
+          "d3d2305cd4b76d89334aec5c629d0dcd672857d462c79b472eebb85bf3b4bb6a"
         ],
         [
           "copy",
@@ -15077,7 +15077,7 @@
       ]
     },
     "obj_info.c": {
-      "sha256": "aedf32844a9b96ab0ec09494440e5506ac73aef55b9c4723b877570cc2cbc768",
+      "sha256": "1fba2f44740f6435cab72b7bc67125f7d5525f288c026ae123341a3b5e7d8fbc",
       "operations": [
         [
           "copy",
@@ -15087,7 +15087,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -15243,7 +15243,7 @@
         ],
         [
           "add",
-          "faf36dd33b7433156be67bbae0d63f37681675d7347dc31a7db5fea8da1d2e26"
+          "f0f1ffbf477b2ea47d9d0d7aa535a32bf16d9a8b622e251b01dedab8849704e5"
         ],
         [
           "copy",
@@ -15933,7 +15933,7 @@
       ]
     },
     "obj_prompt.c": {
-      "sha256": "3c8e8b2268fc09ba0469460c4db12c607e3a3814d2e50600860ea0510b0f9361",
+      "sha256": "8dcfc7d008f254c436e94085bca74e80d31c2c5e3decd14ec87cded3ce260923",
       "operations": [
         [
           "copy",
@@ -15943,7 +15943,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -15953,7 +15953,7 @@
         ],
         [
           "add",
-          "8526b98003cd129fdbf27458df36713403479284d392a0c27a3bb9e290a24bdf"
+          "c38e6e5b4b77eb71a0fef61d09230b78bcdbfaae9a3153586a6c0756e4ad2b20"
         ],
         [
           "copy",
@@ -15973,7 +15973,7 @@
         ],
         [
           "add",
-          "25a6e896342789f10bf6e9bbdc31311fa8c739f05be5a87be2df7bc754691d00"
+          "3faf2da982b7ab1276130c8897114d416dd52b9a85e8698f1acc29d0db4b1b96"
         ],
         [
           "copy",
@@ -16154,7 +16154,7 @@
       ]
     },
     "psion.c": {
-      "sha256": "4254bee036771d89e5cf2d9c61bfe8b126bd22036c5d9b6aca0eec46eb3ee85f",
+      "sha256": "1f62513a6cd48602dde07d28091b2341dc96cb51f57ae8f45d33e83824a62e3e",
       "operations": [
         [
           "copy",
@@ -16164,7 +16164,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -16174,7 +16174,7 @@
         ],
         [
           "add",
-          "46dbc8fc2808da576e32fc9f06700dd1c96fed3068dd8954915634c88d0fd5f1"
+          "f58d2f6469f32a39e1ecd0c9316d13d7e7267e77b95e77a7f66195453195bc44"
         ],
         [
           "copy",
@@ -16355,7 +16355,7 @@
       ]
     },
     "py_birth.c": {
-      "sha256": "e0d8b6e614cea366f2000dede41b4fa44993bf17c46021f0ec97ea3ffa52c188",
+      "sha256": "f2f4174c2d3499228e8202e3c1ad311d89f5b3884351d72eaccb3ba2a329fc8e",
       "operations": [
         [
           "copy",
@@ -16365,7 +16365,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -16376,7 +16376,7 @@
       ]
     },
     "py_info.c": {
-      "sha256": "6a0403827a27922c022fc42e8baf8a99386502e06b9f236b103f1af1acf3005c",
+      "sha256": "f193ed9fa9386a50a99ad55c6427b562303f68ca415793995c6f6bf2c1973c03",
       "operations": [
         [
           "copy",
@@ -16386,7 +16386,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -17126,7 +17126,7 @@
       ]
     },
     "r_dragon.c": {
-      "sha256": "3dfc70f6fbf3bdfd480cd391b84815f981d1d41d1c757d324ca1833be2516b18",
+      "sha256": "6af904c8de2786ac56969121dbcc87318aa78e52a3f80c8504c45b308f075faa",
       "operations": [
         [
           "copy",
@@ -17136,7 +17136,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -17146,7 +17146,7 @@
         ],
         [
           "add",
-          "f3dffce8336ea9760700b4fd18826e1cc217c7c56817c46f3c1ace88753b8b2f"
+          "9d274d06dd5be12e64946abf25b498dfded6ee1a1793e3b915a7f8de12db04b2"
         ],
         [
           "copy",
@@ -17404,7 +17404,7 @@
       ]
     },
     "r_jelly.c": {
-      "sha256": "506328072ab794bca1fc62b1cf636fb4b212626c220fc9202c74746cff9c20cb",
+      "sha256": "c3883cebdd06fe13491192f6af90ace430eb7d73feea9e7ca9f20258592dadbe",
       "operations": [
         [
           "copy",
@@ -17414,7 +17414,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -17467,7 +17467,7 @@
       ]
     },
     "r_mimic.c": {
-      "sha256": "4cfd7b8ed0b1bac12c6e302d77e71216aab25d9c56c53da046d3d575ba99018a",
+      "sha256": "87b0dc773f798b645a9dfb1560e50ee1293a65c8d35a27c8b860bc057f072e18",
       "operations": [
         [
           "copy",
@@ -17477,7 +17477,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -17487,7 +17487,7 @@
         ],
         [
           "add",
-          "cf9512d8543eb62eebc69009258782b50c2f16ac660fbfcdce9e6d82d2a0eb3e"
+          "288f182bcf7084060e905d332eec4e7750cc97c74c454f4fac5e5a464694f772"
         ],
         [
           "copy",
@@ -17508,7 +17508,7 @@
       ]
     },
     "r_mummy.c": {
-      "sha256": "cd8282f874311dc2fc75ee9d17308640521757cf5ee94da6b8825b49be833090",
+      "sha256": "99f5ea3807e46b5f6e9d800ffdcb315ddd570bfaf68719e16c68de0e98243969",
       "operations": [
         [
           "copy",
@@ -17518,7 +17518,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -17633,7 +17633,7 @@
       ]
     },
     "r_rag.c": {
-      "sha256": "0cd4937585bb57d16d79b03a4d52195a7439192b376073fc1fb47d2f40b1ae19",
+      "sha256": "09eb4ff58f8c3c4c017da45547fcbd629e4e4578ff2107b230b94e2b752b4205",
       "operations": [
         [
           "copy",
@@ -17643,7 +17643,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -17653,7 +17653,7 @@
         ],
         [
           "add",
-          "a23e1f6908b816c0d8e3f654f93dc7faa80f4d2e1485523de38c2965d05f2b70"
+          "7d24a1dbfed4eb10b01571f3cefeba23cd76dbe23b72c3b4122e78f4846f042d"
         ],
         [
           "copy",
@@ -17664,7 +17664,7 @@
       ]
     },
     "r_ring.c": {
-      "sha256": "e25ea4c9c1b0a91f4409ade8ca9ec3d784596801e4c1b095b624b4b85d25b597",
+      "sha256": "d96ad8d6b1cf131019b3349fed70ee4544838dfab14bcfc7b88339ebd44bfc22",
       "operations": [
         [
           "copy",
@@ -17674,7 +17674,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18237,7 +18237,7 @@
       ]
     },
     "rune_kt.c": {
-      "sha256": "2a02a8f8f001256ed40dc99e2dc24d1abccf59a94a6a9c433c1eef10d4ffee0e",
+      "sha256": "8631589e2037a3970e9707e5b123b538f75c5f7907cf0e3d1db40582846f5e79",
       "operations": [
         [
           "copy",
@@ -18247,7 +18247,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18308,7 +18308,7 @@
       ]
     },
     "samurai.c": {
-      "sha256": "e7c2acf9de33353d7f3ebe5291067de8b908f2595ff1d4dc89b40a7ba7592d01",
+      "sha256": "832407c2fccf2dd6af91e3d32b0b69567bfabdd3c62cc75134f118ac60609c4f",
       "operations": [
         [
           "copy",
@@ -18318,7 +18318,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18359,7 +18359,7 @@
       ]
     },
     "save.c": {
-      "sha256": "f925235e34c8c0fcbf523839a71be3b3ef233cdd83a19398a75145085a3bbd0c",
+      "sha256": "cbeb76f3fc1bd933b015c97fbd88693214b58157d9b334d2214c79781daca4fc",
       "operations": [
         [
           "copy",
@@ -18369,7 +18369,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18379,7 +18379,7 @@
         ],
         [
           "add",
-          "d08a3d5e3e60e23150cbfc21ad583a9b5be8cba2a596228d82b6df0ca2d648e7"
+          "ec0906582b348220a6fc1c5cb44b317ab3bd6515f65d94e9ee421b9e6d239dd9"
         ],
         [
           "copy",
@@ -18445,7 +18445,7 @@
       ]
     },
     "shop.c": {
-      "sha256": "535e49acfd420ca2b5e7d10f513986d40bd035c17b83f4aa7af39ffb66fa7439",
+      "sha256": "44f2eedf41552cd8e629a2733aef9a5b8cdb4ac34cc646eb6146ed14715b10c0",
       "operations": [
         [
           "copy",
@@ -18455,7 +18455,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18465,7 +18465,7 @@
         ],
         [
           "add",
-          "6206a58458babdc79c56f48f3cefc25ba074fbe755be3f369771a7de80dd27c5"
+          "6bed0eb9c5ea919ea428683ca9aac178492b46433acd331e99a7c17a5179a5e1"
         ],
         [
           "copy",
@@ -18485,7 +18485,7 @@
         ],
         [
           "add",
-          "4e3c867adc52ad5980473c2c2870b7084bf07e8d42fb333f4926db8597033c50"
+          "ef24de77b74598fbce2697c44f90366643ed1cbe8198a3d79fa48e80de993641"
         ],
         [
           "copy",
@@ -18743,7 +18743,7 @@
       ]
     },
     "skillmaster.c": {
-      "sha256": "73d1ab958de474c086492bd3bce80db2c915f4261d7ad902c6331d978a823a88",
+      "sha256": "ee02255d0368cec2f734514ec259744a6a34dd9b8af49cc4fa5f3cc2c5c24626",
       "operations": [
         [
           "copy",
@@ -18753,7 +18753,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18887,7 +18887,7 @@
       ]
     },
     "spells.c": {
-      "sha256": "2b1dd61265c216f5670eb3e294dcb5f2ac6194a3bfde350196db0291886739b6",
+      "sha256": "8bc99faa8f9475f60da1d646a0baf0ada5a0a391218cafccb693bb570281e736",
       "operations": [
         [
           "copy",
@@ -18897,7 +18897,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -18907,7 +18907,7 @@
         ],
         [
           "add",
-          "6e233dcc7da72d3624a0df46f23ec94a42eb49302be4df1794d409ac58838867"
+          "9725b4e238063ef6108cb8ddb2ec28cd8c2ffd3a0b4f944a28ff34733379faab"
         ],
         [
           "copy",
@@ -18917,7 +18917,7 @@
         ],
         [
           "add",
-          "06f761f05225a920c69602c27bfb69bf5f6a011441ffd56d8c95af4760a3eb67"
+          "23a45be83c73fa27ebefb7a684f1c8160beedbc303c5099199fe7f1c33c5f09b"
         ],
         [
           "copy",
@@ -19190,7 +19190,7 @@
       ]
     },
     "spells2.c": {
-      "sha256": "344fe30a3fd44787fde6f2a83d3a8ff83af490e1bc585ac880bf3ddb7fed74da",
+      "sha256": "0d6264c84272f590808f655de1f32f5c0de4aca22885744ee74d78f874ac6908",
       "operations": [
         [
           "copy",
@@ -19200,7 +19200,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -20143,7 +20143,7 @@
       ]
     },
     "spells3.c": {
-      "sha256": "cf1f14bfd783660437761c66de62052fe075ccc585c43620717c9d28d487e232",
+      "sha256": "56c1ffa3659cc240799ee8317676eb9b60c8ccc2d37efe59d48fa2c2f6615212",
       "operations": [
         [
           "copy",
@@ -20153,7 +20153,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -20395,7 +20395,7 @@
       ]
     },
     "spoilers.c": {
-      "sha256": "c4637c5d44798d8ef0699b91196e7ab76e5563ca9f14338129890b86bec57cdc",
+      "sha256": "a7deeb9b54e3b1bbb7f14e9757b26e1dee00ceda7457af4dcecef2e5bd860671",
       "operations": [
         [
           "copy",
@@ -20405,7 +20405,7 @@
         ],
         [
           "add",
-          "db4e5878e5429f3427b776165927fefe3e61004663f1ed00532899e9451cb6df"
+          "726604d70af756d5b1adf3aa65a71b377231097947d8355653bf07f661ffac91"
         ],
         [
           "copy",
@@ -28061,7 +28061,7 @@
       ]
     },
     "troika.c": {
-      "sha256": "b0c2e5f64a55b025a9c4b4646367740e22f329159f648ba9a63cb35cf8706da2",
+      "sha256": "6060e1d78e1d7a20a042c26f04b204517f437d833d1c06e566296c7cddc37120",
       "operations": [
         [
           "copy",
@@ -28071,7 +28071,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -28189,7 +28189,7 @@
       ]
     },
     "util.c": {
-      "sha256": "acc91184e1c2496cb37e9ab0559bcac5e2053f257016370b5e5bbfaba367d52c",
+      "sha256": "373aa5c6d07e080a7818dfa17cf71c24e7ccf117da73c39bf741a39567e82965",
       "operations": [
         [
           "copy",
@@ -28199,7 +28199,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -28219,7 +28219,7 @@
         ],
         [
           "add",
-          "5b8086f487e14d3bdc95c6e134c6c1b1eaa79c7d68f84b91f8eba312a6dabb2c"
+          "b61a531ef5000b9fdc1a31a79504e55f087f533dc82441cf6fb65877919bb131"
         ],
         [
           "copy",
@@ -28435,7 +28435,7 @@
         ],
         [
           "add",
-          "e743cdd5a2f81e3c24a33769c90825f210b1dfd9f0fc3055a2ea5b45cc0e6d3e"
+          "545636272e3c356769f1f0a28f7ff661f68d0b7dc7f655734da7f2932add4755"
         ],
         [
           "copy",
@@ -28465,7 +28465,7 @@
         ],
         [
           "add",
-          "66f409805688a124d527cf6a5114104823f7460cf162611fcae80ab63b1b9933"
+          "129f65779d744c41bf5a7d54eb9bfc92180c10e9f28e136235b0d27725e68694"
         ],
         [
           "copy",
@@ -28525,7 +28525,7 @@
       ]
     },
     "virtue.c": {
-      "sha256": "8b8fafaca0dabdb464682266a23c6f8c1af2239fefaaf7167e28f53a4d6422b2",
+      "sha256": "e0e075fec6cf30df4c06d109b8db4694a0d9109fae3f04e52f10dfd4562e0152",
       "operations": [
         [
           "copy",
@@ -28535,7 +28535,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -28744,7 +28744,7 @@
       ]
     },
     "wild_talent.c": {
-      "sha256": "7506541a386177d1dcfba40eb8728ffe589cf61ab91b974d9d0b77cc02867f2b",
+      "sha256": "9a8dc4ff3186d20e3732c3cd72c2f26f8c8477b95b8f10bf01cc598cc5472537",
       "operations": [
         [
           "copy",
@@ -28754,7 +28754,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -28837,7 +28837,7 @@
       ]
     },
     "wizard2.c": {
-      "sha256": "318942a014c3ef00f637b11aa71c650a6a94b2ba7be197313e072cdf902e8241",
+      "sha256": "196b7dba936e40b12b0acf1bac25bc708b26ce02c84a87a72116a07fcf807879",
       "operations": [
         [
           "copy",
@@ -28847,7 +28847,7 @@
         ],
         [
           "add",
-          "779ae7c6585e20c9e4aaeec7a4fc5884787be552ffad586ebd6bd7ad555709e6"
+          "557806114efaf238e69d693ffd0fd8bea498d29f31c16e70bebe6d8582190627"
         ],
         [
           "copy",
@@ -28857,7 +28857,7 @@
         ],
         [
           "add",
-          "acbd47fbcd5398258c692c255a8ddf2520ca4f76313b725c55f0e615bdb17166"
+          "ce99a64b6048806e5de2358e48ecca2496b3291c166ad7d0b03ba655e4c42bdd"
         ],
         [
           "copy",
@@ -28878,7 +28878,7 @@
       ]
     },
     "xtra1.c": {
-      "sha256": "afc91a56b709771fd3e4869b3890ddaa001e08594d704008104f490cf639628c",
+      "sha256": "5b28a01d6454ff2d27c478300f0efb9f0ded940fbc578f0f63da7f48ef53ce4c",
       "operations": [
         [
           "copy",
@@ -28888,7 +28888,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -29558,7 +29558,7 @@
         ],
         [
           "add",
-          "cad627c2406c36f1f575b506c138bb83e9a0c5e410e9a17ee9e3989dbdcbc122"
+          "e88bd0f11e90570291ed39419ce331fc9511304002125ef3c3f4e6b88a86f195"
         ],
         [
           "copy",
@@ -29773,7 +29773,7 @@
       ]
     },
     "xtra2.c": {
-      "sha256": "e2ab746caedd19a5055003aa911e62209880b30ea7e9f96d70f229b9a9ea652d",
+      "sha256": "47707bd4f6e9cac0a7fd4ded8b89cf72da7fce778b34f1a7040ca19b14a5f2b5",
       "operations": [
         [
           "copy",
@@ -29783,7 +29783,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -30245,7 +30245,7 @@
       ]
     },
     "yeqrezh.c": {
-      "sha256": "d8975211f5fd70aba93321695fdd11182735d4235458f4a4ba6279a179b13a63",
+      "sha256": "d80ea343ad48103da76f79805d6066f29163979b85e1df39f3c6613bb7e87292",
       "operations": [
         [
           "copy",
@@ -30255,7 +30255,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -30418,7 +30418,7 @@
       ]
     },
     "z-doc.c": {
-      "sha256": "52120dadbf8eb74026356071acd13bd19ff453ba12ced7d4d883a80745d5f900",
+      "sha256": "54414d07e86df366eed80283ea923e5ec245277057916c62589851f66def8b15",
       "operations": [
         [
           "copy",
@@ -30428,7 +30428,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -30820,7 +30820,7 @@
         ],
         [
           "add",
-          "1f5c788eaf1d81c6fa11c9bd32ca9403de96f7373af0613b13a279a580c2a914"
+          "1d239addbd5ca77c3765918e984a0c2f92ea40f449adeb66c0744c252efe5889"
         ],
         [
           "copy",
@@ -30840,7 +30840,7 @@
         ],
         [
           "add",
-          "58bbff5fe8144ec7ac1a4bac1663910aa26077b6ff67e3a75ff0123faaabc643"
+          "30a236b06eb5e42d7869be56ce4f159bdf7c8944a1be34de9bd79c99a106cec5"
         ],
         [
           "copy",
@@ -30850,7 +30850,7 @@
         ],
         [
           "add",
-          "58bbff5fe8144ec7ac1a4bac1663910aa26077b6ff67e3a75ff0123faaabc643"
+          "30a236b06eb5e42d7869be56ce4f159bdf7c8944a1be34de9bd79c99a106cec5"
         ],
         [
           "copy",
@@ -31030,7 +31030,7 @@
         ],
         [
           "add",
-          "9b48afaa776c7053bed8b74920227712d251753f91a94236a3a758ddcd73ec92"
+          "a6b2d44f0d396984ae3b5d942069bdaf4f52029f05a90d8908dc581de50c5b99"
         ],
         [
           "copy",
@@ -31052,7 +31052,7 @@
       ]
     },
     "z-form.c": {
-      "sha256": "eb6ec932f340070ba769ea9e7fe1f97eec78e2bbc07da2253ae6ddeaff0d92ea",
+      "sha256": "94feffa9a9dbfcc72633d26d46699638e5f9894a584d2e1838cbcfb081774c5a",
       "operations": [
         [
           "copy",
@@ -31062,7 +31062,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",
@@ -31126,7 +31126,7 @@
       ]
     },
     "z-term.c": {
-      "sha256": "089b41a01cdf828762d4ee3e4108ec129d90f74456dddc5022a9f2c4fab1e1e6",
+      "sha256": "a9c5a310699715017ac91c1a5ffe7e26ac33ceb6e06a57eec10a3ef4967557d2",
       "operations": [
         [
           "copy",
@@ -31136,7 +31136,7 @@
         ],
         [
           "add",
-          "80bb29b607b19f2fec8e6911e2b476b45b0d8cdef297f513242af38b69aaf3e8"
+          "8de3d1ecc6ae63e58c1a761f589ed2c0f0fd482f48d0016f033da22068fde07c"
         ],
         [
           "copy",

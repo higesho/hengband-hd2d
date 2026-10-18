@@ -774,3 +774,26 @@ angband/tilework/tile_review.html
 # Umoria の実行時データ。原作の data/ から tools/umoria/build_windows.py が作る
 /umoria/data/
 /UmoriaCore.exe
+
+# ------------------------------------------------------- TOband コア（TobandCore）
+# 公開ツリーでは toband/lib/ を丸ごと追跡しない（原作のデータの写しなので、tools/core_sources/prepare_original_data.py で作る）
+/toband/lib/
+# toband/lib/ は原作の lib/ を CP932 に写した物
+# （tools/core_sources/prepare_original_data.py が作る）。写しの本体は Angband と同じく追跡し、
+# 実行時に生まれるものだけ外す（各フォルダの delete.me は原作の目印なので追跡する）。
+/TobandCore.exe
+/TobandCore.pdb
+toband/lib/save/*
+!toband/lib/save/delete.me
+toband/lib/data/*
+!toband/lib/data/delete.me
+toband/lib/apex/*
+!toband/lib/apex/delete.me
+toband/lib/bone/*
+!toband/lib/bone/delete.me
+toband/lib/user/*
+!toband/lib/user/delete.me
+toband/lib/info/*
+!toband/lib/info/delete.me
+toband/lib/script/*
+!toband/lib/script/delete.me

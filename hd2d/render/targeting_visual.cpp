@@ -1,4 +1,5 @@
 #include "render/targeting_visual.h"
+#include "render/term_colors.h"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -60,6 +61,20 @@ TargetingVisual build_targeting_visual(const TargetingState &s,Vec3 eye,std::spa
             q.center={x+normal.x*.10f,y+normal.y*.10f,z+height*.53f};q.right={-normal.y*radius,normal.x*radius,0.f};q.up={0.f,0.f,radius};
         }
         out.reticles.push_back(q);
+    }
+    return out;
+}
+std::vector<TargetingQuad> build_element_scope_quads(std::span<const ElementScopeCell> cells,const std::function<float(int,int)> &ground_lift) {
+    // How far above the ground the squares float (cells), their half size (a little under .5 so that neighbours do not merge)
+    // and how opaque they are.
+    constexpr float hover=.07f,half=.46f,alpha=.30f;
+    std::vector<TargetingQuad> out;out.reserve(cells.size());
+    for(const auto &cell:cells) {
+        const auto rgb=term_color_to_rgb(cell.color);
+        TargetingQuad q;q.r=rgb.r/255.f;q.g=rgb.g/255.f;q.b=rgb.b/255.f;q.a=alpha;
+        q.center={cell.gx+.5f,cell.gy+.5f,hover+(ground_lift?ground_lift(cell.gx,cell.gy):0.f)};
+        q.right={half,0.f,0.f};q.up={0.f,half,0.f};q.style=1.f;
+        out.push_back(q);
     }
     return out;
 }

@@ -86,7 +86,7 @@ void prepare_preview(const native_target_hooks &hooks,void *data,native_target_c
     staging.selected={choice.x,choice.y};staging.selected_id=choice.id;
     staging.paths.clear();staging.area.clear();staging.markers.clear();coverage.clear();
     staging.reason.clear();staging.target_name.clear();staging.can_confirm=false;
-    staging.stochastic=false;staging.effect_known=profile.effect_known!=0;staging.extras.clear();
+    staging.stochastic=false;staging.effect_known=profile.effect_known!=0;staging.extras.clear();staging.info.clear();
     preview_overflow=candidate_overflow;path_cells=0;path_open=false;pending_path={};path_keys.clear();
     preview_reason=NATIVE_TARGET_OK;
     emitting=true;hooks.preview(&choice,data);finish_path();emitting=false;
@@ -383,6 +383,17 @@ void hb_target_extra(int key,const char *text_label,int enabled) {
     staging.extras.push_back({key,text(text_label),enabled!=0});
 }
 void hb_target_notice(const char *value){notice_text=value?value:"";}
+void hb_target_info_span(int color,const char *value) {
+    if(!emitting||!value||!*value||color<0||color>15||staging.mode=="fixed")return;
+    if(staging.info.empty())staging.info.emplace_back();
+    auto &line=staging.info.back();
+    if(line.spans.size()>=16)return;
+    line.spans.push_back({text(value),color});
+}
+void hb_target_info_newline(void) {
+    if(!emitting||staging.info.empty()||staging.info.back().spans.empty()||staging.info.size()>=8)return;
+    staging.info.emplace_back();
+}
 void hb_target_status(int can_confirm,int reason,int distance,const char *name,int stochastic,int known) {
     preview_reason=reason;
     staging.can_confirm=can_confirm!=0;staging.reason=reason_text(reason);staging.distance=distance;

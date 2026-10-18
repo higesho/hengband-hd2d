@@ -12,7 +12,7 @@ import sys
 
 MAX_FILE = 64 * 1024 * 1024
 MAX_OPERATIONS = 200000
-VARIANTS = ('raw', 'cp932-c')
+VARIANTS = ('raw', 'cp932-c', 'eucjp-cp932')
 
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -26,6 +26,10 @@ def variant(data: bytes, kind: str) -> bytes:
         sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
         from transcode_cp932_src import transcode
         return canonical(transcode(data, source_encoding='cp932')[0])
+    if kind == 'eucjp-cp932':
+        # TOband は原作が EUC-JP。組み立ては幻想蛮怒と同じ CP932 の写しで行う。
+        # 写せない字は黙って置き換えず止める。
+        return data.decode('euc_jp').encode('cp932')
     raise ValueError('Unsupported source transform: ' + kind)
 
 def integer(value):

@@ -39,6 +39,8 @@ constexpr const char *kOrbLiquidMpPath = "assets/ui/hud/orb_liquid_mp.png";
 constexpr const char *kOrbGlassTopPath = "assets/ui/hud/orb_glass_top.png";
 constexpr const char *kOrbFrontPath = "assets/ui/hud/orb_front.png";
 constexpr const char *kStatusIconsPath = "assets/ui/hud/status_icons.png";
+//! 天候のアイコン（8 列 x 1 行。左の状態欄の天候。`tools/hud/gen_weather_icons.py`）。
+constexpr const char *kWeatherIconsPath = "assets/ui/hud/weather_icons.png";
 
 //! 原寸で持つ 1 枚絵。**無くても遊べる**ので、読めなくても致命ではない。
 class UiImage {

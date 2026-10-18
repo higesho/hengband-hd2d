@@ -7,9 +7,9 @@ from projection_helpers import literal_flags
 
 def injections(source,core,helpers,path_name):
     if core=='frox':return frox_injections(source,helpers,path_name)
-    if core not in ('heng','genso'):return [],[]
+    if core not in ('heng','genso','toband'):return [],[]
     if core=='heng' and path_name not in ('cmd-zapwand.cpp','cmd-zaprod.cpp','cmd-usestaff.cpp'):return [],[]
-    if core=='genso' and path_name!='cmd6.c':return [],[]
+    if core in ('genso','toband') and path_name!='cmd6.c':return [],[]
     from profiles import effect_code,heng_effect_code,ELEMENTS
     edits=[];audit=[]
     for owner in source.functions:
@@ -35,10 +35,10 @@ def injections(source,core,helpers,path_name):
                         guards.append('('+guard+')')
                     if fixed and guards:fixed='if('+ '&&'.join(guards)+'){'+fixed+';}'
                     elif fixed:fixed+=';'
-            if not fixed and core=='genso' and labels==['SV_STAFF_STARLITE']:
+            if not fixed and core in ('genso','toband') and labels==['SV_STAFF_STARLITE']:
                 from self_profiles import scatter_plan,scatter_code
                 scatter=scatter_plan(source,start,end,owner,core)
-                if scatter is None:raise ValueError('Native Genso staff starlight changed')
+                if scatter is None:raise ValueError('Native '+core+' staff starlight changed')
                 fixed=scatter_code(scatter,core)+';'
             self_cases.extend({'case':label,'profile':fixed} for label in labels)
             if fixed:self_body+=''.join('    case '+label+':\n' for label in labels)+'        '+fixed+' break;\n'
@@ -94,6 +94,8 @@ def injections(source,core,helpers,path_name):
                     if normal_only:guards.append('!powerful')
                     if code and guards:code='if('+ '&&'.join(guards)+'){'+code+';}'
                     elif code:code+=';'
+            if code is None and core=='toband' and labels==['SV_WAND_DRAGON_BREATH']:
+                code=toband_dragon_breath(source,start,end,owner,calls)
             cases.extend({'case':label,'profile':code} for label in labels)
             if code:
                 body+=''.join('    case '+label+':\n' for label in labels)+'        '+code+' break;\n'
@@ -109,6 +111,29 @@ def injections(source,core,helpers,path_name):
             audit.append({'core':core,'function':symbol,'cases':entries})
         edits.append((owner[1]+1,owner[1]+1,generated))
     return edits,audit
+
+def toband_dragon_breath(source,start,end,owner,calls):
+    """TOband の竜の息の魔法棒：switch (randint1(5)) の 5 つの case が、それぞれ fire_ball(GF_xxx, dir, 威力, -3, FALSE) を 1 つ呼ぶ。
+    どれが出るかは撃つまで分からないので、5 つとも「見込み（possible）」として並べる（幻想蛮怒の表と同じ扱い）。
+    形が変わったら（case の数・呼び出しの数・条件）作らない。"""
+    from profiles import effect_code
+    original=source.mask[start:end]
+    match=re.search(r'\bswitch\s*\(randint1\((\d+)\)\)\s*\{',original)
+    if not match or int(match.group(1))!=len(calls) or 'default:' not in original:return None
+    if list(CALL.finditer(source.mask,start,end)):return None
+    plans=[]
+    for call in calls:
+        if call.group(1)!='fire_ball' or source.conditions(call.start(),owner):return None
+        numeric=NumericScope(source,call.start(),owner,'toband',known_inputs={'powerful','magic','sval'})
+        args=source.args(call.end()-1)
+        if len(args)!=5:return None
+        radius=numeric.expand(args[3])
+        if radius is None:return None
+        values=list(args);values[3]=radius
+        plan=effect_code('fire_ball',values,numeric,'1')
+        if plan is None:return None
+        plans.append(plan)
+    return 'if(1){'+', '.join(plans)+';}'
 
 def frox_injections(source,helpers,path_name):
     if path_name!='devices.c':return [],[]

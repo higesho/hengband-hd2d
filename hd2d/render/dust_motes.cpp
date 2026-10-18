@@ -34,6 +34,7 @@ uniform vec2 u_focus;       //!< 焦点（キャラの水平位置。マス）
 uniform vec2 u_forward;     //!< 奥行きを測る軸（正規化済み）
 uniform vec3 u_dof;         //!< x = inner, y = span, z = radius_px（`measure_dof()`）
 uniform float u_max_bokeh;  //!< 広がりの上限（画素）
+uniform vec2 u_wind;        //!< 風で流れた量（マス。0 なら従来どおり）
 
 out float v_fade;
 out float v_defocus;   //!< 0 = ピントが合っている / 1 = いちばんぼけている
@@ -49,7 +50,7 @@ void main()
         sin((u_time * 0.37) + (a_seed.w * 6.283)) * 0.6,
         cos((u_time * 0.29) + (a_seed.w * 4.712)) * 0.6,
         u_time * u_speed);
-    vec3 raw = (a_seed.xyz * u_span) + drift;
+    vec3 raw = (a_seed.xyz * u_span) + drift + vec3(u_wind, 0.0);
     vec3 rel = mod(raw - u_camera + (u_span * 0.5), vec3(u_span)) - (u_span * 0.5);
     vec3 world = u_camera + rel;
 
@@ -162,6 +163,7 @@ bool DustMotes::init(std::string &err)
     this->loc_forward_ = glGetUniformLocation(this->program_, "u_forward");
     this->loc_dof_ = glGetUniformLocation(this->program_, "u_dof");
     this->loc_max_bokeh_ = glGetUniformLocation(this->program_, "u_max_bokeh");
+    this->loc_wind_ = glGetUniformLocation(this->program_, "u_wind");
 
     /*
      * 種は**起動時に 1 度だけ**作る（上限のぶん）。実際に描く数は `amount` で決めるので、
@@ -235,6 +237,8 @@ void DustMotes::draw(const Mat4 &view_projection, const Vec3 &camera_pos, const 
     //! **同じ錯乱円の式**を使う（`measure_dof()`）。ここで別の式を書くと粒だけ違うぼけ方をする。
     glUniform3f(this->loc_dof_, dof.inner, dof.span, dof.radius_px);
     glUniform1f(this->loc_max_bokeh_, params.max_bokeh_px);
+    //! 風で流れた量。箱の一辺で巻き戻して渡す（単精度で積み上げ続けない）。0 なら何も足さない。
+    glUniform2f(this->loc_wind_, std::fmod(params.wind_x, params.span), std::fmod(params.wind_y, params.span));
     /*
      * **色みは環境光から借りるが、明るさは借りない。**そのまま掛けると、暗い所ほど
      * 埃も暗くなって消える——いちばん見せたい洞の中で見えなくなるので、色を最大成分で

@@ -822,6 +822,22 @@ std::string encode_game_frame(const GameFrame &f)
         }
         j["monster_alerts"] = std::move(arr);
     }
+
+    /*
+     * ---- element_scope（TOband のエレメントスコープ）----
+     * 1 件 3 要素 `[gx, gy, 色]`。スコープ中だけ出る。空なら鍵ごと出ない＝他のコア・通常時のフレームは 1 バイトも変わらない。
+     */
+    if (!f.element_scope.empty()) {
+        json arr = json::array();
+        for (const ElementScopeCell &c : f.element_scope) {
+            json a = json::array();
+            a.push_back(c.gx);
+            a.push_back(c.gy);
+            a.push_back(c.color);
+            arr.push_back(std::move(a));
+        }
+        j["element_scope"] = std::move(arr);
+    }
     put_num(j, "target_gx", f.target_gx, def.target_gx);
     put_num(j, "target_gy", f.target_gy, def.target_gy);
     if(f.targeting.active||f.targeting.preview_only)j["targeting"]=encode_targeting(f.targeting);
@@ -886,6 +902,15 @@ std::string encode_game_frame(const GameFrame &f)
             arr.push_back(std::move(o));
         }
         j["status_effects"] = std::move(arr);
+    }
+
+    // ---- weather（申告したときだけ書く。3 つの値は 0 でも書く）----
+    if (f.weather.declared) {
+        json o = json::object();
+        o["rain"] = static_cast<int>(f.weather.rain);
+        o["wind"] = static_cast<int>(f.weather.wind);
+        o["temp"] = static_cast<int>(f.weather.temp);
+        j["weather"] = std::move(o);
     }
 
     // ---- 攻撃の視覚効果----
@@ -1371,6 +1396,31 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
     } else if (!ok) {
         return false;
     }
+
+    // ---- element_scope（TOband）----
+    if (const json *arr = sub_arr(j, "element_scope", err, ok)) {
+        f.element_scope.resize(arr->size());
+        for (size_t i = 0; i < arr->size(); ++i) {
+            const json &a = (*arr)[i];
+            if (!a.is_array() || (a.size() != 3)) {
+                err = sfmt("element_scope[%u] is not a 3-element tuple", static_cast<unsigned>(i));
+                return false;
+            }
+            for (size_t k = 0; k < 3; ++k) {
+                if (!a[k].is_number_integer()) {
+                    err = sfmt("element_scope[%u][%u] is not an integer", static_cast<unsigned>(i),
+                        static_cast<unsigned>(k));
+                    return false;
+                }
+            }
+            ElementScopeCell &c = f.element_scope[i];
+            c.gx = a[0].get<int16_t>();
+            c.gy = a[1].get<int16_t>();
+            c.color = static_cast<uint8_t>(a[2].get<int>() & 0x0F);
+        }
+    } else if (!ok) {
+        return false;
+    }
     if (!rd_num(j, "target_gx", f.target_gx, err) || !rd_num(j, "target_gy", f.target_gy, err)) {
         return false;
     }
@@ -1408,6 +1458,22 @@ bool decode_game_frame(const std::string &json_text, GameFrame &out, std::string
 
     // ---- status_effects ----
     if (!dec_status_effects(j, f.status_effects, err, ok)) {
+        return false;
+    }
+
+    // ---- weather（鍵があれば申告。値は 0〜15 へ丸める）----
+    if (const json *o = sub_obj(j, "weather", err, ok)) {
+        int rain = 0;
+        int wind = 0;
+        int temp = 0;
+        if (!rd_num(*o, "rain", rain, err) || !rd_num(*o, "wind", wind, err) || !rd_num(*o, "temp", temp, err)) {
+            return false;
+        }
+        f.weather.declared = true;
+        f.weather.rain = static_cast<uint8_t>(std::clamp(rain, 0, kWeatherMaxValue));
+        f.weather.wind = static_cast<uint8_t>(std::clamp(wind, 0, kWeatherMaxValue));
+        f.weather.temp = static_cast<uint8_t>(std::clamp(temp, 0, kWeatherMaxValue));
+    } else if (!ok) {
         return false;
     }
 
@@ -1896,6 +1962,19 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
             return fail(sfmt("monster_alerts[%u] differs", static_cast<unsigned>(i)));
         }
     }
+
+    // -- element_scope（TOband）
+    if (a.element_scope.size() != b.element_scope.size()) {
+        return fail(sfmt("element_scope.size %u != %u", static_cast<unsigned>(a.element_scope.size()),
+            static_cast<unsigned>(b.element_scope.size())));
+    }
+    for (size_t i = 0; i < a.element_scope.size(); ++i) {
+        const ElementScopeCell &x = a.element_scope[i];
+        const ElementScopeCell &y = b.element_scope[i];
+        if ((x.gx != y.gx) || (x.gy != y.gy) || (x.color != y.color)) {
+            return fail(sfmt("element_scope[%u] differs", static_cast<unsigned>(i)));
+        }
+    }
     if (a.target_gx != b.target_gx) {
         return fail(sfmt("target_gx %d != %d", a.target_gx, b.target_gx));
     }
@@ -2041,6 +2120,11 @@ bool game_frames_equal(const GameFrame &a, const GameFrame &b, std::string &firs
         if (x.key != y.key || x.label_utf8 != y.label_utf8 || x.amount_utf8 != y.amount_utf8 || x.kind != y.kind) {
             return fail(sfmt("status_effects[%u] differs", static_cast<unsigned>(i)));
         }
+    }
+
+    // -- weather
+    if (a.weather != b.weather) {
+        return fail("weather differs");
     }
 
     // -- 攻撃の視覚効果（全欄を突き合わせる）

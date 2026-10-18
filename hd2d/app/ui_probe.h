@@ -220,6 +220,14 @@ struct ProbeOverlay {
     int color{ 1 };
 };
 
+//! エレメントスコープ（TOband）の四角 1 マス。`color` は `TERM_*`、`rgb` は画面が色表で引いた色。
+struct ProbeScopeCell {
+    int gx{ 0 };
+    int gy{ 0 };
+    int color{ 1 };
+    int rgb[3]{ 0, 0, 0 };
+};
+
 //! 描いている実体 1 つ（`ring` は警戒度の輪）。
 struct ProbeEntity {
     int gx{ 0 };
@@ -258,6 +266,29 @@ struct ProbeTimeState {
     bool daytime{ true };
     //! 町の灯りの夜の度合い（0 昼〜1 夜。`lamp_night_factor`）。
     float night_factor{ 0.f };
+};
+
+//! 天候（画面が使った、なめらかにした値）。コアが申告したときだけ載る。
+struct ProbeWeather {
+    bool present{ false };
+    //! コアの値（0〜15）。
+    int rain{ 0 };
+    int wind{ 0 };
+    int temp{ 0 };
+    //! 画面が描いている雨・雪の量（0〜1）。
+    float rain_amount{ 0.f };
+    float snow_amount{ 0.f };
+    //! 風で流れた量（世界のマス。積み上げ）と、画面の右が世界のどちらを向くか。
+    double wind_x{ 0.0 };
+    double wind_y{ 0.0 };
+    float right_x{ 1.f };
+    float right_y{ 0.f };
+    //! 天候のアイコンの番号（0 快晴〜7 暴風雪）。
+    int icon{ 0 };
+    //! 画面が埃に使った量（cfg の `dust=` に降る量の絞りを掛けたもの）。
+    float dust_amount{ 0.f };
+    //! 昼の割合（1 昼・0 夜）。夜は 0 で、天候の光を掛けない。
+    float daylight{ 1.f };
 };
 
 //! マス → 窓の画素（そのフレームのカメラで写す）。写せたら true。`inside` は地図の矩形の中か。
@@ -313,12 +344,16 @@ public:
     void light(const ProbeLight &light);
     //! 一時的な重ね書きの字（コアが送ったもの）と、画面が描いた数。
     void overlays(std::vector<ProbeOverlay> overlays, int drawn);
+    //! エレメントスコープの四角（コアが送ったマスと色）と、画面が描いた数。送らないコアは呼ばれない（`map.element_scope` が出ない）。
+    void element_scope(std::vector<ProbeScopeCell> cells, int drawn);
     //! 描いている実体（敵・アイテム・自分）。警戒度の輪つき。
     void entities(std::vector<ProbeEntity> entities, int rings_drawn);
     //! 窓の焦点・大きさ。
     void window_state(const ProbeWindowState &state);
     //! 昼夜。
     void time_state(const ProbeTimeState &state);
+    //! 天候（画面が使った値）。
+    void weather(const ProbeWeather &weather);
     //! 階の案内（カットイン）の段（`pending`・`in`・`wait`・`out`・`reveal`）。幕が張られていない間は呼ばない（空のまま）。
     void cutin_stage(std::string stage);
     //! `map.cells.list[]` の詳細で使った絵の索引 → 名前（`K:123:file` の形。種類・番号・ファイル名）。
@@ -436,10 +471,14 @@ private:
         ProbeLight light;
         std::vector<ProbeOverlay> overlays;
         int overlays_drawn{ 0 };
+        bool has_element_scope{ false };
+        std::vector<ProbeScopeCell> element_scope;
+        int element_scope_drawn{ 0 };
         std::vector<ProbeEntity> entities;
         int rings_drawn{ 0 };
         ProbeWindowState window_state;
         ProbeTimeState time_state;
+        ProbeWeather weather;
         std::string cutin_stage;
         std::map<int, std::string> tile_names;
         bool has_liveness{ false };

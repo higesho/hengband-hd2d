@@ -69,6 +69,13 @@ struct DustParams {
     float brightness{ 2.4f };
     //! 粒の数の上限（密度から出した数がこれを超えたら頭打ち）。
     int max_motes{ 16384 };
+    /*!
+     * @brief 風で横に流された量（世界のマス。水平面）。**既定 0 = 今までと 1 ビットも変わらない。**
+     * @details 風の速さを時計に掛けるのではなく、**速さを積み上げた位置**を渡す（風が変わった瞬間に
+     * 粒が飛ばない）。天候を申告するコアだけが 0 以外を渡す（`render/weather_fx.h`）。
+     */
+    float wind_x{ 0.f };
+    float wind_y{ 0.f };
 };
 
 /*!
@@ -114,6 +121,7 @@ private:
     gl::GLint loc_dof_{ -1 };
     gl::GLint loc_forward_{ -1 };
     gl::GLint loc_max_bokeh_{ -1 };
+    gl::GLint loc_wind_{ -1 };
 };
 
 } // namespace hd2d

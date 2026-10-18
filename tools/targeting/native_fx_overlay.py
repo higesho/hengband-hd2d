@@ -1,6 +1,6 @@
 """Attack-effect observation calls for the cores that are not built from the Angband-family trees.
 
-Umoria, Rogue 3.6, Rogue 5.4 and RogueClone2 get a handful of one-line calls 
+Umoria, Rogue 3.6, Rogue 5.4 and RogueClone2 get a handful of one-line calls
 added to a copy of their prepared `patched-src` tree.  The calls only record what happened (where a spell or
 a missile went, and whether it took effect); they never change a variable, a random number or the screen.
 

@@ -230,13 +230,13 @@ bool install_assets_if_needed(std::string &out_error)
     std::filesystem::create_directories(base / "tangband" / "lib" / "data", ec);
     std::filesystem::create_directories(base / "tangband" / "lib" / "user", ec);
     /*
-     * 旧 C の 3 コア（幻想蛮怒・Sil-Q・FroxComposband）も同じ形で分離する
-     * （どのコアも「変愚の `lib/` とは交差しない」と
-     *   決めてある）。
+     * 旧 C の 4 コア（幻想蛮怒・Sil-Q・FroxComposband・TOband）も同じ形で分離する
+     * （ /
+     * の「変愚の `lib/` とは交差しない」）。
      * **アダプタ側も無ければ作る**が、あちらは `<lib>` そのものが無いと `mkdir` が
      * 失敗する（1 段しか掘らない）ので、展開が済んだこの場で親ごと用意しておく。
      */
-    for (const char *core : { "gensoband", "silq", "frox" }) {
+    for (const char *core : { "gensoband", "silq", "frox", "toband" }) {
         for (const char *dir : { "save", "apex", "bone", "data", "user", "info" }) {
             std::filesystem::create_directories(base / core / "lib" / dir, ec);
         }

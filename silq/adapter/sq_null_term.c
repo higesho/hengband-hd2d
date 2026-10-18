@@ -174,6 +174,8 @@ static errr sq_term_event(int wait)
     }
 
     if (!wait) {
+        /* 検査用：止めている敵の energy を置き直す（キー入力の確認のたび。無ければ即戻る） */
+        sq_test_monster_hold_tick();
         return sq_drain_keys_into_term() ? 0 : 1;
     }
 
@@ -184,6 +186,9 @@ static errr sq_term_event(int wait)
          * 何も出ないまま固まる。
          */
         sq_present();
+
+        /* 検査用：敵の行動の指定（環境変数が無ければ何もしない）。キーを Term へ積む直前に変える。 */
+        sq_test_monster_act_poll();
 
         if (sq_drain_keys_into_term()) {
             return 0;
@@ -225,6 +230,8 @@ static errr sq_term_xtra(int n, int v)
 
     case TERM_XTRA_FRESH:
         /* 画が確定した。ここが frame の主な出どころ。 */
+        /* 検査用：止めている敵の energy を置き直す（再描画のたび） */
+        sq_test_monster_hold_tick();
         sq_present();
         return 0;
 

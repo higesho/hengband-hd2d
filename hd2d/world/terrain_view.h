@@ -131,6 +131,24 @@ struct TerrainView {
     int occluder_h{ 0 };
     std::vector<float> occluder_z;
 
+    /*!
+     * @brief マスごとの地面の持ち上げ量（マス。添字は `y * occluder_w + x`）。
+     * @details コアが地面の凹凸を申告したときだけ埋まる（`set_ground_relief_voxels`。TOband の
+     * 「地面はマスごとに多少の凹凸。ゲームとしては平面」）。申告が無ければ空で、どのマスも 0。
+     * 実体（モンスター・アイテム・足元の輪・プレイヤ）も同じ量だけ持ち上げる（`hd2d_app.cpp`）。
+     */
+    std::vector<float> ground_lift;
+
+    //! そのマスの地面の持ち上げ量（マス）。範囲外・申告なしは 0。
+    float ground_lift_at(int gx, int gy) const
+    {
+        if (this->ground_lift.empty() || (gx < 0) || (gy < 0) || (gx >= this->occluder_w) || (gy >= this->occluder_h)) {
+            return 0.f;
+        }
+        return this->ground_lift[(static_cast<std::size_t>(gy) * static_cast<std::size_t>(this->occluder_w))
+            + static_cast<std::size_t>(gx)];
+    }
+
     //! そのマスの遮蔽の高さ（マス）。範囲外は 0。
     float occluder_at(int gx, int gy) const
     {
@@ -316,6 +334,14 @@ struct PropLatch {
 void apply_terrain_model_replacements(TerrainView &out,const TerrainMemory *memory,
     const PrefabLibrary *library,const TerrainModels &models);
 
+
+/*!
+ * @brief 地面の凹凸の最大の高さ（ボクセル。0〜6。1 ボクセル＝1/32 マス）を決める。0 で凹凸なし（既定）。
+ * @details コアが `hello_ack.ground_relief` で申告した値を画面が入れる。
+ * 環境変数 `HD2D_GROUND_RELIEF` があればそちらが勝つ（見比べ用）。
+ */
+void set_ground_relief_voxels(int voxels);
+int ground_relief_voxels();
 void build_terrain_view(const FloorMeaning &meaning, const Frustum &frustum, TerrainView &out,
     const TerrainMemory *memory = nullptr, const PrefabLibrary *library = nullptr,
     const TownPlan *town = nullptr, float night = 0.f, float wall_inset = 0.f, bool black_unknown = false,

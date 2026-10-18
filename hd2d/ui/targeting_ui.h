@@ -141,6 +141,11 @@ public:
     }
     void draw(UiPaint &,TextOverlay &,const UiLayout &,int theme)const;
     void draw_map(UiPaint &,const TargetingMapProjection &,double time)const;
+    // The small popup at the lower right of the cursor (TargetingState::info: TOband's element values of the grid and the
+    // element of the monster on it). `anchor_x/y` is the cursor cell's centre on the screen (physical pixels). Draws nothing
+    // when the core sent no info (every other core).
+    void draw_cursor_info(UiPaint &,TextOverlay &,const UiLayout &,int theme,int anchor_x,int anchor_y)const;
+    bool has_cursor_info()const{return visible()&&!state_.info.empty();}
     TargetingMapProjection map_projection;
 private:
     struct Intent {std::string action,target;int value;};

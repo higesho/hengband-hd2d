@@ -552,6 +552,11 @@ bool OrbHudImages::has_icons() const
     return (this->painter != nullptr) && (this->status_icons != nullptr) && this->status_icons->valid();
 }
 
+bool OrbHudImages::has_weather_icons() const
+{
+    return (this->painter != nullptr) && (this->weather_icons != nullptr) && this->weather_icons->valid();
+}
+
 void OrbHudAnimation::reset()
 {
     *this = OrbHudAnimation{};
@@ -714,6 +719,8 @@ std::string orb_asset_key_for_core(std::string_view core_name)
     static const Entry kTable[] = {
         { "tangband", "tangband" },
         { "gensoband", "gensoband" },
+        //! TOband（2026-10-17。遊ぶ人が選んだタロットの意匠。`tools/hud/gen_core_orbs.py`）
+        { "toband", "toband" },
         { "silq", "silq" },
         { "frox", "frox" },
         { "angband", "angband" },

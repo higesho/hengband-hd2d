@@ -14,7 +14,7 @@ def prepare(raw, path):
     targets={
         'src/inventory/floor-item-getter.cpp','src/view/display-inventory.cpp',
         'src/window/main-window-equipments.cpp','src/floor/object-scanner.cpp',
-        'gensoband/src/object1.c','silq/src/object1.c','frox/src/inv.c',
+        'gensoband/src/object1.c','silq/src/object1.c','frox/src/inv.c','toband/src/object1.c','toband/src/cmd6.c',
         'gensoband/src/cmd6.c','frox/src/cmd6.c','frox/src/obj_prompt.c',
         'src/cmd-item/cmd-usestaff.cpp','src/cmd-item/cmd-zaprod.cpp',
     }
@@ -78,6 +78,15 @@ def prepare(raw, path):
         display('show_equip','put_tmp_tight','\t\tif(o_ptr->k_idx)hb_ui_item_add(o_ptr,1,i,equip_label[i-INVEN_RARM],j+1,use_menu&&target_item?(j==target_item-1):(-1));\n'
             '\t\telse {char slot_label[1024];snprintf(slot_label,sizeof(slot_label),"%s: %s",gb_tr(mention_use(i)),out_desc[j]);hb_ui_item_empty(1,i,equip_label[i-INVEN_RARM],j+1,use_menu&&target_item?(j==target_item-1):(-1),slot_label);}')
         display('show_floor','put_tmp','\t\thb_ui_item_add(o_ptr,2,i,floor_label[j],j+1,use_menu&&target_item?(j==target_item-1):(-1));')
+    elif path=='toband/src/object1.c':
+        # TOband（変愚蛮怒 1.5.1 系）の show_inven / show_equip / show_floor は、選択キーをその場で求める（幻想蛮怒の
+        # prepare_label_string の配列は無い）。キーは原作が画面に出す字と同じ式：持ち物は inven_spellbook_label[i]、
+        # 装備・床は index_to_label。装備の空き欄（両手持ちの左手など）の名前は言語層の tb_tr() を通す。
+        scope('get_item');scope('get_item_floor')
+        display('show_inven','put_tmp','\t\thb_ui_item_add(o_ptr,0,i,(i<=INVEN_PACK?inven_spellbook_label[i]:index_to_label(i)),j+1,use_menu&&target_item?(j==target_item-1):(-1));')
+        display('show_equip','put_tmp_tight','\t\tif(o_ptr->k_idx)hb_ui_item_add(o_ptr,1,i,index_to_label(i),j+1,use_menu&&target_item?(j==target_item-1):(-1));\n'
+            '\t\telse {char slot_label[1024];snprintf(slot_label,sizeof(slot_label),"%s: %s",tb_tr(mention_use(i)),out_desc[j]);hb_ui_item_empty(1,i,index_to_label(i),j+1,use_menu&&target_item?(j==target_item-1):(-1),slot_label);}')
+        display('show_floor','put_tmp','\t\thb_ui_item_add(o_ptr,2,i,index_to_label(j),j+1,use_menu&&target_item?(j==target_item-1):(-1));')
     elif path=='silq/src/object1.c':
         scope('get_item')
         display('show_inven','put_tmp','        hb_ui_item_add(o_ptr,0,i,index_to_label(i),j+1,-1);')
@@ -151,7 +160,21 @@ void gb_native_item_use_commands(const void *source,native_store_item *out) {
     }
 }
 '''
+    elif path=='toband/src/cmd6.c':
+        # 杖とロッドの「持ち物の窓で選んだ品の下見」。商店・持ち物の窓の材料は toband/adapter/tb_native_store.c が出す（2026-10-17）。
+        # 幻想蛮怒の gb_native_item_use_commands に当たるものは足さない——TOband の使う・飲む・読むの判定（object_is_food ほか）は
+        # 公開の関数なので、アダプタ側で決める（原作に足す行を増やさない）。profile の関数は device_profiles.py が作る static 関数。
+        action_scope('do_cmd_use_staff','u','tb');action_scope('do_cmd_zap_rod','z','tb')
+        text+='''
+void tb_target_item_profile(int action,const void *source) {
+    object_type *obj=(object_type *)source;
+    if(!obj || !obj->k_idx || !object_is_aware(obj))return;
+    if(action=='u' && obj->tval==TV_STAFF)hb_target_toband_staff_profile(obj->sval,0,FALSE);
+    if(action=='z' && obj->tval==TV_ROD)hb_target_toband_rod_self_profile(obj->sval,0,FALSE);
+}
+'''
     elif path in ('src/cmd-item/cmd-usestaff.cpp','src/cmd-item/cmd-zaprod.cpp'):
         action_scope('do_cmd_use_staff' if 'usestaff' in path else 'do_cmd_zap_rod','u' if 'usestaff' in path else 'z','heng')
         text='#include "util/finalizer.h"\n'+text
+    if path.startswith('toband/'):text='#include "tb_targeting_menu.h"\n#include "tb_lang_c.h"\n'+text
     return ('#include "bridge/native_item_display.h"\n#include "bridge/native_targeting_api.h"\n'+text).replace('\n',newline).encode('latin1')

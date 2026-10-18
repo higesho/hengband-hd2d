@@ -110,7 +110,7 @@ bool is_packaged_core_name(const std::string &name)
     static const char *const kPackaged[] = {
         "libhengcore.so", "libtangcore.so", "libgensocore.so", "libsilcore.so",
         "libfroxcore.so", "librogue2core.so", "librogue36core.so", "librogue54core.so",
-        "libangbandcore.so", "libumoriacore.so",
+        "libangbandcore.so", "libumoriacore.so", "libtobandcore.so",
     };
     for (const char *const packaged : kPackaged) {
         if (name == packaged) return true;

@@ -15,7 +15,25 @@ ELEMENT_TYPE_LINE='a6a995bef30e'
 BALROG_PICK_LINE='32a30d71c8ac'
 THREE_WAY_LINES=('3fdeff77175e','cea2068ac267','b3553abc9b82')
 
-ELEMENTS=set(('ACID ELEC FIRE COLD POIS MISSILE PLASMA NETHER WATER CHAOS SHARDS SOUND DISENCHANT FORCE INERTIA GRAVITY TIME LITE LITE_WEAK DARK DISINTEGRATE NUKE MANA HOLY_FIRE HELL_FIRE ROCKET ICE').split())
+class _Elements(set):
+    """見直し済みの属性の表。TOband を処理している間だけ、TOband の表（TOBAND_ELEMENTS）も「見直し済み」として見る。
+
+    TOband の project() で範囲の形に効く属性は GF_DISINTEGRATE（分解の範囲）と GF_ATTACK（突進）だけで、それ以外の属性は
+    当たった先の効果（ダメージ・状態・地形）が違うだけで経路・範囲は同じ（spells1.c の project() を読んで確認）。
+    ほかのコアの表は変えない（`core` を 'toband' にするのは annotate() の先頭だけ）。"""
+    core=None
+
+    def __contains__(self,name):
+        return set.__contains__(self,name) or (_Elements.core=='toband' and name in TOBAND_ELEMENTS)
+
+    def __or__(self,other):
+        return _Elements(set.__or__(self,other))
+
+# TOband にあって上の表に無い属性のうち、形を変えないもの（GF_ATTACK は突進するので入れない）。
+TOBAND_ELEMENTS=frozenset(('STONE PHYSICAL BLUNT EDGED VOLCANIC_BOMB GODLY_SPEAR PURE_FIRE PURE_AQUA PURE_EARTH PURE_WIND MAKE_TRAP MAKE_TREE '
+    'MAKE_GLYPH OLD_STONE STAR_HEAL NEW_SLOW NEW_DRAIN SILENT CRUSADE CONTROL_BEAST CONTROL_DRAGON GENOCIDE_UNDEAD ANIM_DEAD STRIKE_NOVA '
+    'WORD_OF_PAIN SHINING SPECIAL_STONE DUAL_DRAIN DRAIN_SOUL ERASE_ELEM WATER_FLOW LAVA_FLOW BRAINSTORM UMBRA').split())
+ELEMENTS=_Elements(('ACID ELEC FIRE COLD POIS MISSILE PLASMA NETHER WATER CHAOS SHARDS SOUND DISENCHANT FORCE INERTIA GRAVITY TIME LITE LITE_WEAK DARK DISINTEGRATE NUKE MANA HOLY_FIRE HELL_FIRE ROCKET ICE').split())
 ELEMENTS.update(('INERTIAL CONFUSION NEXUS METEOR DARK_WEAK KILL_WALL KILL_DOOR KILL_TRAP JAM_DOOR OLD_DRAIN HYPODYNAMIA OLD_CLONE OLD_POLY OLD_HEAL OLD_SPEED OLD_SLOW OLD_CONF OLD_SLEEP AWAY_UNDEAD AWAY_EVIL AWAY_ALL TURN_UNDEAD TURN_EVIL TURN_ALL DISP_UNDEAD DISP_EVIL DISP_ALL DISP_DEMON DISP_LIVING DISP_GOOD STASIS STASIS_EVIL DEATH_RAY STUN CHARM CONTROL_UNDEAD CONTROL_DEMON CONTROL_ANIMAL CONTROL_LIVING CHARM_LIVING PSI PSI_DRAIN TELEKINESIS DOMINATION DRAIN_MANA MIND_BLAST BRAIN_SMASH CAUSE_1 CAUSE_2 CAUSE_3 CAUSE_4 HAND_DOOM').split())
 ELEMENTS.update(('VOID_MAGIC ABYSS MONSTER_SHOOT PLAYER_SHOOT PSY_SPEAR').split())
 ELEMENTS.update(('ARROW INACT PUNISH_1 PUNISH_2 PUNISH_3 PUNISH_4 GENOCIDE COSMIC_HORROR E_GENOCIDE CAPTURE').split())
@@ -187,7 +205,10 @@ def heng_native_element_variants(source,query,owner,projections,path):
                 'for(const auto &hb_breath:hb_breaths){'+code+';}}())')
     return None
 
-def effect_code(projection,args,safe=pure_integer,possible_override=None):
+def effect_code(projection,args,safe=pure_integer,possible_override=None,core=None):
+    core=core or getattr(safe,'core',None)
+    # TOband の fire_ball・fire_ball_hide・fire_rocket は末尾に no_reduce（威力を距離で減らさない）を取る。形には関係しない。
+    if core=='toband' and projection in ('fire_ball','fire_ball_hide','fire_rocket') and len(args)==5:args=args[:4]
     if projection=='fire_blast':return blast_effect_code(args,'frox' if len(args)==6 else 'genso',safe)
     if projection=='fire_spark' and len(args)==4 and args[0].startswith('GF_') and args[0][3:] in ELEMENTS and safe(args[3]):
         flags='PROJECT_GRID|PROJECT_ITEM|PROJECT_KILL|PROJECT_THRU|PROJECT_FAST|PROJECT_MASTERSPARK'
@@ -209,7 +230,7 @@ def effect_code(projection,args,safe=pure_integer,possible_override=None):
         flags=resolve_flags(args[3],safe)
         if flags is None:return None
         names=re.findall(r'[A-Za-z_]\w*',flags)
-        allowed={'PROJECT_'+part for part in ('BEAM THRU STOP GRID ITEM KILL HIDE DISI REFLECTABLE NO_PAIN FAST LOS FULL_DAM').split()}
+        allowed={'PROJECT_'+part for part in ('BEAM THRU STOP GRID ITEM KILL HIDE DISI REFLECTABLE NO_PAIN FAST LOS FULL_DAM'+(' AVOIDABLE NO_REDUCE' if core=='toband' else '')).split()}
         if not names or any(name not in allowed for name in names) or re.sub(r'PROJECT_\w+|[\s|()]','',flags):return None
         return emit('BEAM' if 'PROJECT_BEAM' in names else 'BOLT','0','PROJECT_THRU|('+flags+')')
     if projection=='fire_bolt':return emit('BOLT','0',bolt)
@@ -359,7 +380,7 @@ def conditional_aimed_effects(source,query,owner,core,projections,helpers,known_
     return 'hb_target_profile_plain(NATIVE_TARGET_ATTACK), '+', '.join(plans)
 
 def adjacent_melee(source,query,owner,core,projections):
-    if core not in ('frox','genso','heng') or not projections:return None
+    if core not in ('frox','genso','heng','toband') or not projections:return None
     attack='do_cmd_attack' if core=='heng' else 'py_attack'
     if any(p.group(1)!=attack for p in projections):return None
     if query.group(1) not in ('get_rep_dir','get_rep_dir2','get_direction'):return None
@@ -413,6 +434,7 @@ def check_mspell_projection_table(path):
 
 
 def annotate(path,core='frox',ui_only=False,helpers=None,menu_audit=None):
+    _Elements.core=core
     source=Source(path);edits=[];audit=[]
     for query in CALL.finditer(source.mask):
         owner=source.owner(query.start());region=source.region(query.start())
@@ -477,7 +499,7 @@ def annotate(path,core='frox',ui_only=False,helpers=None,menu_audit=None):
                 # affects damage, not the path, and is deliberately not read.
                 code='hb_target_profile_effect(NATIVE_SHAPE_BEAM,GF_MISSILE,0,0,PROJECT_THRU|PROJECT_BEAM|PROJECT_KILL|PROJECT_GRID|PROJECT_ITEM,1,0,0)'
         line=source.text.count('\n',0,query.start())+1
-        if core not in ('frox','sil','heng','genso'):code=None
+        if core not in ('frox','sil','heng','genso','toband'):code=None
         if core=='heng' and path.name in ('blue-magic-breath.cpp','blue-magic-ball-bolt.cpp','blue-magic-spirit-curse.cpp') and query.group(1)=='get_aim_dir':
             entries={
                 'cast_blue_magic_breath':('BLUE_MAGIC_BREATH_TABLE','BREATH','bmc_ptr->plev>40?3:2','hb_magic->second.attribute_type','PROJECT_STOP|PROJECT_KILL|PROJECT_GRID|PROJECT_ITEM|PROJECT_BREATH'),
@@ -504,6 +526,15 @@ def annotate(path,core='frox',ui_only=False,helpers=None,menu_audit=None):
             code='hb_target_profile_effect(NATIVE_SHAPE_SHOT,static_cast<int>(AttributeType::PLAYER_SHOOT),0,project_length,0,snipe_type==SP_EXPLODE||snipe_type==SP_RUSH||snipe_type==SP_DOUBLE,snipe_type,sniper_concent)'
         if core=='genso' and owner[2]=='do_cmd_fire_aux' and path.name=='cmd2.c' and query.group(1)=='get_aim_dir':
             code='hb_target_profile_effect(NATIVE_SHAPE_SHOT,GF_ARROW,0,project_length,0,snipe_type==SP_EXPLODE||snipe_type==SP_RUSH||snipe_type==SP_DOUBLE,snipe_type,p_ptr->concent)'
+        if core=='toband' and owner[2]=='do_cmd_fire_aux' and path.name=='cmd2.c' and query.group(1)=='get_aim_dir':
+            # 射撃（銃・ロケット・散弾を含む）。貫通・連射・爆発は最初の当たりのあとの動きなので予測しない（見込み＝ possible で出す）。
+            # project_length はこの問いの直前に tdis+1 に決まる。dcfa_thru・penetrate・as_beam・direct は関数の頭で決まった局所変数。
+            code=('hb_target_profile_effect(NATIVE_SHAPE_SHOT,GF_MISSILE,0,project_length,dcfa_thru?PROJECT_THRU:0,'
+                  '(penetrate>0||as_beam||p_ptr->tval_ammo==TV_ROCKET||p_ptr->tval_ammo==TV_SHELL),penetrate>0||as_beam,direct)')
+        if core=='toband' and owner[2]=='do_cmd_throw_aux' and path.name=='cmd2.c' and query.group(1)=='get_aim_dir':
+            # 投擲。流れ星（shooting_star）は壁を壊して進むので、形を出さない。
+            code=('(shooting_star?(hb_target_profile_plain(NATIVE_TARGET_NEUTRAL),hb_target_profile_known(0),0)'
+                  ':(hb_target_profile_effect(NATIVE_SHAPE_THROW,GF_MISSILE,0,project_length,0,0,0,0),0))')
         if core=='sil' and owner[2]=='do_cmd_fire' and query.group(1)=='get_aim_dir' and source.args(query.end()-1)==['&dir','tdis']:
             # Radiance changes every traversed grid. Require a known bow so the
             # preview cannot identify an undiscovered artifact or ego power.
@@ -554,6 +585,11 @@ def annotate(path,core='frox',ui_only=False,helpers=None,menu_audit=None):
         if core=='genso' and owner[2] in ('do_cmd_aim_wand_aux','do_cmd_zap_rod_aux'):
             device='wand' if 'wand' in owner[2] else 'rod'
             code=f'(object_is_aware(o_ptr)?(hb_target_genso_{device}_profile(o_ptr->sval,hb_target_powerful_device(JKF1_MASTER_MAGITEM),FALSE),0):(hb_target_profile_plain(NATIVE_TARGET_NEUTRAL),hb_target_profile_known(0),0))'
+        if core=='toband' and owner[2] in ('do_cmd_aim_wand_aux','do_cmd_zap_rod_aux'):
+            # TOband の魔法棒・ロッドは do_cmd_*_aux() の頭で品物を調べ、効果は wand_effect()/rod_effect() の switch(sval) に集まる
+            # （device_profiles.py が同じ表から hb_target_toband_{wand,rod}_profile を作る）。未鑑定の品物は形を出さない。
+            device='wand' if 'wand' in owner[2] else 'rod'
+            code=f'(object_is_aware(o_ptr)?(hb_target_toband_{device}_profile(o_ptr->sval,0,0),0):(hb_target_profile_plain(NATIVE_TARGET_NEUTRAL),hb_target_profile_known(0),0))'
         effect_profile=code
         if ui_only and code and not site.startswith('movement:') and not (core=='sil' and owner[2]=='play_instrument'):
             code='hb_target_profile_plain(NATIVE_TARGET_ATTACK)'
@@ -570,7 +606,7 @@ def annotate(path,core='frox',ui_only=False,helpers=None,menu_audit=None):
     if not ui_only and menu_audit is not None:
         from menu_profiles import injections
         menu_edits,rows=injections(source,core,helpers,path.name);edits.extend(menu_edits);menu_audit.extend(rows)
-    if core in ('heng','genso','frox') and helpers is not None:
+    if core in ('heng','genso','frox','toband') and helpers is not None:
         from device_profiles import injections as device_injections
         device_edits,device_rows=device_injections(source,core,helpers,path.name);edits.extend(device_edits)
         if menu_audit is not None:

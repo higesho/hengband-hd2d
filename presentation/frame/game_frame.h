@@ -11,6 +11,7 @@
 #include "frame/combat_fx.h"
 #include "frame/sound_event.h"
 #include "frame/status_effect.h"
+#include "frame/weather_state.h"
 #include "frame/attack_fx.h"
 #include "frame/hud_snapshot.h"
 #include "frame/map_cell_view.h"
@@ -78,6 +79,20 @@ struct MonsterAlertCell {
     int16_t gx{};
     int16_t gy{};
     uint8_t level{ static_cast<uint8_t>(MonsterAlert::Unknown) };
+};
+
+/*!
+ * @brief エレメントスコープ（TOband）で、地面に重ねる色つきの四角 1 マスぶん。
+ * @details 原作の `p_ptr->action == ACTION_ELEMSCOPE` のとき、原作の `map_info()`
+ * （`cave.c`）は字の色を「そのマスの属性の色」へ差し替える。アダプタはその色を読んで
+ * 見えている（記憶を含む）マスだけをここへ積む。画面側は半透明の四角を地面から少し浮かせて重ねる。
+ * @note **空なら codec が丸ごと省く。** スコープ中でないとき・送らないコアのフレームは
+ * 1 バイトも変わらない（追加だけなので版は上げない。v1 §3.2）。
+ */
+struct ElementScopeCell {
+    int16_t gx{};
+    int16_t gy{};
+    uint8_t color{ 1 }; //!< TERM_COLOR 相当（0〜15。画面側は色表 `term_palette` で RGB にする）
 };
 
 /*!
@@ -599,6 +614,12 @@ struct GameFrame {
      */
     std::vector<MonsterAlertCell> monster_alerts;
     /*!
+     * @brief エレメントスコープ中に地面へ重ねる四角（`ElementScopeCell` の註記）。
+     * @details 出すのは TOband だけ。`combat_fx` と違って**汲んだら消える性質は無い**
+     * （「いま原作がスコープ中か」を毎フレーム写す）。空なら codec が丸ごと省く。
+     */
+    std::vector<ElementScopeCell> element_scope;
+    /*!
      * @name SQ-2 の 8 系統目 — 照準のマス
      * @details `hilite_target` は Term の**カーソルを動かすだけ**なので
      * `map_overlay`（`print_rel` の差分）では 1 度も拾えない。位置を直に運ぶ。
@@ -631,6 +652,13 @@ struct GameFrame {
      * もの」を毎フレーム写す。並びは原作の最下段の表の順。空なら codec が丸ごと省く。
      */
     std::vector<StatusEffectView> status_effects;
+    /*!
+     * @brief 天候（雨・風・気温。`frame/weather_state.h`）。
+     * @details **コアが申告したときだけ効く**（`declared`）。送らないコアは既定のまま＝
+     * 画面側は天候の表示も粒の変化も光の変化も一切しない（今までと 1 画素も変わらない）。
+     * 「いまの値」を毎フレーム写す。
+     */
+    WeatherState weather;
     /*!
      * @name 攻撃の視覚効果（`frame/attack_fx.h`）
      * @details `combat_fx` と同じく**汲んだら消える**。空なら codec が丸ごと省く。

@@ -6,15 +6,16 @@ and line endings. The manifest records input/output hashes for build auditing.
 from pathlib import Path
 import argparse, hashlib, json, re
 from profiles import annotate
-from legacy_overlay import genso_xtra,heng_cpp,sil_xtra,sil_path
+from legacy_overlay import genso_xtra,heng_cpp,sil_xtra,sil_path,toband_xtra
 from heng_geometry import generate as heng_geometry
 from genso_geometry import generate as genso_geometry
+from toband_geometry import generate as toband_geometry
 from projection_helpers import load_helpers
 from frox_menu import prepare as frox_menu
 from item_display import prepare as item_display
 from book_menu import prepare as book_menu
 import line_anchor as anchor
-import attack_fx_overlay as attack_fx  # 攻撃の視覚効果の観測（幻想蛮怒・Frox・Sil-Q）
+import attack_fx_overlay as attack_fx  # 攻撃の視覚効果の観測（幻想蛮怒・Frox・Sil-Q・TOband）
 import native_fx_overlay  # 攻撃の視覚効果の観測（Umoria・Rogue 3.6・Rogue 5.4・RogueClone2。patched-src の写しに足す）
 
 # Hashes of original lines (see line_anchor.py). The original text itself is not quoted here.
@@ -35,6 +36,8 @@ ANCHOR = {
     'shot_fear': '990c0f364103', 'throw_step': 'ea493bea90aa', 'throw_hit': 'ecfed16e56b9', 'throw_return': 'ea7b462c1e1d',
     # 状態のアイコン（prt_status() の「長さを数える」コメントの行。幻想蛮怒・Frox の xtra1.c に 1 本ずつある）
     'status_bar_genso': '3b8447ea713e', 'status_bar_frox': 'a4d63c260a3b',
+    # TOband の xtra1.c の prt_status()（幻想蛮怒と同じ「長さを数える」コメントの行）
+    'status_bar_toband': '3b8447ea713e',
     # 短愚（変愚 3.0.2.4 系）の print_status() の「長さを数える」手前の行（TERM_LEN col = 0, num = 0;）
     'status_bar_tang': 'ccab7cfcf9a3',
 }
@@ -42,7 +45,7 @@ ANCHOR = {
 def digest(value):
     return hashlib.sha256(value).hexdigest()
 
-# 攻撃の視覚効果の記録（決めたこと 2026-10-08）。
+# 攻撃の視覚効果の記録（2026-10-08）。
 # 記録するだけで、原作の変数・乱数・画面には触れない（presentation/bridge/attack_fx_recorder.h に積む）。
 # 変愚（3.0.2.5）と短愚（3.0.2.4）の両方に同じ書き方で当たる。
 # project()：経路（path_g の先頭 path_n マス）と効果範囲（positions）が決まった直後。
@@ -69,7 +72,7 @@ FX_SHOT=('\n            {int hb_brand=-1;if(cur_dis==1){const auto hb_kf=j_ptr->
     'else if(hb_kf.has(TR_FORCE_WEAPON)&&player_ptr->csp>(player_ptr->msp/30))hb_brand=static_cast<int>(AttributeType::MANA);}'
     'hb_attack_fx_shot(cur_dis,x,y,prev_y,prev_x,fire_item.bi_id,static_cast<int>(fire_item.bi_key.tval()),hb_brand);}')
 
-# 状態のアイコン（決めたこと 2026-10-11）。
+# 状態のアイコン（2026-10-11）。
 # 幻想蛮怒と Frox の prt_status() は static で、旗の配列 bar_flags と名札の表 bar[] を関数の中で組む。
 # 旗が出そろった所（長さを数える前）に 1 行足し、立っている旗の番号・名札・色をアダプタへ渡す。
 # 記録するだけで、旗にも画面にも乱数にも触れない。名札は原作が実際に画面へ出す字（言語の切り替え・
@@ -80,15 +83,19 @@ STATUS_BAR_HOOK={
         'for(hb_i=0;bar[hb_i].sstr;hb_i++)if(IS_FLG(hb_i))gb_status_record(hb_i,BAR_LSTR(hb_i),bar[hb_i].attr);}'),
     'frox':('    {extern void fc_status_record(int,const char *,int);int hb_i;fc_status_record(-1,"",(int)(sizeof(bar)/sizeof(bar[0]))-1);'
         'for(hb_i=0;bar[hb_i].sstr;hb_i++)if(IS_FLG(hb_i))fc_status_record(hb_i,fc_bar(bar[hb_i].lstr),bar[hb_i].attr);}'),
+    # TOband（変愚蛮怒 1.x 系）。幻想蛮怒と同じ形で、名札は bar[] の lstr（言語の切り替えは原作の #ifdef JP が決める）。
+    # 切り傷・朦朧の段階も bar[] の項目なので、これ 1 行で足りる。
+    'toband':('\t{extern void tb_status_record(int,const char *,int);int hb_i;tb_status_record(-1,"",(int)(sizeof(bar)/sizeof(bar[0]))-1);'
+        'for(hb_i=0;bar[hb_i].sstr;hb_i++)if(IS_FLG(hb_i))tb_status_record(hb_i,bar[hb_i].lstr,bar[hb_i].attr);}'),
 }
 
 def observe_status_bars(raw,core):
-    """prt_status() の旗が出そろった所へ、状態の記録の呼び出しを 1 行足す（幻想蛮怒は genso、Frox は frox）。"""
+    """prt_status() の旗が出そろった所へ、状態の記録の呼び出しを 1 行足す（幻想蛮怒は genso、Frox は frox、TOband は toband）。"""
     text=raw.decode('latin1');newline='\r\n' if '\r\n' in text else '\n';normalized=text.replace('\r\n','\n')
     normalized=anchor.insert_before(normalized,ANCHOR['status_bar_'+core],STATUS_BAR_HOOK[core],core+' native status bar observation site')
     return normalized.replace('\n',newline).encode('latin1')
 
-# 短愚（変愚 3.0.2.4 系）の状態のアイコン（決めたこと 2026-10-11）。
+# 短愚（変愚 3.0.2.4 系）の状態のアイコン（2026-10-11）。
 # 短愚の print_status()（window/main-window-stat-poster.cpp）は、旗の配列 bar_flags を関数の中で組む。
 # 旗が出そろった所（長さを数える前）に 1 行足し、配列そのものをアダプタ側（presentation/bridge/presentation_bridge.cpp）
 # へ渡す。記録するだけで、旗にも画面にも乱数にも触れない。変愚（3.0.2.5）には当てない（変愚は原作の
@@ -128,6 +135,87 @@ def export_genso_player_flags(raw):
     newline=b'\r\n' if b'\r\n' in raw else b'\n'
     if not raw.endswith(b'\n'):raw+=newline
     return raw+GENSO_PLAYER_FLAGS_EXPORT.encode('latin1')+newline
+
+# TOband の常時の効果（状態のアイコン）。幻想蛮怒と同じ事情：種族・職業などの固有の旗を返す
+# tim_player_flags / player_immunity / tim_player_immunity は files.c の static 関数で、外から呼べない
+# （player_flags だけは xtra1.c の非 static 関数）。既存の行は 1 行も変えず、files.c の末尾に
+# 「同じ関数を呼ぶだけの関数」を 1 つ足す。旗の判定にも画面にも乱数にも触れない。
+TOBAND_PLAYER_FLAGS_EXPORT=('void tb_native_player_flags(u32b *player,u32b *tim,u32b *imm,u32b *tim_imm)'
+    '{player_flags(player);tim_player_flags(tim);player_immunity(imm);tim_player_immunity(tim_imm);}')
+
+def export_toband_player_flags(raw):
+    """files.c の末尾に、static な旗の関数を呼ぶだけの関数 tb_native_player_flags を足す。"""
+    newline=b'\r\n' if b'\r\n' in raw else b'\n'
+    for name in (b'static void tim_player_flags',b'static void player_immunity',b'static void tim_player_immunity'):
+        if raw.count(name)!=1:raise ValueError('toband player flag function changed: '+name.decode())
+    if not raw.endswith(b'\n'):raw+=newline
+    return raw+TOBAND_PLAYER_FLAGS_EXPORT.encode('latin1')+newline
+
+def observe_toband_shot_path(raw):
+    """射撃の 1 歩ごと（位置を保存した直後）に、診断用の範囲の記録を足す（幻想蛮怒の observe_shot_path と同じ。
+    記録は検査のためだけで、フレームにもプレビューにも入らない）。投擲は幻想蛮怒と同じく記録しない。"""
+    text,newline=attack_fx._split(raw)
+    def fire(body):
+        return anchor.insert_after(body,[attack_fx.H['g_save_loc'],attack_fx.H['g_x_nx'],attack_fx.H['g_y_ny']],
+            '\t\t\thb_target_trace_area(GF_MISSILE,x,y);','TOband arrow path observation site')
+    text=attack_fx._edit_function(text,r'^bool do_cmd_fire_aux\(int item, object_type \*j_ptr, int shot_flgs, int x_to_h, int x_to_d, int penetrate, bool direct\)',
+        fire,'TOband do_cmd_fire_aux')
+    return attack_fx._join(text,newline)
+
+def build_toband(sources,output,manifest,ui_only=False,helpers=None):
+    """TOband（toband/src）の写し。ヘッダと C を全部そのまま出し、書き足しは次のものだけ。
+
+    状態のアイコン
+    - xtra1.c … prt_status() に状態の記録の 1 行（observe_status_bars）
+    - files.c … 末尾に読み取りの関数 1 つ（export_toband_player_flags）
+    攻撃の効果（2026-10-17）
+    - spells1.c … project() に攻撃の効果の観測の 1 行（attack_fx.toband_project）
+    - cmd2.c … 射撃・投擲に攻撃の効果の観測の 5 行（attack_fx.toband_cmd2）
+    狙いの画面（2026-10-17「幻想蛮怒と同じに全部」。幻想蛮怒の build() の枝と同じ範囲）
+    - xtra2.c … 入力の関数の入口と受け口の取り込み（legacy_overlay.toband_xtra）
+    - 狙いの呼び出し箇所 … 呼び出しを (プロファイルの宣言, 原作の呼び出し) の形で包む（profiles.annotate）
+    - cmd5.c・spells3.c … 呪文の一覧の行を狙いの画面へ渡す（book_menu）
+    - object1.c・cmd6.c … 道具の選択の行・杖とロッドの下見（item_display）
+    - util.c … 末尾に keymap の読み取り関数 1 つ。spells1.c・spells2.c・cmd2.c … 実際の範囲の診断用の記録
+    - 生成物 tb_targeting_path.generated.inl（toband_geometry.py。経路・視線・分解・ブレスの写し）
+
+    原作の写しは作り直さず、書き込み先（output）にだけ出す。"""
+    root=sources/'toband/src'
+    if not root.is_dir():return
+    helpers=helpers if helpers is not None else load_helpers(sources,'toband')
+    audit=[];profiles=[]
+    for source in sorted(root.iterdir()):
+        if not source.is_file() or source.suffix not in ('.c','.h'):continue
+        before=source.read_bytes();after=before;name=source.name
+        if source.suffix=='.c':
+            if name=='xtra2.c':after=toband_xtra(before)
+            else:
+                after,rows=annotate(source,'toband',ui_only,helpers,audit);profiles.extend(rows)
+            if not ui_only and name in ('cmd5.c','spells3.c'):after=book_menu(after,'toband',name)
+            if name=='util.c':
+                after+=b'\nint tb_target_mapped_direction(void) { if (!inkey_next || !*inkey_next || inkey_xtra) return 0; return get_keymap_dir(*inkey_next); }\n'
+            if name=='cmd2.c':after=attack_fx.toband_cmd2(observe_toband_shot_path(after))
+            if name=='xtra1.c':after=observe_status_bars(after,'toband')
+            if name=='files.c':after=export_toband_player_flags(after)
+            if name=='spells2.c':after=observe_room_area(observe_earthquake(after,'toband'),'toband')
+            if name=='spells1.c':
+                after=attack_fx.toband_project(after)
+                marker=b'\t/* Speed -- ignore "non-explosions" */'
+                if after.count(marker)!=1:raise ValueError('TOband native area observation site changed')
+                after=b'#include "bridge/native_targeting_api.h"\n'+after.replace(marker,
+                    b'\tif(who==0){int trace_i;for(trace_i=0;trace_i<grids;++trace_i)hb_target_trace_area(typ,gx[trace_i],gy[trace_i]);}\n'+marker,1)
+            after=item_display(after,'toband/src/'+name)
+        destination=output/'toband/src'/name;destination.parent.mkdir(parents=True,exist_ok=True)
+        if not destination.exists() or destination.read_bytes()!=after:destination.write_bytes(after)
+        manifest['files'].append({'path':'toband/src/'+name,'source_sha256':digest(before),'overlay_sha256':digest(after)})
+    spells=(root/'spells1.c').read_bytes();cave=(root/'cave.c').read_bytes()
+    generated=toband_geometry(spells,cave);destination=output/'toband/src/tb_targeting_path.generated.inl'
+    if not destination.exists() or destination.read_bytes()!=generated:destination.write_bytes(generated)
+    manifest['files'].append({'path':'toband/src/tb_targeting_path.generated.inl','source_sha256':{'toband/src/spells1.c':digest(spells),'toband/src/cave.c':digest(cave)},'overlay_sha256':digest(generated)})
+    check_menu_audit(audit)
+    (output/'toband-profiles.json').write_text(json.dumps(profiles,indent=2)+'\n',encoding='utf8')
+    (output/'toband-menu-profiles.json').write_text(json.dumps(audit,indent=2)+'\n',encoding='utf8')
+    manifest['toband_profiles']={'total':len(profiles),'supported':sum(r['supported'] for r in profiles)}
 
 def observe_shot_hit(raw):
     """射撃が当たった（test_hit_fire が真）所で、記録に「当たった」の印を付ける。"""
@@ -182,6 +270,7 @@ def observe_earthquake(raw,core):
     markers={
         'frox':('quake_frox','hb_target_trace_area(-2,xx,yy);'),
         'genso':('quake_genso','hb_target_trace_area(-2,xx,yy);'),
+        'toband':('quake_frox','hb_target_trace_area(-2,xx,yy);'),  # TOband の earthquake_aux() は Frox と同じ行（map[…] = TRUE;）
         'heng':('quake_heng','if(m_idx==0)for(const auto &pos:pos_collapses)hb_target_trace_area(-2,pos.x,pos.y);')}
     marker,trace=markers[core]
     text=anchor.append_to_line(raw.decode('latin1'),ANCHOR[marker],' '+trace,core+' native earthquake observation site')
@@ -384,7 +473,7 @@ static void _hide_item(_ui_context_ptr context)
 
 # Windows のファイル名・文字列の変換（変愚・短愚の main-win/main-win-utils.h の to_wchar・to_multibyte）。
 # 原作は変換のコードページを 932（CP932）に決め打ちしているが、この案件のコアは内部が UTF-8（UTF8 を定義）なので、
-# 日本語の名前のセーブのファイル名が化けて書かれる（F-hengband-01・F-tangband-01。修-51。遊ぶ人の許可 2026-10-12）。
+# 日本語の名前のセーブのファイル名が化けて書かれる（F-hengband-01・F-tangband-01。修-51。2026-10-12）。
 # 4 か所の 932 を、内部の符号に合わせたコードページの名前（HB_INTERNAL_CODEPAGE）に置き換え、その定義を windows.h の直後に 1 つ足す。
 # 変換の家は 1 つのまま（ヘッダは 1 個。クラスの二重定義にならない）。原作の文は引用しない。
 CODEPAGE_DEFINE=('\n#if defined(UTF8) || !defined(JP)\n#define HB_INTERNAL_CODEPAGE CP_UTF8\n#else\n#define HB_INTERNAL_CODEPAGE 932\n#endif\n')
@@ -541,8 +630,8 @@ def build(sources, output,ui_only=False):
     heng_profiles=build_heng(sources,output,'',ui_only,helpers['heng'],menu_audit,manifest)
     (output/'heng-profiles.json').write_text(json.dumps(heng_profiles,indent=2)+'\n',encoding='utf8')
     manifest['heng_profiles']={'total':len(heng_profiles),'supported':sum(r['supported'] for r in heng_profiles)}
-    # 短愚蛮怒は変愚 3.0.2.4 の写し（tangband/src）を自分のソースとして持つ（変愚の版上げで短愚を変えないため。
-    # ）。tangband/ を根にして同じ書き換えを当てる。
+    # 短愚蛮怒は変愚 3.0.2.4 の写し（tangband/src）を自分のソースとして持つ（変愚の版上げで短愚を変えないため）。
+    # tangband/ を根にして同じ書き換えを当てる。
     if (sources/'tangband/src').is_dir():
         tang_audit=[]
         tang_profiles=build_heng(sources/'tangband',output/'tangband','tangband/',ui_only,load_helpers(sources/'tangband','heng'),tang_audit,manifest,tangband=True)
@@ -586,6 +675,7 @@ def build(sources, output,ui_only=False):
     check_menu_audit(menu_audit)
     (output/'menu-profiles.json').write_text(json.dumps(menu_audit,indent=2)+'\n',encoding='utf8')
     manifest['menu_profiles']={'functions':len(menu_audit),'defined_cases':sum(bool(case.get('profile')) for entry in menu_audit for case in entry.get('cases',[]))}
+    build_toband(sources, output, manifest, ui_only)
     native_fx_overlay.build(sources, output, manifest)
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n', encoding='utf8')
     return manifest

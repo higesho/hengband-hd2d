@@ -3,6 +3,7 @@
 #include "ui/menu_scale.h"
 #include "ui/modern_skin.h"
 #include "render/text_overlay.h"
+#include "render/term_colors.h"
 #include "i18n/lang.h"
 
 namespace hd2d {
@@ -86,6 +87,47 @@ void TargetingUi::draw(UiPaint &paint,TextOverlay &text,const UiLayout &physical
         const int union_x0=std::min(toolbar_.x,scaled.x),union_y0=std::min(toolbar_.y,scaled.y);
         const int union_x1=std::max(toolbar_.x+toolbar_.w,scaled.x+scaled.w),union_y1=std::max(toolbar_.y+toolbar_.h,scaled.y+scaled.h);
         toolbar_=RectPx{union_x0,union_y0,union_x1-union_x0,union_y1-union_y0};
+    }
+}
+
+void TargetingUi::draw_cursor_info(UiPaint &paint,TextOverlay &text,const UiLayout &physical,int theme,int anchor_x,int anchor_y)const {
+    if(!has_cursor_info())return;
+    // Flush what is already queued so the popup lands above the toolbar and the map glyphs.
+    paint.flush();text.flush();
+    MenuScaleScope scale(paint,text,menu_font_scale(font_level_));const auto layout=menu_logical_layout(physical,scale.scale,&text);
+    const auto skin=modern_skin(theme);const auto area=layout.scene.w>0?layout.scene:layout.content;
+    // TERM_COLOR -> text colour. On the parchment theme the palette is darkened the same way the panels do it.
+    const auto color_of=[&](int index)->TextColor {
+        if(theme==1&&!panel_transparent()) {
+            if(index==0||index==1||index==9)return skin.text;
+            const auto rgb=term_color_to_rgb(std::uint8_t(index));
+            return {rgb.r/255.f*.55f,rgb.g/255.f*.55f,rgb.b/255.f*.55f,1.f};
+        }
+        const auto rgb=term_color_to_rgb(std::uint8_t(index));
+        return {rgb.r/255.f,rgb.g/255.f,rgb.b/255.f,1.f};
+    };
+    const float inverse=1.f/scale.scale;
+    const int ax=int(anchor_x*inverse+.5f),ay=int(anchor_y*inverse+.5f);
+    const int pad=6,line_h=text.cell_h()+2;
+    int widest=0;
+    for(const auto &line:state_.info) {
+        int width=0;for(const auto &span:line.spans)width+=text.measure(span.text);
+        widest=std::max(widest,width);
+    }
+    const int w=widest+pad*2,h=int(state_.info.size())*line_h+pad*2-2;
+    // Lower right of the cursor; if it would run out of the scene, move it to the other side of the cursor.
+    constexpr int dx=22,dy=14;
+    int x=ax+dx,y=ay+dy;
+    if(x+w>area.x+area.w)x=ax-dx-w;
+    if(y+h>area.y+area.h)y=ay-dy-h;
+    x=std::clamp(x,area.x,std::max(area.x,area.x+area.w-w));y=std::clamp(y,area.y,std::max(area.y,area.y+area.h-h));
+    const RectPx box{x,y,w,h};
+    paint_modern_window(paint,box,theme,true,true,.92f);
+    int row=0;
+    for(const auto &line:state_.info) {
+        int cx=box.x+pad;
+        for(const auto &span:line.spans)cx+=text.draw(cx,box.y+pad+row*line_h,span.text,color_of(span.color),box.x+box.w-pad-cx);
+        ++row;
     }
 }
 

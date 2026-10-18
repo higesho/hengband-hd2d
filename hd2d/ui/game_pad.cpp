@@ -907,8 +907,8 @@ int run_command_char_for_core(const std::string &core_name)
      * 幻想蛮怒・Frox・Sil-Q は各 `*_pad_commands.cpp`、Angband・Umoria・Rogue 系は各 `*_main.cpp`）。
      */
     if ((core_name == "hengband") || (core_name == "tangband") || (core_name == "gensoband")
-        || (core_name == "frox") || (core_name == "silq") || (core_name == "angband")
-        || (core_name == "Umoria")) {
+        || (core_name == "toband") || (core_name == "frox") || (core_name == "silq")
+        || (core_name == "angband") || (core_name == "Umoria")) {
         return '.';
     }
     if (core_name == "Rogue 3.6") {
@@ -926,7 +926,7 @@ int run_command_char_for_core(const std::string &core_name)
 bool run_direction_via_targeting_ui(const std::string &core_name)
 {
     return (core_name == "hengband") || (core_name == "tangband") || (core_name == "gensoband")
-        || (core_name == "frox") || (core_name == "silq") || (core_name == "angband");
+        || (core_name == "toband") || (core_name == "frox") || (core_name == "silq") || (core_name == "angband");
 }
 
 bool emit_run_command(const std::string &core_name, const std::vector<PadCommand> &commands,

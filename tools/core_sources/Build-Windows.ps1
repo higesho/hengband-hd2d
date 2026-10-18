@@ -12,7 +12,7 @@ if (-not $Upstream) { $Upstream = Join-Path (Split-Path $uiRoot -Parent) 'roguel
 if (-not $CoreSourceRoot) { $CoreSourceRoot = Join-Path (Split-Path $uiRoot -Parent) 'roguelike-cores/build-sources' }
 & $Python (Join-Path $PSScriptRoot 'prepare.py') --upstream $Upstream --output $CoreSourceRoot
 if ($LASTEXITCODE -ne 0) { throw 'Core source preparation failed' }
-foreach ($core in @('HengbandCore','TangbandCore','GensobandCore','SilCore','FroxCore')) {
+foreach ($core in @('HengbandCore','TangbandCore','GensobandCore','TobandCore','SilCore','FroxCore')) {
     $buildTarget = if ($Rebuild) { 'Rebuild' } else { 'Build' }
     & $MSBuild (Join-Path $uiRoot "VisualStudio/$core/$core.vcxproj") /m /v:minimal /nologo "/t:$buildTarget" "/p:Configuration=$Configuration" /p:Platform=Win32 "/p:HengbandCoreSourceRoot=$CoreSourceRoot" "/p:HengbandPython=$Python"
     if ($LASTEXITCODE -ne 0) { throw "Core build failed: $core" }

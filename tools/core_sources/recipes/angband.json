@@ -2327,13 +2327,9 @@
     }
   },
   "additions": {
-    "001cf4b8d7fe1881f03d2662a753cef8cd275cdd93b4e041e1fc94f8800b5e28": {
+    "00e9efd583b5525f8f8ac9eb2be24ad50222742aeb31e42c8228448e41d9b597": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap); //AN:\n__attribute__((weak)) size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap) { (void)s; (void)cap; return len; } //AN:\nextern int an_wide_clip(const wchar_t *s, int n); //AN:\n__attribute__((weak)) int an_wide_clip(const wchar_t *s, int n) { (void)s; return n; } //AN:\nextern const char *an_ui_entry_label(const char *entry, const char *field, const char *en); //AN:\n__attribute__((weak)) const char *an_ui_entry_label(const char *entry, const char *field, const char *en) { (void)entry; (void)field; return en; } //AN:\n"
-    },
-    "003a6086d6eeb98f4ef93f6ef5642ba6c00833d5a619f7c3679d2bb696158352": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern void an_origin_name_ja(char *name, size_t cap, const char *race_name); //AN:\n__attribute__((weak)) void an_origin_name_ja(char *name, size_t cap, const char *race_name) { (void)name; (void)cap; (void)race_name; } //AN:\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_frame_label(const char *s); //AN:\n__attribute__((weak)) const char *an_frame_label(const char *s) { return s; } //AN:\nextern int an_frame_label_cols(const char *s); //AN:\n__attribute__((weak)) int an_frame_label_cols(const char *s) { return (int)strlen(s); } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern int an_name_to(const char *kind, char *buf, size_t cap); //AN:\n__attribute__((weak)) int an_name_to(const char *kind, char *buf, size_t cap) { (void)kind; (void)buf; (void)cap; return 0; } //AN:\nextern int an_status_advance(int row, int col, int n); //AN:\n__attribute__((weak)) int an_status_advance(int row, int col, int n) { (void)row; (void)col; return n; } //AN:\nextern const char *an_status_field(const char *s); //AN:\n__attribute__((weak)) const char *an_status_field(const char *s) { return s; } //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\n#define put_str(s, r, c) put_str(an_frame_label(s), (r), (c)) //AN: section 17 #11\n#define c_put_str(a, s, r, c) c_put_str((a), an_frame_label(s), (r), (c)) //AN: section 17 #11\n"
     },
     "0141ad6a59fec27e488ce24454e9692c20a41810d802215a071141f977ff59c6": {
       "encoding": "utf8",
@@ -2355,6 +2351,10 @@
       "encoding": "utf8",
       "text": "an_tr_pred("
     },
+    "04c07a8ba2be2d24d63fcacec47fa0d9c219b0780cd7df7fe5306c28e3a6cb25": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_utf8_strlen_hook(const char *s, size_t *out); //AN:\n__attribute__((weak)) int an_utf8_strlen_hook(const char *s, size_t *out) { (void)s; (void)out; return 0; } //AN:\nextern int an_utf8_clipto_hook(char *s, size_t n); //AN:\n__attribute__((weak)) int an_utf8_clipto_hook(char *s, size_t n) { (void)s; (void)n; return 0; } //AN:\n"
+    },
     "0586e6093cb89a9736173a15c8fb690c307ca7851cc03d50594a90308f2429cc": {
       "encoding": "utf8",
       "text": "\t\tan_fx_note_monster_hit(mon->grid.y, mon->grid.x, dam, mon->maxhp);\n\t}\n"
@@ -2367,9 +2367,9 @@
       "encoding": "utf8",
       "text": "\tif (an_lang_enabled()) panel_line(p, attr, \"Weight\", \"%dkg\", an_u_body_kg(player->wt)); else //AN: section 19\n"
     },
-    "077e6475039db492dd939624f3c97e482bd584581f16df9f84b6e3cd4ad94f58": {
+    "0740fe2741c71c8d8ecbf7d02f8a2afa4f19d07bb26633374831b270d0dce4a5": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_CORE_DESIGN.md section 8.5 T4, A4. The weak default\n * returns false ('not handled'), which keeps this file linkable without\n * the adapter and falls through to the original implementation below\n * whenever the new UI is disabled. */\nextern bool an_target_set_interactive_hook(int mode, int x, int y, bool allow_pathfinding, bool *result);\n__attribute__((weak)) bool an_target_set_interactive_hook(int mode, int x, int y, bool allow_pathfinding, bool *result)\n{\n\t(void)mode; (void)x; (void)y; (void)allow_pathfinding; (void)result;\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n"
     },
     "07d922b348a59fb828f6f71023f734da7e4d47cf115312a8adf66fe6068265f7": {
       "encoding": "utf8",
@@ -2395,6 +2395,10 @@
       "encoding": "utf8",
       "text": "));"
     },
+    "0c4fa069d00b866abc622582daf71a2c1406d152600872ad7ea35dff9fac59a7": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_spell_name_ja(const char *name); //AN:\n__attribute__((weak)) const char *an_spell_name_ja(const char *name) { return name; } //AN:\n"
+    },
     "0c5bfdaa15afcce6c84d1a2d4de90aef2def69864e12c5e46cdfdcb32378081f": {
       "encoding": "utf8",
       "text": " an_ui_entry_label(embryo->entry->name, \"label\","
@@ -2415,9 +2419,17 @@
       "encoding": "utf8",
       "text": "\tif (!an_name_to((trap && !square_isinvis(cave, player->grid)) ? \"trap\" : \"terrain\", buf, sizeof(buf))) //AN: section 17 #11\n"
     },
+    "12c0248485c318104eaf7ea151b705a1d395aba7b724403d7f25ee05a7265ce4": {
+      "encoding": "utf8",
+      "text": "/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_obj_desc_name_ja(char *buf, size_t max, size_t *end, "
+    },
     "12dbcf6b00d57b82d44548df6314648f91829cddfbc835ee3575d42f78b90159": {
       "encoding": "utf8",
       "text": "\t\tif (!an_help_path(path, sizeof(path), name)) //AN: section 9 #12\n"
+    },
+    "12dc8aa76d9700be67ba127c31300d5cd800dad419fbefe8dfd9331e85e7ecbc": {
+      "encoding": "utf8",
+      "text": "/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lore_ja(int part, textblock *tb, "
     },
     "130f457b5b45fa5bf8bd596d05559235a1c025d3cc333d1553721c49d24e206c": {
       "encoding": "utf8",
@@ -2431,13 +2443,13 @@
       "encoding": "utf8",
       "text": " const bitflag *known_flags) { (void)part; (void)tb; (void)race; (void)lore; (void)known_flags; return 0; } //AN:\n\n"
     },
-    "14e54b94555ebea75d92496cce03d9a651f1160324d011ac0b56516a989c406f": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_HD2D_GAPS.md AH-31. The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_player_typ(int typ);\n__attribute__((weak)) void an_fx_note_player_typ(int typ)\n{\n\t(void)typ;\n}\n"
-    },
     "14f294ece2e8135d0a6e013cb8653148f9300bffd455f2bdbc91f58b43ac16f7": {
       "encoding": "utf8",
       "text": "an_status_advance(row, col, (int)"
+    },
+    "154cb354cee5d5cb6ac7aa2366aae7e9b785a46b0b75c08eb031fc6308c1f827": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\n"
     },
     "15efd209d1bfd1553292ce8f041e407ce66172159d759aaa91cff0a0e3cba6fe": {
       "encoding": "utf8",
@@ -2451,9 +2463,9 @@
       "encoding": "utf8",
       "text": "9"
     },
-    "195c9b72f0824ef8938923ba95589bff14dddd9b2fb82a373eb348032ebc72e5": {
+    "1ab928e1f6fbdc9932c4e5e35ac29a95b96c7a3bb39d9d762225217869b5e687": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern void an_tr_phrases(char *buf, size_t cap); //AN:\n__attribute__((weak)) void an_tr_phrases(char *buf, size_t cap) { (void)buf; (void)cap; } //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_fmt(const char *fmt); //AN:\n__attribute__((weak)) const char *an_tr_fmt(const char *fmt) { return fmt; } //AN:\nextern const char *an_tr_arg(const char *s, int fmt_translated); //AN:\n__attribute__((weak)) const char *an_tr_arg(const char *s, int fmt_translated) { (void)fmt_translated; return s; } //AN:\nextern int an_fmt_s(char *out, size_t cap, const char *aux, const char *arg); //AN:\n__attribute__((weak)) int an_fmt_s(char *out, size_t cap, const char *aux, const char *arg) { (void)out; (void)cap; (void)aux; (void)arg; return 0; } //AN:\nextern void an_fmt_star_precision(void); //AN:\n__attribute__((weak)) void an_fmt_star_precision(void) {  } //AN:\n"
     },
     "1ad1f81cbfe5fb189c6ed247d538375adf530737c4fb478aa42f3d50103bb1b4": {
       "encoding": "utf8",
@@ -2483,13 +2495,25 @@
       "encoding": "utf8",
       "text": "\tconst char *an_sn = an_spell_name_ja(spell->name); //AN: section 20\n\tu8len = utf8_strlen(an_sn); //AN: section 20\n"
     },
-    "22d5563264e3d043601ef632b24f550f115328c68c9ff770e2b19bdcf46e277e": {
+    "27f0385614ea3fc4a2062cb982690a5b8f659218e58efc5b9fd56697a15ed2c4": {
       "encoding": "utf8",
-      "text": "\tan_wide_expand(s, 1024); //AN: docs/ANGBAND_JA_DESIGN.md section 3 (A7)\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_score_how(const char *died_from); //AN:\n__attribute__((weak)) const char *an_score_how(const char *died_from) { return died_from; } //AN:\n"
+    },
+    "28103f89da5b742428ac1d956b4394348f9e06f38f8d706cafee953fc9ce857a": {
+      "encoding": "utf8",
+      "text": "\tbuf = an_tr_term(buf); //AN: Japanese layer #1\n"
     },
     "285b0984da405a8d296f4f878acffa642322cd9fbba7ded415dfaf1fa82e481d": {
       "encoding": "utf8",
       "text": " an_tr_tag('A',"
+    },
+    "2902549dd708c678d19594d82aeb11a72a60eb1de9658899b46a28872a9d65ea": {
+      "encoding": "utf8",
+      "text": "/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_frame_label(const char *s); //AN:\n__attribute__((weak)) const char *an_frame_label(const char *s) { return s; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern const char *an_tr_arg(const char *s, int fmt_translated); //AN:\n__attribute__((weak)) const char *an_tr_arg(const char *s, int fmt_translated) { (void)fmt_translated; return s; } //AN:\nextern double an_u_wt_real(int w); //AN:\n__attribute__((weak)) double an_u_wt_real(int w) { return w / 10.0F; } //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern int an_u_body_kg(int lb); //AN:\n__attribute__((weak)) int an_u_body_kg(int lb) { return lb; } //AN:\nextern int an_u_body_cm(int inch); //AN:\n__attribute__((weak)) int an_u_body_cm(int inch) { return inch; } //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\n#define put_str(s, r, c) put_str(an_frame_label(s), (r), (c)) //AN: section 17 #11\n#define c_put_str(a, s, r, c) c_put_str((a), an_frame_label(s), (r), (c)) //AN: section 17 #11\n#define AN_LEN(s) (an_lang_enabled() ? utf8_strlen(s) : strlen(s)) //AN: section 17 #11\n\n"
+    },
+    "290d5edd3a15368aba73b00d6b9458b8ee039477bb1ecb3e84de2e8246f4b671": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_player_hit(int dam, int mhp);\n__attribute__((weak)) void an_fx_note_player_hit(int dam, int mhp)\n{\n\t(void)dam; (void)mhp;\n}\n"
     },
     "2ab7de2ef5606007a510b90164eb8e185c802e96313ef6bf65138d8ddf06fe1e": {
       "encoding": "utf8",
@@ -2503,6 +2527,10 @@
       "encoding": "utf8",
       "text": "\tif (an_lore_ja(9, tb, race, lore, known_flags)) return; //AN: section 20\n"
     },
+    "2e9eb9d1ec1e6b1fb73539b4c7eb7ec1f50c8f1e859e566e3f846615548d93c5": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern void an_tr_phrases(char *buf, size_t cap); //AN:\n__attribute__((weak)) void an_tr_phrases(char *buf, size_t cap) { (void)buf; (void)cap; } //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n"
+    },
     "2ec78309ae4432efd91596a9c2a2ac24741cc1d9948b70638ee97aafa391d6d8": {
       "encoding": "utf8",
       "text": "\tan_menu_dynamic_end(m);\n"
@@ -2511,29 +2539,29 @@
       "encoding": "utf8",
       "text": "\t\tan_display_end(); //AN: section 9 #17\n"
     },
+    "2f93227c7bba59f10f028a7dd0ebaee79d3abfdd89c624f834f1dd244e472b45": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\n"
+    },
     "2fb208c32956230f973679421870dcc8d1268f6a91f7f25efa491e630bc43292": {
       "encoding": "utf8",
       "text": " //AN: section 17 #11 (was 30)"
     },
-    "302efcd03ff5e33cf30161a204c7993bccec2bac05eb697e907df395265a3108": {
+    "330d0986447d9c845a078b47e47c5a6f74f0e5fcd9ef4f563b8415650a7a66e4": {
       "encoding": "utf8",
-      "text": "/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern const char *an_lore_race_name(const char *name); //AN:\n__attribute__((weak)) const char *an_lore_race_name(const char *name) { return name; } //AN:\n\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_v(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_v(const char *en) { return en; } //AN:\nextern const char *an_tr_pred(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_pred(const char *en) { return en; } //AN:\n"
     },
     "332e9f69e7e0ce31bee3d6e34bb683d46df24a49cc8b171b8614074fb8a44afe": {
       "encoding": "utf8",
       "text": " //AN: section 19"
     },
-    "336791a3f98a508fab744cb0f6571b54c19401c707a6065ce21672a136317ad2": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\n"
-    },
-    "35a6ca68c91f939b8dbddb3c2477bbcde35d4af410f69ef46bd94529e14d757e": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n"
-    },
     "35df226deaeed0cb8b09f6d696953402eede8324769f528ea58910091aead96e": {
       "encoding": "utf8",
       "text": "\t\t\t\tan_fx_note_missile_hit(); //AN: HD2D: mark the hit for the attack effects\n"
+    },
+    "36540efe467533a93f1cb03ef188c60eb59db1734133e1bafee2a330d5eb5e39": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_copy_to_textblock_with_coloring(textblock *tb, const char *s); //AN:\n__attribute__((weak)) int an_copy_to_textblock_with_coloring(textblock *tb, const char *s) { (void)tb; (void)s; return 0; } //AN:\n"
     },
     "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068": {
       "encoding": "utf8",
@@ -2555,10 +2583,6 @@
       "encoding": "utf8",
       "text": " //AN:\n__attribute__((weak)) int an_mon_name_ja(char *buf, size_t buflen, "
     },
-    "3f0c9d85e28f8ff913743deb245bbc60bff18eec734c76589f8c1dfe486cbc57": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_CORE_DESIGN.md section 4 A5. The weak defaults keep this\n * file linkable without the adapter (town generation then falls straight\n * through to the unmodified upstream town_gen_layout(), exactly like\n * unmodified upstream); the strong symbols in angband/adapter/an_town_map.c\n * and angband/adapter/an_town_rng.c supply the hand-authored map and the\n * RNG save/restore around it. */\nextern void an_town_rng_begin(void);\nextern void an_town_rng_end(void);\nextern bool an_town_build_from_file(struct chunk *c, struct player *p);\n__attribute__((weak)) void an_town_rng_begin(void) {}\n__attribute__((weak)) void an_town_rng_end(void) {}\n__attribute__((weak)) bool an_town_build_from_file(struct chunk *c, struct player *p)\n{\n\t(void)c; (void)p;\n"
-    },
     "412ca345ccf75bf9c0806bce695be8de808b79984251a7a54d202cf6101dd451": {
       "encoding": "utf8",
       "text": "}\n"
@@ -2567,17 +2591,21 @@
       "encoding": "utf8",
       "text": " \"ja:You have found %ld gold pieces worth of %s.\", (long)total_gold, at_most_one ? name : \"treasures\"); //AN: section 16 #23\n"
     },
-    "421fff31f93a77c8d5602d8823ee0bb91a7fe18e3bbd07c9b6757c44a7f33d59": {
+    "43a6db6eb387d0ad47463e5013816bcccdd504912f6d8915b280a8c43bc7961f": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_CORE_DESIGN.md section 4 A7. The weak default keeps this\n * file linkable without the adapter; angband/adapter/an_bootstrap.c supplies\n * the real (strong) symbol. Observation only -- the textblock itself is not\n * changed. */\nextern void an_textblock_shown(int row, int col, int width, int rows_used);\n__attribute__((weak)) void an_textblock_shown(int row, int col, int width, int rows_used)\n{\n\t(void)row; (void)col; (void)width; (void)rows_used;\n}\n"
+      "text": "\tan_wide_expand(s, 1024); //AN: Japanese layer\n"
     },
-    "429a470214c1926c210dea92eaba950114e86ce1d3e16a05fe996799a4ff5408": {
+    "43bbfba6d5b8dd00a00aca94e66a5470040a4d9c53a4877297d8ed7b15a2e383": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_spell_name_ja(const char *name); //AN:\n__attribute__((weak)) const char *an_spell_name_ja(const char *name) { return name; } //AN:\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern void an_origin_name_ja(char *name, size_t cap, const char *race_name); //AN:\n__attribute__((weak)) void an_origin_name_ja(char *name, size_t cap, const char *race_name) { (void)name; (void)cap; (void)race_name; } //AN:\n"
     },
     "441f6f1811b0f4234a7cd65cebfa1f11a589aa81a5ca3ffe07b4437db1981823": {
       "encoding": "utf8",
       "text": " int mode) { (void)desc; (void)max; (void)mon; (void)mode; return 0; } //AN:\nextern int an_mon_name_ja(char *buf, size_t buflen, "
+    },
+    "451a0e2c90625f947c112966b3ed80debcfb77090c2cf52b8cee8dcac894c7d4": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern size_t an_wide_room(size_t n); //AN:\n__attribute__((weak)) size_t an_wide_room(size_t n) { return n; } //AN:\nextern size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap); //AN:\n__attribute__((weak)) size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap) { (void)s; (void)cap; return len; } //AN:\nextern int an_textblock_lines(const wchar_t *text, size_t n, size_t **line_starts, size_t **line_lengths, size_t width, size_t *out_lines); //AN:\n__attribute__((weak)) int an_textblock_lines(const wchar_t *text, size_t n, size_t **line_starts, size_t **line_lengths, size_t width, size_t *out_lines) { (void)text; (void)n; (void)line_starts; (void)line_lengths; (void)width; (void)out_lines; return 0; } //AN:\nextern void an_display_begin(void); //AN:\n__attribute__((weak)) void an_display_begin(void) {  } //AN:\nextern void an_display_end(void); //AN:\n__attribute__((weak)) void an_display_end(void) {  } //AN:\n"
     },
     "4bd12431a7cd50904f852f3a2520ca0f609d4c36a5eabc40a0003a29aec08274": {
       "encoding": "utf8",
@@ -2590,10 +2618,6 @@
     "4d4ce61dd60a3df86da5ebdf98ae5d9a8e9f5ac673623949b5fa06e06b8bee02": {
       "encoding": "utf8",
       "text": "\telse "
-    },
-    "4de4275b88d53f57c76b9ce1b91f97aca5aae945cbbfe8460617f09a71b26c4f": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern void an_msg_tidy(char *buf, size_t cap); //AN:\n__attribute__((weak)) void an_msg_tidy(char *buf, size_t cap) { (void)buf; (void)cap; } //AN:\n"
     },
     "500150938327249f458030072663138bb7258083350062fa0ef7e16efbe4a9d6": {
       "encoding": "utf8",
@@ -2627,6 +2651,10 @@
       "encoding": "utf8",
       "text": "64]; //AN: section 19 (was "
     },
+    "5b465867f4916eaf2edeba8a5d93e8504dc56e8e14651d60e67f5d655a76b4ea": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern void an_msg_tidy(char *buf, size_t cap); //AN:\n__attribute__((weak)) void an_msg_tidy(char *buf, size_t cap) { (void)buf; (void)cap; } //AN:\n"
+    },
     "5bd2ad471eda3855439d3a09fd3354c92ed8e885c9a49be6b3f6541ff360edb1": {
       "encoding": "utf8",
       "text": "\tif (nw != (size_t)-1) nw = an_wide_expand_len(embryo->entry->label, nw, MAX_ENTRY_LABEL); //AN: section 17 #11\n"
@@ -2639,9 +2667,17 @@
       "encoding": "utf8",
       "text": "\n\t/* HD2D AH-31: report the hit (location is always the player's own grid). */\n\tan_fx_note_player_hit(dam, p->mhp);\n"
     },
+    "5cc4d5b85b08005212466e85ce21654ec2096eace154d061d16a88bdaeeb0c35": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern void an_owner_short(char *buf, size_t cap, const char *owner_name); //AN:\n__attribute__((weak)) void an_owner_short(char *buf, size_t cap, const char *owner_name) { (void)buf; (void)cap; (void)owner_name; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\n#define AN_LEN(s) (an_lang_enabled() ? utf8_strlen(s) : strlen(s)) //AN: section 17 #11\n"
+    },
     "5d225ce53e97d9c7aecc42857fa2b765fb70911151760dcf08c647a0a5ad4128": {
       "encoding": "utf8",
       "text": " { (void)buf; (void)max; (void)end; (void)obj; (void)prefix; (void)mode; (void)terse; (void)p; return 0; } //AN:\nextern int an_object_kind_name_ja(char *buf, size_t max, const struct object_kind *kind, bool easy_know); //AN:\n__attribute__((weak)) int an_object_kind_name_ja(char *buf, size_t max, const struct object_kind *kind, bool easy_know) { (void)buf; (void)max; (void)kind; (void)easy_know; return 0; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n\n"
+    },
+    "5d2bd0676ba9045da25e813c9785f28151fae5debd9dbaeb7877f6b975c7dbed": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern void an_wide_expand(wchar_t *s, int cap); //AN:\n__attribute__((weak)) void an_wide_expand(wchar_t *s, int cap) { (void)s; (void)cap; } //AN:\nextern int an_wide_clip(const wchar_t *s, int n); //AN:\n__attribute__((weak)) int an_wide_clip(const wchar_t *s, int n) { (void)s; return n; } //AN:\nextern const char *an_tr_term(const char *buf); //AN:\n__attribute__((weak)) const char *an_tr_term(const char *buf) { return buf; } //AN:\n"
     },
     "5ee82e2f4a8525aa1a1a57fef2f8c557392b726a94f2309d46fc159876393ce2": {
       "encoding": "utf8",
@@ -2659,9 +2695,9 @@
       "encoding": "utf8",
       "text": " //AN: section 17"
     },
-    "62f50c6956aaa64decd93691d2ba482e8b17f0fe8db09eb95d783963161cc7a8": {
+    "64b6147c515af4ceafb2731ae5b3b96b78672747127572dcd5beffbeb56b52ce": {
       "encoding": "utf8",
-      "text": "\tbuf = an_tr_term(buf); //AN: docs/ANGBAND_JA_DESIGN.md section 9 #1\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern const char *an_tr_v(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_v(const char *en) { return en; } //AN:\nextern void an_fx_note_missile_hit(void); //AN:\n__attribute__((weak)) void an_fx_note_missile_hit(void) {} //AN:\n"
     },
     "64efc49418d26dcf129b22a6aa21108ceec37677a32d08e9d5fee35dda66bb9d": {
       "encoding": "utf8",
@@ -2675,33 +2711,29 @@
       "encoding": "utf8",
       "text": "\tsplit = an_msg_split(split, w); //AN: section 9 #4\n"
     },
-    "6a3c4f29b85601c7291b916a7a1b33646d082d505a0850b70f3972b37d065300": {
+    "68102f504bed3698d2b82ee46738e85085af3618f73612e4497a385a7ff9c2e7": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern const char *an_tr_v(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_v(const char *en) { return en; } //AN:\nextern void an_fx_note_missile_hit(void); //AN:\n__attribute__((weak)) void an_fx_note_missile_hit(void) {} //AN:\n"
-    },
-    "6bac047a37cf503dc82880fc7bd66520e4da7bcae8d6b01b465b67b9d971ba3c": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_HD2D_GAPS.md AH-31. The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_monster_typ(int typ);\n__attribute__((weak)) void an_fx_note_monster_typ(int typ)\n{\n\t(void)typ;\n}\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n"
     },
     "6c6f2896f12a948ec6c2650e07508e83020ce47ebdfa303b402cdd03042b774c": {
       "encoding": "utf8",
       "text": " //AN: section 20"
     },
-    "7029bf54dc8f27702d90361e05d21f537d2caad62ad6c75bfd42577e9ff50123": {
-      "encoding": "utf8",
-      "text": "/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\n\n"
-    },
     "7171a61c1382c27e639db59087134ce909ac8544061726918e91520671ef7c94": {
       "encoding": "utf8",
       "text": "\tif (an_lang_enabled() && msg) n = (int)utf8_strlen(msg); //AN: section 16 #24\n"
     },
+    "73ae0b00c9d98acf7f92c5a465450e4d29a2227fa2ef5421d687e7fc5c9a461a": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default keeps this\n * file linkable without the adapter; angband/adapter/an_profile.c supplies the\n * real (strong) symbol. Observation only -- the chosen profile is not changed. */\nextern void an_cave_profile_chosen(struct player *p, const struct cave_profile *profile);\n__attribute__((weak)) void an_cave_profile_chosen(struct player *p, const struct cave_profile *profile)\n{\n\t(void)p; (void)profile;\n}\n"
+    },
+    "75b4a3b03c9653f86db12aef9a1634d5e7e25cf4eb7dda31542743b0c69ac8f7": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_pred(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_pred(const char *en) { return en; } //AN:\nextern int an_mon_subject_ja(char *buf, size_t cap, const char *race_name, int unique, int count, int invisible, int offscreen); //AN:\n__attribute__((weak)) int an_mon_subject_ja(char *buf, size_t cap, const char *race_name, int unique, int count, int invisible, int offscreen) { (void)buf; (void)cap; (void)race_name; (void)unique; (void)count; (void)invisible; (void)offscreen; return 0; } //AN:\n"
+    },
     "76b8786948cf1004c1207b94d6063c07ab12cfac59ba25d50dba6c72d4134a6b": {
       "encoding": "utf8",
       "text": "\n{\n\t(void)menu; (void)pos; (void)oid; (void)sel; (void)cursor; (void)row; (void)col; (void)width;\n}\n__attribute__((weak)) void an_menu_begin(struct menu *menu)\n{\n\t(void)menu;\n}\n__attribute__((weak)) void an_menu_end(struct menu *menu)\n{\n\t(void)menu;\n}\nextern void an_menu_dynamic_begin(struct menu *menu);\nextern void an_menu_dynamic_end(struct menu *menu);\n__attribute__((weak)) void an_menu_dynamic_begin(struct menu *menu)\n{\n\t(void)menu;\n}\n__attribute__((weak)) void an_menu_dynamic_end(struct menu *menu)\n{\n\t(void)menu;\n}\n"
-    },
-    "77962ab2b0404cc4623deaeab84d22fa86b5fff4de4cf1ecab49779a4fe0e49e": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_v(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_v(const char *en) { return en; } //AN:\nextern const char *an_tr_pred(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_pred(const char *en) { return en; } //AN:\n"
     },
     "77c1f9dda54f2e8fec0db28c6f432e51052d8327c116591a62a718cf5f967c84": {
       "encoding": "utf8",
@@ -2719,6 +2751,10 @@
       "encoding": "utf8",
       "text": "n_u_wt_int"
     },
+    "7d9aa4cf4cd5fdee13db1fa4722998a66be37c46cee8b4d7f6e38b74ad4eb818": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: attack effects. A weak default keeps this file linkable without\n * the adapter; angband/adapter/an_fx.c supplies the real (strong) function. It only records. */ //AN:\nextern void an_fx_note_projection(struct source origin, struct loc start, struct loc finish, struct loc centre, int rad, int flg, int typ, bool blind, int num_path_grids, const struct loc *path_grid, int num_grids, const struct loc *blast_grid, const int *distance_to_grid); //AN:\n__attribute__((weak)) void an_fx_note_projection(struct source origin, struct loc start, struct loc finish, struct loc centre, int rad, int flg, int typ, bool blind, int num_path_grids, const struct loc *path_grid, int num_grids, const struct loc *blast_grid, const int *distance_to_grid) { (void)origin; (void)start; (void)finish; (void)centre; (void)rad; (void)flg; (void)typ; (void)blind; (void)num_path_grids; (void)path_grid; (void)num_grids; (void)blast_grid; (void)distance_to_grid; } //AN:\n"
+    },
     "7e31024356e54a36c996416e02bb4f6eff9c16483fb01d6073b1d5f46f6361ea": {
       "encoding": "utf8",
       "text": "an_tr_tag('Q', "
@@ -2727,9 +2763,9 @@
       "encoding": "utf8",
       "text": "AN_LEN"
     },
-    "810b653fbe327dd405d25a4cbd39f801477ba04b840572229027c132ccda794b": {
+    "80497054f8f8930412c941da5ef32d8f8e8f56616813a500f01b9ee87b73da58": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_CORE_DESIGN.md section 8.5 T2, A3. */\nextern void an_note_target_command(struct command *cmd);\n__attribute__((weak)) void an_note_target_command(struct command *cmd)\n{\n\t(void)cmd;\n}\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\n"
     },
     "83b6593a6ad6fc4ecd1109b58296502f2169690d6067072f6c8a7a65432069db": {
       "encoding": "utf8",
@@ -2743,17 +2779,13 @@
       "encoding": "utf8",
       "text": "an_tr_tag('L', "
     },
-    "8d8cc15dcdb6e8017bfec60f9bb5854e9aaa65b13d86369eb75df7d1183e8c2f": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern int an_shape_lore_ja("
-    },
     "8e9a8d26d839384bd205d3a669fedea40c25293dd4603da5392018ebedfcc41c": {
       "encoding": "utf8",
       "text": "\t\tregion an_bounds = panels[i].bounds; //AN: section 18\n\t\tif (an_lang_enabled() && panels[i].panel == get_panel_combat) { an_bounds.col = 27; an_bounds.width = 22; } //AN: section 18\n\t\tif (an_lang_enabled() && panels[i].panel == get_panel_misc) { an_bounds.col = 23; an_bounds.width = 16; } //AN: section 19\n\t\tdisplay_panel(p, panels[i].align_left, &an_bounds); //AN: section 18\n"
     },
-    "8ef615054145651859afa4990803d7218baeaa379a7d26d0eb821666f9cf782e": {
+    "8f743cd1cfaf8ec9b2c64551a44730bf0829b298cb341cc3db49aeca40f49c0b": {
       "encoding": "utf8",
-      "text": "/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lore_ja(int part, textblock *tb, "
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_monster_desc_ja(char *desc, size_t max, "
     },
     "9052e3bcb63810fc8e0b3042760da9c04707efc819001e690dbaef0f4ed79224": {
       "encoding": "utf8",
@@ -2763,9 +2795,9 @@
       "encoding": "utf8",
       "text": "an_lang_enabled() ? (int)utf8_strlen(g_names[i]) : (int)"
     },
-    "922dc3890511560761b298707177b2104d07dc981918269ac238764b8a177152": {
+    "94527e1d8314866e6d7dc3b924ffb8f875e12eb73ade4fb1f847b5e06cdbf2d5": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern void an_wide_expand(wchar_t *s, int cap); //AN:\n__attribute__((weak)) void an_wide_expand(wchar_t *s, int cap) { (void)s; (void)cap; } //AN:\nextern int an_wide_clip(const wchar_t *s, int n); //AN:\n__attribute__((weak)) int an_wide_clip(const wchar_t *s, int n) { (void)s; return n; } //AN:\nextern const char *an_tr_term(const char *buf); //AN:\n__attribute__((weak)) const char *an_tr_term(const char *buf) { return buf; } //AN:\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern int an_shape_lore_ja("
     },
     "95b13fe07b6ef3888010726c9b5b7034125d899c7b98484fb58e1bb8317dac3c": {
       "encoding": "utf8",
@@ -2779,6 +2811,10 @@
       "encoding": "utf8",
       "text": "\t\tif (profile) {\n\t\t\tan_cave_profile_chosen(p, profile); /* HD2D A6 */\n"
     },
+    "96c767e68c69d5067a4b7a67565c5f164b01429568c000beeb68548fa3f16181": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_monster_typ(int typ);\n__attribute__((weak)) void an_fx_note_monster_typ(int typ)\n{\n\t(void)typ;\n}\n"
+    },
     "96e246606dd81cdf24a4d090c33955b77236d979bb45ee25a58359a18f92d5df": {
       "encoding": "utf8",
       "text": "//AN: section"
@@ -2791,21 +2827,33 @@
       "encoding": "utf8",
       "text": "\t\tif (an_lang_enabled() && player->stat_max[i] != 18+100) put_str(\":\", row+i, col+4); //AN: section 18\n"
     },
+    "9ad50de626e00aa47897c332626185bb76395ad55164389b45c22826ea01dde5": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_monster_hit(int y, int x, int dam, int max_hp);\n__attribute__((weak)) void an_fx_note_monster_hit(int y, int x, int dam, int max_hp)\n{\n\t(void)y; (void)x; (void)dam; (void)max_hp;\n}\n"
+    },
     "9be0ee97291761fd8eefbca1663a94904aab8e762a9dd7b374ab39c378d31f1a": {
       "encoding": "utf8",
       "text": "\tif (!an_obj_desc_name_ja(buf, max, &end, obj, prefix, mode, terse, p)) //AN: section 9 #6\n"
+    },
+    "9c320c755be8c9da2760b783edc6d0cfc9065da82183c20df623490fe6f447bc": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: adapter hook. */\nextern void an_note_target_command(struct command *cmd);\n__attribute__((weak)) void an_note_target_command(struct command *cmd)\n{\n\t(void)cmd;\n}\n"
     },
     "9eedf386bfe59d52aed80493c416c1cf6a981f50be5bc1a2d5dcbd715c57280f": {
       "encoding": "utf8",
       "text": "utf8_"
     },
+    "9f0a3a92922d93af7b7600ff979ddeff786d848dc3445ae56c50e57bb01fe9bc": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default\n * returns false ('not handled'), which keeps this file linkable without\n * the adapter and falls through to the original implementation below\n * whenever the new UI is disabled. */\nextern bool an_target_set_interactive_hook(int mode, int x, int y, bool allow_pathfinding, bool *result);\n__attribute__((weak)) bool an_target_set_interactive_hook(int mode, int x, int y, bool allow_pathfinding, bool *result)\n{\n\t(void)mode; (void)x; (void)y; (void)allow_pathfinding; (void)result;\n"
+    },
     "a26898ef3f75de5fd9a7eb0939e4a035507bf6793ac73bbb2be9ac28da3c9f76": {
       "encoding": "utf8",
       "text": "\nextern void an_menu_begin(struct menu *menu);\nextern void an_menu_end(struct menu *menu);\n__attribute__((weak)) void an_menu_row_drawn(struct menu *menu, int pos, int oid, char sel, "
     },
-    "a2df19b574423c48dfc22589ea0dd3732b680e15c69907da9367c6d34c1ab01e": {
+    "a2e8a2b5135fb442b23532863cb19c47f0244551af9e3b0d190ad3eb374ba1d3": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\n\n/* HD2D: docs/ANGBAND_CORE_DESIGN.md section 4 A1/A2 (revised 1.1). AngbandCore's\n * adapter reads the on-screen menu structure through these hooks instead of\n * parsing text. an_menu_row_drawn() takes pos (position before filter_list),\n * oid (position after filter_list) and sel (the tag character chosen for the\n * row, 0 if none) so the adapter does not have to recompute them. The weak\n * empty default keeps this file linkable without the adapter;\n * angband/adapter/an_bootstrap.c supplies the real (strong) symbols. */\nextern void an_menu_row_drawn(struct menu *menu, int pos, int oid, char sel, "
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_help_path(char *buf, size_t cap, const char *name); //AN:\n__attribute__((weak)) int an_help_path(char *buf, size_t cap, const char *name) { (void)buf; (void)cap; (void)name; return 0; } //AN:\n"
     },
     "a2feec10c6b7b4431003e8681d46126c3c8978bc546a20203032bc7beecef2a2": {
       "encoding": "utf8",
@@ -2826,10 +2874,6 @@
     "a68b412c4282555f15546cf6e1fc42893b7e07f271557ceb021821098dd66c1b": {
       "encoding": "utf8",
       "text": "64"
-    },
-    "a739501dd3de527b0da65716cebb9e4e460509d05c28ab888d50537b56de147d": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern int an_msg_split(int split, int w); //AN:\n__attribute__((weak)) int an_msg_split(int split, int w) { (void)w; return split; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern void an_msg_cut(const char *t, int max_cols, int min_cols, int *bytes, int *cols); //AN:\n__attribute__((weak)) void an_msg_cut(const char *t, int max_cols, int min_cols, int *bytes, int *cols) { (void)t; (void)max_cols; (void)min_cols; *bytes = 0; *cols = 0; } //AN:\n"
     },
     "a741d613a5ceafbc23dded95d8100c7a6e2f8e6607a9849e2d0e686df834b5bf": {
       "encoding": "utf8",
@@ -2859,6 +2903,10 @@
       "encoding": "utf8",
       "text": "an_score_how("
     },
+    "ac8de597137137dda5bcad9aeef59af30fd6e8fce8871a310445d9285892dbc6": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default keeps this\n * file linkable without the adapter; angband/adapter/an_bootstrap.c supplies\n * the real (strong) symbol. Observation only -- the textblock itself is not\n * changed. */\nextern void an_textblock_shown(int row, int col, int width, int rows_used);\n__attribute__((weak)) void an_textblock_shown(int row, int col, int width, int rows_used)\n{\n\t(void)row; (void)col; (void)width; (void)rows_used;\n}\n"
+    },
     "b0d03b66489a401deb7a62884d38d77beed838357ff09216ba544bde39164f06": {
       "encoding": "utf8",
       "text": "\t\tentry->nshortened[i] = an_wide_clip(src, entry->nshortened[i]); //AN: section 17 #11\n"
@@ -2871,21 +2919,9 @@
       "encoding": "utf8",
       "text": "\tn = an_wide_clip(s, n); //AN: section 3 (A8)\n"
     },
-    "b1013ce1ef5d3b50d74cd0df0556c03b2d2d36e9b91dec98e5bab97232a9809a": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_pred(const char *en); //AN:\n__attribute__((weak)) const char *an_tr_pred(const char *en) { return en; } //AN:\nextern int an_mon_subject_ja(char *buf, size_t cap, const char *race_name, int unique, int count, int invisible, int offscreen); //AN:\n__attribute__((weak)) int an_mon_subject_ja(char *buf, size_t cap, const char *race_name, int unique, int count, int invisible, int offscreen) { (void)buf; (void)cap; (void)race_name; (void)unique; (void)count; (void)invisible; (void)offscreen; return 0; } //AN:\n"
-    },
-    "b257b54153c8a6fdd5616b11e4a1fd0fd376ca2c05baefd0cda210ccb29cf3a1": {
-      "encoding": "utf8",
-      "text": "/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_obj_desc_name_ja(char *buf, size_t max, size_t *end, "
-    },
     "b30d7c0310d4d7373d96ebec2110a8c7a3d7782de796d5b4843423814c4f435a": {
       "encoding": "utf8",
       "text": "; //AN:\n__attribute__((weak)) int an_obj_desc_name_ja(char *buf, size_t max, size_t *end, "
-    },
-    "b31cf4c46e32f026203e84f0a287633036fcd0560bd321fd19d06d6a6f6311e5": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_score_how(const char *died_from); //AN:\n__attribute__((weak)) const char *an_score_how(const char *died_from) { return died_from; } //AN:\n"
     },
     "b39471e6951d63f15b100a6bf26010dc7bf075becbadd5ef243115d363ece863": {
       "encoding": "utf8",
@@ -2899,21 +2935,9 @@
       "encoding": "utf8",
       "text": "\tif (an_lore_ja(4, tb, race, lore, known_flags)) return; //AN: section 20\n"
     },
-    "b4e2aa8616a8cd1f195d5d8de3ed3f7aeced4a22000075cf49b198aabd926565": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern size_t an_wide_room(size_t n); //AN:\n__attribute__((weak)) size_t an_wide_room(size_t n) { return n; } //AN:\nextern size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap); //AN:\n__attribute__((weak)) size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap) { (void)s; (void)cap; return len; } //AN:\nextern int an_textblock_lines(const wchar_t *text, size_t n, size_t **line_starts, size_t **line_lengths, size_t width, size_t *out_lines); //AN:\n__attribute__((weak)) int an_textblock_lines(const wchar_t *text, size_t n, size_t **line_starts, size_t **line_lengths, size_t width, size_t *out_lines) { (void)text; (void)n; (void)line_starts; (void)line_lengths; (void)width; (void)out_lines; return 0; } //AN:\nextern void an_display_begin(void); //AN:\n__attribute__((weak)) void an_display_begin(void) {  } //AN:\nextern void an_display_end(void); //AN:\n__attribute__((weak)) void an_display_end(void) {  } //AN:\n"
-    },
-    "b51f11089665e6ecd2d4534ace71c080425f488f6568e723a77f7338712fea0a": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_help_path(char *buf, size_t cap, const char *name); //AN:\n__attribute__((weak)) int an_help_path(char *buf, size_t cap, const char *name) { (void)buf; (void)cap; (void)name; return 0; } //AN:\n"
-    },
     "b60196cb62f2234904f690cbb7596c8b2fb1e93788ec740f8e1b3e0aa26300fa": {
       "encoding": "utf8",
       "text": " 20*/"
-    },
-    "b6f434299fd5aac931e410227062cbbd28be173e982b91357b20986026543490": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ATTACK_EFFECT_DESIGN.md (attack effects). A weak default keeps this file linkable without\n * the adapter; angband/adapter/an_fx.c supplies the real (strong) function. It only records. */ //AN:\nextern void an_fx_note_projection(struct source origin, struct loc start, struct loc finish, struct loc centre, int rad, int flg, int typ, bool blind, int num_path_grids, const struct loc *path_grid, int num_grids, const struct loc *blast_grid, const int *distance_to_grid); //AN:\n__attribute__((weak)) void an_fx_note_projection(struct source origin, struct loc start, struct loc finish, struct loc centre, int rad, int flg, int typ, bool blind, int num_path_grids, const struct loc *path_grid, int num_grids, const struct loc *blast_grid, const int *distance_to_grid) { (void)origin; (void)start; (void)finish; (void)centre; (void)rad; (void)flg; (void)typ; (void)blind; (void)num_path_grids; (void)path_grid; (void)num_grids; (void)blast_grid; (void)distance_to_grid; } //AN:\n"
     },
     "ba0c070e007268208712642d45938f2ce0bd8f05e7a626b320fb7e79161bc5ab": {
       "encoding": "utf8",
@@ -2935,10 +2959,6 @@
       "encoding": "utf8",
       "text": "\t\tif (an_lang_enabled()) "
     },
-    "bcb549128eb9157d1968b1a48f425ed186292270e7b766d59bacbfa03ce75b19": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_CORE_DESIGN.md section 4 A6. The weak default keeps this\n * file linkable without the adapter; angband/adapter/an_profile.c supplies the\n * real (strong) symbol. Observation only -- the chosen profile is not changed. */\nextern void an_cave_profile_chosen(struct player *p, const struct cave_profile *profile);\n__attribute__((weak)) void an_cave_profile_chosen(struct player *p, const struct cave_profile *profile)\n{\n\t(void)p; (void)profile;\n}\n"
-    },
     "bdad22233fe577879e7f2c38dc79e275f619dc220e17ec4ca8082dba3451105c": {
       "encoding": "utf8",
       "text": "an_"
@@ -2947,6 +2967,10 @@
       "encoding": "utf8",
       "text": "\t\t/* HD2D AH-31: declare the element right before the hit lands --\n\t\t * previously this ran at the top of project_p(), before the\n\t\t * `!square_isplayer`/`!self` early returns, so a miss (or a\n\t\t * self-projection the caster is not affected by) still left a\n\t\t * stale pending element for the *next*, unrelated take_hit(). */\n\t\tan_fx_note_player_typ(typ);\n"
     },
+    "c107448e62f0fcab2ab95a646024122c72b1d5d176f48ebb1460cb6f52ec8496": {
+      "encoding": "utf8",
+      "text": "/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\n\n"
+    },
     "c222da947fb3f0314a0c5b9b127aaa2032bfdbeb1fadb9f39d7563570fbafec2": {
       "encoding": "utf8",
       "text": "/AN: section"
@@ -2954,10 +2978,6 @@
     "c28e60f37647bd0167ed20bea05a071f0e4c7d54185059e27c202d220170de0b": {
       "encoding": "utf8",
       "text": "\t\t/* HD2D AH-31: declare the element for mon_take_hit() below. */\n\t\tan_fx_note_monster_typ(context->type);\n"
-    },
-    "c5a45db66fc292b08f79663499f6be7ab169eceb0de0321562324f50853e0a5b": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern void an_owner_short(char *buf, size_t cap, const char *owner_name); //AN:\n__attribute__((weak)) void an_owner_short(char *buf, size_t cap, const char *owner_name) { (void)buf; (void)cap; (void)owner_name; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\n#define AN_LEN(s) (an_lang_enabled() ? utf8_strlen(s) : strlen(s)) //AN: section 17 #11\n"
     },
     "c75c148572b5eb6647119b2cd5e81ebdae289c5af57b74df66996f7e44b0a375": {
       "encoding": "utf8",
@@ -2979,17 +2999,9 @@
       "encoding": "utf8",
       "text": "\t\tif (an_lang_enabled()) //AN: section 16 #21\n\t\t\tmsgt(msg_type, \"ja:You %s %s%s. %s\", m_name, an_tr_v(verb), dmg_text, melee_hit_types[i].text ? melee_hit_types[i].text : \"\"); //AN:\n\t\telse "
     },
-    "cadb7cfe847cf84ed75cd04f0760948c79d7f570bc0ea11e42201cdd00a27ab2": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_monster_desc_ja(char *desc, size_t max, "
-    },
     "ccc775da9a6f40b06e58ebcde65480a8f00176fd6970399adb13629c2d7a5de1": {
       "encoding": "utf8",
       "text": "\n\t\t\t/* HD2D A7 (AH-24): the pager redraws its box every page. */\n\t\t\tan_textblock_shown(an_textblock_top_row, area.col, area.width,\n\t\t\t\t(area.row - an_textblock_top_row) + area.page_rows + 2);\n"
-    },
-    "ce04257af23fb0b4bd017b173cc6f23c3c93708194f2dfe38f7f436bd11c1ded": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_HD2D_GAPS.md AH-31. The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_player_hit(int dam, int mhp);\n__attribute__((weak)) void an_fx_note_player_hit(int dam, int mhp)\n{\n\t(void)dam; (void)mhp;\n}\n"
     },
     "ce6df469fd8ff4658a588ff5c636f6dffb9546a4496238abcf3df85e87190f05": {
       "encoding": "utf8",
@@ -2999,13 +3011,13 @@
       "encoding": "utf8",
       "text": "\tan_menu_row_drawn(menu, pos, oid, sel, cursor, row, col, width);\n"
     },
-    "d14eb353fd546d8d587efb0837936309c9f95b68a1c4074c0a9ac5551f0e33a9": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_copy_to_textblock_with_coloring(textblock *tb, const char *s); //AN:\n__attribute__((weak)) int an_copy_to_textblock_with_coloring(textblock *tb, const char *s) { (void)tb; (void)s; return 0; } //AN:\n"
-    },
     "d17534a8e2718b290ea07add3682aa2bb5c3138ce9f9ada7a026057b2bbe2295": {
       "encoding": "utf8",
       "text": "\tif (an_mon_subject_ja(buf, buflen, race->name, rf_has(race->flags, RF_UNIQUE), count, invisible, offscreen)) return; //AN: section 16 #19\n"
+    },
+    "d30d59a81efb74ad650a9fa3a6cef44398b162bfd8c0ee7c23872ead2fb41bcf": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak defaults keep this\n * file linkable without the adapter (town generation then falls straight\n * through to the unmodified upstream town_gen_layout(), exactly like\n * unmodified upstream); the strong symbols in angband/adapter/an_town_map.c\n * and angband/adapter/an_town_rng.c supply the hand-authored map and the\n * RNG save/restore around it. */\nextern void an_town_rng_begin(void);\nextern void an_town_rng_end(void);\nextern bool an_town_build_from_file(struct chunk *c, struct player *p);\n__attribute__((weak)) void an_town_rng_begin(void) {}\n__attribute__((weak)) void an_town_rng_end(void) {}\n__attribute__((weak)) bool an_town_build_from_file(struct chunk *c, struct player *p)\n{\n\t(void)c; (void)p;\n"
     },
     "d46164bcc8fcb4d6826533a8febe49ad0210a6a1ca3e56b3b67c225f54ffd7e5": {
       "encoding": "utf8",
@@ -3015,9 +3027,9 @@
       "encoding": "utf8",
       "text": "an_frame_label_cols(\"LF:\")"
     },
-    "d60f3d5850fd4f8b9655e57e70608993627681ca66746354852a36decb6da38b": {
+    "d5a769f1fee88570e5d83c03ec9cc078537387787bf42d49d320cb3fff4c4b54": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\n"
+      "text": "/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern const char *an_lore_race_name(const char *name); //AN:\n__attribute__((weak)) const char *an_lore_race_name(const char *name) { return name; } //AN:\n\n"
     },
     "da1bdca4e126c66b81654ccf17cc0e35d9cfcae2a4f4d4feb88d9ccf53bce566": {
       "encoding": "utf8",
@@ -3027,17 +3039,13 @@
       "encoding": "utf8",
       "text": " //AN: a translated tag is UTF-8 and was cut mid-character at 19 bytes"
     },
-    "de2051476705f3b709184b031fa25f1dd258eb20b1acf59967a4c3d68b960880": {
+    "dcf1fbd10244738052d433621a6bd6e0247346df6d992e80d092a31ef5cb96a9": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr_fmt(const char *fmt); //AN:\n__attribute__((weak)) const char *an_tr_fmt(const char *fmt) { return fmt; } //AN:\nextern const char *an_tr_arg(const char *s, int fmt_translated); //AN:\n__attribute__((weak)) const char *an_tr_arg(const char *s, int fmt_translated) { (void)fmt_translated; return s; } //AN:\nextern int an_fmt_s(char *out, size_t cap, const char *aux, const char *arg); //AN:\n__attribute__((weak)) int an_fmt_s(char *out, size_t cap, const char *aux, const char *arg) { (void)out; (void)cap; (void)aux; (void)arg; return 0; } //AN:\nextern void an_fmt_star_precision(void); //AN:\n__attribute__((weak)) void an_fmt_star_precision(void) {  } //AN:\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\n\n/* HD2D: AngbandCore's\n * adapter reads the on-screen menu structure through these hooks instead of\n * parsing text. an_menu_row_drawn() takes pos (position before filter_list),\n * oid (position after filter_list) and sel (the tag character chosen for the\n * row, 0 if none) so the adapter does not have to recompute them. The weak\n * empty default keeps this file linkable without the adapter;\n * angband/adapter/an_bootstrap.c supplies the real (strong) symbols. */\nextern void an_menu_row_drawn(struct menu *menu, int pos, int oid, char sel, "
     },
     "e18418c917bbf7061400d7582da20ecd8c129578f7528b1116bae865a199dd9e": {
       "encoding": "utf8",
       "text": " //AN: section 9 #13"
-    },
-    "e1e497c35a2e6d7d41ab927e0c346f4228e823ffa3202a4837b31f101c07ab90": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_utf8_strlen_hook(const char *s, size_t *out); //AN:\n__attribute__((weak)) int an_utf8_strlen_hook(const char *s, size_t *out) { (void)s; (void)out; return 0; } //AN:\nextern int an_utf8_clipto_hook(char *s, size_t n); //AN:\n__attribute__((weak)) int an_utf8_clipto_hook(char *s, size_t n) { (void)s; (void)n; return 0; } //AN:\n"
     },
     "e5eaca1e6bff09eb15f7329df8c2afd6ddba9fe1a9e226bf24fe4355b641f67a": {
       "encoding": "utf8",
@@ -3047,21 +3055,21 @@
       "encoding": "utf8",
       "text": "\t\t\t\t\targ = an_tr_arg(arg, fmt != an_fmt_en); //AN: section 9 #3\n"
     },
-    "e70ec7b6fe2df839e8e5182a72cba8acb3513c47bf01ae326748a36d3be6e7d9": {
+    "e7332027cd862343b71ba612ee97d9b7c2b24700d1330cace4d4a8d52e4bd179": {
       "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\n"
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap); //AN:\n__attribute__((weak)) size_t an_wide_expand_len(wchar_t *s, size_t len, size_t cap) { (void)s; (void)cap; return len; } //AN:\nextern int an_wide_clip(const wchar_t *s, int n); //AN:\n__attribute__((weak)) int an_wide_clip(const wchar_t *s, int n) { (void)s; return n; } //AN:\nextern const char *an_ui_entry_label(const char *entry, const char *field, const char *en); //AN:\n__attribute__((weak)) const char *an_ui_entry_label(const char *entry, const char *field, const char *en) { (void)entry; (void)field; return en; } //AN:\n"
     },
     "e740a6faf2db65f5853148d75d9a335d7c4b94ab106fe5f237bc34fdcfc74584": {
       "encoding": "utf8",
       "text": "\t\t\t"
     },
+    "e7a8366cd030f18cba3302295a753ffa016d28545e5d6734b102a691bb48d1b6": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_player_typ(int typ);\n__attribute__((weak)) void an_fx_note_player_typ(int typ)\n{\n\t(void)typ;\n}\n"
+    },
     "e86edfb5d693a298d4370d854544395547255e796f749e1e26f88a769514b464": {
       "encoding": "utf8",
       "text": "\t\t\t\t\t\tif (an_lang_enabled()) { //AN: section 16 #21\n\t\t\t\t\t\t\tmsgt(msg_type, \"ja:Your %s %s %s%s. %s\", o_name, m_name, an_tr_v(hit_verb), dmg_text, hit_types[j].text ? hit_types[j].text : \"\"); //AN:\n\t\t\t\t\t\t} else "
-    },
-    "ea3ba4eac30fcb4937088eb9492cda9488e2d72258a0438c4d5c57bf9f39c2f7": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\n"
     },
     "eb7aac5a5911bfbf8eaa49c56374e9bf1057eeb99b3abf1b84f85bb85b6b3f41": {
       "encoding": "utf8",
@@ -3075,10 +3083,6 @@
       "encoding": "utf8",
       "text": "\t/* HD2D A7: remember the top row before the optional header consumes it, so\n\t * an_textblock_shown() below can report the whole box (header included). */\n\tint an_textblock_top_row = area.row;\n\n"
     },
-    "ece8e5892b29ad2e85014a3e3bc284fce7ec4a82a0e7ae14742be411057d88a1": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_HD2D_GAPS.md AH-31. The weak default keeps this file\n * linkable without the adapter; angband/adapter/an_fx.c supplies the real\n * (strong) symbol. */\nextern void an_fx_note_monster_hit(int y, int x, int dam, int max_hp);\n__attribute__((weak)) void an_fx_note_monster_hit(int y, int x, int dam, int max_hp)\n{\n\t(void)y; (void)x; (void)dam; (void)max_hp;\n}\n"
-    },
     "ee0e937ac354e6dd472b22c4707a8eb40f627b9441426ef86883cafe21bff904": {
       "encoding": "utf8",
       "text": "\tstring = an_tr(string); //AN: section 16 #25\n"
@@ -3086,6 +3090,10 @@
     "ef00a546f17e3157b371cc19d00c93c50ac3b8f4a4215d8b88c35014a9097d22": {
       "encoding": "utf8",
       "text": "\tif (nw != (size_t)-1) nw = an_wide_expand_len(embryo->entry->shortened_labels[n - 1], nw, n); //AN: section 17 #11\n"
+    },
+    "f02273bdbbbf72867e6017ee05e379cbae9a1e66849995e60ded4dde125d9021": {
+      "encoding": "utf8",
+      "text": "\n/* HD2D: Japanese layer. Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern int an_msg_split(int split, int w); //AN:\n__attribute__((weak)) int an_msg_split(int split, int w) { (void)w; return split; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern void an_msg_cut(const char *t, int max_cols, int min_cols, int *bytes, int *cols); //AN:\n__attribute__((weak)) void an_msg_cut(const char *t, int max_cols, int min_cols, int *bytes, int *cols) { (void)t; (void)max_cols; (void)min_cols; *bytes = 0; *cols = 0; } //AN:\n"
     },
     "f05527c1d78e72c3dd6141684d13be68c1b3bf167b261b245a5c0fc161018a3a": {
       "encoding": "utf8",
@@ -3099,17 +3107,9 @@
       "encoding": "utf8",
       "text": "\n\t/* HD2D AH-31: report the hit -- gate on monster_is_obvious() (見直しの\n\t * 指摘。以前は可視判定が無く、見えていない敵の位置がエフェクトで\n\t * 分かってしまっていた。AH-22 の an_targeting.c と同じ判定に揃える)。\n\t * 強さの目安は mon->race->avg_hp（種族の平均）ではなく、その個体の\n\t * 実際の最大 HP である mon->maxhp を使う。 */\n"
     },
-    "f4b86f0517b4b8f9a6a03ca43f4b451fccb457586df58c716fe0af4e6c21ba58": {
-      "encoding": "utf8",
-      "text": "/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_frame_label(const char *s); //AN:\n__attribute__((weak)) const char *an_frame_label(const char *s) { return s; } //AN:\nextern const char *an_tr_tag(char tag, const char *en); //AN:\n__attribute__((weak)) const char *an_tr_tag(char tag, const char *en) { (void)tag; return en; } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern const char *an_tr(const char *en); //AN:\n__attribute__((weak)) const char *an_tr(const char *en) { return en; } //AN:\nextern const char *an_tr_arg(const char *s, int fmt_translated); //AN:\n__attribute__((weak)) const char *an_tr_arg(const char *s, int fmt_translated) { (void)fmt_translated; return s; } //AN:\nextern double an_u_wt_real(int w); //AN:\n__attribute__((weak)) double an_u_wt_real(int w) { return w / 10.0F; } //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\nextern int an_u_body_kg(int lb); //AN:\n__attribute__((weak)) int an_u_body_kg(int lb) { return lb; } //AN:\nextern int an_u_body_cm(int inch); //AN:\n__attribute__((weak)) int an_u_body_cm(int inch) { return inch; } //AN:\nextern int an_u_wt_int(int w); //AN:\n__attribute__((weak)) int an_u_wt_int(int w) { return w / 10; } //AN:\nextern int an_u_wt_frac(int w); //AN:\n__attribute__((weak)) int an_u_wt_frac(int w) { return w % 10; } //AN:\n#define put_str(s, r, c) put_str(an_frame_label(s), (r), (c)) //AN: section 17 #11\n#define c_put_str(a, s, r, c) c_put_str((a), an_frame_label(s), (r), (c)) //AN: section 17 #11\n#define AN_LEN(s) (an_lang_enabled() ? utf8_strlen(s) : strlen(s)) //AN: section 17 #11\n\n"
-    },
     "f4f40450bd68782a6f5ee1d3ea855aa1e3fc0764d5202b90a5dbf4d4e873c099": {
       "encoding": "utf8",
       "text": " const bitflag *known_flags); //AN:\n__attribute__((weak)) int an_lore_ja(int part, textblock *tb, "
-    },
-    "f658c0a80f6a828b40285b0c8957ab13d810b0853382fbe6b2b1b17f1b6dfb9b": {
-      "encoding": "utf8",
-      "text": "\n/* HD2D: docs/ANGBAND_JA_DESIGN.md (Japanese layer). Weak defaults keep this file\n * linkable without the adapter; angband/adapter/an_wide.c, an_lang.cpp and\n * an_name_ja.c supply the real (strong) symbols. */ //AN:\nextern const char *an_frame_label(const char *s); //AN:\n__attribute__((weak)) const char *an_frame_label(const char *s) { return s; } //AN:\nextern int an_frame_label_cols(const char *s); //AN:\n__attribute__((weak)) int an_frame_label_cols(const char *s) { return (int)strlen(s); } //AN:\nextern int an_lang_enabled(void); //AN:\n__attribute__((weak)) int an_lang_enabled(void) { return 0; } //AN:\nextern int an_name_to(const char *kind, char *buf, size_t cap); //AN:\n__attribute__((weak)) int an_name_to(const char *kind, char *buf, size_t cap) { (void)kind; (void)buf; (void)cap; return 0; } //AN:\nextern int an_status_advance(int row, int col, int n); //AN:\n__attribute__((weak)) int an_status_advance(int row, int col, int n) { (void)row; (void)col; return n; } //AN:\nextern const char *an_status_field(const char *s); //AN:\n__attribute__((weak)) const char *an_status_field(const char *s) { return s; } //AN:\nextern int an_u_ft(int feet); //AN:\n__attribute__((weak)) int an_u_ft(int feet) { return feet; } //AN:\n#define put_str(s, r, c) put_str(an_frame_label(s), (r), (c)) //AN: section 17 #11\n#define c_put_str(a, s, r, c) c_put_str((a), an_frame_label(s), (r), (c)) //AN: section 17 #11\n"
     },
     "fa1d0896b0e0a5b1dcdbf53e53c5110675d675f1f668631721694e812bff1415": {
       "encoding": "utf8",
@@ -3254,7 +3254,7 @@
       "newline": "crlf"
     },
     "cmd-core.c": {
-      "sha256": "d7ab4cb121b3e206c583192984a0982a7fd4aa7b15079a22a65173f37f188177",
+      "sha256": "1d4da0c1a4972075c0aea84d74e93521497eda960f62c8ce0f6f061ff12abb10",
       "operations": [
         [
           "copy",
@@ -3264,7 +3264,7 @@
         ],
         [
           "add",
-          "810b653fbe327dd405d25a4cbd39f801477ba04b840572229027c132ccda794b"
+          "9c320c755be8c9da2760b783edc6d0cfc9065da82183c20df623490fe6f447bc"
         ],
         [
           "copy",
@@ -3321,7 +3321,7 @@
       "newline": "crlf"
     },
     "cmd-pickup.c": {
-      "sha256": "33fff6ddbf33b4820da2a1e9601721f74b1985b6e206f290ff86ff0df7c45cff",
+      "sha256": "a1b690084d2248343cafea98e3b4eeb7d8fa778fe5ed18ad6ae871957ef5a013",
       "operations": [
         [
           "copy",
@@ -3331,7 +3331,7 @@
         ],
         [
           "add",
-          "336791a3f98a508fab744cb0f6571b54c19401c707a6065ce21672a136317ad2"
+          "2f93227c7bba59f10f028a7dd0ebaee79d3abfdd89c624f834f1dd244e472b45"
         ],
         [
           "copy",
@@ -3494,7 +3494,7 @@
       "newline": "crlf"
     },
     "effects-info.c": {
-      "sha256": "479b77287b5c7044365aa857e25cb834cc31ba3c790c4a0c304eb33333b65ebe",
+      "sha256": "d15abc27db983923465c47f9cfd3ee00c5425e80e887481e6a4f0197dae161b5",
       "operations": [
         [
           "copy",
@@ -3504,7 +3504,7 @@
         ],
         [
           "add",
-          "d14eb353fd546d8d587efb0837936309c9f95b68a1c4074c0a9ac5551f0e33a9"
+          "36540efe467533a93f1cb03ef188c60eb59db1734133e1bafee2a330d5eb5e39"
         ],
         [
           "copy",
@@ -3633,7 +3633,7 @@
       "newline": "crlf"
     },
     "gen-cave.c": {
-      "sha256": "4ebf445f76486e1f59de7c5bcd8f39ade38a68ff1b335911a75a5b88fb9e99c7",
+      "sha256": "f0829ed3401eaff39b4fda0b5ae2e17fdb7eb883540c18d00ba870efb9fbf0ed",
       "operations": [
         [
           "copy",
@@ -3643,7 +3643,7 @@
         ],
         [
           "add",
-          "3f0c9d85e28f8ff913743deb245bbc60bff18eec734c76589f8c1dfe486cbc57"
+          "d30d59a81efb74ad650a9fa3a6cef44398b162bfd8c0ee7c23872ead2fb41bcf"
         ],
         [
           "copy",
@@ -3740,7 +3740,7 @@
       "newline": "crlf"
     },
     "generate.c": {
-      "sha256": "eaf3a04405e4a9bb9ba9273120ef36a429948d72947cb2af08bfcacb7d49ccb7",
+      "sha256": "5227b89d12689f918b346d2ad1dcd1ee05a105451735b842cccfa64d7d5d709e",
       "operations": [
         [
           "copy",
@@ -3750,7 +3750,7 @@
         ],
         [
           "add",
-          "bcb549128eb9157d1968b1a48f425ed186292270e7b766d59bacbfa03ce75b19"
+          "73ae0b00c9d98acf7f92c5a465450e4d29a2227fa2ef5421d687e7fc5c9a461a"
         ],
         [
           "copy",
@@ -4451,7 +4451,7 @@
       "newline": "crlf"
     },
     "message.c": {
-      "sha256": "352002e50c10ce5a78a250956347ced361a08baf80b9086e26178d76de1627f6",
+      "sha256": "4608535c3f49748913bee633849bfddcbe629d0677e1e1d3606d5429ebc1ce41",
       "operations": [
         [
           "copy",
@@ -4461,7 +4461,7 @@
         ],
         [
           "add",
-          "4de4275b88d53f57c76b9ce1b91f97aca5aae945cbbfe8460617f09a71b26c4f"
+          "5b465867f4916eaf2edeba8a5d93e8504dc56e8e14651d60e67f5d655a76b4ea"
         ],
         [
           "copy",
@@ -4528,7 +4528,7 @@
       "newline": "crlf"
     },
     "mon-blows.c": {
-      "sha256": "b060636afddc1130f38f774f3449a399534517811b082c8953d0dec9a1345f22",
+      "sha256": "2f6532beafc27ad41b1d9d1e1e245ab0992205d65eb717bb3ddfc0ef66582fa2",
       "operations": [
         [
           "copy",
@@ -4538,7 +4538,7 @@
         ],
         [
           "add",
-          "77962ab2b0404cc4623deaeab84d22fa86b5fff4de4cf1ecab49779a4fe0e49e"
+          "330d0986447d9c845a078b47e47c5a6f74f0e5fcd9ef4f563b8415650a7a66e4"
         ],
         [
           "copy",
@@ -4711,7 +4711,7 @@
       "newline": "crlf"
     },
     "mon-desc.c": {
-      "sha256": "d1db05d6329c783ecfb4652ed9940104d126074e142f30436ec2ebe35e4704f5",
+      "sha256": "c6ba965eabe1e6aa681ead8d148b0fd9690d3e37ed221629549ede0e8e63c2f5",
       "operations": [
         [
           "copy",
@@ -4721,7 +4721,7 @@
         ],
         [
           "add",
-          "cadb7cfe847cf84ed75cd04f0760948c79d7f570bc0ea11e42201cdd00a27ab2"
+          "8f743cd1cfaf8ec9b2c64551a44730bf0829b298cb341cc3db49aeca40f49c0b"
         ],
         [
           "copy",
@@ -4876,7 +4876,7 @@
       "newline": "crlf"
     },
     "mon-lore.c": {
-      "sha256": "9e1fd513267c09cc445b09dc7e452aba006d78bc0393d5638fe3c2c85c9193ac",
+      "sha256": "40b69d452198fffe6dd86f379cbbcd8cd73595153053041da0ec3c4d316ca95c",
       "operations": [
         [
           "copy",
@@ -4886,7 +4886,7 @@
         ],
         [
           "add",
-          "8ef615054145651859afa4990803d7218baeaa379a7d26d0eb821666f9cf782e"
+          "12dc8aa76d9700be67ba127c31300d5cd800dad419fbefe8dfd9331e85e7ecbc"
         ],
         [
           "copy",
@@ -5129,7 +5129,7 @@
       "newline": "crlf"
     },
     "mon-msg.c": {
-      "sha256": "f8f36c23063be254bfd96f707e452b81ac1740a775bead35907be977de9116c0",
+      "sha256": "1cfb887f8f93fdd7ab7209abf02bb31bbaf62899681f88c6e6568a5ad3219945",
       "operations": [
         [
           "copy",
@@ -5139,7 +5139,7 @@
         ],
         [
           "add",
-          "b1013ce1ef5d3b50d74cd0df0556c03b2d2d36e9b91dec98e5bab97232a9809a"
+          "75b4a3b03c9653f86db12aef9a1634d5e7e25cf4eb7dda31542743b0c69ac8f7"
         ],
         [
           "copy",
@@ -5278,7 +5278,7 @@
       "newline": "crlf"
     },
     "mon-util.c": {
-      "sha256": "b10a3222c06784f9973f20f515396d78f8a443801737196e65756450246d210f",
+      "sha256": "9497d1910b3ebab2be9e8e33c3cf234c8919b7cb817912c0537f415355e59255",
       "operations": [
         [
           "copy",
@@ -5288,7 +5288,7 @@
         ],
         [
           "add",
-          "ece8e5892b29ad2e85014a3e3bc284fce7ec4a82a0e7ae14742be411057d88a1"
+          "9ad50de626e00aa47897c332626185bb76395ad55164389b45c22826ea01dde5"
         ],
         [
           "copy",
@@ -5391,7 +5391,7 @@
       "newline": "crlf"
     },
     "obj-desc.c": {
-      "sha256": "c35325929df45a200d96bd7267478e1d0363e433e16bc19a5bc2da3c693f2589",
+      "sha256": "7e4d2370c5b50d40bdfda8ded31bf719e1f850c028eb442cfc2e5206e5d91f5f",
       "operations": [
         [
           "copy",
@@ -5401,7 +5401,7 @@
         ],
         [
           "add",
-          "b257b54153c8a6fdd5616b11e4a1fd0fd376ca2c05baefd0cda210ccb29cf3a1"
+          "12c0248485c318104eaf7ea151b705a1d395aba7b724403d7f25ee05a7265ce4"
         ],
         [
           "copy",
@@ -5652,7 +5652,7 @@
       "newline": "crlf"
     },
     "obj-info.c": {
-      "sha256": "be4232641360ae552fa60a8aa16f467c7fcf05f26e120e90eac948ab0942be54",
+      "sha256": "5e56c140a55280cded42590897a5a54a578d7a5d42fe22f5421ed9bdb3107003",
       "operations": [
         [
           "copy",
@@ -5662,7 +5662,7 @@
         ],
         [
           "add",
-          "003a6086d6eeb98f4ef93f6ef5642ba6c00833d5a619f7c3679d2bb696158352"
+          "43bbfba6d5b8dd00a00aca94e66a5470040a4d9c53a4877297d8ed7b15a2e383"
         ],
         [
           "copy",
@@ -5995,7 +5995,7 @@
       "newline": "crlf"
     },
     "obj-util.c": {
-      "sha256": "64ddecb021a61df024af0ef2afadebc3423b2564be144c6f02c52069fe5d57ff",
+      "sha256": "5c8541c0869b8e3f7c8cf61c6ca6274198c2321def48d8ae1eb16124eabab9ce",
       "operations": [
         [
           "copy",
@@ -6005,7 +6005,7 @@
         ],
         [
           "add",
-          "ea3ba4eac30fcb4937088eb9492cda9488e2d72258a0438c4d5c57bf9f39c2f7"
+          "80497054f8f8930412c941da5ef32d8f8e8f56616813a500f01b9ee87b73da58"
         ],
         [
           "copy",
@@ -6098,7 +6098,7 @@
       "newline": "crlf"
     },
     "player-attack.c": {
-      "sha256": "00c26aa1998a8275d9e1d634693ff1ca4414ea2a3cd23da3b2dba9ef05c2a018",
+      "sha256": "74d646d7e40ec426df955c3cd098c40c9d500781563e938dedca9fa8b2b41877",
       "operations": [
         [
           "copy",
@@ -6108,7 +6108,7 @@
         ],
         [
           "add",
-          "6a3c4f29b85601c7291b916a7a1b33646d082d505a0850b70f3972b37d065300"
+          "64b6147c515af4ceafb2731ae5b3b96b78672747127572dcd5beffbeb56b52ce"
         ],
         [
           "copy",
@@ -6397,7 +6397,7 @@
       "newline": "crlf"
     },
     "player-util.c": {
-      "sha256": "c0b955adc907684adb5e2dc1ea99b52100993569f4033c371945279acfcdc8cf",
+      "sha256": "4d88db347ef90642a075ca72134d40c279e8e1970d632178bdd4d78ac8183789",
       "operations": [
         [
           "copy",
@@ -6407,7 +6407,7 @@
         ],
         [
           "add",
-          "ce04257af23fb0b4bd017b173cc6f23c3c93708194f2dfe38f7f436bd11c1ded"
+          "290d5edd3a15368aba73b00d6b9458b8ee039477bb1ecb3e84de2e8246f4b671"
         ],
         [
           "copy",
@@ -6476,7 +6476,7 @@
       "newline": "crlf"
     },
     "project-mon.c": {
-      "sha256": "300346c7defeae288c20736bb2cd00fb67615384cb9b42319fbce0417955f838",
+      "sha256": "e2f38d97f4dd9e8956e6e3f23445cfb12c0887af19988d0ce9b16cd2f16c3dd7",
       "operations": [
         [
           "copy",
@@ -6486,7 +6486,7 @@
         ],
         [
           "add",
-          "6bac047a37cf503dc82880fc7bd66520e4da7bcae8d6b01b465b67b9d971ba3c"
+          "96c767e68c69d5067a4b7a67565c5f164b01429568c000beeb68548fa3f16181"
         ],
         [
           "copy",
@@ -6519,7 +6519,7 @@
       "newline": "crlf"
     },
     "project-player.c": {
-      "sha256": "ab112a937aa2670657ef31fb17201dcdbfacdfbe9a2ab8250fffdc0fd2859a3d",
+      "sha256": "bd1f9608ac08597babdfc8b0952384551b24e38fe9f97255602c5b50d8dcf1a3",
       "operations": [
         [
           "copy",
@@ -6529,7 +6529,7 @@
         ],
         [
           "add",
-          "14e54b94555ebea75d92496cce03d9a651f1160324d011ac0b56516a989c406f"
+          "e7a8366cd030f18cba3302295a753ffa016d28545e5d6734b102a691bb48d1b6"
         ],
         [
           "copy",
@@ -6560,7 +6560,7 @@
       ]
     },
     "project.c": {
-      "sha256": "a98897517602ae6b8dd39acc0e48bc0a97997553788147d7659c978e158d31ea",
+      "sha256": "14d59da0c4a551d824c5d2904c174a7ada92e77af370b488dbb587de46fc0433",
       "operations": [
         [
           "copy",
@@ -6570,7 +6570,7 @@
         ],
         [
           "add",
-          "b6f434299fd5aac931e410227062cbbd28be173e982b91357b20986026543490"
+          "7d9aa4cf4cd5fdee13db1fa4722998a66be37c46cee8b4d7f6e38b74ad4eb818"
         ],
         [
           "copy",
@@ -6700,7 +6700,7 @@
       "newline": "crlf"
     },
     "score.c": {
-      "sha256": "7a851d5307b6e30f93d5a0bfe0542844233f2ecc6ece87fe179dff88ca67c593",
+      "sha256": "f4a791519ceeea66a7000e44071e72a16dd5e17d96bb08f6a17a6ffd73b1205f",
       "operations": [
         [
           "copy",
@@ -6710,7 +6710,7 @@
         ],
         [
           "add",
-          "b31cf4c46e32f026203e84f0a287633036fcd0560bd321fd19d06d6a6f6311e5"
+          "27f0385614ea3fc4a2062cb982690a5b8f659218e58efc5b9fd56697a15ed2c4"
         ],
         [
           "copy",
@@ -6847,7 +6847,7 @@
       "newline": "crlf"
     },
     "store.c": {
-      "sha256": "16a1cb817c7bc74da20b1aad1d3d00b4420ee3bc5f56b9b03f08b4f9f76a5884",
+      "sha256": "c55fe852661d348e9fdfc8976bd599221f7d7d906236b4d8a77e49af08fb4ec8",
       "operations": [
         [
           "copy",
@@ -6857,7 +6857,7 @@
         ],
         [
           "add",
-          "ea3ba4eac30fcb4937088eb9492cda9488e2d72258a0438c4d5c57bf9f39c2f7"
+          "80497054f8f8930412c941da5ef32d8f8e8f56616813a500f01b9ee87b73da58"
         ],
         [
           "copy",
@@ -7078,7 +7078,7 @@
       "newline": "crlf"
     },
     "ui-birth.c": {
-      "sha256": "2c61d1079bf3d249fedad3861851ec4fcd9fa1742dcfa1d4c12ab7a9c3af0621",
+      "sha256": "422cdf23fb4503d60f3cec6d60d17ed0f67686cefec77bf96f67cb84bdbd8acd",
       "operations": [
         [
           "copy",
@@ -7088,7 +7088,7 @@
         ],
         [
           "add",
-          "35a6ca68c91f939b8dbddb3c2477bbcde35d4af410f69ef46bd94529e14d757e"
+          "0740fe2741c71c8d8ecbf7d02f8a2afa4f19d07bb26633374831b270d0dce4a5"
         ],
         [
           "copy",
@@ -7285,7 +7285,7 @@
       "newline": "crlf"
     },
     "ui-context.c": {
-      "sha256": "bc5c9ba9c0f6a2be041ffd3f849ea2ae837b7798fb357e5d22d66dd1858f7533",
+      "sha256": "b613b0c8eee6cfe2945d9494abdfc0c05ecea365b31cd8ce35eca34c4b8cb2a6",
       "operations": [
         [
           "copy",
@@ -7295,7 +7295,7 @@
         ],
         [
           "add",
-          "e70ec7b6fe2df839e8e5182a72cba8acb3513c47bf01ae326748a36d3be6e7d9"
+          "154cb354cee5d5cb6ac7aa2366aae7e9b785a46b0b75c08eb031fc6308c1f827"
         ],
         [
           "copy",
@@ -7506,7 +7506,7 @@
       "newline": "crlf"
     },
     "ui-display.c": {
-      "sha256": "5305dc73231ff014de0eeb915cb0a788e7fb63564463c242fd0ba9a744ab336e",
+      "sha256": "c6aa2f291393aa91ce17896ca2bc565fc7d67968c7369ecf99d80d0ba955ed29",
       "operations": [
         [
           "copy",
@@ -7516,7 +7516,7 @@
         ],
         [
           "add",
-          "f658c0a80f6a828b40285b0c8957ab13d810b0853382fbe6b2b1b17f1b6dfb9b"
+          "00e9efd583b5525f8f8ac9eb2be24ad50222742aeb31e42c8228448e41d9b597"
         ],
         [
           "copy",
@@ -7783,7 +7783,7 @@
       "newline": "crlf"
     },
     "ui-entry.c": {
-      "sha256": "c0f1e0ce908f12f35be9c1d30864705354b6d3af8f2b39ccad81cfdec6f4d2c2",
+      "sha256": "56f7bad5349f4d43d4a32552afd2251041e8540fc808f59a7b13d6007c82ce18",
       "operations": [
         [
           "copy",
@@ -7793,7 +7793,7 @@
         ],
         [
           "add",
-          "001cf4b8d7fe1881f03d2662a753cef8cd275cdd93b4e041e1fc94f8800b5e28"
+          "e7332027cd862343b71ba612ee97d9b7c2b24700d1330cace4d4a8d52e4bd179"
         ],
         [
           "copy",
@@ -7978,7 +7978,7 @@
       "newline": "crlf"
     },
     "ui-help.c": {
-      "sha256": "5d241915d7bddabf19cdef180191b26cad7228abceb7fe9ed363c9ed76308129",
+      "sha256": "2e362b21c7e321d78bb59e9dd4c2992d89f832eef3c9a91ffe1914147ae3cf8c",
       "operations": [
         [
           "copy",
@@ -7988,7 +7988,7 @@
         ],
         [
           "add",
-          "b51f11089665e6ecd2d4534ace71c080425f488f6568e723a77f7338712fea0a"
+          "a2e8a2b5135fb442b23532863cb19c47f0244551af9e3b0d190ad3eb374ba1d3"
         ],
         [
           "copy",
@@ -8021,7 +8021,7 @@
       "newline": "crlf"
     },
     "ui-history.c": {
-      "sha256": "0ede96b0c929d855d4884e80c856f693446982d868b352dff28c499e271d781c",
+      "sha256": "250e922830b30c08e9bcca180935abf49454e657b3bc4b4de251dd0aad7c675e",
       "operations": [
         [
           "copy",
@@ -8031,7 +8031,7 @@
         ],
         [
           "add",
-          "7029bf54dc8f27702d90361e05d21f537d2caad62ad6c75bfd42577e9ff50123"
+          "c107448e62f0fcab2ab95a646024122c72b1d5d176f48ebb1460cb6f52ec8496"
         ],
         [
           "copy",
@@ -8168,7 +8168,7 @@
       "newline": "crlf"
     },
     "ui-input.c": {
-      "sha256": "384f468f87998bd3ba440df00236a74938f01fc592fbecff7ce517490a64aa1d",
+      "sha256": "d637d8794b2fc49caab40d707aa5ba54f9f8585f48a23a186106d254667f768d",
       "operations": [
         [
           "copy",
@@ -8178,7 +8178,7 @@
         ],
         [
           "add",
-          "a739501dd3de527b0da65716cebb9e4e460509d05c28ab888d50537b56de147d"
+          "f02273bdbbbf72867e6017ee05e379cbae9a1e66849995e60ded4dde125d9021"
         ],
         [
           "copy",
@@ -8275,7 +8275,7 @@
       "newline": "crlf"
     },
     "ui-knowledge.c": {
-      "sha256": "9bbf1597dfbcafb1167eb5b79ea57d18664aa19f1fdc21698f775ec790c861a8",
+      "sha256": "91fa64c0c680cfb5b1241b401881ec7c6b63776710530382ab210dcbe56e58a0",
       "operations": [
         [
           "copy",
@@ -8285,7 +8285,7 @@
         ],
         [
           "add",
-          "8d8cc15dcdb6e8017bfec60f9bb5854e9aaa65b13d86369eb75df7d1183e8c2f"
+          "94527e1d8314866e6d7dc3b924ffb8f875e12eb73ade4fb1f847b5e06cdbf2d5"
         ],
         [
           "copy",
@@ -8472,7 +8472,7 @@
       "newline": "crlf"
     },
     "ui-menu.c": {
-      "sha256": "0272ee939f82199101ea28183396d68b5d931792e34bb924e54664c11f9af48e",
+      "sha256": "b092270b8b7bbc1986a2ead0d81052247e78f593ea06fab5aa75c9b953ec603b",
       "operations": [
         [
           "copy",
@@ -8482,7 +8482,7 @@
         ],
         [
           "add",
-          "a2df19b574423c48dfc22589ea0dd3732b680e15c69907da9367c6d34c1ab01e"
+          "dcf1fbd10244738052d433621a6bd6e0247346df6d992e80d092a31ef5cb96a9"
         ],
         [
           "copy",
@@ -8635,7 +8635,7 @@
       "newline": "crlf"
     },
     "ui-mon-list.c": {
-      "sha256": "b197132be304756a9e89bbfa017dacdc9345f5d69b14588ec0c7f1999cd728f8",
+      "sha256": "99bf0c1a0a2de73fa3762696d603887f4477774428a097e7cfd621f96f8c4bd2",
       "operations": [
         [
           "copy",
@@ -8645,7 +8645,7 @@
         ],
         [
           "add",
-          "d60f3d5850fd4f8b9655e57e70608993627681ca66746354852a36decb6da38b"
+          "68102f504bed3698d2b82ee46738e85085af3618f73612e4497a385a7ff9c2e7"
         ],
         [
           "copy",
@@ -8788,7 +8788,7 @@
       "newline": "crlf"
     },
     "ui-mon-lore.c": {
-      "sha256": "b9d5e946a2b2e3e21d92bf625c5249c0c6dea0ef145777f354baace1ceef1154",
+      "sha256": "143de47298434d5ede075a89fdad02ed97d8cda0184918cb394bef7dfefade2f",
       "operations": [
         [
           "copy",
@@ -8798,7 +8798,7 @@
         ],
         [
           "add",
-          "302efcd03ff5e33cf30161a204c7993bccec2bac05eb697e907df395265a3108"
+          "d5a769f1fee88570e5d83c03ec9cc078537387787bf42d49d320cb3fff4c4b54"
         ],
         [
           "copy",
@@ -8891,7 +8891,7 @@
       "newline": "crlf"
     },
     "ui-obj-list.c": {
-      "sha256": "20f493fa592cc173193f0b3fd004ea39fb29b5c6d093662232e168c53b9c3568",
+      "sha256": "39b7b53a907c382e11303f064a86a9e519bbae5bce3c45bf4c067e315b6b81f9",
       "operations": [
         [
           "copy",
@@ -8901,7 +8901,7 @@
         ],
         [
           "add",
-          "d60f3d5850fd4f8b9655e57e70608993627681ca66746354852a36decb6da38b"
+          "68102f504bed3698d2b82ee46738e85085af3618f73612e4497a385a7ff9c2e7"
         ],
         [
           "copy",
@@ -9024,7 +9024,7 @@
       "newline": "crlf"
     },
     "ui-object.c": {
-      "sha256": "b0fb422f18a68567eb09ff6e7a60bbb09c7ac3a5c366fec3dd937935e5567d36",
+      "sha256": "6cc85d2d47d1e6939f2a7c1ce7f18d4942c33e977091bd2182a3ea07d8c62147",
       "operations": [
         [
           "copy",
@@ -9034,7 +9034,7 @@
         ],
         [
           "add",
-          "195c9b72f0824ef8938923ba95589bff14dddd9b2fb82a373eb348032ebc72e5"
+          "2e9eb9d1ec1e6b1fb73539b4c7eb7ec1f50c8f1e859e566e3f846615548d93c5"
         ],
         [
           "copy",
@@ -9373,7 +9373,7 @@
       "newline": "crlf"
     },
     "ui-options.c": {
-      "sha256": "2c4e87d91ef2b5201b62ee0415473035908522403b369936636ee6dfc1969a5b",
+      "sha256": "722ef6c6b3d73165084a5e036b533d6e8226638fe505ce6a34199d2be39c6f42",
       "operations": [
         [
           "copy",
@@ -9383,7 +9383,7 @@
         ],
         [
           "add",
-          "ea3ba4eac30fcb4937088eb9492cda9488e2d72258a0438c4d5c57bf9f39c2f7"
+          "80497054f8f8930412c941da5ef32d8f8e8f56616813a500f01b9ee87b73da58"
         ],
         [
           "copy",
@@ -9436,7 +9436,7 @@
       "newline": "crlf"
     },
     "ui-output.c": {
-      "sha256": "c83f4441550c26ef3d488f55e6c4838e1020f18cc04bab82544289c24c80f7ec",
+      "sha256": "c03124aa2d1027a48fdb37c1b83ae2fc923a4cdb3cd9e0609368adcec2b1f656",
       "operations": [
         [
           "copy",
@@ -9446,7 +9446,7 @@
         ],
         [
           "add",
-          "421fff31f93a77c8d5602d8823ee0bb91a7fe18e3bbd07c9b6757c44a7f33d59"
+          "ac8de597137137dda5bcad9aeef59af30fd6e8fce8871a310445d9285892dbc6"
         ],
         [
           "copy",
@@ -9523,7 +9523,7 @@
       "newline": "crlf"
     },
     "ui-player.c": {
-      "sha256": "f74ecf486329fb9b12b59246ab75145ea5b88a8ae6ca126d641628f8abac74c2",
+      "sha256": "39d763b78463d0bf83807db1550f74ad7cf0c5ab4d16e61e2023725206671fbe",
       "operations": [
         [
           "copy",
@@ -9533,7 +9533,7 @@
         ],
         [
           "add",
-          "f4b86f0517b4b8f9a6a03ca43f4b451fccb457586df58c716fe0af4e6c21ba58"
+          "2902549dd708c678d19594d82aeb11a72a60eb1de9658899b46a28872a9d65ea"
         ],
         [
           "copy",
@@ -10158,7 +10158,7 @@
       "newline": "crlf"
     },
     "ui-spell.c": {
-      "sha256": "2ed0b73cdd2979eba8edbcf701639921ce57ff765b39c8c40111a55f04b56a04",
+      "sha256": "db70ae221673e94100367cd9494e674f7b3d6b4f298e13d4b8aa63a20116d818",
       "operations": [
         [
           "copy",
@@ -10168,7 +10168,7 @@
         ],
         [
           "add",
-          "429a470214c1926c210dea92eaba950114e86ce1d3e16a05fe996799a4ff5408"
+          "0c4fa069d00b866abc622582daf71a2c1406d152600872ad7ea35dff9fac59a7"
         ],
         [
           "copy",
@@ -10297,7 +10297,7 @@
       "newline": "crlf"
     },
     "ui-store.c": {
-      "sha256": "722934a524b9b0e23d203794f0c40d6318b30b76e6ecdea25bf89bf77bac0248",
+      "sha256": "907d026ae7d85d808ac4da28eaebd1e902cd040bb770c54f3c341c96d613715a",
       "operations": [
         [
           "copy",
@@ -10307,7 +10307,7 @@
         ],
         [
           "add",
-          "c5a45db66fc292b08f79663499f6be7ab169eceb0de0321562324f50853e0a5b"
+          "5cc4d5b85b08005212466e85ce21654ec2096eace154d061d16a88bdaeeb0c35"
         ],
         [
           "copy",
@@ -10440,7 +10440,7 @@
       "newline": "crlf"
     },
     "ui-target.c": {
-      "sha256": "ffe8b35b5f51ab00adc9366f137de16f922518a36cd4de717fef229387df59d0",
+      "sha256": "b7ff5432c0326844a47b893be3d4c9f73fb034fdd554f27478b596a6105955c0",
       "operations": [
         [
           "copy",
@@ -10450,7 +10450,7 @@
         ],
         [
           "add",
-          "077e6475039db492dd939624f3c97e482bd584581f16df9f84b6e3cd4ad94f58"
+          "9f0a3a92922d93af7b7600ff979ddeff786d848dc3445ae56c50e57bb01fe9bc"
         ],
         [
           "copy",
@@ -10493,7 +10493,7 @@
       "newline": "crlf"
     },
     "ui-term.c": {
-      "sha256": "1d56cfcf2438110f731eb13b6d1f3fcad6c23dcf4788326727039c28741ed076",
+      "sha256": "6d1a0dcaa5683efd35c6c7891e4ae271d297c8abe6d9dbab0a005d3b745bf1d0",
       "operations": [
         [
           "copy",
@@ -10503,7 +10503,7 @@
         ],
         [
           "add",
-          "922dc3890511560761b298707177b2104d07dc981918269ac238764b8a177152"
+          "5d2bd0676ba9045da25e813c9785f28151fae5debd9dbaeb7877f6b975c7dbed"
         ],
         [
           "copy",
@@ -10513,7 +10513,7 @@
         ],
         [
           "add",
-          "62f50c6956aaa64decd93691d2ba482e8b17f0fe8db09eb95d783963161cc7a8"
+          "28103f89da5b742428ac1d956b4394348f9e06f38f8d706cafee953fc9ce857a"
         ],
         [
           "copy",
@@ -10523,7 +10523,7 @@
         ],
         [
           "add",
-          "22d5563264e3d043601ef632b24f550f115328c68c9ff770e2b19bdcf46e277e"
+          "43a6db6eb387d0ad47463e5013816bcccdd504912f6d8915b280a8c43bc7961f"
         ],
         [
           "copy",
@@ -10794,7 +10794,7 @@
       "newline": "crlf"
     },
     "z-form.c": {
-      "sha256": "8548e9278b65c41ac742e4d8003a8ea7b035d5a6d8a297987cc697cf3676c6b1",
+      "sha256": "17af37b5a07ccd9a617da19052be5bbed662f6760b2230b9f189e7649a074821",
       "operations": [
         [
           "copy",
@@ -10804,7 +10804,7 @@
         ],
         [
           "add",
-          "de2051476705f3b709184b031fa25f1dd258eb20b1acf59967a4c3d68b960880"
+          "1ab928e1f6fbdc9932c4e5e35ac29a95b96c7a3bb39d9d762225217869b5e687"
         ],
         [
           "copy",
@@ -10939,7 +10939,7 @@
       "newline": "crlf"
     },
     "z-textblock.c": {
-      "sha256": "342d19faa15fe5b8733357160c9e0afe062dd7700df106edde62d4cba7158f46",
+      "sha256": "3a894c97ec43e77ddcdb9cb2946bb6e8113f865487e05b0282195a64c1edf8f4",
       "operations": [
         [
           "copy",
@@ -10949,7 +10949,7 @@
         ],
         [
           "add",
-          "b4e2aa8616a8cd1f195d5d8de3ed3f7aeced4a22000075cf49b198aabd926565"
+          "451a0e2c90625f947c112966b3ed80debcfb77090c2cf52b8cee8dcac894c7d4"
         ],
         [
           "copy",
@@ -11066,7 +11066,7 @@
       "newline": "crlf"
     },
     "z-util.c": {
-      "sha256": "1e71e515c25b26ae15ad4c1f85658341f2871d3ca75cb348ae39f93358816c72",
+      "sha256": "49d6d796f92317ce0561e8cf08eee5ea6d339856ee9af593f682305a08e9ae28",
       "operations": [
         [
           "copy",
@@ -11076,7 +11076,7 @@
         ],
         [
           "add",
-          "e1e497c35a2e6d7d41ab927e0c346f4228e823ffa3202a4837b31f101c07ab90"
+          "04c07a8ba2be2d24d63fcacec47fa0d9c219b0780cd7df7fe5306c28e3a6cb25"
         ],
         [
           "copy",

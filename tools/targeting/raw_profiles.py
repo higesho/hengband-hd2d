@@ -9,12 +9,14 @@ from projection_helpers import resolve_flags
 
 def aimed_raw_project(source,query,owner,core,projections):
     from profiles import ELEMENTS,after_input_conditions,effect_kind
-    if core not in ('frox','genso') or len(projections)!=1:return None
+    if core not in ('frox','genso','toband') or len(projections)!=1:return None
     projection=projections[0]
     if projection.group(1)!='project':return None
     args=source.args(projection.end()-1)
     if len(args)!=(7 if core=='frox' else 8) or args[0]!='0':return None
     if core=='genso' and args[-1] not in ('-1','0'):return None
+    # TOband の project() の最後の引数は与えるダメージの補正の種類（MODIFY_ELEM_MODE_*）で、範囲には関係しない。
+    if core=='toband' and not args[-1].startswith('MODIFY_ELEM_MODE_'):return None
     if not args[5].startswith('GF_') or args[5][3:] not in ELEMENTS:return None
     numeric=NumericScope(source,query.start(),owner,core,projection.start())
     if not numeric(args[1]):return None
@@ -62,7 +64,7 @@ def first_impact_project(source,query,owner,core,projections):
     evaluates damage, random radius, later terrain changes, or chained shots.
     """
     from profiles import ELEMENTS
-    if core not in ('frox','genso','heng'):return None
+    if core not in ('frox','genso','heng','toband'):return None
     if query.group(1) not in ('get_fire_dir','get_aim_dir','get_rep_dir','get_rep_dir2','get_direction','tgt_pt'):return None
     query_end=source.ends[query.end()-1]+1
     candidates=[p for p in projections if p.group(1)=='project' and p.start()>query_end]
@@ -75,6 +77,7 @@ def first_impact_project(source,query,owner,core,projections):
     else:
         if len(args)!=(7 if core=='frox' else 8) or args[0]!='0':return None
         if core=='genso' and args[7] not in ('-1','0'):return None
+        if core=='toband' and not args[7].startswith('MODIFY_ELEM_MODE_'):return None
         radius_at,y_at,x_at,element_at,flags_at=1,2,3,5,6
         default_element='GF_MISSILE'
     # A self-centred projection after an unrelated prompt is not its impact.
