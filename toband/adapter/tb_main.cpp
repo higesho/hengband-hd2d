@@ -55,6 +55,8 @@ extern "C" int tb_native_store_item(int,native_store_item *);
 #include "tb_lang_c.h"
 #include "tb_manifest.h"
 #include "tb_birth_stats.h"
+#include "tb_building_page.h"
+#include "tb_skill_level.h"
 #include "tb_window_extras.h"
 #include "tb_menu.h"
 #include "tb_pad_commands.h"
@@ -485,7 +487,7 @@ int pop_native_key_locked() {
         if (auto key = std::get_if<int>(&queued)) return *key;
         std::vector<int> translated;
         const auto &event=std::get<presentation::InputEventWire>(queued);
-        if(!presentation::native_targeting().input(event,translated)&&!g_inventory_menu.input(event,translated)&&!g_store_menu.input(event,translated)&&!tb::birth_stats_input(event,translated,g_native_menu)&&!tb::window_extras_input(event,translated,g_native_menu))g_native_menu.input(event, translated);
+        if(!presentation::native_targeting().input(event,translated)&&!g_inventory_menu.input(event,translated)&&!g_store_menu.input(event,translated)&&!tb::birth_stats_input(event,translated,g_native_menu)&&!tb::skill_level_input(event,translated,g_native_menu)&&!tb::window_extras_input(event,translated,g_native_menu))g_native_menu.input(event, translated);
         g_has_last_digest = false;
         for (auto it = translated.rbegin(); it != translated.rend(); ++it) g_key_queue.push_front(*it);
     }
@@ -704,10 +706,13 @@ void host_present()
     presentation::prepare_native_targeting_menu_frame(frame);
     const auto items=g_native_menu.enabled()?presentation::read_native_item_rows(tb_native_describe_item,
         [](const char *s){return tb::sjis_to_utf8(s);},tb_tile_for_row):std::vector<presentation::NativeItemRow>{};
+    tb::prepare_building_page(frame); // 建物の「何かキーを押す」結果のページは、押しても効かない建物の一覧を空にして、詳細画面として組ませる
     g_native_menu.capture(frame,{},items);
+    tb::apply_building_page_window(frame); // 題と結果だけの本文にする（建物の主の名前・一覧を載せない）
     tb::apply_birth_stats_window(frame); // 誕生の能力値の割り振りは、capture() の詳細画面を左右で増減できる窓に組み替える
     tb::fix_search_input_window(frame); // 自動拾いエディタの検索語の入力窓の札を直す
     tb::apply_window_extras(frame); // 全体地図の窓へ、エレメントの分布（E）の操作を足す
+    tb::apply_skill_level_window(frame); // 現在のスキルは、分類と技能を矢印で動かせる知識の一覧と同じ形の窓に組み替える
     bool birth_race_choices=frame.pre_game_menu&&frame.modern.content_type=="choice_grid"
         &&(frame.modern.title=="Choose a race"||frame.modern.title==tb::sjis_to_utf8(std::string("種族の選択")));
     if(frame.pre_game_menu&&frame.modern.content_type=="choice_grid"&&!birth_race_choices) {
@@ -1413,6 +1418,10 @@ int run_selftest()
     std::fprintf(stderr, "[toband] menu semantics: %s\n", menu_failures == 0 ? "ok" : "FAIL");
     const int birth_stats_failures = tb::birth_stats_selftest();
     std::fprintf(stderr, "[toband] birth stats: %s\n", birth_stats_failures == 0 ? "ok" : "FAIL");
+    const int skill_level_failures = tb::skill_level_selftest();
+    std::fprintf(stderr, "[toband] skill level: %s\n", skill_level_failures == 0 ? "ok" : "FAIL");
+    const int building_page_failures = tb::building_page_selftest();
+    std::fprintf(stderr, "[toband] building page: %s\n", building_page_failures == 0 ? "ok" : "FAIL");
     const int mirror_failures = tb::term_mirror_baseline_selftest();
     std::fprintf(stderr, "[toband] term mirror baseline: %s\n", mirror_failures == 0 ? "ok" : "FAIL");
 
@@ -1490,7 +1499,7 @@ int run_selftest()
     std::fprintf(stderr, "%s %s\n", tb_core_name(), tb_core_version());
     std::fflush(stderr);
 
-    return (menu_failures == 0 && birth_stats_failures == 0 && mirror_failures == 0 && command_failures == 0 && term_resize_failures == 0 && light_failures == 0 && rw_failures == 0 && status_failures == 0) ? 0 : 1;
+    return (menu_failures == 0 && birth_stats_failures == 0 && skill_level_failures == 0 && building_page_failures == 0 && mirror_failures == 0 && command_failures == 0 && term_resize_failures == 0 && light_failures == 0 && rw_failures == 0 && status_failures == 0) ? 0 : 1;
 }
 
 /* ==================================================================== 本体（P2） */

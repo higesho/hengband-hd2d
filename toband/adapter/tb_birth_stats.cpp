@@ -23,6 +23,8 @@
  */
 #include "tb_birth_stats.h"
 
+#include "tb_term_util.h"
+
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
@@ -33,8 +35,7 @@ namespace tb {
 
 namespace {
 
-//! UTF-8 の文字列リテラル（C++20 の `char8_t`）を `const char *` にする。
-#define TB_U8(literal) reinterpret_cast<const char *>(u8##literal)
+using term::u8c; //!< UTF-8 の文字列リテラルを `const char *` にする（呼ぶ側は `u8c(u8"…")` と `u8` を字面に書く。理由は `tb_term_util.h`）
 
 constexpr int kRowCost = 11;      //!< 操作の案内の行（`POINT_ROW - 3`）
 constexpr int kRowHeader = 13;    //!< 列の見出し（`POINT_ROW - 1`）
@@ -139,7 +140,7 @@ bool parse_stat_row(const std::string &raw, StatRow &out)
     out.total = tokens[open + 3];
     std::string name;
     for (size_t i = 0; i + 3 < open; ++i) {
-        if (tokens[i] == ":" || tokens[i] == TB_U8("：")) {
+        if (tokens[i] == ":" || tokens[i] == u8c(u8"：")) {
             continue;
         }
         if (!name.empty()) {
@@ -258,8 +259,8 @@ bool apply_birth_stats_window(GameFrame &frame)
 
     w.stage = "cursor";
     w.content_type = "sil_allocation";
-    w.title = tr(TB_U8("能力値の設定"), "Attributes");
-    w.subtitle = tr(TB_U8("コスト合計"), "Total cost") + ": " + std::to_string(used) + "/" + std::to_string(limit);
+    w.title = tr(u8c(u8"能力値の設定"), "Attributes");
+    w.subtitle = tr(u8c(u8"コスト合計"), "Total cost") + ": " + std::to_string(used) + "/" + std::to_string(limit);
     w.rows.clear();
     w.content.clear();
     w.actions.clear();
@@ -294,8 +295,8 @@ bool apply_birth_stats_window(GameFrame &frame)
     {
         ModernBlock pool;
         pool.kind = "fields";
-        pool.cells.push_back({ tr(TB_U8("コスト合計"), "Total cost"), std::to_string(used) + "/" + std::to_string(limit), false, "", "" });
-        pool.cells.push_back({ tr(TB_U8("残りポイント"), "Points left"), std::to_string(limit - used), false, "", "" });
+        pool.cells.push_back({ tr(u8c(u8"コスト合計"), "Total cost"), std::to_string(used) + "/" + std::to_string(limit), false, "", "" });
+        pool.cells.push_back({ tr(u8c(u8"残りポイント"), "Points left"), std::to_string(limit - used), false, "", "" });
         w.content.push_back(std::move(pool));
     }
     // 右の欄: 原作の表（基本値・最小値・最大値・コスト・種族・合計値）。
@@ -304,12 +305,12 @@ bool apply_birth_stats_window(GameFrame &frame)
     ModernBlock head;
     head.kind = "table_header";
     const std::vector<std::string> fallback = ja
-        ? std::vector<std::string>{ TB_U8("基本値"), TB_U8("最小値"), TB_U8("最大値"), TB_U8("コスト"), TB_U8("種族"), TB_U8("合計値") }
+        ? std::vector<std::string>{ u8c(u8"基本値"), u8c(u8"最小値"), u8c(u8"最大値"), u8c(u8"コスト"), u8c(u8"種族"), u8c(u8"合計値") }
         : std::vector<std::string>{ "Base", "Min", "Max", "Cost", "Race", "Total" };
     const auto label = [&](size_t i) { return labels.size() == 6 && !labels[i].empty() ? labels[i] : fallback[i]; };
-    head.cells.push_back({ "", tr(TB_U8("能力"), "Stat"), false, "", "" });
+    head.cells.push_back({ "", tr(u8c(u8"能力"), "Stat"), false, "", "" });
     head.cells.push_back({ "", label(0), false, "", "" });
-    head.cells.push_back({ "", tr(TB_U8("最小〜最大"), "Min-Max"), false, "", "" });
+    head.cells.push_back({ "", tr(u8c(u8"最小〜最大"), "Min-Max"), false, "", "" });
     head.cells.push_back({ "", label(3), false, "", "" });
     head.cells.push_back({ "", label(5) + "(" + label(4) + ")", false, "", "" });
     w.content.push_back(std::move(head));
@@ -324,7 +325,7 @@ bool apply_birth_stats_window(GameFrame &frame)
         block.kind = "table_row";
         block.cells.push_back({ "", stat.name, false, "", "" });
         block.cells.push_back({ "", stat.base, false, "", "" });
-        block.cells.push_back({ "", stat.min + (ja ? TB_U8("〜") : "-") + stat.max, false, "", "" });
+        block.cells.push_back({ "", stat.min + (ja ? u8c(u8"〜") : "-") + stat.max, false, "", "" });
         block.cells.push_back({ "", stat.cost, false, "", "" });
         block.cells.push_back({ "", stat.total + " (" + stat.race + ")", false, "", "" });
         if (active) {
@@ -337,7 +338,7 @@ bool apply_birth_stats_window(GameFrame &frame)
             const int key = column ? '6' : '4';
             ModernRow row;
             row.id = "allocation:" + std::to_string(stat.source_row) + ":" + std::to_string(column);
-            row.label = stat.name + (column ? " +" : TB_U8(" −"));
+            row.label = stat.name + (column ? " +" : u8c(u8" −"));
             row.slot = stat.source_row;
             row.selection = 0;
             row.key = row.hotkey = key;
@@ -345,12 +346,12 @@ bool apply_birth_stats_window(GameFrame &frame)
             // 下限・上限は原作が描いた最小値・最大値（最大値はいま残りのポイントで届く上限）。
             row.available = !numbers || (column ? base < max : base > min);
             if (!row.available) {
-                row.reason = column ? tr(TB_U8("これ以上は上げられません（上限か、ポイントが足りません）。"), "Cannot raise this stat further (limit or not enough points).")
-                                    : tr(TB_U8("これ以上は下げられません（最小値です）。"), "Cannot lower this stat further (minimum).");
+                row.reason = column ? tr(u8c(u8"これ以上は上げられません（上限か、ポイントが足りません）。"), "Cannot raise this stat further (limit or not enough points).")
+                                    : tr(u8c(u8"これ以上は下げられません（最小値です）。"), "Cannot lower this stat further (minimum).");
             }
             row.description = stat.name + "\n\n"
-                + (column ? tr(TB_U8("この能力を 1 上げます（ポイントを使います）。"), "Raise this stat by one (spends points).")
-                          : tr(TB_U8("この能力を 1 下げます（ポイントが戻ります）。"), "Lower this stat by one (refunds points)."));
+                + (column ? tr(u8c(u8"この能力を 1 上げます（ポイントを使います）。"), "Raise this stat by one (spends points).")
+                          : tr(u8c(u8"この能力を 1 下げます（ポイントが戻ります）。"), "Lower this stat by one (refunds points)."));
             row.actions = { { "choice", row.label, row.reason, row.available, key } };
             controls.push_back({ row.id, key, row.slot, row.available });
             w.rows.push_back(std::move(row));
@@ -373,7 +374,7 @@ bool apply_birth_stats_window(GameFrame &frame)
     }
     ModernRow done;
     done.id = "allocation:continue";
-    done.label = tr(TB_U8("次に進む"), "Continue");
+    done.label = tr(u8c(u8"次に進む"), "Continue");
     done.slot = 1000000000;
     done.key = done.hotkey = 13;
     done.price_known = false;
@@ -475,16 +476,16 @@ int birth_stats_selftest()
     GameFrame frame;
     frame.pre_game_menu = true;
     frame.menu_open = true;
-    add_line(frame, 1, TB_U8("  キャラクタの能力値を設定してください。"));
-    add_line(frame, 3, TB_U8(" 性別   : 男性"));
-    add_line(frame, 4, TB_U8(" 種族   : 人間"));
-    add_line(frame, 5, TB_U8(" クラス : ナイト"));
-    add_line(frame, 11, TB_U8("          コスト合計: 34/60  2/8/j/k で移動,  4/6/h/l で変更,  Enter で決定"));
-    add_line(frame, 13, TB_U8("                  基本値  最小値  最大値  (コスト)  種族     合計値"));
+    add_line(frame, 1, u8c(u8"  キャラクタの能力値を設定してください。"));
+    add_line(frame, 3, u8c(u8" 性別   : 男性"));
+    add_line(frame, 4, u8c(u8" 種族   : 人間"));
+    add_line(frame, 5, u8c(u8" クラス : ナイト"));
+    add_line(frame, 11, u8c(u8"          コスト合計: 34/60  2/8/j/k で移動,  4/6/h/l で変更,  Enter で決定"));
+    add_line(frame, 13, u8c(u8"                  基本値  最小値  最大値  (コスト)  種族     合計値"));
     const char *const stats[6][7] = {
-        { TB_U8("腕力"), "15", "15", "18", "11", "+0", "15" }, { TB_U8("知能"), "10", "10", "17", " 0", "+0", "10" },
-        { TB_U8("賢さ"), "10", "10", "17", " 0", "+0", "10" }, { TB_U8("器用"), "16", "16", "18", "16", "+0", "16" },
-        { TB_U8("耐久"), "14", "14", "18", " 7", "+0", "14" }, { TB_U8("魅力"), "10", "10", "17", " 0", "+0", "10" } };
+        { u8c(u8"腕力"), "15", "15", "18", "11", "+0", "15" }, { u8c(u8"知能"), "10", "10", "17", " 0", "+0", "10" },
+        { u8c(u8"賢さ"), "10", "10", "17", " 0", "+0", "10" }, { u8c(u8"器用"), "16", "16", "18", "16", "+0", "16" },
+        { u8c(u8"耐久"), "14", "14", "18", " 7", "+0", "14" }, { u8c(u8"魅力"), "10", "10", "17", " 0", "+0", "10" } };
     for (int i = 0; i < 6; ++i) {
         const auto *v = stats[i];
         char buf[160];
@@ -504,11 +505,11 @@ int birth_stats_selftest()
     check(w.rows.size() == 13 && w.rows.back().id == "allocation:continue", "12 stat rows (minus/plus pairs) and the continue row");
     check(w.cursor_target == "allocation:15:0", "the native cursor row is the window cursor");
     check(!w.rows[0].available && w.rows[1].available, "a stat at its minimum cannot be lowered but can be raised");
-    check(w.subtitle == std::string(TB_U8("コスト合計")) + ": 34/60", "the total cost is read from the original line");
+    check(w.subtitle == std::string(u8c(u8"コスト合計")) + ": 34/60", "the total cost is read from the original line");
     bool table_ok = false;
     for (const auto &block : w.content) {
-        if (block.kind == "table_row" && block.cells.size() == 5 && block.cells[0].text == TB_U8("知能")) {
-            table_ok = block.cells[1].text == "10" && block.cells[2].text == std::string("10") + TB_U8("〜") + "17"
+        if (block.kind == "table_row" && block.cells.size() == 5 && block.cells[0].text == u8c(u8"知能")) {
+            table_ok = block.cells[1].text == "10" && block.cells[2].text == std::string("10") + u8c(u8"〜") + "17"
                 && block.cells[3].text == "0" && block.cells[4].text == "10 (+0)";
         }
     }
