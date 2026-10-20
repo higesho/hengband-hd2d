@@ -27,6 +27,7 @@
 
 /* `tb_fprintf()` の `FILE *` のため。ここを include する C++ の TU
  * （`tb_frame.cpp` など）が angband.h を見ていないので、ここで引く。 */
+#include <stddef.h>
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -74,18 +75,38 @@ const char *tb_tr_fmt(const char *fmt);
 const char *tb_tr_arg(const char *s);
 
 /*!
- * @brief `object_desc()` の結果を英語の形へ直す（フック #6。E2）。
+ * @brief `object_desc()` の英語の組み立て（フック **#6**。`object_desc()` の頭で呼ぶ）。
+ * @param buf 出力（`MAX_NLEN` バイト）
  * @param obj `object_type *`（型を見せないため void*）
- * @details JP の組み立て（数詞・エゴと銘の前置・冠詞なし）を後処理で直す。
- * 実装は将来 `tb_name_en.c`（英語の段で作る。M0 には無い）。
+ * @param mode `object_desc()` の mode
+ * @return 1 = 英語で組んで `buf` に書いた（呼び側はそのまま戻る）／0 = 何もしていない（日本語モード・入れ子の呼び出し）
+ *
+ * @details 個数・冠詞・種別の語・エゴと銘・複数形は、`object_type` と `k_info` の英語の名前から**構造で**組み直す。
+ * 飾り（ダメージ・修正値・回数・充填・銘）は JP の組み立てをそのまま使い、日本語の語だけを表で英語にする。
+ * 名前と飾りの境目は、同じ品を `OD_NAME_ONLY` で組んだ長さで分かる（このため `object_desc()` を 2 度、内側で呼ぶ。
+ * 入れ子の呼び出しは 0 を返して通常の道を通す）。実装は `tb_name_en.c`。
  */
-void tb_object_desc_en_fix(char *buf, void *obj, unsigned long mode);
+int tb_object_desc_en(char *buf, void *obj, unsigned long mode);
 
 /*!
- * @brief `monster_desc()` の結果を英語の形へ直す（フック #7。E2）。
+ * @brief `monster_desc()` の英語の組み立て（フック **#7**。`monster_desc()` の頭で呼ぶ）。
+ * @param desc 出力
  * @param mon `monster_type *`
+ * @param mode `monster_desc()` の mode（`MD_*`）
+ * @return 1 = 英語で組んで `desc` に書いた／0 = 何もしていない（日本語モード）
+ *
+ * @details 原作の英語の枝（`monster2.c` の `#else`）と同じ形を、乱数の使い方も同じ順で組む。
  */
-void tb_monster_desc_en_fix(char *desc, void *mon, unsigned long mode);
+int tb_monster_desc_en(char *desc, void *mon, int mode);
+
+/*!
+ * @brief ランダムユニークの名前の英語の組み立て（フック **新**。`random-unique.c` の `random_unique_name()` の中）。
+ * @details 英語は「名前 the 二つ名」（例 `Arnold the Firecracker`。決めたこと）で、`《》` を付けない。
+ * `tb_ru_suffix_en()` は重複の判定の鍵（`Arnold the `）に、`tb_ru_name_en()` は出来上がった名前に差し替える。
+ * 英語の表は `tb_name_en_tables.inc`（`tools/toband/gen_tb_name_tables.py` が用語表から作る）。日本語のときは何もしない。
+ */
+void tb_ru_suffix_en(char *suffix, size_t size, int human, int index);
+void tb_ru_name_en(char *name, size_t size, int profile);
 
 /*!
  * @brief 言語で変わる**ファイル名**の引き替え（フック #8 #9）。
@@ -137,8 +158,31 @@ void tb_fprintf(FILE *fff, const char *fmt, ...);
  */
 void tb_fputs(const char *s, FILE *fff);
 
+/*!
+ * @brief `sprintf()` の代わり。**書き込み先の大きさを見ない**版（フック **#18**）。
+ * @details 呼び出しの引数の途中に `#ifdef JP` などの行がある所（17 か所）は、関数のマクロ
+ * `tb_sprintf` にできない（前処理の指令を引数に書けない）。そこだけこの関数を使う。
+ * 書式（#2）と `%s` の引数（#3）は引かれる。書き込み先を切らないのは今までの `sprintf()` と同じ。
+ * 実装は `tb_shim.c`。
+ */
+int tb_sprintf_u(char *dest, const char *fmt, ...);
+
 #ifdef __cplusplus
 }
+#endif
+
+#ifndef __cplusplus
+/*!
+ * @brief 日本語の書式を持つ `sprintf()` の代わり（フック **#18**）。
+ * @param dest 書き込み先。**配列ならその大きさで切る**（英語の訳は日本語より長いので、
+ *             小さい配列を溢れさせない）。ポインタ（`sizeof` がポインタの大きさ以下）なら
+ *             切らない——今までの `sprintf()` と同じ（`strnfmt()` の `max == 0` は「無制限」）。
+ * @details `strnfmt()` は `vstrnfmt()` を通るので、書式そのもの（#2）と `%s` の引数（#3）が
+ * カタログで引かれる。日本語モードでは引きが素通りするので、出来上がりは `sprintf()` と同じ。
+ * 取り替える呼び出しは `tools/toband/tb_core_patches.py` の規則 #18 が選ぶ（書式に日本語のリテラルがある物だけ）。
+ */
+#define tb_sprintf(dest, ...) \
+    strnfmt((dest), ((sizeof(dest) > sizeof(char *)) ? (unsigned int)sizeof(dest) : 0u), __VA_ARGS__)
 #endif
 
 #endif /* TOBAND_ADAPTER_TB_LANG_C_H */

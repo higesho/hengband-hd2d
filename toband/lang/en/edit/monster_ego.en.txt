@@ -1,0 +1,12 @@
+# TOband -> English: monster ego (r_ego) name overrides. UTF-8; everything except the J: lines is ASCII.
+# I: r_ego number / J: the Japanese name on the N: line (must match) / N: English name (wins over the author's E: line).
+# The race names follow the glossary (classes_races.tsv): Faerie and Pumpkinhead.
+# NOTE: these are suffix forms ("Amazoness of Ghost"); the name builder (adapter/tb_name_en.c) has to put them after the monster's name.
+
+I:3
+J:フェアリーの
+N:of Faerie
+
+I:7
+J:パンプキンヘッドの
+N:of Pumpkinhead

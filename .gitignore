@@ -797,3 +797,8 @@ toband/lib/info/*
 !toband/lib/info/delete.me
 toband/lib/script/*
 !toband/lib/script/delete.me
+# 英語化。lib-en は build_en_edit.py の生成物、
+# data-en は英語用 raw の置き場（raw の名が %s_j.raw 固定なので日本語と分ける）。
+# 訳文の正本は toband/lang/en/（追跡する）。
+toband/lib-en/
+toband/lib/data-en/

@@ -1,0 +1,385 @@
+=== TOband Monsters ===
+
+There are nearly a thousand different kinds of monsters in TOband,
+each of which poses a unique challenge to the adventurer. As you
+progress deeper into the dungeon, the monsters will become
+progressively more difficult to defeat.
+
+
+***** <MonsterSymbols>
+=== Monster Symbols ===
+
+Many monsters have the same letter symbol and sometimes color on the
+screen. The exact species or type of monster can be discovered by
+'l'ooking at it (see jcommdesc.txt#Looking [b]).
+
+    a: Ant                          A: Angel
+    b: Bat                          B: Bird
+    c: Centipede                    C: Canine
+    d: Dragon                       D: Ancient Dragon/Wyrm
+    e: Floating Eye                 E: Elemental
+    f: Feline                       F: Winged humanoid
+    g: Golem                        G: Ghost
+    h: Elf/Hobbit/Lizardman         H: Hybrid
+    i: Icky Thing                   I: Insect
+    j: Jelly                        J: Snake
+    k: Kobold                       K: Killer Beetle
+    l: Aquatic monster              L: Lich
+    m: Mold                         M: Multi-headed reptile
+    n: Naga
+    o: Orc                          O: Ogre/Goblin
+    p: Human                        P: Giant humanoid
+    q: Quadruped                    Q: Quylthulg (pulsing flesh mound)
+    r: Rodent                       R: Reptile/Amphibian
+    s: Skeleton                     S: Spider/Scorpion/Tick
+    t: Townsperson                  T: Troll
+    u: Minor demon                  U: Major demon
+    v: Vortex                       V: Vampire
+    w: Caterpillar/Swarm            W: Wight/Wraith/etc.
+    y: Yeek                         X: Xorn/Xaren/etc.
+    z: Zombie/Mummy                 Y: Yeti
+                                    Z: Zephyr Hound
+
+
+Note that some monsters disguise themselves by assuming the shape (i.e.
+symbol) of common objects found in the dungeon. These include the
+|, ), ?, !, &, $ and * symbols.
+
+
+***** <MonsterColors>
+=== Monster Colors ===
+
+You can often determine some information about a monster based solely
+on the color it is described as having, like "a White Dragon". In
+general, "White" monsters are cold-based, "Red" are fire-based, "Blue"
+are electrical, "Black" are acidic, and "Green" are poisonous, and a
+"Multi-Hued" monster is all of these five. "Bronze" is confusion and
+"Gold" is sound. By being cold-based, we mean that the monster has
+either melee, magical or breath attacks that are cold based.
+
+Unfortunately this rule does not apply to all monsters, so don't be
+surprised if that "Green" monster breathes fire at you. Note that this
+rule cannot be applied to the actual color a monster is displayed as
+on the screen, but only to a color in its name.
+
+
+***** <MonsterMemory>
+=== Monster Memories ===
+
+It is very difficult to remember the abilities of the many different
+species, but TOband automatically keeps track of your experiences with
+each monster.
+
+This feature is called the monster memory. Your monster memory recalls
+the attacks of each monster (whether or not technically a monster)
+which you have suffered, as well as recalling if you have observed
+them to multiply or move erratically, or drop items, etc. Similarly,
+if you attack a monster with a magical attack and it resists, that fact
+is noted.
+
+If you have killed enough of a particular monster, or suffered enough
+attacks, recalling the monster memory may also provide you with more
+detailed information, such as the monster's AC or hit points. These
+are useful for judging the relative danger of each monster.
+
+Your monster memory may be accessed by pressing '/' and then entering
+the symbol you wish to research. Each monster with that symbol which
+you have met will be displayed in turn, beginning with the strongest.
+Alternatively, you may enter targeting mode by pressing '*' and, with
+the cursor over the monster in question, press 'r' to recall details.
+
+The best feature of your monster memory is that it can be passed on
+to a new character even after you die. When you start a new
+character, just use the savefile of the dead character as the base and
+the monster memory will be carried over.
+
+
+***** <MonsterResWeapon>
+=== Monster Weapon Resistances ===
+
+Some monsters are resistant to melee and missile attacks. There are
+two kinds of resistance, to blunt weapons and to edged weapons, and two
+levels of each, weak weapon resistance and strong weapon resistance.
+Weak weapon resistance cuts the damage of the weapon to one half, and
+strong weapon resistance cuts it to one sixth.
+
+To describe the resistances, here is how weapons are classified as
+blunt or edged.
+
+    Blunt: hafted weapons, bullets (all firearm ammunition)
+    Edged: polearms, swords, digging tools, arrows, bolts
+
+Weapon resistance can be overcome with a blessed or an unholy weapon.
+A blessed weapon ignores the weapon resistance of monsters that are
+not good, and an unholy weapon ignores the weapon resistance of
+monsters that are not evil. In the rare case of a weapon that is both
+blessed and unholy, weapon resistance is nullified against everything.
+
+
+***** <MonsterField>
+=== Monster Fields ===
+
+Some monsters fight by spreading a space called a "field" around
+themselves. A field only affects those who are hostile to its owner,
+and has no effect on companions who fight alongside it. Likewise, if
+you spread a field yourself, your pets and friendly monsters are not
+affected. The same goes in the other direction.
+
+There are two kinds of fields: the fear field and the anti-magic field.
+
+A fear field shakes the courage of hostile creatures and lowers the
+damage modifier of their melee attacks, missile attacks, spells and
+so on. A single monster's fear field may be negligible, but when
+several fields overlap their effects accumulate and the damage dealt
+keeps going down. This field has no effect on those who cannot feel
+fear.
+
+An anti-magic field is a very powerful field that completely prevents
+hostile creatures from casting any spell and suppresses the summoning
+of monsters inside the field. A creature that can fight only by magic
+is rendered completely helpless. However, they can still take actions
+that are not magic, such as breathing or using "techniques". Also,
+when a monster that casts spells powerfully is summoned, the summoning
+may succeed even inside an anti-magic field.
+
+
+***** <Uniques>
+=== Unique Monsters ===
+
+TOband has normal monsters and a kind of monster called Unique (that
+is, one of a kind) monsters. While normal monsters can appear many
+times during the course of a game, a Unique monster will never be
+generated again once you have killed it. Also, the game will never
+generate two copies of the same Unique at the same time.
+
+--- Uniques' Resistance to Magic ---
+
+Unique monsters are more resistant to magic than other monsters. Thus,
+slowing, confusing, sleeping and scaring will be less effective and may
+not work at all. In addition, Genocide and Mass Genocide spells will
+never work on Uniques. *Destruction* does not kill Uniques either: it
+simply removes them from the current level (monsters that you have to
+defeat for a quest are teleported away instead).
+
+--- Keeping Track of Uniques ---
+
+Since Unique monsters are often very difficult to defeat, many players
+will attempt to kill them all before attempting to battle Dorgalua,
+the King (itself a Unique monster). This avoids the need to battle
+several very strong opponents at the same time.
+
+Each time your character happens upon a new Unique, this is recorded
+in your monster memory. Under the knowledge command ('~') is a menu
+item which allows you to look at the list of Uniques you have met and
+which of these have been defeated. It is a good idea to check this
+periodically to gauge your progress.
+
+--- Speaking Uniques ---
+
+Occasionally, you will find that a Unique monster will speak to you as
+it approaches. Typically, a monster will shout abuse and challenges,
+but some also talk about matters closely related to themselves.
+
+--- Rewards for Killing Uniques ---
+
+You may also find that occasionally after killing a Unique monster,
+the game will tell you that the Unique was wanted and had a bounty on
+its head. If you take the monster's corpse to the Hunter's office in
+Almorica Castle, you will be paid the bounty.
+
+***** <EldritchHorror>
+=== Eldritch Horrors ===
+
+In some other Angband variants, certain monsters are so fearsome to
+look upon that merely seeing them or detecting them magically makes
+you lose your sanity, with serious consequences such as a temporary or
+permanent drop in intelligence or wisdom, confusion, or even
+mutations like fits of rage, paranoia and feeble-mindedness.
+
+TOband does not have this sanity check. In TOband, merely seeing or
+sensing a monster never costs you sanity.
+
+
+***** <Pets>
+=== Pets and Riding ===
+
+Pets are very useful and also safe in TOband. It is trouble-free and
+very comfortable to send your pet Great Hell Wyrm into a Troll pit and
+wait outside, listening to the howls of agony and terror, the sounds
+of guts splattering and bones crunching. However, you should not
+expect to gain any experience or item drops for such a fight: you will
+only gain experience and items for monsters to whom you deliver the
+death blow yourself.
+
+Monsters which get killed by a pet don't drop items. This feature,
+unique to Hengband, the base of TOband, is a well-thought-out result.
+If you try to interpret it forcibly, you might think that the pet's
+rough attacks lose or destroy the items, but many people will complain
+that this is not realistic. On this point, the specification was
+decided by putting game balance ahead of realism.
+
+In TOband, pets will not get angry with you even if you attack them
+by mistake. You hold the free will of your pets completely under
+magical control. Also, when a pet attacks other monsters with breath
+or magic, it will not normally involve you and harm you. You can
+concentrate on fighting enemies safely right next to your pet Great
+Hell Wyrm as it spews its breath. However, if you want your pets to
+give top priority to defeating the surrounding enemies even if you are
+caught in their breath (for example because you are immune to the
+Great Hell Wyrm's fire breath), you can tell them so with the pet
+command 'p'. Just turn "allow involve player in area spell" ON.
+
+Finally, it takes a lot of mental energy to maintain your control over
+your pets. The total level of your pets is compared with an allowance
+that depends on your level and your pet-upkeep skill. As long as the
+total stays within the allowance, your pets are "free"; beyond that,
+your mana regeneration rate drops. The larger the total of your pets'
+levels, the smaller your mana regeneration rate. Unique pets are far
+more expensive (about ten times their level, less for certain classes
+or when you ride them). And once the upkeep exceeds 100% mana, you do
+not regenerate mana but begin to lose it. If your mana is zero while
+the upkeep is over 100%, you are made to dismiss pets until the upkeep
+drops to 100% or less; this is also true for characters who have no
+mana points. Keep this in mind if you have a pet which can summon or
+otherwise produce more monsters.
+
+
+--- Obtaining a pet ---
+
+You may obtain pets in several different ways. Some magic realms offer
+the ability to summon pets magically or to charm the monsters you meet.
+Magical figurines can be thrown to create a pet.
+
+
+--- Commanding Your Pets ---
+
+Your pets are fairly well trained and will respond to a variety of
+commands such as following you closely, staying nearby and searching
+out your enemies. You can command your pets using the pet command menu,
+which can be found by pressing 'p'.
+
+The pet command menu has the following items.
+
+dismiss pets
+        Dismiss specified pets. Dismissed pets will immediately
+        disappear from the current level. The game asks you whether you
+        want to dismiss each pet, beginning with named pets and strong
+        pets, so it is convenient to answer "N"o for the few you need
+        and then dismiss all the remaining unnamed pets with "U".
+
+specify a target of pet
+        Choose a target monster for your pets to attack.
+
+stay close
+        Command your pets to stay as close to you as they can.
+
+follow me
+        Your pets follow you at a distance of a few steps.
+
+seek and destroy
+        Allow your pets to move a little way from you. Suitable for
+        letting them find and attack enemies on their own.
+
+give me space
+        Your pets move away so that they do not get in your way. Useful
+        when you want to fight an enemy alone for a while.
+
+stay away
+        Command your pets to go as far away from you as they can.
+
+pets open doors
+        Toggle permission of pets to open doors.
+
+pets pick up items
+        Toggle permission of pets to pick up items.
+
+allow teleport
+        Choose whether pets are allowed (or forbidden altogether) to
+        teleport themselves or to teleport enemies away.
+
+allow cast attack spell
+        Choose whether pets use attack spells and breath.
+
+allow cast disintegration spell
+        Choose whether pets use attack spells and breath that destroy
+        walls.
+
+allow cast summon spell
+        Choose whether pets use summoning spells.
+
+allow involve player in area spell
+        Choose whether, when pets attack monsters with breath, beams or
+        ball spells, they may involve the player in the area of effect.
+
+ride a pet
+get off a pet
+        You can ride horse-type and dragon-type monsters. Some classes
+        are good at riding.
+
+name pets
+        Give a pet any name you like. A named pet is asked about first
+        by the "dismiss pets" command, so you are less likely to
+        dismiss it by mistake. There is also an option for recording
+        the information of named pets in the game log.
+
+use one hand to control a riding pet
+use both hands for a weapon.
+        While riding, one hand is normally used to hold the reins. If
+        you carry a weapon and a shield, or fight with two weapons, you
+        cannot control your mount. Therefore, even when you have only
+        one weapon, you normally fight with it one-handed instead of
+        two-handed. When fighting a strong monster, however, you may
+        want to leave your mount to its own will and concentrate on
+        attacking. With this option you can let go of the reins and
+        attack with a single weapon held in both hands.
+
+
+--- Riding ---
+
+In TOband, you can ride on horse-type and dragon-type pets. To control
+your mount you must keep one hand free for holding the reins, but
+your pet will attack your enemies together with you, and enemy attacks
+will be divided between you and your mount, so the damage you take
+will be smaller.
+
+More importantly, while you are riding, your speed does not depend on
+your own original speed but on the speed of the monster you ride.
+It does not matter if you quaff a potion of speed or wear a ring of
+speed or boots of speed. So although you must ride a fast pet, you
+gain the advantage of not having to think about speed at all when
+choosing your equipment. To raise your speed temporarily, rather than
+quaffing a potion of speed yourself, break it by throwing it at a wall
+or dismount and throw it at your pet. There are also wands and spells
+that haste a monster.
+
+The important point here is that your riding skill level is generally
+very low (it is shown by the '_' command). A player with a low skill
+level cannot make full use of the speed of the monster being ridden,
+and is also more likely to fall off.
+
+
+***** <Friendly>
+=== Friendly Monsters ===
+
+You will occasionally find a monster in the dungeon that isn't out to
+get you. Such monsters are described in game messages as being
+"friendly". A friendly monster will not attempt to hurt you but neither
+will it necessarily attack your enemies.
+
+If you do something nasty to a friendly monster it will turn against
+you. Any monsters that a friendly monster summons will also be
+friendly. Unlike pets, however, friendly monsters require no mana
+upkeep and cannot be commanded.
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.0.11
+Updated    : TOband 0.0.3
+
+
+***** Begin Hyperlinks
+***** [b] jcommdesc.txt#Looking
+
+

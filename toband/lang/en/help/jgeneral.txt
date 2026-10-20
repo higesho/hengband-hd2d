@@ -1,0 +1,111 @@
+=== General Information ===
+
+This document gives a brief introduction to TOband. Before beginning any
+serious adventuring, you will probably want to browse through all of the
+help files, especially the sections on available commands (see jcommand.txt
+[b] and jcommdesc.txt [c]).
+
+The game of TOband is a single-player dungeon simulation. A player may
+choose from a number of races and classes (see jbirth.txt [d]) when creating
+a character, and then control that character in the dungeon over a period of
+days, weeks, even months. Deep down inside, the real objective of the game is
+to gain experience and certain other characteristics, and to collect useful
+items, so that you become strong enough to defeat the great Overlord
+'Dorgalua, the King', who lurks in the depths of the dungeon.
+
+
+***** <First>
+=== Your First Steps ===
+
+The player begins his or her adventure in town. There the player acquires
+various items, weapons, armor and magical goods by buying and selling with
+the various shopkeepers. Then the player sets foot in the dungeon, where a
+wonderful adventure awaits!
+
+Races that live and breathe must carry plenty of food when they leave town.
+
+
+--- The Global Map ----  ( Just press '<' to see the whole vast world!!! )
+
+Since this world is very large, it is convenient to enter the global map by
+pressing '<' when you leave town, and then return to the normal map by
+pressing '>' when you reach your destination. In the wilderness, roads and
+grasslands are relatively safe, but lava fields and the open sea are home to
+powerful monsters and are dangerous. You will have to grow stronger before
+you can go to such places.
+
+Many dungeons await brave adventurers, such as the "Palace of the Dead".
+The ultimate goal of this game is "Dorgalua, the King", who dwells at the
+bottom of the "Ancient Ruins". The way to the Ancient Ruins opens only after
+you have conquered the "Hanging Gardens".
+
+For more about the overworld map, see jtown.txt [f].
+
+
+***** <Winning>
+--- Winning The Game ---
+
+On level 99 of the Ancient Ruins lives the Dark Knight 'Lanselot Tartaros'.
+(If your class is Templar, it is 'Denam Morne, the Lord' who waits there
+instead.) You cannot reach 'Dorgalua, the King', who lurks on level 100 of
+the Ancient Ruins, without first defeating the guardian of level 99. Try not
+to wander around on level 100 unless you are ready for him.
+
+'Dorgalua, the King' cannot be killed by the easier methods used on normal
+monsters. Like all other quest monsters, if you use a spell such as
+destruction on his area, he will simply teleport away to another region of
+the level. He cannot be polymorphed, slept, charmed or genocided. Spells
+such as Mana Storm and Summon Ignis Fatuus are effective against him, as are
+some of the more powerful weapons, but he is difficult to kill, and if
+allowed to escape for a time he will heal rapidly.
+
+If you actually survive the battle with 'Dorgalua, the King' and kill him,
+you will receive the status of WINNER ("You have won the game!"). You may
+continue to explore, and may even save the game and play more later.
+
+When you are ready to retire, simply "commit suicide" (SHIFT-Q) to have your
+character entered into the high score list as a winner. Note that until you
+retire, you can still be killed, so you may want to retire before wandering
+into a hoard of Great Wyrms of Power...
+
+
+***** <UponDeath>
+--- Upon Death and Dying ---
+
+If your character falls below 0 hit points, he or she has died and, with a
+few exceptions, cannot be restored. You can write your dying words at the
+end. A tombstone showing information about your character will then be
+displayed. You are also permitted to get a record of your character, and all
+of your equipment, either on the screen or in a file.
+
+The character is erased from the save file, which then keeps only the
+monster memory (see jmonster.txt [e]) and your option settings. If that file
+is restored, the new character is generated exactly as if the file was not
+there, but the new character will find its monster memory containing all the
+experience of past incarnations.
+
+
+
+***** <Web>
+=== TOband on the Web ===
+
+--- http://macband.s15.xrea.com/TOband/ ---
+
+http://macband.s15.xrea.com/TOband/ is the TOband distribution site. It
+has links to the latest source code, binaries and spoilers.
+
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.1.0
+Updated    : TOband 0.0.3
+
+
+***** Begin Hyperlinks
+***** [b] jcommand.txt
+***** [c] jcommdesc.txt
+***** [d] jbirth.txt
+***** [e] jmonster.txt#MonsterMemory
+***** [f] jtown.txt

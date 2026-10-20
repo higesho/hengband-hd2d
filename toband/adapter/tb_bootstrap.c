@@ -346,6 +346,7 @@ int tb_bootstrap(const char *lib_dir)
         char en_data[1024];
         char en_file[1024];
         char en_help[1024];
+        char en_pref[1024];
         size_t blen;
 
         strcpy(base, lib_dir);
@@ -357,6 +358,21 @@ int tb_bootstrap(const char *lib_dir)
         sprintf(en_data, "%s%sdata-en", base, PATH_SEP);
         sprintf(en_file, "%s-en%sfile", base, PATH_SEP);
         sprintf(en_help, "%s-en%shelp", base, PATH_SEP);
+        sprintf(en_pref, "%s-en%spref", base, PATH_SEP);
+
+        /*
+         * pref は**置き場ごと替える**。英語の自動拾いの見本 `pickpref.prf`（`toband/lang/en/pref/` から
+         * `tools/toband/` の道具が作る）は `lib-en/pref` にしか無い（`autopick.c` のフック #17 が英語のとき
+         * `pickpref*.prf` を読み、`prepare_default_pickpref()` が `ANGBAND_DIR_PREF` から写す）。
+         * `lib-en/pref` は `lib/pref` と同じ一式を持つ。無ければ日本語のまま（自動拾いの見本が見つからないだけ）。
+         */
+        if (tb_dir_exists(en_pref)) {
+            string_free(ANGBAND_DIR_PREF);
+            ANGBAND_DIR_PREF = string_make(en_pref);
+            fprintf(stderr, "[toband] english data: pref=%s\n", en_pref);
+        } else {
+            fprintf(stderr, "[toband] english mode, but %s is missing; keeping the japanese pref\n", en_pref);
+        }
 
         if (tb_dir_exists(en_file)) {
             string_free(ANGBAND_DIR_FILE);

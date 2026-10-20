@@ -176,6 +176,7 @@ GENERATED_TREES = {
     "silq/lib-ja": "python tools/silq/build_ja_edit.py && python tools/silq/build_ja_help.py --all",
     "silq/lib-en": "python tools/silq/build_ja_help.py --all",
     "frox/lib-ja": "python tools/frox/fc_build_ja_edit.py",
+    "toband/lib-en": "python tools/toband/build_en_edit.py",
 }
 
 LEGACY_TREES = (
@@ -204,6 +205,8 @@ LEGACY_TREES = (
     # tilework/64・ascii・terrain_* の画像は読まないので入れない。
     # 使用許諾の文書（lib/help/jlicense.txt・lib/file/nethack-license.txt）は lib に入っている。
     "toband/lib",
+    "toband/lib-en",             # 作成した英語 edit（EN E0。生成物）
+    "toband/lang/en",            # 訳文カタログ（tb_lang が実行時に読む）
     "toband/assets/slab",
 )
 

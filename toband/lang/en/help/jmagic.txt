@@ -1,0 +1,238 @@
+=== The TOband Magic System ===
+
+The magic available to players in TOband is quite different from the
+magic systems of ZAngband and Hengband. All spells are cast with the
+'m' command.
+
+You will often be unable to tell what a spell does just by looking at
+its name or casting it a few times. In that case, use the command that
+shows spell descriptions ('b'/'P') and select the spell you want to
+know about. A few lines of description will be displayed.
+
+--- Spellbook magic ---
+
+There are 11 realms of spellbooks: Magery, Fire, Aqua, Earth, Wind,
+Holy, Death, Symbiotic, Witch, Drakonite and Crusade. As you gain
+levels, you become able to read new, more powerful spells written in
+the spellbooks you can use. You must always carry the spellbook which
+contains the spell you want to cast. Except for the Drakonite books,
+all spellbooks can only be obtained in stores.
+
+The realms you can use are determined by your class. Depending on the
+class, however, the realm may be restricted by the player's element.
+Also, for realms with several spellbooks, some classes cannot read the
+higher-level books. In the table below, 'O' means that the class can
+use the realm, and 'E' means that the class can use the realm only if
+it matches your own element.
+
+Mag = Magery,   Fir = Fire,   Aqu = Aqua,     Ear = Earth
+Win = Wind,     Hol = Holy,   Dea = Death,    Sym = Symbiotic
+Wit = Witch,    Dra = Drakonite,              Cru = Crusade
+
+Class           |Mag|Fir|Aqu|Ear|Win|Hol|Dea|Sym|Wit|Dra|Cru
+----------------+---+---+---+---+---+---+---+---+---+---+---
+Warrior         |   |   |   |   |   |   |   |   |   |   |
+Knight          |   |   |   |   |   |   |   |   |   |   |
+Berserker       |   |   |   |   |   |   |   |   |   |   |
+Terror Knight   |   |   |   |   |   |   |   |   |   |   |
+Beast Tamer     |   |   |   |   |   |   |   | O |   |   |
+Swordmaster     |   | E | E | E | E |   |   |   |   |   |
+Dragoon         |   |   |   |   |   |   |   |   |*1 |   |
+Ninja           |   | E | E | E | E |   |   |   |   |   |
+Wizard          | O | O | O | O | O |   |   |   |   |   |
+Warlock         | O |   |   |   |   |   |   |   | O | O |
+Exorcist        |   | E | E | E | E |   |   |   |   |   | O
+Amazoness       |   |   |   |   |   |   |   |   |   |   |
+Valkyrie        |   | E | E | E | E |   |   |   |   |   |
+Archer          |   |   |   |   |   |   |   |   |   |   |
+Dragon Tamer    |   |   |   |   |   |   |   | O |   |   |
+Witch           | O |   |   |   |   |   |*2 |   | O |   |
+Siren           | O | O | O | O | O |   |   |   |   |   |
+Cleric          |   | E | E | E | E | O |   |   |   |   |
+Priest          |   | E | E | E | E | O |   |   |   |   | O
+Lich            | O | O | O | O | O |   | O |   | O |   |
+Divine Knight   |   | E | E | E | E |   |   |   |   |   | O
+Wicce           | O | O | O | O | O | O | O | O | O |   | O
+Fusilier        |   |   |   |   |   |   |   |   |   |   |
+Templar         |   |   |   |   |   |   | O |   |   |   |
+White Knight    |   |   |   |   |   | O |   |   |   |   |
+
+*1: Dragoons can use only the first Witch book.
+*2: Witches can use only the first Death book.
+
+
+***** <MagicRealms>
+=== The Realms of Spellbook Magic ===
+
+***** <Magery>
+--- Magery ---
+     Magery is the basic realm of the mage-type classes, excelling at
+     detection, identification and attack.
+
+***** <Fire>
+--- Fire ---
+     Fire magic. It has a full set of fire-based attack spells. Also,
+     many of its spells are affected by the Fire element.
+
+***** <Aqua>
+--- Aqua ---
+     Water magic. It has a full set of water-based attack spells.
+     Also, many of its spells are affected by the Aqua element.
+
+***** <Earth>
+--- Earth ---
+     Earth magic. It has a full set of earth-based attack spells.
+     Also, many of its spells are affected by the Earth element.
+
+***** <Wind>
+--- Wind ---
+     Wind magic. It has a full set of wind-based attack spells. Also,
+     many of its spells are affected by the Wind element.
+
+***** <Holy>
+--- Holy ---
+     Holy magic excels at recovery. It contains many healing,
+     defensive and detection spells, though it has a few attack spells
+     as well. It is said that some of its high-level spells have the
+     power to reduce undead to dust.
+
+***** <Death>
+--- Death ---
+     There is no more evil category than the black magic of Death.
+     These spells are relatively hard to learn, but at higher levels
+     they give the caster the power to control the living and the
+     undead at will. Unfortunately, the most powerful spells need the
+     caster's own blood as their catalyst and often hurt the caster
+     during the casting.
+
+***** <Symbiotic>
+--- Symbiotic ---
+     Symbiotic is a realm of magic that puts weight on helping each
+     other with your pets. It can heal your pets and summon pets.
+
+***** <Witch>
+--- Witch ---
+     Witch is a realm of support magic. It has hardly any attack
+     spells, but it has many spells that strengthen your own
+     abilities or affect the elements. At higher levels it also has
+     spells that can temporarily change the element of yourself or of
+     an enemy.
+
+***** <Drakonite>
+--- Drakonite ---
+     Drakonite magic is a realm developed by an ancient civilization
+     and now lost. Its attack spells have terrifying destructive
+     power, and its other spells produce unbelievable effects.
+
+***** <Crusade>
+--- Crusade ---
+     Crusade is the magic of "justice". It contains many spells that
+     directly hurt enemies, with fearsome power against evil enemies
+     in particular. It is not very effective against good enemies,
+     however.
+
+
+***** <CastingSpells>
+=== On Casting Spells ===
+
+Players who select spellcasting classes may notice a few unusual
+phenomena during the course of the game. Here are a few hints on what
+may be happening.
+
+--- Armor and Spell Casting ---
+
+All spellcasting classes are penalized for wearing armor above a
+certain total weight. Typically, the more reliant on spells your class
+is, or the more it prefers to fight in light armor, the lower your
+weight allowance. If you exceed your weight limit, your mana will
+drop. This penalty is fairly stiff for low level characters but can
+generally be ignored by high level ones.
+
+--- Spellcasting Classes and Gloves ---
+
+Some of the classes that cast spells from spellbooks are penalized for
+wearing armor on their hands. The exceptions are armor that raises
+dexterity and armor that grants free action or makes magical devices
+easier to use; wearing those results in no penalty. The rationale
+behind this is that the hands must make complicated gestures when
+casting a spell, and anything encumbering the hands would interfere
+with that. The magic of other classes is cast by praying, so those
+classes are not penalized.
+
+--- Casting Spells With Insufficient Mana ---
+
+Occasionally, you may try (either by accident or in desperation) to
+cast a spell when you have insufficient mana to do so. In these
+circumstances you will be told by the game that you do not have enough
+mana to cast the spell. If the over_exert option ("Allow casting
+spells when short of mana") is on, you will then be asked "Attempt it
+anyway?"; if it is off, you simply cannot cast the spell. Casting the
+spell under these conditions has a drastically reduced chance of
+success. Whenever the casting is actually carried out with too little
+mana, you faint from the effort: you are paralyzed for several turns
+(even if you have free action), and there is a 50% chance that your
+constitution is also damaged (in a quarter of those cases the damage is
+permanent). The paralysis and the constitution damage happen
+regardless of whether the casting was successful or not.
+
+--- Spell Durations ---
+
+Some spells, such as speed or resist-all spells, grant an effect which
+wears off after a certain period of time. With very few exceptions,
+multiple castings of such spells are not cumulative in terms of the
+duration of the spell. In other words, casting a spell which has a
+duration of 20 turns three times will not result in a duration of 60
+turns. Typically, the duration of the last casting is the one that
+takes effect.
+
+
+***** <SpellTypes>
+=== Spell Types ===
+
+--- Bolts and Beams ---
+
+A bolt spell is aimed in a direction or at a target, and will hit the
+first monster or obstruction in that direction. This happens whether
+you intend it or not. Occasionally, you may notice that your bolt spell
+hits multiple monsters along the line of fire. This is because some
+bolt spells are granted a chance of "beaming", which may be either
+fixed or level-dependent. A beam will hit every enemy within range
+along a straight line in the direction in which it was aimed.
+
+--- Balls ---
+
+There are two things to remember about ball spells. Firstly, unlike
+bolt spells, they can be aimed at a specific target. You can target a
+specific monster rather than the first monster in the direction you
+are aiming; that is, you can fire at an enemy in the middle of a pack
+of monsters. Secondly, they have a radius (which varies from spell to
+spell). They affect not only the target but also the enemies (and
+objects, etc.) within that radius around the target. In general,
+however, the strength of the effect weakens the farther it is from the
+center. Ghostly monsters are sometimes inside walls; a ball spell
+aimed at such a monster will blow up in front of the wall and do only
+half the damage of a direct hit. Note that some balls do not weaken
+with distance.
+
+--- Line-of-Sight ---
+
+Line-of-sight spells affect all monsters that are currently in sight of
+your character. This includes monsters that may not currently be
+visible because of darkness but would be if it were lit.
+
+--- Area ---
+
+Area spells affect an area around the player. The size of the area can
+vary considerably from spell to spell. For example, Light Area lights
+up a whole room, Detect Traps and Mass Genocide affect the inside of a
+circle of a specific radius, and normal Genocide affects the entire
+level.
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.3.0
+Updated    : TOband 0.0.3
+
+

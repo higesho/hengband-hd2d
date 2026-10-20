@@ -1,0 +1,538 @@
+=== Weapon Guide ===
+
+  Here I explain Western weapons that are not very familiar to Japanese
+  readers. Angband includes weapons that are hard to picture even for people
+  who are used to RPGs, let alone for those who are not. In addition, some
+  weapons seem to be misunderstood because of mistaken RPG reference materials
+  and the influence of fantasy novels, so I decided to include an explanation
+  of every real weapon that appears in Angband.
+
+  The explanations below use the following format. First, the name of the
+  weapon. (In the Japanese edition of Angband, the translated weapon names are
+  written in katakana.) Next come specifications such as overall length and
+  weight. These were not measured by the author; they are quoted from
+  reference works. Then follow the weapon's distinguishing features, how it
+  was used, its history, and so on.
+
+  Please note that this explanation emphasizes each item's role as a weapon in
+  the real world, rather than its use in the dungeon as in Angband. It is
+  therefore not an explanation of how to use the weapons in Angband.
+
+  I am also embarrassed to say that I lacked source material on some weapons,
+  so a very few entries may be unreliable. If you find a mistake, I would
+  appreciate it if you would let me know. If anything is hard to read or hard
+  to understand, I will improve it, so please let me know about that too.
+
+  Finally, I list my references. They are all available at large bookstores,
+  so if Western weapons interest you, please have a look.
+
+
+    Truth In Fantasy XX    Weapons and Armor, Western Edition
+                           by Sadaharu Ichikawa, Shinkigensha
+    Truth In Fantasy VIII  Blades of Valor
+                           by Sadaharu Ichikawa, Shinkigensha
+    Buki-ya (The Weapon Shop)
+                           edited by the Truth In Fantasy editorial staff,
+                           Shinkigensha
+    Maitreya RPG Basic Rules
+                           Shinkigensha
+    GURPS Basic            by Steve Jackson, Kadokawa Shoten
+
+
+  Now, may all of your adventures be fruitful.
+
+                                                             Isamu Kido
+
+  Note for the English edition: not every weapon described below appears in
+  TOband. Entries for weapons that do not appear in TOband are marked "(not in
+  TOband)".
+
+Daggers
+
+ Dagger
+  A dagger in the broad sense, that is, a short blade. Overall length 20-60
+  cm, blade width 1-3 cm, weight 0.25-0.5 kg. Many kinds of daggers were used
+  from the 12th to the 19th century. The characteristics differed greatly by
+  kind, and there were daggers for cutting as well as daggers for stabbing. In
+  general, a dagger was less a weapon than a tool of everyday life, and it was
+  used as a weapon only for self-defense or in duels. The most common dagger
+  is a stabbing dagger 30 cm long. A dagger can also be thrown, but it is
+  large and poorly balanced for the purpose, so its range is very short and
+  considerable skill is needed to hit with it.
+
+ Main Gauche (also: parrying dagger)
+  Overall length 30-50 cm, blade width 1-3 cm, weight 0.3-0.5 kg. A defensive
+  dagger used in private duels from the end of the 15th century to the 19th
+  century. It was normally used in the swordsmanship called fencing, held in
+  the left hand; the name main gauche means "left hand" and comes from this.
+  In the right hand a rapier or a small sword was used. Its distinguishing
+  features are a stiff blade and either a long, straight crossguard or a guard
+  that curves sharply from the hilt toward the blade. The guard and the blade
+  were used to deflect the opponent's attacks and to entangle the opponent's
+  sword. Of course, the opponent's sword was a rapier or a small sword, so it
+  was practically impossible to catch any heavier weapon with it. Outside
+  France this dagger was called a parrying dagger, and it came in many forms:
+  ones with three blades, ones with a comb-shaped blade (especially called a
+  sword breaker), ones with a cup-shaped guard, and so on.
+
+
+Swords
+
+ Short Sword
+  A "short blade". Overall length 70-80 cm, blade width 2-5 cm, weight 0.8-1.8
+  kg. A sword used by heavy infantry from the 14th to the 16th century. Its
+  features are a broad blade, a sharply pointed tip, and, as the name says,
+  shortness (under 80 cm). This is because the short sword was used in close
+  combat between heavily armored infantry, and three points were valued: it
+  was sturdy; it could thrust, which inflicts a large wound on an armored
+  opponent better than hacking does; and it was short enough not to cut one's
+  own comrades when swung in a dense crowd. It was used in one hand.
+
+ Long Sword
+  A "long blade". Overall length 80-95 cm, blade width 3-5 cm in early
+  examples and 2-3 cm in later ones, weight 1.5-2 kg. A sword used on
+  horseback by knights and cavalry from the 11th to the 16th century. Its
+  features are a straight blade, a sharp tip, and two edges. It was used in
+  one hand. Early examples could not technically be made with a thin blade, so
+  they were used for hacking; later examples could be made thin enough and
+  given a sharp tip, so they could both cut and thrust.
+
+ Broad Sword (also: heavy military sword, schiavona, reiterpallasch)
+  A "wide blade". Overall length 70-80 cm, blade width 3-4 cm, weight 1.4-1.6
+  kg. A heavy military sword used by cavalry and infantry in the 17th and 18th
+  centuries. Its features are a straight blade and two edges, and it was
+  intended for hacking. Another feature is a hilt with various designs to
+  protect the fist. It does not have a particularly wide blade compared with
+  the swords of the Middle Ages, but compared with the rapier, the mainstream
+  sword of its day, its blade can be called quite wide, and so it was named
+  the broad sword. It was used in one hand. Cavalry did not use it in cavalry
+  charges, as they did the sabre; it was used in confused melees of cavalry
+  and infantry.
+
+ Bastard Sword (also: hand-and-a-half sword)
+  Overall length 115-140 cm, blade width 2-3 cm, weight 2.5-3 kg. A large
+  sword used by knights from the 13th to the 17th century, intended for both
+  hacking and thrusting. Because it could be used in one hand or in two, it
+  was called a bastard sword, "a sword resembling both a one-handed and a
+  two-handed sword". Knights fought with this sword and a shield and, when it
+  came to it, threw the shield away and struck a decisive blow with the
+  bastard sword in both hands. It differs from a two-handed sword in that its
+  blade is not so long, so it keeps more mobility, and it differs from a
+  one-handed sword in that its hilt is very long (30-40 cm) because it is held
+  with both hands. Knights wore this sword at the waist.
+
+ Two-Handed Sword (also: zweihander)
+  A "two-handed sword". Overall length 180-200 cm, blade width 4-8 cm, weight
+  2.9-6.5 kg. A large sword used by infantry from the 13th to the 16th
+  century. It was intended to hack using the weight of the blade, but it has a
+  point and can also thrust. Its features are its length and weight, a
+  straight blade, and a very long hilt (30-50 cm) because it is held with both
+  hands. It was so long and heavy that considerable skill was needed to handle
+  it. The soldiers who used this sword could not wear it at the waist because
+  of its length, and either carried it on their backs or simply carried it in
+  their hands.
+
+ Executioner's Sword (not in TOband)
+  A "sword of the executioner". Overall length 100 cm and up, blade width 6-7
+  cm, weight 2.2-2.5 kg. A two-handed sword for executions, used by
+  executioners in the 17th and 18th centuries. Its features follow from its
+  purpose. The sword is meant to sever a head with a single stroke. For this
+  reason the blade is very wide, there is no point, and the end is rounded.
+  Also, its hilt is much shorter than that of a two-handed sword, so that it
+  is easy to bring down with force. It has two edges, and the blade is often
+  decorated with various engravings.
+
+ Sabre (also: saber, schweizersabel) (not in TOband)
+  A "cavalry sword". Overall length 70-120 cm, blade width 2-4 cm, weight
+  1.7-2.4 kg. A sword used as the main sword of cavalry units from the 16th to
+  the 20th century. Its features differ considerably with period and region,
+  so they cannot be stated in general. Roughly speaking, it is a one-handed,
+  single-edged sword with a flexible, curved blade. There are, however, three
+  kinds of blade shape: straight, semi-curved, and curved. There are also
+  three kinds of tip: spear-shaped, false-edge-shaped (see Cutlass), and
+  hatchet-shaped. Among these, the straight blade with a spear-shaped tip was
+  made for thrusting, the curved blade with a hatchet-shaped tip for cutting,
+  and the semi-curved blade with a false-edge tip for both. The most common
+  sabres were those with a semi-curved blade and a false-edge or
+  hatchet-shaped tip. The guard and hilt also have regional characteristics
+  and developed in various ways. Sabres were given various names by region and
+  are sometimes treated as separate weapons. Cavalry who used the sabre used
+  it in cavalry charges.
+
+ Rapier (also: epee rapiere, dress sword, espada ropera)
+  Overall length 80-100 cm, blade width 1-3 cm, weight 0.7-0.9 kg. A
+  one-handed sword used from the 16th to the 18th century. Its features are a
+  straight blade, a sharp point, two edges, and a very thin blade. It can cut,
+  but it is normally used by thrusting. It was used in fencing, in an age when
+  soldiers were not heavily equipped but very lightly clad and carried no
+  shields. In the early period a shield was sometimes held in the other hand,
+  but in the 16th century the usual stance was a rapier in the right hand and
+  a main gauche in the left. It spread widely as the instrument of knights'
+  duels and, after those died out, of the private duels of nobles and
+  gentlemen.
+
+ Cutlass (not in TOband)
+  Overall length 50-60 cm, blade width 3-5 cm, weight 1.2-1.4 kg. A sword used
+  by sailors in the 18th and 19th centuries. Its feature is a tip called a
+  false edge. A false edge means a blade that is basically single-edged but is
+  double-edged from the tip back to about a third of the blade. The blade is
+  also very wide and slightly curved. Some had a large guard to protect the
+  fist, and some had a saw-toothed back (the side without an edge). It was
+  intended for hacking, but the false edge also made it possible to inflict
+  large wounds by thrusting. It was used in one hand.
+
+ Small Sword (also: light sword, town sword, walking sword) (not in TOband)
+  A "little sword". Overall length 50-70 cm, blade length 40-60 cm, blade
+  width 1-1.5 cm, weight 0.51-0.7 kg. A sword that ordinary citizens,
+  gentlemen, and nobles carried daily from the 16th to the 18th century. Its
+  features are a sharply pointed tip and a thin, straight blade. It was more
+  an everyday article than a weapon, and many were made for ceremonies or
+  decoration. In private duels and the like it was used in one hand, to
+  thrust. It can be called a small rapier; like the rapier it had hilts and
+  guards of many shapes, and like the rapier it was used in fencing. As with
+  the rapier, a main gauche was sometimes held in the left hand. Those used by
+  nobles in particular were very expensive, with showily decorated hilts set
+  with jewels.
+
+ Scimitar (also: shamshir, simiterra, cimeterre) (not in TOband)
+  A "crescent sword". Overall length 80-100 cm, blade length 75-90 cm, blade
+  width 2-3 cm, weight 1.5-2 kg. The typical sword of Persia. Its features are
+  a gently curved blade, a hilt that curves in the direction opposite to the
+  blade, and a single edge. It is handled in one hand and made to hack by
+  being swung down. The pommel of the hilt, called the "lion's head", is also
+  a characteristic of this sword. It is the sword from which the sabre
+  originated, and in Persian it was called shamshir, "lion's tail". Some
+  scimitars had a flamboyant-style blade (a blade with a wavy shape).
+
+ Tulwar (also: tegha) (not in TOband)
+  Overall length 70-100 cm, blade width about 2 cm, weight 1.4-1.8 kg. A kind
+  of sabre born in 16th-century India, used by the cavalry of the Mughal
+  Empire of India, Turkey, Persia, Mongolia, and elsewhere in the 16th and
+  17th centuries. Its features are a single-edged, curved blade, a
+  cross-shaped guard, and a knuckle guard. The curve of the blade is extreme
+  in early examples, but in later ones it comes close to straight.
+
+
+  * Notes on how swords are used
+  Western swords were made and used under a concept entirely different from
+  that of Eastern swords. That is, they were not used to cut but to hack. The
+  edge of a Western sword certainly has some cutting ability, but compared
+  with a Japanese sword, for example, its sharpness is considerably poorer.
+  Western warriors did not simply swing the sword down, as Eastern swordsmen
+  do, but tried to hack with the force of their whole body weight. The edge
+  exists only to narrow the area over which the force is applied at that
+  moment, and so to make the blow it delivers greater.
+
+  Moreover, there is a great difference between Western and Eastern
+  swordsmanship: armor and shields. In the West, defense depended almost
+  entirely on heavy armor and large shields. The weapon was for attacking the
+  opponent; blocking or deflecting the opponent's attacks with the weapon
+  began only in the 17th century, after armor and shields had gone out of use.
+  That is the swordsmanship called fencing. Before that, it was very rare to
+  receive an opponent's attack with a sword.
+
+
+Axes and Hammers
+
+ Beaked Axe (not in TOband)
+  A "bearded axe". Overall length about 20 cm. A small single-edged axe, a
+  weapon for sea battles used by the Vikings from the 8th to the 11th century.
+  It was intended for hacking and was used in one hand. Its feature is the
+  shape of the axe head, which projects squarely on its lower side. This
+  projection was for hooking onto the side of a ship. The axe also had a long
+  haft, and the haft and the projection were useful when boarding from one
+  ship to another.
+
+ Battle Axe
+  A "war axe". Overall length 80-120 cm, weight 1-1.6 kg. A weapon intended
+  for hacking, widely used from the Neolithic age until the early 19th century
+  in Eastern Europe. Apart from the single-edged, hatchet-like blade on a long
+  haft, its features, like those of the mace, cannot be stated in general. It
+  was an infantry weapon used in both hands.
+
+ Broad Axe
+  A "wide axe". Overall length 1.5-2 m, axe head length 30-45 cm. A two-handed
+  single-edged axe used by the Vikings from the 8th to the 11th century. Its
+  feature, as the name says, is an extremely heavy and wide axe head, and it
+  was intended for hacking. It had the power to cleave in one blow the chain
+  mail that was the main armor of that time.
+
+ Great Axe
+  A "large axe". Weight about 4 kg. A double-edged axe used in both hands. As
+  the name says, its features are an extremely large and heavy axe head and a
+  long haft.
+
+ Mace (only the Lead-Filled Mace appears in TOband)
+  A "club with a metal head". Overall length 30-100 cm, weight 2-3 kg. A
+  striking weapon used from the 30th century BC to the 17th century. There are
+  very many kinds of mace and their features cannot be stated in general, but
+  it is basically a club with a complicated head on the end of a haft. Typical
+  ones include those with a thick, spiked end, those made of identically
+  shaped iron plates joined radially, those with a spiked ball attached (see
+  Morning Star), and those with an onion-shaped head. From the Middle Ages on
+  it was widely used as a weapon to deliver shock to heavily equipped knights.
+  Armor that a sword could not cut could not stop the shock of a mace. It was
+  used by knights, but later long-hafted maces for infantry were also made.
+
+ Morning Star (also: morgenstern) (not in TOband)
+  A "spiked ball hammer". Overall length 50-80 cm, weight 2-2.5 kg. The weapon
+  most favored by knights and soldiers from the 13th to the 17th century. A
+  kind of mace, it is characterized by a star-ball-shaped head. That is, many
+  spikes project radially from a spherical, cylindrical, or elliptical head.
+  It was widely used because it was effective against knights and soldiers in
+  heavy armor.
+
+ War Hammer (not in TOband)
+  A "battle hammer". Overall length 50-200 cm, weight 1.5-3.5 kg. A striking
+  weapon used by Scythian cavalry in the 6th century and by infantry from the
+  14th to the 16th century. Its feature is the shape of the head: one side has
+  a pointed hammerhead and the other a flat, unpointed hammerhead. Many have a
+  spear-shaped tip or a sharply pointed butt. Those for infantry had a long
+  haft of about 2 m, those for knights' tournaments were about 80 cm, and
+  those that knights used on horseback were about 50 cm. Like other striking
+  weapons, it was used to break the opponent's armor and to deliver shock
+  through the armor. When people think of a hammer, they tend to imagine one
+  with a large head for driving stakes, or a larger version of a claw hammer,
+  but the war hammer has a head close to a pickaxe, in order to make the point
+  of impact small.
+
+ Flail
+  Overall length 30-50 cm, haft length 15-30 cm, weight 1-2 kg. A striking
+  weapon used against cavalry by horsemen of the 11th and 12th centuries. Its
+  feature is that a short bar (the part that threshes the grain) and a long
+  bar (the haft) are joined by a chain. You hold the haft and swing it around,
+  giving speed to the head and increasing the force of the blow. The head was
+  often made of metal, or, if wooden, fitted with radiating spikes or
+  reinforced with metal, with various devices to increase its power.
+
+ Ball-and-Chain (not in TOband)
+  Overall length 50-80 cm, weight 1-1.5 kg. A kind of flail in which the head
+  is a metal star ball, fixed to the haft by a longer chain than that of the
+  flail. It is sometimes confused with the morning star and called by that
+  name. How it is used is almost the same as the flail.
+
+ Two-Handed Flail (not in TOband)
+  Overall length 160-200 cm, haft length 120-150 cm, weight 2.5-3.5 kg. A
+  striking weapon used against cavalry by infantry from the 13th to the early
+  20th century. The difference from the flail is the length of the haft. It is
+  very long because it is used in both hands, and it produces greater force.
+  Because even weak infantry could deal a sufficient blow to heavily equipped
+  knights with it, it was widely used in the 14th century.
+
+ Quarterstaff
+  A "six-shaku pole". Overall length 180 cm, weight about 1.4 kg. A striking
+  weapon used by English farmers. It is only a wooden pole, but its one
+  distinguishing feature is that both ends are reinforced with metal. It is
+  normally used not by one end only but by both ends. A skilled quarterstaff
+  fighter could attack freely by making good use of both ends. However, the
+  weakness of this weapon is that it is made of wood: it has no effect at all
+  against an opponent in armor, and it is easily broken by iron weapons.
+
+ Whip
+  A "lash". Overall length 80-100 cm, weight 0.5-1 kg. A cord-like weapon made
+  of leather. By holding the slightly stiffened handle and swinging it, you
+  give striking force to the tip. It is a weapon for striking, but a skilled
+  user can also entangle an opponent with it. It was not a common weapon; it
+  was originally a farm tool used in herding and the like. In modern times it
+  was used on slaves.
+
+
+Polearms
+
+ Spear
+  The oldest kind of spear. Overall length 0.8-3 m, weight 1.2-3.5 kg. By
+  length, spears are classified as short spears and long spears, and their
+  uses differ. Its feature is a stone or metal spearhead on a wooden haft, and
+  it is a weapon for thrusting. A short spear is a spear under 2 m, used for
+  hunting and fighting since the Stone Age. It is one-handed, and besides
+  thrusting it could also be thrown over short distances. In ancient Hittite
+  times, a group tactic using soldiers with shields and short spears was born.
+  A long spear, on the other hand, is a spear over 2 m, a weapon born after
+  the short spear tactics were established. As spears grew longer in order to
+  land the first blow in close combat, it was born in ancient Sumer. It was
+  used in both hands, held at the hip. In the Middle Ages the use of the spear
+  declined because more effective weapons appeared, but it became the basis of
+  the polearms and strongly influenced them.
+
+ Trident (also: fuscina, fucinula) (not in TOband)
+  A "three-pronged spear". Overall length 1.5-1.8 m, weight 2-2.5 kg. A weapon
+  said to have branched off from a fishing tool at the same time as the spear,
+  used by Roman gladiators, galley sailors, peasant soldiers after Roman
+  times, and others. Its feature is three spear-shaped points side by side on
+  the end of the haft. The usual way to use it was to hold the trident in the
+  right hand and a net in the left, catch the opponent with the net so he
+  could not move, and then kill him with the trident.
+
+ Lance (also: coronel)
+  Overall length 2.5-4.2 m, weight 3.5-10 kg. A charging spear used by cavalry
+  from the 16th to the end of the 19th century. It was also used in the joust
+  of tournaments from the 13th to the 17th century. Lances are broadly of
+  three types: for real combat, for jousting, and the type used in Eastern
+  Europe. Their features differ with each type, but in general they are a
+  sharp triangular cone in shape, with a widely flared hand guard, a thin
+  grip, and behind it a thickened part for balance. All types were used held
+  fixed under one arm. The point was spear-shaped for real combat, and a crown
+  shape with three claws for jousting. Since the only purpose of a jousting
+  lance is to knock the opponent off his horse, it has such a point in order
+  to deliver a stronger shock while not wounding the opponent. Some also had
+  grooves in the shaft so that they would break easily. The lances of Eastern
+  Europe, on the other hand, are more practical: like a pike, they have a very
+  long shaft with a sharp spearhead. Incidentally, the lance used by knights
+  from the 7th to the 13th century was no different from a long spear, and the
+  long spear used when charging on horseback was called a lance.
+
+ Pike (also: pique) (not in TOband)
+  Overall length 5-7 m, spearhead about 25 cm, weight 3.5-5 kg. A long spear
+  used against cavalry by infantry from the 15th to the end of the 17th
+  century. It is a weapon for thrusting, but it had an enormous effect as a
+  threat to knights. You set it with both feet and both hands so that the
+  point is at the height of a knight, and aim it at the charging cavalry.
+  Because it has a longer reach than the cavalryman's lance, the cavalry
+  hesitated to charge, and if they did charge, the pikeman could use their
+  momentum to deal a heavy blow. In the later period it was used by infantry
+  units that protected the musket-armed units while they loaded their bullets.
+
+ Awl-Pike (not in TOband)
+  An "awl spear". Overall length 2.5-3 m, spearhead 80-100 cm, weight 2.5-3
+  kg. A long spear used against cavalry by infantry from the 13th to the 16th
+  century. Its features are an extremely long spearhead, thin and sharp like
+  an awl, and a round guard at the base of the spearhead. The spearhead is
+  long and sharp because the knights of the 13th century covered their whole
+  bodies in a coat of chain mail called a hauberk, and the weapon was made to
+  stab a knight through the gaps in the chain. The round guard is to keep the
+  spearhead from going in more deeply than necessary, and to receive the
+  opponent's attacks. However, it is not a very practical weapon, and it is
+  meaningless against enemies who are not wearing a hauberk.
+
+ Lucerne Hammer (not in TOband)
+  Overall length 3 m, head 40-50 cm, weight 3.5 kg. A kind of war hammer used
+  by infantry from the 15th to the middle of the 16th century. Its features
+  are a sharp hook on one side of the head, four projections on the opposite
+  side, and a spearhead as sharp as a spear. With this head the lucerne hammer
+  has four functions: thrusting, hooking, piercing the opponent's helmet with
+  the hook, and snagging the opponent's clothing with the projections. For
+  this reason the lucerne hammer can be said to be closer to the halberd than
+  to a kind of war hammer. It can also be called a weapon that developed from
+  the war hammer and came to resemble the halberd closely. The name Lucerne
+  comes from the fact that the weapon was born in the canton of Lucerne
+  (Luzern) in central Switzerland.
+
+ Halberd
+  The so-called "axe-spear" or "polearm". Overall length 2-3.5 m, head 30-50
+  cm, weight 2.5-3.5 kg. Used by infantry from the 13th to the end of the 16th
+  century. Its features lie in the complicated shape of its head. On one side
+  there is an axe-like blade, on the opposite side a hook for piercing, and at
+  the end of the head a spear-like point for thrusting. With this head it has
+  four functions: hacking, thrusting, hooking, and piercing with the hook. It
+  is more powerful than the spear. Because of its versatility, it became the
+  main weapon of infantry: the spear part pierces cavalry, the hook breaks the
+  opponent's helmet, and the axe part attacks, drags a cavalryman off his
+  horse, or sweeps the legs of infantry. From the end of the 16th century to
+  the 19th century, decorated ones for ceremonies were used by guardsmen at
+  parades. Most illustrations are based on halberds of this period.
+
+ Glaive (also: fauchard, cause, kuse)
+  Overall length 2-3.5 m, blade length 60-70 cm, weight 2-3.5 kg. From the
+  13th to the end of the 17th century it was used mainly as a weapon for
+  guardsmen and for ceremonies. Its feature is a blade occupying the whole of
+  the spearhead, with a shape like the falchion. That is, it is single-edged,
+  the blade bulges into a crescent-shaped arc, and the back is straight. The
+  tip is also pointed and can thrust, but swinging it to hack is more
+  effective and is the usual way to use this weapon. It was not used much in
+  real combat, and from the 16th century it became a completely ceremonial
+  weapon. The spearheads of ceremonial glaives were carved with various
+  patterns and emblems. A glaive with a hook on the side opposite the blade
+  was rather for real combat, and was called a fauchard.
+
+ Lochaber Axe (not in TOband)
+  Overall length 2-2.5 m, axe blade length 40-50 cm, weight 2.2-2.5 kg. A war
+  axe used by soldiers of Scottish peasant origin from the 16th to the 18th
+  century. Its features are a very thin single-edged axe blade and a hook at
+  the end. The hook was used to drag a mounted opponent down. The axe blade is
+  for cutting and has no point for thrusting. The name Lochaber is the name of
+  a region of Scotland, and it was given because the weapon was born there.
+  The Jedburgh axe, a very similar weapon, likewise bears the name of a
+  Scottish town. The Lochaber axe is a weapon of the United Kingdom, and there
+  is no record at all of its use outside the United Kingdom.
+
+ Scythe
+  The so-called "great sickle". Overall length 2-2.5 m, blade length 70-90 cm,
+  weight 2.2-2.5 kg. A weapon derived from the farm tool of the same name,
+  used by peasant soldiers from the late 16th century to the 17th century. Its
+  feature is a curved single-edged blade. Because tenant farmers who knew
+  nothing about fighting used it in rebellions, the usual way to use it was to
+  hold it at the hip and simply swing it around. In close combat, hacking with
+  the blade and knocking the opponent down with the whole weapon were also
+  widely used. Incidentally, the scythe that the Grim Reaper is said to carry
+  has an angle of 90 degrees between the shaft and the blade, but the scythe
+  actually used had a curved blade in the line of the shaft.
+
+
+Missile Weapons
+
+ Short Bow
+  A "short bow". Overall length under 1 m, weight 0.5-0.8 kg. Effective range
+  90 m, maximum range 225 m. A missile weapon that came into use for hunting
+  at the end of the Paleolithic age. It was used by the armies of ancient
+  Egypt, ancient Sumer, and others. Its feature is the shortness of the bow
+  itself. Because its length was convenient to handle, it was also used on
+  horseback. It was a weapon that required great skill to hit a target with,
+  and a great deal of practice was needed.
+
+ Long Bow
+  A "long bow". Overall length 150-200 cm, weight 0.6-1 kg. Effective range
+  150 m, maximum range 255 m. A missile weapon used by English archers from
+  the 12th to the 15th century. The difference from the short bow is its
+  length, and it had a very great power of penetration, enough to pierce plate
+  mail. Its range was longer than that of the short bow, and the range could
+  be lengthened further by shooting in an arc. However, to hit a target with
+  this way of shooting, a far longer period of practice than usual was needed.
+
+ Heavy Crossbow (called "Crossbow" in TOband)
+  Overall length (stock) 60-100 cm, width 50-70 cm, weight 3-10 kg. Effective
+  range 40-80 m, maximum range 100-425 m. A missile weapon used from the 10th
+  to the 15th century; it is what is called a bowgun. Compared with the short
+  bow and long bow, which require training, it spread widely in Europe because
+  of its high performance: just by pulling the trigger it could shoot a more
+  powerful bolt (quarrel) farther. It was so powerful that its use against
+  fellow Christians was once banned, and its greatest drawback was that it
+  took a long time to draw the steel string. Various methods were tried to
+  solve this, but a revolutionary one was never found. This proved fatal, and
+  it ended its life as a weapon in the middle of the 15th century. In the
+  West, the crossbow was first used in ancient Greece in the 4th century BC.
+
+ Light Crossbow (called "Bowgun" in TOband)
+  This is the crossbow used for hunting and sport from the 16th century on. It
+  became smaller, lighter, and easier to handle. Versions that fire stones or
+  bullets instead of quarrels were also developed. It is still called a bowgun
+  today and is used for sport and hunting.
+
+ Sling (not in TOband)
+  A "stone-throwing cord". Overall length 1 m, weight under 0.3 kg. Effective
+  range 100 m, maximum range 120-180 m. A throwing weapon used for hunting
+  since the Paleolithic age. It was also used by armies from ancient Israel,
+  ancient Egypt, and ancient Greece to the Roman Empire. Its shape resembles
+  an eyepatch: there is a piece of leather or cloth in the middle of a cord to
+  wrap the shot, and another cord beyond that. To use it, you wind one cord
+  around your hand, put a stone in the stone pouch, grip the other cord in the
+  same hand, and swing the sling around over your head. When the stone has
+  gained enough speed, you let go. The momentum of the swing then sends the
+  stone flying. Merely throwing a stone is easy, but hitting a target takes
+  great skill. It was a primitive weapon, but because of the relation between
+  cost and power, armies used it until the time of the Crusades. In
+  undeveloped regions it was used until the 19th century and frightened
+  explorers.
+
+
+Fist Weapons
+
+ Cesti
+  The so-called knuckle duster. A weapon worn on the fist, made of metal,
+  intended to raise the striking power of a punch. There are various forms and
+  they cannot be described in general, but the most common is the one now used
+  as knuckles. There are also glove types and knuckle types with projections
+  on the surface. They were used in ancient Greek boxing and by ancient Roman
+  pugilists. There is no example of their use as regular military equipment.
+
+
+--- Written by Isamu Kido ---

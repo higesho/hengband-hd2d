@@ -1,0 +1,2328 @@
+--------------------------------
+     TOband2 Version History
+--------------------------------
+
+2004/09/?? TOband2-0.0.1pre
+  Skills now rise automatically when you gain a class level.
+  Various item changes.
+  Various bug fixes.
+
+2003/01/?? TOband0.0.3fix99
+  Levels are now split into a race level and a class level.
+  Skill points are no longer lost completely on a class change; they are now
+    accumulated as an independent value for each class. They cannot be carried
+    over to another class, however. On reincarnation, the points of all classes
+    are reset to 0.
+  The character dump now lists the classes you have experienced.
+
+Changes before TOband2
+-------------------------------
+
+
+2003/02/03 TOband0.0.3fix11
+  Weakened the racial powers "Throw Pebble" and "Throw Grave".
+  The Pumpkinhead racial power "Pumpkin Wars" is no longer subject to skills.
+  Adjusted the pet-keeping skill.
+  Fixed the description of the Wind magic spell "Deadshot", which gave the
+    wrong element.
+  Fixed a bug where open/broken doors were not destroyed by the Magery magic
+    spell "Trap & Door Destruction".
+  Various other fixes.
+2003/02/01 TOband0.0.3fix10
+  Improved the handling of unfavored weapons for Ninjas and Swordmasters.
+  Made it easier for Ninjas to raise their Rapier and Small Sword skills.
+2003/02/01 TOband0.0.3fix9
+  Weapon skill levels for direct attack can now be raised at the Fighters Hall.
+  Bow skill levels can now be raised at the Archers Guild.
+  Unified the base purchase limit of the General Store to $1000, and that of
+    the other stores to $30000.
+  The purchase limits of the stores in the Royal City of Heim are affected by
+    the Chaos Frame.
+  Mermaids no longer take 4/3 damage from the *Wind* element.
+  The Earth magic spell "Earth spike" now cancels levitation including that of
+    levitating pets.
+  Classes that cannot cast spells now gain twice as much SP from experience.
+  Strengthened fixed artifact weapons across the board.
+  Wearing the Dark Magic Device set grants immunity to darkness and nether.
+  Added the skill/special move categories as auto-pickup keywords.
+  The auto-pickup keyword "missile weapons" now stands for all weapons that go
+    in the shooting slot.
+  A confirmation is now asked when you accept a quest.
+  Fixed a bug where, when a hostile monster was inside a wall, the check for
+    the range that does not catch the player was wrong, so that the player was
+    caught in a pet's ball spell.
+  Fixed a bug where Mermaids and Divine Knights did not stop singing when they
+    cast a spell.
+  Fixed a bug where, with easy_floor enabled and a full inventory, automatic
+    identification of the item underfoot did not work. In that case,
+    inscriptions and the like use the rules for unidentified items.
+  Fixed the learning of the player's resistances by each monster.
+  Fixed a bug in the monster spell "Summon Spirit".
+  Various other fixes.
+2003/01/25 TOband0.0.3fix8
+  Fixed a bug where no experience was gained for delivering the killing blow to
+    a monster.
+  A few other fixes.
+2003/01/24 TOband0.0.3fix7
+  Added "Puddle" as a racial power that Mermaids can use at level 1.
+  Raised the level of the Mermaid's "Flooding" to 26.
+  Mermaids get a bonus to the safe distance of the Water magic spell "Diving".
+  Changed the Magery magic spell "Mana Bolt" from a beam to a bolt.
+  Renamed the Holy magic spell "Sword of Light" to "Godly spear".
+  Changed the Witch magic spell "Sword of Light" to "*element* beam". It fires
+    an *element* beam of your current element.
+  Removed the monster spell "Sword of Light" and split it into "Godly spear"
+    and "*element* beam".
+  Fixed Mermaids with immunity to electricity so that they do not take 4/3
+    damage from *Wind*.
+  Terrain elements now follow terrain changes by differences.
+  Fixes related to warnings about breaths and balls.
+  Various other fixes.
+2003/01/23 TOband0.0.3fix6
+  Added the new race "Mermaid".
+  Strengthened the identification skills for weapons/armor and accessories.
+    Items are now identified the moment they come underfoot, and eventually you
+    can even *identify* them.
+  Redivided the weapon groups.
+  In the Arena, resurrection other than by the Holy magic spell "Resurrection"
+    and reincarnation into a reincarnation class are now forbidden.
+  Fixed a bug where weapons of unidentified different dice were reflected in
+    the display.
+  Fixed a bug where equipping an unidentified Bow of Extra Might revealed the
+    difference in multiplier.
+  Fixed a bug where items with a different unidentified base AC were reflected
+    in the display.
+  Fixed a bug where, inside an extermination-type quest, killing enemies with
+    the effect of a Tarot card triggered by a level-up completed the quest as
+    long as one unique remained.
+  Fixed it so that the dummy doll does not look exactly like the player. It is
+    seen in the same color scheme as the floor.
+  Fixed it so that two dungeon lords who have become pets are not generated.
+  Fixed a bug where a unique using a teleport stone inside an
+    extermination-type quest could make the quest impossible to complete.
+  Fixed a bug where removing the last remaining monster with an
+    annihilation-type effect of a Tarot card made the quest impossible to
+    complete.
+  Fixed a bug where items with different dice still unidentified hit the
+    auto-pickup.
+  Corrected part of the help.
+  Various other fixes.
+2003/01/18 TOband0.0.3fix5.1
+  Fixed a bug where height and weight were displayed wrongly.
+  Fixed a bug where weapons that cannot exist were listed in the skill data.
+2003/01/17 TOband0.0.3fix5
+  Turned the simple identification of weapons/armor and the simple
+    identification of accessories into skills.
+  Made the anti-magic field numerical; its effective radius now accumulates up
+    to 18 grids.
+  Added the new monster spells "Summon Major Demons" and "Invoke
+    Disintegration".
+  Added a way to forbid pets from using disintegration-type attacks.
+  In the unidentified state, differences in dice, AC and multiplier can no
+    longer be seen.
+  The dungeon level at which Snap Dragon weapon monsters appear is decided by
+    the player's maximum reached level.
+  Fixed a bug where the actual MP cost did not change when you raised a magic
+    skill.
+  Fixed several bugs when specifying not to use spells that catch the player.
+  Various other fixes.
+2003/01/14 TOband0.0.3fix4
+  Turned the pet-keeping ability into a skill. Abolished each class's own
+    pet-keeping ability.
+  Guns are not affected in damage by the weather.
+  Made Staffs of Mana Storm easier to find.
+  Monsters now also use Teleport Back and Teleport Level against each other.
+  The evil eye now takes effect only when both parties have a line of sight to
+    each other.
+  Merged ^A e, ^A A and ^A F, and changed ^A e into a menu interface.
+  Fixed a bug where some radius-3 spells caught the player even when you had
+    specified not to catch the player.
+  Fixed a bug where, for race/class combinations with an extremely small MD, MP
+    could drop when the level went up.
+  Fixed another case where your gold could overflow.
+  Various other fixes.
+2003/01/08 TOband0.0.3fix3
+  Abolished the concept of hunger for Skeletons, Ghosts, Liches and Divine
+    Knights.
+  Classes other than the Terror Knight are now allowed to use martial arts
+    techniques. Accordingly, adjusted the Martial Arts skill.
+  Lowered the base number of Martial Arts attacks of the Terror Knight.
+  Martial arts techniques are now decided by skill level rather than by level.
+  Weapon skills now have a larger influence on the number of attacks.
+  Introduced the Black, Bronze and Gold series of wyrms.
+  Dragon pits of the Bronze and Gold series now appear.
+  Fixed a bug where, for classes other than the Terror Knight, the
+    extra-attacks equipment did not take effect on Martial Arts.
+  Fixed a bug where damage modifiers from Magical Weapon and the like were not
+    reset even after entering the Arena.
+  Fixed it so that Mirror Shields made of mithril do not generate (Balder).
+  Fixed a bug where, from bullets with a slay essence added, the slay essence
+    could be recovered by extraction rather than by essence removal.
+  Fixed it so that Gunners also get the 99% discount when they make bullets
+    from ore.
+  Fixed it so that sleeping monsters are not initially generated in the air or
+    over pits.
+  Fixed the Chaos Singularity.
+  Various other fixes.
+2003/01/05 TOband0.0.3fix2
+  Firearms no longer get the multiplier bonus from strength.
+  When the (Magic Throwing) ego is activated, the thrown item can now fly while
+    destroying walls and trees.
+  Dragoons now gain dragon ESP, rather than dragon detection, at level 25.
+  A Dragoon holding a weapon can deliver a Ninja Hit against dragons.
+  Lowered the difficulty of the Pumpkinhead racial power and strengthened
+    "Pumpkin Wars".
+  Increased the amount by which alignment tilts toward Law through donations
+    and the cashing in of bounties.
+  Changed the quest reward of the Dark Elven Lord to a Staff of Probing.
+  Changed the name of rockets according to the essence added to them.
+  Fixed a bug where the Black Arrows of Arycelle the Archer had become the
+    Black Bundle of Arrows of Arycelle the Archer.
+  Adjusted the race and class tables.
+  Fixed it so that, when a Gunner adds essence, essences of abilities that the
+    bullet clearly has already are not added.
+  Fixed it so that Gunners can obtain essence from Extra Might and Extra Shots.
+  Fixed a bug where Throw Pebble and Throw Grave were not correctly treated as
+    blunt weapons.
+  Fixed a bug where the Riding skill value was wrongly used in calculating the
+    number of throws for Throw Pebble and Throw Grave.
+  Fixed a bug where wishing for a fixed artifact generated it with all its
+    modifiers at 0.
+  Various other fixes.
+2003/01/02 TOband0.0.3fix1
+  The blast of the Dark magic spell "Explode Pets" is now the same as a spell
+    cast by the player.
+  With ironman_forward, the dungeon is not saved at all.
+  The artifact spoiler now also describes extra abilities/resistances.
+  Scrolls of Mundanity and essence extraction no longer erase inscriptions.
+  If a Gunner extracts essence with (d), it counts as identification, and if
+    the option to apply auto-destroy at identification is enabled, the item can
+    be made a target of destruction.
+  If a Gunner fails to enhance a firearm, the essence is no longer consumed,
+    and firearm enhancement can now also be used on the gun you are wielding.
+  Made the (Siren) ego cloak female-only.
+  Armor random artifacts very rarely get a gender restriction.
+  Fixed a bug where the damage display of missile weapons showed a value larger
+    than the actual average damage.
+  Fixed a few fixed artifacts to which the unholy flag had been forgotten.
+  Fixed bugs related to messages while hallucinating.
+  Fixed it so that you are not teleported into water surrounded by permanent
+    rock in Almorica and Coritanae.
+  Fixed a bug where the game could be forcibly terminated when you stepped on a
+    piranha trap.
+  Fixed a bug where the energy cost of some throwing-type racial powers did not
+    correctly depend on skill.
+  Fixed a bug where the monster's HP and AC were not displayed at the time of
+    monster probing.
+  Fixed a bug in terrain generation.
+  Fixed several bugs in the Gunner commands.
+  Various other fixes.
+2002/12/29 TOband0.0.3
+  Abolished the fixed values for weapons and skills and changed to a skill
+    point/skill level system. Magic was also changed to a magic skill
+    point/skill level system.
+    - A character starts with all skills at novice.
+    - Skill points and magic skill points are gained by leveling up or by
+      gaining experience.
+    - Classes that cannot cast spells do not gain magic skill points.
+    - Unlike the former fixed values, skills affect not only the to-hit rate
+      but also damage and the number of attacks.
+    - Magic skills affect the energy cost of casting, the failure rate and the
+      MP cost.
+    - Skill points and magic skill points are lost on a class change, but skill
+      levels remain forever.
+    - For carried-over data, skill points/magic skill points are calculated
+      from the current maximum experience and the classes you have experienced.
+  Added the new class "White Knight".
+  Once you change class to either the Templar or the White Knight, you can no
+    longer change class to the other.
+  Added the Scroll of Doppelganger.
+  Merged in the code of Hengband 1.5.1. However, the change that makes Rations
+    (Elvish Waybread) equivalent to satisfy hunger and sells them in stores is
+    not adopted.
+  Greatly strengthened bare-handed attacks. They become even stronger when you
+    remove your shield.
+  The special move selection menu of the Templar now shows
+    level/cost/weapon/description.
+  In the information about yourself, the descriptions of special moves learned
+    from Scrolls of Special Moves and as a Templar are now shown, in addition
+    to race and so on.
+  The number of bare-handed attacks while riding is limited to 1.
+  Deleted the auto-pickup editor.
+  Unholy/blessed status that does not come from the base item, ego or artifact
+    level is removed by Scrolls of Bless Weapon/Unholy Weapon.
+  Adjusted artifacts.
+  Fixes related to fluctuations of the Chaos Frame.
+  Various other fixes.
+2002/12/23 TOband0.0.2fix9
+  Added the Scroll of Bless Weapon and the Scroll of Unholy Weapon.
+  Blunt weapons wielded by a Lich are now treated as unholy.
+  Gave a blessing to the magic weapons made by Divine Knights.
+  Moved the Holy magic spell "Healing plus" to [Holy Blessings].
+  Abolished the Holy magic spell "Blessed Blade".
+  Various other fixes.
+2002/12/23 TOband0.0.2fix8
+  Gunners can now extract the blessed and unholy essences.
+  Veins with treasure no longer appear in Almorica Castle.
+  When terrain is set to floor, terrain that blocks the line of sight is now
+    avoided as far as possible.
+  Fixed a bug in the debug command ^A j where, if you cancelled without
+    choosing a floor after choosing a dungeon, the floor stayed the same but
+    internally you had entered a different dungeon.
+  Items and ore that a Gunner makes into bullets, and rockets made from shot,
+    are now also targets of auto-inscription.
+  Various other fixes.
+2002/12/22 TOband0.0.2fix7
+  Gave the monster flags that always drop a fixed artifact or random artifact
+    to several monsters.
+  Armor random artifacts now get at most 2 modifiers other than the base
+    ability.
+  Changed the display of enemies that always drop items of "excellent" quality
+    or better to "excellent" instead of "special".
+  Further simplified the display of the modifiers of item abilities.
+  Teleport Level and falling from the air no longer count as a fall of 2
+    floors.
+  Fixed a bug in the special-made generation of the debug command object roll.
+  Fixed a bug where trap doors and falls from the air let you escape alive from
+    the starting floor + 1 of an up-going dungeon.
+  Various other fixes.
+2002/12/21 TOband0.0.2fix6
+  Introduced unholy weapons. Exorcists, Clerics, Priests and Divine Knights who
+    hold them get penalties to to-hit, damage and spell failure rate. Liches
+    who hold them get a slight MP increase.
+  Added sharp-weapon resistance and blunt-weapon resistance to monsters. A
+    blessed or unholy weapon may be able to ignore weapon resistance.
+  Weapons held by Exorcists, Clerics, Priests and Divine Knights are now
+    treated as if blessed.
+  Raised the upper limit and the probability of increase of the modifiers when
+    generating random artifacts.
+  The various ability modifiers of items are now shown with a single kanji, as
+    in (+1 STR).
+  Weapons with a positive digging ability can now deal five times damage to
+    enemies weak against rock remover.
+  Fixed a bug where items thrown by Dragoons and Exorcists were judged with the
+    class attribute attached.
+  Fixed a bug where equipping weapons unsuitable for Ninjas and Swordmasters
+    added +25% even to the spell failure rate.
+  Fixed a bug where, under Wind Guard, magic bolts could not be dodged even
+    with INT 18/150.
+  Various other fixes.
+2002/12/18 TOband0.0.2fix5
+  Split the pval of equipment so that different modifiers can be applied to
+    each ability.
+  Changed the object setting interface of ^A o t to a menu style.
+  Random artifacts are now composed, with exceptions, of at most 1 ability
+    modifier, at most 1 non-ability modifier, plus the presence or absence of
+    extra attacks.
+  Greatly changed the ability modifiers of artifacts.
+  The Cloak of Bowmarka can no longer be given stealth.
+  The Bat Cloak can no longer be given speed.
+  Weapons of (Ishtar) can no longer be given dexterity.
+  The Ring of Agony no longer lowers charisma.
+  Monsters are no longer generated on bridges on the surface.
+  Fixed a bug on Windows where the file name of pref-win.prf had changed so
+    that the default macro definitions could not be used.
+  Fixed a bug where invalid combinations of ego and base item could be wished
+    for.
+  Fixed a bug where Level Teleport behaved strangely.
+  Fixed a bug where Trap Doors behaved strangely.
+  Various other fixes.
+2002/12/10 TOband0.0.2fix4
+  Merged in the code of Hengband 1.5.0.
+    - Undead races can satisfy hunger with magic items.
+    - Abolished the Scroll of Satisfy Hunger.
+    - Undead are given a "Staff" as initial food. Nothing happens when it is
+      used.
+    - Added a safety device against cheating. It prevents entering a cheat
+      command by mistake.
+    - Added an option to disturb when a high-level monster acts.
+    - Added a simple auto-destroy option that does not destroy items needed by
+      your race/class.
+    - Added the item/monster browser.
+    - The average damage and dodge rate received at the currently known AC can
+      be checked at the Weaponmaster.
+    - The dungeon becomes semi-saved. Until you return to the surface, a floor
+      that has once been generated is saved.
+    - Almost no items are generated on the floor you arrive on right after
+      entering a dungeon.
+    - Reality Distortion is forbidden with ironman_forward.
+    - Stairs that occasionally became long stairs and moved you one extra floor
+      have been abolished.
+  A player of the class "Lich" resists madness more easily, is not affected by
+    the death ray or by life-draining magic, and does not suffer cuts. They can
+    also use magic items as food.
+  Since the Scroll of Satisfy Hunger was abolished, in TOband it is converted
+    to a Ration of Food when loaded.
+  In TOband, treasure buried in veins can also be detected by Detection. The
+    appearance rate of treasure in veins has also been kept as before.
+  Added "Rotten Pumpkin", a food exclusive to Pumpkinheads.
+  Gave stone resistance to the Tower Shield of Perseus and changed it into the
+    Mirror Shield of Perseus.
+  The Water magic spell "Water flood" can no longer be used for 100 turns after
+    you use it once.
+  Raised the growth rates of HD, MD and melee ability of the Templar.
+  Fixed a bug where, under Wind Guard, attacks other than rockets could still
+    hit at the very limit of the range.
+  Fixed a bug where activating 'Lombardia' teleports you.
+  Fixed a bug where, when stairs became long stairs, a quest floor could be
+    skipped.
+  Fixed a bug where playing a Skeleton or Ghost broke the turn count of the
+    score record.
+  Fixed a bug where the game was forcibly terminated right after starting with
+    ironman_forward.
+  Various other fixes.
+2002/11/01 TOband0.0.2fix3
+  Merged in the code of Hengband 1.3.1.
+  Tarot cards on the floor are no longer broken by magic or breath. (They can
+    still be broken by auto-destroy or by 'k'.)
+  Introduced the (Magic Throwing) Spear as a new ego item. Activation lets you
+    perform a piercing throwing technique.
+  Items can now be placed on runes.
+  Changed the town lighting. The grid around each store and building is lit,
+    and walls are in memory from the start but not lit.
+  Gloves no longer hinder spellcasting, as an exception.
+  Fixed a bug where Potions of Resist Fire and Scrolls of Detect Invisible
+    could not be sold at the Inner Temple.
+  Fixed several bugs in the effects of Tarot cards.
+  Fixed a bug with magnum ammunition.
+  Slightly changed the effect of disintegration on terrain. Fixed a bug where
+    disintegration could conversely produce terrain that blocks the line of
+    sight.
+  Various other fixes.
+2002/10/29 TOband0.0.2fix2
+  The probability of reincarnating as a Divine Knight now depends on the
+    current value of charisma including equipment.
+  *Identifying* a Tarot card now tells you its effect.
+  Abolished the flatulence mutation and replaced it with a mutation that makes
+    your innate element variable.
+  Fixed a bug where, in a quest, opening the status screen and continuing to
+    change the mode with 'h' forcibly terminated the game.
+  Fixed a bug where classes that should not cover their hands did not lose MP
+    when wearing gloves without free action or the like.
+  Various other fixes.
+2002/10/28 TOband0.0.2fix1
+  Gave the blunt weapon of Earthquake an additional stunning effect.
+  Reading a blank Tarot card lets you gain or lose the power of Tarot cards.
+  Dungeon lords (other than Dorgalua) always drop a random Tarot card.
+  Wishing can no longer produce Power Dragon Scale Mail.
+  Fixed artifacts.
+  Various other fixes.
+2002/10/26 TOband0.0.2
+  Merged in the code of Hengband 1.3.0.
+  Introduced a fear field that lowers the attack modifier of hostile beings
+    without fear resistance.
+  The fear field is attached to the Terror Knight at level 15.
+  Slightly increased the MD of the Templar.
+  Changed the specification of the Lizardman's breath. When the innate element
+    is water the power is specially raised, and at high levels they can
+    occasionally breathe *Water*.
+  Made it possible to turn off the monochrome display of wraithform,
+    invulnerability and so on with an option.
+  Renamed the "Light Crossbow" to "Bowgun" and the "Heavy Crossbow" to
+    "Crossbow".
+  Deleted the monster Firecrest.
+  The monster "Beastmaster" no longer summons dragons.
+  Ego items of Morgul rarely get powerful flags.
+  Ego weapons of Sharpness become *Sharpness* with a 1/20 chance.
+  The (Siren) cloak gets Reduce Spell Difficulty with a 1/8 chance.
+  Changed 'Firecrest' to be treated as a light source and removed all its
+    negative effects.
+  Replaced the cloak of Father Prancet Pavel with the Grinser Coat.
+  Replaced the scimitar of Paul, the Devil's Child with the Crossbow 'Tasram'.
+  Replaced the dagger of Botis of Falling Tears with the Freude Helm.
+  Replaced the dagger of Uram of Dark Navy with the Prater Boots.
+  Replaced the Heavy Crossbow of Orsonne, the Holy Flame Knight, with the Saint
+    Crossbow.
+  Stopped making a ring or amulet worthless merely because either its AC
+    modifier or its slaying modifier is negative.
+  Fixed the (Dragoon) ego, whose rarity was so high that it never appeared.
+  The handling of the bonus-calculation mode was wrong, so that even melee
+    blows between monsters were adjusted as if they were magic; this has been
+    corrected to fit the situation as much as possible.
+  Changed the effect of the upright position of the Tarot card "Death".
+  Fixed artifacts.
+  Various other fixes.
+2002/10/14 TOband0.0.1
+  Official public release begins.
+2002/09/09 TOband0.0.0
+  Beta test released to outsiders.
+
+
+=======================================================================
+
+-----------------------------------------------------------
+Below is the change history of Hengband (up to 1.5.1)
+-----------------------------------------------------------
+
+---------------
+Version History
+---------------
+
+2002/12/24 Ver. 1.5.1 (Development branch)
+  Added the visual editor 'v' to the lists of known ~. (From Unangband.)
+  Fixed the Bard's Clairaudience so that it does not detect veins.
+
+  Bug fixes:
+    - Monsters wake up when you go up and down stairs.
+    - A bug in error handling at save time.
+    - The save command corrupts monster data, leading to a crash.
+    - The identity of a mysterious monster is revealed after saving.
+    - Climbing out of an up-going mine lands on a floor shallower than the top
+      floor.
+
+  Plus all the changes of 1.4.1.
+
+2002/12/24 Ver. 1.4.1 (Stable branch)
+  Elvish Waybread now nourishes as much as Satisfy Hunger. It can be bought at
+    the General Store.
+  Salt water has no effect on undead and the like.
+  Received descriptions of weapons, armor and other items from OAngband. The
+    translation is still in progress.
+  When an item inscribed {!!} is recharged, the game now disturbs you.
+  Improved the display of tiles in the info command and the '%' command in
+    Bigtile mode.
+
+  Bug fixes:
+    - Vault with no entrance. Arena while in wraithform. Crash at (a) of the
+      info command.
+    - Smith's items could not be activated. Special foods while shapechanged.
+      Monsters appearing in the Mountain.
+    - Name of the "Staff" in the English version. Random teleport in the
+      monster arena.
+
+2002/12/09 Ver. 1.5.0 (Development branch)
+
+  Implemented the saved-floors specification
+    - If you go back along the stairs you came by in a dungeon, you return to
+      exactly the same floor.
+    - When you return to the surface, all saved floors disappear.
+    - Level Teleport / Trap Doors / the stair creation spell changed. (Each now
+      leads only to a specific floor directly above or below.)
+    - Abolished the dungeon_stairs and confirm_stairs options.
+    - Added the confirm_quest option, which warns about one-way stairs.
+    - Increased the probability that treasure is buried in lava walls and
+      quartz walls.
+    - Added walls containing treasure that cannot be seen until you detect
+      treasure or actually dig.
+    - Removed the ability to detect treasure inside walls from Detection. (Too
+      many were detected, which was annoying.)
+
+2002/12/09 Ver. 1.4.0 (Stable branch)
+
+  Abolished the Scroll of Satisfy Hunger and the Berserker's
+  Satisfy Hunger racial power
+    - Androids can drink flasks of oil.
+    - Balrogs can sacrifice corpses of 't', 'p' and 'h' with the Eat command.
+    - Golems, Zombies, Skeletons and Spectres can eat the charges of staffs or
+      wands.
+    - Ents can get enough nourishment from the water in potions. Potions of
+      Water can be bought at the General Store.
+
+  Ported the lists of known monsters/objects of Eyangband. (Thanks to So-Miya.)
+  In the look command and when selecting a target, the shift key moves the
+    cursor quickly.
+  When easy_floor is on, made piles of items on the floor easier to view in the
+    look command.
+  Introduced a service at the Weaponmaster that shows an evaluation of your AC.
+  Set the auto-inscription for the magic device domination flag to {+Dev}{Md},
+    as it had none.
+  Fixed the HP bar so that only the mount's HP is not displayed in two columns.
+
+  Options added/deleted
+    - disturb_high added: disturb when a high-level monster moves
+    - allow_debug_opts added: allow/forbid the use of debug/cheat options
+    - The birth option munchkin_death became the cheat option cheat_save.
+    - The birth options terrain_streams and stupid_monsters were abolished.
+
+  Bug fixes:
+  Unable to load with a large number of items, crash at the edge of the
+    wilderness, stop time in a wilderness forest, hidden door in deep water,
+    walkable walls, True Warding, runes not disintegrating, new traps not
+    appearing, Blue-Mage unlearning, Amber resurrected by the Curse of Blood,
+    mirror magic energy cost, multiple Chameleon Kings, a bug that disabled
+    macros, etc.
+
+  Corrected English text, typos and so on. (Thanks to John Mikula.)
+
+2002/10/31 Ver. 1.3.1 (Development branch)
+  Added a feature to the Windows version to keep sub-windows on top.
+  The result of the resistance auto-inscription {%} now changes dynamically.
+  Changed the weak pseudo-identification inscription from {good} to {uncursed}.
+  Special trapped rooms: added the Piranha trap and the Armageddon trap.
+  When a Rune of Protection or Rune of Explosion is broken, the original
+    terrain returns.
+  Undetected traps are not removed by earthquakes.
+  Fixed a bug where a trapped pit was isolated inside walls.
+  Abolished little boy and fat man. The data itself is to be deleted in a
+    future version.
+  New unique 'Sheer Heart Attack'.
+  Changed how autoconf is configured, making acconfig.h unnecessary.
+  Fixed a bug where Musou Sandan (Triple Strike) let you burrow into walls.
+  Plus all the changes from 1.2.0 to 1.2.2 below.
+
+2002/10/31 Ver. 1.2.2 (Stable branch)
+  In the Cloning Pits, Borshin appears in place of little boy.
+  Fixed it so that the Samurai's death poem remains in screenshots.
+  As with ordinary light sources, the radius of light sources of darkness is
+    now shown numerically when *identified*.
+  Fixed it so that the light radius becomes 0 even with a fiery aura plus a
+    light source of darkness.
+  Fixed a bug where Rush Attack could cross Pattern terrain.
+  Fixed many small bugs reported by the TOband team.
+  Other bug fixes (an enemy unique of the same kind could appear while a unique
+    pet exists, pets vanished when you accepted a quest, Rod of Identify, Royal
+    Crypt, and others).
+
+2002/09/09 Ver. 1.2.1 (Stable branch)
+  Added a copyright notice and jlicence.txt.
+  Increased the AC of the ego Ring of Protection (Extra Armor) by 7.
+  Fixed a bug in monster AI.
+  Fixed a bug that caused a crash with chest traps (such as summoning birds).
+  Fixed incorrect information about the Tower quest.
+  Fixed a bug where the failure rate of mimicry differed between the display
+    and reality.
+  Fixed the auto-pickup keyword for modifiers to "with modifier of n or more".
+  Changed it to 'Walken' and fixed it to drop items.
+  Also fixed small memory leaks, possible out-of-bounds array accesses and
+    other minor bugs.
+
+2002/08/28 Ver. 1.3.0 (Development branch)
+  Added a new room type: trapped monster pit.
+  Internal change in item flag specifications:
+    - Introduced per-monster-type ESP (from Unangband and ToME). It can be
+      obtained as an extra ability.
+    - Implemented the various *slay* flags. Added them to ego items and
+      artifacts.
+  The 'C' command now shows ESP, *slay* and other flags on a new 4th page.
+  Smiths can now attach the various *slay*s and ESPs.
+  Inserted line breaks at two places in the monster recall to make it easier to
+    read.
+  The Android's experience is now displayed under the name "construction
+    point".
+  Play time no longer advances while the auto-pickup editor is running.
+  Added the quest completion status to the character dump.
+  Auto-destroy is applied right after Psychometry.
+  Introduced a setting (the ';' symbol) that auto-picks up after a confirmation
+    message.
+  Pressing the '?' key during option setting and character creation shows help
+    appropriate to the current situation.
+
+2002/08/28 Ver. 1.2.0 (Stable branch)
+  Placed Thorondor as the lord of the Mountain dungeon. Strengthened all
+    eagle-type monsters.
+  Made it an option whether auto-destroy is applied afterwards to simple
+    (pseudo) identification and ordinary identification.
+  Made haggling a birth option that can no longer be changed during the game.
+  Improved the auto-pickup editor (started with the '_' key):
+    - Added explanations of % and %all etc. to the line descriptions of the
+      auto-pickup editor.
+    - Implemented the search command "/". "/^I" and "/^L" search for lines
+      matching the selected item. "n" searches forward and "N" searches
+      backward.
+    - Introduced the commands "!", "~", ";", "(" in command mode, which switch
+      the auto-pickup settings of multiple lines.
+    - "^K" cuts multiple lines including empty lines and "^Y" pastes them back
+      including the empty lines.
+    - When only picktype.prf is used, it no longer creates picktype-<name>.prf
+      on its own.
+    - The game is automatically saved when the editor starts.
+  When a mirror is broken, the previous terrain returns.
+  Magic-Eaters can also see the description of spells (magic devices) with the
+    Browse command.
+  The area of the Light and Darkness spells, which had been wide since 1.1.0,
+    has been returned to that of 1.1.0RC2 for Darkness creation.
+  On item selection, '(' and ')' now select the first and last items.
+  Made the screenshot of the ')' command cancellable.
+  Changed the message when leaving to the surface by stairs, as against the
+    dungeon.
+  Halved Druj's experience, as it was too much.
+  Added to the help's personality descriptions an explanation of the effect on
+    hit points and spell failure rate.
+  Fixed a large number of bugs.
+
+2002/06/15 Ver. 1.1.0
+  The Light Area spell lights a wide area in wide places.
+  Bug fixes and balance adjustments, making it the official release.
+
+2002/06/02 Ver. 1.1.0 Release Candidate 1
+  Split the Life realm into "Life" and the new "Crusade".
+  Reworked the speed system (in particular, consecutive actions in the early
+    game no longer occur).
+  Auto-pickup editor.
+  Background editor.
+  Quick start (start with the same character as the previous play).
+  Auto-destroy/auto-inscription at the moment of identification.
+  Variable display of temporary effects.
+  Option to display a gray 'x' on unknown terrain whose traps have not been
+    detected.
+  Option to disturb when leaving the trap detection range.
+  Option to set whether a message is shown when leaving the trap detection
+    range.
+  In the Arena, only iron spikes can be thrown.
+  The look command shows (Level ???, unhurt) etc. after the name.
+  If both picktype-<name>.prf and picktype.prf exist, only the named one is
+    read.
+  Pseudo-inscriptions such as "{cursed}", "{empty}" and "{unidentified}" are no
+    longer overwritten by real inscriptions.
+  With easy_floor, piles of 23 or more items on the floor can be selected
+    (scroll with Return).
+  Removed the upper limit of the light source radius.
+  In up-stairs-less mode, the number of floors descended is never increased at
+    random.
+  Smiths can take the Slay Human and Warning essences.
+  Added keywords to auto-pickup.
+  Major reorganization of the help files.
+  Removed "Thieves' Quest" from the names of the two quests of the Thieves'
+    Guild in Morivant.
+  Changed the Japanese name of the Slay Human essence/brand (hitokiri ->
+    hitokui).
+  Changed the Japanese name of "Heavy Lance" (previously "Heavy Lancer").
+  Unified the Japanese spelling of "Heavy" in Heavy Flail and Heavy Crossbow
+    (Hebii -> Hevi).
+  Followed some of the name changes according to the pronunciation in T.o.M.E.
+    in Hengband as well.
+  Added new monsters.
+  Changed the color of permanent rock.
+  Added several tiles.
+  Bug fixes.
+
+
+
+2002/04/06 Ver. 1.0.11
+  Added to the help the ability and skill modifier tables for the classes,
+    races and personalities supported by Hengband.
+  Updated the English help for Hengband.
+  Added a warning-ignore feature. Inscribing '$' on an item makes it lose its
+    warning ability.
+  "You have psychic powers." -> "You have telepathy."
+  Brake (grass patch) # -> :
+  Wyrd sister -> Japanese name changed. Lesser black reaver -> Japanese name
+    changed.
+  The wizard command monster spoiler now uses the recall format.
+  The HUMAN flag for monsters and SLAY_HUMAN for items.
+  Muramasa and the Chainsword were given SLAY_HUMAN, so their strength was
+    reviewed.
+  The cause of death is now also shown in the death location of the dump.
+  Added "while paralyzed" and "while turned to a statue" to the causes of
+    death.
+  Cursed items do not merely fail to come off; they have various unpleasant
+    effects.
+  Added the double-width tile (Bigtile) mode. On X11 it is chosen with an
+    option (see readme.txt).
+  Ported Bigscreen. When you change the window size, the map is displayed
+    larger.
+  Show the correct source (cause of death) of damage while hallucinating.
+  Abolished the behavior on Windows of cutting names longer than 8 half-width
+    characters to 8 bytes.
+  Added Japanese descriptions for artifacts that had no description.
+  Ordinary items now also give an explanation when *identified*.
+  Fixed a bug where the Samurai's Dazzle did not consume MP.
+  Fixed a bug where the AC and degraded pval of poor-quality items returned to
+    the original values when loaded.
+  Fixed a bug where the Chameleon King failed to change shape and became the
+    "Player".
+  Bug fixes.
+
+2002/03/06 Ver. 1.0.10
+  Added new artifacts, new egos and new vaults.
+  Made Double Magic easier to use.
+  Force Trainers also gain attack power when they Improve Force while
+    bare-handed.
+  Raised the experience penalty of ghosts.
+  Telepathy was abolished from the random extra abilities, and Warning was
+    added in its place.
+  The Serpent of Chaos uses the spell that summons dungeon lords.
+  All the uniques in the Cloning Pits became (clone) (they still drop items).
+  Changed the appearance levels of missile weapons.
+  Degradation attacks rarely (1/13) lower pval.
+  When throwing, the damage modifier of an item is interpreted as an absolute
+    value.
+  Greatly tidied up and expanded the names of random artifacts.
+  For Ninjas, iron spikes display (damage per shot/damage per turn).
+  Bundles of ammo such as arrows are automatically packed neatly up to 99.
+  The confirmation when MP is insufficient and the confirmation when following
+    an enemy's teleport are asked as [(O)k/(C)ancel].
+  A confirmation is now asked when going out to the wilderness map with pets.
+  Changed the specification of releasing pets (abolished 'All' and introduced
+    'Unnamed').
+  In the screen display settings (% command), pressing ^N ^A ^C lets you change
+    char and attr by numeric input.
+  The default number of windows is 3 (by default, the message history and the
+    inventory).
+  make install can now install to the correct place.
+  Made compilation possible with MPW on the Mac.
+  Started support for 16x16 tiles.
+  On X11, the extra options -a and -o select 16x16 or 8x8 tiles.
+  8x8 tiles now support the overlay display that brightens the range of light
+    source and sight.
+  Screenshots can be sent even in tile display.
+  Made the beginners' guide (lib/help/tang.txt) compatible with Hengband.
+  The cause of death while hallucinating is displayed normally.
+  Bug fixes.
+
+2002/01/27 Ver. 1.0.9
+  Added new items.
+  Orc Slayers occasionally become *Orc Slayer*s (the same for trolls etc.).
+  Added/deleted random artifact names.
+  Changed the character creation part.
+  Changed the status screen.
+  Shortened the range of crossbows and made them easier for amateurs to handle.
+  Archers' crossbows fire up to 3 times per turn.
+  Changed the specification of the Rod of Pesticide.
+  The difficulty of activating a random artifact now depends on the activation.
+  When sending a score, a screenshot at the time of death or victory is also
+    sent.
+  Increased the number of lines of the message at death.
+  Even without levitation, you can run on water if your load is light.
+  Changed the monster pursuit routines.
+  Standard 8x8 tiles are now included. (Tile artists wanted.)
+  Created the Hengband help based on the Japanese-version Z240 help.
+  A unique monster cannot be destroyed by the Explode Pet spell.
+  Changed the position of options.
+  Swapped the Rune of Explosion and Dimension Door of Sennjutsu (Hermit) magic.
+  Summoning also works on a Rune of Explosion or Rune of Protection.
+  Random Teleport now requires typing the three letters "yes" rather than a
+    single 'y'.
+  "Collecting" matches only things that can actually be stacked.
+  When identifying, only unidentified items can be selected.
+  When writing to files such as macros, old settings are deleted and
+    overwritten.
+  Macro trigger names are now managed by name.
+  The auto-pickup registration status is shown in '~'.
+  Various English-specific changes.
+  Code cleanup.
+  Debugging.
+
+2001/12/23 Ver. 1.0.8
+  Added new items and artifacts.
+  Changed the score server.
+  Renamed some options.
+  Translated to English (by Mogami).
+  Studying a spell you already know raises its proficiency (only for classes
+    that choose which spells to learn).
+  Slightly changed the display of resistances from forms and postures.
+  Changed the English class names (see autopick.txt).
+  Adjusted the balance of the Ninja.
+  Changed the reward of the Ninja's Old Castle.
+  In html output, tofu is converted to '#'.
+  Changed the timing of the initialization of the random number generator at
+    the start.
+  Color-coded the display of auto-picked items on the overview map.
+  Made the source easier to read.
+  Abolished the disintegration resistance of uniques.
+  Fixed a bug in a wilderness-less town.
+  Fixed a bug with darkness light sources.
+  Fixed a bug where '*' did not pick up artifacts.
+  Fixed other small bugs.
+
+2001/11/25 Ver. 1.0.7
+  New artifacts and new monsters.
+  Added explanations to some artifacts/monsters.
+  Holy Knight Captain -> Temple Knight.
+  New class "Ninja".
+  Auto-pickup related:
+    - Keywords "identified ~", "*identified* ~", "unnamed ~", "collecting ~",
+      keywords by equipment slot, % in auto-inscription, a leading ^ matches
+      the beginning of a line, Sustain is also inscribed, auto-inscription for
+      items to be left alone.
+  Unidentified amulets, rings, light sources and dolls are displayed with
+    {unidentified}.
+  Long item names are no longer cut off midway but are displayed on multiple
+    lines.
+  Made the pets' "area spells that catch the player" smarter.
+  Revised the form of the local score display.
+  The detailed list of resistances etc. of random artifacts is shown with ^V.
+  Magma terrain glows around it.
+  Racial immunities such as darkness immunity are shown on the status screen.
+  Changed the Arena.
+  Changing the name during the game no longer changes the name of the savefile
+    (win, mac).
+  Cavalry can now keep unique monsters as mounts a little more easily.
+  In the play record, a record of being in a pinch is made only when the
+    threshold is crossed.
+  Changed the damage system.
+  Changed the archive to bzip2.
+  Bug fixes.
+
+2001/10/17 Ver. 1.0.6
+  Added new monsters.
+  Added new items.
+  Arrow damage display.
+  Option to display the trajectory of arrows/magic.
+  Made releasing pets easier to use.
+  If the game was over in a situation where the score could not be registered,
+    you can register the score again later.
+  Improved auto-pickup.
+  Added detection to the Bard's songs.
+  You do not die even if you die in the Arena (but you can never enter the
+    Arena again).
+  Added a monster attack that damages MP.
+  Changed the lord of the town.
+  Changed the color of the Troll King.
+  Moved the standard setting files to lib/pref.
+  (UNIX only) Changed the user directory from lib/user/ to
+    ~/.angband/Hengband/.
+  Improved the display of the quest command.
+  Artifacts you already own no longer appear as quest rewards (a Scroll of
+    Acquirement instead).
+  Rockets stop when they hit a monster.
+  Monsters that cannot open doors now move without getting stuck on doors.
+  Bug fixes.
+
+2001/08/22 Ver. 1.0.5
+  New classes "Smith" and "Mirror-Master".
+  Life drain and time reversal also weaken monsters (some monsters resist).
+  Ego rings/amulets/light sources.
+  Rings/amulets/light sources can also be pseudo-identified.
+  "Gray potion" -> "Mouse-gray potion" (Japanese flavor name).
+  The success check for activation is the same as for rods.
+  Shortened the recharge time of Dragon Scale armor.
+  Abolished the Ring/Amulet of Slow Digestion.
+  I think I changed various other things, but I did not take notes and have
+    forgotten them (^^;).
+
+2001/06/10 Ver. 1.0.4
+  Balance adjustment of the Smith.
+  Potions of Life restore HP after restoring constitution.
+  Abolished the Staff of the Sage.
+  Increased the appearance rate of Potions of Restore Mana.
+  Various other bug fixes.
+  Balance adjustment of the Mirror-Master (by henkma).
+  The following are specification changes (by Mogami)
+  The names of random artifacts change according to BIAS.
+  Birth options cannot be changed during the game.
+  Dimension Door can specify a place off the screen.
+  The following are specification changes and bug fixes (by habu)
+  Added a service to recharge all the items you carry (the price is the same as
+    recharging them one by one).
+  Options can be toggled with 't' (patch by Koka).
+  Stopped redrawing many times on Expose events in main-x11.c.
+  Made the energy calculation faster still.
+  Line breaks in the message history (patch by Mogami).
+  Made it possible to compile as before using the bundled makefile.std without
+    ./configure.
+  Stopped using strdup.
+  Even with fresh_before off, effects such as magic are displayed.
+  The bug that always gave rings and amulets of random artifacts an AC
+    modifier.
+  The bug that garbled messages at character creation.
+  The bug that the turn count was not reset before character creation.
+  The char tmp[8] bug.
+  The bug that the view was not updated when a monster broke a rock.
+  The bug that items vanished when more than 255 items were put in the Museum.
+  The bug that, when the Chaos Patron lowered your level, stats could go up
+    even when they should not have.
+  The bug that a quest completion staircase overlapped a trap (really fixed).
+
+2001/04/30 Ver. 1.0.3
+  Autoconf support (by habu).
+  Fixed the bug that the Demon-Slaying Sword (Zanmaken) was too strong.
+  Other bug fixes.
+  Many bug fixes follow (by habu)
+  Bugs in the Samurai's Rush Attack and the Berserker's Charge.
+  The bug that you could overlap a monster when pulled by that monster.
+  The bug that the screen broke when you pressed '0' while selecting a spell
+    from the menu (reported by Mogami).
+  The bug that min-max of reduced mana cost was wrong in the artifact.spo of
+    the debug command.
+  The bug that the descriptions of some Sennjutsu (Hermit) spells were swapped.
+  The bug in the processing of pets following you when you change floors
+    (reported by Mogami).
+  The bug that the success rate of rods was wrong.
+  The bug that a charmed monster did not complete the quest.
+  The bug of Banish Evil in the Arena.
+  The z_escape bug.
+  The bug that could cause an abnormal termination when the sub-window display
+    overflowed.
+  The bug that the quest completion staircase overlapped a trap.
+
+2001/03/22 Ver. 1.0.1
+  New class "Berserker".
+  Lazy characters miss their attacks a little more easily.
+  A service in town to identify one item.
+  On the status screen, the color differs when a stat has both sustain and
+    change.
+  Option for whether to display the menu.
+  When you choose a command from the menu, the selection of
+    items/spells/psychic powers/special abilities is also in menu form.
+  Changed the key for Force Training to 'w'.
+  Named pets follow you to the next floor even when up to 3 grids away.
+  Debugging.
+
+2001/02/25 Ver. 1.0.0
+  Since I had the chance, I tried making the major version 1.
+  New magic realm "Daemon".
+  Added new monsters.
+  Changed the specification of the disintegration sonic.
+  In the Treasury quest, the room with Sting is random.
+  Fixed the Chaos magic and Dark magic, changing several of the latter spells.
+  Fixed the small town (it should now be playable properly).
+  Changed the priority with which monsters use magic.
+  The weight of weapons also affects MP reduction.
+  For classes that cast with something other than wisdom, the influence of
+    alignment on spell success rate is small.
+  Magic experience is gained more easily.
+  Removed the menu help in the Win version (nobody uses it anyway).
+  Debugging.
+
+2001/02/14 Ver. 0.4.10
+  Several items that raise magic device ability.
+  Polearms are hard to use in two-weapon fighting.
+  The dump shows named pets/riding pets.
+  Changed how the number of attacks of Monks and Force Trainers is calculated.
+  Changed the rod usage system.
+  Force Trainers speed up like Monks.
+  When riding, one hand must be free to control the mount.
+  Changed the Arena monsters.
+  Beast Masters have a skinny horse as a pet by default.
+  *Destruction* varies slightly in range.
+  Easy mode option for beginners.
+  Fixed a big bug of Androids.
+  Debugging.
+
+2001/01/29 Ver. 0.4.8
+  New class "Cavalry".
+  Classes whose number of bow attacks rises, rise gradually.
+  Weakened monster balls (they do not stack, are expensive, and are heavy).
+  Changed item prices.
+  Reduced the MP cost of Blue-Mage spells.
+  Removed the cold immunity of the Mask of Fear.
+  Adjusted the experience at which monsters evolve.
+  When running, you stop upon returning to the point where you started running.
+  Save the screen as HTML (however, it cannot be saved properly when graphics
+    are used) (by Koka).
+  Helm of Darkness.
+  Debugging.
+
+2001/01/19 Ver. 0.4.7
+  Added new artifacts.
+  Added new monsters.
+  A certain 'A' does not appear in the church.
+  Input is possible even when starting XIM in a sub-window.
+  The dungeons now support Ironman.
+  Changed item prices.
+  Photo shoot for tourists.
+  Made the Riding skill easier to raise.
+  The weapon of Earthquake causes an earthquake when activated.
+  Rogues get a bonus to the number of attacks if their dexterity is high and
+    the weapon is light.
+  Changed the appearance level of some monsters.
+  Changed the specification of Psychic power.
+  The Sorcerer's skill with magic is equal to the Mage's.
+  Added the wallpaper feature on Windows (from Koka).
+  Operators can be used in autopick (from Mogami).
+  Introduced some death quotes from score server dumps.
+  Munchkins cannot pass through walls.
+  HP graph of the monster being ridden.
+  Evolution is added to the monster recall when you see a monster evolve or
+    probe it.
+  Bards interrupt their song when drinking a potion.
+  Messages when dispelling a curse with magic.
+  Confirmation when releasing a named pet.
+  Probing shows the monster's experience.
+  Changed the reward of the Warg quest to a Small Shield.
+  Raised the HD of the Blue-Mage.
+  Changed various item names.
+  Made lite_town and vanilla_town (probably) decent.
+  I think I changed other things too, but forgot (^^;)
+  Bug fixes.
+
+2000/12/15 Ver. 0.4.6
+  New race "Android".
+  Monsters evolve.
+  Changed how item prices are determined.
+  Deep monsters do not appear in the Orc Cave.
+  Deep items are harder to find in the Orc Cave.
+  auto_scum is disabled in the Orc Cave.
+  Reduced the number of wargs in the Warg quest.
+  Dragon Scale Mail has a conical breath activation.
+  XIM support (from ranran).
+  Slightly strengthened Hell Bolt of Dark magic.
+  Changed Dark magic in various ways.
+  A Bard's song is interrupted only for that instant by Dispel Magic.
+  Changed lbtokg() so that weights are round numbers.
+  Slightly raised the Blue-Mage's learning probability.
+  Slightly lowered the failure rate of Blue magic summons.
+  Bug fixes.
+
+2000/12/1 Ver. 0.4.5
+  Added new monsters.
+  Added new artifacts.
+  New race "Kutar".
+  New class "Force Trainer".
+  New class "Blue-Mage".
+  New dungeon "Chameleon Cave".
+  New dungeon "Dark Cave".
+  "Chameleon", a monster that disguises itself as other monsters.
+  The auto_more option, which skips messages.
+  In the message log, the previous turn is white and earlier ones are gray.
+  Item-like monsters drop certain kinds of items.
+  Made the thinking routine of group monsters a bit smarter.
+  You can see explanations about your race/class/personality/magic during the
+    game.
+  Removed the minimum 1 point of damage for paralysis attacks.
+  Sound when the auto-roller settles on a result.
+  Abolished some options.
+  Greatly changed the positions of options.
+  Removed options that answer in the negative (except auto-destroy).
+  Changed the specifications of Stormbringer (item) and the GHBT shirt.
+  Made the prayer of Restore Abilities expensive.
+  Made the prayer of Healing cheap.
+  Teleportation is impossible inside pits and nests.
+  Changed some of the Samurai's techniques.
+  Made the Dimension Door spell harder.
+  Potion of Restore Life Levels -> Potion of Restore Experience.
+  Increased the damage of the Scrolls of Fire, Ice and Logrus.
+  Swapped the order of the Old Castle and the Cloning Pits.
+  The Old Castle on level 50 and the Cloning Pits on level 45.
+  Lowered the probability that the Curse of Amber summons a Cyberdemon.
+  Support for font sets on X11 (from ranran).
+  Support for ANGBAND_X11_AT_* on X11 (from ranran).
+  Support for ANGBAND_X11_COLS/ROWS on X11 (from ranran).
+  Magic-Eaters absorb mana with 'G'.
+  Bug fixes.
+
+2000/11/11 Ver. 0.4.2
+  New class "Red-Mage".
+  New class "Samurai".
+  Stunned monsters can move (their attack and spell failure rates are high).
+  Made NO_STUN effective.
+  Increased the MP cost of song books.
+  Retiring after victory is also confirmed with '@'.
+  Slightly changed the riding specification.
+  Improved the monster thinking routines.
+  Kraknons / Fairy Monks have a smaller experience penalty.
+  Strengthened attack rods/wands/staffs.
+  Slightly changed the specification of the number of attacks.
+  Prevented deep recursion in dungeon generation.
+  Bug fixes.
+
+2000/10/28 Ver. 0.4.0
+  Added new artifacts (from Kuwasaki).
+  Added new monsters (from Kuwasaki).
+  Added new items.
+  New class "Magic-Eater".
+  New class "Bard".
+  The wilderness map.
+  Multiple dungeons.
+  The maximum values of abilities can be checked in the knowledge command.
+  Changed the Gnome's ability to Short Teleport.
+  Monsters that cannot fly do not walk over mountains.
+  Fake artifacts (add #hoge to the end of the inscription).
+  Changed the format of the dump file.
+  With levitation, you can pass over mountains on the surface.
+  Increased the energy consumed when passing over trees (not increased with
+    levitation).
+  Changed the color of Druj.
+  Strengthened the activation of some artifacts.
+  The new monster attack "Slash" (Stormbringer etc.).
+  Increased the level and MP cost of Create Forest.
+  Enabled HURT_FIRE and HURT_COLD.
+  Time passing by staying at an inn does not affect the generation of strong
+    monsters.
+  Display the current time on the main screen.
+  Do not display class and personality on the main screen.
+  Changed the reward of the Sewer to a Ring of Warning.
+  Up mines and down mines.
+  Added monster speech.
+  Weakened the Boots of Shiva a little.
+  Abolished the warrior's damage bonus.
+  Warriors other than Lazy get one more attack at level 40.
+  Changed the trajectory of magic (it flies like an arrow).
+  Psychokinetic sonic bolt -> psychokinetic shock bolt (element: sound ->
+    telekinesis).
+  Detection magic covers a fixed range centered on yourself.
+  Cannot choose a personality opposite to your sex at random.
+  Weakened monster summoning.
+  Reduced the number of group monsters.
+  Changed some monsters to ones familiar in Japan.
+  New spell for monsters: "Starburst".
+  MIND_BLAST and BRAIN_SMASH also reduce MP.
+  Translation changes.
+  Bug fixes.
+
+2000/10/07 Ver. 0.3.6
+  Added new (?) artifacts.
+  Added new monsters (from Koka).
+  Added new items.
+  New (?) race "Dunadan".
+  New race "Shadow Fairy".
+  Shield of Light and Shadow.
+  Boots of Jumping.
+  Wand of Annihilation -> Wand of Disintegration.
+  Cloak 'Horcolles' -> Elven Cloak 'Horcolles'.
+  Sort corpses/dolls/statues in the Home/Museum by monster level.
+  Changed the color of the Museum.
+  Made the Amulet of Intelligence rare.
+  The Rune of Explosion explodes even when you are not standing on it.
+  Menu-style command input.
+  Lazy characters start with little money.
+  Warriors of the Lazy personality get no damage bonus.
+  Made the monster movement routines smarter.
+  Changed the message on pickup (from Mogami).
+  Confirmation when equipping a weapon while holding it two-handed (from
+    Mogami).
+  Confirmation when choosing which ability to raise at level-up (from Mogami).
+  The slot can be chosen when equipping a shield while dual-wielding.
+  When there is only one choice of item, it can no longer be selected by
+    Return.
+  Changed the Japanese translation of backgrounds (from Itakura).
+  Lowered the price of the Wand of Rockets.
+  Changed the Arena reward from the Wand of Rockets to the Wand of Stun
+    Monster.
+  Gave monsters light sources. (A bit heavy?)
+  Increased the power of the Wand of Dragon * and made it conical.
+  Raised the price of steel crossbow bolts.
+  Lowered the price of the fur cloak.
+  Made the Grid Bug rare.
+  Colored monster recall.
+  Space and Return enter targeting mode (from Mogami).
+  Translation changes.
+  Bug fixes.
+
+2000/09/22 Ver. 0.3.5
+  Various Japanization.
+  Enlightenment (staff, rod) -> Detect Surroundings.
+  Added a Joker to Poker.
+  Slightly narrowed the movement range of Dimension Door.
+  A Museum of up to 100 pages (you can place items but cannot take them).
+  Bug fixes.
+
+2000/09/16 Ver. 0.3.4
+  Added new artifacts.
+  New race "Archon".
+  New race "Balrog".
+  Made the Imp a little stronger.
+  Mindcrafters can also see the explanations of psychic powers with the browse
+    command.
+  The Lazy and Shrewd personalities also affect the success rate of psychic
+    powers and mimicry.
+  Option to simplify the "You have found" message.
+  Create Doors -> Create Forest (from mita).
+  Day of the Dove -> Hour of Calm.
+  Summoning is possible on trees.
+  Changed the calculation of the number of attacks (dexterity matters more).
+  Changed the Sky Drake in the Arena to a Phoenix.
+  Victory as a Munchkin gives a score of 2 points.
+  Temporary resistances are shown in yellow on the status screen.
+  Translated monster speech into Japanese.
+  Unidentified monster balls do not show their contents.
+  Artifacts that appear only for the Lazy.
+  A Home common to all towns (20 pages).
+  Reduced the amount of mana recovered when Mana Eater absorbs from a rod.
+  Unique monsters appear in the monster arena.
+  Dracolich, Dracolisk.
+  Made the Storm Giant a little stronger.
+  Introduced Poker in the casino (from KOKA).
+  The casino no longer uses QuickRNG.
+  Debugging.
+
+2000/09/08 Ver. 0.3.3
+  Not released.
+
+2000/09/02 Ver. 0.3.2 Released
+  Added new monsters.
+  Sorted the list of defeated enemies.
+  If you cancel reading a Scroll of Artifact Creation, the scroll remains.
+  Removed the monster-vanishing effect from the Mindcrafter's Mass Teleport.
+  Added Telekinesis for Mindcrafters.
+  Raised the success rate of Double Return.
+  Detection -> Sensing (Japanese wording).
+  Balance adjustment of personalities.
+  Removed the pointlessly remaining hard quest option.
+  Confirmation when entering a fixed quest.
+  Crossbows consume more energy, slings less.
+  Weakened the brand and slay effects of missile weapons.
+  Weakened Archers.
+  Raised the probability of breathing disintegration at a player on a rune.
+  Moved options that affect the score to birth options.
+  The dump shows the number of victories in the Arena.
+  The score increases with the number of victories in the Arena.
+  Weakened the Crossbow of Harad.
+  Improved the monster pursuit routines.
+  The reinforcements of a Kraknon are 'K'.
+  Monsters that do no damage do not appear in the monster arena.
+  The value of an empty chest is 0.
+  Bug fixes.
+
+2000/08/22 Ver. 0.3.1 Released
+  Save at the moment of death.
+  Balance adjustment of personalities.
+  Hit & Away can fail.
+  Merged the option to pursue into the option for taking stupid actions.
+  Options increase or decrease the score.
+  Strengthened the power of Logrus activation.
+  Changed the probability of critical hits.
+  No effects occur after being killed by an attack.
+  Maggots / Forest Trolls and townspeople no longer fight.
+  Summoning on trees is possible.
+  Monsters pursue even in forests.
+  Won's lines.
+  Bug fixes.
+
+2000/08/11 Ver. 0.3.0 Released
+  New class "Sorcerer" - can use all magic.
+  New class "Archer" - a specialist in missile weapons.
+  New race "Ent" - from OAngband.
+  New personality "Munchkin" - practice for beginners. Easy to win.
+  Annihilation-type magic cannot deliver the finishing blow.
+  Strengthened Seeker Arrows and Seeker Bolts.
+  Seeker Arrows and Seeker Bolts are not harmed by the 4 elements.
+  Weakened bows of Extra Might and Extra Shots.
+  Steel crossbow bolts.
+  MP is affected by race.
+  Raised the strength modifier of Mage and High-Mage by 1.
+  The multiplier of missile weapons changes with strength.
+  Abolished the Mass Summon card.
+  Multiple monster cards can be summoned.
+  Kamikaze card.
+  Translated monster speech into Japanese.
+  Life rate is recalculated when you change shape.
+  Debugging.
+
+2000/08/03 Ver. 0.2.5 Released
+  Added new monsters.
+  Added translations of artifact descriptions (from Itakura).
+  '$' also reads picktype.prf.
+  Slightly weakened Mana Storm and Darkness Storm.
+  Switched dungeon generation to that of Zang2.5.1.
+  Bug fixes.
+
+2000/07/28 Ver. 0.2.4 Released
+  Added new artifacts.
+  Added new monsters.
+  Banish Evil -> Wave of Hell (Japanese name).
+  Simplified combat messages.
+  Unified Logrus (Japanese spelling).
+  Men and women can speak different lines.
+  Bug fixes.
+
+2000/07/20 Ver. 0.2.3 Released
+  Added new artifacts.
+  Added new monsters.
+  New personality "Patient".
+  Adjusted the disintegration breath.
+  Monsters no longer use only healing spells.
+  Saved the Chaos Patron at character creation.
+  Gave monsters a flag that prevents them from becoming pets.
+  Gave monsters a flag that prevents them from being annihilated.
+  Simplified the message on pickup.
+  Strengthened Beast Masters.
+  Made the monster's angel summoning powerful.
+  Adapted to the new melee2.c.
+  Phrakia patch.
+  "Mimic" is displayed at the lower right when you can be mimicked.
+  Reflected proficiency in the displayed hit rate of missile weapons.
+  Made extra attacks with high modifiers and Holy Warriors that increase the
+    number of attacks rarer on shallow levels.
+  Mimicked actions taken while blind can no longer be copied.
+  A monster does not use drain mana when the player has no MP.
+  ty_curse no longer causes destruction.
+  Fear -> Cloud of Slaughter.
+  Strengthened some magic.
+  Changed the specification of mimicry.
+  Changed the status display method.
+  The monster's HP and speed are saved in monster balls.
+  When dual-wielding, light weapons are easy to handle and heavy weapons are
+    hard to handle.
+  Improved the method of calculating height and weight.
+  Do not target pets.
+  '[' repeats the previous command.
+  Debugging.
+
+2000/07/18 Ver. 0.2.3 Source-only release
+
+2000/07/10 Ver. 0.2.2
+  Not released.
+
+2000/07/08 Ver. 0.2.1
+  Added new artifacts.
+  Added new monsters.
+  Changed the rarity of artifacts.
+  Uniques can become pets.
+  Fixed the bug where the monster you were riding disappeared.
+  Balance adjustment of the Monk.
+  Monsters killed by a pet do not drop items.
+  Greatly weakened the Beast Master.
+  Ball spells of radius 0 do not bounce back.
+  Changed how experience is gained.
+  Proxy support for score sending.
+  Changed titles.
+  Other debugging.
+
+2000/07/02 Ver. 0.2.0
+  Added new artifacts.
+  Added new monsters.
+  Play time display.
+  Gian's song, full chorus :-)
+  Fishing.
+  Extension of '/' (from ZangbandJ 2.2.8-000628).
+  The expected value of the dice of the Monk's attacks is also added to the
+    average damage (from ZangbandJ 2.2.8-000628).
+  Translation changes (from ZangbandJ 2.2.8-000628).
+  Auto-destroy also with always_pickup.
+  Death Dealer -> Meteor card.
+  The recall can be viewed with '`'.
+  Balance adjustment of the Monk.
+  Balance adjustment of temporary magic.
+  A pet's targets are only enemies it can see.
+  Yes/No -> Hai/Iie (Japanese prompts).
+  Changed the horse symbol 'H' -> 'q'.
+  Naming pets.
+  Pets right next to you follow you to the next floor.
+  Sorted the known legendary items.
+  Support for the score server (experimental).
+  Debugging.
+
+2000/07/01 Ver. 0.1.3
+  Not released.
+
+2000/06/28 Ver. 0.1.2
+  Not released.
+
+2000/06/27
+  Added new artifacts.
+  Added new monsters.
+  The Eldritch Horror nest.
+  silly_attack (from Zangband 2.5.1).
+  Fixed a bug in the spell descriptions.
+  Show the name in output files.
+  Fixed a bug that could make the game crash when attacking.
+  Fixed the bug that garbled the inscription of an item inscribed '=g'.
+  Friendly monsters can be attacked (Ctrl-direction).
+
+2000/06/24 Ver. 0.1.1
+  Added new artifacts.
+  Added new monsters.
+  Suspicious Shadow.
+  Debugging aura.
+  Mindcrafters and spell scrolls.
+  Monk's postures.
+  Reviewed the weapons usable while riding.
+  Spell descriptions (from OAngband).
+  Enabled the option ALLOW_CAVERNS_AND_LAKES.
+  Nazgul do not appear in the Arena.
+  In picktype.prf, items with ! before the item name are auto-destroyed.
+  No experience is given at death.
+
+2000/06/19
+  Added new artifacts.
+  Added new monsters.
+  Introduced new chest traps from OAngband.
+  Staff of Raise Dead's staff -> Staff of Raise Dead.
+  Made upper-level Craft spellbooks unburnable.
+
+2000/06/17 Ver. 0.1.0
+  Public release.
+
+2000/03/2?~06/16 Ver. 0.0.0~0.0.12
+  Made changes as the whim took me.
+  Adjusted balance haphazardly.
+  (^ somehow, zero information)
+
+2000/03/2? Ver. 0.0.0
+  Tried introducing proficiency, dual-wielding and two-handed wielding into
+    Zangband.
+  KMC internal release.
+
+
+=======================================================================
+
+
+-----------------------------------------------------------
+Below is the change history of the Japanese version of ZAngband (up to 2.2.8)
+-----------------------------------------------------------
+
+----------------------------
+ Version History
+----------------------------
+Symbol  Type of change
+ [Jfix]: bug fix specific to the Japanese version
+ [Efix]: bug fix of the English version
+ [Jnew]: feature added specific to the Japanese version
+ [Enew]: feature added from English preview versions, etc.
+ [Tr]  : translation changes, translation of untranslated text
+
+----------------------------
+2000/07/14  2.2.8-J0.9.7
+----------------------------
+Summary: This release is mainly bug fixes. Features were added mainly from the
+English version 2.5.1. Note that the symbols have changed: puyos are now "*"
+and fish are "l". Terrain has become more varied, and hounds now behave a
+little more nastily. In addition, the beginners' guide translation has been
+added to the help, so beginners should be sure to read it.
+
+000710.1 [Efix] Fixed the Meteor Swarm bug, a message display bug and
+            a spoiler generation bug
+000710.2 [Efix] Fixed the bug that let you return in no-return Ironman mode
+000710.3 [Enew] Added a status bar (from Z235)
+000710.4 [Enew] Added a Draconian background (from Z250)
+000710.5 [Enew] Changed fish to "l" (lowercase L) and water/lava to "~"
+            (from Z250)
+000711.1 [Enew] Everything below is from Z251
+            You cannot be killed instantly by Stormbringer
+            The number of random quests can be chosen at random
+            The number of random quests is shown in the character dump
+            The probability that a random quest reward is of good quality
+              is 20/(number of quests)
+            Improved the light/dark shading of terrain in ASCII mode
+            Fixed the bug that a time attack also performed vampiric drain
+000711.2 [Enew] Monsters do not summon monsters of the opposite alignment
+000711.3 [Efix] Stacking empty wands/staffs; good and evil no longer
+            coexist in a PIT
+000711.4 [Enew] Disarm/open is possible even on top of a chest
+000712.1 [Enew] Increased the kinds of terrain and rooms (from Z251)
+000713.1 [Efix] Fixed an autopick bug, by Habu
+000713.1 [Tr]  Changed title translations, from [O]
+000713.2 [Jfix] Quest display bug
+000713.3 [Enew] Fewer fighting messages between monsters, from Z251
+000713.4 [Enew] Replaced most of melee2.c, from Z251: monsters become smarter
+000714.1 [Jfix] Squashed a health bar bug
+xxxxxx.x [Tr]  Changed things under lib/ freely
+xxxxxx.x [Tr]  Translated the beginners' guide, from ZKB-J, by Saito
+
+----------------------------
+2000/06/28  2.2.8-J0.9.6
+----------------------------
+Summary: At last, the Japanese-version special monsters have been introduced.
+Because of this, savefiles can no longer be loaded by the English version.
+However, if you set the new Japanese-version special option "plain_savefile" to
+YES and save, the Japanese-version items and monsters existing in the dungeon
+at that time are erased and a savefile compatible with the English version is
+generated. It can also be used as a last resort, even if support for the newly
+created extended savefile format is ever abandoned in the future, by saving
+once in the compatible format and reading it into the new version. The new
+items/monsters were partly borrowed from Mr. Hoge's variant "Shogeki no
+Variant" (Impact variant), Hengband, and KOKA's SJNetHack. Those who like new
+things should play these two.
+
+I also tidied up the autopick code, so that in picktype.prf and similar files,
+items on lines beginning with "!" are destroyed automatically. Items nearer the
+top of the autopick file are now judged with higher priority. For example, if
+you use the 'M' command to show only the items that will be picked up, and
+several items overlap, the item at the top of the list is displayed, and
+likewise for the item name display at the right edge. Also, if you write
+!(empty)
+!ransacked chest
+chest
+then empty chests and ransacked chests are destroyed, and all other chests are
+picked up. Since the number of items to be destroyed grows in the late game, I
+increased the maximum number of entries to 512 for pickup and destroy combined.
+
+I am also currently playing a natural Monk, so I have changed the translations
+around that. :) I also made a Monk-only artifact (I changed the source quite a
+lot, so it may disappear in a future upgrade of the English version), and the
+'C' command now shows the Monk's average damage.
+
+On a personal note, I will from now on be joining the development team of the
+official English ZAngband. I intend to feed the improvements made in the
+Japanese version back to the original.
+
+----------------------------
+Patch ID Type Details
+-------- ---- ----------------
+000522.1 [Tr]  Deleted junk
+000523.1 [Efix] Fixed the bug that crashed with EAT_LITE
+000529.1 [Tr]  Fixed the Niberung background
+000529.2 [Jfix] Moved roff_to_buff
+000529.3 [Jfix] Moved roff_to_buff
+000529.4 [Jfix] Moved roff_to_buff
+000529.5 [Jfix] Changed background line-break processing to be done by
+            roff_to_buff
+000530.1 [Efix] Fixed it so that {not cursed} is no longer attached.
+000607.1 [Jfix] Reduced the probability that the name of a random
+            artifact is two kanji
+000609.1 [Tr]  Wand = katakana "Wando", Staff = katakana "Sutaffu"
+000609.2 [Jnew] Introduced Japanese-version special monsters and
+            compatibility support (option plain_savefile)
+000609.3 [Tr]  Translation changes
+000609.4 [Tr]  Translation changes
+000609.5 [Tr]  Changed 'C' command labels
+000614.1 [Jnew] Complemented the compatibility support. Added artifacts
+000616.1 [Jnew] Added MONK-only artifact
+000619.1 [Jnew] Merged autopick and auto-destroy
+000623.1 [Jnew] Changed magic translations, added the Monk's average
+            damage table
+            Added a hack for the MONK-only artifact
+            (it attacks the same as bare hands, but special effects
+            do not occur)
+            Raised the maximum number of autopick entries to 512
+            Changed the Japanese names of Stone Skin (stone discrimination),
+            Stone Wall, Summon Sunlight, Pulverize > Disintegrate, etc.
+000623.2 [Efix] Logrus scroll bug, *Fix of the 2-piece artifacts
+000626.1 [Jnew] Added features related to artifact arrows
+000627.1 [Jnew] Extended the '/' command, added joke messages, tidied comments
+            Fixed a crash on X11 when overwriting an inscription in kanji.
+XXXXXXXX [Jnew] Added new monsters/artifacts from Hengband & SJNH
+
+
+----------------------------
+2000/05/09  2.2.8-J0.9.5c
+----------------------------
+  [Jfix] monster2.c: Fixed english_monster not working.
+  [Efix] monster2.c: Fixed the bug where PASS_WALL monsters overlap other
+    monsters. By Mr.Hoge.
+  [Tr] mutation.c: Fixed untranslated text, by Oikawa.
+  [Tr] a_info_j.txt: Added descriptions of Hagen and Nothung.
+
+----------------------------
+2000/04/27  2.2.8-J0.9.5b
+----------------------------
+  [Efix] cmd1.c: Changed to disturb when auto-destroying/picking up.
+  [Efix] xtra2.c: Fixed the quest being cleared when a pet kills the last
+    enemy.
+  [Efix] mind.c: Fixed the crash when Psychic Drain succeeds while MP is
+    insufficient.
+  [Tr] flavor.c: Plain Gold Ring > Japanese flavor name changed.
+
+----------------------------
+2000/04/06  2.2.8-J0.9.5
+----------------------------
+  [Enew] cmd3.c: Confirmation of left/right for rings (from Tk).
+  [Enew] cmd1.c externs.h tables.c variable.c cmd4.c: Auto-destroy option (from
+    2.3.4) and tidying of the autopick code.
+  [Enew] object2.c: Random artifacts for rings and amulets (from 2.3.4).
+  [Enew] externs.h cmd5.c mspells1.c mspells2.c spells2.c: Fixed Summon
+    Cyberdemon always appearing around yourself (from 2.3.4).
+  [Jnew] init2.c: Changed to read misc_j.txt instead of misc.txt. (To make it
+    easy to add monsters.)
+  [Jnew] melee2.c: Monsters whose English name is Ohmu summon molds.
+  [Jfix] cmd1.c object1.c: Simplified the item description in the "You have
+    picked up ~" message. This should reduce --more--.
+  [Jfix] japanese.c: Newly created. Verb conjugation, Sindarin > kana
+    conversion.
+  [Jfix] monster1.c cmd5.c wizard1.c: Changed jverb-related code.
+  [Jnew] flavor.c: Made scroll titles katakana.
+  [Tr] a_info_j.txt: Added descriptions, by Felianas.
+  [Tr] t000000[2-4]_j.txt: Craps > Craps (Japanese spelling fixed).
+  [Tr] bldg.c lib/help/jgambling.txt: Translated the casino rules.
+  [Tr] table.c files.c xtra2.c: Translation changes
+    - auto SCUM > "auto picky" (Japanese term)
+    - Amber royalty > "Amberite" (Japanese term)
+    - Half-giant > Japanese term changed
+    - Half-titan > Japanese term changed
+    - "Magic fighter" > "Magic swordsman" (Japanese class name changed)
+    - "Spirit magician" > "Mindcrafter" (Japanese class name changed)
+    - (for weaklings) Generate a good dungeon > "Auto-picky about floor
+      feeling"
+    - "Servant" (Japanese term corrected)
+  [Tr] lib/edit/t0000001_j.txt: Fixed untranslated "Quest" and "Eat" in the
+    column for the traveler's inn "White Horse".
+  [Tr] lib/edit/t0000003_j.txt: Fixed untranslated "Split the stolen money" and
+    "Quest" in the column for the Thieves' Guild.
+  [Tr] flavor.c: ichor > Japanese flavor name (pus-colored).
+  [Tr] birth.c cmd6.c mspells1.c: Mime > Japanese katakana changed. Logrus >
+    Japanese spelling changed.
+
+The following are by Mr. Hoge
+  [Efix] artifact.c: Fixed the bug in the shield effect of random artifacts.
+  [Efix] bldg.c: Fixed the casino odds.
+  [Efix] cmd5.c: Fixed bugs of TY_CURSE and the Elemental Orb.
+  [Tr] flavor.c: A Japanese adjective ending was fixed ("kuro-kakkoku" >
+    "kuro-kakkoku no").
+  [Efix] object2.c: Fixed the bug that trap doors did not appear.
+  [Efix] monster1.c xtra2.c: Fixed the experience display. Fixed the display of
+    resistances.
+
+The following are by Habu
+  [Jfix] object1.c: Fixed the bug that always_show_list did not work with
+    easy_floor.
+  [Jnew] externs.h, melee2.c, mspell1.c, mspell2.c: A monster whose English
+    name is "Dio Brando" uses "The World"!!!!
+
+----------------------------
+2000/02/18  2.2.8-J0.9.4
+----------------------------
+  [Efix] dungeon.c: Fixed the bug when speed went out of range. By Mr.Hoge.
+  [Efix] spells3.c: Fixed message "25+30" > "25+d30". By Mr.Hoge.
+  [Efix] spells3.c: Fixed the Scroll of Mundanity bug.
+  [Jnew] object1.c: Made autopick possible even when easy_floor is ON.
+  [Tr] rumors_j.txt, a_info_j.txt: Added translations, by Wakabayashi and
+    Itakura.
+  [Enew] k_info_j.txt: Removed wraithform from a certain amulet.
+
+----------------------------
+2000/02/10  2.2.8-J0.9.2
+----------------------------
+  [Jfix] util.c: Fixed a bug in the part that omits repeated messages. By habu.
+  [Efix] util.c: Changed to disturb when a macro fails. By habu.
+  [Tr] cmd1.c: "Indirect kick" > "Joint kick" (a Japanese kanji correction). By
+    habu.
+  [Jnew] main-mac.c: The long-awaited Japanization, by Abe.
+  [Jfix] bldg.c: Fixed a message bug (related to English plurals).
+  [Jfix] cmd5.c mind.c racial.c: Tidied the always_show_list code.
+  [Enew] object1.c init1.c z-config.h a_info_j.txt: Added the artifact
+    description feature.
+
+----------------------------
+2000/02/02  2.2.8-J0.9.1
+----------------------------
+  [Jfix] files.c init1.c: Fixed the town configuration file parsing part. By
+    Mr.Hoge.
+
+----------------------------
+2000/01/31  2.2.8-J0.9.0
+----------------------------
+  [Jfix] racial.c: Fixed messages. By Mr.Hoge.
+  [Jfix] lib/edit/q0000023_j.txt: Fixed a message that exceeded ten lines.
+  [Jnew] types.h externs.h init1.c init2.c variable.c lib/edit/f_info_j.txt:
+    English terrain names were used as tokens in the Tk version, so a field for
+    the English name was added to f_info_j.txt.
+  [Jfix] birth.c: Fixed a bug in the Kobold background (this was why the TK
+    version did not run).
+
+----------------------------
+2000/01/21  2.2.8-J0.8.4
+----------------------------
+  [Efix] dungeon.c: Fixed the bug in the rest command. By Mr.Hoge.
+  [Tr] lib/edit/q*j.txt: Translated the untranslated parts of the quest
+    information.
+  [Jfix] load.c: Fixed a bug in the savefile kanji code conversion.
+  [Jnew] xtra2.c: Added a feature to the X command that shows how many of that
+    monster you must kill to level up.
+  [Jfix] xtra2.c: Fixed a bug in the above feature. By Habu.
+
+----------------------------
+2000/01/07  2.2.8-J0.8.3
+----------------------------
+  [Tr] scores.c: Fixed messages. By Mr.Hoge.
+  [Jnew] files.c: Added autopick for unidentified weapons/armor/arrows.
+  [Tr] monster2.c: Translated the untranslated parts.
+  [Tr] tables.c: Changed the translation of Monk to "Shugyo-so" (ascetic monk).
+    Sorry for doing it on my own.
+
+----------------------------
+2.2.8-J0.8.2
+----------------------------
+  [Jfix] h-define.h, cmd3.c, store.c, object1.c: Changed the kg display of
+    weight to one decimal place.
+  [Tr] store.c: Fixed the message when purchasing an item.
+  [Jfix] externs.h, files.c, cmd1.c, cave.c: Fixed autopick-related code.
+
+
+----------------------------
+2.2.8-J0.8.1
+----------------------------
+  Moved from 2.3.3 to 2.2.8.
+  The messages depending on the enemy's HP when a missile hits are now separate
+    for each kind of monster and have increased considerably. The translation
+    is somewhat sloppy. Also the number of shopkeeper names has grown about
+    eightfold. This is also a somewhat sloppy translation. The lib/help files
+    were largely revised. We look forward to Saito's ZKB Japanese version!
+
+  [Jfix] files.c: Added handling for when the player's name is Japanese.
+  [Jfix] mspells2.c: Fixed the SUMMON_KIN message.
+  [Jfix] init2.c, files.c dungeon.c: Made it read picktype.prf for each
+    character.
+
+
+----------------------------
+2.3.3-J0.8.0
+----------------------------
+  Mr. Hoge adapted the source to 2.3.3.
+
+----------------------------
+2.2.7-J0.8.0
+----------------------------
+  [Efix] files.c: Added labels (abcd...) to the flags of the character display
+    (file). Fixed a bug in the flag display of the character display (file).
+    Added a routine that repeats until a Japanese rumor is fetched.
+  [Tr] monster1.c: Changed the expression for spells in the monster recall, to
+    make it shorter.
+  [Jfix] cmd5.c: Used the Japanese verb conjugation routine to make the
+    arguments of get_spell the same as in the English version.
+  [Tr] r_info_j.txt: Added a large amount of information on Cthulhu-related
+    monsters.
+
+2.2.7-J0.1.0
+  [Tr] spells3.c: Fixed the message of elemental branding.
+  [Tr] bldg.c: Fixed a message: (Japanese past-tense wording of "has been
+    identified").
+
+(*) Changes before this were not recorded. Sorry.
+
+
+
+
+-----------------------------------------------------------
+Below is the change history of the English version of ZAngband
+-----------------------------------------------------------
+
+=== The History of Zangband ===
+
+This document describes the history of Zangband. It summarizes only the main
+events in the history of development, with comments from the previous authors
+and maintainers. For the detailed development history, see z_update.txt.
+
+
+=== Zangband 2.2.0 ===
+
+This version introduced the expanded wilderness and fixed quests (from
+Kangband), among other things. Towns, quests and the wilderness can easily be
+changed by editing text files. The following review is by Zangband's original
+author, Topi Ylinen.
+
+--- Version 2.2.0 (by Topi Ylinen) ---
+
+Zangband 2.2.0 is arguably the version that has changed the most so far. The
+historical versions (Angband-- and Zangband 1.*) mainly changed monsters and
+items, and versions 2.0.* to 2.1.* added new races and elements, but Zangband
+2.2.0 changes the very foundation of the game dramatically.
+
+The new concepts are taken from Kangband: the wilderness, new terrain, and
+customizable quests and maps. Some people may object to these changes, saying
+that randomness is reduced and more becomes predictable, but in fact nothing is
+lost from the game by the new specification. Everything has been *added* to the
+old system. The "random quests" of the popular Zangband 2.1.1 are still there,
+although the floors on which they appear are no longer random.
+
+That said, the pre-programmed parts are limited to maps and quests. At present
+the wilderness map is relatively small and there are not many quests, so
+players should get used to it quickly. Towns and quests can be added simply by
+adding definition files to lib/edit, and no recompilation is needed, so players
+of the new version can create their own quests and share them with all Zangband
+players!
+
+Besides the quests and the wilderness, Zangband 2.2.0 also adds new monsters
+(nearly 300, some of them taken from Vanilla), several new weapons and armors,
+and more than 52 new mutations. The mutations now total 98 kinds. In other
+words, there will be plenty of new discoveries and experiences even for
+Zangband veterans. To implement more than 850 monster races in total, the
+16-bit memory management code had to be removed. Zangband 2.* does not support
+16-bit code, so this has no effect.
+
+
+Other, less conspicuous changes include improved pet AI and s-lang support. The
+latter is not used yet, but it will make it possible to customize items,
+monsters, quests and so on very powerfully. Every function can be called from
+editable files, and no recompilation is needed.
+
+
+=== Zangband 2.1.0d ===
+
+This is the first version released after Robert Ruehlmann became the new
+maintainer of Zangband. In his own words...
+
+"ZAngband 2.1.0c was Topi's last version. He has got a job and doesn't have
+enough time anymore to continue work on ZAngband. He asked for a new maintainer
+and I was the one to take over the task. May I introduce myself, my name is
+Robert Ruehlmann, I'm the creator of the graphical Angband versions for DOS and
+webmaster of 'Thangorodrim - The Angband Page' (http://www.thangorodrim.net)."
+
+
+=== Versions 1.0 - 2.1.0c ===
+
+The following is a record of development by Topi Ylinen.
+
+The seeds of Zangband lie in an obsolete and long ago vanished PC
+variant (somewhat misleadingly) dubbed Angband--. The variant was
+written by a hopeless Angband addict (previously Moria veteran and
+winner) who got bored with the standard monsters and wanted to
+introduce some new monsters. Angband-- was based on the PC Angband 1.31
+sources, and it was set in Roger Zelazny's 'Amber' universe.
+
+Later this individual got a better computer and learned to code, and
+produced the PC Zangband, and most Angband-- monsters survived into
+PC Zangband 1.0. PC Zangband 1.0 was the first PC Angband to introduce
+(simple, font-based) graphics, which were also used in the graphical
+PC Angband 1.40.
+
+Yet this individual was still not cured of his addiction... his almost
+as strong addiction to the Civilization style fantasy strategy game
+'Master of Magic' inspired him to write a new magic system. The current
+version of Zangband (2.*) incorporates this magic system, as well as
+the best features from Angband-- and PC Zangband 1.0. It is based on
+the Angband 2.8.1 sources (by Ben Harrison), and is therefore portable
+to other systems (unlike the earlier versions which were for dos-pc's
+only).
+
+Incidentally, this person (me, Topi Ylinen) also thought that the
+standard Angband monsters were too easy, which led him to introduce
+such monsters as Death swords, Cyberdemons and Great wyrms of power...
+
+
+=== Special thanks ===
+
+The newer versions of Zangband might not have come into existence without the
+significant help from these excellent Angband programmers.
+
+Topi would like to thank:
+
+        Ben Harrison, for obvious reasons.
+
+        Greg Wooledge, who pointed out a bug in the dos compiler,
+        which was preventing Topi's progress with the first 2.* version
+        of Zangband and for various patches.
+
+        Julian Lighton, who must have sent Topi more ideas, patches,
+        and bug reports, than all the others toghether.
+
+        Robert Ruehlmann, whose nice new main-dos.c enables SVGA
+        graphics and even windows in ms-dos.
+
+        Paul Sexton, who is responsible for about 50% of the new code
+        in 2.1.0.
+
+Robert would also like to thank:
+
+        Heino Vander Sanden, who created the quest-code and
+        Dean Anderson, whose patch showed me the quickest way to
+        implement the quests.
+
+        Adam Bolt, who created the new ZAngband tiles.
+
+        Scott Bigham, for the S-Lang patch.
+
+        Jeff Duprey for the new mutations.
+
+        John Duffin and Leigh Silas Hanrihan for the new items.
+
+        Marten Woxberg for many new ideas.
+
+        Ken Wigle for allowing me to include his town and quest code.
+
+        Tim Baker for many patches and bugfixes and for ZAngbandTk.
+
+        Chris Weisiger for many new vault layouts.
+
+        Juergen Neitzel for countless new rumors.
+
+        Topi Ylinen, Mark Howson, Adam Horowitz, Oscar Nelson and
+        all the other regular members of the #angband chat channel
+        for giving me lots of new ideas and being good friends.
+
+        Benny S. Hofmann, Aram Harrow, Greg Harvey, Keldon Jones,
+        Graham Murray, Remco Gerlich, Tim Baker, Oscar Nelson,
+        Adam Horowitz, David A. Henry, "Strikes", Chris Hadgis,
+        David Howdon, Jenni Henzel, Stephen Lee, Gwidon S. Naskrent,
+        Eric Wright, Bob Martin, Jeff Coleburn, Ethan Sicotte,
+        Brandon Walker, Kelly Trinh, Brian Graham, James W. Sager III,
+        John Holton, Larry Bassel, Markus Linnala, Musus Umbra,
+        Mike Hommel, Christopher Stranczek, Werner Baer, Andreas Koch,
+        Jon Boehnker, Jason Willoughby, David Paoletti and many others
+        for bugreports, patches, bugfixes, and ideas.
+
+=== Brief Version History (of standard Angband) ===
+
+First came "VMS Moria", by Robert Alan Koeneke (1985).
+
+Then came "Umoria" (Unix Moria), by James E. Wilson (1989).
+
+
+You can find details of the history of "moria", the direct ancestor of Angband,
+in various places, and this file also carries a message from its author, Robert
+Alan Koeneke. Note that "moria" has been ported to various systems, has its own
+newsgroup, and has its own fans.
+
+In 1990, Alex Cutler and Andy Astrand, with the help of other students
+at the University of Warwick, created Angband 1.0, based on the
+existing code for Umoria 5.2.1. They wanted to expand the game, keeping
+or even strengthening the grounding in Tolkien lore, while adding more
+monsters and items, including unique monsters and artifact items, plus
+activation, pseudo-sensing, level feelings, and special dungeon rooms.
+
+Over time, Sean Marsh, Geoff Hill, Charles Teague, and others, worked
+on the source, releasing a copy known as "Angband 2.4.frog_knows" at
+some point, which ran only on Unix systems, but which was ported by
+various people to various other systems.
+
+Then Charles Swiger (cs4w+@andrew.cmu.edu) attempted to clean up the
+mess, resulting in several versions, starting sometime around November,
+1993, with Angband 2.5.1 (more or less) and leading up to Angband 2.6.2
+in late 1994. Several people ported (the primarily Unix/NeXT centered)
+Angband 2.6.1 to other platforms, including Keith Randall, who made a
+Macintosh port that added support for color usage. Some of the changes
+during this period were based on suggestions from the "net", PC Angband
+1.40, UMoria 5.5, and some of the Angband "variations", such as
+FAngband.
+
+Angband 2.6.1 was written primarily for Unix/NeXT machines, and required the
+use of low-level "curses" commands for all screen and keyboard manipulation.
+Porting to a new system required fundamental changes to the source in every
+version, and usually the creation of screen-handling source that behaved like a
+"curses" emulator. Among the ports made that way was "Macintosh Angband 2.6.1"
+by Keith Randall, which added support for color and formed the basis of the
+first release of Angband 2.7.0.
+
+In the latter half of 1994, I (Ben Harrison) was playing around with the
+Angband source, mainly because I was considering whether I could build a kind
+of automatic player for Angband, like the old "rogue-o-matic" program for the
+game "rogue". The difficulty of compiling the Macintosh version and the
+complexity of the source made that impossible, so I began tidying up the source
+in various ways for my own use.
+
+At the end of 1994, Charles Swiger announced that he could no longer support
+Angband because he had taken a job. This caused considerable dismay in the
+Angband community, represented by the Angband newsgroup, and various people
+tried to set up a "committee" to continue supporting Angband. The committee
+produced nothing but confusion (for example, someone suggested thinking about
+COBOL), so on the first day of 1995, when I published my own source, called it
+"Angband 2.7.0", and said that I would basically be the new maintainer of
+Angband, there was almost no opposition. Or at least, that is how I felt.
+
+Angband 2.7.0 was a very clean (though very buggy) rewrite of the source which,
+among other things, made porting to many platforms, starting with the Macintosh
+and UNIX, extremely simple. After spending a great deal of time on debugging,
+it became Angband 2.7.2, which included X11 and various IBM machines. Angband
+2.7.4 was released to the "ftp.cis.ksu.edu" site and quickly won popularity,
+helped perhaps by the OS2, Windows, Amiga and Linux ports. Angband 2.7.5 and
+2.7.6 added important features such as macros and user preference files, and
+continued to tidy up the source. Angband 2.7.8 was designed to supply another
+"stable" version that we can all give to our friends. In addition to new help
+files and spoiler files for the online help, it added a variety of minor tweaks
+and some new features.
+
+After Angband 2.7.8 was released, I set up a web site to record all the changes
+in each version (with a few omissions), and I became able to use a new
+developer ftp server to support the Official Mirror Server. This web site now
+permanently lives at the Official Angband Home Page (http://www.phial.com).
+Unfortunately, the following six versions are numbered Angband 2.7.9v1 to
+Angband 2.7.9v6, but in fact each of them was a major upgrade. Angband 2.8.0
+and Angband 2.8.1 were released in an attempt to use ordinary version numbers.
+Angband 2.8.2 and Angband 2.8.3 added a few random features, cleaned up the
+source a little, supported graphics, and supported several new systems.
+
+The Official Angband Home Page ("http://www.phial.com/angband/") provides not
+only the latest news about Angband, but also lists of the changes between
+versions, the changes planned for the next versions, and lists of various
+Angband-related email addresses and web sites.
+
+
+=== Some of the changes from Angband 2.6.1 to Angband 2.7.9 ===
+
+It is very difficult to pin down what was changed, and when, between 2.6.1 and
+2.7.8. Every version contained very many changes from the previous one, so many
+that the diff files became longer than the source itself. With the exception of
+the creation of new "main-xxx.c" files for the various platforms, and a few
+other exceptions noted in the source, I wrote most of the changes myself. Some
+were spontaneous, but most were made as a result of suggestions and comments
+from Angband players.
+
+The most important modification was a massive "code level cleanup" that
+made all of my other modifications much simpler and safer. This cleanup
+was so massive that in many places the code is no longer recognizable,
+for example, via "diff -r", often because it was rewritten from
+scratch.
+
+The second most important modification was the design of a generic "z-term.c"
+package, which allows Angband to be ported to a new machine with as few as 50
+lines of code. Angband 2.7.9 thus runs without modification on many machines,
+including Macintosh, PowerMac, Unix/X11, Unix/Curses, Amiga, Windows, OS2-386,
+DOS-386, and even DOS-286.
+
+It would be difficult to list all of the changes between Angband 2.6.1
+and Angband 2.7.9, because many of them were made in passing during the
+massive code level cleanup. Many of the changes are invisible to the
+user, but still provide increased simplicity and efficiency, and
+decreased code size, or make other more visable changes possible. For
+example, the new "project()" code that handles all bolts, beams, and
+balls, the new "update_view()" code that simplifies line of sight
+computation, or the new "generate()" code that builds new levels in the
+dungeon. Many changes have been made to increase efficiency, including
+the new "process_monsters()" and "update_monsters()" functions, and
+the new "objdes()" and "lite_spot()" routines. The generic "Term"
+package yielded efficient screen updates, and enabled the efficient use
+of "color".
+
+But anyway, here are a few things that come to mind, in no particular
+order, and with very little time or effort. Somehow I managed to put
+off updating this file to the very end, and it will just have to do for
+now. The recent changes (and bug fixes) can be found at the Official
+Angband Home Page.
+
+     color
+     macros
+     keymaps
+     user pref files
+     generic feature array, with template file
+     generic object array, with template file
+     generic artifact array, with template file
+     generic ego-item array, with template file
+     generic monster array, with template fils
+     generic vault array, with template file
+     binary image files for the template files
+     special stat effect tables
+     a special table of spells
+     a special table of options
+     inventory tagging
+     inventory restrictions
+     using objects off the floor
+     various new runtime options
+     the new "destroy" command
+     the new "examine" command
+     the new "note" command
+     the new "dump screen" command
+     the new "load screen" command
+     the new "un-inscribe" command
+     the new "change visuals" command
+     the new "change colors" command
+     the new "change macros" command
+     the new "save game" command
+     the new "fire" vs "throw" commands
+     rearranged equipment slots
+     a standard bow slot
+     an extra inventory slot
+     an underlying keyset
+     refueling torches
+     better monster memory
+     nicer targeting mode
+     object stacking
+     the recall window
+     the choice window
+     the mirror window
+     new high score code
+     special lighting effects
+     intelligent monsters
+     new monster flags
+     text formatting code
+     much cleaner store code
+     generic spell projections
+     scrolls of *identify*
+     maximize mode
+     preserve mode
+     new inscription code
+     new message recall code
+     new spell and prayer code
+     massive cleanup of effects code
+     new object allocation routines
+     powerful (but simple) on line help
+     robust savefile cheat preventers
+     new official cheating options
+     new blindness code
+     new hallucination code
+     optimized object description code
+     new keypress input routines
+     actual object discounts
+     fractional (asymptotic) speed
+     postponing updates/redraws
+     run-time price determination
+     better wizard commands
+     the automatic player
+     launchers of extra shots
+     elemental ignore flags
+     new ego-item types
+     new player ghost creation
+     no more sliding objects
+     no more sliding monsters
+     new object flags
+     new chest trap code
+     regularized the artifact code
+     regularized the ego-item code
+     new monster abilities
+     new monster spell attacks
+     some new store owners
+     run-time skill computation
+     player kills vs ancestor kills
+     better room illumination code
+     better group monster code
+     table access through pointers
+     more redefinable constants
+     slightly new screen layout
+     extreme code cleaning
+     extreme optimizations
+
+
+=== A Letter from the Original Author ===
+
+From: koeneke@ionet.net (Robert Alan Koeneke)
+Newsgroups: rec.games.roguelike.angband,rec.games.roguelike.moria
+Subject: Early history of Moria
+Date: Wed, 21 Feb 1996 04:20:51 GMT
+
+I had some email show up asking about the origin of Moria, and its
+relation to Rogue.  So I thought I would just post some text on the
+early days of Moria.
+
+First of all, yes, I really am the Robert Koeneke who wrote the first
+Moria.  I had a lot of mail accusing me of pulling their leg and
+such.  I just recently connected to Internet (yes, I work for a
+company in the dark ages where Internet is concerned) and
+was real surprised to find Moria in the news groups...  Angband was an
+even bigger surprise, since I have never seen it.  I probably spoke to
+its originator though...  I have given permission to lots of people
+through the years to enhance, modify, or whatever as long as they
+freely distributed the results.  I have always been a proponent of
+sharing games, not selling them.
+
+Anyway...
+
+Around 1980 or 81 I was enrolled in engineering courses at the
+University of Oklahoma.  The engineering lab ran on a PDP 1170 under
+an early version of UNIX.  I was always good at computers, so it was
+natural for me to get to know the system administrators.  They invited
+me one night to stay and play some games, an early startrek game, The
+Colossal Cave Adventure (later just 'Adventure'), and late one night,
+a new dungeon game called 'Rogue'.
+
+So yes, I was exposed to Rogue before Moria was even a gleam in my
+eye.  In fact, Rogue was directly responsible for millions of hours of
+play time wasted on Moria and its descendents...
+
+Soon after playing Rogue (and man, was I HOOKED), I got a job in a
+different department as a student assistant in computers.  I worked on
+one of the early VAX 11/780's running VMS, and no games were available
+for it at that time.  The engineering lab got a real geek of an
+administrator who thought the only purpose of a computer was WORK!
+Imagine...  Soooo, no more games, and no more rogue!
+
+This was intolerable!  So I decided to write my own rogue game, Moria
+Beta 1.0.  I had three languages available on my VMS system.  Fortran
+IV, PASCAL V1.?, and BASIC.  Since most of the game was string
+manipulation, I wrote the first attempt at Moria in VMS BASIC, and it
+looked a LOT like Rogue, at least what I could remember of it.  Then I
+began getting ideas of how to improve it, how it should work
+differently, and I pretty much didn't touch it for about a year.
+
+Around 1983, two things happened that caused Moria to be born in its
+recognizable form.  I was engaged to be married, and the only cure for
+THAT is to work so hard you can't think about it; and I was enrolled
+for fall to take an operating systems class in PASCAL.
+
+So, I investigated the new version of VMS PASCAL and found out it had
+a new feature.  Variable length strings!  Wow...
+
+That summer I finished Moria 1.0 in VMS PASCAL.  I learned more about
+data structures, optimization, and just plain programming that summer
+then in all of my years in school.  I soon drew a crowd of devoted
+Moria players...  All at OU.
+
+I asked Jimmey Todd, a good friend of mine, to write a better
+character generator for the game, and so the skills and history were
+born.  Jimmey helped out on many of the functions in the game as well.
+This would have been about Moria 2.0
+
+In the following two years, I listened a lot to my players and kept
+making enhancements to the game to fix problems, to challenge them,
+and to keep them going.  If anyone managed to win, I immediately found
+out how, and 'enhanced' the game to make it harder.  I once vowed it
+was 'unbeatable', and a week later a friend of mine beat it!  His
+character, 'Iggy', was placed into the game as 'The Evil Iggy', and
+immortalized...  And of course, I went in and plugged up the trick he
+used to win...
+
+Around 1985 I started sending out source to other universities.  Just
+before a OU / Texas football clash, I was asked to send a copy to the
+University of Texas...  I couldn't resist...  I modified it so that
+the begger on the town level was 'An OU football fan' and they moved
+at maximum rate.  They also multiplied at maximum rate...  So the
+first step you took and woke one up, it crossed the floor increasing
+to hundreds of them and pounded you into oblivion...  I soon received
+a call and provided instructions on how to 'de-enhance' the game!
+
+Around 1986 - 87 I released Moria 4.7, my last official release.  I
+was working on a Moria 5.0 when I left OU to go to work for American
+Airlines (and yes, I still work there).  Moria 5.0 was a complete
+rewrite, and contained many neat enhancements, features, you name it.
+It had water, streams, lakes, pools, with water monsters.  It had
+'mysterious orbs' which could be carried like torches for light but
+also gave off magical aura's (like protection from fire, or aggravate
+monster...).  It had new weapons and treasures...  I left it with the
+student assistants at OU to be finished, but I guess it soon died on
+the vine.  As far as I know, that source was lost...
+
+I gave permission to anyone who asked to work on the game.  Several
+people asked if they could convert it to 'C', and I said fine as long
+as a complete credit history was maintained, and that it could NEVER
+be sold, only given.  So I guess one or more of them succeeded in
+their efforts to rewrite it in 'C'.
+
+I have since received thousands of letters from all over the world
+from players telling about their exploits, and from administrators
+cursing the day I was born...  I received mail from behind the iron
+curtain (while it was still standing) talking about the game on VAX's
+(which supposedly couldn't be there due to export laws).  I used to
+have a map with pins for every letter I received, but I gave up on
+that!
+
+I am very happy to learn my creation keeps on going...  I plan to
+download it and Angband and play them...  Maybe something has been
+added that will surprise me!  That would be nice...  I never got to
+play Moria and be surprised...
+
+Robert Alan Koeneke
+koeneke@ionet.net
+
+
+=== History of Previous Versions ===
+
+
+                          VMS Moria Version 4.8
+Version 0.1  : 03/25/83
+Version 1.0  : 05/01/84
+Version 2.0  : 07/10/84
+Version 3.0  : 11/20/84
+Version 4.0  : 01/20/85
+
+Modules :
+     V1.0  Dungeon Generator      - RAK
+           Character Generator    - RAK & JWT
+           Moria Module           - RAK
+           Miscellaneous          - RAK & JWT
+     V2.0  Town Level & Misc      - RAK
+     V3.0  Internal Help & Misc   - RAK
+     V4.0  Source Release Version - RAK
+
+Robert Alan Koeneke               Jimmey Wayne Todd Jr.
+Student/University of Oklahoma    Student/University of Oklahoma
+
+
+
+
+
+                        Umoria Version 5.2 (formerly UNIX Moria)
+Version 4.83 :  5/14/87
+Version 4.85 : 10/26/87
+Version 4.87 :  5/27/88
+Version 5.0  :  11/2/89
+Version 5.2  :   5/9/90
+
+James E. Wilson, U.C. Berkeley
+                 wilson@ernie.Berkeley.EDU
+                 ...!ucbvax!ucbernie!wilson
+
+Other contributors:
+D. G. Kneller         - MSDOS Moria port
+Christopher J. Stuart - recall, options, inventory, and running code
+Curtis McCauley       - Macintosh Moria port
+Stephen A. Jacobs     - Atari ST Moria port
+William Setzer        - object naming code
+David J. Grabiner     - numerous bug reports, and consistency checking
+Dan Bernstein         - UNIX hangup signal fix, many bug fixes
+and many others...
+
+
+
+
+Copyright (c) 1989 James E. Wilson, Robert A. Keoneke
+  This software may be copied and distributed for educational,
+  research, and not for profit purposes provided that this copyright
+  and statement are included in all such copies.
+
+Umoria Version 5.2, patch level 1
+
+Angband Version 2.0  Alex Cutler, Andy Astrand, Sean Marsh, Geoff Hill,
+                     Charles Teague.
+
+Angband Version 2.4   :  5/09/93
+
+Angband Version 2.5   : 12/05/93 Charles Swiger.
+
+Angband Version 2.6   :  9/04/94
+
+Angband Version 2.7   :  1/1/95  Ben Harrison
+
+Angband Version 2.8   :  1/1/97  Ben Harrison
+
+
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+
+-- 2.7.9v3 translation: Dotou no Himajin (thanks to SUS, KUNI, Kairai,
+                         Otomaru and FIRST)
+-- 2.7.9v6 revision:    Shitoshin
+-- 2.8.0   revision:    Shitoshin
+-- 2.8.3   revision:    Shitoshin
+

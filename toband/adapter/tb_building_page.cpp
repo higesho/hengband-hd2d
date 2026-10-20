@@ -77,7 +77,12 @@ bool has_building_footer(const GameFrame &frame)
 
 bool is_info_any_key(const std::string &text)
 {
-    return text == u8c(u8"[何かキーを押すとゲームに戻ります]") || text == "[Press any key to continue]";
+    if (text == u8c(u8"[何かキーを押すとゲームに戻ります]") || text == "[Press any key to continue]") {
+        return true;
+    }
+    // 英語層に出る字は、原作の英語の枝（`[Press any key to continue]`）ではなく、日本語の枝を訳のカタログで引いた後の字
+    // （`[Press any key to return to the game]`。実機で確かめた）。訳は変わりうるので、`[` ～ `any key` ～ `]` の形で見る。
+    return text.size() > 9 && text.front() == '[' && text.back() == ']' && text.find("any key") != std::string::npos;
 }
 
 Page classify(const GameFrame &frame)
@@ -415,7 +420,7 @@ bool apply_building_page_window(GameFrame &frame)
         content = compose_armor(frame, ja);
         break;
     case Page::HallOfFame:
-        title = tr(u8c(u8"勇者の殿堂"), "Palace of heros");
+        title = tr(u8c(u8"勇者の殿堂"), "Palace of heroes");
         add_flow(content, rows_of(frame, 3, 18));
         break;
     case Page::ItemInfo: {
@@ -710,6 +715,109 @@ int building_page_selftest()
             rows += block.kind == "table_row" ? 1 : 0;
         }
         check(rows == 3, "eval_ac (english): 3 table rows");
+    }
+    // 武器の比較（英語。字は原作の `#else` の枝と、実機の Term で読んだ形）
+    {
+        GameFrame frame = building_frame(false);
+        clear_list(frame);
+        add_line(frame, 0, "Based on your current abilities, here is what your weapons will do");
+        add_line(frame, 2, two_columns("  3 Minimum Daggers", "  Long Sword"));
+        add_line(frame, 3, two_columns("  Number of Blows: 4", "  Number of Blows: 2"));
+        add_line(frame, 4, two_columns("  To Hit:  0  50 100 150 200 (AC)", "  To Hit:  0  50 100 150 200 (AC)"));
+        add_line(frame, 5, two_columns("          95  74  47  20   5 (%)", "          90  70  40  20   5 (%)"));
+        add_line(frame, 6, "(Only highest damage applies per monster. Special damage not cumulative.)");
+        add_line(frame, 7, two_columns("  Possible Damage:", "  Possible Damage:"));
+        add_line(frame, 8, two_columns("   17-19 per blow", "   25-30 per blow"));
+        add_line(frame, 23, " ESC) Exit building                                  Gold Remaining:       3100");
+        check(prepare_building_page(frame), "compare page (english) is recognised");
+        frame.modern.stage = "detail";
+        frame.modern.kind = "dialog";
+        check(apply_building_page_window(frame), "compare window (english) is composed");
+        int weapon_blocks = 0;
+        bool names = false, note = false, right_damage = false;
+        for (const auto &block : frame.modern.content) {
+            if (block.kind == "fields" && block.cells.size() == 1) {
+                ++weapon_blocks;
+                names = names || (block.cells[0].label == "First weapon" && block.cells[0].text == "3 Minimum Daggers")
+                    || (block.cells[0].label == "Second weapon" && block.cells[0].text == "Long Sword");
+            }
+            for (const auto &cell : block.cells) {
+                note = note || cell.text.rfind("(Only highest damage", 0) == 0;
+                right_damage = right_damage || cell.text == "25-30 per blow";
+            }
+        }
+        check(weapon_blocks == 2 && names && note && right_damage && frame.modern.title == "Compare weapons",
+            "compare (english): one name row per weapon, the right column and the note are read, titled with the action name");
+    }
+    // 賞金首リスト（英語。`Hit any key.` ＋ 行 6 の `Wanted monsters`）
+    {
+        GameFrame frame = building_frame(false);
+        add_line(frame, 0, "Hit any key.");
+        add_line(frame, 4, "          Bring back a corpse or bones and we will give you a prize.");
+        add_line(frame, 6, "          Wanted monsters");
+        add_line(frame, 7, "          Garuba the Blue Flame                    ---- $5700");
+        add_line(frame, 8, "          Bill the Rock Troll                      ---- done");
+        check(prepare_building_page(frame), "wanted page (english) is recognised");
+        frame.modern.stage = "detail";
+        frame.modern.kind = "dialog";
+        check(apply_building_page_window(frame), "wanted window (english) is composed");
+        std::vector<std::string> prizes;
+        std::string head;
+        for (const auto &block : frame.modern.content) {
+            if (block.kind == "table_row" && block.cells.size() == 2) {
+                prizes.push_back(block.cells[0].text + "|" + block.cells[1].text);
+            }
+            if (block.kind == "table_header" && block.cells.size() == 2) {
+                head = block.cells[0].text + "|" + block.cells[1].text;
+            }
+        }
+        check(prizes.size() == 2 && prizes[0] == "Garuba the Blue Flame|$5700" && prizes[1] == "Bill the Rock Troll|done" && head == "Target|Prize"
+                && frame.modern.title == "Wanted unique list",
+            "wanted (english): names and prizes are split at the dashes, the heading is English");
+    }
+    // 勇者の殿堂（英語）
+    {
+        GameFrame frame = building_frame(false);
+        add_line(frame, 0, "Hit any key to continue");
+        add_line(frame, 8, "You) Human tbmbase (Level  1)");
+        check(prepare_building_page(frame), "hall of fame page (english) is recognised");
+        frame.modern.stage = "detail";
+        frame.modern.kind = "dialog";
+        check(apply_building_page_window(frame), "hall of fame window (english) is composed");
+        bool shown = false, header_leaked = false;
+        for (const auto &block : frame.modern.content) {
+            for (const auto &cell : block.cells) {
+                shown = shown || cell.text == "You) Human tbmbase (Level 1)";
+                header_leaked = header_leaked || cell.text.find("Weaponmaster") != std::string::npos;
+            }
+        }
+        check(shown && !header_leaked && frame.modern.title == "Palace of heroes", "hall of fame (english): the player's line is shown, the building header is not, titled in English");
+    }
+    // アイテムの情報の枠（英語）
+    {
+        GameFrame frame = building_frame(false);
+        add_line(frame, 0, "3 Minimum Daggers (1d3) (+0,+0)");
+        add_line(frame, 1, "                Item Attributes:");
+        add_line(frame, 2, " Astinus  It can be thrown at your enemies to do great damage.");
+        add_line(frame, 3, "               Weapon type: small sword/rapier");
+        add_line(frame, 4, "               [Press any key to return to the game]");
+        add_line(frame, 19, " a) Research");
+        add_line(frame, 23, " ESC) Exit buil");
+        check(prepare_building_page(frame), "item info frame (english) over the building screen is recognised");
+        frame.modern.stage = "detail";
+        frame.modern.kind = "dialog";
+        check(apply_building_page_window(frame), "item info window (english) is composed");
+        bool owner = false, footer = false, field = false;
+        for (const auto &block : frame.modern.content) {
+            for (const auto &cell : block.cells) {
+                owner = owner || cell.text.find("Astinus") != std::string::npos;
+                footer = footer || cell.text.find("ESC)") != std::string::npos || cell.text.find("a)") != std::string::npos
+                    || cell.text.find("Press any key") != std::string::npos;
+                field = field || (cell.label == "Weapon type" && cell.text == "small sword/rapier");
+            }
+        }
+        check(!owner && !footer && field && frame.modern.title == "3 Minimum Daggers (1d3) (+0,+0)",
+            "item info (english): the owner's name, the building list and the any-key line are not carried over");
     }
     // 別の画面には触らない
     {

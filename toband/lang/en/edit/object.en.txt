@@ -1,0 +1,208 @@
+# TOband -> English: object (k_info) overrides. UTF-8; everything except the J: lines is ASCII.
+# I: k_info number / J: the Japanese name on the N: line (must match) / N: English name (only where the author's E: line is missing or has
+# Japanese in it: 230, 259 and the 17 spell books 537-553) / D: English description (only objects without a D:$ English line).
+# Markers & (article) and ~ (plural) are stripped from N: when the data is built (the JP build's object_desc() does not understand ~).
+
+I:51
+J:ミスリル・クローク
+D:A cloak woven with mithril fibers.
+
+I:64
+J:クロスボウ
+D:Once its steel string has been drawn beforehand, a bolt can be fired
+D:just by pulling the mechanical trigger. It is easier to handle than the
+D:short bow or the long bow. A crossbow is more powerful than a bowgun,
+D:but it takes a long time to draw the string.
+
+I:85
+J:異界の大槌
+D:A black great hammer imbued with evil power. It displays great strength
+D:against living beings.
+
+I:98
+J:ランス
+D:A spear with a long conical tip.  It is well-suited for the rider of a
+D:charging horse.
+
+I:125
+J:サンダル
+D:Footwear that does not enclose the foot, but is held on by straps or
+D:bands fastened to a sole or platform.
+
+I:136
+J:手袋
+D:Thin gloves. The hands move just as with bare hands, and they do not
+D:hinder the motions of spellcasting.
+
+I:149
+J:カチューシャ
+D:A semicircular hair ornament made of a band of metal or plastic.
+
+I:165
+J:防水クローク
+D:A cloak that keeps out the rain and keeps clothing from getting wet.
+
+I:166
+J:サーコート
+D:A thin garment worn over armor. It is worn on the march to keep metal
+D:armor from being scorched by strong sunlight, and it also serves to
+D:retain the heat inside the armor on cold occasions such as at night.
+
+I:182
+J:ドラゴン・レザー・アーマー
+D:Armor made from dragon hide.
+
+I:187
+J:キルト
+D:A pleatless wraparound skirt of tartan check.
+
+I:188
+J:ローブ・デコルテ
+D:A woman's formal evening gown: a sleeveless dress with a neckline cut
+D:low to show the back and chest.
+
+I:189
+J:ローブ・モンタント
+D:A woman's formal daytime dress, with sleeves to the wrists, a stand-up
+D:collar, and covered shoulders and chest.
+
+I:190
+J:燕尾服
+D:A man's formal evening wear. The jacket is short in front, and the back
+D:hem is long and split into a swallow tail. It is mostly black.
+
+I:191
+J:フロックコート
+D:A man's formal daytime wear. The coat is double-breasted and reaches the
+D:knees. Black broadcloth is used, with a waistcoat of the same cloth and
+D:striped trousers.
+
+I:197
+J:ミスリル製スケイル・メイル
+D:Armor made of a leather shirt with sleeves, to which many mithril pieces
+D:shaped like scales are sewn.
+
+I:211
+J:魔法のランプ
+D:A magic lamp said to grant the wishes of its owner.
+
+I:221
+J:属性転換:真鍮の
+D:This necklace reverses your alignment.
+
+I:230
+J:テレパシー:卍の
+N:Telepathy:Manji
+
+I:239
+J:フーペンダント:ひすいの
+D:A crystal sealing a blazing flame. It lets you communicate with
+D:Zoshonel, the god of fire.
+
+I:240
+J:オーペンダント:ミスリルの
+D:A crystal sealing pure, clear water. It lets you communicate with Gluza,
+D:the god of water.
+
+I:241
+J:ソルペンダント:エメラルドの
+D:A crystal sealing the blessings of the earth. It lets you communicate
+D:with Bersa, the god of the earth.
+
+I:242
+J:ヴァンペンダント:ガーネットの
+D:A crystal sealing the core of a thundercloud. It lets you communicate
+D:with Hanera, the god of wind.
+
+I:259
+J:守り:ジャスパーの
+N:Protection:Jasper
+
+I:441
+J:幻影:合 起翔 根
+D:When read, it gives you a 1/2 chance of taking no damage from any attack
+D:for 12+d12 turns.
+
+I:536
+J:腐ったカボチャ
+D:Is this really safe to eat?
+
+I:537
+J:[魔道入門]
+N:[Introduction to Magery]
+
+I:538
+J:[禁呪大全]
+N:[Compendium of Forbidden Spells]
+
+I:539
+J:[爆炎の書]
+N:[Book of Blazing Flames]
+
+I:540
+J:[水の恩寵]
+N:[Grace of Water]
+
+I:541
+J:[大地の恵み]
+N:[Bounty of the Earth]
+
+I:542
+J:[風の軌跡]
+N:[Trail of the Wind]
+
+I:543
+J:[一般祈祷]
+N:[Common Prayers]
+
+I:544
+J:[神聖祝福]
+N:[Holy Blessings]
+
+I:545
+J:[冥界の扉]
+N:[Gate to the Underworld]
+
+I:546
+J:[ネクロノミコン]
+N:[Necronomicon]
+
+I:547
+J:[野生との融和]
+N:[Harmony with the Wild]
+
+I:548
+J:[かんたんウィッチ]
+N:[Witchcraft Made Easy]
+
+I:549
+J:[魔女入門]
+N:[Introduction to Witchcraft]
+
+I:550
+J:[運命の魔女]
+N:[The Witch of Fate]
+
+I:551
+J:[古代語の聖典]
+N:[Scripture of the Ancient Tongue]
+
+I:552
+J:[怨霊退散]
+N:[Banishing Vengeful Spirits]
+
+I:553
+J:[メギドの雷炎]
+N:[Thunderflame of Megiddo]
+
+I:579
+J:刃の鞭
+D:A whip made of blades.
+
+I:580
+J:聖水
+D:When drunk, it purifies the body.
+
+I:581
+J:不浄な水
+D:When drunk, it defiles the body.

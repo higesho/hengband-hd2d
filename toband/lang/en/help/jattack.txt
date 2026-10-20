@@ -1,0 +1,571 @@
+=== Attacking and Weapons ===
+
+Attacking is simple in TOband. If you move into a monster, you attack
+it. If you are wielding a weapon (including digging implements, which
+are considered to be weapons) when you do so, the damage of the weapon
+is added when you hit a monster. If you wield nothing, you will attack
+using martial arts.
+
+Melee can do more damage per turn than any other form of attack, and
+the basic equipment (a weapon) is easy to find. On the other hand,
+melee only works against adjacent monsters and takes a great deal of
+good equipment to come into its own deeper in the dungeon. Upgrading
+to weapons with higher base damage dice is vital, but heavy weapons
+are harder to master. You will have to find a compromise, depending on
+class, experience level, and available equipment (use the 'C'haracter
+screen to see how various weapons affect your melee skill).
+
+You may wield both a primary weapon for melee combat and a bow or
+other missile launcher for attacking from a distance at the same time.
+Most classes will also benefit from carrying an assortment of magical
+devices for attack.
+
+***** <DistanceAttack>
+--- Attacking from a Distance ---
+
+You can attack monsters from a distance by firing a missile from a bow
+or other missile launcher, by throwing an object or by using magical
+items such as wands, staffs and rods. If you have chosen to play a
+spell casting class, you may be able to learn some spells which allow
+you to attack a monster from a distance. You can use distance attacks
+even when your target is next to you.
+
+Whenever you give a command to fire a weapon, cast a spell, or use an
+attacking magical device (unless the spell or device has an area
+effect), you will be prompted for a direction. You may choose any of
+the eight movement directions or press '*' or the space key to enter
+targeting mode. A detailed explanation of targeting mode can be found
+in the section on Command Descriptions
+(see jcommdesc.txt#ThrowFire [b]).
+
+You may also wish to make use of the use_old_target option, which
+automatically selects the last target. This saves you from having to
+target the same monster every time you attack it. An explanation of
+this option is found in the section on User Interface Options
+(see joption.txt#use_old_target [c]).
+
+***** <AttackWalls>
+--- Attacking Monsters in Walls ---
+
+Some monsters, for example ghosts, can pass through the dungeon walls.
+Even when such a monster is inside a wall, you can attack it by trying
+to move into the wall space which contains the monster. If the monster
+is invisible and you do not have the ability to see invisible
+creatures, you must tunnel into the wall space containing the monster
+to attack it.
+
+Bolt spells such as Magic Missile do full damage to a monster in a
+wall, but ball spells such as Mana Burst will be stopped and blow up
+just in front of the wall, and do only half damage. Inversely, when
+you have the ability to pass through walls and are inside one, this
+becomes a very important privilege for you.
+
+
+***** <MeleeWeapons>
+=== Melee Weapons ===
+
+Carrying a weapon in your backpack does you no good. You must wield a
+weapon before it can be used in a fight. A secondary weapon can be kept
+in the backpack, and switched with the primary weapon when needed.
+
+Weapons have two main magical characteristics, their enchanted ability
+to hit and their enchanted ability to do damage, expressed as
+"(+#,+#)". A normal weapon would be "(+0,+0)". Many weapons have
+bonuses to hit and/or to do damage. Some weapons are cursed, and have
+penalties that hurt the player. Cursed weapons cannot be unwielded
+until the curse is lifted. Identifying a weapon will tell you the
+magical bonuses and penalties and whether or not it is cursed.
+
+TOband assumes that your youth in the rough environment near the
+dungeons has taught you the relative merits of different weapons. The
+damage dice which define a weapon's capabilities are displayed as part
+of its description. Any damage enchantment is added to the dice roll
+for that weapon. The dice used for a given weapon are displayed as
+"#d#". The first number indicates how many dice to roll, and the second
+indicates how many sides they have. A "2d6" weapon will give damage
+from 2 to 12, plus any damage bonus. The weight of a weapon is also a
+consideration. Be aware that attacking with a heavier weapon raises the
+chance of scoring an especially deadly blow (a critical hit). Depending
+on your strength, dexterity, class and weapon weight, you may get
+several attacks per turn.
+
+
+***** <MissileLaunch>
+=== Missile Launchers ===
+
+Ammunition (arrows, bullets and so on) shows its full power when it is
+fired from a launcher suited to it. You may of course throw an arrow at
+a monster without firing it from a bow, but you will find the effects
+may not be what you had hoped. Guns fire bullets, bows fire arrows and
+crossbows fire bolts. Missiles of varying type and quality can be
+bought in the town and may be found throughout the dungeon.
+
+A launcher for attacking from a distance (a bow, etc.) boosts the
+capabilities of the arrows or bullets it fires. If the proper
+launcher/missile combination is used, the launcher's multiplier is
+applied to the total damage, making missile weapons very powerful given
+the proper missiles. This is especially true if the missiles are
+enchanted.
+
+Hits and misses are determined by the attacker's skill versus the
+defender's armor class (AC). A hit is a strike that does some damage;
+a miss does no damage, of course. A strike that hits but does no damage
+at all is also treated as a miss. Higher armor class makes it harder to
+do damage, and so leads to more misses; it will also reduce the damage
+from a strike that actually occurs.
+
+The varying types of missile launchers each have their own strengths
+and weaknesses, and have different multipliers and numbers of shots.
+The number of shots is the number of times you can fire in one turn's
+worth of time. They can be summarized as follows:
+
+                    Shots per turn    Multiplier
+Pistol:                  1.25             2
+Assault Rifle:           0.83             2
+Sniper Rifle:            0.83             4
+Shotgun:                 0.33             2
+Rocket Launcher:         0.67             -
+Short Bow:               1.00             2
+Long Bow:                1.00             3
+Bowgun:                  0.83             3
+Crossbow:                0.75             4
+
+
+Besides the usual description, the missiles that can be fired from your
+current launcher get a "(#/#)" display added. These show, respectively,
+the average damage of one shot and the average damage converted to one
+turn's worth of time. In general, a launcher with a larger second
+number is the more powerful weapon.
+
+Bows tend to be good at dealing constant streams of damage. Crossbows
+deal enormous amounts of damage in one shot, but it takes time to load
+a bolt, so a long bow will deal more damage over time. A pistol is
+good for quickly killing weak enemies. An assault rifle fires three
+rounds per shot and delivers powerful fire. A sniper rifle can fire a
+carefully aimed single shot at a target, but it takes time. A shotgun
+is a scattergun that fires many pellets around the target with one
+shot and has incredible power, but loading the shells takes even longer
+than a crossbow. A rocket launcher fires rockets that cause an
+explosion, so it is suited to area attacks.
+
+Except for firearms, a launcher's multiplier is increased further if
+your strength is high. Also, raising your skill level with a launcher
+increases the number of shots per turn you get with it.
+
+
+***** <EgoArtifact>
+=== Ego Weapons and Artifacts ===
+
+In addition to the ordinary weapons your character may find in the
+dungeon, some of them may be endowed with additional powers. These
+weapons fall into two types: (1) artifacts; and (2) ego weapons. Unlike
+artifacts, which are unique and may only be found once in each game, it
+is not unusual to find several ego weapons of the same type during the
+course of a character's adventures.
+
+In general, artifacts and ego weapons may boost one or more of your
+primary statistics, may confer certain abilities upon your character,
+may grant resistance to certain forms of attack and may be especially
+deadly against certain types of creature. Take note that if your weapon
+has two attributes that make it deadly to your opponent (for example
+you are fighting a demon and your weapon slays both evil and demons
+(demons are evil)), only the modifier with the larger multiplier will
+apply.
+
+(Defender)
+    A magical weapon that actually helps defend the wielder by
+    increasing his/her armor class and providing resistance against
+    damage from fire, cold, acid and lightning attacks. It also grants
+    levitation, lets you see invisible creatures, increases your
+    stealth and protects you from paralyzation and some slowing
+    attacks. It also helps you regenerate hit points and mana faster.
+    It has a randomly chosen ability to sustain a statistic and to
+    provide additional resistance. Some of them also give warnings to
+    the wielder.
+
+(Holy Avenger)
+    A Holy Avenger is one of the more powerful of weapons. It will
+    increase your wisdom and your armor class and prevent you from
+    becoming afraid. This weapon will do extra damage when used against
+    evil, demonic and undead creatures, and lets you see invisible
+    creatures. It is blessed and so can be wielded by priests with no
+    penalty. It has a randomly chosen
+    ability to sustain a statistic, and some of those found at very
+    deep levels of the dungeon have the very powerful ability to
+    increase your number of attacks.
+
+Weapon of Lodis
+    A Weapon of Lodis is one of the more powerful weapons. It
+    increases the wielder's constitution, allows you to see invisible
+    creatures and protects you from paralyzation and some slowing
+    attacks. Each one is also given, at random, one of the following:
+    blessing with slay evil; unholiness with slay good; or one to three
+    slays chosen from animals, undead, demons, orcs, trolls, giants,
+    dragons, humans and living creatures.
+
+(Asmode)
+    This weapon, imbued with the power of Asmode, the god of darkness,
+    does great damage to good and living enemies and increases your
+    ability to find traps and doors hidden in the dungeon. It also
+    helps you regenerate hit points and mana faster. In addition, it
+    grants resistance to darkness and protects you from paralyzation
+    and some slowing attacks. It may also have an additional
+    resistance or ability.
+
+(Ishtalle)
+    This weapon, imbued with the power of Ishtalle, the god of light,
+    increases your strength. It also does great damage to evil
+    monsters, undead, demons and the like. It also allows you to see
+    invisible creatures and protects you from paralyzation and some
+    slowing attacks. It has an additional, random, resistance.
+
+(Blessed)
+    A blessed weapon will increase your wisdom and can be wielded by
+    priests with no penalty. It may have some other special abilities.
+    In addition, unless the opponent is a good monster, it can ignore
+    that monster's weapon resistance.
+
+Weapon of Extra Attacks
+    These weapons will grant the user additional attacks per turn.
+
+Weapon of Sharpness (swords only)
+    These are known to often score vorpal hits (see below) and will
+    also increase your ability to tunnel through the dungeon walls.
+
+Weapon of Earthquakes (hafted weapons only)
+    These weapons may cause an earthquake when they strike an opponent
+    or when activated with the activate command. When that happens,
+    other monsters nearby may take damage from falling rocks, and a
+    small area of the dungeon around the player will collapse. They
+    also increase your ability to tunnel through the dungeon walls and
+    may stun your opponent.
+
+Weapon of Slaying
+    These weapons have unusually large damage dice. Some weapons of
+    this type deal poison damage or cause vorpal hits.
+
+(Dragoon)
+    Effective against dragons, it inflicts damage with 5 times the
+    normal dice against them. It also gives some resistance.
+
+Weapon of Ripper (not hafted weapons)
+    These weapons often score vorpal hits and are especially effective
+    against human-type opponents. Some of them are also strong against
+    particular races.
+
+Digging implements of Exeter, Barmamutha and Basque
+    These digging tools are just the thing for tunneling through the
+    dungeon walls. An implement of Exeter has one more damage die than
+    normal and an improved digging ability. Barmamutha has two more
+    dice, an even better digging ability and bonuses to hit and to
+    damage; it is a fifth heavier than normal. Basque has three more
+    dice, the best digging ability and larger bonuses to hit and to
+    damage; it is half again as heavy as normal. None of them can be
+    damaged by acid, fire, cold or electricity.
+
+
+--- The Elemental and Other Brands ---
+
+(Chaotic)
+    These bizarre, feared weapons have been warped by Chaos, and the
+    effect when they strike an opponent is hard to predict. Effects
+    include collapsing the surrounding dungeon, teleporting the
+    opponent away, draining the opponent's hit points, and confusing or
+    polymorphing the opponent, among others. A Chaotic weapon grants
+    resistance to chaos attacks and cannot be damaged by acid, fire or
+    electricity. It also has an additional, random, resistance.
+
+(Vampiric)
+    These foul weapons have been created by dark magic. They lust for
+    blood, and when they strike an enemy they greedily suck its
+    life away, transferring that energy to the wielder and healing
+    him or her in the process. Some of these weapons are especially
+    effective against human-type opponents, dealing 2.5 times the
+    normal dice against those creatures.
+
+Weapon of Melting
+    A magical weapon of acid that will inflict damage with 2.5 times
+    the normal dice when used against a creature that is not resistant
+    to acid. It also provides resistance against acid attacks.
+
+Weapon of Shocking
+    A magical weapon of lightning that will inflict damage with 2.5
+    times the normal dice when used against a creature that is not
+    resistant to electricity. It also provides resistance against
+    electricity attacks.
+
+Weapon of Freezing
+    A magical weapon of ice that will inflict damage with 2.5 times the
+    normal dice when used against a creature that is not resistant to
+    cold. It also provides resistance against cold attacks.
+
+Weapon of Burning
+    A magical weapon of fire that will inflict damage with 2.5 times
+    the normal dice when used against a creature that is not resistant
+    to fire. It also provides resistance against fire attacks.
+
+Weapon of Venom
+    A magical weapon of poison that will inflict damage with 2.5 times
+    the normal dice when used against a creature that is not resistant
+    to poison. It also increases your stealth and often scores vorpal
+    hits.
+
+Weapon of Force
+    This weapon uses up your mana when it hits (as long as you have
+    some left) and then inflicts damage with 3.5 times the normal dice
+    on monsters; if another multiplier (a slay or a brand) also
+    applies, that multiplier is raised to one and a half times its
+    value plus 2. It also increases your intelligence and allows you
+    to see invisible creatures.
+
+
+--- Weapons of Slay {Monster-Type} ---
+
+Weapon of *Slay* Animal
+    This weapon is especially effective against natural creatures and
+    will inflict damage with 4 times the normal dice against such
+    creatures. It also increases your intelligence and helps you
+    regenerate hit points and mana faster.
+
+Weapon of *Slay* Evil
+    This weapon is especially effective against evil creatures and
+    will inflict damage with 3.5 times the normal dice against such
+    creatures. It is blessed, increases your wisdom and provides
+    resistance to fear.
+
+Weapon of *Slay* Human
+    This weapon is especially effective against human-type creatures
+    and will inflict damage with 4 times the normal dice against such
+    creatures. It also increases your dexterity.
+
+Weapon of *Slay* Undead
+    This weapon is especially effective against undead creatures and
+    will inflict damage with 5 times the normal dice against such
+    creatures. It is blessed, increases your wisdom, allows you to see
+    invisible creatures and provides resistance to life-draining
+    attacks (hold life) and to nether.
+
+Weapon of *Slay* Demon
+    This weapon is especially effective against demonic creatures and
+    will inflict damage with 5 times the normal dice against such
+    creatures. It is blessed and increases your intelligence.
+
+Weapon of *Slay* Orc
+    This weapon is especially effective against orcs and will inflict
+    damage with 5 times the normal dice against such creatures. It also
+    increases your dexterity.
+
+Weapon of *Slay* Troll
+    This weapon is especially effective against trolls and will inflict
+    damage with 5 times the normal dice against such creatures. It also
+    increases your strength.
+
+Weapon of *Slay* Giant
+    This weapon is especially effective against giants and will inflict
+    damage with 5 times the normal dice against such creatures. It also
+    increases your strength.
+
+Weapon of *Slay* Good
+    This weapon is especially effective against good creatures and
+    will inflict damage with 3.5 times the normal dice against such
+    creatures. It is unholy, increases your intelligence and provides
+    resistance to fear.
+
+Weapon of *Slay* Living
+    This weapon is especially effective against living creatures and
+    will inflict damage with 3.5 times the normal dice against such
+    creatures. It is unholy and increases your constitution.
+
+(There is no ego weapon dedicated to slaying dragons in general; the
+(Dragoon) weapons described above are the ones aimed at dragons.)
+
+
+--- Missile Launchers ---
+
+Launcher of Accuracy
+    These missile launchers have an unusually high bonus to hit.
+
+Launcher of Velocity
+    These missile launchers have an unusually high bonus to damage.
+
+Launcher of Extra Might
+    These missile launchers have a higher launcher multiplier than
+    normal. They also provide some resistance.
+
+Launcher of Extra Shots
+    These missile launchers can fire more shots per turn than normal.
+
+--- Ammunition ---
+
+Ammunition of Hurt Animal
+    This ammunition is especially effective against natural creatures
+    and will do 1.7 times the normal damage against such creatures.
+
+Ammunition of Hurt Evil
+    This ammunition is especially effective against evil creatures and
+    will do 1.5 times the normal damage against such creatures.
+
+Ammunition of Hurt Dragon
+    This ammunition is especially effective against dragons and will do
+    2 times the normal damage against such creatures.
+
+Ammunition of Shocking
+    This ammunition will inflict 1.7 times the normal damage when
+    used against a creature that is not resistant to electricity.
+
+Ammunition of Flame
+    This ammunition will inflict 1.7 times the normal damage when
+    used against a creature that is not resistant to fire.
+
+Ammunition of Frost
+    This ammunition will inflict 1.7 times the normal damage when
+    used against a creature that is not resistant to cold.
+
+Ammunition of Slaying
+    This ammunition has unusually large damage dice.
+
+Ammunition of Wounding
+    This ammunition has unusually large bonuses to hit and to damage.
+
+
+--- Other Items ---
+
+Apart from these there are some rare and powerful weapons which are not
+ego items. Maces of Disruption do great damage to undead creatures,
+and Diamond Edges may score vorpal hits.
+
+Also, legendary weapons (artifacts) are similar to ego items but
+usually have more abilities and are very powerful. Artifacts never
+break. However, they may deteriorate and, if caught in the effect
+range of *Destruction*, may disappear forever.
+
+In the world of TOband, there are two types of artifacts: fixed and
+random. The game itself makes no distinction between the two, but a
+fixed artifact has a predetermined name and attributes, so, if you
+play the game many times, you may encounter the same fixed artifact.
+The name and attributes of a random artifact are determined when it is
+generated, so it is extremely unlikely that you would see that
+artifact again in another game.
+
+By the way, the rare weapons mentioned above can also become ego
+items at the same time. A Diamond Edge (Holy Avenger) will have
+a more powerful attack than many artifacts.
+
+
+Note on Vorpal Weapons: A weapon with the vorpal flag will have a
+1-in-6 chance of doing additional damage each time it strikes. If it
+passes the roll it has a chance of doing it again. This continues until
+a roll is failed. The calculations are nasty but the net effect is an
+average 22% increase in damage output.
+
+
+***** <MagicalAids>
+=== Magical Aids to Physical Combat ===
+
+There are several magical means of increasing your physical combat
+ability. The most common of these are potions of Heroism and Berserk
+Strength and various scrolls (Blessing, Holy Prayer, etc.). These
+grant small bonuses to your combat skill, and the bonuses are
+cumulative. Some magic realms contain equivalent spells. Be aware that
+you can't cast spells while berserk from a potion of Berserk Strength.
+If you really want to cast a spell while berserk, drinking a potion of
+Cure Light Wounds or the like will clear your head.
+
+
+***** <BareHandAttacks>
+=== Bare-Handed Attacks ===
+
+A TOband character can also fight bare-handed. As your level and your
+Martial Arts skill rise, the number of attacks you get per turn
+increases and your techniques become increasingly powerful. Higher
+level attacks have a chance to stun your opponent.
+
+While the type of attack used for each blow is chosen at random from
+the list of available techniques, as your Martial Arts skill level
+rises there is a bias towards the techniques which do greater damage.
+This is because the game rolls several times for each blow and the
+highest-level technique is the one chosen.
+
+
+***** <BareHandTypes>
+--- Bare-Handed Attack Types ---
+
+Attack name         Skill level  Damage  Stun  Notes
+-----------------------------------------------------------------------
+Punch               Beginner       1d5     -
+Kick                Beginner       1d7     -
+Strike              Novice         1d9     -
+Knee                Novice         2d4     *   Likely to stun male opponents
+Elbow               Novice        1d12     -
+Butt                Average        2d6     -
+Ankle Kick          Average        3d6     -   May slow down the opponent
+Uppercut            Average        5d5     6
+Double-kick         Skilled        5d6     8
+Cat's Claw          Skilled        5d8     -
+Jump Kick           Skilled        6d8    10
+Eagle's Claw        Expert         7d9     -
+Circle Kick         Expert        8d10    10
+Iron Fist           Expert        8d11    10
+Flying Kick         Master        8d12    12
+Half-moon Kick      Master        9d12    16
+Kingly Shooting Star Kick
+                    Master       10d13    18
+
+
+***** <MeleeTactics>
+=== Basic Tactics ===
+
+
+Pillardancing
+-------------
+This is the classic tactic for when you are faster than your enemy:
+find an isolated wall surrounded by eight floor squares, lure the
+enemy to it, and when you and the enemy are next to the wall, attack
+it, then run to the opposite side of the wall from it, and repeat the
+whole thing from the start.
+
+In TOband, however, this method is of no use at all!!! Monsters in
+TOband inherently move at erratic speeds. A monster may stand still for
+a while and then suddenly move many steps in a row and attack you.
+
+
+Shoot'n Scoot
+-------------
+Requires a large room, Phase Door, and some type of ranged attack.
+Stand at one end of the room while your enemy is at the other end.
+Repeat your ranged attack until it gets next to you, then use Phase
+Door to jump to a distant spot. Keep doing that. By the time you run
+out of arrows or sling pebbles, the enemy will be dead or nearly so.
+
+
+Wail'n Bail
+-----------
+Requires Teleport items. Fight the monster until you're almost dead,
+then teleport out. Then find it again and resume fighting. This is
+dangerous, because you could teleport right next to some other nasty
+monster. Also, it is not generally useful for killing unique monsters,
+as they regenerate damage very quickly, and by the time you find them
+again, they will have healed what you did to them.
+
+
+The Anti-Summoning Corridor
+---------------------------
+Requires a little time to set up. This can be done just about anywhere.
+Dig a twisting corridor into the rock, and station yourself at one end
+of it. When your opponent arrives, it won't be able to summon any
+monsters next to you. This is a very important technique for fighting
+powerful monsters which can summon a horde of other monsters.
+
+
+--
+Original   : (??) and Leon Marrick
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.3.0
+Updated    : TOband 0.0.3
+
+
+***** Begin Hyperlinks
+***** [b] jcommdesc.txt#ThrowFire
+***** [c] joption.txt#use_old_target
+

@@ -1,0 +1,401 @@
+=== Races, Classes, Elements ===
+
+This file describes the races, classes and elements that the player can
+choose in TOband. At the end of the file there are tables of the stat and
+skill modifiers for each race and class.
+
+
+***** <TheRaces>
+=== The Races ===
+
+TOband has 11 races to choose from. Each race has its own strengths and
+weaknesses, and its own modifiers to stats and abilities. Many races also
+have innate abilities and powers.
+
+
+***** <Human>
+--- Human ---
+
+    The Human is the baseline character; all other races are compared to
+    humans. Humans can take up any class and do about average in every one.
+    Because humans have short lifespans, they tend to gain levels faster
+    than any other race. They have no special modifiers or abilities.
+
+
+***** <Hawkman>
+--- Hawkman ---
+
+    Hawkmen are a fierce, battle-loving winged race. They are long-lived,
+    with three times the lifespan of a human. By using their wings they can
+    avoid pits and dangerous terrain.
+
+
+***** <Lizardman>
+--- Lizardman ---
+
+    Lizardmen are an amphibious race with tough scales. The scales give
+    them resistance to acid and cold. They are also excellent fighters,
+    with a high hit point gain, and are fairly good at disarming traps and
+    using magic devices.
+
+
+***** <Fairy>
+--- Faerie ---
+
+    Faeries are very small. They have little wings and can fly over traps
+    and dangerous terrain. They love sunlight and resist light, but take
+    great damage from darkness. At high levels they can fly faster.
+
+
+***** <Gremlin>
+--- Gremlin ---
+
+    Gremlins are the opposite of faeries. They have wings and can fly over
+    traps and dangerous terrain. They love darkness and resist dark and
+    nether, but take great damage from light. At high levels they can fly
+    faster.
+
+
+***** <Skeleton>
+--- Skeleton ---
+
+    As undead, Skeletons need not worry about poison or life-draining
+    attacks. They do not use eyes to perceive objects, so they cannot be
+    fooled by invisible things. Their bones resist shards, and at higher
+    levels they gain resistance to cold. The effects of potions and food
+    work on a Skeleton without passing through its stomach (which it does
+    not have), but the potions and food themselves fall straight through
+    its jaw and no nourishment can be absorbed. Skeletons do not need food.
+
+
+***** <Ghost>
+--- Ghost ---
+
+    Ghosts are a powerful kind of undead. Being semi-material, they can
+    pass through walls, but they are hurt by the density of the wall when
+    they do. Like other undead, they cannot have their life force drained,
+    can see invisible things, resist poison and cold, and are further immune
+    to nether. At sufficiently high levels they gain telepathy. Ghosts can
+    become outstanding spellcasters, but their physical attributes are very
+    poor. Ghosts do not need food.
+
+
+***** <Pumpkin-Head>
+--- Pumpkinhead ---
+
+    Pumpkinheads are pumpkin ghosts created by the witch Deneb. They bring
+    out the cruelty in their enemies, so enemies tend to target them first.
+    Pumpkinheads are physically weak, but are immune to paralysis, resist
+    chaos and disenchantment, sustain their life force, and gain telepathy
+    as they level up. Only males can choose this race.
+
+
+***** <Goblin>
+--- Goblin ---
+
+    Goblins can make good fighters, but cannot be expected to do much with
+    magic. They are poor at stealth, and awful at searching, disarming and
+    perception. Goblins are ugly, and tend to be asked higher prices when
+    shopping. Because they like to live underground, goblins resist
+    darkness.
+
+
+***** <Gorgon>
+--- Gorgon ---
+
+    Gorgons are monsters with countless snakes growing in place of hair, and
+    a snake's lower body instead of a mermaid's. They are competent at every
+    skill, and are far better with bows than other races. They resist
+    petrification, and as they level up they can also gain resistance to
+    acid, cold, poison, nether and chaos. On top of that, they can use the
+    "evil eye" that turns whoever sees it to stone, which makes this a very
+    powerful race. Only females can choose this race.
+
+
+***** <Mermaid>
+--- Mermaid ---
+
+    Mermaids are a sea-dwelling race with a human upper body and a fish's
+    lower body. They love the water, and can be expected to fight very well
+    in it. On land, however, they are awkward, and moving about takes effort.
+    They are also excellent singers, and can sing songs that charm monsters.
+
+
+
+***** <TheClasses>
+=== The Classes ===
+
+TOband has 25 classes, each with its own strengths and weaknesses and its
+own modifiers to the character's abilities. Many classes also have unique
+abilities. These often depend on level, and some cannot be used until late
+in the game.
+
+
+***** <Soldier>
+--- Warrior ---
+
+    The Warrior is the basic class for male characters. It has no special
+    class skills and its parameters grow evenly, so if you raise one as a
+    Warrior you will end up with a half-baked jack of all trades. It is,
+    however, quite useful for straightening out a character who has become
+    too specialized.
+
+
+***** <Knight>
+--- Knight ---
+
+    Knights excel in arms and are ambassadors of the chivalric code of
+    loyalty. They cannot use magic, but defend better than Warriors and are
+    skilled with swords and polearms. They are also fairly good at riding,
+    and their attack power when riding and wielding a lance is devastating.
+
+
+***** <Berserker>
+--- Berserker ---
+
+    Berserkers are savage fighters who cut a path to survival with a
+    powerful body and superhuman strength. They are good with axes and blunt
+    weapons. They cannot use magic and are poor with magic devices, but
+    their instincts, honed on the battlefield, are keen, and they excel at
+    disarming, perception and searching.
+
+
+***** <Terror-Knight>
+--- Terror Knight ---
+
+    Terror Knights are fearsome knights who proudly lead the spirits of
+    everyone they have killed. Their killing power is almost mythical, but
+    they have next to no magical ability.
+
+
+***** <BeastTamer>
+--- Beast Tamer ---
+
+    Beast Tamers are warriors who fight alongside monsters. They favor the
+    whip, and can cast Symbiotic magic that supports their pets. They are
+    also good at riding, and suffer little penalty even when wielding
+    weapons ill-suited to riding. The stat needed to cast spells is wisdom.
+
+
+***** <Sword-Master>
+--- Swordmaster ---
+
+    Swordmasters are seekers of the way who polish their souls by mastering
+    the sword, aiming to rise above karma. They have superb swordsmanship,
+    are good at dual wielding, and can use magic of their own element. The
+    stat needed to cast spells is intelligence.
+
+
+***** <Dragoon>
+--- Dragoon ---
+
+    This class prefers swords and boasts overwhelming killing power against
+    dragons. It can also use simple magic. The stat needed to cast spells is
+    intelligence.
+
+
+***** <Ninja>
+--- Ninja ---
+
+    A superior fighter of the dark, with high stealth and skill with swords,
+    able to wield two weapons and to use magic of its own element. The stat
+    needed to cast spells is intelligence.
+
+
+***** <Wizard>
+--- Wizard ---
+
+    Wizards are spellcasters who draw on broad knowledge and rich experience
+    to master many attack spells. In addition to Magery magic, they can use
+    the magic of all four elements. The stat needed to cast spells is
+    intelligence.
+
+
+***** <Warlock>
+--- Warlock ---
+
+    Warlocks are scholarly spellcasters. They can use Witch magic, two
+    books of Magery magic and Drakonite magic, have reasonable melee power,
+    and can summon golems. The stat needed to cast spells is intelligence.
+
+
+***** <Exorcist>
+--- Exorcist ---
+
+    Exorcists are specialists in slaying demons and evil spirits. By using
+    Crusade magic they show unmatched strength against evil demons and the
+    undead. They can also use magic of their own element. They also have
+    reasonable melee power, and can find a way to victory in melee. The stat
+    needed to cast spells is wisdom.
+
+
+***** <Amazoness>
+--- Amazoness ---
+
+    The Amazoness is the basic class for female characters. She cannot use
+    magic, but handles everything else competently. However, she is
+    undeniably short on power, so it is not a good idea to raise her as an
+    Amazoness to the very end.
+
+
+***** <Valkyrie>
+--- Valkyrie ---
+
+    Valkyries are spellswords who excel with the spear. They are also good
+    at riding. A spear thrust from horseback is devastatingly powerful. They
+    can use magic of their own element. The stat needed to cast spells is
+    wisdom.
+
+
+***** <Archer>
+--- Archer ---
+
+    Archers are specialists with bow-type weapons. They cannot use magic,
+    but their shooting ability is tremendous. They can shoot down enemies
+    one after another.
+
+
+***** <DragonTamer>
+--- Dragon Tamer ---
+
+    Dragon Tamers are spellswords who take up the sword themselves and fight
+    alongside dragons. She is especially liked by dragons, and can borrow
+    their power at any time. The stat needed to cast spells is wisdom.
+
+
+***** <Witch>
+--- Witch ---
+
+    Witches are sorceresses who excel at support magic and the use of magic
+    devices. They can cast Witch magic, Magery magic, and the first book of
+    Death magic. The stat needed to cast spells is intelligence.
+
+
+***** <Sirene>
+--- Siren ---
+
+    Sirens are beautiful sorceresses who wield many attack spells. In
+    reality they are hardly different from Wizards. The stat needed to cast
+    spells is intelligence.
+
+
+***** <Cleric>
+--- Cleric ---
+
+    Clerics are priests who excel at healing magic. They can cast Holy magic
+    and magic of their own element. Compared with other magic users, they can
+    also use a bow to some extent. A Cleric can be thought of as an
+    apprenticeship class before changing to Priest. The stat needed to cast
+    spells is wisdom.
+
+
+***** <Priest>
+--- Priest ---
+
+    Priests are clerics who wield both attack and healing magic. They can
+    cast Holy magic, Crusade magic and magic of their own element. A Priest
+    can be thought of as the advanced class of the Cleric. Their healing
+    magic is somewhat inferior to the Cleric's. The stat needed to cast
+    spells is wisdom.
+
+
+***** <Lich>
+--- Lich ---
+
+    A reincarnation class taken on after death by a Wizard, Warlock,
+    Exorcist, Siren or Witch who was wearing the "Ring of the Dead". Having
+    been revived by the power of the Ring of the Dead, the Lich has even
+    higher-level abilities. A Lich can use every magic realm except Holy,
+    Symbiotic, Crusade and Drakonite, but can no longer change class. The
+    stat needed to cast spells is intelligence. Liches do not need food.
+
+
+***** <Angel-Knight>
+--- Divine Knight ---
+
+    A reincarnation class that a pure-hearted female character may be able
+    to take on after death. Boasts high combat ability in both melee and
+    magic, but can no longer change class. Divine Knights can use Crusade
+    magic and magic of their own element. The stat needed to cast spells is
+    wisdom. Divine Knights do not need food.
+
+
+***** <High-Witch>
+--- Wicce ---
+
+    The Wicce is: "The same as a Witch? How rude. Don't lump me in with
+    them. I'm prettier and curvier (snip) and the trick is to say it with a
+    slight rising tone, like when you ask someone a question (heart)." This
+    class can no longer change class. The stat needed to cast spells is
+    intelligence.
+
+
+***** <Gunner>
+--- Fusilier ---
+
+    The only class that can use the "gun", a powerful weapon made on the
+    southern continent of Barbauda that takes the place of the sword. Having
+    abandoned its faith in supernatural science such as magic, its
+    resistance to magic has dropped remarkably, and it cannot change to any
+    other class.
+
+
+***** <Temple-Knight>
+--- Templar ---
+
+    Templars are knights who have sworn loyalty to the Dark Knights
+    Loslorien. They can use every kind of weapon and cast Death magic. While
+    in this class you cannot change to any other class. The stat needed to
+    cast spells is wisdom.
+
+
+***** <White-Knight>
+--- White Knight ---
+
+    White Knights are knights who have sworn loyalty to the Kingdom of New
+    Xenobia. They can use every kind of weapon and cast Holy magic. While in
+    this class you cannot change to any other class. The stat needed to cast
+    spells is wisdom.
+
+
+***** <TheElements>
+=== The Elements ===
+
+TOband has four elements: Fire, Aqua, Earth and Wind. They affect damage
+calculations according to the elements of the monsters fighting the player
+and the elements of the terrain. In addition, the magic realms a class can
+use may be restricted by element.
+
+The elements have opposing relationships: Fire and Aqua are opposed, and
+Earth and Wind are opposed.
+
+Many magic attributes correspond to an element. For example, fire
+corresponds to Fire, cold to Aqua, acid to Earth, and so on.
+
+All damage, from melee, magic and so on, is affected by the elements. The
+way it is decided involves a rather complicated chain of several factors,
+and the overall flow differs between magic attacks and everything else.
+
+For a magic attack, if the spell has a corresponding element, the greater
+the element value of that element on the terrain of both the caster and the
+target, the more power the spell has. In addition, if the spell has the same
+element as the caster, its power rises further, and if it has the element
+opposed to the caster's, its power drops.
+
+For an attack that is not magic, the attacker's element is used from among
+the element values of the terrain of both the attacker and the one being
+attacked, and the greater that element value, the more power the attack has.
+
+To resist the damage increased by these effects, there is a defensive
+modifier based on element. The greater the defender's own element value
+among the element values of the terrain of the one being attacked, the
+greater the rate at which damage is reduced.
+
+If you have a means of manipulating elements, you can suitably manipulate
+your own elements, the caster's, and the terrain's, so that you increase the
+damage you deal while reducing the damage you take.
+
+
+--
+Updated    : Hengband 1.5.0
+Updated    : TOband 0.0.3

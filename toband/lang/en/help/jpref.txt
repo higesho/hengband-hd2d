@@ -1,0 +1,577 @@
+=== User Pref Files ===
+
+TOband allows you to change various aspects of the game to suit your
+tastes. By rewriting the pref files you can change the keymaps (changing
+the way pressed keys are assigned to the underlying keymap), create
+macros (making one key remember a series of several keypresses), modify
+the visuals (changing the characters and colors that represent monsters,
+items and terrain), change the colors (making a given color brighter,
+darker, or something else entirely), set options (turning their
+functions on and off), and also set up the auto-pickup and
+auto-destruction of items.
+
+TOband stores the various changes made by the user in files called "user
+pref files", which consist of comments and simple commands that change
+settings. There are many ways to load a user pref file, and some of
+them are loaded automatically.
+
+The pref files that come with TOband are in the "lib/pref/" directory.
+The settings you save and the pref files you write yourself are kept in
+the "user directory". If the game was compiled with the standard
+settings, this is ~/.angband/TOband/ on Unix and under lib/user/ on
+other platforms. You can also use the command to enter a user pref
+command (") to type in the pref commands, which are normally written in
+a file, directly during the game. After changing a setting that affects
+the game screen, you may need to use the redraw command (^R).
+
+When the game starts up, the "pref.prf" file is loaded first. This file
+contains some user pref commands that work on every system. Then the
+"pref-xxx.prf" file is loaded. This file contains the macros, colors and
+so on that each system needs. The "xxx" in all of these names stands for
+a string that depends on the system. Specifically, it is the "xxx" of
+the "main-xxx.c" that was used to build the executable. When the
+character's screen symbols are set up, "font.prf" and then
+"font-<character name>.prf" are loaded. These files contain the
+settings of how monsters, items and terrain are displayed (their
+characters and colors).
+
+After you have loaded the savefile of an old character or created a new
+one, several more pref files are loaded automatically. First the
+"user.prf" file and then the "user-xxx.prf" file are loaded. These
+files normally hold what the user has set, but they are common to all
+characters. Then the "<race name>.prf", "<class name>.prf" and
+"<character name>.prf" files are loaded, where <race name> is the race
+of the player, <class name> is the class, and <character name> is the
+name of the character you are currently playing. You will mainly write
+your own settings in "<character name>.prf".
+
+After that, the dedicated auto-pickup/destroy file is loaded:
+"pickpref-<character name>.prf" if it exists, and otherwise
+"pickpref.prf". In this file, in addition to writing macros and the
+like, you can register the names of items to be picked up
+automatically. You have to write this file yourself with an editor, or
+with the auto-picker/destroyer editor (the '_' command). Finally, the
+pref file of each magic realm the character can use ("<realm name>.prf")
+is loaded.
+
+When you want to change a setting, you can write the pref commands
+directly into a user pref file with an editor, but you can also change
+settings more intuitively in the game with "Interact with macros" (@),
+"Interact with visuals" (%) and "Interact with colors" (&). In these
+commands you can also load existing user pref files, create new user
+pref files, and overwrite information in existing user pref files.
+
+When TOband overwrites information in an existing user pref file, it
+deletes the old setting lines. That is, you need not worry that the file
+will swell to an enormous size as you keep appending to it. Feel free to
+write as much as you like.
+
+
+***** <Commands>
+=== User pref file commands ===
+
+Interact with options (=)
+     Displays the option screen, where you can change how TOband
+     behaves. Be careful with the "cheating options": once you enable
+     one of them, that fact is recorded in the savefile, and your
+     character can never appear in the high-score list. You can also set
+     the ordinary options with the "X" and "Y" commands in a user pref
+     file. Also, some options do not take effect until you enter the
+     redraw command (^R).
+
+Interact with macros (@)
+     Lets you set macros. You can load macros from a user pref file,
+     save macros to a user pref file, define macros of various kinds,
+     and change keymaps.
+
+Interact with visuals (%)
+     Lets you make settings related to the screen display. You can load
+     visual settings from a user pref file, save them to a user pref
+     file, and change the colors and characters of monsters, items and
+     terrain. After changing the settings, use the redraw command (^R)
+     to redraw the screen.
+
+Interact with colors (&)
+     Lets you set colors. This command does not work on some systems.
+     After changing the settings, use the redraw command (^R) to redraw
+     the screen.
+
+Reload auto-picker/destroyer preference ($)
+     This command loads "pickpref-<character name>.prf" or
+     "pickpref.prf" again. It is handy when you have edited these files
+     with an editor during the game.
+
+Edit auto-picker/destroyer pref (_)
+     Lets you edit the auto-picker/destroyer pref file in the user
+     directory with the built-in editor. The ESC key opens the menu in
+     this editor. You can see and use all the edit commands from the
+     command menu. Press ^Q or ^W to quit the editor (see also
+     jeditor.txt).
+
+
+***** <Macros>
+=== User Pref Files (Macros) ===
+
+The "Interact with macros" command lets you define and remove macros. A
+macro defines a series of keypresses on a function key or an otherwise
+unused key. Macros exist to spare you the trouble of entering the same
+series of keypresses over and over again.
+
+Macros are applied in every situation (the only exception is while you
+are choosing the trigger key in the macro command). Therefore, if you
+use, for example, the escape key or the 'y' key as a macro trigger, you
+will no longer be able to enter the original escape key and so on, which
+would cause you great trouble.
+
+A macro can be bound to a sequence of several keypresses, but when you
+use a special key (the Return key or a CTRL key) it must be written in
+a special format. Writing "^X" is interpreted as CTRL-X (other CTRL keys
+work the same way), writing "\NNN" is interpreted as the decimal number
+NNN, and writing "\xHH" is interpreted as the hexadecimal number HH.
+Also, "\e" stands for ESC, "\n" for the next line (line feed), "\r" for
+the Return key, "\s" for the space key, "\\" for a backslash, and "\^"
+for the character "^".
+
+When you use a special key as the trigger key of a macro, it is also
+written in a special format. CTRL-X is written ^X, the F1 key is written
+\[F1], and the Control key plus the F2 key is written \[control-F2], and
+so on. How a key is actually written is displayed inside the macro
+command '@', so try it out in various ways.
+
+While a macro action is being interpreted, the triggers of other macros
+are not checked, so you do not need to worry about making an infinite
+loop when you create a macro action. A macro can be as long as you
+like, but it is limited by the system's internal input functions;
+normally the limit is about 1024 characters.
+
+The "\" command (which you type as "\\" when writing it in a macro
+action) is very useful in macros. In any macro or keymap, the key that
+follows the "\" command is always interpreted as a key of TOband's
+"underlying keyset". For the list of the "underlying keyset", see
+"jcommand.txt". For example, suppose you write "\\.6" as a macro action
+and use "SHIFT-(numpad)6" as the trigger key. That is, "\" + "." + "6"
+is defined on SHIFT-(numpad)6. Then it is interpreted as "run east"
+whichever keyset you are using. Because macros then do not depend on the
+keyset or its definitions, it is better to write macros in the
+underlying keyset with the "\" command wherever possible.
+
+A macro definition is written on two lines in a user pref file. The
+first line is "A:<string>", which represents the encoded macro action.
+The second line is "P:<string>", which represents the encoded trigger
+key.
+
+
+***** <Keymaps>
+=== User Pref Files (Keymaps) ===
+
+In the "Interact with macros" command you can also change "keymaps". A
+"keymap" assigns a key as the character that executes each command.
+Unlike macros, which are applied in every situation, keymaps matter
+only when you are entering a command. That is, even if you define the
+'f' command on the 'n' key, the 'n' key is still interpreted simply as
+'n' when you choose an item or enter a string.
+
+The original keyset and the roguelike keyset are actually not the
+underlying keyset; they are just assigned to the underlying keyset by
+pref files. Therefore, the user can also modify these assignments. When
+a player changes a "keymap", the command to be executed must always be
+specified with the character of the underlying keyset, not with the
+command characters of the original keyset or the roguelike keyset.
+
+The original keyset is very similar to the underlying keyset. In
+addition, all the numbers are assigned to ";" + (direction), "5" is
+assigned to ",", and the control keys are assigned to various things.
+For the underlying keyset itself, see "jcommand.txt". Another use of
+keymap changes is to assign "\x00" to a particular command, which makes
+that command unusable.
+
+A keymap is written on two lines in a user pref file, like a macro. The
+first line is "A:<string>", which is a command written with characters
+of the underlying keyset. The second line is "C:<0 or 1>:<string>",
+which represents the encoded trigger key (the key you actually press).
+Specify 1 for the number for the roguelike keyset, and 0 for the
+original keyset.
+
+
+***** <Visuals>
+=== User Pref Files (Visuals) ===
+
+The "Interact with visuals" command lets you change various aspects of
+the screen display. At present you can change the characters and colors
+that represent the various monsters, items and terrain.
+
+As for the actual keys used to change colors and characters, normally
+an uppercase letter decreases the value by one and a lowercase letter
+increases it by one. Press "n" or "N" to choose the entry you want to
+change. Pressing "a" or "A" changes the color of that entry, and
+pressing "c" or "C" changes the character that represents it. You can
+also press "^N", "^A" or "^C" to enter a number directly and change the
+value.
+
+<<Note>> With this function you can see the names of all the monsters in
+the game. If you do not want such information, do not use this function.
+
+Visual settings are written in a user pref file in the form
+"R:<N>:<A>/<C>", "K:<N>:<A>/<C>" and "F:<N>:<A>/<C>".
+
+
+***** <Colors>
+=== User Pref Files (Colors) ===
+
+The "Interact with colors" command lets you change the color values
+used for various parts of the screen. This command may not work on some
+systems. On the systems where it works best, you can change each of the
+16 colors used by TOband by its RGB values, and you may also be able to
+set new colors that are not currently in use.
+
+Colors are written in a user pref file in the form
+"V:<N>:<V>:<R>:<G>:<B>".
+
+
+***** <Options>
+=== User Pref Files (Options) ===
+
+The "Interact with options" command lets you turn the effects of
+options on and off. You can also turn options on and off inside a user
+pref file. The commands are "X:<option>" and "Y:<option>" respectively.
+
+You may want to use this method in macros. For example, suppose you
+register on the F1 key a macro that casts the 3rd spell of magic book b,
+and you want to cast it again and again, resting in between. If you
+simply insert 'R\r', the rest is interrupted when the next command
+character to cast the spell is entered. So it is convenient to use the
+command that executes one line of user settings (") and write the
+following:
+
+A:"X:check_abort\rR\rmbc"Y:check_abort\r
+P:\[F1]
+
+For the check_abort option, see the disturbance options [b].
+***** [b] joption.txt#check_abort
+
+***** <Autopick>
+==== Auto-picker/destroyer pref file ====
+
+If you create a file named "pickpref.prf" or "pickpref-<name>.prf" in
+the user directory and write the name of an item on each line, you can
+tell TOband to pick up or destroy that item automatically. When the game
+starts, "pickpref-<character name>.prf" is loaded if it exists;
+otherwise "pickpref.prf" is loaded (only one of the two is loaded). The
+file is also loaded again with the '$' command when you have rewritten
+it during the game. If neither file exists, the default settings are
+copied from lib/pref/pickpref.prf when you open the editor with the '_'
+command.
+
+For example, write it as follows.
+---------
+wanted items
+!corpse
+!skeleton
+unaware potion
+~unidentified lights
+~unidentified weapons
+~unidentified armors
+*Destruction*
+Genocide
+Healing
+of Speed
+potion of Cure Critical Wounds
+---------
+
+For a more practical example of settings, see the default file
+"pickpref.prf" in lib/pref/. By using conditional branches you can use
+auto-pickup/destroy comfortably with any class.
+
+
+--- Basic format of auto-pickup/destroy ---
+
+Basically, if the name of an item contains the string written in the
+file, that item is picked up automatically. Upper or lower case makes no
+difference. However, if the line begins with...
+
+ - "!", the item is destroyed automatically.
+ - "~", the item is neither picked up nor destroyed, but left on the
+   floor.
+ - ";", a confirmation message is shown before the item is picked up.
+
+In addition to these, you can add "(" to suppress the display of that
+item in the map command. The file is evaluated in order from the top of
+pickpref.prf, with priority going to the earlier lines, so a convenient
+approach is to write the settings that pick up the other items below the
+settings that destroy unneeded items, or to write the settings that
+destroy other low-quality items below the settings that pick up
+high-grade items.
+
+The location and name of items that are set to be picked up, destroyed
+or left on the floor can be displayed in the map of the whole dungeon,
+the 'M' command. See the display of the map of the whole dungeon in the
+description of the commands (jcommdesc.txt#Looking [d]).
+
+***** [d] jcommdesc.txt#Looking
+
+--- Special keywords ---
+
+A line that begins with one of the following keywords receives special
+treatment.
+
+ - all                : All items match.
+ - collecting         : Items of a kind you already carry (items that
+                        would stack with an item in your pack) match.
+ - unaware            : Items whose effects you do not know match.
+ - unidentified       : Unidentified items match.
+ - identified         : Identified items match.
+ - *identified*       : Fully identified items match.
+ - dice boosted       : Identified melee weapons whose dice differ from
+                        the normal ones, such as Weapons of Slaying,
+                        match.
+ - more than n dice   : Weapons whose number of dice x number of sides
+                        is n or more match.
+ - more bonus than n  : Identified items with an ability modifier or a
+                        bonus of (+n) or more match.
+ - worthless          : Worthless (unsellable) items match.
+ - artifact           : Known artifacts match.
+ - ego                : Known ego items match.
+ - good               : Equipment known to be {good} match.
+ - good or better     : Equipment known to be good, excellent or
+                        special, or known to be an ego item or an
+                        artifact, match.
+ - excellent or better : Equipment known to be excellent or special, or
+                        known to be an ego item or an artifact, match.
+ - unknown quality    : Items whose quality has been neither sensed nor
+                        identified match.
+ - nameless           : Equipment that is neither an ego item nor an
+                        artifact (including equipment you have sensed
+                        to be {average}, {good}, {broken} or
+                        {cursed}) match.
+ - average            : Equipment known to be {average} match.
+ - rare               : Rare equipment, such as dragon armor, match.
+ - common             : Any items except "rare" equipment match.
+ - wanted             : Corpses and skeletons of wanted monsters match.
+ - unique monster's   : Corpses, skeletons and statues of unique
+                        monsters match.
+ - walstanian, gargastan, bacrum, zenobian, lodis
+                      : Statues of unique monsters of the Walister,
+                        Galgastani, Bakram, Xenobian or Lodissian
+                        people match. (Write the keywords exactly as
+                        shown here.)
+ - metal              : Items made of metal match. (Used when making
+                        shots.)
+
+For the "..." part, the following keywords that represent the kind of
+item receive special treatment.
+
+ - items              : All items match.
+ - weapons            : Weapons, including launchers, match.
+ - armors             : Armor of every kind, including crowns, shields
+                        and cloaks, matches.
+ - missiles           : Arrows and crossbow bolts match.
+ - shots              : Bullets, rounds, shells and rockets for guns
+                        match.
+ - magical devices    : Scrolls, staffs, wands and rods match.
+ - lights             : Torches, lanterns and so on match.
+ - junks              : Skeletons, bottles, statues and useless things
+                        such as broken sticks match.
+ - ammo-materials     : Things that can be converted into ammunition
+                        (junk and skeletons) match.
+ - corpses or skeletons : Corpses and skeletons of monsters match.
+ - spellbooks         : Spellbooks match.
+
+For weapons, the following keywords, which target the classification by
+skill/special move, can be used: small swords, katanas, swords, great
+swords, axes, spears, lances, claws, scythes, whips, hammers, staffs,
+fans, bows, guns.
+
+There are also keywords that target equipment by body part: shields,
+launchers, rings, amulets, suits, cloaks, helms, gloves, boots.
+
+If a string follows these after the separator, the colon ":", items
+whose name contains that string as a part match. Here, when you do not
+use a keyword that represents a kind of item (items, weapons, armors,
+etc.), the separator can be omitted. Also, if you put the symbol "^" at
+the head of the string, it matches the beginning of the item name.
+Specifically, the lines are interpreted as follows.
+
+lights:stone        // Picks up light sources whose name contains
+                    // "stone". The colon is required: "lights stone"
+                    // cannot be used.
+gloves:Free Action  // Picks up Gauntlets of Free Action, but does not
+                    // pick up Rings of Free Action.
+!Mace               // Destroys anything whose name contains "Mace"
+                    // (Maces, Lead-Filled Maces, etc.).
+!^Mace              // Destroys only Maces; Lead-Filled Maces are not
+                    // destroyed.
+!armors:Resist Fire // Destroys armor of Resist Fire. Armor of
+                    // Resistance is not destroyed.
+
+Also, if you write a string that begins with # at the end of a line, that
+string is automatically inscribed on the item at the moment you
+identify it or stand on it.
+
+
+--- Strict format ---
+
+The strict format of each line is as follows, in this order. Keywords
+such as unidentified and dice boosted can be written on one line, side
+by side, to apply both restrictions. In the current version the order
+of the keywords is free.
+
+   [! ~ ; (]
+   [[all] [collecting]
+    [unaware] [unidentified] [identified] [*identified*]
+    [artifact] [ego] [good] [good or better] [excellent or better]
+    [unknown quality] [nameless] [average]
+    [worthless] [rare] [common]
+    [dice boosted] [more than n dice] [more bonus than n]
+    [wanted] [unique monster's] [walstanian] [gargastan] [bacrum]
+    [zenobian] [lodis] [metal]
+    [items|weapons|armors|missiles|shots|magical devices|lights|
+     junks|ammo-materials|corpses or skeletons|spellbooks|
+     small swords|katanas|swords|great swords|axes|spears|lances|
+     claws|scythes|whips|hammers|staffs|fans|bows|guns|shields|
+     launchers|rings|amulets|suits|cloaks|helms|gloves|boots] :]
+   [[^]other string] [#auto-inscription string]
+
+
+***** <Condition>
+=== Preference files with conditions ===
+
+Every user pref file can be given conditions on the race, class, race
+level and so on. This is particularly useful for the settings of
+auto-pickup and macros.
+
+
+---  Format of conditional branches  ---
+
+?:expr
+
+   If expr is "0", the registration of the auto-pickup/destroy lines
+   below is skipped. If expr is "1", the registrations below are made.
+   Any expr other than "0" is regarded as "1".
+
+ (Note!) Conditional branches cannot be nested.
+
+
+---  Available operators  ---
+
+A special string and a list of several arguments, enclosed in '[' and
+']', work as an operator, and return whether the result is true "1" or
+false "0".
+
+[EQU arg1 arg2 ...]
+   Returns "1" when all the arguments are equal, and "0" when they are
+   not equal.
+
+[IOR arg1 arg2 ...]
+[AND arg1 arg2 ...]
+   IOR takes the logical OR of the arguments, and AND takes the logical
+   AND; each returns "1" if the result is true and "0" if false.
+
+[NOT arg]
+   Returns "0" if the argument is "1", and "1" if it is "0".
+
+[LEQ arg1 arg2 ...]
+[GEQ arg1 arg2 ...]
+
+   LEQ compares the arguments "as strings" and returns "1" when
+   arg1 <= arg2 <= .... GEQ returns "1" when arg1 >= arg2 >= ....
+
+
+---  Description of the variables  ---
+
+Inside a conditional expression, some strings that begin with '$' are
+automatically replaced by strings that represent the state of the
+character.
+
+$SYS
+   Returns the system suffix, that is, the "xxx" of the "main-xxx.c"
+   that was used to build the executable.
+
+$KEYBOARD
+   Returns a string that identifies the type of keyboard in use.
+
+$GRAF
+   Returns the name of the graphics mode in use ("ascii" for text).
+
+$MONOCHROME
+   Returns "ON" in monochrome mode, and "OFF" otherwise.
+
+$ELEM
+   Returns the element by its English name. One of
+   Fire, Aqua, Earth, Wind
+
+$RACE
+   Returns the race by its English name. One of
+   Human, Hawkman, Lizardman, Faerie, Gremlin, Skeleton, Ghost,
+   Pumpkinhead, Goblin, Gorgon, Mermaid, Mad-Halloween, Vartan, Raven
+
+$CLASS
+   Returns the class by its English name. One of
+   Warrior, Knight, Berserker, Terror-Knight, Beast-Tamer,
+   Swordmaster, Dragoon, Ninja, Wizard, Warlock, Exorcist, Amazoness,
+   Valkyrie, Archer, Dragon-Tamer, Witch, Siren, Cleric, Priest, Lich,
+   Divine-Knight, Wicce, Fusilier, Templar, White-Knight, Lord,
+   General, Ninja-Master, Archmage, Freya, Crescent, Vampire, Medium,
+   Succubus, Grappler, Elementaler, Relics-Knight, Enigma-Hunter,
+   Ranger, Dark-Element, Knight-Commander
+
+$PLAYER
+   Returns the name of the player. Spaces and square brackets in the
+   name are replaced by '_'.
+
+$SEX
+   Returns the sex of the player.
+   Female, Male
+
+$LEVEL
+   Returns the player's race level as a two-digit string.
+   "01","09","10","50", etc.
+
+$CLEVEL
+   Returns the level of the player's current class as a two-digit
+   string.
+   "01","09","10","50", etc.
+
+$CLEVEL(ClassStr)
+   Returns the level of the specified class as a two-digit string.
+   For ClassStr, put a class name usable with $CLASS.
+   "01","09","10","50", etc.
+   If the class name is invalid, it returns "00".
+
+
+---  Format for inserting a file  ---
+
+%:filename
+   Reads lib\user\filename or ~/.angband/TOband/filename as an
+   auto-pickup registration file.
+
+(*WARNING!!*) If a file reads itself (for example pickpref.prf), it
+              causes an endless loop and crashes, so never do this.
+
+
+--- An example used for auto-pickup settings ---
+
+?:[EQU $CLASS Archer]
+skeleton
+
+?:[EQU $CLASS Fusilier]
+~*identified* shots#%all
+metal items
+?:1
+
+?:[GEQ $LEVEL 20]
+(!nameless weapons:(+0,+0)
+(!nameless armors:,+0]
+?:1
+
+
+--
+Original   : Alexander Cutler and Andy Astrand
+Updated    : (2.7.6) by Russ Allbery (rra@cs.stanford.edu)
+Updated    : (2.7.9) by Ben Harrison (benh@phial.com)
+Updated    : Zangband 2.2.0 through 2.2.6c by Robert Ruehlmann
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.3.0
+Updated    : TOband 0.0.3
+
+
+

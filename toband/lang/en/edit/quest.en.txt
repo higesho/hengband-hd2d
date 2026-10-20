@@ -1,0 +1,415 @@
+# TOband -> English: quest names and quest text (q*.txt in lib/edit).
+# Format: I: quest number / J: Japanese name (for cross-check) / N: English name / T: text lines.
+# Only quests whose English is missing, incomplete, different from the Japanese or the game, or spelled
+# differently from the glossary (Tactics Ogre portable edition spellings) are listed.
+# A quest with a good English name already in the original file has no N: line.
+# Each group of T: lines is the full English text of one block (the block is named in the comment).
+# A comment line beginning with REPLACES says which original English lines (the Q:$no:N: or Q:$no:T: lines
+# of the named file, by file line number) this entry takes the place of. Without it, the original had no English.
+# Kinds: NEW (no English before), REWRITE (the old English said something else than the Japanese and the
+# game), SPELLING (old English kept, only proper nouns changed to the glossary spelling), SPELLING+ADD (the
+# same, and the missing part of the Japanese added).
+# Original rule (init1.c, English build): only lines written as Q:$<no>:N: and Q:$<no>:T: are read;
+# lines without the $ are the Japanese ones and are skipped. quest_text is char[10][80], so one block
+# is at most 10 lines of at most 79 characters, and the characters colon, slash and backslash must
+# not appear in a value (tokenize() splits on them).
+# A T: line with nothing after it is an empty line. Empty lines count toward the 10.
+
+# q0000003.txt
+I:3
+J:異国の機械兵
+# N: unchanged, already in the original: Gunner
+# REWRITE intro block ?:[LEQ $QUEST3 2], JP lines 21-26
+K:21-26
+# REPLACES q0000003.txt lines 13-20 (8 lines)
+T:Recently, a suspicious foreigner bought one of the houses in town.
+T:Ever since, strange incidents have been occurring frequently. Animals
+T:die, people fall ill, and nothing but misfortune befalls this town. It
+T:seems someone is toying with the power of science. I have evidence
+T:that the cause is the stranger living in the house near the temple.
+T:Please drive that foreign soldier out.
+
+# q0000005.txt
+I:5
+J:塔
+# N: unchanged, already in the original: The Tower
+# REWRITE reward block ?:[EQU $QUEST5 3], JP lines 26-28
+K:26-28
+# REPLACES q0000005.txt lines 23-25 (3 lines)
+T:Thank you for cleaning the tower of all these strange creatures. I
+T:have spoken with Astinus of the Library, Suiyan the Weaponmaster and
+T:Lorien the Beastmaster, so you should be able to get their services at
+T:a bargain price from now on.
+
+# q_Lancelot.txt
+I:8
+J:暗黒騎士ランスロット
+N:Lanselot Tartaros, the Dark Knight
+# NEW intro block ?:[LEQ $QUEST8 2], JP lines 13-16
+K:13-16
+T:At long last the hour has come to face King Dorgalua. Yet you cannot
+T:reach him unless you first seek out and defeat Lanselot. Only when
+T:this mighty commander of the Dark Knights has fallen will the Chaos
+T:Gate, the passage to the demon realm, be opened.
+
+# q_dolgarua.txt
+I:9
+J:覇王ドルガルア
+N:Dorgalua, the King
+# REWRITE intro block ?:[LEQ $QUEST9 2], JP lines 17-20
+K:17-20
+# REPLACES q_dolgarua.txt lines 13-16 (4 lines)
+T:Your final quest is the ultimate quest, the one that has always been
+T:demanded of you. You must pass through the Chaos Gate and defeat King
+T:Dorgalua, the source of all our woes. Be prepared, be patient, and may
+T:fortune smile upon you. May the blessing of Philaha be with you, brave
+T:adventurer.
+
+# q_Death13.txt
+I:13
+J:死神への挑戦
+# REPLACES q_Death13.txt line 4, N: The Death Callenge
+N:The Death Challenge
+
+# q_Armorica.txt
+I:14
+J:アルモリカ城の解放
+# REPLACES q_Armorica.txt line 4, N: Warg problem
+N:Liberation of Almorica Castle
+# REWRITE intro block ?:[LEQ $QUEST14 2], JP lines 18-20
+K:18-20
+# REPLACES q_Armorica.txt lines 13-17 (5 lines)
+T:...We must rescue Duke Ronwey, held captive in Almorica Castle...
+T:The Galgastani have him. Rumor says his execution is near.
+T:We have to do something...
+# REWRITE reward block ?:[EQU $QUEST14 3], JP lines 28-29
+K:28-29
+# REPLACES q_Armorica.txt lines 25-27 (3 lines)
+T:Thank you so much. At last, life has returned to this town.
+T:A reward awaits you outside.
+
+# q_Bernicia.txt
+I:15
+J:バーニシア城
+N:Barnicia Castle
+# NEW intro block ?:[LEQ $QUEST15 2], JP lines 13-19
+K:13-19
+T:When King Dorgalua, the rightful ruler of Valeria, vanished, Bishop
+T:Brantyn at once moved to secure his own rule. He claimed the northern
+T:half of the Valerian Isles as his own domain and declared
+T:'independence' from the Kingdom of Valeria! We must not recognize
+T:Bakram. Should we do so, the call for self-determination will rise
+T:across the isles, and an age of war will return to Valeria. Hasten,
+T:young one! Steal into Barnicia Castle in the Royal City of Heim and
+T:strike down Brantyn!
+# NEW failure block ?:[EQU $QUEST15 5], JP lines 30-33
+K:30-33
+T:Brantyn is now King of Bakram. In the Coritanae region, Hierophant
+T:Balbatos has founded the Kingdom of Galgastan around the Galgastani
+T:people and fiercely oppresses the Walister minority in the Almorica
+T:region. The age of war has come. It is too late now.
+
+# q000dekn.txt
+I:16
+J:モンサルヴァト城への侵攻
+# N: unchanged, already in the original: Assault on Montsalvat
+# SPELLING intro block ?:[LEQ $QUEST16 2], JP lines 17-18
+K:17-18
+# REPLACES q000dekn.txt lines 13-16 (4 lines)
+T:Those annoying do-gooders who call themselves the knights of the Holy
+T:Grail are a pain in our flesh. We can tolerate them no longer! You
+T:must storm their Montsalvat Castle and show them who's the boss!
+
+# q_runeweapon.txt
+I:17
+J:魔剣の代償
+# N: unchanged, already in the original: Compensation of Runeweapon
+# NEW intro block ?:[LEQ $QUEST17 2], JP lines 13-21
+K:13-21
+T:Heir to my blood, you who are cursed by my flesh, hear me well. My
+T:body, bereft of its soul, has forgotten death and run wild. It craves
+T:this demon sword, my soul, to regain control, yet cannot curb its rage
+T:and would hurl all things into the abyss. But I cast off my flesh of
+T:my own will and made my soul a sword. Never again will I be bound to
+T:it. Pass my trial and climb from the depths of the Palace of the Dead
+T:to the surface. Slay my soulless body awaiting you on the first level
+T:and win true release for me, deliverance for the world from oblivion,
+T:and freedom from fate for yourself. Now hasten! Make ready in Illusion
+T:Town and march to battle for release.
+
+# q0000021.txt
+I:21
+J:破滅のクエスト２
+# N: unchanged, already in the original: Doom Quest 2
+# REWRITE intro block ?:[LEQ $QUEST21 2], JP lines 19-24
+K:19-24
+# REPLACES q0000021.txt lines 13-18 (6 lines)
+T:A hole leading to the demon realm has opened up on the edge of our
+T:town. It seems even more dangerous than the hole reported in the
+T:Arkhaiopolis of Rhime. Five of our strongest knights ventured within
+T:-- only one returned, scorched by fire and babbling incoherently. We
+T:have no means left to deal with this threat. Can you?
+
+# q0000022.txt
+I:22
+J:オークのキャンプ
+# N: unchanged, already in the original: Orc Camp
+# SPELLING intro block ?:[LEQ $QUEST22 2], JP lines 19-23
+K:19-23
+# REPLACES q0000022.txt lines 13-18 (6 lines)
+T:The marauding orcs approach ever closer to our quiet town, as is
+T:happening all over in these troubled times.  To the south lies a
+T:valley where our scouts have found an orc raiding party, preparing to
+T:overrun the Arkhaiopolis of Rhime once and for all.  Our forces are
+T:committed elsewhere; please repel this threat before they reach our
+T:borders.
+
+# q0000023.txt
+I:23
+J:増殖地獄
+# N: unchanged, already in the original: Spawning Pits
+# SPELLING intro block ?:[LEQ $QUEST23 2], JP lines 24-33
+K:24-33
+# REPLACES q0000023.txt lines 14-23 (10 lines)
+T:A great, great evil approaches, perhaps the end for our town. Our
+T:scouts lie slaughtered, their bodies crushed and mangled by powerful
+T:beasts.  I know not what you shall face. Monsters appear as if out of
+T:thin air, as if spawned by a foul altar in a southern valley close to
+T:where you defeated the orcs.
+T:
+T:I am hesistant to ask for your help, knowing you may be sent to your
+T:doom, and yet you are the last hope for the Arkhaiopolis of Rhime.
+T:Approach each nook carefully, as evil lies in unexpected places.
+T:Please prepare well, and strike hard in our names.
+# SPELLING reward block ?:[EQU $QUEST23 3], JP lines 43-47
+K:43-47
+# REPLACES q0000023.txt lines 38-42 (5 lines)
+T:Your valor shall go down in our legends; your name shall be sung by
+T:our clan for ages to come.  Hail the conquering hero! May your battles
+T:with King Dorgalua be as successful.
+T:
+T:Use our gift wisely, and may the light shine on you.
+
+# q_Denim.txt
+I:24
+J:神竜騎士団長デニム
+# REPLACES q_Denim.txt line 4, N: Denim
+N:Denam, Commander of the Order of Godscale
+# NEW intro block ?:[LEQ $QUEST24 2], JP lines 13-16
+K:13-16
+T:At long last the hour has come to face King Dorgalua. Yet you cannot
+T:reach him unless you first defeat Denam Morne, the leader of Valeria.
+T:Only when this mighty Commander of the Order of Godscale has fallen
+T:will the Chaos Gate, the passage to the demon realm, be opened.
+
+# qhaunted.txt
+I:25
+J:幽霊屋敷
+# N: unchanged, already in the original: Haunted House
+# SPELLING intro block ?:[LEQ $QUEST25 2], JP lines 17-19
+K:17-19
+# REPLACES qhaunted.txt lines 13-16 (4 lines)
+T:There is something evil going on in the old, thatched house near the
+T:south-east of Almorica Castle. People say that the house is haunted
+T:and refuse to go near it. We need someone to exorcise the evil spirits
+T:that are infesting the house.
+# NEW failure block ?:[EQU $QUEST25 5], JP lines 32-38
+K:32-38
+T:Ah, what a sorry showing! By good fortune, a few knights passing
+T:through town turned out to be White Knights, the elite holy knights of
+T:Xenobia. As part of their training, they drove the phantoms from the
+T:manor. They did not even ask about a reward! Perhaps you ought to find
+T:them and take a lesson or two from their example.
+
+# q0000027.txt
+I:27
+J:コリタニ城
+N:Coritanae Keep
+# NEW intro block ?:[LEQ $QUEST27 2], JP lines 15-21
+K:15-21
+T:Dire tidings! The remnants of the Galgastan army have retaken
+T:Coritanae Keep, northeast of town! Their leader, Xaebos, holds the
+T:Galgastani refugees within the walls as hostages, and swears to put
+T:them to death as a warning unless the Walister Resistance withdraws
+T:from Coritanae. I beg of you, infiltrate the Keep in secret and sweep
+T:away every enemy within. Be warned, for Xaebos has gathered not only
+T:Galgastan stragglers but also wicked sorcerers, vampires and their
+T:ilk. Take the utmost care.
+
+# q0000028.txt
+I:28
+J:王家の墓
+# N: unchanged, already in the original: The Royal Crypt
+# SPELLING reward block ?:[EQU $QUEST28 3], JP lines 33-37
+K:33-37
+# REPLACES q0000028.txt lines 28-32 (5 lines)
+T:How can I ever thank you? Let the people rejoice - a hero of legend
+T:walks the streets of this town today. My treasurer tells me a number
+T:of rather valuable heirlooms seem to be missing from the crypt - how
+T:about I turn a blind eye and we call it quits?
+
+# qdarkelf.txt
+I:32
+J:ダークエルフ・ロード
+# N: unchanged, already in the original: Dark Elven Lords Quest
+# SPELLING intro block ?:[LEQ $QUEST32 2], JP lines 20-23
+K:20-23
+# REPLACES qdarkelf.txt lines 15-19 (5 lines)
+T:A small group of Dark Elven Lords have set up a small shop in town.  I
+T:do not need any competition, so kill everything in their shop.  You
+T:will be very well rewarded.  There shop is located in a building on
+T:south-east of Almorica Castle. They are well guarded so be careful.
+
+# q0clone0.txt
+I:33
+J:クローン地獄
+# N: unchanged, already in the original: The Cloning Pits
+# SPELLING intro block ?:[LEQ $QUEST33 2], JP lines 22-27
+K:22-27
+# REPLACES q0clone0.txt lines 15-21 (7 lines)
+T:For the past few years we have been cloning exceptionally powerful
+T:creatures for gladiatorial combat.  Something has gone very wrong in
+T:the Cloning Pits. Please eliminate ALL the clones, you will be well
+T:rewarded.  The active security systems have stopped working. The
+T:clones can use magic, teleport, summon, etc..  Levitation and a good
+T:distance weapon are needed.  The entrance to the pits is in a building
+T:on the east of Almorica Castle.
+
+# q0000034.txt
+I:34
+J:地下室
+# N: unchanged, already in the original: Vault
+# NEW intro block ?:[LEQ $QUEST34 2], JP lines 18-21
+K:18-21
+T:Before I knew it, my cellar was overrun with caterpillars, mushrooms,
+T:molds and the like. I am sorry to trouble you, but would you clean out
+T:my cellar?
+T:
+T:Naturally, you shall have a fitting reward.
+# NEW reward block ?:[EQU $QUEST34 3], JP lines 28-29
+K:28-29
+T:Thank you for cleaning out my cellar. A small reward awaits you
+T:outside.
+# NEW failure block ?:[EQU $QUEST34 5], JP lines 36-37
+K:36-37
+T:It seems this task was too difficult for you. I shall call a cleaning
+T:service to finish the rest, so you need not trouble yourself any
+T:further.
+
+# q_Barmamutha_a.txt
+I:35
+J:バルマムッサの虐殺 (秩序)
+# REPLACES q_Barmamutha_a.txt line 4, N: The Genocide of Barmamutha (Lawful)
+N:The Massacre at Balmamusa (Law)
+# NEW intro block ?:[LEQ $QUEST35 2], JP lines 13-21
+K:13-21
+T:The people of Balmamusa have no will left to fight. We cannot rouse
+T:them to armed revolt after all.
+T:...Listen well. We are going to kill every last one of them. It is the
+T:Duke's command. He foresaw this.
+T:...You will obey? Without this, the Walister have no tomorrow!
+T:
+T:...Forgive me. Their sacrifice will not be in vain.
+T:Let us begin at once. You take the prison camp. I will take the town.
+T:...Let no one escape.
+
+# q_Barmamutha_b.txt
+I:36
+J:バルマムッサの虐殺 (混沌)
+# REPLACES q_Barmamutha_b.txt line 4, N: The Genocide of Barmamutha (Chaotic)
+N:The Massacre at Balmamusa (Chaos)
+# NEW intro block ?:[LEQ $QUEST36 2], JP lines 13-22
+K:13-22
+T:The people of Balmamusa have no will left to fight. We cannot rouse
+T:them to armed revolt after all.
+T:...Listen well. We are going to kill every last one of them. It is the
+T:Duke's command. He foresaw this.
+T:...You will obey? Without this, the Walister have no tomorrow!
+T:
+T:...I knew it. You are still so young... I envy your innocent heart...
+T:One who will not dirty his hands for his ideals has no place in this
+T:war...
+T:None at all!!
+
+# q0000037.txt
+I:37
+J:沈没船ラムゼン号の引き上げ
+# N: unchanged, already in the original: The sunken ship 'Ramzen'
+# NEW intro block ?:[LEQ $QUEST37 2], JP lines 13-18
+K:13-18
+T:Ah, hero! The sunken ship Ramzen is to be raised at last. Rumor has it
+T:that the ship holds a rare treasure from Barbauda, the continent to
+T:the south, called the 'Gun.' I beg you, find the 'Gun' aboard the ship
+T:and bring it back to us! The quest will be complete the moment you
+T:pick up the 'Gun.' However, it is said that the Dark Knights Loslorien
+T:are after it as well. Outwit the Loslorien and bring back the precious
+T:'Gun'!
+# NEW reward block ?:[EQU $QUEST37 3], JP lines 23-23
+K:23-23
+T:Please, keep that gun. It will lend strength to our revolution.
+# NEW failure block ?:[EQU $QUEST37 5], JP lines 28-30
+K:28-30
+T:What a calamity! Having seized the 'Gun,' the Loslorien have gained a
+T:power greater still.
+
+# q0000038.txt
+I:38
+J:聖騎士達の隠れ家
+# N: unchanged, already in the original: Holy Knights Hideout
+# NEW intro block ?:[LEQ $QUEST38 2], JP lines 13-17
+K:13-17
+T:Word has come that a Xenobian special forces unit has landed at the
+T:port town of Golyat. They have joined hands with Golyat's
+T:anti-government guerrillas and are said to be lying low in the
+T:guerrillas' hideout.
+T:You will infiltrate their lair in Golyat and eliminate every last one
+T:of them.
+T:...And once the mission is done, withdraw swiftly and leave no trace.
+# NEW reward block ?:[EQU $QUEST38 3], JP lines 22-22
+K:22-22
+T:Good work. Your pay is waiting outside.
+# NEW failure block ?:[EQU $QUEST38 5], JP lines 27-28
+K:27-28
+T:Damn it all! You cannot even manage a mission this simple!
+T:I am speechless.
+
+# q_heaven.txt
+I:62
+J:女神イシュタル
+# REPLACES q_heaven.txt line 26, N: Ishtalle, the Goddess
+N:Ishtar, the Goddess
+
+# q_heaven.txt
+I:63
+J:太陽神フィラーハ
+# REPLACES q_heaven.txt line 36, N: Filarhh, the God of Sun
+N:Philaha, the God of the Sun
+
+# q_brunhild.txt
+I:64
+J:ブリュンヒルド強奪
+# REPLACES q_brunhild.txt line 6, N: Theft of Brunhild
+N:Theft of Brynhildr
+# SPELLING+ADD intro block ?:[LEQ $QUEST64 2], JP lines 13-15
+K:13-15
+# REPLACES q_brunhild.txt lines 11-12 (2 lines)
+T:This is a top-secret mission from the Lodissian homeland. Seize the
+T:holy sword Brynhildr, the greatest treasure of Xenobia. The guard will
+T:be exceedingly tight, yet this is a mission that demands absolute
+T:success.
+T:Search the four corner treasuries for Brynhildr.
+T:The commander patrols separately.
+T:The entire castle blocks teleportation.
+T:Stealing the sword triggers the alarm.
+# SPELLING+ADD reward block ?:[EQU $QUEST64 3], JP lines 19-20
+K:19-20
+# REPLACES q_brunhild.txt lines 18-18 (1 lines)
+T:Mission accomplished. Keep Brynhildr as your reward.
+T:Guard the holy sword against the days to come, and never lose it.
+# SPELLING+ADD failure block ?:[EQU $QUEST64 5], JP lines 24-25
+K:24-25
+# REPLACES q_brunhild.txt lines 23-23 (1 lines)
+T:You failed to seize Brynhildr.
+T:You have disappointed us. The Pope has cast us aside, and a punishment
+T:worse than death awaits.
+

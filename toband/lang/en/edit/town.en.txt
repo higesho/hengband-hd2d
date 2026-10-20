@@ -1,0 +1,125 @@
+# TOband -> English: town buildings (t0000*.txt). UTF-8; everything except the BJ:/AJ: lines is ASCII.
+#
+# Building names and owners come from the glossary (glossary_tsv/places.tsv, kind "building"); the owner's race comes from the
+# glossary's race table (glossary_tsv/classes_races.tsv). This file holds only:
+#   BJ: / BE:  an override of one building, keyed by the Japanese "name:owner" pair as it stands in the data;
+#              the English is "name:owner". Wins over the glossary.
+#   AJ: / AE:  the label of a building menu entry (B:n:A:k:label:cost:key:cmd:flag), Japanese label -> English label.
+# Buffer limits in the game (types.h building_type): building name, owner and race 19 characters each, menu label 29.
+
+# t0000000.txt B:30. The glossary row for this one repeats the Smith's English (it was copied from B:31), but the Japanese
+# is the "Demon clan" building run by "TBD", whose only menu entry is "class change".
+BJ:魔族:未定
+BE:Demon Clan:TBD
+
+# Menu labels. The author's English (B:$ lines) is used where it was right; typos and inconsistent capitals are fixed.
+AJ:お金を寄付する
+AE:Donate money
+AJ:アイテム調査
+AE:Research item
+AJ:アイテム鑑定
+AE:Identify item
+AJ:イン・ビトイーン
+AE:In-Between
+AJ:クエスト
+AE:Request quest
+AJ:クラスチェンジ
+AE:Change class
+AJ:クラップス
+AE:Play craps
+AJ:ゲームのルール
+AE:Game rules
+AJ:スペシャル・ターゲット
+AE:Special target
+AJ:ゼノビア騎士団に入団する
+AE:Join Xenobian Knights
+AJ:ダイス・スロット
+AE:Play dice slots
+AJ:ダンジョンへ帰還
+AE:Recall to dungeon
+AJ:ポスターを見る
+AE:Look at poster
+AJ:ポーカー
+AE:Poker
+AJ:モンスター調査
+AE:Research monster
+AJ:ルーレット
+AE:Spin the wheel
+AJ:一泊する
+AE:Rest for the night
+AJ:他の町へ移動
+AE:Teleport to other town
+AJ:全てのアイテムを再充填
+AE:Recharge all items
+AJ:再充填
+AE:Recharge item
+AJ:勇者の殿堂
+AE:Palace of heroes
+AJ:噂を聞く
+AE:Listen for rumors
+AJ:器用さを鍛える
+AE:Increase DEX
+AJ:平衡化の儀式
+AE:Ritual of balance
+AJ:弓を強化する
+AE:Enchant bow
+AJ:持ち物全てを鑑定
+AE:Identify possessions
+AJ:換金する
+AE:Receive prize
+AJ:日替わり賞金首
+AE:Today's wanted
+AJ:暗黒騎士団に入団する
+AE:Join Dark Knights
+AJ:武器を強化する
+AE:Enchant weapon
+AJ:武器を比較する
+AE:Compare weapons
+AJ:治療の祈祷
+AE:Healing prayer
+AJ:治療家に会う
+AE:See Healers
+AJ:矢やボルトを強化する
+AE:Enchant missiles
+AJ:矢やボルト等を強化する
+AE:Enchant missiles
+AJ:知能を上げる
+AE:Increase INT
+AJ:突然変異を治療する
+AE:Cure mutation
+AJ:耐久力を鍛える
+AE:Increase CON
+AJ:能力回復
+AE:Restoration
+AJ:腕力を鍛える
+AE:Increase STR
+AJ:街の概要
+AE:Town Overview
+AJ:装備品を合成する
+AE:Compose weapon
+AJ:賞金首リスト
+AE:Wanted unique list
+AJ:賢さを上げる
+AE:Increase WIS
+AJ:闘技場に入る
+AE:Enter arena
+AJ:防具を強化する
+AE:Enchant armor
+AJ:防御について調べる
+AE:Evaluate AC
+AJ:階を指定してテレポート
+AE:Teleport to dungeon level
+AJ:食事をする
+AE:Buy food and drink
+AJ:魅力を上げる
+AE:Increase CHR
+AJ:魔界の神と契約する
+AE:Make pact with demon god
+
+# Buildings whose English name is over the 19-character limit of the game's buffer (the author's English is kept in the glossary).
+BJ:転送術の塔:コレウス
+BE:Transport Tower:Colleuse
+BJ:転送術の塔:ペロイ
+BE:Transport Tower:Pelloi
+BJ:エステ・シンデレラ:辻 彩
+BE:Esthetic Cinderella:Tsuji Aya

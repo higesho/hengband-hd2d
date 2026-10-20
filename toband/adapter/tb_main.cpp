@@ -665,7 +665,8 @@ void host_present()
         row.count=raw.count;row.price=raw.price;row.price_known=raw.price_known!=0;row.available=raw.available!=0;row.equipped=raw.location==1;
         row.label=tb::sjis_to_utf8(std::string(raw.name));row.weight=raw.weight;
         row.description=tb::sjis_to_utf8(std::string(raw.description));row.reason=tb::sjis_to_utf8(std::string(raw.reason));
-        if(!row.available&&row.reason.empty())row.reason="This store does not accept this item.";
+        //! 売れない理由の既定。日本語は共用部分（`modern_store.cpp:383`）の字に合わせる（以前は英語だけで、日本語の画面にも英語が出ていた）。
+        if(!row.available&&row.reason.empty())row.reason=(g_first_ui_state_lang=="en")?"This store does not accept this item.":reinterpret_cast<const char *>(u8"この店では買い取れません。");
         row.tile=tb_tile_for_row(raw.kind_id,raw.unaware_category);
         row.glyph=tb::sjis_to_utf8(std::string(raw.glyph));row.glyph_color=raw.glyph_color;
         row.id=presentation::native_store_id(store_info.kind,raw,row.label);
@@ -1235,13 +1236,19 @@ int title_and_pick_savefile()
     }
 
     /* --- セーブ選択（下 6 行: 見出し 22・一覧 23〜25・新規 26）。 --- */
-    std::string head = "どのセーブデータで始めますか？（* = 前回）";
+    /*
+     * 字は日英の 2 本を持つ（この旧式の描き方は Term へ直に書くので、訳のカタログは**文全体の鍵**でしか引けず、
+     * `hidden` を埋めた見出しは引けない。`tb_lang_enabled()` で選ぶ）。ここは `g_native_menu` が無効のときだけ通る。
+     */
+    const bool english = (tb_lang_enabled() != 0);
+    std::string head = english ? "Which save do you want to start with? (* = last)" : "どのセーブデータで始めますか？（* = 前回）";
     if (hidden > 0) {
-        head += "（ほか " + std::to_string(hidden) + " 件は --savefile= で）";
+        head += english ? "(" + std::to_string(hidden) + " more: use --savefile=)"
+                        : "（ほか " + std::to_string(hidden) + " 件は --savefile= で）";
     }
     tb_term_putstr(6, kTermRows - 5, 11, head.c_str());
     if (slots.empty()) {
-        tb_term_putstr(8, kTermRows - 4, 2, "（セーブデータはまだありません）");
+        tb_term_putstr(8, kTermRows - 4, 2, english ? "(There are no saves yet.)" : "（セーブデータはまだありません）");
     }
     /*
      * 選択肢は**画面側のカーソル層にも宣言する**（P5 その2・2026-08-19。気づいたこと
@@ -1300,7 +1307,7 @@ int title_and_pick_savefile()
         }
     }
     {
-        const char *const tail = "n) 新しく始める";
+        const char *const tail = english ? "n) Start a new game" : "n) 新しく始める";
         MenuChoice mc{};
         mc.line_index = kTermRows - 1;
         mc.span_begin = 8;
@@ -1604,10 +1611,13 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      */
     ack.features.emplace_back("audio");
     /*
-     * `lang-restart` は**名乗らない**（M0 は日本語だけで、
-     * 訳のカタログも空）。名乗ると画面側に効かない言語の切り替えが出る。英語の段で、
-     * 幻想蛮怒の gb_main.cpp と同じ形（言語が替わったら起こし直す）で足す。
+     * `lang-restart`（幻想蛮怒の gb_main.cpp と同じ）:
+     * 言語が替わったら画面がこのコアを**起こし直す**（`hd2d/app/hd2d_app.cpp` の
+     * 一般形。コア名の分岐は無い）。起こし直しの回には `--resume` が付き、
+     * `.resume` に覚えた枠を開き直す。申告しないと `ui_state.lang` が次のフレームから
+     * 効く扱いになるが、edit と raw は読み直せないので言語は変わらない。
      */
+    ack.features.emplace_back("lang-restart");
     /*
      * 既定の視点の向き（設計 §6.2・T5）。1 = 地図を反時計回りに 45 度回した斜めの視点（北が左上）。
      * 画面側が起動時の `camera_turn` をこの値で始める（`--turn=` が指定されたときはそちらが勝つ）。

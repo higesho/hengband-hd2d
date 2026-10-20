@@ -562,6 +562,55 @@ int birth_stats_selftest()
     other.modern.stage = "detail";
     other.modern.continue_key = 13;
     check(!apply_birth_stats_window(other), "a different screen is left alone");
+
+    // 英語（`birth.c` の `#else` の枝の字。能力値の名は英語層で引かれた `STR` ほか）。窓の字が英語になり、表と副題が原作の行から読める。
+    {
+        GameFrame en;
+        en.pre_game_menu = true;
+        en.menu_open = true;
+        add_line(en, 1, "  Configure stats of character.");
+        add_line(en, 3, " Sex    : Male");
+        add_line(en, 4, " Race   : Human");
+        add_line(en, 5, " Class  : Knight");
+        add_line(en, 11, "          Total Cost 34/60.  Use 2/8/j/k to move, 4/6/h/l to modify, Enter to accept.");
+        add_line(en, 13, "          Base     Min     Max    (Cost)  Race      Total");
+        const char *const names[6] = { "STR", "INT", "WIS", "DEX", "CON", "CHR" };
+        const char *const values[6][6] = { { "15", "15", "18", "11", "+0", "15" }, { "10", "10", "17", " 0", "+0", "10" }, { "10", "10", "17", " 0", "+0", "10" },
+            { "16", "16", "18", "16", "+0", "16" }, { "14", "14", "18", " 7", "+0", "14" }, { "10", "10", "17", " 0", "+0", "10" } };
+        for (int i = 0; i < 6; ++i) {
+            char buf[160];
+            std::snprintf(buf, sizeof(buf), "          %s :      %s      %s      %s      (%s)    %s  =      %s", names[i], values[i][0], values[i][1], values[i][2],
+                values[i][3], values[i][4], values[i][5]);
+            add_line(en, 14 + i, buf);
+        }
+        en.menu_term_curs_row = 15;
+        en.modern.version = 5;
+        en.modern.kind = "dialog";
+        en.modern.stage = "detail";
+        en.modern.continue_key = 13;
+        en.modern.language = "en";
+        check(apply_birth_stats_window(en), "the stat screen (english) is recognised");
+        const ModernWindow &e = en.modern;
+        check(e.title == "Attributes" && e.subtitle == "Total cost: 34/60" && e.content_type == "sil_allocation", "english: title, subtitle and window kind");
+        check(e.rows.size() == 13 && e.rows.back().label == "Continue" && e.rows[0].label == std::string("STR") + u8c(u8" −") && e.rows[1].label == "STR +", "english: the stat rows and the continue row");
+        check(!e.rows[0].available && e.rows[0].reason == "Cannot lower this stat further (minimum)." && e.rows[1].available,
+            "english: a stat at its minimum cannot be lowered (the reason is English)");
+        bool head_ok = false, row_ok = false, fields_ok = false;
+        for (const auto &block : e.content) {
+            if (block.kind == "table_header" && block.cells.size() == 5) {
+                head_ok = block.cells[0].text == "Stat" && block.cells[1].text == "Base" && block.cells[2].text == "Min-Max" && block.cells[3].text == "Cost"
+                    && block.cells[4].text == "Total(Race)";
+            }
+            if (block.kind == "table_row" && block.cells.size() == 5 && block.cells[0].text == "INT") {
+                row_ok = block.cells[2].text == "10-17" && block.cells[4].text == "10 (+0)";
+            }
+            if (block.kind == "fields" && block.cells.size() == 2 && block.cells[0].label == "Total cost") {
+                fields_ok = block.cells[0].text == "34/60" && block.cells[1].label == "Points left" && block.cells[1].text == "26";
+            }
+        }
+        check(head_ok && row_ok && fields_ok, "english: the table header, a table row and the cost block are English");
+        check(e.rows[1].description.find("Raise this stat by one") != std::string::npos, "english: the plus description is English");
+    }
     return failed;
 }
 

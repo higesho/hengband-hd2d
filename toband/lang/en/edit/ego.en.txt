@@ -1,0 +1,16 @@
+# TOband -> English: ego item (e_info) name overrides. UTF-8; everything except the J: lines is ASCII.
+# I: e_info number / J: the Japanese name on the N: line (must match) / N: English name (wins over the author's E: line).
+# Only names that disagree with the glossary spelling (Tactics Ogre: Let Us Cling Together) are listed; the other ego names are the
+# author's English (E: lines) as they are.
+
+I:9
+J:ゼノビアの
+N:of Xenobian
+
+I:90
+J:バルマムッサの
+N:of Balmamusa
+
+I:99
+J:(イシュタル)
+N:(Ishtar)

@@ -1,0 +1,269 @@
+=== Item Guide ===
+
+Zangband added a variety of weapons and armor. Here I briefly explain those
+items, the armor not covered in Jangband, and the names by which items are
+called.
+
+Note for the English edition: most of the weapons and armor described below
+come from Zangband and do not appear in TOband. Items that are not in TOband
+are marked "(not in TOband)". The AC and to-hit values given for the armor
+that does appear in TOband (Soft Leather Armour, Hard Leather Armour, Metal
+Scale Mail, Chain Mail, Double Chain Mail, Splint Mail, Mithril Chain Mail,
+Full Plate Armour, and Mithril Plate Mail) were checked against the game's
+item data.
+
+
+--- Rods / Wands / Staffs ---
+
+All of these are rod-shaped items with magic stored in them. The definitions
+in AD&D, which seems to be where the setting was borrowed from, are quoted
+below from Mr. Ferianasu's explanation, with additions. For the differences in
+how they behave in the game, see jobjects.txt#ObjectTypes [b].
+
+    A wand is a small staff like a magical girl's baton. It has almost no
+    meaning other than "magic stick"; most are decorative or have some single
+    ornament at the tip. In the Japanese translation of D&D it is rendered as
+    "magic stick".
+
+    A staff is made of wood, about as tall as a person or taller, and is quite
+    large. Gandalf's staff... the way it is often drawn may be somewhere
+    between a staff and a cane.
+
+    A rod is a metal stick about three feet long. A cane is the same size but
+    made of wood, like a gentleman's walking stick, and a sceptre is a heavily
+    decorated one like a royal scepter. A rod is "thinner" than a staff; it is
+    said to be about as thick as a thumb, so it is quite thin. It is also
+    translated as "pole".
+
+
+--- Weapons Added in Zangband ---
+
+I explain these with reference to the "Weapon Dictionary" (Buki Jiten) by
+Sadaharu Ichikawa, published by Shinkigensha.
+
+  - Three Piece Rod (not in TOband): You can see it in movies such as "The
+    36th Chamber of Shaolin." Three sticks joined like nunchaku.
+
+  - Lajatang (not in TOband): A weapon with a naginata-like blade on both ends
+    of a pole.
+
+  - Hatchet (not in TOband): An axe for throwing, but it cannot be used for
+    throwing in the game.
+
+  - Trifurcate Spear (not in TOband): I cannot tell how it differs from the
+    trident.
+
+  - Guisarme (not in TOband): A weapon with a spear-like point and projections
+    on both sides (figure below).
+
+           +
+__________===>
+            |
+
+  - Fauchard (not in TOband): A naginata-like weapon used in France, with a
+    hook like a jitte on the side opposite the blade, which can catch the
+    enemy's weapon (figure below).
+
+           +-
+__________===7
+
+  - Espadon (not in TOband): A two-handed sword used in Europe in the 15th
+    century.
+
+  - Basillard (not in TOband): A dagger used in Europe in the 13th-15th
+    centuries.
+
+  - Khopesh (not in TOband): A sword shaped like a Japanese sickle, used in
+    ancient Egypt.
+
+  - Flamberge (not in TOband): A French two-handed sword, characterized by a
+    wavy, double-edged blade. This is to widen the enemy's wounds and make
+    them hard to heal.
+
+  - Claymore (not in TOband): A two-handed sword with a characteristically
+    shaped guard (figure below).
+
+   %
+  /
+###|=============>
+  \
+   %
+
+  - Zweihander (not in TOband): A great sword used with both hands in Germany.
+    The word means "two-hander" in German, but because its shape is so
+    distinctive it is called by this name (figure below).
+
+   |
+   |
+   | |
+####================>
+   | |
+   |
+   |
+
+
+--- Japanese Weapons / Armor ---
+
+Zangband contains dubious Japanese weapons and armor, which seem to have been
+taken from the old Apple II game "Deathlord",
+http://208.167.74.218:2700/tiktok/Docs/DeathlordManual.txt.
+
+  - Bo Staff (not in TOband)
+
+  - Tetsubo (not in TOband)
+
+  - Tanto (not in TOband)
+
+  - Wakizashi (not in TOband)
+
+  - Naginata (not in TOband)
+
+  - Jo Staff (not in TOband): This probably refers to the staff (shakujo)
+    carried by yamabushi, the mountain ascetics. In the Japanese version of
+    Diablo II it is rendered as "Joe's Staff" ;)
+
+  - Ninjato (not in TOband): The blade is about 50 cm long, and its
+    distinguishing feature is a large, square guard (tsuba). This is so that
+    it can be stood against a wall and used as a foothold. (From Gakken,
+    "Secrets of Ninpo and Ninjutsu")
+
+  - No-dachi (not in TOband): A large Japanese sword.
+
+  - O-yoroi (not in TOband) AC 24, skill modifier -2
+
+  - Do-maru (not in TOband) AC 20, skill modifier -2
+
+  - Haramakido (not in TOband) AC 17, skill modifier -2
+
+  - Kabuto (not in TOband) AC 7
+
+  - Jingasa (not in TOband) AC 4
+
+
+--- Armor Guide ---
+
+Armor in the game is divided into several categories. Armor that gives high
+protection but is hard to move in carries a slight minus modifier to the
+to-hit chance of your attacks. From the middle of the game on, however, this
+is too small to matter. Much more important is that armor with higher
+protection is heavier, so if you lack strength you suffer penalties to speed,
+spell success rate, and so on, and this effect is far greater.
+
+
+1: Types made of joined pieces of metal
+
+Armor that balances mobility and strength. Movement is somewhat restricted,
+and in the game it carries a to-hit modifier of 2 to 3.
+
+  - Splint Mail, AC 19, to-hit modifier -2: Made of long, narrow metal plates
+    joined together. In Diablo it had the graphics of Japanese armor, but in
+    Diablo II it returned to ordinary graphics. In D&D, the names Splint Mail
+    and Banded Mail are used to distinguish whether the metal plates run
+    vertically or horizontally, but it is doubtful whether the vertical kind
+    actually existed.
+
+  - Metal Scale Mail, AC 13, to-hit modifier -2
+
+  - Metal Brigandine Armour (not in TOband), AC 19, to-hit modifier -3
+
+  - Metal Lamellar Armour (not in TOband), AC 23, to-hit modifier -3
+
+    The last three are all made by joining pieces of metal 5 to 15 cm long in
+    a regular pattern.
+
+
+2: Types made of joined metal rings
+
+Mail made of chains or metal rings joined into a surface. Movement is somewhat
+restricted, and in the game it carries a to-hit modifier of 1 to 2.
+
+  - Ring Mail (not in TOband), AC 12, to-hit modifier -2: Easy to make if the
+    rings are large, but it cannot stop a spear thrust.
+
+  - Double Ring Mail (not in TOband), AC 15, to-hit modifier -2: Ring mail
+    made double.
+
+  - Chain Mail, AC 14, to-hit modifier -2: Made with finer rings than ring
+    mail. In Japan, too, ninja (for example Kage-Maru in Virtua Fighter 3)
+    wore it.
+
+  - Augmented Chain Mail (not in TOband), AC 16, to-hit modifier -2:
+    Apparently chain mail with the important parts doubled. An item that has
+    existed since Moria, the predecessor of Angband.
+
+  - Double Chain Mail, AC 16, to-hit modifier -2: Apparently chain mail with
+    every part doubled. An item that has existed since Moria, the predecessor
+    of Angband.
+
+  - Bar Chain Mail (not in TOband), AC 18, to-hit modifier -2: Apparently
+    chain mail with the important parts covered by iron plates. An item that
+    has existed since Moria, the predecessor of Angband.
+
+  - Mithril Chain Mail, AC 28, to-hit modifier -1: Made of precious mithril.
+    Famous as the one that Bilbo gets in the novel "The Hobbit".
+
+
+3: Types made of metal plates
+
+The kind you often see displayed in Western mansions. The protection is
+perfect, but movement is restricted, and in the game it carries a to-hit
+modifier of 3 to 4.
+
+  - Partial Plate Armour (not in TOband), AC 22, to-hit modifier -3: Armor
+    that covers only part of the body, such as the torso.
+
+  - Full Plate Armour, AC 25, to-hit modifier -3: Armor that covers everything
+    from the hands to the feet, leaving no part of the body exposed.
+
+  - Ribbed Plate Armour (not in TOband), AC 28, to-hit modifier -3: Plate mail
+    whose iron plates have ridges, like corrugated iron, to increase their
+    strength.
+
+  - Mithril Plate Mail, AC 35, to-hit modifier -3: Plate mail made of precious
+    mithril.
+
+  - Adamantite Plate Mail (not in TOband), AC 40, to-hit modifier -4: In "The
+    Lord of the Rings", adamantite is a sturdy metal also used, for example,
+    in the foundation of the Tower of Orthanc. The word adamantite is also
+    used as an archaic word for diamond, but in the game it is a special
+    metal.
+
+
+4: Materials other than metal
+
+Movement is hardly restricted at all, but the protection is only moderate.
+
+  - Soft Leather Armour, AC 4
+
+  - Soft Studded Leather (not in TOband), AC 5
+
+  - Hard Leather Armour, AC 6, to-hit modifier -1
+
+  - Hard Studded Leather (not in TOband), AC 7, to-hit modifier -1
+
+    Hard leather gives more protection but makes movement slightly harder. For
+    the studded kind, you can imagine the sort of outfit a heavy-metal fan
+    often wears.
+
+  - Padded Armour (not in TOband), AC 4: Also called quilted armor. Cloth is
+    sewn together with cotton or the like stuffed in between.
+
+  - Leather Jacket (not in TOband), AC 12, to-hit modifier -1: In NetHack it
+    is the starting equipment of the Archeologist. The kind that Indiana Jones
+    wears.
+
+  - Cord Armour (not in TOband), AC 6: Apparently leather armor reinforced
+    with wire.
+
+  - Stone and Hide Armour (not in TOband), AC 15, to-hit modifier -1
+
+  - Rhino Hide Armour (not in TOband), AC 8, to-hit modifier -1
+
+  - Paper Armour (not in TOband), AC 4
+
+    I do not really know about these last three.
+
+--
+Written by: Itakura
+***** Begin Hyperlinks
+***** [b] jobjects.txt#ObjectTypes

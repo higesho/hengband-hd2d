@@ -1,0 +1,298 @@
+=== The Dungeon ===
+
+
+Although the vast overworld of TOband contains several towns and a large
+wilderness, the bulk of your adventuring will take place in the dungeon.
+Symbols appearing on your screen represent the dungeon's walls, floor,
+objects, features, and the creatures lurking about. In order to direct your
+character, you enter single-character commands (see jcommand.txt [b]).
+
+
+***** <MapSymbols>
+=== Symbols On Your Map ===
+
+Symbols on your map can be broken down into three categories: features of
+the dungeon such as walls, floor, doors and traps; objects which can be
+picked up such as treasure, weapons and magical devices; and creatures which
+may or may not move about the dungeon, but are mostly harmful to your
+character's well-being.
+
+Some symbols are used to represent more than one type of entity, and some
+symbols are used to represent entities in more than one category. The '@'
+symbol (by default) is used to represent the character.
+
+It will not be necessary to remember all of the symbols and their meanings.
+The '/' command will identify any symbol on your map at any time.
+
+Note that you can use a "user pref file" to change any of these symbols to
+something you are more comfortable with.
+
+
+--- Features that do not block line of sight ---
+
+  [[[[[w.]   Floor                       [[[[[y;]   Statue of Evasion
+  [[[[[w.]   A trap (hidden)             [[[[[R;]   An explosive rune
+  [[[[[w^]   A trap                      [[[[[U1]   General Store
+  [[[[[u.]   Dirt                        [[[[[s2]   Armoury
+  [[[[[g.]   Grass                       [[[[[w3]   Weaponsmith's Shop
+  [[[[[G:]   Flower                      [[[[[g4]   Temple
+  [[[[[g:]   Brush                       [[[[[b5]   Alchemy Shop
+  [[[[[B.]   Swamp                       [[[[[r6]   Magic Shop
+  [[[[[W.]   Ice field                   [[[[[D7]   Black Market
+  [[[[[B~]   Shallow water               [[[[[y8]   Home
+  [[[[[b~]   Deep water                  [[[[[o9]   Bookstore
+  [[[[[U~]   Shallow lava                [[[[[v0]   Museum
+  [[[[[r~]   Deep lava                   [[[[[B+]   Other building
+  [[[[[D#]   Dark pit                    [[[[[v+]   Other building
+  [[[[[B#]   Air
+  [[[[[U']   An open door
+  [[[[[u']   A broken door
+  [[[[[w<]   A staircase up
+  [[[[[w>]   A staircase down
+  [[[[[U<]   A shaft up
+  [[[[[U>]   A shaft down
+  [[[[[v>]   Dungeon entrance
+  [[[[[v<]   Upward dungeon entrance
+  [[[[[y>]   Quest entrance
+
+--- Features that block line of sight ---
+
+  [[[[[w#]   A granite wall              [[[[[G#]   A tree
+  [[[[[s%]   A magma vein                [[[[[o^]   Mountain chain
+  [[[[[w%]   A quartz vein               [[[[[U+]   A closed door
+  [[[[[w#]   A secret door               [[[[[w:]   A pile of rubble
+  [[[[[o*]   Vein with treasure
+
+
+***** <WithinDungeon>
+=== Within The Dungeon ===
+
+Once your character is adequately supplied with food, light, armor and
+weapons, he or she is ready to enter the dungeon. Move on top of the '>'
+symbol and use the "Down" command ('>').
+
+Your character will enter a maze of interconnecting staircases and finally
+arrive somewhere on the first level of the dungeon. Each level of the
+dungeon is fifty feet high (thus dungeon level "1" is sometimes called "50
+feet"), and is divided into large rectangular regions, each larger than the
+screen.
+
+In the dungeon, there are many items to find, but your character must
+survive many horrible monsters that are after you in order to find the items
+lying about and take them safely back to town to sell.
+
+There are two sources of light inside the dungeon. One is the permanent
+light that has been magically placed within rooms. The other is light
+sources carried by the player or monsters. If neither is present, the
+character will be unable to see. This will affect searching, picking locks,
+disarming traps, reading scrolls, casting spells and prayers, browsing books
+and more. So be very careful not to run out of light!
+
+A character must wield a torch or lamp in order to supply his or her own
+light. A torch or lamp burns fuel as it is used, and once it is out of fuel
+it stops supplying light. You will be warned as the light approaches this
+point. You may use the 'F' command to refuel your lantern (with flasks of
+oil) or your torch (with other torches), so it is a good idea to carry a
+reasonable number of extra torches or flasks of oil. There are rumors of
+items of exceptional power which glow with their own never-ending light.
+
+
+***** <Objects>
+=== Objects In The Dungeon ===
+
+The dungeon is full of items just waiting to be picked up and used. How did
+they get there? Well, most of the useful items belonged to the adventurers
+who entered the dungeon before you. After they were killed, the monsters
+busily scattered the items they left behind throughout the dungeon. Most
+cursed items were placed there by spiteful evil sorcerers, who delight in
+watching the adventurer who picks one up come to a bad end.
+
+One item in particular is worth mentioning here. The scroll of "Word of
+Recall" can be found within the dungeon, or bought at the temple in town. It
+works in two ways, depending on your current location. If read within the
+dungeon, it will teleport you back to town. If read in town, it will
+(usually) teleport you down to the deepest level of the dungeon that your
+character has previously been on. This makes the scroll very useful for
+getting back to the deeper levels of the dungeon. The level you return to is
+usually the deepest one you have been to, but you can change it by going
+back to a shallower level and reading a scroll of "Word of Recall".
+
+A scroll of "Word of Recall" takes some time to take effect after you read
+it, so don't expect to use it as an instant escape from a crisis. If you
+read another such scroll before the first has taken effect, the two cancel
+each other out and you will not be teleported.
+
+A more complete description of TOband items is found elsewhere in the
+documentation (see jobjects.txt [c]).
+
+
+***** <Mining>
+=== Mining ===
+
+Much of the treasure within the dungeon can be had only by digging it out of
+the walls. Rich veins exist on every level, but of course they must be
+found and mined. Quartz veins are the richest, holding most of the metals
+and gems, but magma veins also hold some.
+
+Mining is rather difficult without a pick or shovel. Some picks and shovels
+have an additional magical ability, shown in the form "(+#)". The higher the
+number, the better the magical digging ability of the tool. A pick or shovel
+may also have plusses to hit and to damage, which means it can be used as a
+weapon too.
+
+When a vein of quartz or magma is located, the character may wield a pick or
+shovel and begin digging out a section. When that section is removed, he or
+she can go on and keep digging further. Since granite rock is very hard, the
+efficient way to mine is to follow the vein and dig around the granite. At a
+certain point in the game, mining for treasure becomes more trouble than
+simply killing monsters and finding items to sell. Early on, however,
+mineral veins are a storehouse of easy treasure.
+
+If the character has a scroll, staff or spell of treasure detection, all the
+treasure in the veins on the screen is shown at once. This makes mining much
+easier and more fruitful. Note, however, that some treasure is not revealed
+even by detection.
+
+A character with high strength, or one wielding a heavy weapon, can dig
+without a pick or shovel. But even the strongest character will benefit from
+a pick or shovel when digging through granite.
+
+Various magical spells and items can sometimes leave a character trapped. So
+it is a good idea to always carry some kind of digging tool to escape with,
+even if you are not planning to dig for treasure.
+
+There are rumors of rooms deep in the dungeon holding incredible treasure,
+completely surrounded by permanent rock and granite walls, which can be
+entered only with a digging tool or magic. The same rumors say that these
+rooms are guarded by incredibly powerful monsters, so beware!
+
+
+***** <StairsDoorsEtc>
+=== Staircases, Secret Doors, Passages, and Rooms ===
+
+Staircases are how you go deeper into the dungeon or climb out of it. The
+symbols for the up and down staircases and shafts are the same as the
+commands to use them. A "<" represents an up staircase and a ">" represents
+a down staircase. You must move your character onto the staircase before you
+can use it.
+
+In TOband, a staircase takes you up or down one level, and a shaft takes you
+up or down two levels.
+
+Each level has 3 or 4 staircases leading onward (down in a normal dungeon,
+up in a dungeon that is climbed upward) and 1 or 2 leading back. You may have
+trouble finding a well-hidden secret door, or you may have to dig through
+obstructions to reach the stairs, but if you look hard enough you can find
+them in almost every case. Like permanent rock, the stairs and the entrances
+to shops cannot be destroyed by any means.
+
+Many secret doors are used within the dungeon to confuse and demoralize
+adventurers foolish enough to enter. But with some luck, or careful
+searching, you can find these secret doors. Behind a secret door there may be
+a room or corridor, or sometimes a whole main section of the level is hidden.
+Sometimes, though, there is only an empty room or a dead-end corridor.
+Secret doors always look like granite walls, just as traps always look like
+normal floor.
+
+Monsters in the dungeon will generally know about and use these secret
+doors, and you may see them left open behind a monster that has passed
+through.
+
+Doors can be broken down by bashing them. Once a door is bashed open, it is
+forever useless and cannot be closed.
+
+
+***** <Feelings>
+=== Level Feelings ===
+
+Once you have been on a particular dungeon level for a while, you will
+receive a "feeling" prompt representing what your intuition tells you about
+the quality of the items and the difficulty of the monsters found on that
+level. You may check this prompt again at any time after receiving it by
+pressing 'CTRL-F'.
+
+The actual feeling is determined by a number of factors. Things which raise
+the feeling level include the presence of vaults and special rooms, items
+and monsters that are out of depth for the level, and items of a certain
+quality (named items, artifacts, and "great" items (see jobjects.txt)). The
+feeling is the one you get when you enter the level, and it does not change
+because of monsters or items generated afterwards.
+
+In TOband, the nastier the feeling prompt, the better the level. From
+worst to best, the prompts are as follows:
+
+     "What a boring place..."
+     "This level looks reasonably safe."
+     "You don't like the look of this place."
+     "You feel your luck is turning..."
+     "You feel nervous."
+     "You have a bad feeling..."
+     "You have a very bad feeling..."
+     "This level looks very dangerous."
+     "You nearly faint as horrible visions of death fill your mind!"
+
+If for some reason you have a "white aura", you are very optimistic, and the
+prompts are quite different. In that case, the more "good" the feeling, the
+better the level:
+
+     "What a boring place..."
+     "This level can't be all bad..."
+     "You like the look of this place..."
+     "You feel your luck is turning..."
+     "You feel strangely lucky..."
+     "You have a good feeling..."
+     "You have a very good feeling..."
+     "You have an excellent feeling..."
+     "You have a superb feeling about this level."
+
+TOband also has two other special feelings. If you have not yet been on a
+level long enough to get a feeling and press 'CTRL-F', you will be given the
+prompt:
+
+     "Looks like any other level."
+
+If you are playing with artifact preservation turned off, you may also
+occasionally receive the following prompt:
+
+     "You feel there is something special about this level."
+
+A special feeling means one of two things: either there is a special room or
+vault on the level, or there is an artifact on the level. As you go deeper
+into the dungeon, special feelings caused by special rooms and vaults become
+increasingly rare, and are more commonly given when an artifact has been
+generated. Note that a level can have both a vault and an artifact, or more
+than one artifact, so you should never leave a special level without fully
+exploring it unless your character's survival is in question.
+
+
+***** <RandomQuests>
+=== Random Quests ===
+
+When your character is created, 10 random quests are set up automatically
+(you are not asked how many you want). Random quests are always of the type
+"Kill a particular powerful unique monster". There is a limit to how powerful
+the monster can be, but these quests are still very dangerous.
+
+Random quests appear in the Palace of the Dead, on levels 6, 12, 24, 38, 44,
+50, 56, 62, 76 and 88. On arriving at a random quest level, you will be told
+which monster is the quest monster.
+
+On random quest levels, no down staircase appears until the quest monster
+is killed. When you kill the quest monster, the down staircase will appear
+and the monster will drop an item of 'excellent' quality or above. This is
+true even of monsters that do not normally drop items.
+
+If the quest monster is too strong for you, simply run away by taking the
+up staircase or by using Word of Recall. In that case, the random quest is
+merely treated as failed, and you can carry on with your adventure.
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.0.11
+Updated    : TOband 0.0.3
+
+***** Begin Hyperlinks
+***** [b] jcommand.txt
+***** [c] jobjects.txt

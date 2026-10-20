@@ -1,0 +1,75 @@
+#=================================================#
+#   Object Auto-picker/Destroyer Sample Setting   #
+#=================================================#
+#
+# English version of lib/pref/picktype.prf (the Japanese sample).
+# Item and class names follow the English data in lib-en/edit: $CLASS gives the English class name
+# from lib-en/edit/p_class.txt (the glossary spelling, e.g. Fusilier for the Gunner).
+
+#
+# Pick up the corpses and skeletons of bounty targets for the Hunter's office,
+# and inscribe {Wanted} on them.
+#
+wanted corpses or skeletons#Wanted
+
+#
+# Pick up magical items with unknown effects. Identify them later.
+#
+unaware items
+
+#
+# Pick up anything that stacks with what is already in the pack.
+#
+collecting potion
+collecting scroll
+collecting rod
+(collecting items
+
+#
+# Pick up valuable potions, inscribing {!k} so they are not destroyed by mistake.
+#
+potion of *curing*#!k
+potion of life#!k!q
+potion of *healing*#!k!q
+potion of healing#!k
+potion of resistance#!k
+potion of speed#!k
+
+#
+# Pick up valuable scrolls, inscribing {!k}.
+#
+scroll of artifact creation#!k
+scroll of *destruction*#!k
+scroll of genocide#!k
+scroll of mass genocide#!k
+
+
+#
+# Archers and Crescents pick up the materials for arrows.
+#
+?:[IOR [EQU $CLASS Archer] [EQU $CLASS Crescent]]
+ammo-materials
+?:1
+
+#
+# Fusiliers pick up the materials for bullets.
+#
+?:[EQU $CLASS Fusilier]
+metal items
+?:1
+
+
+#
+# Auto-destroy common equipment that is neither ego nor artifact at high levels.
+# Dragon armors and the like are not "common", so they are kept.
+#
+?:[GEQ $LEVEL 30]
+# Destroy equipment known to be {average} or {good}.
+!nameless common weapons
+!nameless common armors
+
+?:[GEQ $LEVEL 20]
+# Destroy equipment known to be {average}.
+!average common weapons
+!average common armors
+?:1

@@ -1,0 +1,384 @@
+-----------------------------------------------------------
+Copyright Notice and License of the Original Hengband, and Other Matters
+-----------------------------------------------------------
+
+**********************************************************************
+             Copyright and License of Hengband
+**********************************************************************
+
+(The Japanese original of this page translates the English texts quoted
+below; here those English originals are given as they stand.)
+
+
+---------
+Copyright
+---------
+
+    The parts of Hengband that differ from Japanese Angband and Japanese
+  Zangband are held in copyright, on behalf of all the contributors, by:
+
+    Mr.hoge                 Email: echizen@users.sourceforge.jp
+
+
+    The parts of Japanese Zangband specific to the Japanese translation of
+  Zangband are held in copyright, on behalf of all the contributors, by:
+
+    Itakura                 Email: m-itakura@geocities.co.jp
+
+
+    The changes common to all platforms made in Japanese Angband 2.8.3-1.2.6
+  over the original Angband 2.8.3 are held in copyright by:
+
+    Shitoshin (Kiyohide Utsumi)            iris@bf.mbn.or.jp
+    Elrock                                 CXK01336@niftyserve.or.jp
+    FIRST (Kentaro Shirakata)              argrath@yo.rim.or.jp
+    sayu (YOKOYAMA Atsushi)                sayu@gol.com
+    Koji Kishi                             kis-@ca2.so-net.or.jp
+    TeO                                    CXE00237@niftyserve.or.jp
+    Dotou no Himajin (Hiromine Kanemitsu)  KFF02766@niftyserve.or.jp
+    VOLKO (Isamu Kido)                     Tokyo BBS: VOLKO
+
+
+    The platform-specific changes made in Japanese Angband 2.8.3-1.2.6 over
+  the original Angband 2.8.3 are held in copyright by the porters below:
+
+    PC-98x1   ported by : Shitoshin (iris@bf.mbn.or.jp)
+                          Elrock (CXK01336@niftyserve.or.jp)
+    X680x0    ported by : FIRST (argrath@yo.rim.or.jp)
+    DOS/V     ported by : sayu (sayu@gol.com)
+    UNIX/X11  ported by : Koji Kishi (kis-@ca2.so-net.or.jp)
+                          Akinobu Lee (ri@kuis.kyoto-u.ac.jp)
+    NeXTSTEP  ported by : Rei Takahashi
+                          (university: ks7098tr@ex.ecip.osaka-u.ac.jp)
+                          (home: rei0@osk2.3web.ne.jp)
+    FM-TOWNS  ported by : Kenichiro Katayama (ken_katayama@geocities.co.jp)
+    Windows95 ported by : TeO (CXE00237@niftyserve.or.jp)
+
+
+
+-------
+License
+-------
+
+Hengband, like Angband and ZAngband on which it is based, is distributed
+under the Moria/Angband license below.
+
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+(Translator's note: the last sentence is understood to mean that, besides
+the three people named above, there are many other contributors whose
+copyrights apply separately.)
+
+
+If you distribute a program that changes Hengband, or another program that
+includes part of Hengband's code, distribution is permitted only when the
+following conditions are met in addition to the Moria/Angband license. A
+"change" here means a change to any of the individual files in the
+distributed archive, or the addition or removal of files.
+
+  (1) All copyright notices must be included as they stand.
+
+  (2) The fact that changes were made, and what those changes are, must be
+      clearly stated.
+
+  (3) Whatever changes are necessary must be made so that scores can no
+      longer be sent to Hengband's score server (by disabling the score
+      sending feature, by changing the address of the destination server, or
+      by some similar means). This condition does not apply if none of the
+      changes affects the content of the game itself at all.
+
+
+The license notice above does not rule out the possibility of distribution
+under the GPL alone, by way of Angband's dual license (described below). At
+present Hengband cannot be distributed under the GPL, but should that become
+possible in future, those who receive it under the GPL are under no
+obligation to follow the license notice above.
+
+
+--------
+Warranty
+--------
+    The authors accept no responsibility for any damage whatever arising from
+  the use of this program.
+
+
+
+-----------------------------------------------
+Copyright and License of Angband (the English)
+-----------------------------------------------
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+(Translator's note: the last sentence is understood to mean that, besides
+the three people named above, there are many other contributors whose
+copyrights apply separately.)
+
+
+All changes made by Ben Harrison and Robert Ruehlmann are also available
+under the GNU GENERAL PUBLIC LICENSE.  Note that this doesn't influence
+the current distribution, since parts of the source are still only
+available under the old Moria/Angband license.  Until all parts of
+Angband are distributed under the GPL the only valid license remains
+the original Moria/Angband license.
+
+
+----------------------
+About the dual license
+----------------------
+At the suggestion of Robert Ruehlmann, an effort has been under way to make
+Angband and its variants distributable under the GPL. For details see the page
+about the Angband OpenSource Initiative on the official Angband home page.
+
+http://thangorodrim.angband.org/development/opensource.html
+
+Translation (partly paraphrased) of that page:
+
+Angband and its predecessor Moria were written before the idea of OpenSource
+was widely accepted, but their authors made a license guaranteeing that
+Angband and Moria would always be distributed free of charge.
+(Translator's note: this is the so-called Moria/Angband license.)
+
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+
+That license, however, does not meet the conditions of OpenSource: there is
+no obligation to publish the source when distributing a changed version, and
+there were several other problems besides. As a result Angband cannot lawfully
+be included in a Linux distribution, nor can it use the many services prepared
+for OpenSource projects (SourceForge and the like), nor can code distributed
+under the GPL be used as part of Angband.
+
+I (Robert Ruehlmann) have begun the Angband OpenSource Initiative to
+overcome these problems, and am working to make it possible to distribute
+Angband (and any variant that wishes to share in the benefit of the license
+change) under the GNU General Public License.
+
+Changing the license requires either the agreement of everyone who wrote any
+of the code in Angband, or else a complete rewrite of every part written by an
+author who has not agreed to the new license.
+
+Moving Angband to the GPL alone would force the authors of every variant based
+on Angband to change their license to the GPL as well. To avoid that, I have
+decided to use the "dual license" method, distributing the code under both the
+GPL and the Angband license. Variant authors may therefore go on using the
+Angband license if they wish; they need not change their variant's license to
+the GPL.
+
+Note that at present the dual license applies only to the parts of the source
+written by those who agreed to the Angband OpenSource Initiative. Other parts
+are still distributed under the Moria/Angband license alone, so the dual
+license does not affect the whole of Angband as it is distributed today. Until
+every part of Angband can be distributed under both licenses, the only license
+valid for the program as a whole is the Moria/Angband license.
+
+To distribute your own changes under the dual license, you may use the short
+statement below and send it to me by mail.
+
+(Translator's note: the statement must include your name; a nickname is said
+to be acceptable. The official Angband maintainer who is given dual license
+permission by this statement can then distribute Angband (and its variants)
+including those changes under the GPL as well, and each developer who
+receives it can in turn redistribute his or her own variant under the GPL as
+well.)
+
+I hereby release [insert here the name of your patch, or the phrase 'all my
+changes to the Angband code'], under the terms of the GNU General
+Public License (version 2), as well as under the traditional Angband
+license.  It may be redistributed under the terms of the GPL (version
+2 or any later version), or under the terms of the traditional Angband
+license.
+
+
+You may also choose to release all your changes to Angband into the public
+domain and give up all rights. If so, please tell me.
+
+
+So far the Angband OpenSource Initiative has the agreement of the following
+developers:
+ - Robert Ruehlmann
+ - Ben Harrison
+ - Greg Wooledge (Random artifact generation)
+ - Tim Baker
+ - William Tanksley
+ - Dr. Andrew White (APW Borg)
+ - Dennis van Es (BorgBand, DvEband)
+ - Julian Lighton
+ - Billy Tanksley
+ - Dean Anderson (CthAngband)
+ - Chris Weisiger (new Angband vaults)
+ - Shayne Steele
+ - Topi Ylinen
+ - Steven Fuerst
+ - Jonathan Ellis (edit files patch)
+ - Eytan Zweig (EyAngband) - public domain
+ - Matthias Kurzke (PsiAngband, ego-item patch)
+ - Sheldon Simms (random artifact names)
+ - Dave Blackston (squelch patch)
+ - Greg Flint
+ - John I'anson-Holton
+ - Aram Harrow
+ - Leon Marrick
+ - Daniel Nash
+ - Keldon Jones
+ - Jim Wilson (UMoria author)
+ - Mark Kvale (labyrinthine room patch)
+
+
+:::End of translation
+
+
+
+
+-----------------------------------------------------------
+Copyright Notice of the Original Japanese ZAngband
+-----------------------------------------------------------
+
+*********************************************************************
+                  From the Creator of the Japanese Version
+*********************************************************************
+
+Copyright
+---------
+The parts of Japanese Zangband specific to the Japanese translation of
+Zangband are held in copyright, on behalf of all the contributors, by the
+person below. For the copyright of the changes made for each platform, see
+the documents for that platform.
+
+    Representative of the translation: Itakura    Email: ita@zangband.org
+    For the achievements of the others who helped, see the version history.
+
+The changes common to all platforms made in Japanese Angband 2.8.3-1.2.6
+over the original Angband 2.8.3 are held in copyright by:
+
+    Shitoshin (Kiyohide Utsumi)            iris@bf.mbn.or.jp
+    Elrock                                 CXK01336@niftyserve.or.jp
+    FIRST (Kentaro Shirakata)              argrath@yo.rim.or.jp
+    sayu (YOKOYAMA Atsushi)                sayu@gol.com
+    Koji Kishi                             kis-@ca2.so-net.or.jp
+    TeO                                    CXE00237@niftyserve.or.jp
+    Dotou no Himajin (Hiromine Kanemitsu)  KFF02766@niftyserve.or.jp
+    VOLKO (Isamu Kido)                     Tokyo BBS: VOLKO
+
+
+Contact
+-------
+Please send all impressions of the game, complaints, opinions, bug reports
+and words of thanks :-P to the bulletin board below.
+
+     http://www63.tcup.com/6300/ita.html
+
+
+Getting the Source and Binaries
+-------------------------------
+The source patches common to all platforms for Japanese Zangband can be
+obtained from the home page below.
+
+    http://www.geocities.co.jp/SiliconValley-SanJose/9606/zg/index.html
+
+    For the binaries and source for each platform, please ask the porter
+    below.
+    * Porter to Windows :  Mitsuhiro Itakura  Email: ita@zangband.org
+      http://www.geocities.co.jp/SiliconValley-SanJose/9606/
+    * Porter to Mac :      Shinichi Abe       Email: s_abe@i.bekkoame.ne.jp
+      http://www.bekkoame.ne.jp/i/s_abe/
+
+
+About Japanese Zangband
+-----------------------
+At first I (Itakura) had no thought of translating Zangband into Japanese.
+I happened to be reading The Lord of the Rings and The Hobbit, and I liked
+the way Smeagol talks, so I tried changing Smeagol's lines in the game into
+Japanese. But when I rewrote the relevant part in lib/file/monspeak.txt in
+Japanese, it was not displayed in the game, so I started tinkering with the
+source code to make it display Japanese, and before I knew it I was hooked.
+Fortunately, the Angband source, in both the English and Japanese versions,
+was very easy to understand and easy to change, so I was able to mechanically
+extract the Japanese parts from Japanese Angband and mechanically build them
+into the English Zangband, and without much effort a large part of it was
+translated into Japanese. Even so, a large amount of Z's own messages
+remained that needed to be translated.
+
+So I released the still unfinished source, appealed on the net for Zangband
+fans to help with the translation, and also released a Windows binary, in the
+hope of drawing in more people. I also e-mailed the creators of the many
+wonderful home pages I came across on the net, though I had never met them,
+and received a variety of useful information.
+
+In this way I gradually drew in many people, the translation progressed, and
+here we are. As of 2000/04/06, the translation of the source is almost
+finished, and what remains is the monsters' lines and some of the
+descriptions. I am very grateful to everyone who helped. The names of the
+main people who helped with the translation are listed below.
+
+    Mr. Wakabayashi (bldg.c, cmd5.c)
+    Mr. Yozora no Suisei (quests)
+    Mr. Shizuki Kanmaru (monster names, item names, etc.)
+    Mr. Tessi (Smeagol's speech)
+    Mr. Kuru (Cthulhu and Amber related)
+    Mr. Fujioka (Amber related)
+
+I am especially grateful to Mr. Kuru, who searched out the Japanese
+translations of the Cthulhu material from a huge body of literature. Thanks
+to him, R_INFO_J.TXT has become something of real value as reference
+material. I also thank Mr. Shizuki Kanmaru, who devised many of the
+translated terms.
+
+For the Cthulhu-type monsters, I received the kind permission of NeSYS, the
+administrator of N-SYSTEM (http://www.geocities.com/Tokyo/Palace/8768/ ), a
+Cthulhu information site with an overwhelming amount of information, to
+quote his descriptions of the monsters, and so I was able to add quite
+detailed descriptions. I take this opportunity to express my thanks.
+
+For the help files, I used Mr. Saito's ZKB-Japanese Edition,
+http://www.ceres.dti.ne.jp/~asaitoh/roguelike/zkb/contents/main.html .
+
+Of course I also thank the people who made Angband, JAngband and Zangband.
+After all, their source code is about ten times easier to translate into
+Japanese than NetHack's. And in making the WINDOWS version I was greatly
+helped by TeO, who made the JAngband WINDOWS version.
+
+Since then, many people have also given me advice and ideas on the bulletin
+board. I cannot list all the names, but I am very grateful.
+
+
+About Distribution
+------------------
+Distribution follows that of the original English ZAngband 2.X.X. Basically,
+you will be fine if you observe the following:
+
+      (1) Do not make changes to the distributed files.
+      (2) Do not distribute for commercial or profit-making purposes
+          (do not make a profit).
+
+
+Copyright of the English Angband
+--------------------------------
+Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+This software may be copied and distributed for educational, research,
+and not for profit purposes provided that this copyright and statement
+are included in all such copies.  Other copyrights may also apply.
+(If you copy it, this copyright and text must be included.)
+
+
+Copyright of the English Moria (the game on which Angband is based)
+-------------------------------------------------------------------
+Copyright (c) 1989 James E. Wilson, Robert A. Keoneke
+This software may be copied and distributed for educational, research, and
+not for profit purposes provided that this copyright and statement are
+included in all such copies.
+
+
+Warranty
+--------
+The authors accept no responsibility for any damage whatever arising from
+the use of this program.

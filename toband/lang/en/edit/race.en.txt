@@ -1,0 +1,101 @@
+# TOband -> English: race (p_race) descriptions. UTF-8; everything except the J: lines is ASCII.
+# I: p_race number / J: the Japanese race name on the N: line (must match) / D: English description.
+# Race names come from the glossary (classes_races.tsv).
+
+I:0
+J:人間
+D:The Human is the baseline character; all other races are compared to
+D:Humans. Humans can take any class and perform averagely in every one.
+D:Because of their short life span, they tend to gain levels faster than any
+D:other race. They have no special modifiers or traits.
+
+I:1
+J:ホークマン
+D:Hawkmen are a fierce, battle-loving winged race. They are long-lived, with
+D:three times the life span of humans. By using their wings they can avoid
+D:pit traps and dangerous terrain.
+
+I:2
+J:リザードマン
+D:Lizardmen are an amphibious race with hard scales. Their scales give them
+D:resistance to acid and cold. They are also excellent fighters with a high
+D:rate of HP growth, and are reasonably competent at disarming traps and
+D:using magic devices.
+
+I:3
+J:フェアリー
+D:Faeries are very small. They have tiny wings and can fly over traps and
+D:dangerous terrain. They love sunlight and resist light, but take great
+D:damage from darkness. At high levels they can fly faster.
+
+I:4
+J:グレムリン
+D:Gremlins are the opposite of Faeries. They have wings and can fly over
+D:traps and dangerous terrain. They love darkness and resist dark and nether,
+D:but take great damage from light. At high levels they can fly faster.
+
+I:5
+J:スケルトン
+D:As undead, Skeletons need not worry about poison or life-draining attacks.
+D:They do not use eyes to perceive objects, so they are not fooled by things
+D:unseen. Their bones resist shards and the like, and at higher levels they
+D:gain resistance to cold. The effects of potions and food take hold without
+D:passing through a Skeleton's stomach (which does not exist), but the
+D:potions and food themselves fall through the jaw, so no nourishment can be
+D:absorbed. Skeletons do not need food.
+
+I:6
+J:ゴースト
+D:Ghosts are a powerful kind of undead. Being semi-material, they can pass
+D:through walls, but are hurt by the wall's density when they do. Like other
+D:undead, they cannot be drained of life, can see invisible things, resist
+D:poison and cold, and are immune to nether. At sufficiently high levels they
+D:gain telepathy. Ghosts can become superb spellcasters, but their physical
+D:traits are very poor. Ghosts do not need food.
+
+I:7
+J:パンプキンヘッド
+D:Pumpkinheads are pumpkin ghouls created by Deneb the Witch. They provoke
+D:the cruelty of their enemies, so enemies target them first. Pumpkinheads
+D:are physically weak, but are immune to paralysis, resist chaos and
+D:disenchantment, sustain their life force, and gain telepathy as they level
+D:up.
+
+I:8
+J:ゴブリン
+D:Goblins make good warriors, but do not expect magic from them. They are
+D:poor at stealth, and terrible at searching, disarming and perception.
+D:Goblins are ugly and tend to be charged higher prices in shops. Since they
+D:like living underground, they resist darkness.
+
+I:9
+J:ゴーゴン
+D:Gorgons are monsters with countless snakes growing in place of hair and,
+D:instead of a mermaid's tail, the lower body of a snake. They are competent
+D:in all skills, and are far better with bows than other races. They resist
+D:petrification, and as they level up they also gain resistance to acid,
+D:cold, poison, nether and chaos. In addition, they can use the evil eye,
+D:which turns those who see it to stone, making them an extremely powerful
+D:race.
+
+I:10
+J:マーメイド
+D:Mermaids are a sea-dwelling race, human above the waist and fish below.
+D:They favor water and can be expected to fight well in it. On land, however,
+D:they are weak and move with difficulty. They are also excellent singers and
+D:can sing songs that charm monsters.
+
+I:11
+J:マッドハロウィン
+D:Mad Halloweens are a race of Pumpkinheads strengthened by rotten pumpkins.
+D:They are physically superior to Pumpkinheads.
+
+I:12
+J:バルタン
+D:Descendants of the ancient winged people said to have ruled the heavens.
+D:Their burning red hair is the mark of their noble blood.
+
+I:13
+J:レイブン
+D:Winged people who fell to the dark path, soaring on jet-black feathers. An
+D:extremely ferocious race that loves blood more than strife itself.

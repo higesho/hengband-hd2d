@@ -1,0 +1,988 @@
+# TOband -> English: class titles (the T: lines of p_class.txt, 10 per class, 410 in all). UTF-8; everything except the J:/TJ: lines is ASCII.
+# I: p_class number / J: the Japanese class name (must match) / TJ: the Japanese title (must match the T: line) / T: the English title.
+# The title is centred in a 31-column field on the tombstone (files.c print_tomb: center_string()).
+# The same Japanese title always has the same English; titles inherited from Hengband use the upstream English.
+
+I:0
+J:ソルジャー
+# class name: Warrior
+TJ:予備兵
+T:Reservist
+TJ:二等兵
+T:Private
+TJ:一等兵
+T:Private First Class
+TJ:上級兵
+T:Senior Private
+TJ:伍長
+T:Corporal
+TJ:軍曹
+T:Sergeant
+TJ:曹長
+T:Sergeant Major
+TJ:少尉
+T:Second Lieutenant
+TJ:中尉
+T:First Lieutenant
+TJ:大尉
+T:Captain
+
+I:1
+J:ナイト
+# class name: Knight
+TJ:従士
+T:Squire
+TJ:見習い騎士
+T:Cadet Knight
+TJ:下級騎士
+T:Junior Knight
+TJ:中級騎士
+T:Knight
+TJ:上級騎士
+T:Senior Knight
+TJ:修道騎士
+T:Monastic Knight
+TJ:参謀
+T:Strategist
+TJ:副団長
+T:Deputy Commander
+TJ:騎士団長
+T:Knight Commander
+TJ:騎士総長
+T:Grand Commander
+
+I:2
+J:バーサーカー
+# class name: Berserker
+TJ:ごろつき
+T:Ruffian
+TJ:ちんぴら
+T:Thug
+TJ:強盗
+T:Robber
+TJ:山賊
+T:Bandit
+TJ:賞金首
+T:Outlaw
+TJ:賞金稼ぎ
+T:Bounty Hunter
+TJ:流血の闘士
+T:Bloodshed Fighter
+TJ:血河の闘士
+T:Bloodriver Fighter
+TJ:屍山の闘士
+T:Corpsehill Fighter
+TJ:伝説の闘士
+T:Legendary Fighter
+
+I:3
+J:テラーナイト
+# class name: Terror-Knight
+TJ:ろくでなし
+T:Scoundrel
+TJ:変質者
+T:Deviant
+TJ:鬼畜
+T:Brute
+TJ:悪漢
+T:Villain
+TJ:人殺し
+T:Murderer
+TJ:首切り狂
+T:Decapitator
+TJ:殺戮享楽者
+T:Slaughter Reveler
+TJ:悪魔の騎士
+T:Demon Knight
+TJ:戦場の悪夢
+T:Nightmare of War
+TJ:殺戮大王
+T:Slaughter King
+
+I:4
+J:ビーストテイマー
+# class name: Beast-Tamer
+TJ:小鳥の主人
+T:Bird Master
+TJ:犬猫の主人
+T:Dog-Cat Master
+TJ:馬の主人
+T:Horse Master
+TJ:狼の主人
+T:Wolf Master
+TJ:虎の主人
+T:Tiger Master
+TJ:熊の主人
+T:Bear Master
+TJ:獅子の主人
+T:Lion Master
+TJ:聖獣の主人
+T:Holy Beast Master
+TJ:魔獣の主人
+T:Demon Beast Master
+TJ:獣神の友人
+T:Beast God's Friend
+
+I:5
+J:ソードマスター
+# class name: Swordmaster
+TJ:初心者
+T:Beginner
+TJ:入門生
+T:Student
+TJ:白帯
+T:White Belt
+TJ:黒帯
+T:Black Belt
+TJ:師範代
+T:Deputy Instructor
+TJ:師範
+T:Instructor
+TJ:宗家
+T:School Head
+TJ:剣匠
+T:Blade Master
+TJ:剣聖
+T:Sword Saint
+TJ:剣神
+T:Sword God
+
+I:6
+J:ドラグーン
+# class name: Dragoon
+TJ:とかげ殺し
+T:Lizard Slayer
+TJ:へび殺し
+T:Snake Slayer
+TJ:竜卵盗み
+T:Dragon Egg Thief
+TJ:幼竜殺し
+T:Baby Dragon Slayer
+TJ:子竜殺し
+T:Juvenile Dragon Slayer
+TJ:若竜殺し
+T:Young Dragon Slayer
+TJ:成竜殺し
+T:Mature Dragon Slayer
+TJ:古竜殺し
+T:Ancient Dragon Slayer
+TJ:魔竜殺し
+T:Demon Dragon Slayer
+TJ:竜王殺し
+T:Dragon King Slayer
+
+I:7
+J:ニンジャ
+# class name: Ninja
+TJ:訓練生
+T:Trainee
+TJ:仕手
+T:Myrmidon
+TJ:熟達者
+T:Initiate
+TJ:短刀使い
+T:Knifer
+TJ:切り裂き
+T:Bladesman
+TJ:凄腕
+T:Hashishin
+TJ:漆黒の刃
+T:Black Dagger
+TJ:闇の一撃
+T:Shadowstrike
+TJ:暗殺者
+T:Assassinator
+TJ:死の長き腕
+T:Death Lord
+
+I:8
+J:ウィザード
+# class name: Wizard
+TJ:手品師
+T:Prestidigitator
+TJ:奇術師
+T:Trickster
+TJ:占い師
+T:Fortune-Teller
+TJ:霊感師
+T:Psychic
+TJ:陰陽師
+T:Onmyoji
+TJ:召喚師
+T:Summoner
+TJ:妖術師
+T:Enchanter
+TJ:魔術師
+T:Magician
+TJ:魔道師
+T:Sorcerer
+TJ:大魔法使い
+T:Great Wizard
+
+I:9
+J:ウォーロック
+# class name: Warlock
+TJ:ムーの読者
+T:Occult Magazine Reader
+TJ:神秘主義者
+T:Mystic
+TJ:オカ研部員
+T:Occult Club Member
+TJ:魔法学部学生
+T:Magic Undergraduate
+TJ:魔学修士課程
+T:Magic Master's Student
+TJ:魔学博士課程
+T:Magic Doctoral Student
+TJ:魔学部助教授
+T:Magic Asst. Professor
+TJ:魔法学部教授
+T:Professor of Magic
+TJ:探求者
+T:Seeker
+TJ:全てを識る者
+T:Knower of All
+
+I:10
+J:エクソシスト
+# class name: Exorcist
+TJ:信者
+T:Believer
+TJ:修道僧
+T:Monastic
+TJ:僧兵
+T:Warrior Monk
+TJ:古参僧兵
+T:Veteran Warrior Monk
+TJ:熟練僧兵
+T:Expert Warrior Monk
+TJ:聖職者
+T:Clergyman
+TJ:悪霊払い
+T:Spirit Exorcist
+TJ:悪魔払い
+T:Demon Exorcist
+TJ:魔を討つ者
+T:Slayer of Evil
+TJ:神の処刑者
+T:God's Executioner
+
+I:11
+J:アマゾネス
+# class name: Amazoness
+TJ:予備兵
+T:Reservist
+TJ:二等兵
+T:Private
+TJ:一等兵
+T:Private First Class
+TJ:上級兵
+T:Senior Private
+TJ:伍長
+T:Corporal
+TJ:軍曹
+T:Sergeant
+TJ:曹長
+T:Sergeant Major
+TJ:少尉
+T:Second Lieutenant
+TJ:中尉
+T:First Lieutenant
+TJ:大尉
+T:Captain
+
+I:12
+J:ヴァルキリー
+# class name: Valkyrie
+TJ:若芽の槍士
+T:Sprout Spearman
+TJ:若草の槍士
+T:Grass Spearman
+TJ:竹の槍士
+T:Bamboo Spearman
+TJ:石の槍士
+T:Stone Spearman
+TJ:銅の槍士
+T:Copper Spearman
+TJ:青銅の槍士
+T:Bronze Spearman
+TJ:鉄の槍士
+T:Iron Spearman
+TJ:鋼鉄の槍士
+T:Steel Spearman
+TJ:銀の槍士
+T:Silver Spearman
+TJ:白銀の槍士
+T:Platinum Spearman
+
+I:13
+J:アーチャー
+# class name: Archer
+TJ:紙を貫く者
+T:Paper-Piercer
+TJ:革を貫く者
+T:Leather-Piercer
+TJ:板を貫く者
+T:Plank-Piercer
+TJ:鉄を貫く者
+T:Iron-Piercer
+TJ:岩を貫く者
+T:Rock-Piercer
+TJ:水を貫く者
+T:Water-Piercer
+TJ:闇を貫く者
+T:Dark-Piercer
+TJ:光を貫く者
+T:Light-Piercer
+TJ:空を貫く者
+T:Sky-Piercer
+TJ:時を貫く者
+T:Time-Piercer
+
+I:14
+J:ドラゴンテイマー
+# class name: Dragon-Tamer
+TJ:蜥蜴の主人
+T:Lizard Master
+TJ:幼竜の主人
+T:Baby Dragon Master
+TJ:子竜の主人
+T:Juvenile Dragon Master
+TJ:若竜の主人
+T:Young Dragon Master
+TJ:成竜の主人
+T:Mature Dragon Master
+TJ:古竜の主人
+T:Ancient Dragon Master
+TJ:聖竜の主人
+T:Holy Dragon Master
+TJ:魔竜の主人
+T:Demon Dragon Master
+TJ:竜王の主人
+T:Dragon King Master
+TJ:神竜の友人
+T:Divine Dragon's Friend
+
+I:15
+J:ウィッチ
+# class name: Witch
+TJ:オカルト少女
+T:Occult Girl
+TJ:見習い魔女
+T:Apprentice Witch
+TJ:駆け出し魔女
+T:Fledgling Witch
+TJ:お使い魔女
+T:Errand Witch
+TJ:占い魔女
+T:Fortune Witch
+TJ:白き魔女
+T:White Witch
+TJ:黒き魔女
+T:Black Witch
+TJ:紅の魔女
+T:Crimson Witch
+TJ:蒼紺の魔女
+T:Indigo Witch
+TJ:偉大なる魔女
+T:Great Witch
+
+I:16
+J:セイレーン
+# class name: Siren
+TJ:手品師
+T:Prestidigitator
+TJ:奇術師
+T:Trickster
+TJ:占い師
+T:Fortune-Teller
+TJ:霊感師
+T:Psychic
+TJ:陰陽師
+T:Onmyoji
+TJ:召喚師
+T:Summoner
+TJ:妖術師
+T:Enchanter
+TJ:魔術師
+T:Magician
+TJ:魔道師
+T:Sorcerer
+TJ:大魔法使い
+T:Great Wizard
+
+I:17
+J:クレリック
+# class name: Cleric
+TJ:神学生
+T:Seminarian
+TJ:侍者
+T:Attendant
+TJ:侍祭
+T:Acolyte
+TJ:尼僧
+T:Nun
+TJ:助任司祭
+T:Curate
+TJ:聖女
+T:Saintess
+TJ:司祭
+T:Priest
+TJ:司教
+T:Bishop
+TJ:大司教
+T:Archbishop
+TJ:総大司教
+T:Patriarch
+
+I:18
+J:プリースト
+# class name: Priest
+TJ:神学生
+T:Seminarian
+TJ:侍者
+T:Attendant
+TJ:侍祭
+T:Acolyte
+TJ:僧侶
+T:Monk
+TJ:助任司祭
+T:Curate
+TJ:司祭
+T:Priest
+TJ:司教
+T:Bishop
+TJ:大司教
+T:Archbishop
+TJ:枢機卿
+T:Cardinal
+TJ:教皇
+T:Pope
+
+I:19
+J:リッチ
+# class name: Lich
+TJ:新米リッチ
+T:Novice Lich
+TJ:闇眼の骸
+T:Dark-Eyed Corpse
+TJ:修行僧リッチ
+T:Ascetic Lich
+TJ:ハイリッチ
+T:High Lich
+TJ:鉄のリッチ
+T:Iron Lich
+TJ:灰色の掠奪者
+T:Gray Plunderer
+TJ:デミリッチ
+T:Demilich
+TJ:アーチリッチ
+T:Archlich
+TJ:黒き掠奪者
+T:Black Plunderer
+TJ:永遠を識る者
+T:Knower of Eternity
+
+I:20
+J:エンジェルナイト
+# class name: Divine-Knight
+TJ:清きこころ
+T:Pure Heart
+TJ:天使
+T:Angel
+TJ:大天使
+T:Archangel
+TJ:権天使
+T:Principality
+TJ:能天使
+T:Power
+TJ:力天使
+T:Virtue
+TJ:主天使
+T:Dominion
+TJ:座天使
+T:Throne
+TJ:智天使
+T:Cherub
+TJ:熾天使
+T:Seraph
+
+I:21
+J:うぃっち
+# class name: Wicce
+TJ:ねずみさん
+T:Mouse-san
+TJ:マローネ
+T:Marone
+TJ:シーグル
+T:Sigel
+TJ:ばんぺいくん
+T:Banpei-kun
+TJ:みまわりくん
+T:Mimawari-kun
+TJ:三級地霊神
+T:3rd Class Earth Deity
+TJ:二級神管理
+T:2nd Class Mgmt Deity
+TJ:二級神一種
+T:2nd Class Cat.1 Deity
+TJ:一級神二種
+T:1st Class Cat.2 Deity
+TJ:一級神特務
+T:1st Class Special Duty
+
+I:22
+J:ガンナー
+# class name: Fusilier
+TJ:不信心者
+T:Unbeliever
+TJ:無神論者
+T:Atheist
+TJ:銃使い
+T:Gunman
+TJ:新米狙撃手
+T:Novice Sniper
+TJ:古参狙撃手
+T:Veteran Sniper
+TJ:熟練狙撃手
+T:Expert Sniper
+TJ:スナイパー
+T:Sniper
+TJ:シューター
+T:Shooter
+TJ:死神
+T:Grim Reaper
+TJ:神を撃つ者
+T:God Shooter
+
+I:23
+J:テンプルナイト
+# class name: Templar
+TJ:従士
+T:Squire
+TJ:見習い騎士
+T:Cadet Knight
+TJ:下級騎士
+T:Junior Knight
+TJ:中級騎士
+T:Knight
+TJ:上級騎士
+T:Senior Knight
+TJ:修道騎士
+T:Monastic Knight
+TJ:参謀
+T:Strategist
+TJ:副団長
+T:Deputy Commander
+TJ:騎士団長
+T:Knight Commander
+TJ:騎士総長
+T:Grand Commander
+
+I:24
+J:ホワイトナイト
+# class name: White-Knight
+TJ:従士
+T:Squire
+TJ:見習い騎士
+T:Cadet Knight
+TJ:下級騎士
+T:Junior Knight
+TJ:中級騎士
+T:Knight
+TJ:上級騎士
+T:Senior Knight
+TJ:修道騎士
+T:Monastic Knight
+TJ:参謀
+T:Strategist
+TJ:副団長
+T:Deputy Commander
+TJ:騎士団長
+T:Knight Commander
+TJ:騎士総長
+T:Grand Commander
+
+I:25
+J:ロード
+# class name: Lord
+TJ:予備兵
+T:Reservist
+TJ:二等兵
+T:Private
+TJ:一等兵
+T:Private First Class
+TJ:上級兵
+T:Senior Private
+TJ:伍長
+T:Corporal
+TJ:軍曹
+T:Sergeant
+TJ:曹長
+T:Sergeant Major
+TJ:少尉
+T:Second Lieutenant
+TJ:中尉
+T:First Lieutenant
+TJ:大尉
+T:Captain
+
+I:26
+J:ジェネラル
+# class name: General
+TJ:従士
+T:Squire
+TJ:見習い騎士
+T:Cadet Knight
+TJ:下級騎士
+T:Junior Knight
+TJ:中級騎士
+T:Knight
+TJ:上級騎士
+T:Senior Knight
+TJ:修道騎士
+T:Monastic Knight
+TJ:参謀
+T:Strategist
+TJ:副団長
+T:Deputy Commander
+TJ:騎士団長
+T:Knight Commander
+TJ:騎士総長
+T:Grand Commander
+
+I:27
+J:ニンジャマスター
+# class name: Ninja-Master
+TJ:訓練生
+T:Trainee
+TJ:仕手
+T:Myrmidon
+TJ:熟達者
+T:Initiate
+TJ:短刀使い
+T:Knifer
+TJ:切り裂き
+T:Bladesman
+TJ:凄腕
+T:Hashishin
+TJ:漆黒の刃
+T:Black Dagger
+TJ:闇の一撃
+T:Shadowstrike
+TJ:暗殺者
+T:Assassinator
+TJ:死の長き腕
+T:Death Lord
+
+I:28
+J:ゴエティック
+# class name: Archmage
+TJ:手品師
+T:Prestidigitator
+TJ:奇術師
+T:Trickster
+TJ:占い師
+T:Fortune-Teller
+TJ:霊感師
+T:Psychic
+TJ:陰陽師
+T:Onmyoji
+TJ:召喚師
+T:Summoner
+TJ:妖術師
+T:Enchanter
+TJ:魔術師
+T:Magician
+TJ:魔道師
+T:Sorcerer
+TJ:大魔法使い
+T:Great Wizard
+
+I:29
+J:フレイヤ
+# class name: Freya
+TJ:若芽の槍士
+T:Sprout Spearman
+TJ:若草の槍士
+T:Grass Spearman
+TJ:竹の槍士
+T:Bamboo Spearman
+TJ:石の槍士
+T:Stone Spearman
+TJ:銅の槍士
+T:Copper Spearman
+TJ:青銅の槍士
+T:Bronze Spearman
+TJ:鉄の槍士
+T:Iron Spearman
+TJ:鋼鉄の槍士
+T:Steel Spearman
+TJ:銀の槍士
+T:Silver Spearman
+TJ:戦乙女
+T:Battle Maiden
+
+I:30
+J:クレセント
+# class name: Crescent
+TJ:紙を貫く者
+T:Paper-Piercer
+TJ:革を貫く者
+T:Leather-Piercer
+TJ:板を貫く者
+T:Plank-Piercer
+TJ:鉄を貫く者
+T:Iron-Piercer
+TJ:岩を貫く者
+T:Rock-Piercer
+TJ:水を貫く者
+T:Water-Piercer
+TJ:闇を貫く者
+T:Dark-Piercer
+TJ:光を貫く者
+T:Light-Piercer
+TJ:空を貫く者
+T:Sky-Piercer
+TJ:アルテミス
+T:Artemis
+
+I:31
+J:ヴァンパイア
+# class name: Vampire
+TJ:吸血生物
+T:Bloodsucker
+TJ:吸血生物
+T:Bloodsucker
+TJ:吸血生物
+T:Bloodsucker
+TJ:吸血生物
+T:Bloodsucker
+TJ:伯爵
+T:Count
+TJ:公爵
+T:Duke
+TJ:夜の帝王
+T:Emperor of Night
+TJ:夜の支配者
+T:Lord of the Night
+TJ:闇の支配者
+T:Lord of Darkness
+TJ:真祖
+T:Progenitor
+
+I:32
+J:巫女
+# class name: Medium
+TJ:無垢な少女
+T:Innocent Girl
+TJ:御神馬の少女
+T:Sacred Horse Girl
+TJ:聖少女
+T:Holy Girl
+TJ:朝霧の巫女
+T:Morning Mist Medium
+TJ:夕月の巫女
+T:Evening Moon Medium
+TJ:姫巫女
+T:Princess Medium
+TJ:山神の巫女
+T:Mountain God Medium
+TJ:龍神の巫女
+T:Dragon God Medium
+TJ:神子
+T:Divine Child
+TJ:常乙女
+T:Eternal Maiden
+
+I:33
+J:サキュバス
+# class name: Succubus
+TJ:見習い淫魔
+T:Apprentice Succubus
+TJ:駆け出し淫魔
+T:Fledgling Succubus
+TJ:下級淫魔
+T:Lesser Succubus
+TJ:下級淫魔
+T:Lesser Succubus
+TJ:上級淫魔
+T:Greater Succubus
+TJ:上級淫魔
+T:Greater Succubus
+TJ:夢魔
+T:Dream Demon
+TJ:夢魔
+T:Dream Demon
+TJ:妖姫
+T:Enchantress
+TJ:魔界の女王
+T:Demon Realm Queen
+
+I:34
+J:グラップラー
+# class name: Grappler
+TJ:入門者
+T:Initiate
+TJ:弟子
+T:Brother
+TJ:直弟子
+T:Disciple
+TJ:師範代
+T:Immaculate
+TJ:師範
+T:Master
+TJ:道場主
+T:Soft Master
+TJ:名人
+T:Hard Master
+TJ:大名人
+T:Flower Master
+TJ:拳聖
+T:Dragon Master
+TJ:拳神
+T:Grand Master
+
+I:35
+J:風水士
+# class name: Elementaler
+TJ:見習い
+T:Apprentice
+TJ:占い師
+T:Fortune-Teller
+TJ:下級風水士
+T:Junior Geomancer
+TJ:上級風水士
+T:Senior Geomancer
+TJ:導師
+T:Guru
+TJ:元素使い
+T:Elementalist
+TJ:精霊の友
+T:Spirit Friend
+TJ:精霊使い
+T:Spirit Caller
+TJ:精霊の主人
+T:Spirit Master
+TJ:精霊王
+T:Spirit King
+
+I:36
+J:レリクスナイト
+# class name: Relics-Knight
+TJ:人殺し
+T:Murderer
+TJ:悪鬼
+T:Fiend
+TJ:羅刹
+T:Rakshasa
+TJ:首切り狂
+T:Decapitator
+TJ:殺戮享楽者
+T:Slaughter Reveler
+TJ:地獄の使者
+T:Envoy of Hell
+TJ:悪魔の騎士
+T:Demon Knight
+TJ:戦場の悪夢
+T:Nightmare of War
+TJ:生きる狂気
+T:Living Madness
+TJ:オウガの裔
+T:Ogre Descendant
+
+I:37
+J:エニグマハンター
+# class name: Enigma-Hunter
+TJ:見習い
+T:Apprentice
+TJ:三流ハンター
+T:Third-Rate Hunter
+TJ:二流ハンター
+T:Second-Rate Hunter
+TJ:熟練ハンター
+T:Skilled Hunter
+TJ:一流ハンター
+T:First-Rate Hunter
+TJ:悪霊払い
+T:Spirit Exorcist
+TJ:悪魔払い
+T:Demon Exorcist
+TJ:闇払い
+T:Dark Banisher
+TJ:魔を討つ者
+T:Slayer of Evil
+TJ:神の執行者
+T:God's Enforcer
+
+I:38
+J:レンジャー
+# class name: Ranger
+TJ:使い走り
+T:Runner
+TJ:馳夫
+T:Strider
+TJ:斥候
+T:Scout
+TJ:狩人
+T:Courser
+TJ:追跡者
+T:Tracker
+TJ:先導者
+T:Guide
+TJ:探険者
+T:Pathfinder
+TJ:野伏
+T:Low Ranger
+TJ:野伏頭
+T:High Ranger
+TJ:野伏の総領
+T:Ranger Lord
+
+I:39
+J:ダークエレメント
+# class name: Dark-Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+TJ:ダークエレメント
+T:Dark Element
+
+I:40
+J:テンプルコマンド
+# class name: Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander
+TJ:テンプルコマンド
+T:Knight-Commander

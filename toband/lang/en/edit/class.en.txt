@@ -1,0 +1,284 @@
+# TOband -> English: class (p_class) descriptions. UTF-8; everything except the J: lines is ASCII.
+# I: p_class number / J: the Japanese class name on the N: line (must match) / D: English description.
+# Class names come from the glossary (classes_races.tsv); titles are in class_titles.en.txt.
+
+I:0
+J:ソルジャー
+D:The Warrior is the basic class for male units. It has no special skills of
+D:its own, and its parameters rise evenly, so a unit raised as a Warrior to
+D:the end tends to become a jack-of-all-trades. It is quite useful, however,
+D:for correcting a character who has been over-specialized.
+
+I:1
+J:ナイト
+D:The Knight is an apostle of chivalry, excelling in martial skill and
+D:prizing loyalty. Knights cannot use magic, but have better defense than
+D:Warriors and are skilled with swords and pole weapons. They are fair
+D:riders, and the attack of a mounted Knight wielding a lance is devastating.
+
+I:2
+J:バーサーカー
+D:The Berserker is a ferocious warrior who cuts a path through the carnage
+D:with a robust body and superhuman power. Berserkers favor axes and blunt
+D:weapons. They cannot use magic and are poor with magic devices, but their
+D:battle-honed instincts are keen, and they excel at disarming, perception
+D:and searching.
+
+I:3
+J:テラーナイト
+D:The Terror Knight is a fearsome knight who proudly leads the spirits of
+D:everyone he has slain. His killing power is nothing short of mythic. His
+D:magical ability, on the other hand, can be called nonexistent.
+
+I:4
+J:ビーストテイマー
+D:The Beast Tamer is a warrior who fights alongside magical beasts. Beast
+D:Tamers favor the whip and can cast Symbiotic magic that supports their
+D:pets. They are also skilled riders, and suffer little penalty for equipping
+D:weapons ill suited to riding. The ability needed to cast spells is Wisdom.
+
+I:5
+J:ソードマスター
+D:The Swordmaster is a seeker who polishes his soul by mastering the sword,
+D:striving to overcome his karma. He has superb swordsmanship, excels at
+D:wielding two swords, and can cast magic of his own element. The ability
+D:needed to cast spells is Intelligence.
+
+I:6
+J:ドラグーン
+D:A class that favors swords and boasts overwhelming killing power against
+D:dragons. Dragoons can also use simple magic. The ability needed to cast
+D:spells is Intelligence.
+
+I:7
+J:ニンジャ
+D:The Ninja is an excellent warrior of darkness with high stealth and great
+D:swordsmanship, who can fight with two weapons and also use magic of his own
+D:element. The ability needed to cast spells is Intelligence.
+
+I:8
+J:ウィザード
+D:The Wizard is a mage who makes full use of many attack spells, drawing on
+D:broad knowledge and rich experience. In addition to Magery, Wizards can
+D:wield the magic of the four elements. The ability needed to cast spells is
+D:Intelligence.
+
+I:9
+J:ウォーロック
+D:The Warlock is a scholarly mage. Warlocks master Witch magic, two books of
+D:Magery, and Drakonite magic. They have a fair amount of melee power, and
+D:can summon golems. The ability needed to cast spells is Intelligence.
+
+I:10
+J:エクソシスト
+D:The Exorcist is a specialist in dispelling demons and evil spirits. By
+D:wielding Crusade magic, Exorcists show unmatched strength against evil
+D:demons and the undead. They also have fair melee power, and can find a way
+D:out through blows. The ability needed to cast spells is Wisdom.
+
+I:11
+J:アマゾネス
+D:The Amazoness is the basic class for female units. She cannot use magic,
+D:but handles everything else with ease. She is clearly lacking in strength,
+D:however, so raising her as an Amazoness to the very end is not advisable.
+
+I:12
+J:ヴァルキリー
+D:The Valkyrie is a spear-wielding magic warrior who is also a good rider. A
+D:spear thrust from horseback can be devastating. The ability needed to cast
+D:spells is Wisdom.
+
+I:13
+J:アーチャー
+D:The Archer is a specialist with bows. Archers cannot use magic, but their
+D:shooting ability is immense. They can shoot down enemy after enemy.
+
+I:14
+J:ドラゴンテイマー
+D:The Dragon Tamer is a magic warrior who takes up the sword herself and
+D:fights alongside dragons. Dragons are especially fond of her, and she can
+D:borrow their power at any time. The ability needed to cast spells is
+D:Wisdom.
+
+I:15
+J:ウィッチ
+D:The Witch is a sorceress skilled in support magic and the use of magic
+D:devices. She can cast Witch magic, Magery, and the first book of Death
+D:magic. The ability needed to cast spells is Intelligence.
+
+I:16
+J:セイレーン
+D:The Siren is a beautiful witch who wields many attack spells. In practice
+D:she is almost no different from a Wizard. The ability needed to cast spells
+D:is Intelligence.
+
+I:17
+J:クレリック
+D:The Cleric is a member of the clergy skilled in healing magic. Clerics can
+D:cast Holy magic and magic of their own element. Compared with other
+D:spellcasters, they can also use bows to a degree. A Cleric may be regarded
+D:as an apprentice class until changing to Priest. The ability needed to cast
+D:spells is Wisdom.
+
+I:18
+J:プリースト
+D:The Priest is a member of the clergy who makes full use of both attack and
+D:healing magic. Priests can cast Holy and Crusade magic and magic of their
+D:own element. Think of it as the advanced class of Cleric. Their healing
+D:magic is somewhat inferior to that of a Cleric. The ability needed to cast
+D:spells is Wisdom.
+
+I:19
+J:リッチ
+D:A reincarnation class that Wizards, Warlocks, Exorcists, Sirens and Witches
+D:equipped with the Ring of the Dead are reborn into after death. Having
+D:returned through the power of the Ring, they have acquired even
+D:higher-level abilities. They can use every realm of magic except Holy,
+D:Symbiotic, Crusade and Drakonite, but can no longer change class. The
+D:ability needed to cast spells is Intelligence. Liches do not need food.
+
+I:20
+J:エンジェルナイト
+D:A reincarnation class that a pure-hearted female unit may be reborn into
+D:after death. Divine Knights boast high combat ability in both melee and
+D:magic, but can no longer change class. They can use Crusade magic and magic
+D:of their own element. The ability needed to cast spells is Wisdom. Divine
+D:Knights do not need food.
+
+I:21
+J:うぃっち
+D:A Wicce is: "The same as a Witch? How rude. Don't lump me in with them. I'm
+D:prettier and curvier, and (snip) the trick is to say it with a slightly
+D:rising tone, like when you ask someone a question (heart)." This class can
+D:no longer change class. The ability needed to cast spells is Intelligence.
+
+I:22
+J:ガンナー
+D:The Fusilier is the only class that can use the "gun," a powerful weapon
+D:that has replaced the sword, manufactured on the southern continent of
+D:Barbauda. Having abandoned faith in supernatural science such as magic,
+D:Fusiliers have greatly reduced resistance to magic, and cannot change to
+D:any other class.
+
+I:23
+J:テンプルナイト
+D:The Templar is a knight sworn to the Dark Knights Loslorien. Templars can
+D:handle any weapon and cast Death magic. While in this class, you cannot
+D:change to another class. The ability needed to cast spells is Wisdom.
+
+I:24
+J:ホワイトナイト
+D:The White Knight is a knight sworn to the Kingdom of New Xenobia. White
+D:Knights can handle any weapon and cast Holy magic. While in this class, you
+D:cannot change to another class. The ability needed to cast spells is
+D:Wisdom.
+
+I:25
+J:ロード
+D:The Lord is one whom the Order of Philaha has recognized as the heir to the
+D:Valerian throne. His ability surpasses that of the Paladin, and he is fit
+D:to be the leader who unites the liberation army. This class can no longer
+D:change class. The ability needed to cast spells is Wisdom.
+
+I:26
+J:ジェネラル
+D:A high-ranking knight with the ability and qualification to lead an army.
+D:Superior in swordsmanship, the General looses shock waves from a sword tip
+D:that moves faster than sound. This class can no longer change class.
+
+I:27
+J:ニンジャマスター
+D:The Ninja Master is an excellent warrior of darkness with high stealth and
+D:great swordsmanship, who can fight with two weapons and use magic of the
+D:four elements. This class can no longer change class. The ability needed to
+D:cast spells is Intelligence.
+
+I:28
+J:ゴエティック
+D:One who has obtained great magical power after an insatiable quest. This
+D:class can no longer change class. The ability needed to cast spells is
+D:Intelligence.
+
+I:29
+J:フレイヤ
+D:Freya is a female warrior who serves the gods and receives their divine
+D:protection. Possessing both a robust body and spirit, she fights with
+D:spearmanship and magic. This class can no longer change class. The ability
+D:needed to cast spells is Wisdom.
+
+I:30
+J:クレセント
+D:The Crescent is a female fighter who can use magic of the Wind realm. She
+D:can generate an anti-magic field around her. This class can no longer
+D:change class. The ability needed to cast spells is Intelligence.
+
+I:31
+J:ヴァンパイア
+D:Vampires can show their true power in the darkness of night. They fight
+D:with direct weapon attacks and Death magic, but can no longer change class.
+D:The ability needed for magic is Intelligence.
+
+I:32
+J:巫女
+D:Mediums are maidens devoted to the gods. Frail, they are poor at fighting
+D:enemies directly, but arrows they loose with a focused mind never miss. At
+D:higher levels they can imbue arrows with a holy power that fells trees and
+D:pierces foes. They can also purify evil defilement by cleansing themselves
+D:on water, and can chant prayers to the gods. Mediums shun anything but
+D:weapons blessed by the gods, and shields that hinder drawing the bow;
+D:equipping these disturbs their prayer and makes their arrows fly poorly.
+D:The ability needed for magic is Wisdom.
+
+I:33
+J:サキュバス
+D:The Succubus is a witch who has become a creature of the demon realm
+D:through a pact with demons. She can cast Witch and Death magic. This class
+D:can no longer change class. The ability needed to cast spells is
+D:Intelligence.
+
+I:34
+J:グラップラー
+D:A warrior who has mastered the ancient martial arts of Nildahme. Making the
+D:most of high athletic ability, the Grappler unleashes consecutive attacks.
+D:This class can no longer change class.
+
+I:35
+J:風水士
+D:The Elementaler can cast magic that uses the power of the elements.
+D:Elementalers can attack and heal, but have no detection or movement spells.
+D:The power of their magic depends greatly on the elements of the terrain and
+D:the weather, so you will need to manipulate each of them. The ability
+D:needed to cast spells is Wisdom.
+
+I:36
+J:レリクスナイト
+D:A berserker who appeared from another world called Relics. It seems to take
+D:pleasure in hunting the humans it meets. Its true face beneath the thick
+D:armor cannot be seen. This class can no longer change class.
+
+I:37
+J:エニグマハンター
+D:A hunter who relentlessly pursues creatures of darkness, armed with a
+D:silver cross that dispels evil. Blessed by God, he strikes powerful blows
+D:against the wicked. This class can no longer change class.
+
+I:38
+J:レンジャー
+D:The boomerang and ten-gallon hat imitate the warriors of a foreign land.
+D:The Ranger wanders many lands and has learned various kinds of magic. The
+D:ability needed to cast spells is Intelligence.
+
+I:39
+J:ダークエレメント
+D:The thought-form of one who obtained ultimate power in the demon realm. Its
+D:power surpasses that of humans and reaches the realm of the gods.
+
+I:40
+J:テンプルコマンド
+D:The Knight Commander is an elite knight who leads the Dark Knights
+D:Loslorien. You can be promoted from a Templar when you and your two
+D:companions are all alive and the Lodissian Chaos Frame is 150 or higher.
+D:Knight Commanders have combat ability above Templars, plus Death magic, and
+D:learn a special blow of their own. The special blow costs 20 MP and makes a
+D:normal attack, with the weapon's additional effects, against an enemy
+D:within 2 squares.

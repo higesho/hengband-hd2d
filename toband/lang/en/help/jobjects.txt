@@ -1,0 +1,866 @@
+=== TOband Objects ===
+
+The TOband dungeons are full of objects, and many of the monsters you
+meet will be carrying one or more items about their person, which you
+may take from their corpses should you be skillful enough to defeat
+them. By setting an option you may pick up objects simply by walking on
+top of them, or be prompted before picking them up (see
+joption.txt#always_pickup [b]). You can also set which kinds of objects
+are picked up automatically (see autopick.txt).
+
+Many objects found within the dungeon have their own commands for their
+use. Wands must be 'a'imed, staffs must be 'u'sed, scrolls must be
+'r'ead, potions must be 'q'uaffed, and so on. You may, in general, use
+not only the items in your pack but also the items on the floor beneath
+you.
+
+
+***** <ObjectSymbols>
+=== Object Symbols ===
+
+
+  !   A potion (or flask)             /   A pole-arm
+  ?   A scroll (or book)              |   An edged weapon
+  ,   Food                            \   A hafted weapon
+  -   A wand or rod                   }   A gun, bow, or crossbow
+  _   A staff                         {   A shot, arrow, or bolt
+  =   A ring                          (   Soft armor
+  "   An amulet                       [   Hard armor
+  $   Gold or treasure                ]   Misc. armor
+  ~   Junk, bones, etc.               )   A shield
+  ~   Lights, tools, etc.             &   A chest
+  `   Statues or figurines
+
+
+***** <EquipInvent>
+=== Equipment and Inventory ===
+
+You can carry up to 23 different kinds of objects in your pack, and in
+addition you can wear or wield up to 12 others. Note that the powers an
+object grants only work while it is equipped. For example, a Shield of
+Resist Acid will not protect you from acid attacks while it is merely
+in your pack. Items you hold in your hands or wear on your body are
+called your 'equipment', while the items in your pack are called your
+'inventory'. You can view your equipment with the 'e' command and your
+inventory with the 'i' command at any time.
+
+Although you are limited to 23 different kinds of items in your pack,
+each kind may actually be a 'stack' of up to 99 similar items. This
+allows you to carry multiple spell books, rations of food and other
+essential items without using up all of your inventory slots. If you
+somehow manage to stuff a 24th kind of item into your pack (for
+example, by taking off a piece of equipment while your pack already
+holds 23 kinds), your pack will 'overflow' and the item you were trying
+to put in it will fall to the floor. You will be warned before you
+execute any command that is likely to cause this.
+
+In addition to the number of different kinds of items you may carry,
+you are also limited in the total weight you can carry. As you approach
+this limit you become slower, which makes it easy for monsters to chase
+you. Note that there is no upper bound on how much you can carry if you
+do not mind being slow. The amount you may carry before becoming slowed
+is determined by your strength. The limit applies to the combined
+weight of your equipment and your inventory.
+
+Because of these limits on space and weight, it is important for a
+player to learn to manage his inventory efficiently. You must carefully
+balance the need to carry essential items such as food, fuel for your
+light source, spell books (if you can use them), healing items,
+escaping items and everything else that is necessary for your survival,
+while at the same time keeping room in your pack to carry back treasure
+from the dungeon to sell in the town, and making sure that you do not
+exceed your weight limit.
+
+
+***** <Generation>
+=== Object Generation ===
+
+In TOband, objects are generated when you enter a dungeon level, and
+they are spread around the dungeon floor. They may also be generated
+when a monster is killed (assuming the monster is capable of carrying
+objects). Each object has a 'native' depth, a depth at which it begins
+to be commonly found in the dungeon. It is unusual, though not
+impossible, to find an object on a level significantly shallower than
+its native depth. Note that although items generated on the floor may
+be in 'piles', they will never be in 'stacks'.
+
+Which items are generated when a level is created, or when a monster
+dies, is determined by a number of factors, including the current
+dungeon depth, the monster's native level and the native depth of the
+object being considered for generation. In the case of monster drops,
+the quality of the object is also affected by the guaranteed quality
+level (if any) of that monster's drop.
+
+Monster drops are either normal, 'good', 'great' or 'special'. These
+terms generally refer to equipment such as weapons and armor (for
+example, a 'good' drop means that any equipment generated is guaranteed
+to have magical pluses, a 'great' drop means that any equipment
+generated is guaranteed to be either an ego item or an artifact, and a
+'special' drop means that any equipment generated is guaranteed to be
+an artifact), but they also encompass certain other objects. For
+example, Amulets of the Magi, the dungeon-only spell books and Rings of
+Speed are all considered to be 'great' objects, and may therefore be
+dropped by a monster with a 'great' drop. Note that some monsters may
+drop treasure rather than objects.
+
+
+***** <Compaction>
+=== Object Compaction ===
+
+TOband can keep track of a large, but finite, number of objects at any
+one time. If, as you kill monsters, the number of objects dropped
+together with the number of objects already lying on the floor exceeds
+this limit, you will be told that the game is "Compacting objects...".
+
+When TOband compacts objects, it first tries to combine similar objects
+into piles. If this does not create enough space, it will delete some
+already existing items to make room for new ones. As far as possible,
+the compaction is performed on objects some distance away from the
+player's current position. During compaction, items are removed in
+order of increasing value, with the least valuable items removed first.
+Ego items are rarely removed during the compaction process, while
+artifacts (see below [d]) are never removed.
+
+
+***** <CursedObjects>
+=== Cursed Objects ===
+
+A goodly percentage of the items generated in the dungeon or dropped by
+monsters will be cursed. Most cursed items have penalties to various
+things such as your skill, your deadliness, or your armor class. They
+may also have other undesirable attributes. Shopkeepers will refuse to
+buy cursed items.
+
+Should you wield or wear a cursed item, you will be shown the message
+"Oops, it feels deathly cold!" and the item will automatically be
+inscribed {cursed}. Once equipped, a cursed item cannot be taken off
+until the curse has been lifted. Lifting the curse allows the item to
+be removed, but it does not remove negative effects such as the
+penalties mentioned above.
+
+There are several ways to lift a curse. The Holy realm of magic
+contains a spell for this purpose. Scrolls that remove curses can also
+be bought in the Inner Temple. In addition, a curse may be lifted as a side
+effect of enchanting an item, although this is not guaranteed to
+happen.
+
+Note: Items that can be activated (Dragon Scale Mail and artifacts)
+become hard to activate when they are cursed.
+
+--- The Curses ---
+
+There are several different types of curse.
+
+
+Normal Curse
+    A normally cursed item will typically have penalties to armor class,
+    skill, deadliness and various other things. It can be uncursed by
+    reading a Scroll of Remove Curse, or by the weaker version of the
+    Holy realm spell.
+
+Heavy Curse
+    A heavily cursed item will typically have penalties to armor class,
+    skill, deadliness and various other things. It can be uncursed by
+    reading a Scroll of *Remove Curse*, or by the stronger version of
+    the Holy realm spell.
+
+Permanent Curse
+    Items that are permanently cursed cannot be uncursed, and so once
+    worn they can never be removed. You may often find permanently
+    cursed items that you are tempted to wield. Think carefully before
+    you do so, because it will be too late once you change your mind.
+
+
+***** <AncientCurse>
+=== The Ancient and Foul Curse ===
+
+The Ancient and Foul Curse is sometimes incorrectly called 'The Curse
+of Topi Ylinen', after the person who first created it. Unlike the
+other curses discussed above, an object with the Ancient and Foul Curse
+can be taken off at any time, and you will not get the "Oops, it feels
+deathly cold!" message when you wield it (unless, of course, it also
+carries one of the other curses).
+
+While the item is equipped, the curse will be invoked at random from
+time to time. When it is invoked, one or more of several possible
+effects will occur at random. The possible effects are: summoning
+monsters, summoning Cyberdemons, paralysis (even with Free Action),
+teleporting the player, removing the walls around the player, amnesia,
+and the temporary or permanent reduction of some of your primary
+stats.
+
+Note: Although the Ancient and Foul Curse is mostly found on objects,
+there are a few other occasions on which you might fall foul of it,
+such as setting off certain traps.
+
+
+***** <ObjectFlavors>
+=== Object Flavors ===
+
+Some objects (scrolls, potions, wands, rods and staffs) are 'flavored
+items'. This means that in each game they are given a random flavor.
+For example, the first time you find a Potion of Heroism it might be
+described as a 'Dark Blue Potion'. Once you have identified it, the
+potion will be described as a 'Dark Blue Potion of Heroism'. Flavors
+vary from game to game, so your next character might find that the same
+Dark Blue Potion is now something entirely different. This means that
+each new character must set about learning exactly what each flavored
+item is.
+
+One of the TOband options lets you switch to 'plain' object
+descriptions, which leave the flavor out of the description of any
+flavored item whose effect is already known. With it, the potion above,
+once identified, would be described simply as a 'Potion of Heroism'.
+
+
+***** <PseudoID>
+=== Pseudo-ID ===
+
+Occasionally, as you wander around the dungeon, you will sense
+something about the quality of the items you are wielding or carrying
+in your pack. This also applies to items lying at your feet. This
+sensing ability is called 'pseudo-id', and it works only on weapons and
+armor. The speed and accuracy of your pseudo-id ability depend on a
+number of factors, but the primary consideration is your skill level.
+Pseudo-id is either 'strong' or 'weak', and its speed is 'slow',
+'medium' or 'fast'.
+
+When you pseudo-id an item, it will be inscribed (see below [e]) with
+the quality level you have sensed. This inscription remains until you
+identify the item (see below [f]). The various inscriptions and their
+meanings are as follows:
+
+
+Table 1 - Strong Pseudo-Id
+
+    Inscription    Meaning
+    -------------------------------------------------
+    terrible       a cursed artifact
+    worthless      a cursed ego item
+    cursed         a cursed item
+    average        an average item
+    good           an enchanted item
+    excellent      an ego item
+    special        a non-cursed artifact
+
+
+Table 2 - Weak Pseudo-Id
+
+    Inscription    Meaning
+    ------------------------------------------------
+    cursed         a cursed item (includes bad ego
+                   items and artifacts)
+    uncursed       an enchanted item (includes good
+                   ego items and artifacts)
+
+If pseudo-id fails to tell you what an item does, {tried} is inscribed.
+
+As your skill level rises, pseudo-id gives way to ordinary
+identification and *identification*.
+
+
+***** <Identifying>
+=== Identifying Objects ===
+
+Each player will rely to a greater or lesser extent on pseudo-id to
+judge the quality of items, but in most cases you will need to identify
+an item before you can tell how useful it will be to you. There are
+several methods of identifying items available to you. These include
+Scrolls of Identify and *Identify*, Staffs and Rods of Perception,
+spells and prayers, and services offered in the buildings of the town,
+among others.
+
+There is an important difference between 'identify'ing an object and
+'*identify*'ing an object. 'Identify'ing an object will reveal its
+correct name (including the ego type, if applicable), any pluses to
+combat or armor class, and any bonuses to stats and skills it may have.
+'*Identify*'ing an item will reveal all information about it, including
+its fixed abilities and any random abilities it has. Once an item has
+been *identified*, you can review its full abilities at any time with
+the 'I'nspect command, and you can also use the special inscription '%'
+to make all of its abilities visible at a glance (see Object
+Inscriptions [e] below).
+
+
+Another means of identifying flavored items is to sell them to a shop.
+After buying the item, the shopkeeper will tell you what it was that
+you sold. This can be a useful technique in the early game, but it
+exposes you to the risk of selling a valuable item that can only be
+found deep in the dungeon and that happened to be generated out of
+depth.
+
+Note: You will automatically have full knowledge of any item that you
+purchase in the town.
+
+
+***** <EgoObjects>
+=== Ego Objects and Artifacts ===
+
+In addition to the ordinary weapons and armor, you may find in the
+dungeon items that are endowed with additional powers. Unlike
+artifacts, of which only one exists in each game, it is not unusual to
+find several Ego Weapons or pieces of Ego Armor of the same type in the
+course of your adventures.
+
+For Ego Weapons, see jattack.txt#EgoArtifact [g]. For Ego Armor, see
+jdefend.txt#EgoArtifact [h]. (If you press 'g' or 'h' now, you will
+jump there. Press ESC to return when you have finished reading.)
+
+Of all the objects in TOband, by far the most important are the
+artifacts. They are unique items that exist only once in the world, and
+they increase or sustain several of your stats, and grant resistances
+or bonuses to your skills. Often an artifact can be 'A'ctivated for a
+magical effect. This is extremely useful, especially for classes that
+are weak in magic.
+
+There are two types of artifacts, fixed and random. The fixed artifacts
+each have an entry in the lib/edit/a_info.txt file, and consequently
+have a chance of appearing in every game you play. Random artifacts, on
+the other hand, are created by the game, and have both random names and
+random properties. Once created, there is almost no chance that you
+will ever see exactly the same one again.
+
+
+--- (Non-) Preserve Mode ---
+
+One important thing to note when considering artifacts is the
+(non-)preserve mode that you choose at the start of the game. In
+non-preserve mode, once a fixed artifact has been generated (either on
+the dungeon floor or as a monster drop), it will never be generated
+again during that game. This means that if you leave the level without
+picking up the artifact, it is gone forever. In preserve mode, on the
+other hand, this only happens once you have identified the artifact. It
+is therefore safer to leave a level before it has been completely
+explored, because any fixed artifact you missed may appear again on
+another level.
+
+--- Special Feelings ---
+
+If you stay on a dungeon level for a while, a feeling about that level
+will be displayed. This is your intuition telling you about the quality
+of the items on the level and how dangerous its monsters are. Feelings
+are discussed in more detail in the sections on the town and the
+dungeon. One of the possible feelings is "You feel there is something
+special about this level." This message is only given when playing in
+non-preserve mode. A special feeling means one of two things: the level
+has either a special room or vault, or an artifact. If there is an
+artifact on the level, you will always get this message, but for a
+special room or vault the message becomes less and less likely the
+deeper you go in the dungeon. At very deep levels, a special feeling is
+almost always caused by an artifact.
+
+Note: In non-preserve mode, you may still find an artifact on a level
+that did not give you a special feeling. In that case, though, it will
+have been dropped by a monster, not lying on the dungeon floor from the
+start.
+
+--- The '~' Command ---
+
+By pressing '~' and choosing the option to display known artifacts, you
+can see which fixed artifacts you have found so far. In non-preserve
+mode, this will also show the fixed artifacts that you have missed.
+However, while you are in the dungeon and have not yet picked up the
+artifact, nothing about it is shown; the artifacts you have missed are
+shown only after you have returned to the town.
+
+--- Random Artifacts ---
+
+In addition to the standard fixed artifacts, which may appear in any
+game, TOband also generates random artifacts. Weapons and armor, and
+even Amulets of the Magi and Rings of Lordly Protection, can become
+artifacts.
+
+Random artifacts can be good or bad, and their quality varies widely.
+Unlike fixed artifacts, the details of random artifacts are not
+included in the spoiler file the game can output, so *Identify*ing one
+is the only way to get detailed information about it.
+
+
+***** <RandomAbilities>
+=== Random Abilities of Objects ===
+
+In addition to the ordinary weapons, armor and other equipment you may
+find in the dungeon, there are items endowed with additional powers
+such as sustains, resistances and special abilities. Such items fall
+into three categories: (b) artifacts; (c) ego items; and (d) ordinary
+items that grant additional powers. In addition to their fixed powers,
+some of these objects may also be granted an additional power (or
+powers) in a random fashion.
+
+The random powers of objects may be either guaranteed (so that objects
+of that type will always have an additional random power) or may have a
+varying chance of being granted (so that only some of the objects of
+that type will have an additional random power). A few rare objects
+have the possibility of having multiple random powers. Random powers
+fall into the following three categories:
+
+Extra Sustains
+--------------
+    Sustain Strength
+    Sustain Intelligence
+    Sustain Wisdom
+    Sustain Dexterity
+    Sustain Constitution
+    Sustain Charisma
+
+Extra Resistances
+-----------------
+    Resist Blindness
+    Resist Confusion
+    Resist Sound
+    Resist Shards
+    Resist Nether
+    Resist Stone
+    Resist Chaos
+    Resist Disenchantment
+    Resist Poison
+    Resist Light
+    Resist Dark
+
+Extra Powers
+------------
+    Levitation
+    Permanent Light
+    See Invisible
+    Warning
+    Slow Digestion
+    Regeneration
+    Free Action
+    Hold Life
+
+
+***** <Inscriptions>
+=== Object Inscriptions ===
+
+You may "inscribe" any object with a text inscription of your choice,
+using the 'inscribe' command. These inscriptions are not limited in
+length, though you may not be able to see the whole inscription on
+screen if it is too long. An inscription is enclosed in { } and
+appended to the object's name. An inscription is applied to the
+specific object (or pile of objects) you chose; it is not automatically
+applied to all similar objects (there are two options concerning this,
+so please refer to them).
+
+In certain situations, TOband will automatically give an object a
+temporary "fake" inscription. The inscription "empty" shows that an
+item has no magic left in it. The inscription "tried" is given to an
+item that you have used, but whose effect you could not identify.
+Items that are known to be cursed are inscribed "cursed", and broken
+items are inscribed "broken". Also, any item that was purchased at a
+discount (implying that it is slightly "sub-standard") will be
+inscribed with the appropriate discount, such as "25% off".
+
+In addition to these, TOband often inscribes an item with an
+"impression" of its quality that your character has formed. Every
+character forms an impression of an item after carrying it for a while.
+
+
+--- Making use of Inscriptions ---
+
+Some players use the inscription feature to record where and how they
+found an object, or to note the abilities and powers an object has.
+TOband has a feature that examines an object's abilities and inscribes
+them for you automatically.
+
+Besides this, some inscriptions have a special meaning of their own.
+Many commands in TOband require you to specify an object, for example
+from your inventory: which potion you wish to 'q'uaff, which staff you
+wish to 'u'se, and so on. Inscriptions are a powerful way of saving
+effort in such cases.
+
+
+----------------------------------------------------------------
+Auto Inscription of Resistances and Powers '%'
+----------------------------------------------------------------
+
+When you inscribe {%} on an *identified* object, using the '{' command
+or the auto-pickup/destroy settings, the inscription is automatically
+replaced at that moment by a short string of abbreviations describing
+the object's abilities. For example, if you inscribe '%' on a random
+artifact that has resistance to fire and poison and some bonus to
+Strength, it will be written as {St;FiPo}. From then on you can see the
+artifact's resistances at a glance, without using the 'I' command.
+Naturally, if you do not know the object's abilities (that is, you have
+not *identified* it), inscribing '%' does nothing.
+
+For fixed artifacts and ego items, you can tell their resistances from
+the name alone (if you remember them!), so the inscription lists only
+the extra resistances and abilities that were added at random. For
+example, if Boots of Levitation have been given an extra resistance to
+nether, they will simply be inscribed {Nt}. The ability of levitation
+is not written in the inscription. If you do not like this behavior,
+inscribe '%all' instead. Then all resistances and abilities will be
+written, with no distinction between the added ones and the ones the
+object had from the start. For the boots above, the result would be
+{Nt;Lv}.
+
+
+List of abbreviations:
+
+At : extra blows                    Ac : resistance to acid
+Sp : affects speed                  El : resistance to electricity
+Am : anti-magic field               Fi : resistance to fire
+St : affects strength               Co : resistance to cold
+In : affects intelligence           Po : resistance to poison
+Wi : affects wisdom                 Li : resistance to light
+Dx : affects dexterity              Dk : resistance to darkness
+Cn : affects constitution           Sh : resistance to shards
+Ch : affects charisma               Bl : resistance to blindness
+Md : affects magic devices          Cf : resistance to confusion
+Sl : affects stealth                So : resistance to sound
+Sr : affects searching ability      Nt : resistance to nether
+If : affects infravision            St : resistance to stone
+Dg : affects tunneling ability      Ca : resistance to chaos
+*Ac : immune to acid                Di : resistance to disenchantment
+*El : immune to electricity         Fe : resistance to fear
+*Fi : immune to fire
+*Co : immune to cold
+
+Ma : decreases mana consumption     [F : fiery sheath
+Th : suitable for throwing          [E : electric sheath
+Rf : reflection                     [C : cold sheath
+Fa : free action                    [M : anti-magic shell
+Si : see invisible                  [T : prevent teleportation
+Hl : hold life                      [R : magic defense shell
+Esp : telepathy                     |A : brand acid
+Sd : slow digestion                 |E : brand electricity
+Rg : regeneration                   |F : brand fire
+Rm : mana regeneration              |Co : brand cold
+Lv : levitation                     |P : brand poison
+Lu : extra light                    |Ca : chaotic effects
+Wr : provides warning               |V : vampiric weapon
+Xm : extra might when shooting      |Q : weapon of quake
+Xs : extra shots when shooting      |S : vorpal hit
+De : drains experience              |M : weapon of the force
+Ag : aggravate monsters             |XS : *vorpal* hit
+Bs : blessed weapon
+Uh : unholy weapon
+Ty : Ancient and Foul Curse
+Ea : decreases spell difficulty
+Wf : wraithform
+Ff : fear field
+Fo : female only
+Mo : male only
+
+/* : slay evil                      /XD : *slay* dragon
+/A : slay good
+/p : slay human
+/d : slay dragon
+/o : slay orc
+/T : slay troll
+/P : slay giant
+/U : slay demon
+/Y : slay living
+/L : slay undead
+/Z : slay animal
+
+Te : random teleportation
+(St : sustain strength
+(In : sustain intelligence
+(Wi : sustain wisdom
+(Dx : sustain dexterity
+(Cn : sustain constitution
+(Ch : sustain charisma
+
+
+
+----------------------------------------------------------------
+The {@x#} Inscription
+----------------------------------------------------------------
+
+The {@x#} inscription (where 'x' is a single letter for the key of a
+command, and '#' is a digit from 0 to 9 that identifies the object) is
+perhaps the most commonly used inscription. When you select command
+'x' and then press the digit '#', the game searches your inventory for
+an object with the inscription {@x#} and performs that command on it.
+Thus if you inscribe a Potion of Healing with {@q1}, pressing 'q1' will
+quaff it. This feature is useful because as items are added to or
+removed from your inventory, the label ('a' to 'w') of each item
+changes. With this inscription you can select the item regardless of
+its label, which makes things much easier.
+
+Note: The letter that specifies the command in an inscription must be
+the one from the original keyset. Even if you have chosen the roguelike
+keyset, you must use the original keyset's letters in inscriptions. For
+example, the command to fire a missile is 't' in the roguelike keyset,
+but if you inscribe your arrows with {@t0}, pressing the digit '0'
+will not select them. You must inscribe them with {@f0}. This is
+inconvenient, but it has the advantage that changing your keyset later
+does not affect your item selection or your macros.
+
+As a special case, when the command is 'm' (cast a spell), you may use
+any letter instead of a digit, as in {@ma} or {@mb}. Especially with the
+roguelike keyset, letters are easier to type over and over than digits.
+
+You can inscribe the same {@x#} inscription on several objects. If you
+do so, selecting '#' for that command will act only on the first
+matching object found, not on each of the objects bearing the
+inscription.
+
+You can also put several such inscriptions on a single object. For
+example, a spell book may be inscribed {@m1@b1}, so that it works for
+both of the commands that take a spell book as their target: cast a
+spell ('m') and browse a book ('b'). You can also give the same command
+more than one number; for example, a food item might be inscribed
+{@E1@E2}.
+
+Example 1:
+    Suppose you have a main weapon and a shovel. You normally keep your
+    weapon wielded, but you use the shovel when you dig for treasure.
+    Inscribe your main weapon with {@w0} and your shovel with {@w1}.
+    Then, when you want to wield the shovel, press 'w1', and to wield
+    your main weapon again, press 'w0', wherever they happen to be in
+    your inventory.
+
+    Note: You can also inscribe both the main weapon and the shovel
+    with {@w0}, and just press 'w0' whenever you want to swap them.
+
+Example 2:
+
+    To cast the first spell from the first spell book in your
+    inventory, you would normally type 'maa', and to cast the first
+    spell from the second book you would type 'mba'. However, if your
+    first book is stolen or destroyed, typing 'mba' will no longer cast
+    the spell you wanted. Players often cast the wrong spell in such a
+    situation. To prevent this, inscribe your first book with {@ma} and
+    your second book with {@mb}, and so on. Then, even if your other
+    spell books are lost, you never have to worry about casting the
+    wrong spell.
+
+Example 3:
+    Suppose you are carrying some Rations of Food and some Waybread. You
+    normally want to eat the Rations first, but you also want to be able
+    to use the healing properties of the Waybread in an emergency.
+    Inscribe the Rations with {@E1} and the Waybread with {@E1@E2}. Since
+    the Rations appear above the Waybread in your inventory list, typing
+    'E1' will eat the Rations first, and the Waybread only when the
+    Rations have run out. When you deliberately want to eat the
+    Waybread, simply type 'E2'. You can do something similar with your
+    healing potions.
+
+----------------------------------------------------------------
+The {@#} Inscription
+----------------------------------------------------------------
+
+The {@#} inscription (where '#' is a digit from 0 to 9) is similar to
+the {@x#} inscription, but it works for any command. For example, if
+you inscribe both your main weapon and your digging tool with {@0},
+typing 'w0' will swap them, whichever one you are currently wielding.
+
+----------------------------------------------------------------
+The {!x} Inscription
+----------------------------------------------------------------
+
+An object inscribed {!x} (where 'x' is the key of any command) will
+always prompt you for "verification" whenever that object is selected
+for that command. For example, inscribing an object {!f!k!d} greatly
+reduces the odds of losing it by accident, because any attempt to throw
+it ('f'), destroy it ('k') or drop it ('d') will prompt you to verify
+whether you really wish to take that action.
+
+An object inscribed "!*" prompts for verification in every command, so
+you can handle that object with great caution. Also note that "selling"
+and "dropping" both use the 'd' command, so inscribing an item with {!d}
+will also prevent you from selling it by accident.
+
+----------------------------------------------------------------
+The {^x} Inscription
+----------------------------------------------------------------
+
+If you inscribe {^x} (where 'x' is the key of any command) on an item
+you are wearing or wielding, you will be asked to verify before using
+that command. A common example is to inscribe your boots with {^<^>},
+which makes the game ask for verification before you go up or down a
+staircase.
+
+----------------------------------------------------------------
+The {=g} Inscription
+----------------------------------------------------------------
+
+An object inscribed {=g} is picked up automatically when you walk over
+it. This overrides any auto-pickup options you have set. The primary
+purpose is to make it easy to retrieve missiles such as arrows and
+crossbow bolts that are scattered on the floor after being fired.
+
+----------------------------------------------------------------
+The {#anystring} Inscription (fake artifacts)
+----------------------------------------------------------------
+
+Normally an inscription is shown enclosed in { }, so you can tell at a
+glance that it was written by the user. Sometimes, however, you may want
+to give a favorite item a name of your own, as if it were an artifact.
+In that case, put a '#' in the inscription and write the name you like
+after it. For example, if you inscribe a Katana of Slaying (4d4) (+9,+9)
+with "#'Masamune'", the game will display it as "a Katana of Slaying
+'Masamune' (4d4) (+9,+9)". This does not work on real artifacts,
+because they already have names.
+
+----------------------------------------------------------------
+The {!!} Inscription
+----------------------------------------------------------------
+
+If you inscribe {!!} on a rod or on certain activatable artifacts, the
+game will tell you with a message when the item has finished recharging
+and can be used again.
+
+----------------------------------------------------------------
+The {.} Inscription
+----------------------------------------------------------------
+
+Some items have the ability of random teleportation. In particular, for
+items that are not cursed, the game will at random moments ask you for
+confirmation whether you want to teleport. If you find this annoying,
+inscribe the item with {.}, and the game will no longer ask for
+confirmation and the item will not teleport you. The {.} inscription
+has no effect on cursed items (they always teleport you).
+
+----------------------------------------------------------------
+The {$} Inscription
+----------------------------------------------------------------
+
+Some items have the ability of warning. They warn you and ask for
+confirmation before you continue when you are about to be caught by a
+trap, or when you come into the line of sight of an enemy that makes
+strong attacks. If you inscribe such an item with {$}, no warning will
+ever be given.
+
+
+
+***** <ObjectTypes>
+=== The Object Types ===
+
+Ammunition ('{')
+   Ammunition of various types and quality is a frequent find in the
+   dungeon and is usually found in piles. To get the full benefit from
+   ammunition, it must be 'f'ired with the appropriate missile
+   launcher. Guns fire bullets, bows fire arrows and crossbows fire
+   crossbow bolts.
+
+Missile Launchers ('}')
+   There are several types of missile launchers, from firearms to
+   crossbows. Each type of launcher uses its own ammunition. Missile
+   launchers must be 'w'ielded before they can be used.
+
+Weapons ('|', '/', '\')
+   There are numerous types of weapons in the dungeons. Each weapon
+   differs in weight and in its damage dice. Weapons must be 'w'ielded
+   before they can be used.
+
+Armor ('[', '(', ')', ']')
+   Body armor is worn on your body, cloaks about your body, shields on
+   your arm, caps and helms on your head, gloves, gauntlets and cesti on
+   your hands, and boots on your feet. Armor of any kind must be
+   'w'orn with the 'w' command.
+
+Amulets ('"')
+   Amulets are flavored items and are worn around your neck, using the
+   'w' command.
+
+Rings ('=')
+   Rings are flavored items. They are worn on the ring fingers of your
+   left and right hands, using the 'w' command.
+
+Scrolls ('?')
+    Scrolls are flavored items whose effects take place when they are
+    'r'ead. Most scrolls serve practical purposes.
+
+Potions ('!')
+    Potions are flavored items whose effects take place when they are
+    'q'uaffed. Some potions can be thrown at monsters and will take
+    effect on them when the potion shatters. Similarly, a potion you are
+    carrying may occasionally shatter during combat, spreading its
+    effects on the monsters around you.
+
+Food (',')
+    Various food items are scattered throughout the dungeon. They must
+    be 'E'aten for you to take in nourishment. If you do not eat
+    regularly, you will become hungry and then weak. Eventually you will
+    begin to faint from hunger, and finally you will die of starvation.
+
+Note: Undead races and reincarnated classes do not need food. If a food
+item has a special effect, however, you can still gain that effect.
+
+Wands ('-')
+    Wands are flavored magical items that hold a finite number of
+    'charges'. Each charge represents a single use of the wand, and
+    using the wand once reduces the number of charges by one. Once all
+    the charges are gone, the wand must be 'recharged' before it can be
+    used again. In general, wands fire bolt or ball spells and do not
+    have area effects. Wands do not normally affect the player directly,
+    and are generally used for attacking. Wands are used with the 'a'im
+    command, and you need to specify a target.
+
+Staffs ('_')
+    Staffs are flavored magical items and are made of various types of
+    wood. Like wands, they hold a finite number of charges and must be
+    recharged when empty. In general, staffs have an area effect or act
+    on the player himself. Unlike wands, few staffs can be used for
+    attack. Staffs are used with the 'u'se command and do not require a
+    target.
+
+Rods ('-')
+    Rods are similar to both wands and staffs, in that many of the
+    magical effects available from wands and staffs are also available
+    from rods. The main difference is that a rod holds only a single
+    charge, and that after it is used it recharges itself naturally over
+    time. Typically, the better the effect of a rod, the longer it takes
+    to recharge. This means that you have an unlimited supply of the
+    magical effect, but that you can only use it infrequently, compared
+    with a wand or staff that can be used every turn until it is empty.
+    Rods are used with the 'z'ap command, and many of them require a
+    target.
+
+Spell Books ('?')
+    Each realm of magic has one or more spell books. If you are a
+    spellcaster, you can 'b'rowse the books of the realms you can use to
+    see what spells they contain. You cannot use books from other
+    realms. You cast spells with the 'm' (magic) command.
+
+Chests ('&')
+    Chests are complex objects, which may be trapped or locked. If you
+    manage to open one, however, you may find treasure or other objects
+    inside. The commands that apply to traps and doors also work on
+    chests; however, these commands cannot be used while you are
+    carrying the chest.
+
+Figurines ('`')
+    A figurine is a magical item, a small replica of one of the monsters
+    in the dungeon. When a figurine is thrown, it turns into that
+    monster and becomes your pet.
+
+Statues (''')
+    Statues are made of various materials and can be found throughout
+    the dungeon. Unlike figurines, they have no magical powers, but
+    depending on their material they may sell for a high price.
+
+Corpses and Bones ('~')
+    You may sometimes find the corpses and bones of monsters and of
+    other adventurers who died in the dungeon.
+
+Various Junk ('~')
+    As in any dungeon, you should expect to find various kinds of junk
+    such as broken sticks and empty bottles. Most of it is useless, but
+    an Iron Spike can be wedged into a door with the 'j'am command to
+    prevent it from being opened.
+
+Light Sources ('~')
+    Various light sources and their fuel are also scattered about the
+    dungeon. If you are carrying the appropriate items, you can refill
+    your light source with the 'F' (fuel) command. Lanterns can be
+    refilled with flasks of oil, and torches with other torches.
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.5.0
+Updated    : TOband 0.0.3
+
+
+***** Begin Hyperlinks
+***** [b] joption.txt#always_pickup
+***** [d] jobjects.txt#EgoObjects
+***** [e] jobjects.txt#Inscriptions
+***** [f] jobjects.txt#Identifying
+***** [g] jattack.txt#EgoArtifact
+***** [h] jdefend.txt#EgoArtifact

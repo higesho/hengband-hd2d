@@ -234,6 +234,7 @@
     <ClCompile Include="..\..\toband\adapter\tb_audio.c" />
     <ClCompile Include="..\..\toband\adapter\tb_null_term.c" />
     <ClCompile Include="..\..\toband\adapter\tb_shim.c" />
+    <ClCompile Include="..\..\toband\adapter\tb_name_en.c" />
     <ClCompile Include="..\..\toband\adapter\tb_sub_terms.c" />
     <ClCompile Include="..\..\toband\adapter\tb_win_stubs.c" />
     <ClCompile Include="..\..\toband\adapter\tb_text.cpp" />

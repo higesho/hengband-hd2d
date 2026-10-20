@@ -1,0 +1,28 @@
+=== TOband Online Help Commands ===
+
+q      : Leave the online help.
+ESC    : Return to the previous help file, or leave the help.
+?      : How to use the online help (this file)
+-      : Go back 1 page
+8      : Go up 1 line
+2      : Go down 1 line
+Space  : Go forward 1 page
+
+#      : Jump to a specific line (the default is line 0)
+%      : Open a specific file (the default is "jhelp.hlp")
+=      : Highlight lines containing a given string
+/      : Search for a string ( '/' + Return searches again)
+           ( '#' + '0' + Return + '/' + Return searches from the top)
+|      : Save the contents of the current file.
+
+[a-z]  : Select a menu entry, or jump to a linked file.
+         When the text contains a note such as "(see jgeneral.txt#First [a])",
+         pressing 'a' takes you to the place it refers to.
+
+--
+Original   : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.3.0
+Updated    : TOband 0.0.2
+
+***** [a] jgeneral.txt#First

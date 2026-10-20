@@ -1,0 +1,597 @@
+=== TOband Beginner's Guide ===
+
+
+=== Basic Training ===
+
+Start the game and begin creating your character. Depending on the type of
+computer you are using, you may have to choose "New" from the File menu to
+begin character creation. Read the on-screen instructions carefully and follow
+the steps to choose your sex, race, class, and Element. If you want basic
+information about races, classes, and Elements, use the online help command
+(the "?" key) and see the "Character Creation" and "Races, Classes, and
+Elements" topics. You should also look through the other topics as soon as you
+can. For anyone who is new to TOband in particular, the "Command Descriptions"
+topic is especially important.
+
+After you name your character, the game begins in a town called Golyat, a port
+town. The numbered buildings are shops where you can buy equipment and sell
+the things you find in the dungeon. The ">" just a short way to the left is a
+staircase, and it marks the entrance to a dungeon (the one here is a dungeon
+called "Seaside Cave"). Press the ">" key. You will go down the stairs and
+enter the dungeon. The symbol for an up staircase is "<". If you press the "<"
+key, you will go back up the stairs to the surface.
+
+Next, try pressing the "<" key on the surface. If there are no monsters
+around, you will leave the normal map and enter the wide-area map, where you
+can look out over the whole of the vast surface world. Remember this, because
+it is essential when you travel to distant towns or other dungeons. Pressing
+the ">" key on the wide-area map takes you back to the normal map.
+
+If you want to know what a character shown on the screen stands for, you can
+find out with the "look" command (the "l" key or the "x" key). Press the
+direction keys to choose what you want to look at. Note, however, that at
+first the cursor does not move freely when you press the direction keys; it
+can only select interesting things such as items, monsters, and shop
+entrances. If you want a description of an ordinary "." (the floor symbol) or
+"#" (the wall symbol), press "o" after pressing the "l" key or the "x" key.
+Then you can move the cursor freely. Also, instead of moving the cursor, you
+can press the space bar or the enter key to go one after another through the
+interesting things in view.
+
+Now let's look around the town. But stay away from the killer whales. They can
+easily send you to your grave. They can be useful, though, for raising your
+level by throwing things at them. Also, be careful about shop number 7. It is
+the Black Market, where extremely powerful items are sold at ridiculously high
+prices.
+
+Don't forget to stop in at shops 1 and 2, the General Store and the Armory. At
+the General Store, buy a Cloak, a Brass Lantern, and one or two Flasks of oil.
+Then sell the Wooden Torch you started with. At the Armory, buy some light
+armor. How about Hard Leather Armour, a Leather Hat, and Leather Gloves? If a
+Small Leather Shield is for sale and you can afford it, buy that too.
+
+By now you have probably spent all your money. But if you still have some
+left, we strongly recommend visiting the Alchemy shop (shop 5) and buying a
+Scroll of Phase Door. When you are surrounded by monsters, read it. It
+teleports you, though only within a short range.
+
+Of course, these items are sometimes not for sale. Each shop replaces its
+stock from time to time. If what you need is not on sale at the moment, you
+can wait for the shop's goods to change.
+
+As a matter of fact, TOband is not very hard to learn to play. You will pick
+up how to handle it quite quickly.
+
+From here on, I would like to give you detailed information on how to survive
+in the dungeon. Some of it you could work out by intuition, while some of it
+you would probably not notice until after dying many times. If you want to
+learn by getting hurt and earn your success that way, do not read any further.
+But if you are tired of worrying about dying, read on.
+
+=== Weapons and Multiple Attacks ===
+
+Most warrior-type characters start out able to attack with a weapon two or
+more times per turn. Whether you can attack more often than that later in the
+game depends on your class, the weight of your weapon, and your Strength and
+Dexterity scores. The number of blows is shown on the character sheet screen
+(press "C").
+
+Multiple attacks become very important in the later part of the dungeon. The
+more blows you get, the more damage your weapon does (obviously).
+
+
+=== The Importance of Magical Items ===
+
+You may think you can get by without magical items. If so, your stay in the
+dungeon may be interesting, but it will be short. It may even turn out to be a
+one-way ticket.
+
+--- Teleportation Items ---
+
+The most important are the items that let you teleport. There are many kinds
+of this type of item:
+
+Phase Door
+     A short-range teleport, a good way to escape when you want to stay near
+     the enemy (it is also the basis of the "Shoot'n Scoot" tactic; details
+     later).
+
+Teleportation
+     Teleports you quite far away within the floor. This is a handy way to
+     escape instantly when you are surrounded by dangerous enemies or by a
+     horde of them. It has the unfortunate effect of sometimes putting you
+     next to an enraged monster, but that is still better than simply waiting
+     to die. Also, some enemies have the ability to follow you when you
+     teleport.
+
+Teleport Other
+     Teleports one or several monsters far away. It is safer than
+     Teleportation, but a single use may not be able to send away every enemy.
+     Also, there are enemies that resist being teleported.
+
+Teleport Level
+     Moves you one level up or down. When the current level is full of
+     dangerous monsters and you want to teleport, this is a ticket to safety.
+     Also, as a very important point, right after a Teleport Level your next
+     turn comes immediately. If you are near death and use ordinary
+     Teleportation, you risk being killed in an instant if an enemy happens to
+     be at the place you land. With Teleport Level, that one instant is always
+     safe.
+
+*Destruction*
+     This powerful spell blows away everything around you (artifacts
+     included!) along with the dungeon itself, and makes rocks rain down from
+     the ceiling. If you fall into serious danger, it is the safest way to
+     escape. Unique monsters are not killed by *Destruction*; they are simply
+     removed from the level and will appear before you again later.
+
+
+--- Healing Items ---
+
+Second in importance are the healing items. Here "healing" includes Cure Light
+Wounds, Cure Serious Wounds, Cure Critical Wounds, Curing, Healing, *Curing*,
+*Healing*, and the Potion of Life, which are listed in order of increasing
+power.
+
+Cure Light Wounds, Cure Serious Wounds, Cure Critical Wounds
+     Cure Light Wounds restores 2d8 HP and cures cuts, blindness, and berserk
+     rage. Cure Serious Wounds restores 4d8 HP and cures cuts, blindness,
+     confusion, and berserk rage. Cure Critical Wounds restores 6d8 HP and
+     cures cuts, blindness, confusion, stun, poison, and berserk rage.
+
+Curing
+     This potion focuses more on curing a variety of status ailments than on
+     healing wounds. It cures cuts, blindness, confusion, stun, poison, and
+     hallucination, and also restores 50 HP.
+
+Healing
+     Restores 300 HP and cures cuts, blindness, confusion, stun, poison, and
+     berserk rage.
+
+*Curing*
+     Restores 700 HP and cures cuts, blindness, confusion, stun, poison,
+     hallucination, and slowly progressing petrification.
+
+*Healing*
+     Restores 1200 HP and cures cuts, blindness, confusion, stun, poison, and
+     berserk rage.
+
+Life
+     Basically cures everything bad: it restores 5000 HP, restores stats and
+     experience drained by enemies, and cures all temporary bad conditions.
+     This item is extremely rare, so save it for dangerous battles to come.
+
+--- Identification Items ---
+
+There are various ways to identify things: Scrolls of Identify, Staffs of
+Perception, Rods of Perception, and the Identify spell and prayer. These let
+you learn every magical property an object has, for example a weapon's to-hit
+and to-damage bonuses and the modifiers it gives to your stats. They also tell
+you whether an item is cursed. And you also learn what that wand, rod, staff,
+potion, scroll, and so on actually is, which is very important. You would not
+want to drink some troublesome potion found deep in the dungeon without
+knowing what it is. Sometimes the description of an item is vague. Examples
+are the Staff of Holiness and the Staff of Power. To find out what these do,
+you may have to try them out a little.
+
+There is a more advanced kind of identification, called *Identify*. It reveals
+all the attributes of a single item, for example that it lets you see
+invisible things, protects your stats from being drained, gives you rapid
+regeneration, and so on. You should use it on artifacts and on high-level ego
+items (weapons of Lodis, (Holy Avenger) and (Defender) weapons, armor of
+Zenobian, boots of Levitation, and so on).
+
+
+--- Light Sources ---
+
+A note about light sources: without light you can hardly do anything. You
+cannot see most monsters, you cannot cast spells or read scrolls, and, to take
+the most obvious example, you cannot see the layout of the dungeon. There are
+items that light up the inside of the dungeon, but only in part. Any item or
+spell that serves as a light source lights up the room you are in (or a part
+of a corridor). A Potion of Enlightenment or the Enlightenment spell lights up
+the entire level.
+
+--- Word of Recall ---
+
+Finally, the most useful magical item may be the Scroll of Word of Recall. If
+you read it when you are in town, you choose a dungeon and are then teleported
+to the deepest level you have reached in that dungeon so far. If you read it
+in a dungeon, you are teleported to town. (If you read it on a level shallower
+than your deepest one, the game asks whether to reset the recall depth to the
+current level.) Because it takes 15 to 35 turns after you read the scroll for
+the effect to take hold, it is not a perfect means of escape.
+
+
+=== About Resistances ===
+
+TOband has many kinds of attacks, divided into physical attacks, magic
+attacks, and breath attacks. Unless a character has the matching resistance,
+these cause special damage that can easily kill the character. Each kind of
+attack has a resistance that corresponds to it. Broadly, the resistances fall
+into three basic groups: the "lower" resistances, the "higher" resistances,
+and the magical resistances. The lower resistances are acid, lightning, fire,
+and cold. The higher resistances are poison, light, darkness, shards,
+confusion, sound, nether, stone, chaos, and disenchantment. The magical
+resistances are resistance to blindness, resistance to fear, Free Action
+(immunity to paralysis), and Hold Life (resistance to life draining).
+Resistances come from items and from racial traits. For example, Fairies
+resist light (you can see these in the character creation section of the
+online help). Some types of items give all four of the basic (lower)
+resistances. Such items include weapons with the (Defender) mark, the Robe of
+Permanence, armor of Resistance and of Zenobian, and Shields of Resistance.
+Many artifacts also have some or all of the basic resistances, plus one or two
+of the "higher" resistances.
+
+Resistance generally reduces the total damage to between 1/5 and 2/3. Also,
+only the four basic resistances and poison can have a double resistance
+effect, by combining resistance from equipment with temporary resistance. In
+that case the damage becomes 1/9.
+
+Resistances are your lifeline for surviving in the dungeon. For example, the
+Great Hell Wyrm, a quite powerful fire dragon, breathes fire, and without
+resistance the damage can be as much as 1600 HP. If you have resistance to
+fire, however, the damage becomes 1/3, which is 533 HP. With double
+resistance, the damage is reduced to a mere 178 HP.
+
+
+=== Important Dungeon Levels ===
+
+The dungeon has certain levels that serve as guidelines: beyond them you will
+need particular resistances or abilities. The levels shown here are only
+guidelines and should not be taken literally. But if you decide to go past one
+of those levels without the listed properties, you should be very careful, and
+you should not complain when you see the dreadful message "It breathes -more-
+You die."
+
+Dungeon level 15: Resist Blindness, or if you have none, light and darkness
+Dungeon level 20: See Invisible, Resist Fire, Free Action (paralysis)
+Dungeon level 25: Resist Acid, Lightning, and Cold
+Dungeon level 30: Confusion, blindness (mage-type classes), (stone)
+Dungeon level 35: Poison, blindness (warrior-type classes)
+Dungeon level 40: Nether, Chaos, (darkness)
+Dungeon level 50: Hold Life (resistance to life draining), Telepathy
+Dungeon level 60: Permanent speed +10 or more
+Dungeon level 70: Permanent speed +15 or more, shards, darkness
+Dungeon level 90: Permanent speed +25 or more
+Dungeon level 99: Every resistance and ability you can get
+
+Note: if you have good infravision, you can use it for a while as a substitute
+for See Invisible. But ghosts will soon begin to appear, and you cannot see
+them with infravision.
+
+Going without resistance to paralysis is like walking to your own death.
+Carrion crawlers (and monsters of that kind) have a paralyzing attack that
+leaves you unable to move until you die. Also, from around this point monsters
+that cast paralysis spells start to appear. There is nothing worse than
+helplessly watching an insignificant monster kill your character right before
+your eyes.
+
+Resistance to confusion and blindness is important. If you have them, you can
+rely on Scrolls of Teleportation in any situation. If you do not have the
+resistances, you will need a Staff of Teleportation when you are confused or
+blind, but it has some chance of failure. Scrolls are safe.
+
+Resistance to poison becomes essential because of two kinds of monsters that
+begin to appear from about the 40th level down, the Ancient Multi-hued Dragon
+and the Drolem. Both breathe poison and deal heavy damage (700 and 800
+respectively). It is also a resistance you want to have on at all times, as
+early as possible from level 24 on, to guard against the deadly side effects
+of radioactive waste.
+
+You also need resistance to stone to prevent its side effects. Without it, you
+are turned to stone on the spot and your adventure is over. If you have the
+"earth" resistances, acid and shards, you escape instant death (and a
+successful saving throw can also turn the attack aside), but petrification
+then proceeds gradually, and if you have no means of curing it and cannot
+reach the healer in town, you become a complete statue.
+
+Resistance to chaos is a *lifeline*. Chaos not only deals large damage but
+also brings nasty side effects such as hallucination and mutation.
+
+Resistance to nether is also very important. A great many enemies make this
+type of attack, and it does heavy damage.
+
+Resistance to life draining (Hold Life) is a very good resistance, but it is
+not essential. If you cannot get it, carry plenty of Potions of Restore Life
+Levels.
+
+
+=== About Secret Doors ===
+
+In the dungeon, many doors are hidden so that they cannot be found. To find
+them, you must use the Search (S) command to switch into search mode. (Each
+press of S cycles through search mode, element scope mode, and normal mode.
+The "s" key searches once.) But sometimes you do not even know where to look.
+Usually, in cases like the following, there is often a hidden door at the
+places marked with "*".
+
+#*###  ###'###  ####*#    ###*###
+*@...  ..'@'..  ..@'.*    ..'@...
+#*###  ###*###  ####'#    #######
+
+In general, if a corridor has a door, there is another door nearby. If you
+find a corner with two doors, try looking for a hidden door. Crossroads often
+have hidden doors. Finally, hidden doors are never in places where you would
+have to move diagonally to open them. Dead ends (the first example) usually
+have a door, but not always. If you search for a while and find nothing, give
+up and look elsewhere. Dead ends often occur at the edge of the map, because
+the corridor cannot be extended any further.
+
+
+=== About Preserve Mode ===
+
+You choose ON or OFF for this when you create the character, with the
+"Preserve artifacts" item (preserve_mode) in the birth option menu. It cannot
+be changed afterwards.
+
+With Preserve Mode OFF, a level containing an artifact is generated, and if
+you leave for another level without picking it up, that item is lost forever.
+With Preserve Mode ON, you can find that artifact again, but in exchange you
+can no longer sense the "special" feeling of a level (see the next section).
+The same goes for an artifact you unknowingly blow away with the *Destruction*
+described above.
+
+
+=== Level Feelings ===
+
+After you have spent a little time on a level, you sense a feeling that
+vaguely tells you how good that level is. How long this takes depends on the
+depth of the level and on your Searching skill. The more "dangerous" the
+feeling you get, the more powerful the items and the higher-level the enemies
+on that level. The feeling is worked out from the monsters on the level
+(monsters whose level is deeper than the current level, unique monsters that
+are nearly out of depth, and unusually crowded groups) and from the items
+lying on the floor that you have not identified (ego items, artifacts, some
+special items such as dragon armor and Rings of Speed, and items whose base
+level is deeper than the current level). The feeling is checked again as time
+passes, and the game announces it whenever it changes.
+
+For example, the base level of a Long Sword is 10. If one is seen on a level
+shallower than that, it is regarded as "unusual". An item is regarded as
+"unusual" by the condition above alone; it does not need to have any special
+power. If an ordinary, non-magical sword lies on a shallow level, it gives
+rise to a dangerous feeling, because it is "unusual". A pit (a large room
+filled with one kind of monster) or a vault (a dense, dangerous room with many
+monsters and items not normally seen on that level) usually raises the feeling
+too, because of the monsters and items in it. There is also a "special
+feeling". It occurs only when Preserve Mode is off, and it tells the player
+that there is an artifact on the level.
+
+Pressing "^F" (the Control key + "F") redisplays the feeling you already know.
+If not enough time has passed since you entered the current level, the message
+"Looks like any other level." is displayed, and you get no information at all
+about the level. In town, "^F" instead tells you the attitude of the
+townspeople toward you (welcoming, indifferent, or hostile), which depends on
+the Chaos Frame of that town's ethnic group.
+
+
+=== The Meaning of the Numbers on Equipment ===
+
+Your equipment always has numbers displayed on it that show how effective it
+is.
+
+For armor:               Armor of Something (+x,+y) [a,+b] (+c)
+For weapons:             Sword of Something (XdY) (+x,+y) [+b] (+c)
+Unidentified armor:      Armor of Something [a]
+Unidentified weapons:    Sword of Something (XdY)
+
+Meaning of (+x,+y):
+
+ These are the magical bonuses added to the to-hit modifier and the to-damage
+ modifier, respectively. They are added together with your other bonuses when
+ you attack. Some armor also has bonuses to the to-hit and to-damage
+ modifiers. Most of these are artifacts, but exceptions include things like
+ Gloves of Slaying. Also, heavy armor has a small minus value in front of the
+ AC display. This is a minus modifier to your to-hit, caused by the armor
+ being heavy and restricting your movement. The modifier is small, so you can
+ ignore it unless the character is of very low level.
+
+Rings of Damage and Rings of Accuracy have a (+y) or a (+x) modifier, one or
+the other. When worn, they add to damage and to the chance to hit,
+respectively. But be careful! The effect of a ring applies only to the weapon
+held in the arm on the same side as the ring. Normally you hold your weapon in
+your right hand, so wearing a ring on a finger of your left hand has no effect
+at all.
+
+[a,+b]. This shows the item's base AC and the bonus to it. The larger the
+number, the better. (Note: some armor shows a small negative value in "()" in
+front of these numbers. This means the armor is so heavy that you have trouble
+moving, giving you a negative modifier to your to-hit. Normally, though, it is
+small enough to ignore.) Some weapons also have a bonus to AC.
+
+A Ring of Protection has a [+b] modifier and raises your AC. In practice,
+however, this ring is not useful. It is far better to use your precious ring
+slots for something else.
+
+(+c). This is the bonus the item gives to your other stats: Strength,
+Intelligence, Wisdom, Constitution, Dexterity, Charisma, speed, stealth,
+searching ability, infravision, number of blows, digging ability, and so on.
+Not every item has it, and it gives you a reason to choose one item over
+another. (This value does not affect every stat in the list above. Most items
+give this bonus to only one or two stats. Some give it to more (weapons of
+Lodis give bonuses to Strength, Dexterity, and Constitution).)
+
+For example, a Holy Avenger looks like this:
+
+Mace (Holy Avenger) (2d4) (+7,+5) [+4] (+1)
+
+This means that when you attack you roll two 4-sided dice, that you get a +7
+modifier to your chance to hit and a +5 modifier to damage, that your AC goes
+up by 4, and that one stat (Wisdom, in this case) goes up by 1.
+
+XdY. This is the weapon's base damage. If an attack hits, you roll a Y-sided
+die X times, and the total of the rolls is the damage before modification by
+brands, critical hits, and other bonuses. For example, a Long Sword rolls a
+5-sided die twice (2d5) when it hits.
+
+For arrows, bolts, and bullets, in addition to the usual weapon information,
+the average damage the item can deal per shot and per turn is displayed. These
+numbers are displayed only when you are wielding a suitable launcher. (The
+average damage of melee attacks is displayed by the "C" command.) The display
+format is as follows:
+
+Arrow (1d4) (+0,+0) (16/32)
+
+The first number is the average damage per shot, and the next number is the
+average damage per turn. The numbers here are only an example; they are for
+the case where you fire 2 shots per turn.
+
+
+=== About Slays and Brands ===
+
+Many weapons in the dungeon are terribly powerful against particular kinds of
+enemies. These properties are collectively called slays. Such weapons multiply
+the damage dice you roll. They do not affect the damage modifier, however. The
+slay properties are listed below:
+
+     Slay Evil: damage dice x2 against evil monsters
+     *Slay* Evil: damage dice x3.5 against evil monsters
+     Slay Good: damage dice x2 against good monsters
+     *Slay* Good: damage dice x3.5 against good monsters
+     Slay Animal: damage dice x2.5 against animals
+     *Slay* Animal: damage dice x4 against animals
+     Slay Human: damage dice x2.5; *Slay* Human: x4
+     Slay Living: damage dice x2; *Slay* Living: x3.5
+     Slay Undead, Demon, Orc, Troll, Giant, or Dragon: damage dice x3
+     *Slay* Undead, Demon, Orc, Troll, Giant, or Dragon: damage dice x5
+
+Weapons with an elemental brand (Melting, Burning, Freezing, Shocking, Venom)
+attack with damage dice multiplied by 2.5 against monsters that do not resist
+that element (5 against monsters that are especially vulnerable to it). In
+addition, (Vampiric) weapons drain HP from living enemies and heal the player
+by the same amount, and (Chaotic) weapons sometimes cause random effects
+(draining life, confusion, an earthquake, teleporting the enemy away, or
+polymorphing it).
+
+
+=== Monster Memory ===
+
+In many other games, you have to take notes on monsters' weaknesses and
+strengths, the spells they use, and so on. TOband takes care of this by
+recording a brief memory of each monster for you. When your character finds
+out something new about a monster, for example that it uses a breath attack,
+it is added to your information about that monster. You can look at this
+information by typing "/" and then the character that represents the monster.
+Press the space bar to skip past the records of other monsters until you reach
+the one you want to see. By setting window flags, you can have this memory
+always displayed in a subwindow. In that case, the memory window is updated
+automatically as you fight monsters.
+
+Unfortunately, when your character dies, you can use that character's savefile
+to create the next character. Instead of "New", choose the dead character's
+file with "Open", and you will go to the character creation screen. A
+character created this way inherits the knowledge about monsters of all its
+ancestors, and for the monster that killed an ancestor, a special sentence is
+displayed in the memory.
+
+
+=== Monster Colors ===
+
+You can often read some information from a monster's color. This means the
+color that is part of its name, as in "White Dragon", not the color displayed
+on the screen (you should not look at a white "p" and assume it is a
+cold-based monster). In general, white monsters are cold-based, red ones are
+fire-based, blue ones are lightning-based, black ones are acid-based, and
+yellow or green ones are poison-based. Multi-hued monsters combine all of
+these.
+
+
+=== The Options Screen ===
+
+The options screen is displayed by typing "=". It contains various settings
+that make TOband more comfortable to play. Most of them can stay at their
+defaults, but a few are worth setting.
+
+After typing "=", press "H" to enter the hitpoint warning setting, and change
+it to about 50%. You will see the effect as soon as you are about to die.
+
+After typing "=", press "D" to enter the base delay factor screen. This
+determines how long the animation takes when special effects actually play
+out, that is, the explosion of a ball spell, or a bolt or missile in flight.
+Normally it is a good idea to set this to 2 or 3.
+
+After typing "=", press "W" to enter the window flags screen. This sets what
+each subwindow displays. With it you can keep the message history, the monster
+memory, your inventory and equipment, and other things always displayed in
+several windows.
+
+
+=== Death ===
+
+In TOband, death is permanent. In this game, saving is merely a means of
+suspending the game. When you die, the savefile is marked, and the next time
+you try to start the game with that savefile, you begin by creating a new
+character. The dead character's descendant inherits the monster memory and the
+options you have set, passing them on to the next generation.
+
+Some people make backups of their savefiles. If their character dies, they
+simply load the old character and resume from where they stopped before. They
+are set back to the point of their last backup, but alive. This, however, is
+considered "cheating". If you do this only for your own private enjoyment,
+there is no reason to stop you. The only exception in which you can use a
+backed-up savefile is when your computer crashes, or the character data is
+corrupted by a serious bug or the like.
+
+The Cheating menu of the options screen has an option for cheating death. But
+like the other cheating options, it invalidates your high score, and it
+becomes impossible to be a true winner of the game.
+
+
+=== About Speed in TOband ===
+
+TOband has a system that confuses players (especially veterans of
+Angband-family games). It concerns speed. In most other Angband-family games,
+the speed at which you and your enemies act is fixed by the type and condition
+of the character. A character with +10 speed (or one who is "Fast") moves at
+twice the speed of a normal monster, and can always act twice in the time it
+takes a +0 player (or a "normal speed" monster) to act once. In TOband,
+however, speed is not constant. The speed number simply indicates a
+statistical average. Therefore a monster moving at normal speed may suddenly
+act two or three times in a row, or may stand still for one or two turns.
+
+Also, the speed number has the complexity common to Angband-family games. When
+it is displayed as speed +nn, the actual increase in speed is not proportional
+to +nn; beyond +27, the actual gain in speed per point of the displayed number
+gradually becomes smaller.
+
+You can understand this system more deeply by learning the details of TOband's
+time system. In TOband, players and monsters gain some points of "energy" as
+time passes, according to their speed. As mentioned above, unlike other
+Angband-family games, the amount of energy needed to act in TOband is random.
+Only the average is equal: on average, you can act once you have gained 100
+energy points. Most actions cost 100 energy. There are a few exceptions; for
+example, shooting with a bow of Extra Shots costs only half, 50 energy, so
+your turn comes around twice on average before a monster of the same speed
+moves.
+
+And the speed bonus is added to the energy a player gains each turn. With
+speed +10 you gain twice the normal energy each turn, so you move twice as
+fast. With +20 it is three times. With +30, however, it is only 3.8 times, and
+no matter how high you raise your speed, the maximum is 4.9 times.
+
+
+=== Techniques for Killing Monsters ===
+
+Shoot'n Scoot.
+     You need a large room, Phase Door, and some means of ranged attack (a
+     bow, a crossbow, or a gun). Stand in one corner of the room, with the
+     enemy in another corner. Keep making ranged attacks until the enemy comes
+     next to you, then jump to a distant place with Phase Door. Repeat this.
+     By the time you run out of ammunition, the enemy will be dead or nearly
+     dead.
+
+Wail'n Bail.
+     You need a teleportation item. Fight a monster until you are about to
+     die, then teleport. After that, find it and resume the fight. This is a
+     dangerous method, because teleporting can drop you next to other
+     monsters. It is also not very useful for killing unique monsters. They
+     recover damage very quickly, so by the time you find the enemy again, it
+     will have recovered the damage you inflicted.
+
+The Anti-Summoning Corridor.
+     This takes a little time to prepare. It is a technique you can use
+     anywhere. First, dig a winding corridor into the rock, and take your
+     position at one end of it. Even when the enemy comes there, it cannot
+     summon monsters next to you. This is a very important technique when you
+     fight powerful monsters that can summon hordes of monsters.

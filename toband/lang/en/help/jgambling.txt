@@ -1,0 +1,23 @@
+=== Gambling Rules ===
+
+Between: Three 10-sided dice are rolled; 2 black, 1 red. The red die must
+       fall between the two black dice to win. If the red die matches a
+       black die, you lose. Pays 4x.
+Craps: Two dice are rolled. On the first roll, a 7 or 11 wins. A 2, 3 or 12
+       loses. Otherwise, keep rolling until the first roll is matched (win)
+       or a 7 is rolled (loss). Pays 2x.
+Wheel: Pick a number from 0-9. If that number comes up, you win. Pays 9x.
+Slots: Three dice are rolled and shown as symbols. A match wins. The symbols
+       are Lemon, Orange, Sword, Shield, Plum and Cherry (Lemon comes up most
+       often, Cherry least often). Payoffs are as follows:
+       Lemon Lemon               2
+       Lemon Lemon Lemon         5
+       Orange Orange Orange     10
+       Sword Sword Sword        20
+       Shield Shield Shield     50
+       Plum Plum Plum          200
+       Cherry Cherry Cherry   1000
+
+--
+This file was last updated for Kangband 2.8.3i.
+Translation: Itakura

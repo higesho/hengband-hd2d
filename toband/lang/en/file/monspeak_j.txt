@@ -1,0 +1,565 @@
+# This is the file for allowing uniques to speak their "own" lines.
+# Deleting this file will have no real effect on the game.  Modifying it may
+# cause STRANGE unique lines to come up if the format's wrong, but shouldn't
+# crash anything.  The format goes like so:
+#
+# N:45:whoever this is
+# 3
+# says line 1
+# says line 2
+# says line 3
+#
+# The number after the N: is the "monster index number" obtained from
+# r_info.txt.  The text field after that number isn't actually used--it's
+# just there to help humans edit the file.  The numbers on lines by
+# themselves are the number of lines that the monster has.  Getting these
+# numbers wrong won't crash anything, but will produce strange lines.
+#
+# A '*' in the number field is a wildcard and applies to any monster.
+# It should only be placed at the end of the file, since all 'N:' lines
+# after it will be ignored.
+#
+# Two or more monsters can share lines; just put their N: lines in a
+# contiguous block.
+#
+# To stop a certain monster from having unique lines, put a # in front of
+# its N: line.
+#
+# Entries by Matt Graham, Andrew Hill, and Topi Ylinen
+
+N:53:Grip, the Pet of Charch
+N:54:Wolf, the Pet of Charch
+N:55:Fang, the Pet of Charch
+6
+ chases its own tail.
+ barks noisily.
+ is foaming at the mouth.
+ wags its tail.
+ flops down and rolls over.
+ growls.
+
+N:97:Pavan Bapal
+3
+ shouts, 'Right, you dogs, move out!!'
+ laughs, 'Fools, wandering in here lured by the rumor of Ronwey's execution. And you never even suspected it was false information we spread to bury you surviving guerrillas! Kukukukuku.'
+ snarls, 'You are no islander! A Lodissian cur, are you!?'
+
+N:112:Agares Bazin, the Knight
+4
+ mutters, 'That this should happen while Lord Nybeth is away...'
+ shouts, 'Men! Now is the hour to show the pride of Galgastan!'
+ demands, 'Knight of a foreign land, where do you hail from? Why do you meddle in the wars of this island? This is a feud between us Galgastans and the Walisters, handed down since the days of our forefathers. It is no land for those without ties. Or do you too, like Lodis, covet this Valeria? Answer me!!'
+ snarls, 'You fight for gold? Fool! Then you shall perish here!'
+
+N:177:Orba Brondel
+1
+ says, 'You shall die here.'
+
+N:137:Moldova Obdilord
+1
+ shouts, 'Hold until Lord Nybeth returns! Let none pass this place!'
+
+N:186:Tomasius Brezen
+1
+ sneers, 'Taking fright just because Almorica Castle was lost... Come then, come at me. I will show you the might of Galgastan!!'
+
+#N:315:Bolis, the Knight
+
+N:250:Grion
+2
+ swears, 'Walister dogs, here of all places! Curse them.'
+ shouts, 'Men, let them not pass this place! Advance!'
+
+N:714:Xapan Illudas, the Mercenary
+2
+ chuckles, 'What luck! A bounty of thirty thousand Goth, walking right to me.'
+ shouts, 'Don't let him slip away, lads!'
+
+N:260:Genzo
+1
+ roars, 'I shall cast you down into hell!!'
+
+N:855:Vyce Bozeck, the Warrior
+5
+ says, 'It has been a long time. I am glad to see you again. Thank goodness you are safe. I was terribly worried that some cheap bounty hunter had killed you.'
+ snarls, 'You defied orders, traitor. Galgastan's dog!'
+ says, 'I will forgive it! History will forgive it! A small sacrifice builds the future of our people.'
+ shouts, 'I'll kill you with my own hands!'
+# cries, 'How can a true revolution come from killing innocents!'
+# cries, 'Withdraw your troops, Denam! What meaning is there in our fighting? I am not your enemy. The Duke pulling your strings from behind is the true enemy! What he aims for is no liberation of the Walisters. It is the building of his own kingdom. For that he will even sacrifice his own people. The conflict between our peoples was his scheme in the first place. That is right, our enemies are those who ignore the will of the people and use them as tools!'
+# cries, 'I ran away? Nonsense! It was you who ran! You, Denam, made no effort and compromised with reality. Even when it seems futile, a man must never stop moving forward. That is what true reform is. Yet you gave it up. You threw away your precious dreams and ideals for a petty, immediate gain!'
+# sighs, '...What a shame. I thought you of all people would understand.'
+# snarls, 'Enough! I've heard enough of your prattle. Come on, then. A duel!'#
+# mutters, 'Why is it only you who gets fussed over? It has been so since we were boys... You were always loved by everyone, and I was always left out. What do you think the difference is? It is all Father's fault! Don't you think so?'
+# mutters, 'Your father was a priest, but mine was just a drunkard. A worthless wretch. But why am I the one who is hated? For that reason? What difference is there between you and me!'
+ mutters, 'I hate you. I really do. I envied you... Loved by everyone, with a good-natured father and a beautiful, gentle big sister...'
+# cries, 'Liar! You don't know! Catiua is different! Catiua sees only you. She thinks I don't matter at all. Can you not see? Catiua even hated your father! Catiua loves only you!'
+
+
+N:291:Farrel
+1
+ roars, 'Here is where you die! Disgrace of the Walisters, prepare yourself!'
+
+N:350:Darza, the Pirate
+2
+ shouts, 'Lads, at them!!'
+ sneers, 'No matter how tough you act, you cannot beat us pirates, tempered by the rough seas of Obero.'
+
+N:380:Veldrei
+2
+ snarls, 'Are you the one who killed my husband? Even a man like that was precious to me. And not only to me, but to the child in my belly...'
+ shouts, 'Enough of your jokes! I am the wife of Darza the pirate, I will have you know! Do not think you can look down on me because I am a woman! Come on, everyone, avenge the boss!'
+
+N:642:Dagon
+1
+ chuckles, 'Fufufu. You die here, and the thirty thousand Goth are mine.'
+
+N:315:Garba Brondel
+2
+ shouts, 'All of you, know that Galgastan's future hangs on this battle!'
+ shouts, 'Hold him here at all costs and buy us time! Let us go!'
+
+N:314:Nadia
+1
+ says, 'Walisters, I will not let you have your way. We Galgastans cannot lose to ogres like you, who sacrifice even your own kin for your goals!'
+
+#N:215:Wynoa Canaletto
+N:325:Gousin Blum
+1
+ sneers, '...? Y-you are the boss of the monkey mountain, praised as the hero of Golyat? Hmph... I was looking for someone willing to leave the Resistance, but you would never leave, would you?'
+
+N:356:Ramidos Mendoza
+3
+ says, 'Well, well, the bounty-marked boy has really come. After a long time as a bounty hunter one grows suspicious, but now and then one ought to believe what Xapan says.'
+ says, 'You have had a hard time so young, and I pity you, but my own living depends on this. Please forgive me.'
+ chants, 'From the black abyss, I summon fiends... Come! Summon Darkness!!'
+
+N:370:Gannon
+1
+ laughs, 'So it is you. I searched for you for a long time. Lord Gannon here has earned your head. Do not hold it against me, boy!'
+
+N:429:Felnatorre
+1
+ says, 'Forgive me, Vyce. I shall see you off myself. Now, come at me!!'
+
+N:536:Gildora
+2
+ cries, 'The Resistance has responded this quickly! What became of Didarro and the others? Anyone will do, tell Lord Xaebos to send some soldiers!'
+ shouts, 'I shall avenge His Eminence! Everyone, advance!!'
+
+N:441:Modiliani
+2
+ snarls, 'Traitor! Did you turn to the Hierophant, or to the bishop!'
+ snarls, 'You'd take the Duke's place? You get above yourself! Go!'
+
+N:489:Hektor Didarro
+0
+
+N:506:Bingham
+1
+ laughs, 'Meeting me was your bad luck. I shall offer your head to His Eminence! Let us go, lads!'
+
+N:505:Kakrinoros
+1
+ says, 'I was just bored. Time to work off the rust. Come, Walister!'
+
+#N:598:Roberval
+
+#N:606:Dukas Windelband Gatialo
+
+N:628:Brutakos
+1
+ roars, 'Curse you! I'll avenge His Eminence!!'
+
+N:674:Muntzer
+3
+ chants, 'From the black abyss, I summon fiends... Come! Summon Darkness!!'
+ roars, 'A mere Walister, daring to... daring to kill His Eminence! How could I leave this grudge unavenged!!'
+ shouts, 'Go! My servants! Break their necks!!'
+
+N:669:Mercure
+1
+ sneers, 'Attacking head-on, what a fool. I shall kill you all!'
+
+N:679:Vestiarri, the Witch
+1
+ shouts, 'Hold until Loslorien's main force arrives. At them!!'
+
+N:413:Marino
+3
+ says, 'Shameless youth, to betray the Resistance. To forget the Duke's favor.'
+ says, 'Because of your kind, the revolution never succeeds. How lamentable.'
+ says, 'With this greatsword from the Duke, I shall see you off.'
+
+N:650:Hiram
+1
+ says, 'This is what comes of unrelated guests meddling.'
+
+N:651:Uram
+1
+ roars, 'I've waited for this! Now I avenge His Eminence and Galgastan's army!!'
+
+N:656:LeRozza
+1
+ says, 'If you want the reason, defeat me...!'
+
+N:687:Merrik Ehlrig, the Pirate Captain
+0
+# says, 'What business could one as great as the leader of the Resistance have in such a place? Have you come to borrow my strength? Or do you wish to convert to our Maritime Free Alliance?'
+# cries, 'Only the teachings of God and the wildness of the sea bind us! We need not help those who crave supremacy over a narrow land and seek blood in war!'
+
+N:761:Ocionne Rabine, the Dragon Tamer
+0
+# cries, 'I searched for you, wicked dragon knight of Galgastan! Today I will avenge my father and mother! Prepare yourself!!'
+# cries, 'Even if you forget, I will never forget that day! Even if you join the Resistance, the sin you committed will never vanish! I will not forgive you!!'
+# cries, 'Do not apologize now! An apology will not bring back my father and mother! If you were going to apologize, why did you do such a terrible thing!? It is too late now!!'
+
+N:681:Lobos
+1
+ snarls, 'We can't let anyone who found Lobos's hideout live!'
+
+N:684:Aeshan
+1
+ roars, 'Now I take vengeance for His Eminence!'
+
+N:686:Barvan
+1
+ shouts, 'Lads! If we are caught here, it is the guillotine for sure! Kill them all!!'
+
+N:706:Anaberg
+1
+ says, '...Looking for something? Leave this place while you still live. Otherwise you will lose your life before you find what you seek...!!'
+
+N:683:Falfaday Geb Lesmoaria, the Poisoner
+1
+ says, 'Sleep well in the Palace of the Dead, little boy!'
+
+N:823:Xadoba
+2
+ says, 'My name is Xadoba... You too shall turn to cold stone...!'
+ cries, 'Fool of a human, desecrating this temple! Turn to stone and rot!!'
+
+N:858:Nybeth Obdilord, the Necromancer
+4
+ says, 'Why have you come to this Palace of the Dead? Is it for Dragon-tongue magic? Or do you, like me, seek eternal life? Kukukukuku. Well, meeting here is fate of a sort. Would you like to see the fruits of my research? No, no, do not hold back.'
+ says, 'I slipped at Ndamsa Fortress, but not this time.'
+ chants, 'From the black abyss, I summon fiends... Come! Summon Darkness!!'
+ says, 'I would very much like this to be the last time I see your face!'
+
+N:787:Vepahl Dabran, the White Mage
+1
+ cries, 'Just when I was close to solving the mystery of the Fire Crest!! Everyone! Do not let him go any further! Stop him here at all costs!'
+
+N:817:Beelzebuth, the Witch
+1
+ laughs, 'The finest sacrifice for Lord Ashmedai, then. Fufufu.'
+
+#N:695:Pajeot
+
+N:707:Stanoska
+1
+ snarls, 'Traitor who sides with an inferior race! Not one step further!'
+
+#N:735:Hanzo, the Man-Slayer
+
+N:738:Derain, the Knight
+1
+ shouts, 'To attack head-on takes nerve! But your road ends here!'
+
+N:760:Latimer Grandier, the Knight
+1
+ shouts, 'Enemy of Heim! I'll not let you have your way any longer!'
+
+N:747:Botis
+1
+ roars, 'You too shall turn to stone! Feel our grudge!!'
+
+#N:678:Orgeau
+
+N:763:Xaebos Ronsenbach, the Knight
+0
+# snarls, 'You, from Golyat! Was it you who killed Gildora!? I thought you were merely a man hunted by the Resistance, but was that to deceive us, as at Balmamusa?'
+# sneers, 'You say you fight for others!? Hypocrite with a righteous face! How many people did you kill saying that? Your hands must be stained with blood too. After all, you and I are birds of a feather.'
+# sneers, 'At last I see why you, once called a hero, are hunted by the Resistance. The Duke dislikes you. You keep your hands clean, speak only fine words, and steal only the tasty parts... You leave the dirty work to others and dangle ideals and justice. That is you. In time the people will abandon the Duke and come to support you. Because you are "not stained" compared to the Duke. But that too is brief. Sooner or later you too will be "stained". Kukukuku.'
+
+N:789:Leonar Reci Rimon, the Knight
+6
+ says, 'Men kill for a slice of bread. They fight for their own happiness.'
+ says, 'That is why strife will never vanish from this world. As long as men are men, war will not end.'
+ says, 'Our role is to govern such people and lead them to an orderly world. They desire such leaders.'
+ says, 'Ideals and reality have a gap. Someone must fill it.'
+ says, 'It was fated to be this way. When you appeared before me, it was already decided. If you seek the light, I shall bury myself in darkness and stain my hands with blood.'
+ says, '...Now, draw your sword. Let us settle this, just the two of us.'
+
+N:767:Hierophant Leundar Balbatos
+2
+ says, '.........'
+ snarls, 'Do you think I would bow to a lowly Walister!'
+
+N:573:Duke Juda Ronwey
+1
+ cries, 'The dark age that lasted until yesterday finally comes to an end... by this man's death!!'
+
+N:660:Oz Moh Glacius, the Dark Knight
+0
+
+N:773:Ozma Moh Glacius, the Dark Knight
+0
+
+N:794:Volaq Windsalf, the Dark Knight
+0
+
+N:799:Martym Noumous, the Dark Knight
+2
+ cries, '...What did you say!? You bid me, me, to judge him!? Very well, O Lord! I, unworthy Martym, shall pass judgment in Your stead!!'
+ shouts, 'Kill him!!'
+
+N:807:Barbas Dahd Geuse, the Dark Knight
+1
+ shouts, 'I've been waiting, boy!! Attacking head-on, you've got nerve!'
+
+N:820:Balxephon V. Rahms, the Dark Knight
+0
+
+N:824:Andoras Gaffryn, the Dark Knight
+1
+ cries, 'Kill me! Kill me and stop Barbas and the others!'
+
+N:860:Lanselot Tartaros, the Dark Knight
+0
+# says, 'I recall binding no one. They wished to be ruled by force.'
+# says, 'Look around the world. How many people achieve things by their own judgment alone? Soiling their own hands, bearing the risk, and walking on their own feet... How many such people are there in this world?'
+# says, 'No, you are wrong. Being a victim is easier. They do not complain because they are weak. Because they want to vent their discontent, they put themselves in the position of the weak. They choose to become "the weak".'
+# cries, 'Do you not understand!? True freedom is not something given by someone. It is something you win yourself. Yet the people seek it from others. They do nothing themselves, yet claim their rights. They wait any day now for a savior, yet never try to become that savior themselves. That is the people!'
+# says, 'Man is a creature born carrying deep karma. For the pleasure called happiness he sacrifices others without a thought... He wants an easier life, and for that he will not shrink from killing. Yet even such men can feel guilt. They think: this is not my fault. It is the fault of the world.'
+# says, 'Then let us set the disordered world right. Let us make it an orderly world. Let us give the foolish masses, who can only wallow in pleasure, a fitting role. Everything shall be managed by us!'
+# says, 'We are not oppressing them. We are merely trying to remove the cause of the disease from this sick world. Malignant cancer cells must be eliminated before they affect other tissue!'
+# says, 'Fufufu... you trust the animal called man too much. The people draw close to the stronger, the safer side. For that they can even betray what they love... Catiua!'
+
+N:813:Brantyn Morne, the Bishop
+1
+ snarls, '......Damn. Curse it!!'
+# cries, 'Child of my younger brother Prancet! It is not too late even now! Kneel before me! And rule Valeria together with me!'
+# cries, 'You saw them, did you not? The Dark Knights have left this island! I merely did as they told me! Yes, I deliberately became their dog to save this island! It is no lie!'
+# cries, 'When we lost King Dorgalua, who could have driven off the interference of Lodis!? Had we fought then, we would all have been killed by them! I had no choice but to obey them to protect the people! Believe me!!'
+# cries, '......What is wrong with using people! What is wrong with it! Unless we do this, a man of common birth cannot live! Fine words alone will not do!'
+# cries, 'Listen well! In this world there is no such word as "fairness"! Men are born "unfair"! But what use is it to lament your birth!? If you have time to lament, fight!'
+# cries, 'Fight, and win everything! If you do not wish to remain weak, you have no choice but to place yourself in battle!'
+# cries, 'You too gained your present position that way, did you not? Can you say otherwise!? You gained your position by sacrificing someone! For you to criticize me is laughable!!'
+
+N:63:Father Prancet Pavel
+5
+ says, 'Denam... Thank you for coming... This way...'
+ says, 'I think I was wrong... When the Prince died, had I handed Catiua over to the King, this war would never have happened... But I... I could not let Catiua go. I could not let go of the child who called me "Father"...'
+ says, 'Cast away yourself... Be a cornerstone for a great cause...'
+ says, 'Look at reality squarely, and choose the better path...'
+ says, 'You need only pave the road for the next generation... Do not forget...'
+
+N:862:Dorgalua Oberyth Valeria, the King
+4
+ intones, 'I am Dorgalua... God of Valeria...'
+ intones, 'Base creatures that struggle upon the earth... Kneel before me, who am a god...'
+ intones, 'Bless my return...!'
+ intones, 'Give me Brynhildr... Then I shall rise again upon the earth...'
+
+N:859:Versalia Oberyth, the Princess
+0
+# cries, 'I don't care if I'm used! At least they need me! Do you need me!?'
+
+N:771:Cerya Phoraena
+2
+ says, 'As you see, I live on in shame. I cannot die. Not until I have defeated Brantyn and driven the Dark Knights from this island!'
+ cries, 'Do not lean on others!! It was you who wished for this! You chose this path yourself! Walk it with your own legs to the very end!!'
+
+N:762:Cistina Phoraena
+1
+ says, 'Those who worship only "power" will one day be destroyed by "power". As the Valerian Liberation Front was destroyed by the Dark Knights, Bakram, who uses the Dark Knights, will in time meet the same fate!'
+
+N:914:Ganpp Vochstein
+2
+ cries, 'I lost a dear friend. It is all your fault! Lads! Your turn!!'
+ roars, 'I'll make this your grave!!'
+
+N:841:Deneb Rove, the Witch
+3
+ says, 'Silly. You should just discard that body and reincarnate.'
+ says, 'Oh, did you get angry? How cute (heart).'
+ sighs, 'Honestly. A man's hysterics... Right, Grandpa? (heart)'
+
+# Lines for monsters originally in Hengband (begin)
+
+N:135:Mughash the Kobold Lord
+4
+ shouts, 'I may be a kobold, but I'll beat you to a pulp!'
+ shouts, 'Feel my wrath, fool!'
+ shouts, 'Death and destruction are my joy!'
+ grins wickedly.
+
+N:180:Orfax, Son of Boldor
+N:237:Boldor, King of the Yeeks
+5
+ rants, calling you a pervert.
+ spews a torrent of lewd words.
+ shouts, 'Eek! Eek! Eek!'
+ shouts, 'Let me show you that yeeks are not to be mocked!'
+ mimics Dirty Harry, saying, 'Feel lucky, punk?'
+
+N:200:Hobbes the Tiger
+4
+ says, 'What are humans for? Tiger food!'
+ says, 'Looks tasty! An adventurer sandwich!'
+ says, 'I killed Calvin, so you're next!'
+ says, 'I'll make your short life nasty and miserable!'
+
+N:215:Golfimbul, the Hill Orc Chief
+N:330:Bolg, Son of Azog
+N:373:Azog, King of the Uruk-Hai
+19
+ grins and rests a hand on his weapon.
+ snickers, 'Now, I strike a blow for *our* side!'
+ says, 'Orcs don't get no respect... I'm gonna change that!'
+ calls your mother nasty names.
+ says, 'Your guts must taste great.'
+ belches and spits at you.
+ scratches his armpit.
+ says, 'I love the smell of fresh blood.'
+ says, 'Another fool comes to be killed!'
+ hawks a loogie in your direction.
+ farts thunderously.
+ is working out how much experience you are worth.
+ says, 'I love going berserk!'
+ says, 'My brain is burning with the urge to kill you!'
+ says, 'I'll torture you slowly.'
+ calls you a rotten scoundrel's backside hair.
+ says, 'I shall have my way with your women!'
+ says, 'You're not so tough, buttmunch!'
+ giggles, 'Hee hee. Killing's so much fun.'
+
+N:382:Mime, the Nibelung
+6
+ snarls, 'Get out! This place is mine!'
+ says, 'Soon I shall put you to eternal sleep.'
+ snarls, 'I'll ruin it all!'
+ snarls, 'You shall pay for this... with your life!'
+ grins broadly.
+ says, 'Maybe I will just hack your head off.'
+
+N:383:Hagen, son of Alberich
+10
+ cries, 'Have you heard what the ravens say? They croak 'vengeance'!'
+ shouts, 'Hoiho! Hoiho! To arms! To arms!'
+ says, 'I hate the happy. Joy has never been mine.'
+ shouts, 'Stay away from that ring!'
+ says, 'My spear shall surely cut down the wicked.'
+ cries, 'There! There shall my spear strike!'
+ grins, 'You will die soon, handsome hero!'
+ says, 'I merely punish the perjurers.'
+ shouts, 'Hand over the ring, here and now!'
+ shouts, 'Hoiho! Hoiho-hoho!'
+
+N:409:Kharis the Powerslave
+2
+ says, 'Open the gates of my hell. I shall rise from the grave and strike you down.'
+ is casting a curse.
+
+N:419:Alberich the Nibelung King
+15
+ snarls, 'I'll ruin it all!'
+ shouts, 'Hand over the Rhine gold! Or die!'
+ cries, 'I forsook love. So shall all the living forsake love!'
+ laughs madly.
+ cries, 'Do you hear? The Nibelung host marches up from deep below!'
+ laughs, 'Hahaha! Beware!'
+ says, 'Beware, fool! Beware!'
+ cries, 'Driven by envy, you came this far, pitiful villain!'
+ boasts, 'I dauntlessly defy everyone, everyone!'
+ shouts, 'Tremble and kneel before the lord of the ring!'
+ shouts, 'Quake in fear, wretched rabble!'
+ says, 'I am watching you everywhere, expect me where you do not perceive me!'
+ says, 'Feel my wrath, idle rascal!'
+ shouts, 'At last I've found you, foolish thief!'
+ snarls, 'You're not afraid? You had better be!'
+
+N:697:Smaug the Golden
+8
+ rumbles, 'I smell you. I hear your breath. Come closer!'
+ says, 'Count yourself lucky if you leave here alive.'
+ scowls.
+ laughs in a terrible voice that shakes the earth.
+ growls, 'Where is the fool who comes near me?'
+ says, 'I am old now, and strong. Remember: I am stronger than anything.'
+ says, 'My scales are tenfold shields. No sword can pierce them.'
+ roars, 'My teeth are swords, my claws spears, my breath is death!'
+
+N:712:Fafner the Dragon
+5
+ says, 'This looks like a feast.'
+ says, 'I wanted a drink, and now there's food too.'
+ snarls, 'My fangs are not for chatter. You shall taste them soon.'
+ growls, 'My gullet can swallow you whole.'
+ shouts, 'Come, conceited whelp!'
+
+N:715:Glaurung, Father of the Dragons
+N:766:Ancalagon the Black
+2
+ intones, 'Thou canst not escape destruction.'
+ intones, 'Foolish mortal. Be reduced to ashes by my flames.'
+
+N:733:Santa Claus
+8
+ shouts, 'Ho ho ho! Die!'
+ says, 'I'll put dung in your stocking!'
+ says, 'On Smasher, on Whoop-Ass, now dash away all!'
+ laughs cruelly.
+ shouts, 'You're on the naughty list!'
+ shouts, 'No presents for you, ever!'
+ shouts, 'I'll set my man-eating reindeer on you!'
+ shouts, 'I hate Christmas! I hate it so much I've gone mad!'
+
+N:764:Uriel, Angel of Fire
+N:765:Azriel, Angel of Death
+N:769:Raphael, the Messenger
+7
+ cries, 'Repent, evildoer!'
+ cries, 'My justice shall purify you!'
+ says, 'Don't EVER steal from the collection plate!'
+ says, 'The Lord loves thee, but *I* do not!'
+ says, 'I shall smite thee with extreme prejudice!'
+ says, 'I hope you like eternal damnation.'
+ says, 'Verily, it is too late for thee.'
+
+N:804:Vecna, the Emperor Lich
+N:830:Cantoras, the Skeletal Lord
+N:831:Mephistopheles, Lord of Hell
+12
+ brags, 'My power is beyond compare!'
+ sneers, 'A mere mortal dares challenge me? Ha!'
+ says, 'Back again? I've only just finished chewing the last one!'
+ is working out how much experience you are worth.
+ leafs through 'Evil Geniuses For Dummies'.
+ says, 'Another maggot comes to be killed...'
+ says, 'Hell claims your corpse!'
+ says, 'Twelve more skulls and my boss will give me a reward!'
+ yawns at your pitiful efforts.
+ shouts, 'Minions, dispose of this fool!'
+ intones, 'Set thine house in order, for thou shalt die.'
+ says, 'I am no god... a god would have mercy!'
+
+N:837:Surtur the Giant Fire Demon
+3
+ says, 'Slaying me will not win you the Orb of Fate.'
+ shouts, 'Burn! Be reduced to ashes!'
+ says, 'The level 14 Valkyrie who came before had more spine!'
+
+N:850:Orthros, Geryon's Dog
+8
+ barks and bellows frighteningly!
+ says, 'Oh good, another chew toy!'
+ says, 'Gulp! I was getting tired of chicken!'
+ barks in an ear-splitting voice.
+ drools all over the dungeon.
+ lifts a leg against the wall.
+ says, 'Naughty adventurer! You'll get no treat for your life!'
+ growls and barks.
+
+# Lines for monsters originally in Hengband (end)

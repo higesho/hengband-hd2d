@@ -39201,43 +39201,43 @@
       "upstream_repo": "toband",
       "commit": "5c298634e8c30c7d91ef0fd0f13fc00692364eaa",
       "recipe": "recipes/toband.json",
-      "recipe_sha256": "5f24c065f8a1ec8a651effde9519eb537e56d7f8c9bc411b5dfb6d1dda5820d1",
+      "recipe_sha256": "4084fe0c780ed651ac50653e67b3b1c38736de0ef7b50f5125e71bad36fef18d",
       "files": {
         "angband.h": {
-          "sha256": "a94bd067d5205211cb37c0e88bd2c5e6094e9e0c101c389724807532ac0cdf06"
+          "sha256": "2a21c63f622754b8f1febc098e3025ea7b2abcbe5ec6927c3ca423f782a799be"
         },
         "artifact.c": {
           "sha256": "18d750b95e42018e626ed693b287729ebcd378c1bb4ef453b9ebfb936828209e"
         },
         "autopick.c": {
-          "sha256": "07e6e1f82baca890d3f371a0485e1c81022b540295b056e85309f8ea1d710664"
+          "sha256": "64ef5dd46e67b3d232f4420347a71e2605a32a542f6c7f2af4a00a9933487092"
         },
         "birth.c": {
-          "sha256": "f2a5b726dd0512bfbb5c4db754dcd25d164b7fef0a94f307174aa860a38fc02e"
+          "sha256": "c7b07720ce05c016eb07b391b6ca38e1d28a51e860895f17cba0417ab86e0770"
         },
         "bldg.c": {
-          "sha256": "f8e7bcfaefe49975509b9de8ae7d52063503f97b5344202df06cb2bb712cd130"
+          "sha256": "6edbc7cf4973e370a8c897c2c9c9d5bdfbf85ad570a3bdcf9d9bc3d3771725ff"
         },
         "cave.c": {
           "sha256": "905cf121928cabaad560e240425144361c2c9afe9a964fb2b4851444769ec018"
         },
         "cmd1.c": {
-          "sha256": "60d51c0520b6b4e5781df3b5ee4d1ac7a1c51e5410214365770bb68b98aba403"
+          "sha256": "4cc31c626bbb7daa0235cfd87014809e807d140a04e5aaac6ae52a93877fb0f1"
         },
         "cmd2.c": {
           "sha256": "15ccbf0e2347d6df19112487549c95dfb7e46b0d95167285e2d14cb01bc32ad0"
         },
         "cmd3.c": {
-          "sha256": "58eadd2e7d03417168ea5f3f877be0032a49b20bb4dcf8cc54771af9b2e9dd6c"
+          "sha256": "cdd63dccb33f9463a56e68a8f8e2da5a1f3199c10e942f848ff742c89edc364d"
         },
         "cmd4.c": {
-          "sha256": "fc8efdab3fe7c35111c7c75f9c466d9fc9bf6045322e8a2b55210daa952432c7"
+          "sha256": "8925661f9deae01077ddcbdb41b9829c1dc9d42f70614b5774c5cc9561867b25"
         },
         "cmd5.c": {
-          "sha256": "b0f0f9fec9f8965cfb94d98ad1f0822cf69d8d2a622052b5e48aa9ef1d8bbb0a"
+          "sha256": "d4366274d55edcfc2be1cb891146be5551940ce537da66e73423bf691691dd35"
         },
         "cmd6.c": {
-          "sha256": "a2bf869ad252087116bdebea17790b315f2c33573bcdeb249e551a03c25dfd48"
+          "sha256": "05e56098a9d9fc24ede5407c0d51a374670b9c6fffeb302fe875507c7ffd8192"
         },
         "defines.h": {
           "sha256": "3168fbd7660446193bec0aa9f95140961e4e1b3d2e9ce8df617c9bca497753d2"
@@ -39246,13 +39246,13 @@
           "sha256": "bdb7274cadc5e2fde5ba3a4659ed71d064a7b5b32f8b3cf408fe93f0d3510a83"
         },
         "dungeon.c": {
-          "sha256": "dd9c5d072532bf9e2fd7a9f8dfebd90a83bfe5605c14c5b82781f1196809c708"
+          "sha256": "b0d79658b593bb0cd1edffd4334b2c2bfdf3d60cd50421ce697849851c9e8bd2"
         },
         "effects.c": {
-          "sha256": "404bd8a27fce6a17e22e2e3d875478d9266666e90847e352121e205ea448b66d"
+          "sha256": "057ce9ad2b501a2f0a1dae044f560c491e3efb19f502ecbe11a0f2fea6f24495"
         },
         "element.c": {
-          "sha256": "bd1bbb69c3488a66156ef307430f4c16f7ffa833bda17416d9adc22cad8f51c0"
+          "sha256": "f6f229973725a9f4ecb5ad6aa818637bb55dd1ef3116fe0b45231e168c0f1063"
         },
         "elementtips.h": {
           "sha256": "7fa03904ecf6887b310a3b9e91d69a89eecb551c5ffee6d8348a93dcc4e2f2f4"
@@ -39261,10 +39261,10 @@
           "sha256": "56d4d9cf1fd1e750d477efdd730f1a751692075195ddf6c867499550159c7e3d"
         },
         "files.c": {
-          "sha256": "50c3b174d232c8f7fdae9a957c2614fb40c0f22ae397389ecf3eff5590e4a61e"
+          "sha256": "c1d3f6ca35c483b48c8f9a6ed2603447ff78109b90475a57193c1ff7b4cadab6"
         },
         "flavor.c": {
-          "sha256": "5753b518f33a6fb89ebd1eb6669148c7797f371df5d5d19033ad5823c4f8b3e2"
+          "sha256": "699b04b6bdd4387823a5f872312761cccf0c8d017d73a685889d0cb46f72cf15"
         },
         "floors.c": {
           "sha256": "853ad5e7415a6d7799e9196f2b13eae7dabbd16de5701ab682866e4a742e6344"
@@ -39306,7 +39306,7 @@
           "sha256": "7fce577427192e17e881ebc32eab3016e72b28c75c7eb851f56a310504ed9f94"
         },
         "init2.c": {
-          "sha256": "23b36709a41a070dfe22b2e87fd023987dbaf05454d97eb4763236338fb0b524"
+          "sha256": "4c520b4f4d6fd08ee33d15865ecd73a079a577c0ef48d976e2387e106e4abe7e"
         },
         "japanese.c": {
           "sha256": "2e3d3bc64fa0900c6ad159e31f6f818d1176e1f4e7ae56dc675cd02af639ec2e"
@@ -39351,10 +39351,10 @@
           "sha256": "9167562b6d296c9eceb6ccfb839ac565576a25e9b90bc895ca0b3f7d96c0a77a"
         },
         "monster1.c": {
-          "sha256": "71ca0116addbe55963168fcc88c051281e50b42d173a6c7d748cd5ac70c57fef"
+          "sha256": "2b78106e9c0272985c2f86806c40fb6ac21e48e8c5f2f644069078ddd0386177"
         },
         "monster2.c": {
-          "sha256": "7feaf6874215b819bddca7282b6bebc220c60b8c8112d36c4136e381480ec075"
+          "sha256": "cfe7c385738366099d5ce036f6659bb29e325b0496405786d776f569a349e25d"
         },
         "mspells1.c": {
           "sha256": "a3ee7a12bfa95525e261ea76af45ddf921eb20a90048d63b60ec47eea155292c"
@@ -39363,16 +39363,16 @@
           "sha256": "44eb490ba4c588810614172094b3c5bce0cf18e22da7dd57ac87a15395250c1f"
         },
         "mutation.c": {
-          "sha256": "8b0f778d67471b37a2fde8f5734d5f843082edd8458884fbc8a8eed301a04418"
+          "sha256": "998a1047d449069f7b142a423c0f9ce647170cc18c47632bb970598edee96fa7"
         },
         "obj_kind.c": {
           "sha256": "e8abeb1cafc9815bdfdb6fcb0eb211237da31b0389f94d5fa5b463b879fbe2ed"
         },
         "object1.c": {
-          "sha256": "b789e5703840869a23f1217c1ce574a1c9bb1a911cf7d66bc6320019f7a07881"
+          "sha256": "e17f7f88edf0ba580dc9e7051510736b321dc3a9fffdb1f22d06b12c5d7deb7a"
         },
         "object2.c": {
-          "sha256": "60b83e1d9825ea7d109b014b301b8721d1ddfcd13b2b1d6282d481df448f7b33"
+          "sha256": "d56e1845e7e2854c679f480f995afaa70491c29d0a3081eaea3383067db2ff40"
         },
         "party-effects.h": {
           "sha256": "52cfb67555897826188ed7dc689dd0e15c7a1a7d609f7292d721ddc69a4da73b"
@@ -39387,7 +39387,7 @@
           "sha256": "1e844f9cd1ccc4d6bd21ae9cafb1b697ff535c7d1a04f011da7591ce9089a134"
         },
         "racial.c": {
-          "sha256": "7b390e23e909b79f15db6546f03e10f8213e78d2673007aa0323a59198a7ca97"
+          "sha256": "2d5af00ecb032ee844f50e7dff8d1483fc85d72decfd714ae74af6515638845c"
         },
         "random-unique-data.h": {
           "sha256": "16f7f3cc8847ba96d3a6ffa5ebfeb83e47474f20a46b1787be638b67f7510bcb"
@@ -39399,7 +39399,7 @@
           "sha256": "080b64be1814c3cfa7c704f9dd56403ac76dbb01cb68fcd6d94f9cc203278000"
         },
         "random-unique.c": {
-          "sha256": "c6b66c14786aeb1e800f51b435844fff0ad7bc2d323e42ed17b420da9931d983"
+          "sha256": "180714033ab7ed531c47eedb2b8f16c15c00836fb16255fca35e49ab785a0a19"
         },
         "report.c": {
           "sha256": "34f53391ecbe3334ff4c00f3fdea0c83d0243486db7456e08efaadb55338a4d3"
@@ -39414,19 +39414,19 @@
           "sha256": "317fcf5eb682b6fc897edad81e2ff74f70150e423a4bc5cfb2fe35377159d834"
         },
         "scores.c": {
-          "sha256": "f1ce9819e0afe95747a1fd31ed9031f00d21d8d251928b38a2d20a8b2be38078"
+          "sha256": "f8a94d3ed7ed306641f3f4cd0ee69176f977270c4bfd4d957c903a13d4055027"
         },
         "spells1.c": {
           "sha256": "5203d67b4bfe0adaf8e4646b925a9e09c7213d2b674daa643fa0d7942dcf1515"
         },
         "spells2.c": {
-          "sha256": "0a87655ae6e10288e2722cb4d66ff17143f15768b051431ada9bfa897eb5b051"
+          "sha256": "8e3b52bb9a8868afd39cf4fa7e376e2a5b4b0813268ddaff633181bec0af2f95"
         },
         "spells3.c": {
-          "sha256": "e34abbcc5efb913b2f7eb9ad6ed06d37f6ef853cd631dc354ac306d2a218fb13"
+          "sha256": "090ba4fb96477f4be5379b7ce1a77ab22f0a05ad268363b8932366baf42b0436"
         },
         "store.c": {
-          "sha256": "c87243120620a9d3a0fa6ce3385f9be714eed9d4d94c7f0a7648886ccfab7a59"
+          "sha256": "8d67671ff8e516ae17c03f81dbdd12ffc28698cc9af94b4750ac3ad15c7b2f7a"
         },
         "streams.c": {
           "sha256": "588584c3053ca8d7ec556c47b894cea24b2ebd6e0db5f5d2d5c89c8f118f3a8a"
@@ -39441,7 +39441,7 @@
           "sha256": "95b7f713b013d3ad037203c606896db3283920dec047f2df34ee1647e0bc9ed2"
         },
         "util.c": {
-          "sha256": "4110b1f5455b4612e76263c34f803c094759cc39750520d5b72977a1e873f104"
+          "sha256": "58a223193bb6c726eb4bee0f2d8a604a6ef0dfa9df93b59f31fdd86a3097811d"
         },
         "variable.c": {
           "sha256": "942515c13463df53e3d1438aa4b9ddf09fb09a45c7c955981277f2c63107c3b3"
@@ -39450,22 +39450,22 @@
           "sha256": "1bf8678919c3ad792c099b6894d67695d3f1eb6bd1f85423b9088e0be772c1b3"
         },
         "wizard1.c": {
-          "sha256": "b78d2602e4ea4e9a68636667c67b6d68e9f9bfeac59a0354fcfdc5a818f75bc1"
+          "sha256": "5d0f31f77a88dde49ab5cfe9ec47fe0998a1d4a392030df19eafa16958e1446c"
         },
         "wizard2.c": {
           "sha256": "ddd944fc949a16d55aec8e1e73229e437d6df374da1dae2eafc4a08d99eefb61"
         },
         "xtra1.c": {
-          "sha256": "58d6a023bee98fc99e94328747e297802fe603193427d0d7ddcad1868a26f507"
+          "sha256": "200424583e9fb5e0b52e8200c9d64edfebb44cb2757f4be0d4a8ddee1a070afe"
         },
         "xtra2.c": {
-          "sha256": "8c6f9cf97e8ce0ef8986c6c304cbeccd964a2ad509dd8f7b820b5aa7994fe790"
+          "sha256": "c4981c1f849831d27b58b97a05b76d559508cf562a0fa8525fac8643fa3dc8ae"
         },
         "z-config.h": {
           "sha256": "f0e3382c6c9162403b4f05086238946e28423e948230e0ac5d1e3a481f63600d"
         },
         "z-form.c": {
-          "sha256": "0ce23abfd6abb2c2ec5e6d543c3e3ea66ee1f83c61edff13114149e3307fab66"
+          "sha256": "cd3aa64764eaf4a8b9de6a76fb7f3f7b346af2efabdc8cea543ac4452a149407"
         },
         "z-form.h": {
           "sha256": "f1b9a3158277416417bc7b08697b6046f73e81aeb8a3b47f82d044c25312f165"
@@ -39477,7 +39477,7 @@
           "sha256": "5ef2c008035dfe441d6955f8f4eab0878aff11c54bfc1d4082bc57fa22b4818c"
         },
         "z-term.c": {
-          "sha256": "007e01c45662a81aa98c16cb40952b83e69ea4b5b57966bf071084564b766d05"
+          "sha256": "f7740bdc11203dd490091e660f846bd7c79abd689510571a58cb4a4f18f2c717"
         },
         "z-term.h": {
           "sha256": "2993514659bff17f5fbff81b8320e303baa0f10d59efd2b2c779de429168f6ab"

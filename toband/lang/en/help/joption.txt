@@ -1,0 +1,950 @@
+=== Options and Their Effects ===
+
+Most of the "options" can be changed during the game with the '='
+command. By changing the options, the player can customize various
+settings of the game to his or her own taste.
+
+Below, each option is described in the following format:
+
+Short summary of the option  [official option name]
+    A detailed description of the option, including what happens when
+    you switch it on or off.
+
+A convenient way to read the descriptions in this file is to press '?'
+while you are setting options. If you press '?' inside the '=' command,
+the entry for the option under the cursor is displayed automatically.
+
+The official option names, written in the alphabet, can also be used to
+set options in user pref files. For details, see the help on user pref
+files (jpref.txt#Options [a]).
+
+Some of the terms used in the descriptions below need an explanation.
+"Disturb" means to cancel a run, a rest or a repeated command that is
+about to continue. "Flush" means to discard all keypresses that are
+already waiting in the queue; macros that are about to continue are
+discarded in the same way. "Fresh" means to redraw the current state to
+the screen. For "sub-windows", see below.
+
+
+***** <Input>
+=== Option Set 1 -- Input from keyboard ===
+
+***** <rogue_like_commands>
+Rogue-like commands  [rogue_like_commands]
+    Selects the "roguelike" command set (see 'jcommand.txt').
+
+***** <always_pickup>
+Pick things up by default  [always_pickup]
+    Automatically picks up an item when you stand on it. When this is
+    off, you have to use the 'g' command, or the '-' command while
+    walking, to pick things up. The easy auto-destroyer (destroy_items)
+    option takes priority over the always_pickup option. That is, if you
+    use both options at the same time, junk and corpses are destroyed
+    automatically first, and only the items that remain are picked up.
+    However, if the item to be destroyed has been registered for
+    auto-destruction in the auto-pickup/destroy pref file
+    'pickpref.prf', the always_pickup option takes priority. This is so
+    that you can pick up something you usually destroy automatically,
+    just this once, without rewriting 'pickpref.prf'.
+
+***** <carry_query_flag>
+Prompt before picking things up  [carry_query_flag]
+    Asks for confirmation before you pick up an item. It is a good idea
+    to use it together with the always_pickup option. Items picked up
+    automatically by the item auto-pickup/destroy settings are an
+    exception: they are picked up without confirmation.
+
+***** <quick_messages>
+Activate quick messages  [quick_messages]
+    Accepts any keypress as the response to a '-more-' prompt. At the
+    same time, most keys are taken as 'no' in response to a '[y/n]'
+    prompt.
+
+***** <auto_more>
+Automatically clear '-more-' prompts  [auto_more]
+    Displays all messages one after another, without waiting for a
+    keypress at '-more-'. You will need to show the messages in a
+    sub-window, or check the history often with the message history
+    command ^P, but the game becomes very comfortable to play. However,
+    the messages right after you take damage from an enemy are very
+    important, and it is dangerous to skip them, so in such cases the
+    game waits for a keypress at '-more-' regardless of the auto_more
+    setting. Also, while you are reading messages in a sub-window, the
+    game waits for a keypress once whenever a screenful of messages has
+    scrolled by.
+
+***** <command_menu>
+Enable command selection menu  [command_menu]
+    When this option is on, pressing the Return key, or the 'x' key
+    (only with the original keyset), opens a unified command menu that
+    contains almost all commands. It is a handy option for beginners
+    who have not yet learned the command keys.
+
+***** <other_query_flag>
+Prompt for floor item selection  [other_query_flag]
+    When you select an item on the floor with '-', the game asks you to
+    confirm that it is really the item you want. However, it does not
+    ask when the easy_floor option is on, because while easy_floor is
+    in use, pressing '-' automatically displays the list of items on
+    the floor and asks you to choose one.
+
+***** <use_old_target>
+Use old target by default  [use_old_target]
+    In every command that allows the targeting mode when asking for a
+    'direction', the previously chosen target is used as the default.
+    This option can be dangerous when the target is a location on the
+    ground, so check carefully.
+
+***** <always_repeat>
+Repeat obvious commands  [always_repeat]
+    Automatically repeats the 'open', 'bash', 'tunnel' and 'disarm'
+    commands up to 99 times (or until the command succeeds or something
+    interrupts it).
+
+***** <confirm_destroy>
+Prompt for destruction of known worthless items  [confirm_destroy]
+    Normally, when you select a cursed item with a command that
+    destroys items, it is destroyed without any confirmation. If you
+    turn this option on, the game asks for confirmation even when you
+    destroy an item that you know to be worthless.
+
+***** <confirm_wear>
+Confirm to wear/wield known cursed items  [confirm_wear]
+    Some players occasionally find themselves wearing an item they knew
+    was cursed, because of a typing mistake. If this option is on, you
+    can prevent such accidents: when you try to wear or wield an item
+    that you know is cursed, the game asks for confirmation.
+
+***** <confirm_quest>
+Prompt before exiting a quest level  [confirm_quest]
+    In the dungeon you can freely go up and down the ordinary stairs and
+    return to where you were. On a quest floor, however, going up the
+    stairs may fail the quest at that moment, and you may never be able
+    to return. If you turn this option on, you are warned that you
+    cannot return, and asked for confirmation.
+
+***** <target_pet>
+Allow targeting pets  [target_pet]
+    Normally, pets are not offered when you choose a target, so that you
+    do not attack your pets by mistake with a spell such as magic
+    missile or with missile weapons. However, if for some reason you
+    want to target a pet, turn this option on, and pets become possible
+    targets just like other hostile monsters.
+
+    Some magic items have effects that speed up or heal monsters. While
+    you are choosing a target for such an effect, pets can always be
+    selected, regardless of the target_pet setting. Therefore, there are
+    almost no situations in which this option is useful.
+
+***** <easy_open>
+Automatically open doors  [easy_open]
+    Bumping into a door opens it automatically. Also, when you use the
+    command to open doors and chests (o), if there is only one adjacent
+    door or chest, it is opened without asking for a direction. However,
+    if you have the ability to pass through walls, you do not normally
+    need to open doors, so merely bumping into a door does not open it.
+
+***** <easy_disarm>
+Automatically disarm traps  [easy_disarm]
+    Bumping into a trap disarms it automatically. However, if your
+    resistances or abilities completely nullify the harm of the trap, it
+    is not disarmed automatically. Also, with the command to disarm
+    traps (D), if there is only one adjacent trap or trapped chest, it
+    is disarmed without asking for a direction.
+
+***** <easy_floor>
+Display floor stacks in a list  [easy_floor]
+    Lets you select an item from the stack on the floor by browsing a
+    list. Also, when you select a pile of several items with the look
+    commands 'l'/'x', it is described as "there is a pile of n items",
+    and pressing 'x' once more lists the contents of the pile.
+
+***** <use_command>
+Allow unified use command  [use_command]
+    Unifies all the commands that use items - activate 'A', quaff a
+    potion 'q', read a scroll 'r', zap a rod 'z'/'a', aim a wand
+    'a'/'z', use a staff 'u'/'Z' - into one general "use" command. It is
+    'u' in the original keyset and 'a' in the roguelike keyset. Even if
+    you turn this on, each of the individual commands remains valid, and
+    they can be used in macros.
+
+***** <over_exert>
+Allow casting spells when short of mana  [over_exert]
+    If this option is on and you try to cast a spell without enough MP,
+    a confirmation message is displayed, and if you answer 'y' you try
+    to cast the spell by force. In this case the failure rate is very
+    high, and you may also lose constitution or be paralyzed, so it is
+    very dangerous to do this by mistake. If you turn this option off,
+    you cannot make such a reckless attempt: the command is cancelled
+    automatically because you do not have enough MP.
+
+***** <numpad_as_cursorkey>
+Use numpad keys as cursor keys in editor mode  [numpad_as_cursorkey]
+    Makes the numpad keys work as cursor movement keys in text editing
+    mode. This covers the auto-picker editor, entering an inscription
+    or a macro action, and so on. If this option is off, the numpad
+    keys always enter numbers.
+
+
+***** <MapScreen>
+=== Option Set 2 -- Map Screen ===
+
+***** <center_player>
+Center map while walking (*slow*)  [center_player]
+    Normally, when the player moves close to the edge of the screen, the
+    screen switches so that the adjacent area comes into view. If you
+    turn this option on, the screen scrolls so that the player is always
+    displayed at the center.
+
+***** <center_running>
+Centering even while running  [center_running]
+    If the center_player option is on, turning this option on as well
+    keeps scrolling the screen so that the player stays at the center
+    even while running, for example with Shift + a direction key.
+
+***** <view_yellow_lite>
+Use special colors for torch-lit grids  [view_yellow_lite]
+    In certain situations (see 'view_granite_lite' and
+    'view_special_lite'), special colors are used for grids lit by a
+    torch. Turning this option off will slightly speed up the game.
+
+***** <view_bright_lite>
+Use special colors for 'viewable' grids  [view_bright_lite]
+    In certain situations (see 'view_granite_lite' and
+    'view_special_lite'), special colors are used for grids that are out
+    of your line of sight. When this option is on, floors, which are
+    normally displayed in white, are displayed in dark gray if they are
+    currently out of sight. This makes the grids in view appear
+    brighter, so it is easier to tell whether a grid is in your line of
+    sight. Turning this option off will probably speed up the game.
+
+***** <view_granite_lite>
+Use special colors for wall grids (slow)  [view_granite_lite]
+    Uses special colors for walls, which are normally white. When the
+    player is blind they are displayed in dark gray. A wall lit by a
+    torch is shown in yellow or white (depending on the
+    'view_yellow_lite' option). If the 'view_bright_lite' option is on,
+    a wall that is not in view is shown in dark gray. A wall that is
+    only partly lit is shown in gray. Any other wall is shown in the
+    normal color, white. Turning this option off will probably speed up
+    the game.
+
+***** <view_special_lite>
+Use special colors for floor grids (slow)  [view_special_lite]
+    Uses special colors for floors, which are normally white. When the
+    player is blind they are displayed in dark gray. A floor lit by a
+    torch is shown in yellow or white (depending on the
+    'view_yellow_lite' option). A floor in a dark place is shown in
+    dark gray. If the 'view_bright_lite' option is on, a floor that is
+    not in view is shown in gray. Any other floor is shown in the normal
+    color, white. Turning this option off will probably speed up the
+    game.
+
+***** <new_ascii_graphics>
+Show a clear contrast between light and dark  [new_ascii_graphics]
+    Used together with view_bright_lite or view_granite_lite, this makes
+    terrain other than floors and ordinary walls also appear in
+    different colors inside and outside your line of sight.
+
+***** <use_fake_monochrome>
+Use monochrome display on special occasion  [use_fake_monochrome]
+    Shows the screen in monochrome when you are in a special state, such
+    as when you have become incorporeal or invulnerable.
+
+***** <view_perma_grids>
+Map remembers all perma-lit grids  [view_perma_grids]
+    Memorizes all permanently lit floor grids that the player has
+    actually seen (they stay displayed as lit). This option makes it
+    easy to keep track of where you have explored among permanently lit
+    floors, but you cannot distinguish dark places from unexplored
+    places. If you turn this option off, you can always tell the area
+    that is not blocked from your line of sight, but it is better to do
+    that with the 'view_bright_lite' option. Note that any grid other
+    than a floor is always memorized once the player sees it, and an
+    "object" is memorized independently of the floor of the grid where
+    the object lies.
+
+***** <view_torch_grids>
+Map remembers all torch-lit grids  [view_torch_grids]
+    Memorizes all (torch-lit) floor grids that the player has actually
+    seen. This option not only lets you keep track of the places you
+    have explored, but also of which places are "dark". This is because
+    turning this option on activates a special color scheme: "dark"
+    grids are displayed in dark gray, "lit" grids in white, and (if the
+    'view_bright_lite' option is on) "lit" grids that are also in your
+    line of sight in orange. Grids that are currently lit by a torch are
+    considered "lit" grids, and are drawn in white, unless the
+    'view_yellow_lite' option is on, in which case they are yellow.
+
+***** <view_unsafe_grids>
+Map marked by detect traps  [view_unsafe_grids]
+    Displays unknown terrain for which traps have not been detected as a
+    gray 'x'. This makes it easy to see whether traps have been
+    detected, but you cannot tell the difference when the terrain has
+    been detected by magic mapping or the like.
+
+***** <view_reduce_view>
+Reduce view-radius in town  [view_reduce_view]
+    Narrows the range you can see while you are in town. This lets you
+    run more smoothly in town, and lets you ignore creatures that are
+    some distance away. There are no enemies in town that attack from a
+    distance, so this is normally safe.
+
+***** <fresh_before>
+Flush output while continuous command  [fresh_before]
+    Redraws the whole screen before each command is executed. This
+    displays all the information that should be displayed, but it may
+    slow the game down somewhat. This option is effective only while
+    macros, resting, running and other repeated commands are being
+    executed, because output is always displayed immediately whenever
+    the game is waiting for a keypress.
+
+***** <fresh_after>
+Flush output after monster's move  [fresh_after]
+    Redraws the whole screen not only after each command, but also after
+    all the processing concerning monsters and objects. This displays
+    all the information that should be displayed, but the game will run
+    considerably slower, especially on slow machines. On fast machines,
+    you will normally not be able to notice the effect of this option.
+
+***** <fresh_message>
+Flush output after every message  [fresh_message]
+    Redraws the whole screen every time a message is displayed. This
+    displays all the information that should be displayed, but it may
+    affect the speed of the game somewhat.
+
+***** <hilite_player>
+Hilite the player with the cursor  [hilite_player]
+    Places the cursor at the player's location. This often looks good on
+    UNIX machines, but not so good in other graphical environments. In
+    some environments you can hide the cursor; in such environments,
+    hiding the cursor will speed up the game and improve its looks.
+
+***** <display_path>
+Display actual path before shooting  [display_path]
+    While you are choosing a target, keeps displaying the path that a
+    spell or an arrow would take to the current cursor position.
+
+
+***** <TextDisplay>
+=== Option Set 3 -- Text Display ===
+
+***** <plain_pickup>
+Plain pickup messages(japanese only)  [plain_pickup]
+    This option has no effect in the English version of the game. In the
+    Japanese version it makes the message shown when you pick up an item
+    shorter (it leaves out the number of items picked up).
+
+***** <always_show_list>
+Always show list at first when select items  [always_show_list]
+    Normally, when you choose an item, only the range of letters is
+    displayed at first, and the list of items you can choose appears
+    when you press the space key or '*'. If you turn this option on, the
+    list is displayed from the start.
+
+***** <depth_in_feet>
+Show dungeon level in feet  [depth_in_feet]
+    Displays the depth of the dungeon in 'feet'. This also affects the
+    monster recall display.
+
+***** <show_damage>
+Show done/taken damage  [show_damage]
+    Displays as numbers the damage the player takes from monsters, the
+    damage the player deals to monsters, and also the damage monsters
+    take in fights among themselves.
+
+***** <show_labels>
+Show labels in object listings  [show_labels]
+    Displays "labels" for the objects in the "equipment" list, in every
+    window in which the "equipment" is displayed. These labels show what
+    the player is using each object for, such as "right hand", "left
+    finger", "body" or "feet", and the equipment slots are shown in that
+    form. After you have played for a while, this information is no
+    longer useful, and it will rather get in your way.
+
+***** <show_weights>
+Show weights in object listings  [show_weights]
+    Displays the weight of each item in the inventory list, the
+    equipment list, and the list of goods for sale in stores.
+
+***** <show_item_graph>
+Show items graphics  [show_item_graph]
+    Displays the symbol of each item, with the same character and color
+    as when it lies on the floor, in the inventory and equipment lists.
+
+***** <equippy_chars>
+Display 'equippy' chars  [equippy_chars]
+    Shows the equipment you are wearing graphically at the left edge of
+    the main screen. These characters use the standard symbol of each
+    item.
+
+***** <display_mutations>
+Display mutations in 'C'haracter Display  [display_mutations]
+
+    Normally, when the character mutates, you can check it with the '~'
+    command of the information menu. If you turn this option on, mutations
+    are also displayed in the 'C' character information command, when you
+    switch the mode with 'h' several times.
+
+***** <compress_savefile>
+Compress messages in savefiles  [compress_savefile]
+    Compresses the savefile by recording only the most recently
+    displayed messages. This reduces the size of the savefile
+    dramatically, but past messages are lost.
+
+***** <abbrev_extra>
+Describe obj's extra resistances by abbreviation  [abbrev_extra]
+    When a fully identified (*identified*) piece of equipment is
+    displayed, an abbreviation string for the object's extra
+    resistances and extra abilities is added to its name as a fake
+    inscription. (It is not added if the item's own inscription
+    contains '%'.)
+
+    The word "extra" means that the ability is not obvious from the
+    object's name. For example, a pair of boots of Levitation sometimes
+    has extra shard resistance, but the fire resistance of an armor of
+    Resist Fire is not an extra resistance.
+
+***** <abbrev_all>
+Describe obj's all resistances by abbreviation  [abbrev_all]
+    When a fully identified (*identified*) piece of equipment is
+    displayed, an abbreviation string for all of the object's
+    resistances and abilities is added to its name as a fake
+    inscription. (It is not added if the item's own inscription
+    contains '%'.)
+
+
+***** <GamePlay>
+=== Option Set 4 -- Game playing ===
+
+***** <stack_force_notes>
+Merge inscriptions when stacking  [stack_force_notes]
+    Stacks otherwise identical items even if one has an inscription and
+    the other does not. In this case the inscription is kept (that is,
+    the stack takes the inscription of the item that has one).
+
+***** <stack_force_costs>
+Merge discounts when stacking  [stack_force_costs]
+    Stacks otherwise identical items even if one was a discounted item
+    and the other was sold at the normal price. In this case the
+    largest discount is applied to the whole stack. Once items have been
+    stacked, they never return to their original discount rates, so you
+    should not use this option if you do not want to lose value.
+
+***** <expand_list>
+Expand the power of the list commands  [expand_list]
+    In the look command, the target command and the monster recall
+    command, when you examine the entries in order by pressing the space
+    key, pressing space at the last entry takes you back to the first
+    entry.
+
+***** <small_levels>
+Allow unusually small dungeon levels  [small_levels]
+    Allows floors with various overall sizes to be generated. How small
+    they get is decided randomly. Sometimes the size is such that you
+    can hardly tell the difference when you simply explore normally.
+    There is also a chance of a floor about one screen in size, like the
+    town. This can be dangerous, especially for low-level characters.
+    When you use this option, a floor that has been partly *destroyed*
+    may also be generated.
+
+***** <always_small_levels>
+Always create unusually small dungeon levels  [always_small_levels]
+    If you turn this option on, all floors become smaller than usual.
+    How small they get is decided randomly. Sometimes the size is such
+    that you can hardly tell the difference when you simply explore
+    normally. See also 'Allow unusually small dungeon levels' above.
+
+***** <empty_levels>
+Allow empty 'arena' levels  [empty_levels]
+    Normal dungeon levels consist mostly of solid rock. If this option
+    is on, levels with empty floor instead of solid rock may also be
+    created (somewhat reminiscent of NetHack's "big-room" levels). These
+    levels can be extremely deadly, especially with breathing monsters,
+    since there are almost no places to hide. Arena levels may have
+    vaults, nests and pits in them, just like normal levels. Some arena
+    levels are pitch dark, but they are normally lit.
+
+***** <last_words>
+Leave last words when your character dies  [last_words]
+    When your character dies, a random line from 'death.txt' is
+    displayed, and you can then edit your last words on the spot. If
+    this option is turned off, the message "You die." is displayed
+    instead.
+
+***** <allow_debug_opts>
+Allow use of debug/cheat options  [allow_debug_opts]
+    Once you use the debug command (^A), the wizard mode (^W) or the
+    various cheating options (the 'C' item on the option screen), you
+    can no longer register your score, so their use is restricted to
+    keep you from using them by mistake. Turning on allow_debug_opts
+    lifts this restriction.
+
+
+***** <Disturbance>
+=== Option Set 5 -- Disturbance ===
+
+***** <find_ignore_stairs>
+Run past stairs  [find_ignore_stairs]
+    Ignores stairs while running.
+
+***** <find_ignore_doors>
+Run through open doors  [find_ignore_doors]
+    Ignores open doors while running.
+
+***** <find_cut>
+Run past known corners  [find_cut]
+    While running, cuts diagonally around corners you can already see,
+    if necessary, so as to take the shortest route. As a result you can
+    run "faster", but you may run into a monster lying in ambush.
+
+***** <check_abort>
+Check for user abort while continuous command  [check_abort]
+    When this option is on (the default), the game checks for a keypress
+    while you are resting, running or executing other repeated
+    commands, and cancels the command if a key has been pressed. If you
+    turn this option off, the game stops checking. This not only makes
+    the game much more efficient (on many systems), but also makes it
+    possible to run macros such as "turn this option off -> rest until
+    fully recovered -> turn this option on -> cast a spell". Note that
+    turning this option off can be dangerous on certain "graphical"
+    platforms. It is also dangerous to rest for a long time with this
+    option off: you may end up resting endlessly until you take damage
+    from hunger.
+
+***** <flush_failure>
+Flush input on various failures  [flush_failure]
+    Discards the keypresses entered so far when some kind of "failure"
+    occurs, for example when you fail to cast a spell or fail to use a
+    wand. This is very useful when you use a macro that includes a
+    direction and it fails: it prevents you from walking in that
+    direction even though the command specified in the macro has
+    failed.
+
+***** <flush_disturb>
+Flush input whenever disturbed  [flush_disturb]
+    Discards the keypresses entered so far when the character is
+    "disturbed" by something. This is useful when you use macros that
+    take a long time, because the macro is cancelled if you are attacked
+    by a monster.
+
+***** <disturb_move>
+Disturb whenever any monster moves  [disturb_move]
+    Disturbs you (cancels your current action) when any monster moves,
+    appears or disappears. This includes monsters that are visible only
+    by telepathy. Therefore, if you want to rest near a monster that
+    has not noticed you, you should turn this option off.
+
+***** <disturb_high>
+Disturb whenever high-level monster moves  [disturb_high]
+    Disturbs you when any monster whose level is higher than the
+    player's moves, appears or disappears. This includes monsters that
+    are visible only by telepathy.
+
+***** <disturb_near>
+Disturb whenever viewable monster moves  [disturb_near]
+    Disturbs you when a monster you can see moves, when a monster comes
+    into view for the first time, and when a monster in view goes out of
+    view. This option ignores monsters that are visible only by
+    telepathy. See also the 'view_reduce_view' option.
+
+***** <disturb_pets>
+Disturb when visible pets move  [disturb_pets]
+    The player may not want some of the disturbance options to apply to
+    pets. For example, it would surely be annoying if your rest were
+    interrupted every time a pet dog came up to you. By default, pets do
+    not disturb you even if all the disturbance options are on. If you
+    want your pets to disturb you just like ordinary monsters, turn this
+    option on.
+
+***** <disturb_panel>
+Disturb whenever map panel changes  [disturb_panel]
+    Disturbs you when the screen scrolls to a different part of the map.
+
+***** <disturb_state>
+Disturb whenever player state changes  [disturb_state]
+    Disturbs you when the player's state changes. This includes hunger,
+    resistances, confusion and so on.
+
+***** <disturb_minor>
+Disturb whenever boring things happen  [disturb_minor]
+    Disturbs you whenever anything happens, however trivial. This
+    includes monsters bashing down doors, getting a feeling about an
+    item in your pack, and your light source beginning to run out of
+    fuel.
+
+***** <ring_bell>
+Audible bell (on errors, etc)  [ring_bell]
+    Tries to ring the bell when an error of some kind occurs.
+
+***** <disturb_trap_detect>
+Disturb when leaving trap detected area  [disturb_trap_detect]
+    Disturbs you when, while you are running, you reach the edge of the
+    area where traps have been detected.
+
+***** <alert_trap_detect>
+Alert when leaving trap detected area  [alert_trap_detect]
+    Warns you with a message when, while you are moving, you reach the
+    edge of the area where traps have been detected.
+
+
+***** <AutoDestroyer>
+=== Option Set 6 -- Easy Auto-Destroyer ===
+
+***** <destroy_items>
+Use easy auto-destroyer  [destroy_items]
+    If you turn this option on, any item lying on the floor is
+    destroyed automatically as soon as you touch it. By itself,
+    destroy_items tries to destroy every item, so you need to turn on
+    some of the options below to keep the items you need from being
+    destroyed.
+
+***** <destroy_feeling>
+Apply auto-destroy as sense feeling  [destroy_feeling]
+    If you turn this option on, auto-destruction is applied at the
+    moment you get a feeling about an item you carry. Typically, an item
+    is destroyed the moment it is found to be {cursed}. If for some
+    reason you cannot sense the feelings of items correctly, you should
+    turn this option off.
+
+***** <destroy_identify>
+Apply auto-destroy as identify an item  [destroy_identify]
+    If you turn this option on, auto-destruction is applied to an item
+    at the moment you identify it with a scroll, a spell or the like.
+    Items that are cursed, or that you have registered in the
+    auto-destroy settings as unnecessary, are destroyed immediately.
+
+***** <leave_worth>
+Auto-destroyer leaves known worthy items  [leave_worth]
+    Keeps valuable items, that is, items that can be sold in stores,
+    from being targets of auto-destruction.
+
+***** <leave_equip>
+Auto-destroyer leaves weapons and armour  [leave_equip]
+    Keeps all weapons and armor from being targets of auto-destruction.
+    They are not destroyed even if they are cursed.
+
+***** <leave_chest>
+Auto-destroyer leaves closed chests  [leave_chest]
+    Keeps chests with contents from being targets of auto-destruction.
+
+***** <leave_wanted>
+Auto-destroyer leaves wanted corpses  [leave_wanted]
+    Keeps the corpses and skeletons of wanted monsters from being
+    targets of auto-destruction.
+
+***** <leave_corpse>
+Auto-destroyer leaves corpses and skeletons  [leave_corpse]
+    Keeps all corpses and skeletons from being targets of
+    auto-destruction.
+
+***** <leave_junk>
+Auto-destroyer leaves junk  [leave_junk]
+    Keeps junk such as shards of pottery and empty bottles from being
+    targets of auto-destruction.
+
+***** <leave_special>
+Auto-destroyer leaves items your race/class needs  [leave_special]
+    Keeps items that are normally worthless, but useful only to certain
+    classes or races, from being targets of auto-destruction. For
+    Archers, skeletons are an example.
+
+
+***** <PlayRecord>
+=== Option Set R -- Play-record ===
+
+***** <record_fix_art>
+Record fixed artifacts  [record_fix_art]
+    Records the acquisition of a fixed artifact at the moment it is
+    identified (down to its name).
+
+***** <record_rand_art>
+Record random artifacts  [record_rand_art]
+    Records the acquisition of a random artifact at the moment it is
+    identified (down to its name).
+
+***** <record_destroy_uniq>
+Record when destroy unique monster  [record_destroy_uniq]
+    Records the moment you defeat a unique monster.
+
+***** <record_fix_quest>
+Record fixed quests  [record_fix_quest]
+    Records when you complete a fixed quest, or fail it by running away.
+
+***** <record_rand_quest>
+Record random quests  [record_rand_quest]
+    Records when you complete a random quest, or fail it by running
+    away.
+
+***** <record_maxdeapth>
+Record movements to deepest level  [record_maxdeapth]
+    Records when you move to a floor deeper than the floor that recall
+    is set to. If you change the recall depth with a Scroll of Reset
+    Recall or the like, the same floor may be recorded more than once.
+
+***** <record_stair>
+Record recall and stair movements  [record_stair]
+    Records every time you move between floors by stairs, recall and so
+    on.
+
+***** <record_buy>
+Record purchased items  [record_buy]
+    Records an item, with its quantity, when you buy it.
+
+***** <record_sell>
+Record sold items  [record_sell]
+    Records an item, with its quantity, when you sell it.
+
+***** <record_danger>
+Record hitpoint warning  [record_danger]
+    Records the moment your hitpoints drop to the warning level set by
+    the hitpoint warning option.
+
+***** <record_arena>
+Record arena victories  [record_arena]
+    Records when you win in the arena, or lose and are thrown out.
+
+***** <record_ident>
+Record first identified items  [record_ident]
+    Records when you identify, for the first time, an item whose effect
+    you did not know.
+
+***** <record_named_pet>
+Record informations of named pets  [record_named_pet]
+    Records when you give a name to a pet, and when a named pet dies or
+    goes missing.
+
+
+***** <BaseDelay>
+=== Option D -- Base Delay Factor ===
+
+If the base delay factor is non-zero, it works to "slow down" the game.
+This is useful when you want to observe the effects of magic animations.
+The actual delay is equal to the base delay factor cubed, in
+milliseconds.
+
+
+***** <Hitpoint>
+=== Option H -- Hitpoint Warning ===
+
+The hitpoint warning value is a number from 0 to 9. If it is non-zero,
+the player is warned that the character is about to die when the
+hitpoints fall to that value times 10 percent of the maximum hitpoints
+(for example, a value of 3 means 30 percent). Below this level,
+hitpoints and mana are also displayed in red. A value of 0 turns the
+warning off.
+
+
+***** <Autosave>
+=== Option A -- Autosave Options ===
+
+Ideally, the game should be so stable that these options are not needed
+at all. However, even if the game were 100% reliable (which, to be
+frank, it probably is not), the user might forget to save, and the game
+may crash because of hardware or other causes. For all of these reasons,
+you may want to use the following options.
+
+***** <autosave_l>
+Autosave when entering new levels  [autosave_l]
+        If this option is on, the game saves your character
+        automatically every time you are about to move to a new floor
+        (by stairs, recall, level teleport and so on). This option is
+        useful if you have ever experienced a hang-up while a new floor
+        was being generated.
+
+***** <autosave_t>
+Timed autosave  [autosave_t]
+        If this option is on, the game saves your character
+        automatically every n turns. To set this interval, press the
+        'F' key. Each time you press it, the interval changes to every
+        50, 100, 250, 500, 1000, 2500, 5000, 10000 and then 25000 turns
+        (and back to 0 after that). To use this function, the option
+        must be on and the interval must be non-zero.
+
+
+***** <Window>
+=== Option W -- Window Flags ===
+
+Selects what kind of information is displayed in which window. Some
+platforms support "sub-windows", which are windows that can be used to
+display useful information that is generally available through other
+means. The window flags available are the following.
+
+Display inven/equip
+    Displays the inventory (and sometimes the equipment).
+
+Display equip/inven
+    Displays the equipment (and sometimes the inventory).
+
+Display spell list
+    Displays a list of the spells of your magic realm.
+
+Display character
+    Displays a brief description of the character.
+
+Display visible monsters
+    Displays a list of the monsters currently in view.
+
+Display messages
+    Displays the most recently generated messages.
+
+Display overhead view
+    Displays an overhead view of the entire dungeon.
+
+Display monster recall
+    Displays a description of the monster that has most recently been
+    attacked, targeted or examined in some way.
+
+Display object recall
+    Displays a description of the most recently selected object.
+
+Display dungeon view
+    Displays a copy of the dungeon map of your surroundings.
+
+Display snap-shot
+    Displays the snap-shot (memorial picture) window.
+
+Display borg messages
+Display borg status
+    These window flags are used only by the Borg, which is not
+    supported.
+
+
+***** <Cheating>
+=== Option C -- Cheating Options ===
+
+The Cheating Options item on the option screen is shown only when your
+character has already cheated, or when the allow_debug_opts option is
+on.
+
+If you use the cheating options, your character is regarded as a
+"cheater" and will not appear in the high-score list. This does not
+change even if you turn the options off afterwards, so think carefully
+before using the options below.
+
+***** <cheat_peek>
+Peek into object creation  [cheat_peek]
+    Lets you secretly peek at the process of item creation.
+
+***** <cheat_hear>
+Peek into monster creation  [cheat_hear]
+    Lets you secretly peek at the process of monster creation.
+
+***** <cheat_room>
+Peek into dungeon creation  [cheat_room]
+    Lets you secretly peek at the process of room creation.
+
+***** <cheat_xtra>
+Peek into something else  [cheat_xtra]
+    Lets you see debugging messages.
+
+***** <cheat_know>
+Know complete monster info  [cheat_know]
+    You know everything about monsters from the start.
+
+***** <cheat_live>
+Allow player to avoid death  [cheat_live]
+    Lets you avoid death. When you do, you are moved to the town and
+    revived.
+
+***** <cheat_save>
+Ask for saving death  [cheat_save]
+    If you turn this option on, the game no longer forces a save when
+    your character dies, and you can be revived from the previous
+    savefile.
+
+
+***** <StartUp>
+=== Birth Options ===
+
+The following options make TOband harder or easier. The birth options
+can be set only when you create a character, by pressing the '=' key
+(even if you do not press '=', you always enter the option screen once).
+After the character has been created, the birth options can only be
+browsed; they can be changed only in wizard mode with the
+allow_debug_opts option on. Indicators "(*)" after the name of an option
+mean that the option affects the estimation of your score.
+
+***** <manual_haggle>
+Manually haggle in stores  [manual_haggle]
+    Normally, with this option off, bargaining in stores is automated.
+    In this case a 10% sales tax is imposed automatically. If you turn
+    this option on, you will actually have to haggle. This gives you the
+    chance to sell items for more and buy them for less.
+
+***** <easy_band>
+Easy Mode (*)  [easy_band]
+    This is a mode for beginners to practice in. If you turn this option
+    on, the following things happen.
+      - You start with a huge amount of gold (10,000,000 more than
+        usual).
+      - You gain resistance to blindness and confusion and protection
+        from experience drain (hold life). Unless you are a Ninja, a
+        Ninja Master or a Vampire, you also gain the effect of a light
+        source.
+      - When you enter a new floor, you are enlightened (the map of the
+        floor is revealed).
+      - The items you pick up are identified automatically.
+      - Most of the damage you take is halved.
+      - You know everything about every monster.
+      - Monsters summon fewer monsters with their summoning spells.
+      - The items you find are of somewhat better quality.
+      - Conditions such as hallucination, slowness, blindness,
+        paralysis, confusion and fear wear off twice as fast.
+    However, your final score is always 1 (plus 1 if you have won the
+    game, and plus 1 if you have defeated Philaha, the God of the Sun).
+
+***** <smart_learn>
+Monsters learn from their mistakes (*)  [smart_learn]
+    Monsters learn when the spells they cast at you have been resisted,
+    and use this knowledge to attack you more effectively. If you turn
+    this option on, your score is evaluated higher.
+
+***** <smart_cheat>
+Monsters exploit players weaknesses (*)  [smart_cheat]
+    Monsters know your resistances even before they fight you, and use
+    this knowledge to attack you more effectively. If you turn this
+    option on, your score is evaluated higher.
+
+***** <ironman_rooms>
+Always generate very unusual rooms (*)  [ironman_rooms]
+    If you turn this option on, the only rooms that are generated are
+    Greater Vaults (treasure chambers). Some special dungeons (such as
+    beginner dungeons and dungeons with the smallest floors) are not
+    affected. If you turn this option on, your score is evaluated
+    higher.
+
+***** <left_hander>
+Left-Hander  [left_hander]
+    Normally the top slot of the equipment list is the right hand, and
+    you hold a one-handed weapon in that hand. If you turn this option
+    on, the top slot of the equipment list becomes the left hand.
+
+***** <preserve_mode>
+Preserve artifacts (*)  [preserve_mode]
+    Enables the artifact preservation mode. When preserve mode is off,
+    a fixed artifact that has been generated, either with a floor or by
+    defeating a monster, will never be generated again until the game
+    is over. That is, if you leave the floor without picking up the
+    artifact, it is lost forever. When preserve mode is on, this happens
+    only once you have identified the artifact. It is therefore safer to
+    leave a floor before exploring it completely, because a fixed
+    artifact you missed may appear again on another floor. If you turn
+    this option on, your score is evaluated lower.
+
+***** <powerup_home>
+Increase capacity of your home (*)  [powerup_home]
+    If you turn this option on, the number of items you can store in
+    your home becomes ten times as large, and you can store up to 20
+    pages. If you turn this option on, your score is evaluated lower.
+
+--
+Original   : Ben Harrison
+Updated    : Zangband 2.1.* by Topi Ylinen
+Updated    : Zangband 2.2.0 through 2.2.6c by Robert Ruehlmann
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.5.0
+Updated    : TOband 0.0.3
+
+***** [a] jpref.txt#Options
+

@@ -1,0 +1,368 @@
+=== Creating a Character ===
+
+TOband is a role-playing game, in which you, the player, control a character
+you have created and adventure in the world of TOband. The most important
+thing to do before you begin your adventure is to create your character. In
+character creation you choose and decide various attributes that will affect
+the future of the character who is your alter ego.
+
+The order of character creation is this. First you choose the type of
+character you want to play, and then the stats are decided by allocating
+points. Once the character has been born in this way, you can start the game
+with that character.
+
+You may start the entire process over at any time by pressing 'S'.
+
+
+***** <CharAttributes>
+=== Character Attributes ===
+
+Every character has four primary attributes: sex, race, class and element.
+They are chosen at the start of character creation and are fixed for the
+whole life of the character. However, if you meet conditions such as sex,
+stats and alignment, you can change class later at your home.
+
+The sex of the character affects which races and classes you can choose.
+More details on the other attributes are found in the section on races,
+classes and elements (see jraceclas.hlp [a]) and the section on the magic
+system (see jmagic.hlp [b]).
+
+Every character also has a few secondary attributes: height, weight, social
+class and background. These are generated randomly, but are somewhat affected
+by the sex and race of the character. In general these attributes only add
+"flavor" to the character and help you get into the game, but they do have a
+few effects on play. For example, weight affects the penalty when riding.
+
+In addition to these, there are several statistics which are used to
+determine your character's relative skills and abilities.
+
+
+--- Primary Statistics ---
+
+Each character has six primary stats: strength, intelligence, wisdom,
+dexterity, constitution and charisma, which modify the abilities of the
+character in a variety of ways. For example, strength affects your carrying
+capacity, the damage you do to an enemy, and the number of attacks you can
+make per turn. A more complete discussion is given later (see [c]).
+
+--- Experience ---
+
+Experience affects almost everything about your character. Experience can
+be gained when your character kills monsters, casts a spell or prays for the
+first time, learns about a kind of item by using it, and disarms traps or
+unlocks doors. Certain classes also gain experience by destroying specific
+spellbooks, and there are potions in the dungeon that will boost your
+experience if you quaff them.
+
+When your character's experience crosses certain fixed boundaries, you will
+attain a new level (up to a maximum of 50). When this happens, your hit
+points, your mana (if any), and certain skills such as melee fighting, bows
+and throws all increase. Some races and classes will also gain new powers
+when their experience crosses certain thresholds.
+
+Deep down inside, the real objective of the game is to gain experience and
+certain other characteristics and to collect useful items, so that you
+become strong enough to defeat the great 'Dorgalua, the King'. Certain
+monsters can "drain" your experience, and thus your level, which will cause
+you to lose all of the abilities gained with the higher level. Luckily, you
+can restore drained experience by magical means, or by simply earning the
+experience all over again.
+
+--- Gold (AU) ---
+
+Each character has some gold, which can be used to buy items and services
+in town. Gold can be increased by selling items to the shops, by taking it
+from defeated enemies, and by mining the veins where it lies buried.
+
+Each character starts the game with some gold, the amount of which is
+decided by the points left over from deciding the character's stats. A
+character also starts with a few useful items. You may keep them, or sell
+them to a shopkeeper for gold.
+
+--- Hit Points ---
+
+Hit points (HP) represent how much damage the character can sustain before
+dying. HP are decided by race, class, level, constitution and the luck of
+the dice, and can be raised by magical means. HP can be recovered by
+resting or by other magical means.
+
+--- Spell Points (Mana) ---
+
+Spell points (or mana, MP) represent how many spells (prayers) the character
+can cast. MP are decided by one primary stat determined by class, the race
+modifier to that stat, level, and the luck of the dice. MP can be recovered
+by resting or by other magical means.
+
+--- Character Skills ---
+
+Each character has several primary skills: disarming, magic devices, saving
+throws, stealth, searching, perception, melee, and bows and throws. These
+are determined by race, class, level, stats and equipment. The effects of
+these skills are fairly obvious from their names, but they are described in
+more detail later. The starting abilities depend on race and class. They are
+also changed by stats and level (see [d] for details). The amount they grow
+varies with the classes you have experienced.
+
+
+***** <StartupOptions>
+=== Birth Options ===
+
+After you choose your element during character creation, the birth options
+screen appears; you can also press '=' at any time while choosing your race,
+class and so on to change the birth options. For a description of the
+various birth options, see the help on options (see [e]). Options with
+"(*)" in their name affect the difficulty of the game. If you change them,
+your final score is adjusted to reflect the difference in difficulty.
+
+
+***** <PointConfig>
+=== Point Allocation ===
+
+Your character is given a number of points (60). Some of these points have
+already been used up by the class you chose, and you decide your character's
+abilities by distributing the remaining points. For each stat (see [c]), the
+screen shows the base value, the minimum and maximum values, the cost, the
+race modifier and the total. Each base stat can be set from 10 to 18.
+
+Use 2/8 (or j/k, or the cursor keys) to move between stats, and 4/6 (or
+h/l, or the cursor keys) to decrease or increase the selected stat. When you
+are satisfied, press Enter to accept.
+
+If you finish with points left over, you start with more gold (50 gold for
+each unused point).
+
+After the stats, you can edit the background (see below), and then you are
+asked for the character's name. Finally the character is displayed. If you
+accept it (by pressing Enter), you arrive in town. If you do not accept it
+(press 'S'), you return to the beginning of character creation; press 'Q' to
+quit.
+
+
+***** <BackgroundEditor>
+=== Background Editor ===
+
+A background for the character is generated randomly along with the stats,
+but you can change it in the background editor. The editor comes up once you
+have finished allocating points, so enter your text there. It cannot be
+changed after the game has started.
+
+In the editor, move the cursor with the cursor keys (or Ctrl-P, Ctrl-N,
+Ctrl-F and Ctrl-B). Any other printable key, including the number keys,
+types that character. Press Enter to finish editing and keep your changes,
+or ESC to finish editing and discard them.
+
+
+***** <QuickStart>
+=== Quick Start ===
+
+If you have already created a character, and that character died or you gave
+up and chose to create a new character, you will be asked whether to use
+quick start before the normal creation. If you press 'y' and choose quick
+start, you can start a new game with a character exactly the same as the
+last one, including race, class, stats and background.
+
+
+***** <PrimaryStats>
+=== The Six Primary Stats ===
+
+Each character has six primary stats: strength, intelligence, wisdom,
+dexterity, constitution and charisma. They modify the abilities of the
+character in a variety of ways. Each stat is expressed as a number, with a
+minimum value of 3. For traditional reasons, stats above 18 are expressed as
+(nearly) percentile numbers such as 18/47. The base stat, before race
+bonuses are added, has an upper limit of 18/200. As you gain levels, these
+stats rise by amounts set by your class.
+
+Increases from race and the magical effects of equipment can be added to
+this base stat, up to a maximum of 18/220. Since it can never go beyond this,
+18/220 is shown in the game as 18/*** to show that it is the maximum.
+
+Traditionally, a number such as "18/50" is thought of as a number between 18
+and 19. However, probably the best way to understand the bonus after the
+"18/" is to think of it as tenths, since it often takes the same magic to
+raise a stat from, say, 4 to 5, or 16 to 17, as from 18/40 to 18/50. Another
+important thing to note is that most internal calculations ignore the last
+digit, so that, for example, "18/40" and "18/49" almost always have the same
+effect.
+
+--- The Primary Statistics ---
+
+Strength
+     Strength is critical to fighting effectively in melee and with missile
+     weapons. A high strength increases your chances of getting multiple
+     blows per turn, and dramatically increases the damage done with each
+     hit. It also has a slight effect on your chance to hit. Characters with
+     low strength may receive penalties. Strength is also useful for
+     digging, bashing, and carrying heavy loads without being slowed down.
+
+Intelligence
+     Intelligence affects the spellcasting ability of the classes that cast
+     by intelligence (Swordmaster, Dragoon, Ninja, Wizard, Warlock, Witch,
+     Siren, Lich and Wicce). Intelligence affects the rate at which MP rise,
+     and the spell failure rate. Intelligent characters are also better at
+     using magic devices, and at picking locks and disarming traps.
+
+Wisdom
+     Wisdom affects the spellcasting ability of Beast Tamers, Exorcists,
+     Valkyries, Dragon Tamers, Clerics, Priests, Divine Knights, Templars and
+     White Knights. In that sense it means exactly the same for them as
+     intelligence does for an ordinary mage. A character with high wisdom has
+     a greater chance of resisting spells cast on him or her by enemies.
+
+Dexterity
+     Dexterity is a combination of agility and quickness. A character with
+     high dexterity can get multiple blows with light weapons, increasing
+     attack power, and also improves the chance to hit and to avoid being
+     hit. A character with high dexterity is good at picking locks and
+     disarming traps, and also good at protecting himself or herself from the
+     thieves that live in the dungeon.
+
+Constitution
+     Constitution is a character's ability to withstand damage and recover
+     from damage received. A character with high constitution gets more HP,
+     and also recovers faster when resting.
+
+Charisma
+     Charisma represents a character's personality and physical appearance. A
+     character with high charisma gets better prices in stores, whereas a
+     character with very low charisma is cheated blind.
+
+
+***** <PrimarySkills>
+=== Primary Skills ===
+
+A character has several primary skills for survival. Their initial values
+depend on the character's race and class, and they change with level, stats
+and equipment.
+
+Melee
+     Melee is the ability to hit and do damage with weapons or fists.
+     Normally a character gets a single blow from any weapon, but if
+     dexterity and strength are high enough, he or she may receive two or
+     more blows per turn with a light weapon. Both strength and dexterity
+     affect the chance to hit. This skill increases with the level of the
+     character.
+
+Bows and Throws
+     Using ranged missile weapons (and throwing objects) is included in this
+     skill. Different stats apply to different weapons, but this ability
+     modifies the distance an object is thrown or fired, the amount of damage
+     done, and the chance to hit. This skill increases with the level of the
+     character.
+
+Saving Throws
+     The saving throw is the ability of a character to resist the effects of
+     a spell cast on him or her by an enemy; it has no effect on spells you
+     cast on yourself. This ability increases with the level of the
+     character, but most high-level creatures are good at casting spells, so
+     it tends to even out in the end. High wisdom helps increase this
+     ability.
+
+Stealth
+     The ability to move silently about is very useful. Characters with good
+     stealth can usually surprise their enemies and get the first blow. Also,
+     monsters may fail to notice a stealthy character at all, letting the
+     player avoid some fights. This skill is based on race and class. For
+     some classes it improves as the class level rises; otherwise it never
+     improves unless magically enhanced.
+
+Disarming
+     Disarming is the ability to (safely) remove traps, and it includes
+     unlocking doors. When it succeeds, the character gains some experience.
+     A trap must be found before it can be disarmed. This ability also
+     increases with the character's level.
+
+Perception (Searching Frequency)
+     Perception is the ability to notice something without actively seeking
+     it out. This skill is based entirely on race and class, and never
+     improves unless magically enhanced.
+
+Searching (Searching Ability)
+     To search is to actively look for secret doors and traps (on the floor
+     or on chests). This skill is based entirely on race and class, and never
+     improves unless magically enhanced.
+
+Magic Device Skill
+     Using a magical device such as a wand or staff requires experience and
+     knowledge. Spellcasters such as the Wizard are therefore much better at
+     using these devices than, say, the Warrior. This skill is modified by
+     intelligence, and increases with level.
+
+Infravision
+     Infravision is the ability to "see" heat sources. Since most of the
+     dungeon is cool or cold, infravision will not let you see walls and
+     objects. Instead, it lets you see warm-blooded creatures within a
+     certain distance. This ability works the same with or without a light
+     source. Most of TOband's creatures are cold-blooded and will not be
+     detected unless lit by a light source. Many non-human races have this
+     ability from birth. Humans can gain it only by magical means.
+
+
+***** <SkillLevel>
+=== Skill Levels ===
+
+In TOband, a character has a skill level for each type of weapon, for each
+of several other skills (martial arts, dual wielding, riding, throwing, pet
+upkeep, weapon and armor identification, accessory identification, spell
+casting), and for each magic realm. You can check them with the knowledge
+command ('~'): press Space to go to the second page, and then 'b' (Display
+Skills) to open the "Current Skill" screen. At the start of the game, all
+weapon and other skills are at [Beginner].
+
+There are no skill points to spend. Skills grow by themselves when your
+class reaches a new highest level. How much each skill grows depends on the
+class, and a skill that the class cannot learn does not grow at all. A skill
+also stops growing when it reaches a limit that depends on the class level,
+so the higher your class level, the further it can go.
+
+Weapon skills and the other skills have six levels: [Beginner], [Novice],
+[Average], [Skilled], [Expert] and [Master]. The skill of each magic realm
+is shown as a number.
+
+The skill level of a weapon affects the chance to hit, the damage and the
+number of attacks with that kind of weapon. Martial arts and throwing work
+in the same way.
+
+The skill level of dual wielding affects the chance to hit when you hold two
+weapons.
+
+A higher riding skill level increases the speed of a mounted character, up
+to a maximum equal to the speed of the monster being ridden (see
+jmonster.txt#Pets [i]).
+
+The skill level of spell casting lowers the failure rate and MP cost of
+spells, and also the energy used to cast them. Because less energy is used,
+a spell's effect per turn becomes greater.
+
+As the pet upkeep skill level rises, you can keep higher-level pets, and
+more of them.
+
+The skill levels of weapon and armor identification and of accessory
+identification affect your ability to identify items on the floor, in your
+pack and in your equipment. At a low skill level, you get only a weak, quick
+identification of weapons and armor, and you learn nothing about accessories;
+as the skill level rises, automatic identification becomes more detailed,
+and finally you can automatically *identify* items just by walking around.
+
+The skill of each magic realm limits which spells you can cast: you can use
+a spell only if the skill of its realm is at least the spell's level.
+
+
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.3.0
+Updated    : TOband 0.0.3
+
+
+***** [a] jraceclas.hlp
+***** [b] jmagic.hlp
+***** [c] jbirth.txt#PrimaryStats
+***** [d] jbirth.txt#PrimarySkills
+***** [e] joption.txt#StartUp
+***** [f] jtown.txt#TownLevel
+***** [g] jdungeon.txt#RandomQuests
+***** [h] jraceclas.txt#TheRaces
+***** [i] jmonster.txt#Pets

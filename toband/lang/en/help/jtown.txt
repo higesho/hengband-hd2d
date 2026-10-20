@@ -1,0 +1,309 @@
+=== The Town and Wilderness ===
+
+After you have created your character, your TOband adventure begins in the
+town called Golyat. Symbols appearing on your screen represent the walls,
+floor, objects, features, and creatures lurking about. In order to direct
+your character, you enter single-character commands (see jcommand.txt [b]).
+
+Races that live and breathe must carry plenty of food when they leave town.
+
+--- The Vast Wilderness --- ( The '<' command lets you see all of it. )
+
+Since this world is very large, it is convenient to enter the global map by
+pressing '<' when you leave town, and then return to the normal map by
+pressing '>' when you reach your destination. In the wilderness, roads and
+grasslands are relatively safe, but lava fields and the open sea are home to
+powerful monsters and are dangerous. You will have to grow stronger before
+you can go to such places.
+
+Many dungeons await brave adventurers, such as the "Palace of the Dead".
+The ultimate goal of this game is "Dorgalua, the King", who dwells at the
+bottom of the "Ancient Ruins". The way to the Ancient Ruins opens only after
+you have conquered the "Hanging Gardens".
+
+
+***** <MapSymbols>
+=== Town and Wilderness Symbols ===
+
+Symbols on your map can be broken down into three categories: terrain
+features such as walls, floor and doors, and trees, water and lava; objects
+which can be picked up such as gold, weapons and magical devices; and
+creatures which may or may not move about, but are mostly harmful to your
+character's well-being. Symbols specific to the town and wilderness are
+shown below. Note that many creatures and objects from the dungeon may also
+appear in town, so you should also review the comprehensive listing of all
+the various symbols found in the dungeon section (see jdungeon.txt#MapSymbols
+[c]).
+
+  Terrain                                   Shops
+  -------                                   -----
+  # (Green)       A Tree                    1   Entrance to General Store
+  ~ (Light Blue)  Shallow Water             2   Entrance to Armoury
+  ~ (Dark Blue)   Deep Water                3   Entrance to Weaponsmith
+  ~ (Orange)      Shallow Lava              4   Entrance to Temple
+  ~ (Red)         Deep Lava                 5   Entrance to Alchemy Shop
+  ^ (Brown)       Mountains                 6   Entrance to Magic Shop
+  . (White)       Floor / Road              7   Entrance to the Black Market
+  . (Brown)       Dirt                      8   Entrance to your Home
+  . (Green)       Grass                     9   Entrance to Bookstore
+  > (Purple)      Dungeon Entrance          0   Entrance to the Museum
+  < (Purple)      Upward Dungeon Entrance
+  > (Yellow)      Quest Entrance
+  < (Yellow)      Quest Exit
+
+Trees, water and lava may also appear inside the dungeon.
+Remember that mountains on the surface can be crossed if you can levitate.
+
+
+***** <TownLevel>
+=== The Town Map ===
+
+Your adventure begins in town. At first it is daytime. The sun rises and
+sets as time passes, and the town grows dark at night. Fortunately, the
+various shops and buildings are open 24 hours a day.
+
+The vast world of TOband contains six towns and many dungeons. By entering
+buildings in the towns, you can accept fixed quests (see [d] below) or aim
+to become champion in the arena.
+
+***** <WildMap>
+--- The Overworld Map ---
+
+The overworld map is a vast world divided into 129x64 blocks. Each block is
+the size of a standard TOband dungeon level and contains natural terrain
+(mountainous areas, oceans, plains, volcanoes and so on). It holds six towns
+connected by roads, and dungeons with various characteristics are scattered
+around the world.
+
+The wilderness is not uninhabited, and it can be dangerous indeed for the
+unwary. Wander into the ocean by mistake and you will be attacked by hydras
+at once; enter a volcano and you will suffer severe burns before you know
+it, and either one can kill you in an instant.
+
+To avoid getting lost in the vast wilderness, use the climb command '<' to
+move to the global map, travel to your destination, and then return with
+'>'. However, you may suddenly be attacked while moving on the global map.
+When hostile monsters are nearby you cannot escape with '<', so you will have
+to walk to the edge of the screen to get away.
+
+Each town contains a number of stores where you can buy what you need and
+sell your spoils. There are also special buildings that offer services for a
+fee. The services available and their prices vary from town to town, so it
+is worth hunting around for the best deal.
+
+Buildings that offer various fixed quests are also generated in the towns.
+
+
+***** <Townspeople>
+=== Townspeople ===
+
+The town contains many different kinds of people. There are the street
+urchins, young brats who will mob an adventurer for money, and who seem to
+come out of the woodwork when excited. Blubbering idiots are a constant
+annoyance, but not harmful. Public drunks wander about the town singing, and
+are of no threat to anyone. Sneaky rogues who work for the Black Market are
+always greedily eyeing your pack for potential new "purchases"... And
+finally, what town would be complete without a gang of half-drunk warriors,
+who attack or pester people just for fun.
+
+Most of the townspeople should be avoided by the largest possible distance
+when you wander from store to store. Fights will break out, though, so be
+prepared. Since your character grew up in this chaotic town, no experience
+is awarded for killing the townspeople, though you may acquire treasure.
+
+One word of warning, however: occasionally a creature that would normally
+inhabit only the wilderness and dungeons may wander into the town. These
+should generally be handled with much more caution than the ordinary
+townspeople.
+
+
+***** <Shopping>
+=== Shopping in Town ===
+
+Your character will begin his or her adventure with a few basic items and
+some money to buy things at the stores. You may enter any of the stores,
+represented by the numbers 1 to 9, by moving onto its entrance, and barter
+with the shopkeeper over the items you would like to buy.
+
+Once inside a store, you will see the name and race of the shopkeeper, the
+name of the store, the maximum amount of money the shopkeeper will pay for
+any one item, and the store's goods along with tentative prices. Once you
+have haggled an item down as far as the shopkeeper will go, its price becomes
+"fixed" (see [e] below).
+
+You will also see an (incomplete) list of available commands. Note that many
+of the commands which work in the dungeon work in the stores as well, but
+some do not, especially those which involve "using" items.
+
+Stores do not always have everything in stock. As the game progresses,
+shopkeepers may put new items on their shelves, so check from time to time.
+Also, if you sell a store an item, it may be sold to someone else while you
+are adventuring, so don't always expect to be able to buy back everything
+you have sold. If you want the goods on sale to change, you need to spend
+some time elsewhere. If you have a lot of spare gold, you can buy up every
+item in a store, which will induce the shopkeeper to bring out new stock, and
+perhaps even make him or her think of retiring.
+
+Shopkeepers will not buy harmful or useless items. If an item is
+unidentified, they will pay you its base price for it. Once they have bought
+it, they will immediately identify it. If it is a good item, they will add it
+to their stock; if it was a bad bargain, they simply throw it away. In either
+case, you will gain some knowledge of that kind of item.
+
+***** <Bartering>
+--- Bartering ---
+
+When bartering over an item, you enter the amount you are willing to pay (or
+accept). You can either enter the amount directly, or precede a number with
+a plus or minus sign to enter the difference from your previous offer. But
+be warned that shopkeepers do not like to be made fools of, and if you do it
+too often they may even throw you out of the store.
+
+If you consistently bargain well in a store, that is, you very often manage
+to draw out the "final offer", the shopkeeper will eventually recognize you
+as a superb haggler, and will go directly to the final offer instead of
+haggling with you. Items that cost $10 or less do not count, as haggling
+well over these is usually either very easy or almost impossible. The more
+expensive the item, the less likely the shopkeeper is to take you for a good
+haggler.
+
+You can also choose, with an option, not to haggle at all, but then a 10%
+sales tax is always added to every purchase. This disadvantage is how the
+shopkeeper tries to lead you into bartering. (See the options page for
+details.)
+
+
+***** <ObjectPricing>
+--- Object Pricing ---
+
+Each shopkeeper has three primary attributes: the maximum amount he or she
+will pay for an item, race, and how greedy he or she is. Each of these
+affects the price of the goods and what the shopkeeper will pay for what you
+sell. Only the first two can be known by the player. The final factors
+affecting prices are the race and charisma of the player.
+
+Each item has a base price which is written in the game's source code. That
+price is modified by the shopkeeper's greed (greedy shopkeepers charge more
+and pay less), your charisma (charismatic players pay less and can charge
+more), and the feeling toward your race held by the people who rule the town
+in which the shopkeeper lives.
+
+Finally, when you sell an item, the selling price is limited by the state of
+the shopkeeper's purse. Even a charismatic player of a friendly people cannot
+sell an item for more than this cap. Since the cap applies per item, though,
+when you sell several items at once you may receive more than the cap.
+
+
+***** <TheShops>
+=== List of Shops ===
+
+The General Store ("1")
+     The General Store sells foods, drinks, cloaks, torches, lanterns, flasks
+     of oil, shovels, picks, spikes, arrows, bolts, scratch cards and magic
+     dolls. All of these items and some others can be sold back to the
+     General Store for money.
+
+The Armoury ("2")
+     The Armoury is where the town's armor is fashioned. All sorts of
+     protective gear may be bought and sold here.
+
+The Weaponsmith's Shop ("3")
+     The Weaponsmith's Shop is where the town's weapons are fashioned. Hand
+     and missile weapons may be bought and sold here, along with arrows and
+     bolts.
+
+The Temple ("4")
+     The Temple deals in healing and restoration potions, scrolls of
+     Blessing, scrolls of Remove Curse, scrolls of Word of Recall, priestly
+     weapons and so on. It sometimes sells magic dolls too.
+
+The Alchemy Shop ("5")
+     The Alchemy Shop deals in many kinds of potions and scrolls.
+
+The Magic Shop ("6")
+     The Magic Shop deals in many kinds of rings, wands, staffs, amulets and
+     magic dolls.
+
+The Black Market ("7")
+     The Black Market will sell and buy any kind of item at extortionate
+     prices. However, it occasionally has VERY rare and valuable items. Items
+     are also sometimes sold in large lots, which is handy when you want to
+     buy a lot of a useful item at once. The shopkeepers are not known for
+     their tolerance...
+
+Your Home ("8")
+     This is your house, where you can store items that you cannot carry on
+     your travels or will need at a later date.
+
+The Bookstore ("9")
+     The Bookstore deals in all sorts of magic books, which you can buy and
+     sell here.
+
+The Museum ("0")
+    Here you can donate items you own, to be put on display. When you have
+    grown rich enough, and come across a rare item you have no need to use,
+    you may want to leave it here as a memento instead of selling it.
+
+***** <Buildings>
+=== Special Buildings ===
+
+In addition to the stores, special buildings appear in town. The names of
+these buildings and the services they offer differ from town to town. Each
+town has an inn, where the player can have a meal (if food does the player
+any good) and stay the night. Each town also has the house or castle of the
+person who rules the land.
+
+Besides the inn and the ruler's house or castle, there are also libraries
+where you can research items and monsters, various guilds, casinos,
+temples, healers and more.
+
+
+***** <FixedQuests>
+=== Fixed Quests ===
+
+In each town there are buildings that offer quests. Quests fall into several
+types: kill a certain number of a certain monster (for example, kill 16
+wargs), kill all the monsters on the quest map, retrieve a certain item, or
+escape from the quest map.
+
+When you accept a quest, you will be given a brief description of the quest
+and your objective, and also an indication of its danger level (the dungeon
+level it is equivalent to). Note that the danger indication can be somewhat
+misleading: quest maps are always the same however many times you play them,
+so you can repeat the same situation over several attempts and work out an
+effective strategy. When you take a quest for the first time, assume it is
+harder than the danger level shown. Also, because the maps are fixed, quest
+designers can set up some particularly nasty ambushes!
+
+Once you have accepted a quest, a quest entrance will appear and you may
+enter the quest map. Note that you do not have to enter the quest right away;
+you may go in whenever you like as you progress through the game. Many quests
+can be attempted only once per game, so you should not enter until you are
+confident of succeeding.
+
+Whether you complete a quest or fail it, upon leaving the quest map, report
+to the person who gave you the quest. If you succeeded, you will receive a
+reward. It will normally be waiting for you outside the building, though it
+may take other forms. Note that a reward left outside the building will
+vanish when you accept the next quest. If you failed, you will be told how
+useless you are and be abused. Note that you cannot accept another quest from
+the same person until you have reported your success or failure.
+
+Note: Genocide, Mass Genocide and *Destruction* do not work inside fixed
+quests, with very rare exceptions.
+
+
+--
+Original   : (??)
+Updated    : (??)
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.0.11
+Updated    : TOband 0.0.3
+
+
+
+***** Begin Hyperlinks
+***** [b] jcommand.txt
+***** [c] jdungeon.txt#MapSymbols
+***** [d] jtown.txt#FixedQuests
+***** [e] jtown.txt#Bartering

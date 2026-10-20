@@ -2603,6 +2603,22 @@ void tb_fputs(const char *s, FILE *fff)
 	fputs(tb_tr(s), fff);
 }
 
+/*!
+ * @brief `sprintf()` の代わり。書き込み先の大きさを見ない版（フック #18。`tb_lang_c.h` の `tb_sprintf_u`）。
+ * @details `vstrnfmt()` の `max == 0` は「無制限（32767）」。書式と `%s` の引数は #2・#3 が引く。
+ */
+int tb_sprintf_u(char *dest, const char *fmt, ...)
+{
+	va_list vp;
+	uint n;
+
+	va_start(vp, fmt);
+	n = vstrnfmt(dest, 0, (cptr)fmt, vp);
+	va_end(vp);
+
+	return (int)n;
+}
+
 /* Report only the core command input boundary, never a nested prompt. */
 int tb_awaiting_command(void)
 {

@@ -125,6 +125,7 @@ $dataDirs = @(
     'silq/lib-ja', 'silq/lib-en', 'silq/lang/ja',
     'frox/lib-ja', 'frox/lang/ja',
     'gensoband/lib-en', 'gensoband/lang/en',
+    'toband/lib-en', 'toband/lang/en',
     # 実行時に接続コードが読むタイルと対応表。原画・原作ソースは含めない。
     'gensoband/assets/slab',
     'toband/assets/slab',
@@ -143,6 +144,7 @@ $generated = @{
     'silq/lib-en'     = 'python tools/silq/build_ja_help.py --all'
     'frox/lib-ja'     = 'python tools/frox/fc_build_ja_edit.py'
     'gensoband/lib-en' = 'python tools/gensoband/build_en_edit.py && python tools/gensoband/build_en_file.py'
+    'toband/lib-en'   = 'python tools/toband/build_en_edit.py && python tools/toband/build_en_file.py && python tools/toband/build_en_help.py'
 }
 
 $name = "HengbandHD-$Version-win-x64"

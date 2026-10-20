@@ -1,0 +1,1371 @@
+# TOband -> English: monster overrides (applied by tools/toband/build_en_edit.py). UTF-8; everything except the J: lines is ASCII.
+# I: r_info number / J: the Japanese name on the N: line (must match lib/edit/r_info.txt exactly) / N: English name (optional; wins over the
+#    glossary and the author's E: line) / D: English description (replaces the whole Japanese D: block; one D: line per source line, no trailing
+#    space needed because add_text() puts a space between lines).
+# Entries here are the monsters that have a Japanese D: block but no D:$ English line (223), plus the two without an E: line (287, 960 - the latter
+# takes its name from the glossary).
+# Names of the unique monsters come from the glossary (toband/lang/en/glossary_tsv/uniques.tsv); non-unique names come from the author's E: line.
+# Proper nouns follow the glossary (Tactics Ogre: Let Us Cling Together spellings).
+
+I:8
+J:海を見つめる男
+D:A broken man of unknown origin, who is being cared for by the girl Klaire
+D:at the church in the Royal City of Heim.
+
+I:19
+J:戦災遺児『クレア・ハルモラーア』
+D:A girl who devotedly looks after the victims of the war at the church.
+D:Thanks to her, the hard lives of the refugees have become much brighter.
+
+I:34
+J:プアー・ワイアーム
+D:Among the dragonkind, the Great Wyrm of Poor is the weakest, and it is
+D:seldom encountered in this world.  Its powerlessness is enough to make your
+D:knees buckle.
+
+I:45
+J:クレリック
+D:She is tripping over her priestly robes, forever stepping on the hem.
+
+I:53
+J:教会の飼い犬『くいつき』
+D:A rather vicious dog kept by the church.  It thinks you mean to take Klaire
+D:away.
+
+I:54
+J:教会の飼い犬『おおかみ』
+D:A rather vicious dog kept by the church.  It thinks you mean to take Klaire
+D:away.
+
+I:55
+J:教会の飼い犬『きば』
+D:A rather vicious dog kept by the church.  It thinks you mean to take Klaire
+D:away.
+
+I:63
+J:神父『プランシー』
+D:Denam's father and the younger brother of Bishop Brantyn.  The torture of
+D:the Dark Knights reduced him to a shell of a man.
+
+I:83
+J:アマゾネス
+D:An agile female warrior, always thinking of battle.
+
+I:92
+J:リザードマン・プリースト
+D:He is a pious lizardman, able to cast spells.
+
+I:97
+J:下愚『バパール』
+D:A berserker of the Galgastan army.  He rose from a poor farming village to
+D:captain of the guard at the gate of Almorica Castle, and so he brags about
+D:it at every chance, to the annoyance of everyone around him.
+
+I:98
+J:シャーマティック・リザード
+D:He is an intelligent lizardman, able to cast advanced spells.
+
+I:109
+J:クレリック
+D:A student in a course that trains clerics.  These girls keep tripping over
+D:their priestly robes, stepping on the hems.
+
+I:110
+J:ソルジャー
+D:He looks inexperienced but tough.
+
+I:112
+J:騎士『アガレス』
+D:A knight of the Galgastan army and acting inspector of the Almorica region.
+D:He guards Almorica Castle in the absence of Nybeth.
+
+I:116
+J:アーチャー
+D:She shoots a powerful bow.
+
+I:137
+J:恍惚の『モルドバ』
+D:A witch of the Galgastan army and assistant to the necromancer Nybeth.  She
+D:is a witch of great ability, but she resents that people tend to pay more
+D:attention to her beauty than to her talent.
+
+I:138
+J:アーチャー『サラ』
+D:An archer of the Walister Resistance who was held captive by Moldova.
+
+I:140
+J:彩雲の『オルバ』
+D:A wizard of the Galgastan army.
+
+I:169
+J:騎士『ヴォルテール』
+D:A knight of the Walister Resistance who was captured by Moldova.
+
+I:177
+J:クレリック『フェリシア』
+D:A cleric of the Walister Resistance.  She was captured by Moldova.
+
+I:186
+J:吃音の『ブレッゼン』
+D:A berserker of the Galgastan army.  On the Golborza Plain, he encounters
+D:the Resistance, who are trying to make contact with the Dark Knights, and
+D:challenges them to battle.  "Losing your nerve just because they took
+D:Almorica Castle...  Fine, come at me!  I'll show you the power of
+D:Galgastan!!" (Tactics Ogre, Chapter 1, "Do You Ask Me to Dirty My Hands?",
+D:Golborza Plain)
+
+I:189
+J:完全体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:216
+J:ウィッチ
+D:A beautiful witch who uses many support spells.  She is here with her
+D:friends.
+
+I:217
+J:完全体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:219
+J:深森の『ウィノア』
+D:An archer of the Galgastan royal army.  After winning the battle against
+D:the Resistance at Psonji Weald, she was secretly marching on Almorica.  She
+D:happened to meet the Resistance at Tynemouth Hill and, fearing that her
+D:presence would be revealed, challenged them to battle.
+
+I:223
+J:騎士『リューモス』
+D:A knight of the Galgastan army.  He came to Rhime to scout out the Valerian
+D:Liberation Front's plan to seize supplies, and tried to capture Cistina.
+
+I:225
+J:プリースト
+D:A priest who wields both healing and offensive magic, by the grace of the
+D:holy gods Philaha and Ishtar.
+
+I:240
+J:ウィッチ
+D:A beautiful witch who uses many support spells.
+
+I:241
+J:エクソシスト
+D:A specialist in hunting down the undead, who exorcises evil spirits and the
+D:restless dead by the grace of the holy god.
+
+I:242
+J:完全体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:250
+J:幽愁の『レクセンテール』
+D:"Walisters, here of all places!  And so many of them, too...  Damn.  The
+D:Hierophant understands nothing.  It is precisely because we are in turmoil
+D:that we must hold the front line without fail..." (Tactics Ogre, Chapter 1,
+D:"Do You Ask Me to Dirty My Hands?", Lake Bordu) A knight of the Galgastan
+D:army, stationed at Lake Bordu on the front line against the Walister
+D:Resistance.  Though he is discontented with the Hierophant, who will not
+D:defend the front line properly, he fights the Resistance with his small
+D:force.
+
+I:251
+J:爆裂スカウト
+D:A boy scout with a bomb planted inside his body.  When a VIP comes near,
+D:his bomb goes off automatically.
+
+I:260
+J:鬼哭『ゲンゾウ』
+D:A ninja of the Galgastan army, one of the remnants of the Galgastan army
+D:who have been cornered by the Resistance.
+
+I:274
+J:完全体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:287
+J:ビーストテイマー
+N:Beast Tamer
+D:An inexperienced beast tamer.  The only creatures he has managed to tame
+D:are ants.
+
+I:290
+J:リザードマン
+D:An amphibious lizardman clad in hard scales.
+
+I:291
+J:壊乱の『ガナッシュ』
+D:A knight of the Walister Resistance.  Stationed at Krysaro on Vyce's
+D:orders, he mistook Folcurt for one of Denam's companions and detained him
+D:as a suspicious person.
+
+I:314
+J:鎮魂の『ナディア』
+D:"So Walister, this town is what you are after!  But I will not let you have
+D:your way.  We of Galgastan cannot lose to Ogres like you, who would
+D:sacrifice even your own kin for your goals!" (Tactics Ogre, Chapter 2,
+D:"Deceiving and Deceived", Port Asyton) A cleric of the Galgastan royal
+D:army.  She was guarding Port Asyton, the only port town of Galgastan, and
+D:fights the Resistance who landed through Ronwey's scheme.
+
+I:315
+J:青炎の『ガルバ』
+D:A wizard of the Galgastan royal army.  While stationed in the Xeod Moors,
+D:he runs into the Resistance, who appear just as Ronwey's scheme planned.
+D:He sends word to Balbatos of the landing of the Hero of Golyat, and himself
+D:challenges them to battle to buy time.
+
+I:319
+J:完全体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:320
+J:フェアリー
+D:A cute fairy with a tiny body.  She can hover in the air at all times with
+D:the wings on her back.
+
+I:322
+J:ホークマン
+D:A savage winged man of fierce temper who loves battle.  A demi-human whose
+D:lifespan is three times that of a human.
+
+I:325
+J:祈りの『カズン』
+D:A ninja of the New Walister Alliance.  "Everyone, listen up.  That is
+D:Denam.  The man who slaughtered our compatriots at Balmamusa like
+D:livestock.  A pitiful man who threw away his ideals and lives only for his
+D:own ambition.  Listen, we are not afraid to lay down our lives for our
+D:ideals.  Let's show that man our courage!" (Tactics Ogre, Chapter 2,
+D:"Nobody Can Blame Me", Golborza Plain)
+
+I:332
+J:ジャック・オー・ランタン
+D:A lesser demon of the pumpkin kind that moves around extremely quickly,
+D:scattering lantern flames everywhere.
+
+I:350
+J:海賊『ダッザ』
+D:The captain of the pirates who ravage the Obero Sea from their base at
+D:Ndamsa Fortress.  Veldrei's husband.
+
+I:356
+J:毒牙の『ラミドス』
+D:A fellow bounty hunter of Xapan, and a summoner who commands the dead.
+D:Just as Xapan's information said, he ambushes Denam, the man with a bounty
+D:on his head, on the Golborza Plain.
+
+I:357
+J:ジャック・オー・フロスト
+D:A lesser demon of the snowman kind that moves around extremely quickly,
+D:hurling parts of its own body in all directions.
+
+I:368
+J:究極体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:370
+J:減紫の『ガノン』
+D:A berserker bounty hunter.  He came to Port Asyton in pursuit of Denam, who
+D:has a bounty of 30,000 goth on his head.
+
+I:380
+J:嘆きの『ヴェルドレ』
+D:The wife of the pirate Darza.  To avenge him, she challenges you to battle,
+D:together with the child in her belly.
+
+I:384
+J:『ストラス』
+D:One of the seventy-two demons of Solomon.  A prince of the netherworld who
+D:commands twenty-six legions of evil spirits.  He takes the form of a
+D:strange bird modeled on an owl.
+
+I:392
+J:騎士『フォルカス』
+D:Folcurt Reeda Lynde.  Formerly of the Valerian Liberation Front.  A Bakram.
+D:A man who graduated at the top of the Banaheum Officer Academy, a
+D:prestigious Bakram institution.  He fights to protect his beloved Cistina.
+
+I:393
+J:究極体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:410
+J:『カイム』
+D:One of the seventy-two demons of Solomon.  Once a mere angel, he is a
+D:self-made man who rose through the ranks to become a president commanding
+D:thirty legions of evil spirits.
+
+I:413
+J:激昂の『アーバイン』
+D:A Terror Knight of the Walister Resistance.  He stormed Coritanae Keep,
+D:which had been occupied by the Order of Godscale, and afterward stood guard
+D:in front of the keep's gate.
+
+I:414
+J:ソードマスター
+D:A swordsman who strives to master the sword in order to polish his soul and
+D:rise above his karma.
+
+I:429
+J:景仰の『フェルナトーレ』
+D:A knight of the Walister Resistance.  A Walister.
+
+I:434
+J:『毒デニム』
+D:Honorary president of the Poison Youth League.  His broken smile is
+D:charming.  His eyes are dead.
+
+I:438
+J:究極体
+D:A deliberately businesslike name.  Name suggestions wanted.
+
+I:441
+J:怒りの『モディリアーニ』
+D:A sorcerer of the Walister Resistance.  After taking Coritanae Keep, he was
+D:marching on Brigantys Castle when he went after Hobyrim, a suspicious
+D:swordsman he had spotted on the Bahanna Highlands.
+
+I:442
+J:テラーナイト
+D:A fearsome knight possessed by countless vengeful spirits.
+
+I:445
+J:パンプキンヘッド
+D:An artificial life form made from a glass pumpkin by the magic of the witch
+D:Deneb.  A pumpkin spook.  It is not an orc.
+
+I:449
+J:ウォーロック
+D:A researcher versed in the ancient tongue, who works hard to decipher the
+D:scriptures of spells.  A magician who truly deserves to be called a
+D:scholar.
+
+I:452
+J:サテュロス
+D:A creature of the demonic kind.  A magical warrior of the netherworld, with
+D:the horns and lower body of a goat.  It has intelligence on a par with a
+D:human.
+
+I:455
+J:騎士『タムズ』
+D:A knight of the Walister Resistance.  A subordinate of Leonar, who was
+D:dispatched to put down the Galgastan remnants at Quatriga Fortress.  Leonar
+D:was captured and Tamuz himself had been turned to stone, but they were
+D:rescued by the Order of Godscale.
+
+I:467
+J:ピクシー
+D:The evolved form of the fairy.  It can no longer be dismissed as a mascot
+D:that merely spreads cuteness.
+
+I:468
+J:『マルファス』
+D:One of the seventy-two demons of Solomon.  He is said to be a president
+D:commanding forty legions.  He takes the form of a wild pigeon.
+
+I:475
+J:ゴーゴン
+D:A monster with countless snakes growing in place of hair, and the lower
+D:body of a snake rather than that of a mermaid.
+
+I:489
+J:無念の『ディダーロ』
+D:A knight of the Galgastan royal order of knights.  He never forgot his
+D:loyalty, even after the death of the Hierophant.  He had marched out of
+D:Brigantys Castle for the decisive battle with the Resistance at Coritanae
+D:Keep, but was defeated by the Order of Godscale on the way, and joined
+D:Xaebos, who had retreated to Brigantys Castle.  They turned back to
+D:Brigantys Castle and, bracing for the decisive battle with the Order of
+D:Godscale, he guarded the south of the castle.
+
+I:492
+J:テンプルナイト
+D:An ordinary soldier of the Loslorien, the order of knights that the Holy
+D:Lodissian Empire dispatched to the Valerian Isles.  Many are elite knights,
+D:versed in every kind of swordsmanship and magic.
+
+I:497
+J:ビーストマスター
+D:Only those who have mastered the way of the beast tamer are called
+D:Beastmasters.  They are said to understand the hearts of beasts and to
+D:speak their language.
+
+I:498
+J:ガンナー
+D:A warrior from a foreign land who shoots his enemies with a "gun".
+
+I:505
+J:東雲の『カークリノーラス』
+D:A mage serving in the army of the Kingdom of Galgastan. He was assigned
+D:to defend the south side of Brigantys Castle.
+
+I:506
+J:焦香の『ビンガム』
+D:A Hawkman serving in the army of the Kingdom of Galgastan. He was
+D:defending the west side of Brigantys Castle when the Resistance suddenly
+D:appeared, and now he fights them.
+
+I:517
+J:エクソシスト『ベイレヴラ』
+D:A former exorcist of the New Walister Alliance.
+
+I:523
+J:究極体
+D:The name has been made deliberately bureaucratic. Suggestions for a
+D:proper name are welcome.
+
+I:532
+J:ヴァルキリー
+D:A battle mage who can attack in two ways, with melee and with magic, and
+D:shows her strength as an all-rounder.
+
+I:535
+J:魔術師『カモス』
+D:A wizard of the Walister Resistance. He was a subordinate of Leonar,
+D:dispatched to put down the remnants of the Galgastan forces at Qadriga
+D:Fortress. He was himself turned to stone, but was rescued by the Order of
+D:Godscale.
+
+I:536
+J:障碍の『ジルドア』
+D:A witch serving in the army of the Kingdom of Galgastan. A beautiful
+D:woman who looks elegant with a fan in her hand.
+
+I:552
+J:騎士『ペイトン』
+D:A former knight of the New Walister Alliance.
+
+I:553
+J:魔術師『バイアン』
+D:Bayin Rosen Orne. Formerly of the Valerian Liberation Front. A Bakram. A
+D:mage who once taught sorcery at the magic academy of the former Valerian
+D:Kingdom.
+
+I:571
+J:セイレーン
+D:A young and beautiful witch who can use many attack spells.
+
+I:572
+J:竜騎兵『ジュヌーン』
+D:Former commander of the Dragoon Corps of the Kingdom of Galgastan. Taken
+D:in by Gatialo's false information, he attacked Vasque village and
+D:slaughtered its villagers.
+
+I:573
+J:『ロンウェー公爵』
+D:Juda Ronwey. Former lord of Almorica Castle. A Walister. As the leader of
+D:the Walisters, a minority people, he has used every kind of scheme and
+D:intrigue.
+
+I:576
+J:ペガサス
+D:It is a large white horse with wings.
+
+I:577
+J:完全体
+D:The name has been made deliberately bureaucratic. Suggestions for a
+D:proper name are welcome.
+
+I:580
+J:戦士『フェスタ』
+D:A Valkyrie of the Walister Resistance. She was not favorably disposed
+D:toward Denam when he returned to the Resistance.
+
+I:581
+J:クレリック『アプサラ』
+D:A former cleric of the New Walister Alliance.
+
+I:587
+J:ストーン・ボルテックス
+D:It is a whirling vortex of dark, foul vapor that turns anything it
+D:touches to stone. It turns whatever lies around it to stone at random.
+
+I:597
+J:テンプルコマンド
+D:A knight's rank in the Holy Lodissian Empire. The holder commands a
+D:thousand Templars. In the case of the Loslorien, who are hand-picked
+D:elite, no more than about thirty serve under one.
+
+I:598
+J:枯色の『カムラット』
+D:A ninja serving in the army of the Kingdom of Galgastan. Captain of the
+D:supply unit bound for Brigantys.
+
+I:606
+J:黄土の『グアチャロ』
+D:A member of the Knights of the Kingdom of Galgastan. One of the central
+D:figures in carrying out the ethnic cleansing policy pushed by Hierophant
+D:Balbatos. He lied to Jeunan, commander of the Dragoon Corps, that Vasque
+D:village was a guerrilla base, and made him burn the village down. "Well
+D:now, I haven't the faintest idea what you're talking about. Either way,
+D:it was you, Jeunan, who stained your sword with blood!!" (Tactics Ogre,
+D:Chapter 3 "Deceiving and Deceived", inside Coritanae Keep)
+
+I:608
+J:リザードの王
+D:He is the king of the lizardmen.
+
+I:613
+J:暗紅の『ハイラム』
+D:A Terror Knight serving in the army of the Bakram-Valerian Kingdom.
+D:Following a scheme by Vyce and the priest Brantyn, he attacked, together
+D:with Vyce, the secret meeting at Rhime between Lanselot, commander of the
+D:Dark Knights, and Duke Ronwey. He held off Oz, Ozma and the other Dark
+D:Knights who were guarding Lanselot, so that Lanselot could be captured.
+D:But the plan failed when the Order of Godscale made a sudden assault, and
+D:he died fighting them.
+
+I:615
+J:騎士『デボルド・オブデロード』
+D:Dievold Obdilord. Son of the necromancer Nybeth and elder brother of
+D:Oelias. When the civil war broke out he resisted Hierophant Balbatos and
+D:fell victim to a "purge", but was revived by his father Nybeth's art of
+D:resurrection. Because the art was incomplete, however, he lost his mind.
+D:He wanders with his younger sister Oelias, who has turned against their
+D:father.
+
+I:619
+J:ユニコーン
+D:It is a white horse with a horn on its forehead. It is said to open its
+D:heart only to maidens.
+
+I:627
+J:完全体
+D:The name has been made deliberately bureaucratic. Suggestions for a
+D:proper name are welcome.
+
+I:628
+J:秘色の『ブルタコス』
+D:A mage serving in the army of the Kingdom of Galgastan. In a force led by
+D:Xaebos, commander of the royal knights, he defeated the Resistance led by
+D:Vyce. But that Resistance had been a decoy: Coritanae had already fallen
+D:and Balbatos had taken his own life. Learning this, Xaebos ordered the
+D:force to march on Coritanae Keep. On the way, in the Psonji Weald, it met
+D:the Resistance and fought.
+
+I:642
+J:災いの『ダゴン』
+D:A bounty hunter. To save his sick daughter, he is after the head of
+D:Denam, who carries a bounty of 30,000 goth.
+
+I:647
+J:ヴェネフィック
+D:The word means "poisoner". An expert in all poisons and poison magic, and
+D:also an assassin. Originally a specialist in pharmacology, this poisoner
+D:has not used that knowledge for medicine, but has turned it to nothing
+D:but the making of poisons.
+
+I:650
+J:『フォルネウス』
+D:One of the Seventy-two Demons of Solomon. A marquis served by twenty-nine
+D:legions of evil spirits, he takes the form of a huge ratfish. He is said
+D:to have once held the rank of Thrones among the angels.
+
+I:651
+J:鉄紺の『ウラム』
+D:A mage serving in the army of the Kingdom of Galgastan. After the kingdom
+D:fell, he never forgot his loyalty to his lord Balbatos, and wandered from
+D:place to place to avenge the grudge of the Galgastan army.
+
+I:654
+J:僧侶『オリアス・オブデロード』
+D:Oelias Obdilord. Daughter of the necromancer Nybeth. She goes to the
+D:Palace of the Dead to slay Nybeth, who made even her brother Dievold a
+D:subject of his necromantic experiments.
+
+I:656
+J:灰白の『ルロッツァ』
+D:A warlock serving in the Bakram army, assigned together with Sherri to
+D:the search for the forbidden spell.
+
+I:659
+J:ゾンビソルジャー
+D:A warrior who died on the battlefield and was made undead through
+D:necromancy; what is commonly called a living corpse. It has kept the
+D:skills it had in life, but its strength has faded.
+
+I:660
+J:暗黒騎士『オズ』
+D:Oz Moh Glacius. One of the seven Commanders of the Loslorien. Born in
+D:Galius, the holy capital of Lodis. A Lodissian. An elite swordsman who
+D:graduated at the top of his class from the prestigious Zanam Military
+D:Academy. After three years as the head of three regiments in the Ganan
+D:Light Division, he was assigned to the Dark Knights. A sadistic man.
+D:"I'll take real good care of you. Now, come over here." (Tactics Ogre,
+D:Chapter 3 "Things That Cannot Be Saved", Boed Fortress)
+
+I:662
+J:ゾンビナイト
+D:A warrior who died on the battlefield and was made undead through
+D:necromancy; what is commonly called a living corpse. It has kept the
+D:skills it had in life, but its strength has faded.
+
+I:663
+J:ゾンビバーサーカー
+D:A warrior who died on the battlefield and was made undead through
+D:necromancy; what is commonly called a living corpse. It has kept the
+D:skills it had in life, but its strength has faded.
+
+I:669
+J:孤高の『マーキュリー』
+D:A swordmaster serving in the Bakram army, assigned to defend the west of
+D:Phidoch Castle so that it could hold out until reinforcements from the
+D:main force of the Loslorien arrived.
+
+I:670
+J:暗殺者『プロキオン』
+D:Prokion. Former captain of the assassin unit that secretly supported the
+D:Kingdom of Ofays.
+
+I:674
+J:木賊の『ミュンツァー』
+D:A summoner serving in the army of the Kingdom of Galgastan. In a force
+D:led by Xaebos, commander of the royal knights, he defeated the Resistance
+D:led by Vyce. But that Resistance had been a decoy: Coritanae had already
+D:fallen and Balbatos had taken his own life. Learning this, Xaebos ordered
+D:the force to march on Coritanae Keep. On the way, at Lake Bordu, he
+D:fought the Order of Godscale and was killed in action.
+
+I:677
+J:ケンタウロス
+D:A race of half-man, half-horse. They live in the mountains and fields and
+D:run about with bow and arrow in hand. They are savage, violent and
+D:lecherous by nature.
+
+I:678
+J:勇躍の『オルゲウ』
+D:A Hawkman serving in the army of the Kingdom of Galgastan. After the
+D:Hierophant's death this Hawkman was defending Brigantys Castle, and is
+D:now looking for the enemy in order to avenge Gildora.
+
+I:679
+J:魔女『ベスティアリ』
+D:A witch serving in the army of the Bakram-Valerian Kingdom. Until
+D:reinforcements from the main force of the Loslorien arrived, she was
+D:defending the south of Phidoch Castle so that it could hold out.
+
+I:681
+J:砂漠の『ロボス』
+D:Lobos. A Galgastani. The leader of a band of thieves who have made their
+D:base at Boed Fortress, which the Valerian Liberation Front has left.
+
+I:682
+J:ゾンビセイレーン
+D:A warrior who died on the battlefield and was made undead through
+D:necromancy; what is commonly called a living corpse. It has kept the
+D:skills it had in life, but its strength has faded.
+
+I:683
+J:毒使いの『ファルファデ』
+D:A poisoner who, on Brantyn's orders, is searching for Dragon Tongue magic
+D:in the Palace of the Dead.
+
+I:684
+J:敗残兵『エイシェン』
+D:Aeshan. A swordmaster formerly serving in the army of the Kingdom of
+D:Galgastan. Even after the kingdom fell, his loyalty to Balbatos did not
+D:change. He lay hidden in Ndamsa Fortress, waiting for a chance to take
+D:revenge.
+
+I:686
+J:激憤の『バヴァン』
+D:Barvan. The leader of the pirates who ravaged the Obero Sea. He operated
+D:from Gecho Fortress. He fights the Resistance, who came in search of the
+D:forbidden spell.
+
+I:687
+J:海賊船長『エルリグ』
+D:Merrik Ehlrig. A survivor of the Valerian Liberation Front. A Galgastani.
+D:When the Dark Knights attacked Boed Fortress, he happened to be at sea
+D:and so was saved. Later he met Cerya again in the city of Rhime, and hid
+D:at Qadriga Fortress as a pirate. When the Resistance heard rumors of
+D:pirates and came to visit, he revealed his true identity in their talks
+D:and joined the Resistance.
+
+I:695
+J:紫紺の『パジョー』
+D:A dragoon serving in the Bakram-Valerian Kingdom, stationed at Lambiss
+D:Hill. "Why are you here?! Then the force at Iorumza Canyon was a decoy!
+D:You mean to march south from Barnicia, but I will not allow it! I will
+D:not let you pass one step beyond this point!" (Tactics Ogre, Chapter 4
+D:"Hand in Hand", Lambiss Hill)
+
+I:699
+J:ホワイトナイト
+D:An outstanding knight, one of only a handful even among the Xenobian Holy
+D:Knights.
+
+I:706
+J:戦慄の『アナベルグ』
+D:A lich who commands an army of the undead. Having overcome the flow of
+D:time, he made Geyld Fortress his base. He fights the Order of Godscale,
+D:who came in search of the forbidden spell.
+
+I:707
+J:拘泥の『スタノスカ』
+D:A beast tamer serving in the Bakram-Valerian Kingdom, and a Bakram
+D:supremacist. At Iorumza Canyon this tamer fought the Resistance's decoy
+D:force and blocked its advance, and now fights the Order of Godscale led
+D:by Denam.
+
+I:714
+J:傭兵『ザパン・イリューダス』
+D:Zapan Illudus. A professional fighter who lends his strength in exchange
+D:for money, according to the term or the mission. For money, however, he
+D:will take on any job, however dirty. It is rumored that he would sell
+D:even his own mother to the enemy.
+
+I:721
+J:ゾンビアーチャー
+D:A warrior who died on the battlefield and was made undead through
+D:necromancy; what is commonly called a living corpse. It has kept the
+D:skills it had in life, but its strength has faded.
+
+I:731
+J:ダークストーカー
+D:A tribe of darkness that carries the blood of the Demon Realm and lives
+D:only in the dark.
+
+I:734
+J:銃士『レンドル』
+D:A renowned gunman, but he seems to have lost his gun somewhere.
+
+I:735
+J:人斬り『ハンゾウ』
+D:Hanzo. A swordsman, commander of the Violet Holy Knights of the
+D:Bakram-Valerian Kingdom. He was preparing at Oeram for the Resistance's
+D:advance. He fought the Resistance led by Denam.
+
+I:736
+J:ゾンビアマゾネス
+D:A warrior who died on the battlefield and was made undead through
+D:necromancy; what is commonly called a living corpse. It has kept the
+D:skills it had in life, but its strength has faded.
+
+I:737
+J:ネクロマンサー
+D:A mage who practices necromancy (foretelling the future by communing with
+D:spirits). Their knowledge rivals that of a sage. In practice the art
+D:centers less on divination than on the arts of the dead: breathing life
+D:into the dead and creating new life from corpses.
+
+I:738
+J:騎士『ラウアール』
+D:A Terror Knight serving in the Bakram-Valerian Kingdom. He was defending
+D:the front gate of Heim Castle.
+
+I:743
+J:『フェネクス』
+D:One of the Seventy-two Demons of Solomon. An earl who commands twenty
+D:legions of evil spirits. He sings a song that echoes in the heart without
+D:ceasing, and his voice easily enchants all who hear it.
+
+I:745
+J:ダークウィング
+D:A bird of darkness that carries the blood of the Demon Realm and lives
+D:only in the dark. It is feared as a bird of ill omen that brings
+D:misfortune.
+
+I:746
+J:オピニンクス
+D:A beast with the body of a lion, the head and wings of an eagle, and the
+D:tail of a bear. It was originally a sacred beast created as a mount for
+D:the gods, but the poisonous miasma of the Palace of the Dead drove it to
+D:become a ferocious monster.
+
+I:747
+J:落涙の『ボティス』
+D:Botis. A mage serving in the army of the Kingdom of Galgastan. After the
+D:kingdom fell, he waged guerrilla war against the Resistance as a remnant
+D:soldier, centered on Qadriga Fortress. He turned to stone the unit led by
+D:Leonar, which came to put down the uprising, and took Leonar prisoner. At
+D:the same time he also captured Hobyrim, a suspicious swordsman from a
+D:foreign land.
+
+I:755
+J:竜使い『ハルファス』
+D:A dragon tamer serving in the Bakram-Valerian Kingdom, defending the rear
+D:gate of Heim Castle in order to protect Lord Brantyn.
+
+I:757
+J:騎士『ヴェルマドワ』
+D:A knight of the Bakram Knights. He was defending the south of Heim
+D:Castle. Just before the battle with the Resistance he realized that they
+D:could not win and tried to let his men escape, but when his men saw that
+D:he meant to stand his ground, they too stood firm.
+
+I:758
+J:ルフ
+D:A huge monstrous bird that nests in the Palace of the Dead. In the Ogre
+D:Battle, it played its part as a mount for the demons.
+
+I:760
+J:騎士『グランディエ』
+D:A knight of the Bakram Knights. He was defending the courtyard of Heim
+D:Castle.
+
+I:761
+J:竜使い『オクシオーヌ』
+D:Ocionne Rabine. From Vasque village. A Galgastani. A survivor of the
+D:believers of the Vasque faith, which worships Vasque, god of the sea. She
+D:was searching for her enemy Jeunan. She found Jeunan serving in the
+D:Resistance and attacked, but Denam persuaded her, and she joined the
+D:Resistance in order to learn the truth.
+
+I:762
+J:風の『システィーナ』
+D:Cistina Phoraena. Formerly of the Valerian Liberation Front. A Bakram.
+D:Born into a priestly family of the Philaha faith, she was driven from the
+D:royal capital when her father lost a struggle for power against the
+D:priest Brantyn. After losing her mother, she began guerrilla activity
+D:together with her sister Cerya, but came into conflict with Cerya, who
+D:aimed at revolution by armed struggle, over the course to take, and left
+D:the Valerian Liberation Front. "...Sister is wrong. There must be a
+D:better way. To not care what means you use for the sake of your goal is
+D:just like Brantyn or the Duke. That is wrong. ...Sister, did we fight to
+D:build a bloodstained kingdom? No, we didn't, did we, Sister...." (Tactics
+D:Ogre, Chapter 2 "Because I Don't Want to Resign Myself to a World Where
+D:Nothing Goes My Way", Boed Fortress)
+
+I:763
+J:騎士『ザエボス』
+D:Xaebos Ronsenbach. Former commander of the Galgastan knights. A
+D:Galgastani. As the right hand of Hierophant Balbatos, he played a central
+D:part in purging the opposition and oppressing the Walisters. After the
+D:Hierophant's death he carried out guerrilla activity with the survivors.
+D:"You're late, Denam. I've been waiting. I finally understand why you, who
+D:were called a hero, are being hunted by the Resistance. The Duke simply
+D:dislikes you. You never dirty your hands, you speak only pretty words,
+D:and you steal only the sweet parts... You leave the dirty work to others
+D:while flaunting ideals and justice... That is what you are. Before long
+D:the people will give up on the Duke and support you, because you are less
+D:'stained' than he is. But that too will last only a moment. Sooner or
+D:later you will be 'stained' as well. Heh heh heh. Now, enough chatter..."
+D:(Tactics Ogre, Chapter 3 "What Drives Us Is Ambition and Desire, What
+D:Lies Down Are Dogs and Pigs", inside Brigantys Castle)
+
+I:767
+J:『バルバトス枢機卿』
+D:The leader of the Kingdom of Galgastan. Wanting to take the southern half
+D:of the Valerian Isles, he schemed to drive out the Walisters under the
+D:banner of "ethnic cleansing". His high-handed policy provoked resistance
+D:even among his own people, but he purged even that by military force; a
+D:cold-blooded man. "How pitiful you are, Ronwey. You are no different from
+D:me... Lazy, full of complaints, never dirtying your own hands... That is
+D:what the people are. Ronwey, you think you have the people in your
+D:grasp... But you are mistaken. It is not they who dance in the palm of a
+D:hand. It is you and I... The man you see in me is your own future.
+D:Hahahaha." (Tactics Ogre, Chapter 2 "Because I Don't Want to Resign
+D:Myself to a World Where Nothing Goes My Way", The Last of Hierophant
+D:Balbatos)
+
+I:770
+J:ヴァレリアの覇者『jnk』
+D:She is one of the greatest witches ever to walk this world. Her
+D:bloodstained, self-made staff has buried countless victims, together with
+D:her own magic power.
+
+I:771
+J:炎の『セリエ』
+D:Cerya Phoraena. Leader of the Valerian Liberation Front. A Bakram. After
+D:the civil war she began missionary work in the Philaha faith, which
+D:worships Philaha, father of the gods, as the absolute god. Feeling the
+D:limits of religion, however, she organized the Valerian Liberation Front,
+D:aiming to end the war by force of arms. "...My sister cannot face
+D:reality. However high one's ideals, they mean nothing unless one's feet
+D:are on the ground. A bird looking down from the sky cannot understand the
+D:feelings of an ant crawling on the earth. My sister, who cannot dirty her
+D:hands, cannot bring about a true revolution. ...Just like you. ...But
+D:even so, I love my sister. Look after her. Be her strength." (Tactics
+D:Ogre, Chapter 2 "Because I Don't Want to Resign Myself to a World Where
+D:Nothing Goes My Way", Boed Fortress)
+
+I:772
+J:占星術師『ウォーレン』
+D:Warren Omon. Former commander of the Mage Corps of the Kingdom of New
+D:Xenobia. Birthplace unknown. A Xenobian. The hidden force behind the
+D:founding of the Kingdom of New Xenobia.
+
+I:773
+J:暗黒騎士『オズマ』
+D:Ozma Moh Glacius. One of the seven Commanders of the Loslorien. Born in
+D:Galius, the holy capital of Lodis. A Lodissian. A member of the Glacius
+D:clan, which supports the Galius Academy of Magic. She is the fraternal
+D:twin sister of the Dark Knight Oz. A battle mage who excels in sorcery as
+D:well as swordsmanship.
+
+I:778
+J:ルシファークロウ
+D:An ominous bird said to have been born from the blood shed by the dark
+D:god Dagda. The blood that flows through its body is colder than ice.
+
+I:780
+J:ストーン・ハウンド
+D:Wherever this dog with dark gray stone skin has passed, everything must
+D:have turned to stone.
+
+I:787
+J:白魔道士『ヴェパール』
+D:A white mage belonging to the Bakram secret search party. Taking over the
+D:search for the "forbidden spell" from Sherri, who had failed to abduct
+D:High Priest Moruba and been cast out, this mage instead learned the
+D:secret of the "Fire Crest", a treasure jewel more precious than the
+D:forbidden spell.
+
+I:789
+J:騎士『レオナール』
+D:Leonar Reci Rimon. Commander of the Knights of Almorica. A Walister. He
+D:is something like the right hand of Duke Ronwey. His mother was murdered
+D:by Galgastanis. He is not swayed by momentary emotion and judges matters
+D:with extreme rationality, yet he also has a calm side. "This was our
+D:fate. When you appeared before me, it had already been decided that it
+D:would come to this. If you seek the light, I will bury myself in darkness
+D:and stain my hands with blood. ...Now, draw your sword. Let the two of us
+D:settle this battle alone." (Tactics Ogre, Chapter 3 "What Drives Us Is
+D:Ambition and Desire, What Lies Down Are Dogs and Pigs", inside Coritanae
+D:Keep)
+
+I:791
+J:魔術師『シェリー』
+D:Sherri Phoraena. Born in Heim, the royal capital. A Bakram. After the
+D:civil war she took part in the missionary work of the Philaha faith with
+D:her father Moruba and her sisters, but left the order after losing her
+D:mother. She then joined the Bakram army and worked as Brantyn's right
+D:hand. "Go home...? Go home, where...? I have no place to go home to
+D:anymore... That's right... there is none anymore... You took it from me!"
+D:(Tactics Ogre, Chapter 4 "Hand in Hand", Sherri in Sorrow)
+
+I:794
+J:暗黒騎士『ヴォラック』
+D:Volaq Windsalf. One of the seven Commanders of the Loslorien. Birthplace
+D:unknown. Not only his birthplace but his past military career and even
+D:how he came to join the Dark Knights are shrouded in mystery. His loyalty
+D:to Lodis is high, and Tartaros trusts him as a confidant second only to
+D:Balxephon.
+
+I:796
+J:『テュポン』
+D:Its body is as long as a serpent's. It has a thousand faces and a winged
+D:torso.
+
+I:797
+J:盲目の剣聖『ハボリム』
+D:Hobyrim Vandam. A blind sword saint.
+
+I:799
+J:暗黒騎士『マルティム』
+D:Martym Noumous. One of the seven Commanders of the Loslorien. Born in
+D:Galius, the holy capital of Lodis. A Lodissian. A swordsman described as
+D:"a wolf in sheep's clothing". He stops at no means to win, and lives by
+D:the motto "without dirtying one's hands". He is also one of the Dark
+D:Knights who attacked Golyat. "Oh, great God in heaven! This man is lying
+D:to me! It is a precious item that we salvaged, yet the men we hired stole
+D:it and are hiding it! God! Please, in Your heart, have mercy on this
+D:sinful lamb!" (Tactics Ogre, Chapter 4 "Hand in Hand", Salvaging the
+D:Sunken Ship Ramunzen)
+
+I:805
+J:フレアブラス
+D:A kind of copper dragon whose orange, shining copper scales protect her
+D:from fire attacks. The true flames she breathes will burn everything to
+D:ashes!
+
+I:807
+J:暗黒騎士『バルバス』
+D:Barbas Dahd Geuse. One of the seven Commanders of the Loslorien. Born in
+D:Bowmouth, on the frontier of Lodis. A Lodissian. A giant, the most cruel
+D:of the seven Commanders and the one who loves blood most. He was tried
+D:for beating a superior officer to death, and was about to be executed
+D:when Tartaros picked him up. "Hm... That I, of all people, should be put
+D:under pressure! ...Can I justify it?" (Tactics Ogre, Chapter 4 "Hand in
+D:Hand", courtyard of Barnicia Castle)
+
+I:810
+J:鳳凰
+D:It is a ruler among the birds and a symbol of virtue and grace. It has
+D:the beak of a rooster, the face of a swallow, the forehead of a fowl, the
+D:neck of a snake, the back of a tortoise, the hindquarters of a stag, and
+D:tail of a fish.
+
+I:813
+J:司祭『ブランタ』
+D:Brantyn Morne. A Bakram. After the death of King Dorgalua of Valeria, a
+D:man of burning ambition who seized the real power. He made a secret pact
+D:with the northern military power Lodis, and under its protection founded
+D:the Bakram-Valerian Kingdom. He is Prancet's own elder brother and
+D:Denam's uncle. "...What is wrong with using people! What is wrong with
+D:it! Unless one does this, a man of common birth cannot live! It cannot be
+D:done with pretty words alone! Listen, Denam! In this world there is no
+D:such word as 'fairness'! Humans are born 'unfair'! But what is the use of
+D:lamenting one's birth?! If you have time to lament, fight! Fight and win
+D:everything! If you do not want to remain weak, there is nothing to do but
+D:put yourself in the midst of battle! You, too, obtained your present
+D:position that way, did you not? Can you say that it is not so?! You
+D:obtained your position by sacrificing someone! For you to criticize me is
+D:utterly laughable!!" (Tactics Ogre, Chapter 4 "Hand in Hand", inside Heim
+D:Castle)
+
+I:814
+J:ダークアイ
+D:A giant of darkness that carries the blood of the Demon Realm and lives
+D:only in the dark.
+
+I:815
+J:レリクスナイト
+D:A berserker that has come from another world called Relics. Hunting down
+D:the humans it meets seems to be its pleasure.
+
+I:817
+J:魔女『ベルゼビュート』
+D:"How rare, for a living human to come all the way here..." At a glance
+D:she looks like an ordinary young girl, but her abilities far surpass the
+D:limits that a human can possess.
+
+I:818
+J:水の『オリビア』
+D:Olivya Phoraena. Born in Heim, the royal capital. A Bakram. Daughter of
+D:High Priest Moruba of the priestly house of the Philaha faith, and a
+D:former priestess of the Philaha faith. She was Denam's playmate when they
+D:were children. After the civil war she continued the missionary work of
+D:the Philaha faith with her father, and after her father disappeared she
+D:worked as an executive of the order.
+
+I:819
+J:魔道士『ラドラム』
+D:A warlock who came from a foreign land in search of the legendary Dragon
+D:Tongue magic. His knowledge is extremely deep, far surpassing that of the
+D:sages and elders of Valeria.
+
+I:820
+J:暗黒騎士『バールゼフォン』
+D:Balxephon V. Rahms. Number two of the Loslorien. Born in Galius, the holy
+D:capital of Lodis. A Lodissian. Son of Brigadier General Vogras, who
+D:commands five knight orders in the homeland. Hobyrim's own elder brother.
+D:That the Loslorien stands independent of the Senate is thanks to this
+D:man's thick connections. "We are surely winning the hearts of the people!
+D:You know that too! Do not trouble me any further! The gears have already
+D:begun to turn! Be silent and follow me!!" (Tactics Ogre, Chapter 4 "Hand
+D:in Hand", Hobyrim's True Identity)
+
+I:823
+J:妖女『ザドバ』
+D:"That's right, humans were turned to stone while still alive. They were
+D:turned to stone by the curse of the guardian who protects this temple.
+D:All the stone statues in this temple are like that..." (Tactics Ogre,
+D:Chapter 4 "Hand in Hand", Palace of the Dead) At first glance she looks
+D:like a young woman, but... she is a mighty protector of the temple.
+
+I:824
+J:暗黒騎士『アンドラス』
+D:Andoras Gaffryn. One of the seven Commanders of the Loslorien. Born in
+D:Neimaran, on the frontier of Lodis. A Lodissian. The youngest child of
+D:the former royal house of Nildahme, which once held a great power
+D:centered on the Rai Sea. He prefers fighting with his body to
+D:swordsmanship, but is in fact a strategist who never neglects caution and
+D:analysis. "...What do you know! What can you possibly know! There are
+D:many in Lodis who were once the people of my Nildahme. They are hostages.
+D:Hostages, to me!" (Tactics Ogre, Chapter 4 "Hand in Hand", Hanging
+D:Gardens "Between Heaven and Earth")
+
+I:825
+J:『ベリアル』
+D:One of the Seventy-two Demons of Solomon. The name means "worthless",
+D:"wicked" and "useless". Belial's magical power is immense, and the extent
+D:of his true strength is beyond measure.
+
+I:826
+J:『ダークドラゴン』
+D:A dragon of darkness that carries the blood of the Demon Realm and lives
+D:only in the dark.
+
+I:828
+J:『レラージュ』
+D:One of the Seventy-two Demons of Solomon. Also called Lerajie or Lerazie.
+D:He is depicted as a hunter in green clothes armed with a bow and arrows,
+D:and is a marquis who leads thirty legions.
+
+I:829
+J:寂寞の巨人
+D:A giant who seeks eternal sloth. He releases his pain and turns people to
+D:stone.
+
+I:832
+J:大魔法使い『イェンダー』
+D:"You think you can kill me? You fool!" No matter how many times this
+D:great archwizard is defeated, he rises again from the depths of Hell!
+
+I:833
+J:無神論者『フィリニオン』
+D:A fusilier serving in the Bakram army. "You fools who still believe in
+D:the power of God! Bow down before the muzzle of my gun! I will prove that
+D:the power of this Camandas gun, brought in from Barbauda, surpasses
+D:magic!!" (Tactics Ogre, Chapter 4 "Hand in Hand", Boulder Sands)
+
+I:836
+J:『イポス』
+D:One of the Seventy-two Demons of Solomon. A mighty prince and earl who
+D:rules thirty-six legions of demons. He sees through the present, past and
+D:future, and is said to tell the truth to anyone who asks, especially
+D:about the future.
+
+I:839
+J:『エリゴス』
+D:One of the Seventy-two Demons of Solomon. Also called Eligor, Erigor or
+D:Abigor. He is depicted as a handsome knight in black clothes carrying a
+D:spear and a war banner, a serpent, or a royal staff or scepter, and
+D:appears riding a black horse. A duke who commands sixty legions.
+
+I:840
+J:幻獣『フウェイル』
+D:A huge phantom beast that swims around the Obero Sea.
+
+I:841
+J:魔女『デネブ』
+D:Deneb Rove. A beautiful witch who loves pumpkins.
+
+I:842
+J:竜牙の『フォーゲル』
+D:The greatest knight in the world. He defeated the Divine Dragon known as
+D:the Heavenly Dragon, but was cursed and turned into a dragon, and became
+D:a knight of the sky in order to atone for his sin.
+
+I:843
+J:巨人『ブリアレオス・ヘカトンケイル』
+D:A legendary giant, feared even by the gods, said to have one hundred
+D:hands and fifty heads.
+
+I:845
+J:大天使『シャヘル』
+D:"God! Teach me, foolish as I am: why do You love humankind? Is it because
+D:they bear Your likeness...?! God, this heart that loves You is the truth.
+D:Are You telling me that even this is a sin...?! O longing of my heart,
+D:thirst that is never to be filled! Why do You forsake me? Your radiant
+D:form, more than anyone I chased after You!! Your dazzling light, more
+D:than anyone I loved You!!"
+
+I:846
+J:母なる女王『エキドナ』
+D:Her upper body is that of a beautiful woman and her lower body is that of
+D:a spotted great serpent. By Heracles she bore Agathyrsus, Gelonus,
+D:Genoros and Scythes, and by lying with Typhon she also bore many
+D:monsters, including Cerberus, Orthros and the Sphinx.
+
+I:848
+J:ガーディアン『円舞』
+D:The first of the four Guardians who are the guardian deities of this
+D:dungeon.
+
+I:849
+J:暗黒竜『デスバハムート』
+D:A dragon that inherited the blood of the Divine Dragon but fell onto the
+D:Dark Path.
+
+I:850
+J:ゲリュオンの怪犬『オルトロス』
+D:A three-headed, three-bodied demon dog kept by the monster Geryon, who
+D:lives on the island of Erytheia at the end of the world.
+
+I:851
+J:ガーディアン『青月』
+D:One of the four Guardians who protect the dungeon.
+
+I:852
+J:ガーディアン『金武』
+D:One of the four Guardians who protect the dungeon.
+
+I:855
+J:ウォリアー『ヴァイス・ボゼック』
+D:Vyce Bozeck. Denam's childhood friend. A Walister. "That is only what you
+D:thought! I hate you! I envied you... Liked by everyone, with a
+D:good-natured father and a beautiful, kind sister..." (Tactics Ogre,
+D:Chapter 2 "Because I Don't Want to Resign Myself to a World Where Nothing
+D:Goes My Way", inside Almorica Castle)
+
+I:856
+J:ガーディアン『烈空』
+D:It is the strongest of the Guardians.
+
+I:857
+J:『アモン』
+D:One of the Seventy-two Demons of Solomon. A grand marquis of Hell. He
+D:appears as a wolf with the head of a huge bird, whose beak has dog's
+D:fangs, and the tail of a serpent.
+
+I:858
+J:屍術師『ニバス』
+D:Nybeth Obdilord. Birthplace unknown. A Galgastani. Much of his background
+D:is shrouded in mystery... "What do you mean by that? Talking such
+D:nonsense... Can you, who commit murder in the name of revolution,
+D:criticize me? Your hands are covered in blood, and so are mine, just the
+D:same..." (Tactics Ogre, Chapter 4 "Hand in Hand", Palace of the Dead)
+
+I:859
+J:王女『ベルサリア・オヴェリス・ヴァレリア』
+D:Versalia Oberyth, also known as Catiua Pavel. A Bakram. Daughter of the
+D:Conqueror King Dorgalua and Manafloa, the queen's handmaid. She was taken
+D:in by Prancet immediately after her birth and raised in Golyat as his
+D:daughter Catiua. Precisely because she loved her younger brother Denam so
+D:deeply, she hated him fiercely.
+
+I:860
+J:暗黒騎士『ランスロット』
+D:Lanselot Tartaros. A Lodissian. Commander of the Dark Knights Loslorien,
+D:sent to Valeria by the Holy Lodissian Empire in accordance with its
+D:secret pact with Brantyn, the leader of Bakram. "...Humans are creatures
+D:born carrying a deep karma. For the sake of the pleasure called
+D:happiness, they sacrifice others without a second thought. Wishing for an
+D:easier life, they will not even hesitate to kill. Yet even such people
+D:can feel guilt. They think: this is not my fault. It is the fault of the
+D:world. Then let us set the disordered world right. Let us make it an
+D:orderly world. We shall give the foolish masses, who can do nothing but
+D:wallow in pleasure, a role that suits them. Everything will be managed by
+D:us!" (Tactics Ogre, Chapter 4 "Hand in Hand", The Two Lanselots)
+
+I:861
+J:ロード『デニム・モウン』
+D:Denam Pavel, a Bakram. After rescuing the captive Duke Ronwey and being
+D:praised as the "Hero of Golyat", he left the Walister Resistance in the
+D:wake of the Balmamusa massacre. Later, after the death of Duke Ronwey, he
+D:reconciled with the Resistance and effectively became the leader of
+D:southern Valeria. However, he failed to rescue Princess Versalia, who was
+D:held captive in Barnicia Castle. Thereafter he took the title of Lord and
+D:became the king of Valeria.
+
+I:862
+J:覇王『ドルガルア』
+D:The thought-form of Dorgalua Oberyth Valeria, who has lost his body. His
+D:power exceeds that of humankind and has reached the realm of the gods.
+D:Most of his memories from life are lost, and he exists only on hatred of
+D:the living and attachment to this world. He is the final boss of this
+D:dungeon.
+
+I:863
+J:究極体
+D:The name has been made deliberately bureaucratic. Suggestions for a
+D:proper name are welcome.
+
+I:870
+J:コカトリス
+D:A magical beast with the body of a chicken and the scales and tail of a
+D:snake. It turns everything to stone.
+
+I:871
+J:ゼブラ
+D:A rare beast with a striped pattern, unlike any other. Said to be a
+D:phantom animal, its pelt is traded at a high price.
+
+I:883
+J:風使い『カノープス』
+D:Canopus Wolph. Former commander of the Xenobian Beast Legion of the
+D:Kingdom of New Xenobia. Born in the city of Peshawar in the Charlom
+D:District. A descendant of the Vartan, the ancient winged people said to
+D:have ruled the heavens.
+
+I:896
+J:セントール
+D:A female centaur. Her fantastic singing voice, as she plays her lyre and
+D:sings, enchants all who hear it and steals their souls.
+
+I:898
+J:エンジェルナイト
+D:The form taken, after death, by a pure-hearted woman who trained as a
+D:warrior and was reborn as an angel.
+
+I:899
+J:レイヴン
+D:A Hawkman fallen to the Dark Path (Darkside). It has jet-black plumage.
+D:Its nature is extremely ferocious; it is more accurate to say that it
+D:does not stop fighting until it sees blood than that it merely likes to
+D:fight.
+
+I:900
+J:ゲイビアル
+D:A crocodile man covered in hard scales. It far surpasses lizardmen in
+D:both power and speed.
+
+I:901
+J:ミミック(ミミック(箱)の像)
+D:This strange creature, transformed into an image of a strange creature
+D:that is transformed into an abandoned box, waits for a stupid adventurer
+D:to get close to its poisonous claws.
+
+I:902
+J:マッドハロウィン
+D:Of the pumpkin warriors called Pumpkinheads, made by the witch Deneb,
+D:this is an elite so well made that Deneb praises it to the skies. What
+D:exactly is so well made about it, no one else can tell, though...
+
+I:914
+J:我執の『ガンプ』
+D:Ganpp Vochstein. A Galgastani. A man of an extremely coarse nature who
+D:offends people, and whose arrogant attitude makes him enemies. For that
+D:reason people disliked him and would not even let him come near. He in
+D:turn avoided people, and opened his heart only to monstrous beasts.
+
+I:915
+J:ガンプの親友『オブダ』
+D:This is Ganpp's dearest friend, whom he treasures above all else.
+
+I:916
+J:ガンプの親友『ベルダ』
+D:This is Ganpp's dearest friend, whom he treasures above all else.
+
+I:917
+J:ガンプの友人『ザンガ』
+D:This is a dear friend of Ganpp the Egoist.
+
+I:918
+J:ガンプの友人『バンガ』
+D:This is a dear friend of Ganpp the Egoist.
+
+I:919
+J:グリフォン『オブダ・ジュニア』
+D:The child of Ganpp's dear friend Obda.
+
+I:920
+J:グリフォン『ベルダ・ジュニア』
+D:The child of Ganpp's dear friend Berda.
+
+I:921
+J:『伝説のオウガ』
+D:She is a legendary witch who is said to have destroyed everything that
+D:exists in this world. Changing her body and passing through the wheel of
+D:reincarnation, she cannot be defeated by anyone.
+
+I:922
+J:愛と正義の女神『フェルアーナ』
+D:The god of freedom and justice in Xytegenian mythology.
+
+I:923
+J:知神『ホルプ』
+D:The god who governs the laws of nature in Xytegenian mythology.
+
+I:924
+J:戦争と勝利の女神『イシュタル』
+D:When Philaha, the sun god, joined forces with his brother gods and
+D:defeated his father Vora, the god of heaven, Vora summoned his last
+D:strength and created a god from the blood that flowed out. That god was
+D:Ishtar. Although born from a sea of blood, she wore a spotless white
+D:dress and armor and carried the white sword Zanzibar.
+
+I:925
+J:太陽神『フィラーハ』
+D:The king of the heavens and the highest god of the heavens.
+
+I:926
+J:天竜『ディバインドラゴン』
+D:A phantom dragon said to be both god and devil. To humans of pure heart
+D:it is a god, but to humans of ugly heart it brings terror. Many people
+D:who sought to fatten their own purses have fallen prey to it.
+
+I:930
+J:みずぼらしい老人
+D:An old person who has lost every dream and hope.
+
+I:931
+J:醜い老婆
+D:An old woman whose expression says that she has nothing left in her.
+
+I:932
+J:憔悴した女性
+D:From this woman's expression one can read nothing but exhaustion and
+D:disappointment.

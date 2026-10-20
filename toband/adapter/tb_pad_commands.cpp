@@ -199,8 +199,12 @@ std::vector<presentation::PadCommandWireEntry> entries_from_seeds()
         presentation::PadCommandWireEntry wire;
         wire.id = id++;
         wire.command = seed.command;
-        wire.group_utf8 = sjis_to_utf8(seed.group_sjis, std::char_traits<char>::length(seed.group_sjis));
-        wire.label_utf8 = sjis_to_utf8(seed.label_sjis, std::char_traits<char>::length(seed.label_sjis));
+        //! **英語ならカタログで引く**（`append_extras()` と同じ。この表の字もコアの表を通らず、Term にも出ない）。
+        //! 引けなければ日本語のまま返る。必要な鍵は `catalog_keys_needed` で申告してある。
+        const char *group = tb_tr(seed.group_sjis); //GB: english layer #33
+        const char *label = tb_tr(seed.label_sjis); //GB: english layer #33
+        wire.group_utf8 = sjis_to_utf8(group, std::char_traits<char>::length(group));
+        wire.label_utf8 = sjis_to_utf8(label, std::char_traits<char>::length(label));
         wire.seq_original.push_back(seed.key_original);
         wire.seq_rogue.push_back((seed.key_rogue != 0) ? seed.key_rogue : seed.key_original);
         out.push_back(std::move(wire));

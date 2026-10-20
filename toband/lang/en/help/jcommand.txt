@@ -1,0 +1,341 @@
+=== TOband Commands ===
+
+
+Introduction
+
+Most TOband commands are a single letter or symbol. Beginners will need
+some time to memorize the command keys. However, TOband also has a
+unified command menu that covers almost every command. Press the Return
+key to bring up the command menu, then simply choose a command with the
+cursor keys or the numeric keypad and confirm it with Return. Note that
+the command menu may be disabled in the options. The option is called
+"Enable command selection menu" (command_menu).
+
+
+TOband commands are made up of a basic single-key input plus various
+additional inputs. For the basic key, you can choose between two
+standard keysets: the "original" keyset and the "roguelike" keyset.
+
+The original keyset is very close to the "underlying keyset" that TOband
+uses internally, with a few additions. You can use the numeric keypad to
+specify the direction in which to walk, and the "5" key to stay still.
+The roguelike keyset has the same additions, and it also lets you use
+the h/j/k/l/y/u/b/n keys to specify the direction in which to walk; if
+you hold SHIFT or CTRL while pressing them, you can "run" or "alter the
+terrain" in that direction. Since the roguelike keyset uses the CTRL and
+SHIFT keys a great deal, see the quick reference of commands for
+details.
+
+In either keyset, any key that is not assigned in the "underlying
+keyset" can be used as a trigger for a "command macro" (explained
+later). If you want to use a key of the "underlying keyset" directly,
+press backslash ("\") and then the underlying key. This is normally
+used when defining "macros". Instead of holding the CTRL key, you may
+also press the ("^") key and then type a letter. In other words,
+pressing "^" and then "p" is interpreted as "CTRL+p".
+
+Some commands also allow an additional "repeat count". A "repeat count"
+tells the game to repeat a command several times. The repetition is
+interrupted if you press a key or if anything else disturbs you. To
+specify a repeat count, first press "0", then type the count, and then
+type the command. For certain commands you must type a space before
+entering the command. If you do not specify a count, 99 is assumed. If
+the auto-repeat option is set, certain commands (open, disarm, tunnel,
+and so on) repeat automatically.
+
+Some commands prompt for further input. Normally, pressing only the
+Return key is taken as entering the "default" value. Pressing the ESC
+key cancels the command.
+
+Some commands prompt for a spell or an item to use. Pressing the space
+key (or '*') displays a list of the available choices. Pressing '-'
+(minus) selects the item on the floor. Pressing a lowercase letter
+selects that item immediately. Pressing a capital letter selects the
+item after a confirmation. Pressing '#' (a digit) selects the first
+item (if any) inscribed with "@#" or "@x#" (where x is the current
+command). You can only select items that are "legal" for the command.
+If an item is inscribed with "!*" or "!x", you are always asked to
+confirm before the item is selected.
+
+There are items in TOband that teleport the player at random, and each
+time they ask whether you really want to teleport. Being asked
+"Teleport (y/n)?" over and over can be annoying, so in that case you
+can inscribe the item with "." (or any string containing "."). The item
+will then no longer teleport you around, nor keep asking you. If you
+want to restore the teleport ability to the item, just remove the "."
+from its inscription. Note that if an item that teleports you is
+cursed, you are teleported by force regardless of the inscription, so
+be careful.
+
+Some commands prompt for a direction. Enter a direction using the
+direction keys shown in the tables below. Sometimes you may specify the
+current target; in that case press "t" or "5". To select a new target,
+press "*". There is also the '*' command, which lets you set the
+"current target" in advance, before you execute a command that asks for
+a direction.
+
+In both standard keysets, shortcut keys for the "underlying keyset" are
+defined. For example, in both keysets you can "walk" simply by pressing
+a direction key. (In the underlying keyset, you enter the "walk"
+command first and then specify the direction.) In the roguelike keyset,
+you can also "run" and "alter the terrain" by holding SHIFT or CTRL
+while pressing a direction key. In the underlying keyset, of course,
+you enter the "run" or "alter" command first and then specify a
+direction. In addition, the "5" key may be used in either keyset to
+"stay still", which is especially convenient in the original keyset.
+
+On many systems you can define "macros" for various keys and key
+combinations. It may therefore be possible to define macros that "run"
+or "alter the terrain" when you press SHIFT or CTRL together with a
+numeric keypad key. To do so, use the fact that, in any keyset, for
+example "\" + "." + "6" stands for "run east".
+
+
+***** <OriginalKeyset>
+=== Original Keyset: Quick Reference ===
+
+     Original Keyset Directions
+
+              7  8  9
+              4     6
+              1  2  3
+
+ a  Aim a wand                           A  Activate an equipment
+ b  Browse a book                        B  Bash a door
+ c  Close a door                         C  Character description
+ d  Drop an item                         D  Disarm a trap
+ e  Equipment list                       E  Eat some food
+ f  Fire an item                         F  Fuel your lantern/torch
+ g  Stay still (flip pickup)             G  Give money to a townsperson
+ h  (unused)                             H  (unused)
+ i  Inventory list                       I  Observe an *identified* item
+ j  Jam a door                           J  (unused)
+ k  Destroy an item                      K  (unused)
+ l  Look around                          L  Locate player on map
+ m  Cast a spell/use magic or skills     M  Full dungeon map
+ n  Repeat last command                  N  (unused)
+ o  Open a door or chest                 O  (unused)
+ p  Command your pets                    P  Pray to the gods
+ q  Quaff a potion                       Q  Quit (commit suicide)
+ r  Read a scroll                        R  Rest for a period
+ s  Search for traps/doors               S  Toggle search mode
+ t  Take off equipment                   T  Dig a tunnel
+ u  Use a staff                          U  Use racial/class/mutation power
+ v  Throw an item                        V  Version info
+ w  Wear/wield equipment                 W  (unused)
+ x  Open the unified command menu        X  Swap equipment (wield @w0 item)
+ y  (unused)                             Y  Switch to next living companion
+ z  Zap a rod                            Z  (unused)
+ !  Front-end user menu (if any)        ^A  (special - debug command)
+ @  Interact with macros                ^B  (unused)
+ #  (unused)                            ^C  (special - break)
+ $  Reload auto-picker pref             ^D  (unused)
+ %  Interact with visuals               ^E  (unused)
+ ^  (special - control key)             ^F  Repeat level feeling
+ &  Interact with colors                ^G  (unused)
+ *  Target monster or location          ^H  (unused)
+ (  Load screen dump                    ^I  Toggle choice window
+ )  Dump screen dump                    ^J  Open the unified command menu
+ {  Inscribe an object                  ^K  Quit (commit suicide)
+ }  Uninscribe an object                ^L  (unused)
+ [  (unused)                            ^M  Open the unified command menu
+ ]  (unused)                            ^N  (unused)
+ -  Walk (flip pickup)                  ^O  Show the last message
+ _  Edit auto-picker/destroyer pref     ^P  Show previous messages
+ +  Alter (attack/open/dig, etc.)       ^Q  Display current quest info
+ =  Set options                         ^R  Redraw the screen
+ ;  Walk (with pickup)                  ^S  Save and don't quit
+ :  Take notes                          ^T  Display game time
+ '  (unused)                            ^U  (unused)
+ "  Enter a user pref command           ^V  Output rand artifacts list
+ ,  Stay still (with pickup)            ^W  (special - wizard mode)
+ <  Go up staircase (global map)        ^X  Save and quit
+ .  Run                                 ^Y  (unused)
+ >  Go down staircase (normal map)      ^Z  (unused)
+ \  (special - bypass keymap)            |  Check play record
+ `  (special - escape)                   ~  Check various information
+ /  Identify symbol                      ?  Help
+
+***** <RogueKeyset>
+=== Roguelike Keyset: Quick Reference ===
+
+     Roguelike Keyset Directions
+
+              y  k  u
+              h     l
+              b  j  n
+
+ a  Zap a rod (Activate)                 A  Activate an equipment
+ b  (walk - south west)                  B  (run - south west)
+ c  Close a door                         C  Character description
+ d  Drop an item                         D  Disarm a trap
+ e  Equipment list                       E  Eat some food
+ f  Bash a door (Force)                  F  Fuel your lantern/torch
+ g  Stay still (flip pickup)             G  Give money to a townsperson
+ h  (walk - west)                        H  (run - west)
+ i  Inventory list                       I  Observe an *identified* item
+ j  (walk - south)                       J  (run - south)
+ k  (walk - north)                       K  (run - north)
+ l  (walk - east)                        L  (run - east)
+ m  Cast a spell/use magic or skills     M  Full dungeon map
+ n  (walk - south east)                  N  (run - south east)
+ o  Open a door or chest                 O  Use racial/class/mutation power
+ p  Command your pets                    P  Browse a book (Peruse)
+ q  Quaff a potion                       Q  Quit (commit suicide)
+ r  Read a scroll                        R  Rest for a period
+ s  Search for traps/doors               S  Jam a door (Spike)
+ t  Fire an item (Throw)                 T  Take off equipment
+ u  (walk - north east)                  U  (run - north east)
+ v  Throw an item                        V  Version info
+ w  Wear/wield equipment                 W  Locate player on map (Where)
+ x  Look around (Examine)                X  Swap equipment (wield @w0 item)
+ y  (walk - north west)                  Y  Switch to next living companion
+ z  Aim a wand (Zap)                     Z  Use a staff (Zap)
+ !  Front-end user menu (if any)        ^A  (special - debug command)
+ @  Interact with macros                ^B  (alter - south west)
+ #  Toggle search mode                  ^C  (special - break)
+ $  Reload auto-picker pref             ^D  Destroy an item
+ %  Interact with visuals               ^E  (unused)
+ ^  (special - control key)             ^F  Repeat level feeling
+ &  Interact with colors                ^G  Pray to the gods
+ *  Target monster or location          ^H  (alter - west)
+ (  Load screen dump                    ^I  Toggle choice window
+ )  Dump screen dump                    ^J  (alter - south)
+ {  Inscribe an object                  ^K  (alter - north)
+ }  Uninscribe an object                ^L  (alter - east)
+ [  Repeat last command                 ^M  Open the unified command menu
+ ]  (unused)                            ^N  (alter - south east)
+ -  Walk (flip pickup)                  ^O  Show the last message
+ _  Edit auto-picker/destroyer pref     ^P  Show previous messages
+ +  Alter (attack/open/dig, etc.)       ^Q  Display current quest info
+ =  Set options                         ^R  Redraw the screen
+ ;  Walk (with pickup)                  ^S  Save and don't quit
+ :  Take notes                          ^T  Dig a tunnel
+ '  Display game time                   ^U  (alter - north east)
+ "  Enter a user pref command           ^V  Output rand artifacts list
+ ,  Run                                 ^W  (special - wizard mode)
+ <  Go up staircase (global map)        ^X  Save and quit
+ .  Stay still (with pickup)            ^Y  (alter - north west)
+ >  Go down staircase (normal map)      ^Z  (unused)
+ \  (special - underlying keyset)        |  Check play record
+ `  (special - escape)                   ~  Check various information
+ /  Identify symbol                      ?  Help
+
+Note that in the roguelike keyset "Y" is used for switching to the next
+companion, so there is no SHIFT shortcut for running north west. Use
+"\" + "." + "7" instead.
+
+
+***** <SpecialKeys>
+=== Special Keys ===
+
+Certain special keys may be intercepted by the operating system or the
+host machine and may cause unexpected results. In general these special
+keys are control keys, and you can often disable their special effects.
+
+If you are playing on UNIX or a similar system, then CTRL-C will
+interrupt TOband. The second and third presses sound a warning bell,
+the fourth sounds a warning bell together with a special message, and
+the fifth kills your character and quits the game. Also, CTRL-Z
+suspends the game and returns you to the original command shell until
+you resume the game with the "fg" command.
+
+It is often possible to enter a control-key command without actually
+pressing the CTRL key: press the "^" key and then the next key. This is
+useful on systems where control-key commands like the ones above would
+affect the system.
+
+Pressing "\" before a command makes the command be interpreted as a
+command of the TOband "underlying keyset". Pressing "^" after "\" and
+then a command makes it be interpreted as a command combined with the
+CTRL key in the "underlying keyset". The "\" key is very useful when
+creating macro actions, because it always expresses a fixed action
+regardless of the keyset currently in force. For example, "\" + "." +
+"6" always means "run east", even if "." is currently assigned to a
+different command.
+
+The "0", "^" and "\" keys all have a special meaning when pressed at
+the command prompt, but they mean nothing on their own.
+
+At many prompts and confirmations, the ESC key means "abort". At a
+"[y/n]" prompt, only "y", "n" or ESC is accepted. When a "-more-"
+message is displayed, you can clear it, once you have read it, with the
+ESC key, the space key or the Return key. If the "quick_messages"
+option is set, any key clears it.
+
+
+***** <CommandCounts>
+=== Command Counts ===
+
+Some commands can be executed several times in a row by specifying a
+count first. A counted command keeps executing until the count is used
+up, you press a key, or something interrupts it, such as an attack by a
+monster. When a monster is nearby, almost everything counts as an
+interruption, so counts cannot be used for attacking monsters. While
+the command is being repeated, the remaining count is displayed at the
+bottom of the screen.
+
+To give a count to a command, first press "0", then type the count, and
+finally type the command. If you are using the original keyset, the
+movement keys are digits, so a count for a movement command cannot be
+told apart from the command itself. In that case, press the space key
+after typing the count, and then type the command.
+
+Counts are very useful for searching and tunneling, since the repetition
+stops automatically when the command succeeds or a monster attacks you.
+In addition, any repetition (as well as resting and running) can be
+interrupted at any time by pressing a key. Any key will do, but the
+space key or the ESC key is the safest, because those keys never have a
+meaning as commands, so they prevent a mistaken command in case the
+repetition happens to end just as you press the key.
+
+If the "always_repeat" option ("Repeat obvious commands") is set,
+commands that are normally expected to be repeated (open, close,
+disarm, tunnel, bash, alter) are automatically repeated 99 times.
+
+
+***** <ObjectSelection>
+=== Selection of Objects ===
+
+Many commands prompt for an item to use afterwards. For example, the
+command to read a scroll asks which of the scrolls you are carrying you
+want to read. In such cases, you select by pressing a letter of the
+alphabet. The letters you can use are shown in the prompt. If you press,
+for example, "*" there, a list of the items you can use is displayed.
+If you are in a windowing environment and the windows are enabled, the
+list of selectable items is also displayed in the "choice window". The
+list of usable items is built from your current inventory, but where
+possible you can also press "/" to select an item from your equipment
+list instead. The space key works just like "*", so it is usually the
+more convenient one.
+
+The letter you press to select an item may be uppercase or lowercase.
+If you press a lowercase letter, the selection is carried out
+immediately. If you press an uppercase letter, the item you chose is
+displayed and you are asked to confirm that you really want it. An
+uppercase selection is safer, but you must press more keys to confirm.
+Please also read about the "@#" and "!x" inscriptions described later.
+
+With many commands, you can press the "-" key to specify an item on the
+floor on which you are standing. This lets you, for example, drink or
+read a potion or scroll lying on the floor directly, without picking it
+up. For inscriptions that make selecting items easier, see jobjects.txt
+[b].
+
+The "X" key is defined as a keymap for "w0" in both keysets: it wields
+the first item inscribed with "@w0". If you inscribe both your digging
+tool and your main weapon with "@w0", pressing "X" swaps between them.
+
+
+--
+Original   : Alexander Cutler and Andy Astrand
+Updated    : (2.7.6) by Russ Allbery (rra@cs.stanford.edu)
+Updated    : (2.7.9) by Ben Harrison (benh@phial.com)
+Updated    : Zangband 2.2.0 through 2.2.6c by Robert Ruehlmann
+Updated    : Zangband DevTeam
+Updated    : Hengband 1.0.11
+Updated    : TOband 0.0.3
+
+
+***** Begin Hyperlinks
+***** [b] jobjects.txt#Inscriptions
