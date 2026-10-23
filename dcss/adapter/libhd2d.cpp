@@ -392,3 +392,20 @@ bool dcss_adapter_world_reacting()
 {
     return you.turn_is_over;
 }
+
+int dcss_adapter_seen_hups()
+{
+    return crawl_state.seen_hups;
+}
+
+extern bool CrawlIsCrashing; // end.cc: `end(exit_code, …)` が、0 でない終了コードのとき立てる
+
+bool dcss_adapter_exit_failed()
+{
+    return CrawlIsCrashing;
+}
+
+void dcss_adapter_test_mark_failed()
+{
+    CrawlIsCrashing = true;
+}

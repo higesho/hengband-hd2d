@@ -49,6 +49,12 @@ std::string dcss_adapter_tabs_json();
 void dcss_adapter_queue_tab_action(const std::string &json);
 // 控えた操作を入力待ちへ知らせるキーの番号。`{"msg":"key","keycode":N}` を `dcss_shim_feed_line` へ入れて入力待ちを起こす。
 int dcss_adapter_tab_action_key();
+//! 原作の `crawl_state.seen_hups`（0 でなければ、画面が居なくなった・コンソールが閉じた・保存して終われと言われたなど、原作が「終わる道」に入った）。終わりの記録（`at_process_end`）に使う。
+int dcss_adapter_seen_hups();
+//! 原作が失敗（終了コードが 0 でない）で終わろうとしているか（`end(1, …)` など）。`at_process_end` が画面へ送る終了コードを正しくするために使う。
+bool dcss_adapter_exit_failed();
+//! 検査用: 原作が失敗で終わろうとしている印を立てる（`DCSS_TEST_EXIT_FAIL`。終了コードを正しく送る道の確かめ。`tools/dcss/dc_warm_check.py`）。
+void dcss_adapter_test_mark_failed();
 
 // 画面の部品（dcss-ui）の地図のマウス操作（足元のクリック・ツールチップ。段 U3・U4。dcss_ui_mouse.h）。
 // 画面が送る `{"msg":"hd2d_…"}` の行は、原作の制御メッセージではない。recvfrom が（ゲームのスレッドで）この受け口へ渡す。

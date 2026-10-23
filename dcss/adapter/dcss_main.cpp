@@ -48,9 +48,12 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
+#include <dbghelp.h>
+#pragma comment(lib, "dbghelp.lib")
 #else
 #include <csignal>
 #include <pthread.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #endif
 
@@ -84,6 +87,7 @@ presentation::TransportHandle g_in = nullptr;
 presentation::TransportHandle g_out = nullptr;
 std::mutex g_send_mutex;
 std::atomic<bool> g_ui_gone{ false };
+std::atomic<int> g_quit_requests{ 0 }; //!< 画面から受けた `quit_request` の数（終わりの記録用）
 std::atomic<bool> g_exit_sent{ false };
 std::atomic<bool> g_webtiles_passthrough{ false }; //!< 画面が dcss-webtiles を挙げた
 std::atomic<bool> g_ui_offered{ false }; //!< 画面が dcss-ui を挙げた（hello_ack でも名乗った）
@@ -424,6 +428,7 @@ void receive_loop()
             std::snprintf(key_line, sizeof(key_line), "{\"msg\":\"key\",\"keycode\":%d}", dcss_adapter_tab_action_key());
             dcss_shim_feed_line(key_line);
         } else if (type == "quit_request") {
+            g_quit_requests.fetch_add(1);
             // 窓を閉じた・言語を替える。原作に保存して終わらせる（EOF と同じ道）。画面はまだ居るので、最後に exit を送る（v1 §9.1）。
             dcss_shim_signal_eof();
             return;
@@ -456,11 +461,187 @@ void write_last_name()
     out << name;
 }
 
+#ifdef _WIN32
+//! 検査用: 環境変数 DCSS_EXIT_TRACE があるとき、終わるときの呼び出しの並び（`exit` を呼んだ側）を標準エラーへ出す（終了コード 0 で終わる道を突き止めるため）。記号は実行体の隣の .pdb から引く。
+void print_exit_stack()
+{
+    const char *flag = std::getenv("DCSS_EXIT_TRACE");
+    if (flag == nullptr || *flag == '\0') return;
+    HANDLE process = GetCurrentProcess();
+    SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+    SymInitialize(process, nullptr, TRUE);
+    void *frames[48];
+    const USHORT n = CaptureStackBackTrace(0, 48, frames, nullptr);
+    alignas(SYMBOL_INFO) char buffer[sizeof(SYMBOL_INFO) + 256];
+    for (USHORT i = 0; i < n; ++i) {
+        SYMBOL_INFO *sym = reinterpret_cast<SYMBOL_INFO *>(buffer);
+        std::memset(sym, 0, sizeof(SYMBOL_INFO));
+        sym->SizeOfStruct = sizeof(SYMBOL_INFO);
+        sym->MaxNameLen = 255;
+        DWORD64 displacement = 0;
+        if (SymFromAddr(process, reinterpret_cast<DWORD64>(frames[i]), &displacement, sym)) {
+            IMAGEHLP_LINE64 line{};
+            line.SizeOfStruct = sizeof(line);
+            DWORD line_disp = 0;
+            if (SymGetLineFromAddr64(process, reinterpret_cast<DWORD64>(frames[i]), &line_disp, &line)) {
+                std::fprintf(stderr, "[dcss] exit stack #%u %s (%s:%lu)\n", static_cast<unsigned>(i), sym->Name, line.FileName, static_cast<unsigned long>(line.LineNumber));
+            } else {
+                std::fprintf(stderr, "[dcss] exit stack #%u %s\n", static_cast<unsigned>(i), sym->Name);
+            }
+        } else {
+            std::fprintf(stderr, "[dcss] exit stack #%u %p\n", static_cast<unsigned>(i), frames[i]);
+        }
+    }
+    std::fflush(stderr);
+}
+#endif
+
 void at_process_end()
 {
+    // 終わり方の記録（標準エラー。画面の記録に残る）。終了コード 0 で終わる道は複数ある（画面からの終了要求・画面が居なくなった・原作が「終わる道」〔seen_hups〕に入った・原作の通常の終わり）ので、
+    // どれを通ったかを後から突き止められるようにする。seen_hups は、画面が居なくなったとき・コンソールが閉じたとき（Windows の CTRL_CLOSE_EVENT）にも立つ。
+    std::fprintf(stderr, "[dcss] core exit: quit_requests=%d ui_gone=%d seen_hups=%d\n", g_quit_requests.load(), g_ui_gone.load() ? 1 : 0, dcss_adapter_seen_hups());
+    std::fflush(stderr);
+#ifdef _WIN32
+    print_exit_stack();
+#endif
     write_last_name();
+    // 原作が失敗で終わるとき（`end(1, …)`。例: マップの定義の読み込みの誤り）は、終了コード 0 にせず、理由を添えて画面へ知らせる
+    // （以前はここがいつも 0 で、起動の途中の失敗が「正常に終わった」ように見え、画面が黙って終わっていた。2026-10-23）。
+    if (dcss_adapter_exit_failed() && g_out != nullptr && !g_ui_gone.load() && !g_exit_sent.load()) {
+        presentation::FatalMessage fatal;
+        fatal.reason = "DCSS が異常終了しました（原作が終了コード 1 で終わりました）。標準エラーの記録を確認してください。起動の途中なら、もう一度起動すると直ることがあります。";
+        (void)send_message(presentation::encode_fatal(fatal));
+        send_exit(1);
+        return;
+    }
     send_exit(0);
 }
+
+// ---- 原作のマップの定義（.des）の読み込みの前もっての実行 ----
+//
+// 原作は起動のたびに `read_maps()`（startup.cc）でマップの定義を読み、結果を `saves/<版>/des` に 1 ファイルずつ残す（次からは残したものを読む）。
+// この読み込みの検査には乱数が入る（`map_def::has_exit`。`rng::seed()` は起動のたびに無作為）ので、`lair.des` の `regret_index_lairdec_grave_grove` のように
+// 「出口が無い」と判じられる確率の小さい取りこぼしがあり、そのとき原作は `end(1)` で終わる。残したものが無い最初の起動（作業用フォルダ・新しく入れた直後）の約 0.1% で起こる
+// （2026-10-23。画面が「終了コード 0」で終わる件の原因。原作のデータ・ソースは書き換えない）。
+// そこで最初の 1 回だけ、読み込みだけを別プロセス（`-builddb`。読み込みを済ませて終わる）で、成功するまで繰り返してから本番を起こす。
+// 読み込みは 1 ファイルずつ残るので、繰り返しは失敗した所から再開する。
+
+#if !defined(HENGBAND_ANDROID)
+std::string prepare_crawl_dir(std::string &why); // 下（始めの準備）で定義
+constexpr int kWarmMaxTries = 8;
+
+std::string warm_marker_path() { return join(g_crawl_dir, "hd2d_des_ready.txt"); }
+
+bool warm_marker_ok()
+{
+    std::ifstream in(warm_marker_path(), std::ios::binary);
+    std::string v((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    return v == kCoreVersion;
+}
+
+//! 子（`--dcss-warm-cache`）を 1 回走らせて、終了コードを返す。起こせない・時間切れは -1。
+int run_warm_child(bool english)
+{
+#ifdef _WIN32
+    wchar_t exe[MAX_PATH * 2] = {};
+    if (GetModuleFileNameW(nullptr, exe, static_cast<DWORD>(sizeof(exe) / sizeof(exe[0]))) == 0) return -1;
+    std::wstring cmd = L"\"" + std::wstring(exe) + L"\" --dcss-warm-cache --lang=" + (english ? L"en" : L"ja");
+    STARTUPINFOW si{};
+    si.cb = sizeof(si);
+    PROCESS_INFORMATION pi{};
+    if (!CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) return -1;
+    const DWORD waited = WaitForSingleObject(pi.hProcess, 300000);
+    DWORD code = 0;
+    int result = -1;
+    if (waited == WAIT_OBJECT_0 && GetExitCodeProcess(pi.hProcess, &code)) {
+        result = static_cast<int>(code);
+    } else {
+        TerminateProcess(pi.hProcess, 1);
+    }
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    return result;
+#else
+    char exe[4096] = {};
+    const ssize_t n = ::readlink("/proc/self/exe", exe, sizeof(exe) - 1);
+    if (n <= 0) return -1;
+    const pid_t pid = ::fork();
+    if (pid < 0) return -1;
+    if (pid == 0) {
+        const char *lang = english ? "--lang=en" : "--lang=ja";
+        ::execl(exe, exe, "--dcss-warm-cache", lang, static_cast<char *>(nullptr));
+        ::_exit(127);
+    }
+    int status = 0;
+    if (::waitpid(pid, &status, 0) < 0) return -1;
+    return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+#endif
+}
+
+//! 最初の 1 回だけ、読み込みを前もって済ませる。何回やっても失敗したら、そのまま本番へ進む（本番が失敗を画面へ知らせる）。
+void warm_des_cache(const std::string &lang)
+{
+    if (warm_marker_ok()) return;
+    for (int attempt = 1; attempt <= kWarmMaxTries; ++attempt) {
+        const int rc = run_warm_child(lang == "en");
+        std::fprintf(stderr, "[dcss] des cache warm-up %d/%d: exit code %d\n", attempt, kWarmMaxTries, rc);
+        if (rc == 0) {
+            std::ofstream out(warm_marker_path(), std::ios::binary | std::ios::trunc);
+            out << kCoreVersion;
+            return;
+        }
+    }
+}
+
+//! `--dcss-warm-cache`（子）。本番と同じデータの置き場・言語で、原作に読み込みだけをさせる（`-builddb`）。標準入出力は使わない。
+int run_warm_cache(int argc, char **argv)
+{
+    std::string lang = "ja";
+    for (int i = 1; i < argc; ++i) {
+        const std::string_view a(argv[i]);
+        if (a.rfind("--lang=", 0) == 0) lang = std::string(a.substr(7));
+    }
+    std::string why;
+    g_crawl_dir = prepare_crawl_dir(why);
+    if (g_crawl_dir.empty()) return 6;
+    // 標準エラーは記録のファイルへ、標準出力は捨てる（子には端末が無い）。
+    (void)std::freopen(join(g_crawl_dir, "des_warm.log").c_str(), "wb", stderr);
+#ifdef _WIN32
+    (void)std::freopen("NUL", "wb", stdout);
+    _putenv_s("CRAWL_DIR", g_crawl_dir.c_str());
+#else
+    (void)std::freopen("/dev/null", "wb", stdout);
+    ::setenv("CRAWL_DIR", g_crawl_dir.c_str(), 1);
+#endif
+    const std::string rc_path = join(g_crawl_dir, "init_warm.txt");
+    {
+        std::ofstream rc(rc_path, std::ios::binary | std::ios::trunc);
+        rc << "language = " << (lang == "en" ? "en" : "ja") << "\n";
+    }
+    if (const char *fails = std::getenv("DCSS_WARM_TEST_FAILS"); fails != nullptr && *fails != 0) {
+        // 検査用: 環境変数の回数だけ（子の起こし直しをまたいで数える）、読み込みに失敗したことにして終わる。繰り返しの確かめ（tools/dcss/dc_warm_check.py）に使う。
+        const std::string counter = join(g_crawl_dir, "warm_test_count.txt");
+        int done = 0;
+        {
+            std::ifstream in(counter, std::ios::binary);
+            in >> done;
+        }
+        if (done < std::atoi(fails)) {
+            std::ofstream out(counter, std::ios::binary | std::ios::trunc);
+            out << (done + 1);
+            std::fprintf(stderr, "[dcss] warm test: failing on purpose (%d)\n", done + 1);
+            return 1;
+        }
+    }
+    std::vector<std::string> args = { argv[0], "-rc", rc_path, "-builddb" };
+    std::vector<char *> argv2;
+    for (std::string &s : args) argv2.push_back(s.data());
+    argv2.push_back(nullptr);
+    dcss_shim_disable_stdin_reader();
+    return dcss_original_main(static_cast<int>(args.size()), argv2.data());
+}
+#endif
 
 // ---- 画面へ最初に送る表（命令の一覧）----
 
@@ -689,6 +870,9 @@ int run_protocol_common(const char *argv0, const std::string &lang_arg, bool res
         rc << "reduce_animations = false\n";
     }
 
+#if !defined(HENGBAND_ANDROID)
+    warm_des_cache(lang); // 最初の 1 回だけ、マップの定義の読み込みを別プロセスで前もって済ませる（乱数による取りこぼしを繰り返しで吸収する）
+#endif
     std::vector<std::string> args = { argv0, "-rc", rc_path, "-webtiles-socket", "dcss-hd2d", "-await-connection" };
     if (resume) {
         std::ifstream in(join(g_crawl_dir, "hd2d_last_name.txt"), std::ios::binary);
@@ -699,7 +883,21 @@ int run_protocol_common(const char *argv0, const std::string &lang_arg, bool res
         }
     }
     // 検査用: 追加の引数（例 `-seed 1`）。空白で区切る。
-    if (const char *extra = std::getenv("DCSS_EXTRA_ARGS"); extra != nullptr && *extra != '\0') {
+    const char *extra = std::getenv("DCSS_EXTRA_ARGS");
+#if defined(HENGBAND_ANDROID)
+    // 環境変数を渡せない Android の検査用: 外部ストレージのアプリの場所（adb で読み書きできる）に `dcss_extra_args.txt` があれば、その 1 行目を `DCSS_EXTRA_ARGS` の代わりに使う
+    // （例 `-wizard -seed 5 -extra-opt-first pickup_menu_limit=0`）。無ければ従来どおり。
+    std::string extra_from_file;
+    {
+        std::ifstream f("/storage/emulated/0/Android/data/org.hengband.hd2d/files/dcss_extra_args.txt", std::ios::binary);
+        if (f) {
+            std::getline(f, extra_from_file);
+            while (!extra_from_file.empty() && (extra_from_file.back() == '\r' || extra_from_file.back() == '\n')) extra_from_file.pop_back();
+            if (!extra_from_file.empty()) extra = extra_from_file.c_str();
+        }
+    }
+#endif
+    if (extra != nullptr && *extra != '\0') {
         std::string cur;
         for (const char *p = extra;; ++p) {
             if (*p == ' ' || *p == '\0') {
@@ -726,6 +924,11 @@ int run_protocol_common(const char *argv0, const std::string &lang_arg, bool res
     dcss_shim_set_idle_callbacks(on_game_idle, on_game_poll);
     if (g_ui_offered.load()) dcss_shim_set_ui_line_hook(on_ui_line, on_ui_reply);
     std::atexit(at_process_end);
+    if (const char *flag = std::getenv("DCSS_TEST_EXIT_FAIL"); flag != nullptr && *flag != 0) {
+        // 検査用: 原作が失敗（end(1)）で終わった場合と同じ印を立てて終わる。終了コードを正しく画面へ送る道の確かめ（tools/dcss/dc_warm_check.py）。
+        dcss_adapter_test_mark_failed();
+        std::exit(1);
+    }
 
     const int rc = dcss_original_main(static_cast<int>(args.size()), argv2.data());
     write_last_name();
@@ -785,6 +988,9 @@ extern "C" __attribute__((visibility("default"))) int hengband_core_entry(presen
 int main(int argc, char **argv)
 {
     if (argc > 1 && std::string_view(argv[1]).rfind("--dcss-slab-", 0) == 0) return dcss_frame::slab_tool(argc, argv); // 板の作り方の検査（ゲームは起こさない）
+#if !defined(HENGBAND_ANDROID)
+    if (argc > 1 && std::string_view(argv[1]) == "--dcss-warm-cache") return run_warm_cache(argc, argv); // 読み込みだけの子（warm_des_cache が起こす）
+#endif
     bool protocol = false;
     for (int i = 1; i < argc; ++i) {
         if (std::string_view(argv[i]) == "--ui-protocol=stdio") protocol = true;

@@ -18,6 +18,7 @@
 #include "dcss/dcss_cells.h"
 #include "dcss/dcss_message.h"
 #include "dcss/dcss_model.h"
+#include "dcss/dcss_prompt.h"
 #include "dcss/dcss_stat.h"
 
 #include <iostream>
@@ -330,6 +331,143 @@ void test_stat_small()
     check_eq(static_cast<int>(g.attr_at(1, 25) >> 4), 0, "上端の上は空き");
 }
 
+// メッセージ欄の問いのマウス（`dcss_prompt.h`）。期待する本文・並びは、コアの JSON の記録（`DCSS_TRACE_JSON`）で取った実物:
+//   拾うかの問い  {"msg":"msgs","messages":[{"text":"<yellow>12巻のテレポートの巻物<cyan>を拾いますか？ ((y)はい/(n)いいえ/(a)全部/(m)一覧/*?g,/q)<lightgrey>",...}]} → {"msg":"input_mode","mode":8}
+//   打たせる確認  "<cyan>本当にウィザードモードに移行しますか？ (確認のため\"wiz\"と入力してください) <lightgrey>" → input_mode 7 → init_input
+void test_prompt_mouse()
+{
+    DcssUiModel m;
+    DcssMessageWindow w;
+    w.resize(56, 6); // 先頭の 1 桁は印の字。本文は 55 マスで折り返す（実機の欄の幅より狭くして、複数の行にまたがるようにする）
+    m.ingest_line(R"({"msg":"input_mode","mode":0})");
+    m.ingest_line(kFirstPlayer);
+    m.ingest_line(R"({"msg":"msgs","messages":[{"text":"ここにはいくつかの物がある。","turn":0,"channel":0},{"text":"<yellow>12巻のテレポートの巻物<cyan>を拾いますか？ ((y)はい/(n)いいえ/(a)全部/(m)一覧/*?g,/q)<lightgrey>","turn":0,"channel":2}]})");
+    m.ingest_line(R"({"msg":"input_mode","mode":8})");
+    w.sync(m);
+    DcssTextGrid g;
+    w.build(m, g);
+    check(w.last_item_first_row() >= 1, "最後のメッセージ（拾うかの問い）の先頭の行が分かる");
+    check(w.last_item_rows() >= 2, "拾うかの問いは折り返して複数の行");
+    DcssPromptInput in;
+    in.input_mode = 8;
+    in.first_row = w.last_item_first_row();
+    in.row_count = w.last_item_rows();
+    DcssPromptView v = dcss_prompt_view(g, in);
+    std::vector<std::string> labels;
+    for (const DcssPromptHit &h : v.hits) {
+        labels.push_back(h.label);
+    }
+    check_eq(static_cast<int>(v.hits.size()), 4, "(y)(n)(a)(m) の 4 つが押せる（*?g,/q は押せる字にしない）");
+    if (v.hits.size() == 4) {
+        check_eq(v.hits[0].label, std::string("(y)はい"), "1 つ目");
+        check_eq(v.hits[1].label, std::string("(n)いいえ"), "2 つ目");
+        check_eq(v.hits[2].label, std::string("(a)全部"), "3 つ目");
+        check_eq(v.hits[3].label, std::string("(m)一覧"), "4 つ目");
+        check_eq(v.hits[0].keys.size(), static_cast<std::size_t>(1), "キーは 1 つ");
+        check_eq(v.hits[0].keys[0], static_cast<int>('y'), "(y) は y");
+        check_eq(v.hits[1].keys[0], static_cast<int>('n'), "(n) は n");
+        check_eq(v.hits[3].keys[0], static_cast<int>('m'), "(m) は m");
+        check(v.hits[0].col_end > v.hits[0].col_begin, "桁の範囲がある");
+        check(g.at(v.hits[0].col_begin, v.hits[0].row) == U'(', "範囲は '(' から始まる");
+    }
+    check(v.right_escape, "右クリックは Esc");
+    check_eq(v.block_first_row, -1, "文字入力ではないので Enter の範囲は無い");
+    // 窓が開いていれば窓が答えを受けるので、何も探さない
+    in.window_open = true;
+    check(dcss_prompt_view(g, in).hits.empty(), "窓が開いている間は探さない");
+    in.window_open = false;
+    // 入力の種類が問いでなければ（命令待ち）、探さない
+    in.input_mode = 1;
+    check(!dcss_prompt_view(g, in).active(), "命令待ちでは探さない");
+
+    // (+0) のような 2 字の括弧は押せる字にしない
+    m.ingest_line(R"({"msg":"msgs","messages":[{"text":"ロングソード (+0) と (a) (b)c を持つ","turn":1,"channel":0}]})");
+    w.sync(m);
+    w.build(m, g);
+    in.input_mode = 7;
+    in.first_row = w.last_item_first_row();
+    in.row_count = w.last_item_rows();
+    v = dcss_prompt_view(g, in);
+    check_eq(static_cast<int>(v.hits.size()), 1, "(+0) と、ラベルの無い (a) は押せる字にしない。(b)c は押せる");
+    if (v.hits.size() == 1) {
+        check_eq(v.hits[0].label, std::string("(b)c"), "(b)c");
+    }
+
+    // 打たせる確認
+    DcssUiModel m2;
+    DcssMessageWindow w2;
+    w2.resize(78, 8);
+    m2.ingest_line(R"({"msg":"input_mode","mode":0})");
+    m2.ingest_line(kFirstPlayer);
+    m2.ingest_line(R"({"msg":"msgs","messages":[{"text":"<lightred>警告: ウィザードモードに入ろうとしています！<lightgrey>","turn":0,"channel":6},{"text":"<cyan>本当にウィザードモードに移行しますか？ (確認のため\"wiz\"と入力してください) <lightgrey>","turn":0,"channel":2}]})");
+    m2.ingest_line(R"({"msg":"input_mode","mode":7})");
+    w2.sync(m2);
+    DcssTextGrid g2;
+    w2.build(m2, g2);
+    DcssPromptInput in2;
+    in2.input_mode = 7;
+    in2.text_input = true;
+    in2.first_row = w2.last_item_first_row();
+    in2.row_count = w2.last_item_rows();
+    DcssPromptView v2 = dcss_prompt_view(g2, in2);
+    check_eq(static_cast<int>(v2.hits.size()), 1, "打たせる確認の単語が 1 つ");
+    if (v2.hits.size() == 1) {
+        check_eq(v2.hits[0].label, std::string("\"wiz\""), "単語は引用符つき");
+        check_eq(v2.hits[0].keys.size(), static_cast<std::size_t>(3), "w i z（Enter は含めない。一押しでは実行されない）");
+        check_eq(v2.hits[0].keys[0], static_cast<int>('w'), "1 つ目は w");
+        check_eq(v2.hits[0].keys[2], static_cast<int>('z'), "最後は z");
+        check_eq(v2.hits[0].word, std::string("wiz"), "単語");
+        check(v2.hits[0].kind == DcssPromptHit::Kind::Word, "種類は単語");
+    }
+    check(v2.block_first_row >= 1 && v2.block_rows >= 1, "文字入力の問いの本文の行（押すと Enter）がある");
+    check(v2.right_escape, "右クリックは Esc");
+    in2.typed = "wiz";
+    check_eq(static_cast<int>(dcss_prompt_view(g2, in2).hits.size()), 1, "字が打たれていても単語は押せる（入力欄が同じ単語ならもう 1 回押して決める。違う字なら入れ替える）");
+    in2.typed.clear();
+    in2.first_row = -1;
+    check(dcss_prompt_view(g2, in2).block_first_row < 0, "本文の行が分からなければ Enter の範囲は無い");
+
+    // -more-
+    DcssUiModel m3;
+    DcssMessageWindow w3;
+    w3.resize(30, 4);
+    m3.ingest_line(R"({"msg":"input_mode","mode":0})");
+    m3.ingest_line(kFirstPlayer);
+    m3.ingest_line(R"({"msg":"msgs","messages":[{"text":"x","turn":0,"channel":0}],"more":true})");
+    m3.ingest_line(R"({"msg":"input_mode","mode":5})");
+    w3.sync(m3);
+    DcssTextGrid g3;
+    w3.build(m3, g3);
+    DcssPromptInput in3;
+    in3.input_mode = 5;
+    in3.more = m3.more();
+    DcssPromptView v3 = dcss_prompt_view(g3, in3);
+    check_eq(static_cast<int>(v3.hits.size()), 1, "-more- は 1 つ");
+    if (v3.hits.size() == 1) {
+        check_eq(v3.hits[0].label, std::string("--more--"), "最終行の --more--");
+        check_eq(v3.hits[0].row, 3, "最終行");
+        check_eq(v3.hits[0].col_begin, 1, "2 桁目から");
+        check_eq(v3.hits[0].col_end, 9, "8 マス");
+        check_eq(v3.hits[0].keys[0], 13, "Enter");
+    }
+    check(!v3.right_escape, "-more- の右クリックは何もしない（原作は無視する）");
+
+    // 桁 ⇔ 表示の座標（全角は 2 桁・半角の 2 倍の幅）
+    DcssTextGrid g4;
+    g4.resize(10, 1);
+    g4.goto_xy(1, 1);
+    g4.putstr("a体b");
+    check_eq(dcss_grid_col_x(g4, 0, 0, 8), 0, "0 桁目の x");
+    check_eq(dcss_grid_col_x(g4, 0, 1, 8), 8, "全角の手前");
+    check_eq(dcss_grid_col_x(g4, 0, 3, 8), 8 + 16, "全角の次の字");
+    check_eq(dcss_grid_x_col(g4, 0, 7, 8), 0, "x=7 は 0 桁目");
+    check_eq(dcss_grid_x_col(g4, 0, 8, 8), 1, "x=8 は全角の 1 桁目");
+    check_eq(dcss_grid_x_col(g4, 0, 23, 8), 1, "x=23 は全角の中（1 桁目）");
+    check_eq(dcss_grid_x_col(g4, 0, 24, 8), 3, "x=24 は b");
+    check_eq(dcss_grid_x_col(g4, 0, -1, 8), -1, "負は行の外");
+    check_eq(dcss_grid_x_col(g4, 0, 8 * 10, 8), -1, "右端を超えたら行の外");
+}
+
 } // namespace
 
 int main()
@@ -340,6 +478,7 @@ int main()
     test_stat_normal();
     test_stat_changes();
     test_stat_small();
+    test_prompt_mouse();
     std::cout << g_checks << " checks, " << g_failed << " failed" << std::endl;
     return g_failed == 0 ? 0 : 1;
 }

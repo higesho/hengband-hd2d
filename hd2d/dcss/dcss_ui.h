@@ -31,6 +31,7 @@
 #include "dcss/dcss_model.h"
 #include "dcss/dcss_pad.h"
 #include "dcss/dcss_pad_screen.h"
+#include "dcss/dcss_prompt.h"
 #include "dcss/dcss_stat.h"
 #include "dcss/dcss_tabs.h"
 #include "dcss/dcss_touch.h"
@@ -172,6 +173,12 @@ public:
     const DcssTabs &tabs() const { return this->tabs_; }
 
     /*!
+     * メッセージ欄の問い（`-more-`・拾うかの問い・文字入力の問い）のマウス操作（`dcss_prompt.h`。決めたこと 2026-10-23）。押せる所は `draw` が毎フレーム探し直す。
+     * 左クリックは `on_tab_mouse` の中で（タブの欄が食わなかったときに）受ける。`-more-` だけは `on_window_event` が受ける（どこを押しても進む）。
+     */
+    const DcssPromptView &prompt_view() const { return this->prompt_view_; }
+
+    /*!
      * タッチ（段 7。`dcss_touch.h`・「段 7 のタッチ」）。指の出来事（`SDL_FINGER*`）を原作の Android 版と同じ決まりで
      * マウスの出来事（`which` = `kTouchMouseId`）に直して `out` へ追記する。呼ぶ側が `SDL_PushEvent` で積み直し、窓・タブの欄・地図の既存のマウスの経路へ流す。
      * @param ignore_down 真のとき、この指の押下はなかったことにする（仮想パッドのボタンの近くを触った指）
@@ -207,6 +214,13 @@ private:
     void draw_grid(FontSlot &font, UiPaint &paint, int x, int y, const DcssTextGrid &grid, int char_w, int char_h);
     void draw_minimap(UiPaint &paint);
     void draw_text_input_echo(UiPaint &paint, int screen_w, int screen_h);
+    //! メッセージ欄の問いの押せる所を探し直し、マウスの下の物を強調する（`rebuild_grids` の後）。
+    void update_prompt_view();
+    //! 論理の座標がメッセージ欄の格子のどの桁・行か。欄の外・行の外なら偽。
+    bool message_cell_at(int logical_x, int logical_y, int &col, int &row) const;
+    bool in_message_region(int logical_x, int logical_y) const;
+    bool on_prompt_press(int button, int logical_x, int logical_y);
+    void send_key_line(int keycode);
     int glyph_y_shift() const;
     //! SDL の出来事の座標（窓の座標）を論理の座標に直した写しを返す。倍率 1 なら同じ物。
     SDL_Event to_logical(const SDL_Event &event, float scale) const;
@@ -246,6 +260,9 @@ private:
     DcssPad pad_; //!< ゲームパッド（段 5）
     DcssPadScreen pad_screen_{ pad_, windows_ }; //!< 割り当ての画面（窓の部品へ積む）
     DcssMapMouse map_mouse_; //!< 地図のマウス操作とツールチップ（段 U3・U4）
+    DcssPromptView prompt_view_; //!< メッセージ欄の問いの押せる所（毎フレーム探し直す）
+    int pointer_x_{ -1 }; //!< マウスの位置（論理の座標。まだ動いていなければ -1）
+    int pointer_y_{ -1 };
     FontSlot tip_font_; //!< ツールチップの字（原作 `tile_font_tip`）
     DcssTabs tabs_;
     DcssTouch touch_; //!< 指 → マウスの状態機械（段 7）

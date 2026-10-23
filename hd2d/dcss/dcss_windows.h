@@ -104,6 +104,8 @@ public:
     void send_escape() { this->send_key(27); }
     //! Enter（`-more-` を進める。原作の「`-more-` の間はどこを押しても進む」`MOUSE_MODE_MORE` の左クリック）を送る。
     void send_enter() { this->send_key(13); }
+    //! 任意のキーをコアへ送る（文字入力が開いていれば、打った字の覚えも更新する。メッセージ欄の問いのマウス操作が使う）。
+    void send_keycode(int keycode) { this->send_key(keycode); }
 
     //! コアから届いた `webtiles` の 1 行を取り込む。
     bool ingest_line(const std::string &line);

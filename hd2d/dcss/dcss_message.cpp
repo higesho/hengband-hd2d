@@ -30,6 +30,8 @@ void DcssMessageWindow::clear_lines()
     this->next_line_ = 0;
     this->input_line_ = 0;
     this->prompt_ = Prefix::None;
+    this->last_item_first_ = -1;
+    this->last_item_rows_ = 0;
 }
 
 void DcssMessageWindow::resize(int cols, int rows)
@@ -62,6 +64,18 @@ void DcssMessageWindow::scroll(int n)
     }
     this->next_line_ -= n;
     this->input_line_ -= n;
+    if (this->last_item_first_ >= 0) {
+        this->last_item_first_ -= n;
+        if (this->last_item_first_ < 0) {
+            // 先頭の行が押し出された。残った行だけを数える。
+            this->last_item_rows_ += this->last_item_first_;
+            this->last_item_first_ = 0;
+            if (this->last_item_rows_ <= 0) {
+                this->last_item_first_ = -1;
+                this->last_item_rows_ = 0;
+            }
+        }
+    }
 }
 
 void DcssMessageWindow::make_space(int n)
@@ -87,8 +101,14 @@ void DcssMessageWindow::add_item(const DcssMessage &message)
     this->prompt_ = Prefix::None;
     const int out_width = std::max(1, this->cols_ - 1); // 先頭の 1 桁は印の字
     const DcssStyledLine styled = dcss_parse_tagged(message.text, kLightGrey);
+    this->last_item_first_ = -1;
+    this->last_item_rows_ = 0;
     for (DcssStyledLine &piece : dcss_wrap_line(styled, out_width)) {
         this->make_space(1);
+        if (this->last_item_first_ < 0) {
+            this->last_item_first_ = this->next_line_; // この行に入る（`make_space` が全部消したときは 0 に戻る）
+        }
+        ++this->last_item_rows_;
         DcssStyledLine line;
         line.reserve(piece.size() + 1);
         line.push_back(prefix_glyph(Prefix::None));

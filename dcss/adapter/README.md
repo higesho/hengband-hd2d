@@ -216,6 +216,7 @@ python -u tools\dcss\dc_protocol_driver.py --exe DcssCore.exe --scratch <一時�
 ```
 
 - 検査用の環境変数: `DCSS_EXTRA_ARGS`（原作への追加の引数。例 `-seed 7`）、`DCSS_TRACE_JSON`（原作が出した JSON を 1 行ずつ書き出す）。
+- 起動の前もっての読み込み（2026-10-23）: 最初の 1 回だけ、原作のマップの定義（.des）の読み込みを別プロセス（`--dcss-warm-cache`＝原作の `-builddb`）で成功するまで繰り返してから本番を起こす（読み込みの検査に乱数が入り、約 0.1% で原作が `end(1)` で終わるため。Windows・Linux。Android・Quest は 1 プロセスなので入れていない）。印は `dcss/lib/hd2d_des_ready.txt`、子の標準エラーは `dcss/lib/des_warm.log`。検査用の環境変数: `DCSS_EXIT_TRACE=1`（コアが終わるときの呼び出しの並びを標準エラーへ。Windows）、`DCSS_WARM_TEST_FAILS=N`（前もっての読み込みを N 回わざと失敗させる）、`DCSS_TEST_EXIT_FAIL=1`（原作が失敗で終わった印を立てて終わる）。確かめは `tools/dcss/dc_warm_check.py`。
 - 画面を通さない確かめ（`dc_protocol_driver.py`）は、窓なし（`modern_ui` 偽）のとき Enter では原作のメニュー（はい/いいえ）を選べない。選択肢のキー（`Y`）を送ること。
 
 ### 9.5 M0 の残り（できていないこと）
@@ -374,5 +375,6 @@ python3 -u tools/dcss/dc_protocol_driver.py --exe ~/hb-build/dcss-linux/bin/core
 - `dcss_posix_shim.cpp`（`HENGBAND_ANDROID` のときだけ）: `__wrap_mkdir`・`__wrap_stat`・`__wrap_opendir`。Android のアプリの SELinux が、実在する上の階層（`/data` ほか）に `EACCES` を返し、原作の `_create_dirs`（`files.cc`）が保存先の下の階層を作れなかった。保存先（`CRAWL_DIR`）の祖先に当たる道だけ「在る」と返す。
 - `android_compat/execinfo.h`: bionic に `backtrace` が入ったのは API 33 から（Quest は minSdk 32）。`crash.cc` にだけ、何も返さない代わりのヘッダを当てる。
 - 検査用: 外部ストレージのアプリの場所（`/storage/emulated/0/Android/data/org.hengband.hd2d/files/`）に `dcss_trace.flag` があれば、原作の JSON を同じ場所の `dcss_trace.jsonl` へ残す（環境変数を渡せない Android で `DCSS_TRACE_JSON` の代わり。`adb shell touch` で作り、`adb pull` で読む）。
+- 検査用: 同じ場所に `dcss_extra_args.txt` があれば、その 1 行目を環境変数 `DCSS_EXTRA_ARGS` の代わりに使う（例 `-wizard -seed 5 -extra-opt-first pickup_menu_limit=0`。`adb push` で置く。2026-10-23。マウス・タップの確かめ用）。
 - 組み方: `tools/dcss/prepare_android_gen.py`（生成物をホストで先に作る）→ `tools/core_sources/dcss_android_core.cmake`（`libdcsscore.so`。原作の C++ は `-U__ANDROID__`）。手順は。
 - 原作のソース・レシピは書き換えていない（0 行）。

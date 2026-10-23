@@ -507,6 +507,7 @@ void DcssUi::draw(UiPaint &paint, const UiImagePainter &images, int screen_w, in
         { this->stat_font_.open ? &this->stat_font_.text : nullptr, this->msg_font_.open ? &this->msg_font_.text : nullptr,
             this->lbl_font_.open ? &this->lbl_font_.text : nullptr });
     this->rebuild_grids();
+    this->update_prompt_view();
 
     const DcssLayout &L = this->layout_;
     const PaintColor black{ 0.f, 0.f, 0.f, 1.f };
@@ -588,8 +589,13 @@ bool DcssUi::on_tab_mouse(const DcssTabMouse &ev)
     DcssTabMouse logical = ev; // 窓の座標を論理の座標に直す（倍率 1 なら同じ）
     logical.x = ev.x / this->ui_scale_;
     logical.y = ev.y / this->ui_scale_;
+    this->pointer_x_ = logical.x; // メッセージ欄の問いの強調に使う（タブの欄が食っても位置は追う）
+    this->pointer_y_ = logical.y;
     if (this->tabs_.on_mouse(logical)) {
         return true;
+    }
+    if ((ev.kind == DcssTabMouse::Kind::Press) && this->on_prompt_press(ev.button, logical.x, logical.y)) {
+        return true; // メッセージ欄の問いへの左・右クリック（原作に無い。決めたこと）
     }
     if ((ev.kind != DcssTabMouse::Kind::Press) || (ev.button != 1) || !this->layout_.ok || (this->model_.input_mode() != 1)) {
         return false; // 原作: どちらの欄も左クリックで、命令待ち（`MOUSE_MODE_COMMAND`）のときだけ
@@ -615,9 +621,177 @@ bool DcssUi::on_tab_mouse(const DcssTabMouse &ev)
     return false;
 }
 
+void DcssUi::send_key_line(int keycode)
+{
+    this->region_out_.push_back(DcssTabOutgoing{ true, "{\"msg\":\"key\",\"keycode\":" + std::to_string(keycode) + "}" });
+}
+
+bool DcssUi::in_message_region(int logical_x, int logical_y) const
+{
+    const DcssRegion &m = this->layout_.message;
+    const int x = logical_x - this->origin_x_ - m.x;
+    const int y = logical_y - this->origin_y_ - m.y;
+    return (m.w > 0) && (m.h > 0) && (x >= 0) && (x < m.w) && (y >= 0) && (y < m.h);
+}
+
+bool DcssUi::message_cell_at(int logical_x, int logical_y, int &col, int &row) const
+{
+    const DcssRegion &m = this->layout_.message;
+    if (!this->layout_.ok || !this->msg_font_.open || (m.cell_h <= 0) || (this->msg_grid_.rows <= 0)) {
+        return false;
+    }
+    const int x = logical_x - (this->origin_x_ + m.x + m.margin_x);
+    const int y = logical_y - (this->origin_y_ + m.y + m.margin_y);
+    if ((x < 0) || (y < 0)) {
+        return false;
+    }
+    row = y / m.cell_h;
+    if (row >= this->msg_grid_.rows) {
+        return false;
+    }
+    col = dcss_grid_x_col(this->msg_grid_, row, x, std::max(1, this->msg_font_.text.cell_w()));
+    return col >= 0;
+}
+
+void DcssUi::update_prompt_view()
+{
+    DcssPromptInput in;
+    in.input_mode = this->model_.input_mode();
+    in.more = this->model_.more();
+    in.window_open = this->windows_.has_windows();
+    const DcssTextInput &ti = this->windows_.stack().text_input();
+    in.text_input = ti.active;
+    in.typed = ti.typed;
+    in.first_row = this->msgwin_.last_item_first_row();
+    in.row_count = this->msgwin_.last_item_rows();
+    this->prompt_view_ = dcss_prompt_view(this->msg_grid_, in);
+    if (const char *trace = std::getenv("HD2D_DCSS_PROMPT_TRACE"); (trace != nullptr) && (*trace != 0)) {
+        // 検査用: メッセージ欄の問いの状態が変わるたびに標準エラーへ 1 行出す。
+        char buf[256];
+        std::snprintf(buf, sizeof(buf), "mode=%d more=%d window=%d text=%d typed=%zu rows=%d+%d hits=%zu block=%d+%d esc=%d", in.input_mode, in.more ? 1 : 0,
+            in.window_open ? 1 : 0, in.text_input ? 1 : 0, in.typed.size(), in.first_row, in.row_count, this->prompt_view_.hits.size(),
+            this->prompt_view_.block_first_row, this->prompt_view_.block_rows, this->prompt_view_.right_escape ? 1 : 0);
+        static std::string last;
+        if (last != buf) {
+            last = buf;
+            std::fprintf(stderr, "[hd2d] dcss-prompt %s\n", buf);
+        }
+    }
+    if (!this->prompt_view_.active()) {
+        return;
+    }
+    UiProbe &probe = ui_probe();
+    if (probe.enabled()) {
+        // 検査の窓口: 押せる字を部品として記録する（`tap` で押せる）。位置は描くときの座標（`draw_grid` と同じ計算）。
+        const DcssRegion &m = this->layout_.message;
+        const int half = std::max(1, this->msg_font_.text.cell_w());
+        const int base_x = this->origin_x_ + m.x + m.margin_x;
+        const int base_y = this->origin_y_ + m.y + m.margin_y;
+        for (std::size_t i = 0; i < this->prompt_view_.hits.size(); ++i) {
+            const DcssPromptHit &h = this->prompt_view_.hits[i];
+            const int x0 = base_x + dcss_grid_col_x(this->msg_grid_, h.row, h.col_begin, half);
+            const int x1 = base_x + dcss_grid_col_x(this->msg_grid_, h.row, h.col_end, half);
+            probe.button(h.label, ProbeRect{ x0, base_y + (h.row * m.cell_h), x1 - x0, m.cell_h }, true, false, "dcss-prompt", false, "prompt:" + std::to_string(i));
+        }
+        if (this->prompt_view_.block_first_row >= 0) {
+            probe.button("(prompt)", ProbeRect{ base_x, base_y + (this->prompt_view_.block_first_row * m.cell_h), std::max(1, m.w - m.margin_x),
+                std::max(1, this->prompt_view_.block_rows) * m.cell_h }, true, false, "dcss-prompt-block", false, "prompt:block");
+        }
+    }
+    if (this->pointer_x_ < 0) {
+        return;
+    }
+    // マウスの下の物を強調する（原作のメニューの強調と同じ向き: 暗い灰色の地に白い字）。
+    int col = -1;
+    int row = -1;
+    if (!this->message_cell_at(this->pointer_x_, this->pointer_y_, col, row)) {
+        return;
+    }
+    DcssTextGrid &g = this->msg_grid_;
+    const std::uint8_t lit = static_cast<std::uint8_t>((kDarkGrey * 16) + kWhite);
+    const auto paint_cells = [&](int r, int c0, int c1) {
+        for (int c = c0; (c < c1) && (c < g.cols); ++c) {
+            g.attr[(static_cast<std::size_t>(r) * static_cast<std::size_t>(g.cols)) + static_cast<std::size_t>(c)] = lit;
+        }
+    };
+    for (const DcssPromptHit &h : this->prompt_view_.hits) {
+        if ((h.row == row) && (col >= h.col_begin) && (col < h.col_end)) {
+            paint_cells(h.row, h.col_begin, h.col_end);
+            return;
+        }
+    }
+    if ((this->prompt_view_.block_first_row >= 0) && (row >= this->prompt_view_.block_first_row)
+        && (row < (this->prompt_view_.block_first_row + this->prompt_view_.block_rows))) {
+        // 文字入力の問いの本文（押すと Enter）。本文の行ぜんぶの、字のある所を強調する（先頭の 1 桁は印の字）。
+        const int last_row = std::min(g.rows, this->prompt_view_.block_first_row + this->prompt_view_.block_rows);
+        for (int r = this->prompt_view_.block_first_row; r < last_row; ++r) {
+            int end = 0;
+            for (int c = g.cols - 1; c >= 1; --c) {
+                if ((g.at(c, r) != U' ') && (g.at(c, r) != kWideFiller)) {
+                    end = c + 1;
+                    break;
+                }
+            }
+            paint_cells(r, 1, end);
+        }
+    }
+}
+
+bool DcssUi::on_prompt_press(int button, int logical_x, int logical_y)
+{
+    if (!this->layout_.ok || !this->in_game() || this->windows_.has_windows() || !this->prompt_view_.active()) {
+        return false;
+    }
+    if (button == 3) {
+        if (!this->prompt_view_.right_escape) {
+            return false;
+        }
+        this->send_key_line(27); // 右クリックは取消（Esc）
+        return true;
+    }
+    if ((button != 1) || !this->in_message_region(logical_x, logical_y)) {
+        return false;
+    }
+    int col = -1;
+    int row = -1;
+    if (this->message_cell_at(logical_x, logical_y, col, row)) {
+        for (const DcssPromptHit &h : this->prompt_view_.hits) {
+            if ((h.row == row) && (col >= h.col_begin) && (col < h.col_end)) {
+                if (h.kind == DcssPromptHit::Kind::Word) {
+                    // 打たせる確認の単語: 一押しでは入力欄にその単語が入るだけ（確認は通らない）。入力欄がその単語のときにもう 1 回押すと Enter で決まる。
+                    const std::string &typed = this->windows_.stack().text_input().typed;
+                    if (typed == h.word) {
+                        this->windows_.send_keycode(13);
+                    } else {
+                        if (!typed.empty()) {
+                            this->windows_.send_keycode(21); // Ctrl-U: 違う字が入っていれば消してから入れる
+                        }
+                        for (const int key : h.keys) {
+                            this->windows_.send_keycode(key);
+                        }
+                    }
+                    return true;
+                }
+                for (const int key : h.keys) {
+                    this->send_key_line(key);
+                }
+                return true;
+            }
+        }
+    }
+    if (this->prompt_view_.block_first_row >= 0) {
+        this->windows_.send_keycode(13); // 文字入力の問いは、打った字（何も打たなければ空）で決める（原作の ja4: 何も打たずに Enter ならはい/いいえの窓。違う字なら確認は通らず取り消し）
+        return true;
+    }
+    return false;
+}
+
 std::vector<DcssTabOutgoing> DcssUi::take_tab_outgoing()
 {
     std::vector<DcssTabOutgoing> out = this->tabs_.take_outgoing();
+    for (std::string &line : this->windows_.take_outgoing()) { // メッセージ欄の問いのマウス操作が窓の送り口へ積んだ行
+        out.push_back(DcssTabOutgoing{ true, std::move(line) });
+    }
     for (DcssTabOutgoing &o : this->region_out_) {
         out.push_back(std::move(o));
     }

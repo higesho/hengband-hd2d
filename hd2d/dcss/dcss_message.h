@@ -45,6 +45,12 @@ public:
     int out_height() const { return std::max(1, this->rows_ - 1); }
     int next_line() const { return this->next_line_; }
     int line_count_for_overlay() const;
+    /*!
+     * 最後に足したメッセージ（折り返した行の並び）の、欄の中での先頭の行（0 始まり）と行数。まだ足していない・押し出されて無くなったときは -1 と 0。
+     * 問い（`-more-` の次の文・拾うかの問い・文字入力の問い）の本文がどの行かを知るのに使う（マウスで押せる所を探す。`dcss_prompt.h`）。
+     */
+    int last_item_first_row() const { return this->last_item_first_; }
+    int last_item_rows() const { return this->last_item_rows_; }
 
 private:
     enum class Prefix { None, TurnStart, TurnEnd, NewCmd, NewTurn };
@@ -67,6 +73,8 @@ private:
     std::uint64_t rollback_seen_{ 0 };
     int last_input_mode_{ -1 };
     int last_message_turn_{ -1 };
+    int last_item_first_{ -1 };
+    int last_item_rows_{ 0 };
     std::uint64_t version_{ 0 };
 };
 

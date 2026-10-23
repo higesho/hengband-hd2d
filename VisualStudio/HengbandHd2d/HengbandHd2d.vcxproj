@@ -324,6 +324,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\dcss\dcss_mouse.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_pad.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_pad_screen.cpp" />
+    <ClCompile Include="..\..\hd2d\dcss\dcss_prompt.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_stat.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_tabs.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_touch.cpp" />
@@ -441,6 +442,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\dcss\dcss_mouse.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_pad.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_pad_screen.h" />
+    <ClInclude Include="..\..\hd2d\dcss\dcss_prompt.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_stat.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_tabs.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_touch.h" />

@@ -1562,6 +1562,9 @@ void pump_sdl_events(InputPumpContext &ctx)
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
+            if (ctx.dcss_window) { // DCSS のときだけ（終了コード 0 で終わる道を後から突き止める記録。ほかのコアは変えない）
+                std::fprintf(stderr, "[hd2d] SDL_QUIT を受けました（窓の ×・OS の終了要求）\n");
+            }
             ctx.batch.want_quit = true;
             continue;
         }
@@ -1637,6 +1640,15 @@ void pump_sdl_events(InputPumpContext &ctx)
             && ((event.type == SDL_FINGERDOWN) || (event.type == SDL_FINGERMOTION) || (event.type == SDL_FINGERUP))) {
             // カットイン（階の名前の幕）の間は、キーと同じく演出が指を食う。タップで進める（キーでは Enter・Space）。
             if (event.type == SDL_FINGERDOWN) {
+                (void)ctx.floor_cutin.confirm();
+            }
+            continue;
+        }
+        if (ctx.dcss_window && ctx.floor_cutin.blocks_input()
+            && ((event.type == SDL_MOUSEBUTTONDOWN) || (event.type == SDL_MOUSEBUTTONUP) || (event.type == SDL_MOUSEMOTION) || (event.type == SDL_MOUSEWHEEL))) {
+            // 同じ幕を、マウスの左クリックでも進める（申告 `dcss-ui` のコアだけ）。幕の向こうは見えていないので、地図・タブの欄・窓へは通さない。
+            // 指から作ったマウスの写し（`SDL_TOUCH_MOUSEID`）は、上の指の出来事で進めているので数えない。
+            if ((event.type == SDL_MOUSEBUTTONDOWN) && (event.button.button == SDL_BUTTON_LEFT) && (event.button.which != SDL_TOUCH_MOUSEID)) {
                 (void)ctx.floor_cutin.confirm();
             }
             continue;

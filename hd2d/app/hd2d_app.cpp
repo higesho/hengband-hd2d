@@ -8157,6 +8157,9 @@ int run(const AppOptions &options)
         }
         if (link.exit_received()) {
             result = link.exit_code();
+            if (dcss_ui) { // DCSS のときだけ（終了コード 0 で終わる道を後から突き止める記録。ほかのコアは変えない）
+                std::fprintf(stderr, "[hd2d] コアが終わりました（exit code=%d・終了要求を送った=%d）\n", result, quit_sent ? 1 : 0);
+            }
             /*
              * **言語を替えたので畳んだ**（(d2)）。同じコアを起こし直す。
              * `want_quit` は見ない——あれはフレームごとの局所変数で、`exit` が
