@@ -1,0 +1,147 @@
+// dc_floor_necropolis_squares — プレハブ定義（設計書 §7）。`dc_floor_necropolis_squares.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 necropolis_squares_1（dngn/floor/necropolis_squares_1）。タイルに合わせた凹凸（stone。出 329・へこみ 428。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_necropolis_squares",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "042D44",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "00320C",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "002D4C",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "005184",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "0C77A7",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "003F65",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "0065C1",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "002359",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "0089CB",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "00265E",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "14446D",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "11304C",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "071E30",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "236FA2",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "00A2FF",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "004C84",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "00113A",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "001E2B",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "001926",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "001430",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "000F42",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "00BCFF",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "006ABC",
+      "material": "stone"
+    }
+  ]
+}

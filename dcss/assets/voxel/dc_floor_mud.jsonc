@@ -1,0 +1,182 @@
+// dc_floor_mud — プレハブ定義（設計書 §7）。`dc_floor_mud.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 liquefaction1（dngn/water/liquefaction1）。タイルに合わせた凹凸（liquid。出 33・へこみ 2。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_mud",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "433616",
+      "material": "clean"
+    },
+    {
+      "i": 2,
+      "rgb": "56451D",
+      "material": "clean"
+    },
+    {
+      "i": 3,
+      "rgb": "55441C",
+      "material": "clean"
+    },
+    {
+      "i": 4,
+      "rgb": "614E20",
+      "material": "clean"
+    },
+    {
+      "i": 5,
+      "rgb": "5E4C1F",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "655222",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "5B491E",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "58471D",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "645021",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "624F21",
+      "material": "clean"
+    },
+    {
+      "i": 11,
+      "rgb": "5F4D20",
+      "material": "clean"
+    },
+    {
+      "i": 12,
+      "rgb": "53431C",
+      "material": "clean"
+    },
+    {
+      "i": 13,
+      "rgb": "52421B",
+      "material": "clean"
+    },
+    {
+      "i": 14,
+      "rgb": "6E5925",
+      "material": "clean"
+    },
+    {
+      "i": 15,
+      "rgb": "5C4A1F",
+      "material": "clean"
+    },
+    {
+      "i": 16,
+      "rgb": "59481E",
+      "material": "clean"
+    },
+    {
+      "i": 17,
+      "rgb": "685423",
+      "material": "clean"
+    },
+    {
+      "i": 18,
+      "rgb": "675322",
+      "material": "clean"
+    },
+    {
+      "i": 19,
+      "rgb": "50411B",
+      "material": "clean"
+    },
+    {
+      "i": 20,
+      "rgb": "4F3F1A",
+      "material": "clean"
+    },
+    {
+      "i": 21,
+      "rgb": "6D5824",
+      "material": "clean"
+    },
+    {
+      "i": 22,
+      "rgb": "4D3E1A",
+      "material": "clean"
+    },
+    {
+      "i": 23,
+      "rgb": "6A5523",
+      "material": "clean"
+    },
+    {
+      "i": 24,
+      "rgb": "735C26",
+      "material": "clean"
+    },
+    {
+      "i": 25,
+      "rgb": "6B5624",
+      "material": "clean"
+    },
+    {
+      "i": 26,
+      "rgb": "4C3D19",
+      "material": "clean"
+    },
+    {
+      "i": 27,
+      "rgb": "715B26",
+      "material": "clean"
+    },
+    {
+      "i": 28,
+      "rgb": "705A25",
+      "material": "clean"
+    },
+    {
+      "i": 29,
+      "rgb": "7C6429",
+      "material": "clean"
+    },
+    {
+      "i": 30,
+      "rgb": "7A6229",
+      "material": "clean"
+    },
+    {
+      "i": 31,
+      "rgb": "745E27",
+      "material": "clean"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+// dc_altar_pakellas — プレハブ定義（設計書 §7）。`dc_altar_pakellas.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 pakellas0（dngn/altars/pakellas0）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_pakellas",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "4A4A50",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "5C5C64",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "1D1D20",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "919CA3",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "E8347C",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "DEB63E",
+      "material": "metal"
+    }
+  ]
+}

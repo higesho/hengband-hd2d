@@ -1,0 +1,57 @@
+// dc_floor_salt — プレハブ定義（設計書 §7）。`dc_floor_salt.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 salt0（dngn/floor/salt0）。タイルに合わせた凹凸（sand。出 174・へこみ 201。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_salt",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "7A7B72",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "9FA297",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "B9B1A2",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "938B84",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "6F655E",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "CBC8C2",
+      "material": "stone"
+    }
+  ]
+}

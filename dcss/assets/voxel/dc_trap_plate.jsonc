@@ -1,0 +1,157 @@
+// dc_trap_plate — プレハブ定義（設計書 §7）。`dc_trap_plate.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 pressure_plate（dngn/traps/pressure_plate）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_trap_plate",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "434343",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "4E4E4E",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "5A5A5A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "525252",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "606060",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "5F5F5F",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "707070",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "6D6D6D",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "808080",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "202020",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "161616",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "101010",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "0B0B0B",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "7A7A7A",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "909090",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "656565",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "505050",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "383838",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "444444",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "404040",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "2D2D2D",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "303030",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "222222",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "363636",
+      "material": "stone"
+    }
+  ]
+}

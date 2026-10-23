@@ -17,6 +17,7 @@
 #include "frame/protocol_transport.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 /*!
@@ -32,3 +33,14 @@
  */
 int hengband_core_protocol_main(presentation::TransportHandle in, presentation::TransportHandle out,
     const std::string &protocol_log_path, const std::vector<std::string> &forwarded_args);
+
+/*!
+ * @brief 起動引数 1 つが自己検査（`--text-check`・`--term-resize-check`・`--selftest`）なら、それを走らせる。
+ * @param opt 起動引数 1 つ。
+ * @param exit_code 走らせたとき、プロセスの終了コード（0 = 通った）。
+ * @return 自己検査の引数だったら真（呼び手は `exit_code` で終わる）。そうでなければ偽（何もしない）。
+ * @details パイプもゲームも要らない自己検査。Windows の `main()`（`platform/windows/core_main.cpp`）と
+ * Linux の `main()`（`platform/linux/core_main.cpp`）が同じ関数を呼ぶので、**両方の OS で同じ検査が走る**
+ * （Linux だけ `--selftest` が「This is a game core」で終わっていた。2026-10-23）。Android は `main()` が無いので呼ばない。
+ */
+bool hengband_core_run_selftest_option(std::string_view opt, int &exit_code);

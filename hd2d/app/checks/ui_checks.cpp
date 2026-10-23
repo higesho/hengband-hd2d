@@ -4871,6 +4871,7 @@ int run_status_hud_check(const AppOptions &options)
                     // 置き場（重ならない・範囲の中）
                     bool inside_ok = true;
                     bool avoid_ok = true;
+                    std::string avoid_detail; //! 落ちたとき、最初に重なったアイコンの矩形と相手の矩形（原因を探す手がかり）
                     bool apart_ok = true;
                     bool orb_side_apart_ok = true;
                     long long orb_overlap = 0;
@@ -4882,8 +4883,18 @@ int run_status_hud_check(const AppOptions &options)
                             && (item.cell.y >= perm.top) && ((item.cell.y + item.cell.h) <= perm.bottom);
                         const RectPx *const avoid[] = { &layout.status_col, &layout.bottom_bar, &layout.message_bar,
                             &layout.prompt_bar, &layout.minimap, &layout.hud };
-                        for (const RectPx *rect : avoid) {
-                            avoid_ok = avoid_ok && (rect_overlap_area(item.cell, *rect) == 0);
+                        static const char *const avoid_names[] = { "状態列", "最下段", "メッセージ", "プロンプト", "ミニマップ", "名前の行" };
+                        for (std::size_t r = 0; r < std::size(avoid); ++r) {
+                            if (rect_overlap_area(item.cell, *avoid[r]) != 0) {
+                                if (avoid_ok) {
+                                    avoid_detail = std::string("アイコン (") + std::to_string(item.cell.x) + "," + std::to_string(item.cell.y) + " "
+                                        + std::to_string(item.cell.w) + "x" + std::to_string(item.cell.h) + ") が " + avoid_names[r] + " ("
+                                        + std::to_string(avoid[r]->x) + "," + std::to_string(avoid[r]->y) + " " + std::to_string(avoid[r]->w) + "x"
+                                        + std::to_string(avoid[r]->h) + ") と重なる。窓 " + std::to_string(w) + "x" + std::to_string(h)
+                                        + "・文字のマス " + std::to_string(text.cell_w()) + "x" + std::to_string(text.cell_h());
+                                }
+                                avoid_ok = false;
+                            }
                         }
                         orb_overlap += rect_overlap_area(item.cell, orb);
                         for (const StatusIconPlacement &other : placed.items) {
@@ -4894,7 +4905,8 @@ int run_status_hud_check(const AppOptions &options)
                         }
                     }
                     check(inside_ok, tag + ": 常時の列は地図と画面の中・縦の範囲の中");
-                    check(avoid_ok, tag + ": 常時の列は状態列・最下段・メッセージ・プロンプト・ミニマップ・名前の行と重ならない");
+                    check(avoid_ok, tag + ": 常時の列は状態列・最下段・メッセージ・プロンプト・ミニマップ・名前の行と重ならない"
+                        + (avoid_ok ? std::string() : (" ← " + avoid_detail)));
                     check(orb_overlap == 0, tag + ": 常時の列は玉の矩形と重ならない");
                     check(apart_ok, tag + ": 常時の列のアイコンどうしが重ならない");
                     check(orb_side_apart_ok, tag + ": 常時の列は玉の横のアイコンと重ならない");
@@ -5287,22 +5299,38 @@ int run_status_hud_check(const AppOptions &options)
                     const StatusIconLayout en_row = layout_status_icons(text, layout, english);
                     const PermanentIconLayout en_perm = layout_permanent_icons(text, layout, english);
                     bool en_ok = !en_row.items.empty() && !en_perm.items.empty();
+                    std::string en_detail; //! 落ちたとき、最初に規則を外れた名前（原因を探す手がかり）
+                    const auto en_note = [&](bool ok, const std::string &where, const std::string &label, const FittedText &name) {
+                        if (!ok && en_detail.empty()) {
+                            const int icon = (where == "常時の列") ? en_perm.icon_px : en_row.icon_px;
+                            const int ref = status_text_reference_px(text, icon);
+                            en_detail = where + " の「" + label + "」（" + std::to_string(name.lines) + " 行・幅 " + std::to_string(name.width) + "・字 "
+                                + std::to_string(text.sized_px(name.scale)) + "px）。アイコン幅 " + std::to_string(icon) + "・基準の字 " + std::to_string(ref)
+                                + "px・基準の文字列の幅 "
+                                + std::to_string(text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref) / static_cast<float>(text.base_px())))
+                                + "・半角 8 字の幅 "
+                                + std::to_string(text.measure_sized("Poisoned", static_cast<float>(ref) / static_cast<float>(text.base_px())));
+                        }
+                        return ok;
+                    };
                     int en_two = 0;
                     int en_one = 0;
                     for (const StatusIconPlacement &item : en_row.items) {
                         const std::string &label = english.status_effects[static_cast<std::size_t>(item.effect_index)].label_utf8;
-                        en_ok = en_ok && name_wrap_ok(item.name, en_row.icon_px, label) && (item.cell.h == mixed.items.front().cell.h);
+                        en_ok = en_note(name_wrap_ok(item.name, en_row.icon_px, label), "玉の横の段", label, item.name) && en_ok;
+                        en_ok = en_note(item.cell.h == mixed.items.front().cell.h, "玉の横の段の高さ", label, item.name) && en_ok;
                         en_two += (item.name.lines == 2) ? 1 : 0;
                         en_one += (item.name.lines == 1) ? 1 : 0;
                     }
                     for (const PermanentIconPlacement &item : en_perm.items) {
                         const std::string &label = english.status_effects[static_cast<std::size_t>(item.effect_index)].label_utf8;
-                        en_ok = en_ok && name_wrap_ok(item.name, en_perm.icon_px, label);
+                        en_ok = en_note(name_wrap_ok(item.name, en_perm.icon_px, label), "常時の列", label, item.name) && en_ok;
                         en_two += (item.name.lines == 2) ? 1 : 0;
                         en_one += (item.name.lines == 1) ? 1 : 0;
                     }
                     check(en_ok && (en_two > 0) && (en_one > 0),
-                        tag + ": 英語の名前も同じ規則（空白でだけ折れ、1 語は折れない。1 行 " + std::to_string(en_one) + " 個 / 2 行 " + std::to_string(en_two) + " 個）");
+                        tag + ": 英語の名前も同じ規則（空白でだけ折れ、1 語は折れない。1 行 " + std::to_string(en_one) + " 個 / 2 行 " + std::to_string(en_two) + " 個）"
+                            + (en_detail.empty() ? std::string() : (" ← " + en_detail)));
                 }
             }
         }
@@ -5335,6 +5363,34 @@ int run_status_hud_check(const AppOptions &options)
                         + std::to_string(text.sized_px(five.scale)) + "px / 6 文字 " + std::to_string(text.sized_px(six.scale)) + "px / 英語 "
                         + std::to_string(text.sized_px(english.scale)) + "px）");
             }
+            //! 全角 4 文字ぶん以内（表示上の幅 8 以内）の名前が基準の大きさでもアイコンの幅に収まらないときだけ、字の高さを保って横だけ縮めて
+            //! アイコンの幅に収める。収まる名前は横の倍率 1 のまま（Windows の MS ゴシックでは 8 桁が全角 4 字と
+            //! 同じ幅なので、すべてここ）。Linux・Android の等幅フォントは半角 8 字が全角 4 字より広く、縮める側に入る。
+            for (const int icon : { 64, 43, 38, 34, 24 }) {
+                const int ref = status_text_reference_px(text, icon);
+                const float ref_scale = static_cast<float>(ref) / static_cast<float>(text.base_px());
+                int fitting = 0;
+                int squeezed = 0;
+                bool rule_ok = true;
+                std::string detail;
+                for (const char *label : { "Poisoned", "Confused", "Blind", "Haste", "Slow", "ABCDEFGH", "WWWWWWWW", "毒", "ヒーロー", "火炎耐性", "加速" }) {
+                    const FittedText f = fit_status_name(text, label, icon);
+                    const int natural = text.measure_sized(label, ref_scale);
+                    const bool shrinks = natural > icon;
+                    const bool this_ok = (text.sized_px(f.scale) == ref) && (f.lines == 1) && !f.overflow && (f.width <= icon)
+                        && (shrinks ? ((f.x_scale < 1.f) && (f.x_scale > 0.f) && (f.width == icon)) : ((f.x_scale == 1.f) && (f.width == natural)));
+                    fitting += shrinks ? 0 : 1;
+                    squeezed += shrinks ? 1 : 0;
+                    rule_ok = rule_ok && this_ok;
+                    if (!this_ok && detail.empty()) {
+                        detail = std::string(label) + "（自然な幅 " + std::to_string(natural) + "・結果の幅 " + std::to_string(f.width) + "・横の倍率 "
+                            + std::to_string(f.x_scale) + "・字 " + std::to_string(text.sized_px(f.scale)) + "px・基準 " + std::to_string(ref) + "px）";
+                    }
+                }
+                check(rule_ok, "名前の横の縮め(アイコン " + std::to_string(icon) + "px): 基準の大きさでも収まらない短い名前だけ、字の高さを保って横だけ縮めて幅 "
+                        + std::to_string(icon) + " に収める（収まる " + std::to_string(fitting) + " 個は倍率 1 のまま・縮めた " + std::to_string(squeezed) + " 個）"
+                        + (detail.empty() ? std::string() : (" ← " + detail)));
+            }
         }
     }
 
@@ -5352,7 +5408,8 @@ int run_status_hud_check(const AppOptions &options)
         make_status_hud_frame_english(english_frame);
         for (const Extra &extra : { Extra{ 2560, 1080, LayoutMode::Full, 0, "_full" }, Extra{ 1280, 720, LayoutMode::Full, 0, "_full" },
                  Extra{ 2560, 1080, LayoutMode::Hybrid, 1, "_right" }, Extra{ 2560, 1080, LayoutMode::Split, 0, "_split" },
-                 Extra{ 2560, 1080, LayoutMode::Hybrid, 0, "_en", true }, Extra{ 1280, 720, LayoutMode::Hybrid, 0, "_en", true } }) {
+                 Extra{ 2560, 1080, LayoutMode::Hybrid, 0, "_en", true }, Extra{ 1280, 720, LayoutMode::Hybrid, 0, "_en", true },
+                 Extra{ 2560, 1080, LayoutMode::Split, 0, "_split_en", true } }) {
             StatusHudTarget target;
             if (!make_status_hud_target(target, extra.w, extra.h)) {
                 check(false, "画面の外の描画先を作れません（作りを替えた絵）");

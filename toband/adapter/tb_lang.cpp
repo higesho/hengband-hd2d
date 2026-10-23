@@ -535,6 +535,52 @@ const char *tb_tr_addstr(const char *s, int *n)
     return out;
 }
 
+int tb_head_len(const char *head, int col, int len)
+{
+    if (head == nullptr) {
+        return 0;
+    }
+    if (!g_enabled) {
+        return static_cast<int>(std::strlen(head));
+    }
+    int n = static_cast<int>(std::strlen(tb_lookup(head, 0)));
+    //! 人物表の右の欄（`col == 54`・値が札に続く欄）は、英語の札を 14 桁にそろえて訳してある（`Fighting    : `）。
+    //! 短い札（`AM Field  :`。人物表の 4 枚目の札と同じ鍵）でも、値の桁は 14 にそろえる。
+    if ((len < 0) && (col == 54) && (n < 14)) {
+        n = 14;
+    }
+    return n;
+}
+
+const char *tb_clip(const char *s, int width)
+{
+    static char buf[256];
+    if (!g_enabled || (s == nullptr) || (width <= 0) || (width >= static_cast<int>(sizeof(buf)))) {
+        return s;
+    }
+    if (std::strlen(s) <= static_cast<size_t>(width)) {
+        return s;
+    }
+    std::memcpy(buf, s, static_cast<size_t>(width)); // 英語は ASCII なので、バイトで切ってよい（日本語のときはここへ来ない）
+    buf[width] = '\0';
+    return buf;
+}
+
+const char *tb_fit(const char *s, int width)
+{
+    static char buf[64];
+    if (!g_enabled || (s == nullptr) || (width < 2) || (width >= static_cast<int>(sizeof(buf)))) {
+        return s;
+    }
+    if (std::strlen(s) <= static_cast<size_t>(width)) {
+        return s;
+    }
+    std::memcpy(buf, s, static_cast<size_t>(width - 1)); // 英語は ASCII なので、バイトで切ってよい
+    buf[width - 1] = '.';
+    buf[width] = 0;
+    return buf;
+}
+
 const char *tb_tr_fmt(const char *fmt)
 {
     return tb_lookup(fmt, 1);

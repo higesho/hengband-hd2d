@@ -1,0 +1,82 @@
+// dc_altar_trog — プレハブ定義（設計書 §7）。`dc_altar_trog.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 trog（dngn/altars/trog）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_trog",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "595959",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "6F6F6F",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "6D0606",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "BCBCBC",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "961418",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "B41E22",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "EEC6A8",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "1E1818",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "785032",
+      "material": "wood"
+    },
+    {
+      "i": 10,
+      "rgb": "B4BAC4",
+      "material": "stone"
+    }
+  ]
+}

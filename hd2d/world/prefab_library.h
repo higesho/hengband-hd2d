@@ -135,6 +135,13 @@ struct LibraryEntry {
     /*! @} */
     bool has_motion{ false }; //!< 剛体の動きを持つか（行列が要るか）
     bool is_ground{ false }; //!< 天面が z<=0.05（カットアウェイも沈み込みも掛けない）
+    /*!
+     * 対応表の `object`（地面の上に立つもの。扉・階段・祭壇・像・植物など）にだけ使われ、`structure`（壁）・`ground` には使われないプレハブ。
+     * 実体（怪物・アイテム・プレイヤー）と同じマスでは実体の後ろへ回す描き方（DCSS の D24。`draw_library_color`）が見る。
+     */
+    bool used_as_object{ false };
+    bool used_as_other{ false }; //!< `structure`・`ground` にも使われている
+    bool is_object() const { return this->used_as_object && !this->used_as_other && !this->is_ground; }
 };
 
 class PrefabLibrary {

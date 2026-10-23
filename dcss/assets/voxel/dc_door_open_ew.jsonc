@@ -1,0 +1,222 @@
+// dc_door_open_ew — プレハブ定義（設計書 §7）。`dc_door_open_ew.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の扉 open_door（dngn/doors/open_door）。東西向き。枠は厚み 12、扉板は 4 引っ込める（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_door_open_ew",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "646464",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "0E0E0E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "747474",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "1E1E1E",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "818181",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "565656",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "474747",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "373737",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "767676",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "888888",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "989898",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "656565",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "535353",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "414141",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "1A1A1A",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "292929",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "303030",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "371E20",
+      "material": "wood"
+    },
+    {
+      "i": 20,
+      "rgb": "412326",
+      "material": "wood"
+    },
+    {
+      "i": 21,
+      "rgb": "462126",
+      "material": "wood"
+    },
+    {
+      "i": 22,
+      "rgb": "52272D",
+      "material": "wood"
+    },
+    {
+      "i": 23,
+      "rgb": "813A44",
+      "material": "wood"
+    },
+    {
+      "i": 24,
+      "rgb": "984450",
+      "material": "wood"
+    },
+    {
+      "i": 25,
+      "rgb": "0C0C0C",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "622E35",
+      "material": "wood"
+    },
+    {
+      "i": 27,
+      "rgb": "73363E",
+      "material": "wood"
+    },
+    {
+      "i": 28,
+      "rgb": "2A191B",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "311D20",
+      "material": "stone"
+    },
+    {
+      "i": 30,
+      "rgb": "BC9151",
+      "material": "metal"
+    },
+    {
+      "i": 31,
+      "rgb": "DDAB5F",
+      "material": "wood"
+    },
+    {
+      "i": 32,
+      "rgb": "81663A",
+      "material": "wood"
+    },
+    {
+      "i": 33,
+      "rgb": "987844",
+      "material": "metal"
+    },
+    {
+      "i": 34,
+      "rgb": "9E7B46",
+      "material": "metal"
+    },
+    {
+      "i": 35,
+      "rgb": "BA9152",
+      "material": "metal"
+    },
+    {
+      "i": 36,
+      "rgb": "463721",
+      "material": "stone"
+    },
+    {
+      "i": 37,
+      "rgb": "524127",
+      "material": "stone"
+    },
+    {
+      "i": 38,
+      "rgb": "423434",
+      "material": "stone"
+    }
+  ]
+}

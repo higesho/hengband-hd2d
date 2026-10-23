@@ -1,0 +1,117 @@
+// dc_floor_sprouting_ruin — プレハブ定義（設計書 §7）。`dc_floor_sprouting_ruin.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 sprouting_ruin00（dngn/floor/sprouting_ruin00）。タイルに合わせた凹凸（organic。出 329・へこみ 422。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_sprouting_ruin",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "27260D",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "2A1908",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "0C1800",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "1D340E",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "264316",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "112000",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "7A602D",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "6B4D29",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "365C18",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "613F22",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "3C2411",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "2C4D14",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "5B4722",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "392611",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "654B26",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "5C3D21",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "291D09",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "302C10",
+      "material": "stone"
+    }
+  ]
+}

@@ -9,7 +9,7 @@ from pathlib import Path
 from reconstruction_recipe import decode_addition,materialize
 from reconstruction import canonical,variant
 
-def audit(recipe,read):
+def audit(recipe,read,max_files=10000):
     allowed={'schema','inputs','additions','files','archives','platform','probe','output','commands','responses'}
     if recipe.get('schema')!=2 or set(recipe)-allowed:raise ValueError('Unexpected recipe format or fields')
     anchors={};input_bytes=0
@@ -36,7 +36,7 @@ def audit(recipe,read):
         for op in spec['operations']:
             if op[0] not in ('copy','add'):raise ValueError('Unsupported operation')
             count+=op[0]=='copy'
-    result=materialize(recipe,read)
+    result=materialize(recipe,read,max_files)
     return {'files':len(result),'copy_operations':count,'unique_addition_bytes':addition_bytes,'source_text_hits':0,'output_hashes_verified':True}
 
 def main():

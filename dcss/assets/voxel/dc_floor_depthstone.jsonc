@@ -1,0 +1,67 @@
+// dc_floor_depthstone — プレハブ定義（設計書 §7）。`dc_floor_depthstone.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 depthstone_floor0（dngn/floor/depthstone_floor0）。タイルに合わせた凹凸（sand。出 166・へこみ 261。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_depthstone",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "242329",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "3F3D44",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "54525E",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "1B1B23",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "272933",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "332F37",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "37373F",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "111117",
+      "material": "stone"
+    }
+  ]
+}

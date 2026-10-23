@@ -1366,6 +1366,19 @@ void print_usage()
 }
 
 /*!
+ * @brief 目録の絵（PNG）が置き場にあるか。`<データの置き場>/tilework/sfc` があれば開発ツリー、無ければ配布物。
+ * @details PNG は HD2D が使わない開発の頃の 2D の絵で、配布物（Linux・Android）には 1 枚も入れない
+ * （`presentation/bridge/slab_presence.h`。`tools/package/build_linux_package.py` は `tilework/` の絵を除く）。
+ * 置き場が無いときの `--selftest` は、PNG の有無の照合だけを**飛ばすと言って数える**（黙って通さない。
+ * 目録の行の全数照合・板の有無は飛ばさない）。
+ */
+bool tile_pngs_present()
+{
+    const std::string dir = under_exe("tilework", "sfc");
+    return !dir.empty() && portable::dir_exists(dir);
+}
+
+/*!
  * @brief `--selftest`。起動列を通し、**地形の名寄せ表を全数照合する**（設計 §9 の 4）。
  * @return プロセスの終了コード
  *
@@ -1391,6 +1404,14 @@ int run_selftest(const std::string &lib_dir)
     }
 
     int failures = 0;
+    //! 飛ばした照合（配布物に PNG が無いとき）。終わりの行に数を出す。
+    int skipped = 0;
+    const bool pngs_present = tile_pngs_present();
+    if (!pngs_present) {
+        std::fprintf(stderr,
+            "[frox] selftest: SKIP - tile PNG presence is not checked: %s is absent (the package ships no 2D tiles)\n",
+            under_exe("tilework", "sfc").c_str());
+    }
 
     int limits[6] = { 0 };
     if (fc_read_limits(limits, 6) != 6) {
@@ -1434,7 +1455,10 @@ int run_selftest(const std::string &lib_dir)
             std::fprintf(stderr,
                 "[frox] selftest: terrain map: %d rows, %d defined feats, %d missing, %d png missing\n",
                 manifest.terrain_count(), defined, missing, manifest.missing_files());
-            if ((missing > 0) || (manifest.missing_files() > 0)) {
+            if (!pngs_present) {
+                ++skipped; //!< PNG の有無は飛ばす（上の SKIP の行）。表の行の全数照合（missing）は効く
+            }
+            if ((missing > 0) || (pngs_present && (manifest.missing_files() > 0))) {
                 failures++;
             }
         }
@@ -1480,7 +1504,10 @@ int run_selftest(const std::string &lib_dir)
             std::fprintf(stderr,
                 "[frox] selftest: entity map: %d rows, %d defined entities, %d missing, %d png missing\n",
                 manifest.entity_count(), want, missing, manifest.missing_files());
-            if ((missing > 0) || (manifest.missing_files() > 0)) {
+            if (!pngs_present) {
+                ++skipped;
+            }
+            if ((missing > 0) || (pngs_present && (manifest.missing_files() > 0))) {
                 failures++;
             }
         }
@@ -1681,7 +1708,11 @@ int run_selftest(const std::string &lib_dir)
         std::fflush(stderr);
         return 1;
     }
-    std::fprintf(stderr, "[frox] selftest: PASS\n");
+    if (skipped > 0) {
+        std::fprintf(stderr, "[frox] selftest: PASS (%d check(s) skipped: tile PNG presence)\n", skipped);
+    } else {
+        std::fprintf(stderr, "[frox] selftest: PASS\n");
+    }
     std::fflush(stderr);
     return 0;
 }

@@ -1,0 +1,242 @@
+// dc_wall_frigid — プレハブ定義（設計書 §7）。`dc_wall_frigid.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 rime_wall0（dngn/wall/rime_wall0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_frigid",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "143750",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "002358",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "4CDBF5",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "66F5F9",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "248BB8",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "A7FFFE",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "3595E7",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "ECF6FA",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "035DAD",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "0065D5",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "000A24",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "094E7B",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "010A2E",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "010A50",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "10F2F3",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "00CDD5",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "1B729D",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "004E57",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "A9C0E8",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "BEDAED",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "00204F",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "E6E6E6",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "5CDCE0",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "96E6E5",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "44C5DC",
+      "material": "stone"
+    },
+    {
+      "i": 28,
+      "rgb": "005BC0",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "D4DDE1",
+      "material": "stone"
+    },
+    {
+      "i": 30,
+      "rgb": "3086D0",
+      "material": "stone"
+    },
+    {
+      "i": 31,
+      "rgb": "03549C",
+      "material": "stone"
+    },
+    {
+      "i": 32,
+      "rgb": "207DA6",
+      "material": "stone"
+    },
+    {
+      "i": 33,
+      "rgb": "010929",
+      "material": "stone"
+    },
+    {
+      "i": 34,
+      "rgb": "000920",
+      "material": "stone"
+    },
+    {
+      "i": 35,
+      "rgb": "010948",
+      "material": "stone"
+    },
+    {
+      "i": 36,
+      "rgb": "08466F",
+      "material": "stone"
+    },
+    {
+      "i": 37,
+      "rgb": "00B8C0",
+      "material": "stone"
+    },
+    {
+      "i": 38,
+      "rgb": "ABC4D5",
+      "material": "stone"
+    },
+    {
+      "i": 39,
+      "rgb": "98ADD1",
+      "material": "stone"
+    },
+    {
+      "i": 40,
+      "rgb": "00464E",
+      "material": "stone"
+    },
+    {
+      "i": 41,
+      "rgb": "0EDADB",
+      "material": "stone"
+    },
+    {
+      "i": 42,
+      "rgb": "18678D",
+      "material": "stone"
+    }
+  ]
+}

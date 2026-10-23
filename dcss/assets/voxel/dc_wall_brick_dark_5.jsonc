@@ -1,0 +1,102 @@
+// dc_wall_brick_dark_5 — プレハブ定義（設計書 §7）。`dc_wall_brick_dark_5.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 brick_dark_5_0（dngn/wall/brick_dark_5_0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_brick_dark_5",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "1E1814",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "100A07",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "2F2720",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "3F352D",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "4E413A",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "6E6056",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "191615",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "63564D",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "393028",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "2A231D",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "1B1612",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "0E0906",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "463A34",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "0E0D0B",
+      "material": "stone"
+    }
+  ]
+}

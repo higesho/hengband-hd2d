@@ -1,0 +1,97 @@
+// dc_wall_flesh — プレハブ定義（設計書 §7）。`dc_wall_flesh.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 wall_flesh0（dngn/wall/wall_flesh0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_flesh",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "9B6E58",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "A5765E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "7F5A48",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "FFB691",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "E5A282",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "CA8F72",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "FFD3AF",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "946A55",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "725141",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "E6A482",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "CE9275",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "B68167",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "E6BE9E",
+      "material": "stone"
+    }
+  ]
+}

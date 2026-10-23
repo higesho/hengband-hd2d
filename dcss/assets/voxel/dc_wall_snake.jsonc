@@ -1,0 +1,117 @@
+// dc_wall_snake — プレハブ定義（設計書 §7）。`dc_wall_snake.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 snake0（dngn/wall/snake0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_snake",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "2D360E",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "3D4913",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "29310D",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "1E240A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "141806",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "7B9327",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "52621A",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "667A20",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "8FAB2D",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "1B2009",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "4A5817",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "374211",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "252C0C",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "5C6E1D",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "6F8423",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "819A28",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "121605",
+      "material": "stone"
+    }
+  ]
+}

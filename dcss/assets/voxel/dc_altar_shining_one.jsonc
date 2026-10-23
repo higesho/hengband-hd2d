@@ -1,0 +1,62 @@
+// dc_altar_shining_one — プレハブ定義（設計書 §7）。`dc_altar_shining_one.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 shining_one（dngn/altars/shining_one）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_shining_one",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "8D6D00",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "B08800",
+      "material": "metal"
+    },
+    {
+      "i": 3,
+      "rgb": "2D2200",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "F5D740",
+      "material": "metal"
+    },
+    {
+      "i": 5,
+      "rgb": "AC962D",
+      "material": "metal"
+    },
+    {
+      "i": 6,
+      "rgb": "FFF74A",
+      "material": "metal"
+    }
+  ]
+}

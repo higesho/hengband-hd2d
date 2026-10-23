@@ -1,0 +1,177 @@
+// dc_gate_enter_ossuary — プレハブ定義（設計書 §7）。`dc_gate_enter_ossuary.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 ossuary_portal（dngn/gateways/ossuary_portal）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_ossuary",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "956940",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "5E4228",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "7C5835",
+      "material": "wood"
+    },
+    {
+      "i": 5,
+      "rgb": "AF7C4B",
+      "material": "metal"
+    },
+    {
+      "i": 6,
+      "rgb": "6E4E2F",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "92673E",
+      "material": "wood"
+    },
+    {
+      "i": 8,
+      "rgb": "50351A",
+      "material": "wood"
+    },
+    {
+      "i": 9,
+      "rgb": "5E3E1F",
+      "material": "wood"
+    },
+    {
+      "i": 10,
+      "rgb": "3D2914",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "483018",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "1F140A",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "24180C",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "2C1F13",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "342516",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "130C06",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "160E07",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "8C7863",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "A58D75",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "9F8E7E",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "BBA794",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "A37A00",
+      "material": "metal"
+    },
+    {
+      "i": 23,
+      "rgb": "C09000",
+      "material": "metal"
+    },
+    {
+      "i": 24,
+      "rgb": "6D5200",
+      "material": "wood"
+    },
+    {
+      "i": 25,
+      "rgb": "806000",
+      "material": "wood"
+    },
+    {
+      "i": 26,
+      "rgb": "BE8F00",
+      "material": "metal"
+    },
+    {
+      "i": 27,
+      "rgb": "E0A800",
+      "material": "metal"
+    },
+    {
+      "i": 28,
+      "rgb": "886600",
+      "material": "wood"
+    },
+    {
+      "i": 29,
+      "rgb": "A07800",
+      "material": "metal"
+    }
+  ]
+}

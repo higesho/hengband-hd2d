@@ -27,6 +27,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 struct SDL_Window;
@@ -178,7 +179,25 @@ void draw_library_depth(VoxelRenderer &renderer, PrefabLibrary &library, const T
     const Mat4 &light_view_projection);
 
 /*! @brief プレハブライブラリを色のパスへ描く。 */
-void draw_library_color(VoxelRenderer &renderer, PrefabLibrary &library, const TerrainView &terrain);
+/*!
+ * @brief 実体と同じマスにある地形のオブジェクトを、実体の後ろへ回すための置き場（DCSS の D24）。
+ * @details `draw_library_color` が `occupied`（実体のあるマスの鍵 `(gx << 16) | gy`）を受けたときだけ、そのマスの `object` 役のプレハブ
+ * （扉・階段・祭壇・像・植物など。壁は含まない）を本描画から外してここへ集める。`draw_library_deferred` が壁などを描いた後・実体の前に、
+ * **深度を書かずに**描く（実体は位置に関わらず手前になる。壁の向こうの物は壁に隠れたまま）。渡さなければ従来どおり。
+ */
+struct LibraryDeferred {
+    std::vector<std::pair<int, std::vector<InstanceData>>> items;
+    std::size_t instance_count() const;
+};
+void draw_library_color(VoxelRenderer &renderer, PrefabLibrary &library, const TerrainView &terrain,
+    const std::unordered_set<std::uint32_t> *occupied = nullptr, LibraryDeferred *deferred = nullptr);
+//! `draw_library_color` が集めた物を、深度を書かずに描く（カットアウェイは立つものと同じ）。
+void draw_library_deferred(VoxelRenderer &renderer, PrefabLibrary &library, const LibraryDeferred &deferred);
+//! 実体のあるマスの鍵。
+inline std::uint32_t occupied_cell_key(int gx, int gy)
+{
+    return (static_cast<std::uint32_t>(gx & 0xFFFF) << 16) | static_cast<std::uint32_t>(gy & 0xFFFF);
+}
 
 /* --------------------------------------------------- 切り欠き（手前を刈る） */
 

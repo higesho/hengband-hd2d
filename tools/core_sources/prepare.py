@@ -65,7 +65,7 @@ def reconstruct(upstream,source,result):
     """Write one core's reconstructed sources under result/<output> and verify them."""
     originals=original_files(upstream,source)
     recipe=json.loads(recipe_path(source).read_text(encoding='utf8'))
-    files=materialize(recipe,lambda archive,path:originals[path] if archive=='source' else (_ for _ in ()).throw(ValueError('Unexpected source archive')))
+    files=materialize(recipe,lambda archive,path:originals[path] if archive=='source' else (_ for _ in ()).throw(ValueError('Unexpected source archive')),max_files=source.get('max_files',10000))
     if files.keys()!=source['files'].keys():raise ValueError('Reconstruction file list mismatch')
     target=(result/source['output']).resolve()
     if not target.is_relative_to(result.resolve()):raise ValueError('Unsafe source output root')

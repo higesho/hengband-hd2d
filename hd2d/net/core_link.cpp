@@ -467,6 +467,8 @@ struct CoreLink::Impl {
     std::vector<MissileFx> carried_missiles;
     static constexpr std::size_t kCarriedFxMax = 64;
     std::deque<std::string> table_payloads;
+    //! `webtiles`・`dcss_ui`（DCSS。順序を守って捨てない列。ほかのコアは 1 通も来ない）。
+    std::deque<std::string> webtiles_payloads;
     std::string fatal_reason;
 
 
@@ -543,6 +545,11 @@ struct CoreLink::Impl {
             || (type == "macro_triggers")) {
             std::lock_guard<std::mutex> lock(this->inbox_mutex);
             this->table_payloads.push_back(std::move(payload));
+            return;
+        }
+        if ((type == "webtiles") || (type == "dcss_ui")) {
+            std::lock_guard<std::mutex> lock(this->inbox_mutex);
+            this->webtiles_payloads.push_back(std::move(payload));
             return;
         }
         if (type == "exit") {
@@ -1017,6 +1024,7 @@ bool CoreLink::handshake(std::string &err)
     hello.protocol = presentation::kProtocolVersion;
     hello.ui_name = "hengband-voxel-hd2d";
     hello.ui_version = "0.1.0";
+    hello.features = this->hello_features_;
     if (!impl.send("hello", presentation::encode_hello(hello))) {
         err = "コアへ hello を送れませんでした。";
         return false;
@@ -1171,6 +1179,17 @@ std::vector<std::string> CoreLink::take_table_payloads()
     return std::vector<std::string>(std::make_move_iterator(taken.begin()), std::make_move_iterator(taken.end()));
 }
 
+std::vector<std::string> CoreLink::take_webtiles_payloads()
+{
+    Impl &impl = *this->impl_;
+    std::deque<std::string> taken;
+    {
+        std::lock_guard<std::mutex> lock(impl.inbox_mutex);
+        taken.swap(impl.webtiles_payloads);
+    }
+    return std::vector<std::string>(std::make_move_iterator(taken.begin()), std::make_move_iterator(taken.end()));
+}
+
 bool CoreLink::send_ui_state(const presentation::UiStateMessage &message)
 {
     return this->impl_->send("ui_state", presentation::encode_ui_state(message));
@@ -1189,6 +1208,47 @@ bool CoreLink::send_keys(const presentation::KeysMessage &message)
 bool CoreLink::send_quit_request()
 {
     return this->impl_->send("quit_request", presentation::encode_quit_request(presentation::QuitRequestMessage{}));
+}
+
+bool CoreLink::send_webtiles_input(const std::string &line)
+{
+    //! `{"t":"webtiles_input","line":"<line を JSON の字にしたもの>"}`。line は原作の制御メッセージの JSON（引用符と逆斜線を含む）。
+    std::string out = "{\"t\":\"webtiles_input\",\"line\":\"";
+    for (const unsigned char c : line) {
+        switch (c) {
+        case '"':
+            out += "\\\"";
+            break;
+        case '\\':
+            out += "\\\\";
+            break;
+        case '\n':
+            out += "\\n";
+            break;
+        case '\r':
+            out += "\\r";
+            break;
+        case '\t':
+            out += "\\t";
+            break;
+        default:
+            if (c < 0x20) {
+                char buf[8];
+                std::snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned>(c));
+                out += buf;
+            } else {
+                out += static_cast<char>(c);
+            }
+            break;
+        }
+    }
+    out += "\"}";
+    return this->impl_->send("webtiles_input", out);
+}
+
+bool CoreLink::send_dcss_message(const char *type, const std::string &payload)
+{
+    return this->impl_->send(type, payload);
 }
 
 bool CoreLink::exit_received() const

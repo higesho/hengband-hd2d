@@ -1,0 +1,667 @@
+// dc_water_open_sea — プレハブ定義（設計書 §7）。`dc_water_open_sea.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 open_sea（dngn/water/open_sea）。タイルに合わせた凹凸（liquid。出 180・へこみ 259。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_water_open_sea",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "041D65",
+      "material": "clean"
+    },
+    {
+      "i": 2,
+      "rgb": "051258",
+      "material": "clean"
+    },
+    {
+      "i": 3,
+      "rgb": "051868",
+      "material": "clean"
+    },
+    {
+      "i": 4,
+      "rgb": "051253",
+      "material": "clean"
+    },
+    {
+      "i": 5,
+      "rgb": "05155B",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "051870",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "051268",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "081A8B",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "0A309E",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "082D93",
+      "material": "clean"
+    },
+    {
+      "i": 11,
+      "rgb": "082A8B",
+      "material": "clean"
+    },
+    {
+      "i": 12,
+      "rgb": "05258B",
+      "material": "clean"
+    },
+    {
+      "i": 13,
+      "rgb": "05206D",
+      "material": "clean"
+    },
+    {
+      "i": 14,
+      "rgb": "022585",
+      "material": "clean"
+    },
+    {
+      "i": 15,
+      "rgb": "05288B",
+      "material": "clean"
+    },
+    {
+      "i": 16,
+      "rgb": "053D78",
+      "material": "clean"
+    },
+    {
+      "i": 17,
+      "rgb": "052893",
+      "material": "clean"
+    },
+    {
+      "i": 18,
+      "rgb": "05257D",
+      "material": "clean"
+    },
+    {
+      "i": 19,
+      "rgb": "081DB6",
+      "material": "clean"
+    },
+    {
+      "i": 20,
+      "rgb": "021258",
+      "material": "clean"
+    },
+    {
+      "i": 21,
+      "rgb": "05157B",
+      "material": "clean"
+    },
+    {
+      "i": 22,
+      "rgb": "051878",
+      "material": "clean"
+    },
+    {
+      "i": 23,
+      "rgb": "021048",
+      "material": "clean"
+    },
+    {
+      "i": 24,
+      "rgb": "02104B",
+      "material": "clean"
+    },
+    {
+      "i": 25,
+      "rgb": "021253",
+      "material": "clean"
+    },
+    {
+      "i": 26,
+      "rgb": "02124D",
+      "material": "clean"
+    },
+    {
+      "i": 27,
+      "rgb": "051573",
+      "material": "clean"
+    },
+    {
+      "i": 28,
+      "rgb": "08187B",
+      "material": "clean"
+    },
+    {
+      "i": 29,
+      "rgb": "0A32A6",
+      "material": "clean"
+    },
+    {
+      "i": 30,
+      "rgb": "0835B3",
+      "material": "clean"
+    },
+    {
+      "i": 31,
+      "rgb": "0832B3",
+      "material": "clean"
+    },
+    {
+      "i": 32,
+      "rgb": "052A93",
+      "material": "clean"
+    },
+    {
+      "i": 33,
+      "rgb": "052D98",
+      "material": "clean"
+    },
+    {
+      "i": 34,
+      "rgb": "052D9E",
+      "material": "clean"
+    },
+    {
+      "i": 35,
+      "rgb": "054285",
+      "material": "clean"
+    },
+    {
+      "i": 36,
+      "rgb": "085096",
+      "material": "clean"
+    },
+    {
+      "i": 37,
+      "rgb": "0830B3",
+      "material": "clean"
+    },
+    {
+      "i": 38,
+      "rgb": "052578",
+      "material": "clean"
+    },
+    {
+      "i": 39,
+      "rgb": "0518A6",
+      "material": "clean"
+    },
+    {
+      "i": 40,
+      "rgb": "05188B",
+      "material": "clean"
+    },
+    {
+      "i": 41,
+      "rgb": "051563",
+      "material": "clean"
+    },
+    {
+      "i": 42,
+      "rgb": "051568",
+      "material": "clean"
+    },
+    {
+      "i": 43,
+      "rgb": "05126D",
+      "material": "clean"
+    },
+    {
+      "i": 44,
+      "rgb": "051273",
+      "material": "clean"
+    },
+    {
+      "i": 45,
+      "rgb": "0820C3",
+      "material": "clean"
+    },
+    {
+      "i": 46,
+      "rgb": "0830AB",
+      "material": "clean"
+    },
+    {
+      "i": 47,
+      "rgb": "052885",
+      "material": "clean"
+    },
+    {
+      "i": 48,
+      "rgb": "082DA6",
+      "material": "clean"
+    },
+    {
+      "i": 49,
+      "rgb": "05407D",
+      "material": "clean"
+    },
+    {
+      "i": 50,
+      "rgb": "084893",
+      "material": "clean"
+    },
+    {
+      "i": 51,
+      "rgb": "08488B",
+      "material": "clean"
+    },
+    {
+      "i": 52,
+      "rgb": "0A32B8",
+      "material": "clean"
+    },
+    {
+      "i": 53,
+      "rgb": "02125D",
+      "material": "clean"
+    },
+    {
+      "i": 54,
+      "rgb": "051598",
+      "material": "clean"
+    },
+    {
+      "i": 55,
+      "rgb": "052063",
+      "material": "clean"
+    },
+    {
+      "i": 56,
+      "rgb": "05128B",
+      "material": "clean"
+    },
+    {
+      "i": 57,
+      "rgb": "085DAE",
+      "material": "clean"
+    },
+    {
+      "i": 58,
+      "rgb": "052273",
+      "material": "clean"
+    },
+    {
+      "i": 59,
+      "rgb": "082D98",
+      "material": "clean"
+    },
+    {
+      "i": 60,
+      "rgb": "021568",
+      "material": "clean"
+    },
+    {
+      "i": 61,
+      "rgb": "081DAB",
+      "material": "clean"
+    },
+    {
+      "i": 62,
+      "rgb": "053298",
+      "material": "clean"
+    },
+    {
+      "i": 63,
+      "rgb": "082578",
+      "material": "clean"
+    },
+    {
+      "i": 64,
+      "rgb": "0840CB",
+      "material": "clean"
+    },
+    {
+      "i": 65,
+      "rgb": "083DC8",
+      "material": "clean"
+    },
+    {
+      "i": 66,
+      "rgb": "02205B",
+      "material": "clean"
+    },
+    {
+      "i": 67,
+      "rgb": "020D42",
+      "material": "clean"
+    },
+    {
+      "i": 68,
+      "rgb": "08389E",
+      "material": "clean"
+    },
+    {
+      "i": 69,
+      "rgb": "082093",
+      "material": "clean"
+    },
+    {
+      "i": 70,
+      "rgb": "022273",
+      "material": "clean"
+    },
+    {
+      "i": 71,
+      "rgb": "051293",
+      "material": "clean"
+    },
+    {
+      "i": 72,
+      "rgb": "0830A6",
+      "material": "clean"
+    },
+    {
+      "i": 73,
+      "rgb": "05428B",
+      "material": "clean"
+    },
+    {
+      "i": 74,
+      "rgb": "02257D",
+      "material": "clean"
+    },
+    {
+      "i": 75,
+      "rgb": "052D93",
+      "material": "clean"
+    },
+    {
+      "i": 76,
+      "rgb": "081568",
+      "material": "clean"
+    },
+    {
+      "i": 77,
+      "rgb": "081AB0",
+      "material": "clean"
+    },
+    {
+      "i": 78,
+      "rgb": "052A98",
+      "material": "clean"
+    },
+    {
+      "i": 79,
+      "rgb": "087BE1",
+      "material": "clean"
+    },
+    {
+      "i": 80,
+      "rgb": "0530A6",
+      "material": "clean"
+    },
+    {
+      "i": 81,
+      "rgb": "02386B",
+      "material": "clean"
+    },
+    {
+      "i": 82,
+      "rgb": "053A70",
+      "material": "clean"
+    },
+    {
+      "i": 83,
+      "rgb": "05287B",
+      "material": "clean"
+    },
+    {
+      "i": 84,
+      "rgb": "051285",
+      "material": "clean"
+    },
+    {
+      "i": 85,
+      "rgb": "021D50",
+      "material": "clean"
+    },
+    {
+      "i": 86,
+      "rgb": "05127B",
+      "material": "clean"
+    },
+    {
+      "i": 87,
+      "rgb": "0838BB",
+      "material": "clean"
+    },
+    {
+      "i": 88,
+      "rgb": "0A58BE",
+      "material": "clean"
+    },
+    {
+      "i": 89,
+      "rgb": "0532BB",
+      "material": "clean"
+    },
+    {
+      "i": 90,
+      "rgb": "082D9E",
+      "material": "clean"
+    },
+    {
+      "i": 91,
+      "rgb": "052A8B",
+      "material": "clean"
+    },
+    {
+      "i": 92,
+      "rgb": "051585",
+      "material": "clean"
+    },
+    {
+      "i": 93,
+      "rgb": "052268",
+      "material": "clean"
+    },
+    {
+      "i": 94,
+      "rgb": "052585",
+      "material": "clean"
+    },
+    {
+      "i": 95,
+      "rgb": "05427D",
+      "material": "clean"
+    },
+    {
+      "i": 96,
+      "rgb": "05226D",
+      "material": "clean"
+    },
+    {
+      "i": 97,
+      "rgb": "052D88",
+      "material": "clean"
+    },
+    {
+      "i": 98,
+      "rgb": "022068",
+      "material": "clean"
+    },
+    {
+      "i": 99,
+      "rgb": "0A3DBB",
+      "material": "clean"
+    },
+    {
+      "i": 100,
+      "rgb": "052898",
+      "material": "clean"
+    },
+    {
+      "i": 101,
+      "rgb": "051263",
+      "material": "clean"
+    },
+    {
+      "i": 102,
+      "rgb": "052570",
+      "material": "clean"
+    },
+    {
+      "i": 103,
+      "rgb": "022278",
+      "material": "clean"
+    },
+    {
+      "i": 104,
+      "rgb": "052A85",
+      "material": "clean"
+    },
+    {
+      "i": 105,
+      "rgb": "05309E",
+      "material": "clean"
+    },
+    {
+      "i": 106,
+      "rgb": "05189E",
+      "material": "clean"
+    },
+    {
+      "i": 107,
+      "rgb": "051A70",
+      "material": "clean"
+    },
+    {
+      "i": 108,
+      "rgb": "0850B8",
+      "material": "clean"
+    },
+    {
+      "i": 109,
+      "rgb": "0518AE",
+      "material": "clean"
+    },
+    {
+      "i": 110,
+      "rgb": "0828B6",
+      "material": "clean"
+    },
+    {
+      "i": 111,
+      "rgb": "0538C6",
+      "material": "clean"
+    },
+    {
+      "i": 112,
+      "rgb": "08258B",
+      "material": "clean"
+    },
+    {
+      "i": 113,
+      "rgb": "08158B",
+      "material": "clean"
+    },
+    {
+      "i": 114,
+      "rgb": "052DAE",
+      "material": "clean"
+    },
+    {
+      "i": 115,
+      "rgb": "05488B",
+      "material": "clean"
+    },
+    {
+      "i": 116,
+      "rgb": "084BA8",
+      "material": "clean"
+    },
+    {
+      "i": 117,
+      "rgb": "0835BE",
+      "material": "clean"
+    },
+    {
+      "i": 118,
+      "rgb": "022A98",
+      "material": "clean"
+    },
+    {
+      "i": 119,
+      "rgb": "02105D",
+      "material": "clean"
+    },
+    {
+      "i": 120,
+      "rgb": "021265",
+      "material": "clean"
+    },
+    {
+      "i": 121,
+      "rgb": "02128B",
+      "material": "clean"
+    },
+    {
+      "i": 122,
+      "rgb": "022D9E",
+      "material": "clean"
+    },
+    {
+      "i": 123,
+      "rgb": "052075",
+      "material": "clean"
+    },
+    {
+      "i": 124,
+      "rgb": "02288B",
+      "material": "clean"
+    },
+    {
+      "i": 125,
+      "rgb": "02258B",
+      "material": "clean"
+    },
+    {
+      "i": 126,
+      "rgb": "000D42",
+      "material": "clean"
+    },
+    {
+      "i": 127,
+      "rgb": "0515A3",
+      "material": "clean"
+    },
+    {
+      "i": 128,
+      "rgb": "021273",
+      "material": "clean"
+    }
+  ]
+}

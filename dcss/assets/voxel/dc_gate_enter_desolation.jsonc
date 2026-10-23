@@ -1,0 +1,97 @@
+// dc_gate_enter_desolation — プレハブ定義（設計書 §7）。`dc_gate_enter_desolation.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 desolation_portal（dngn/gateways/desolation_portal）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_desolation",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "786471",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "584B4A",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "8A817B",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "8D7685",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "685857",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "A29891",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "A8A29C",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "C6BEB7",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "B2B5AC",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "D2D5CA",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "C9C2B5",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "ECE4D5",
+      "material": "stone"
+    }
+  ]
+}

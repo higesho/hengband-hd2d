@@ -491,6 +491,8 @@ Overreach afx_overreach(const Ev &ev, const std::vector<::FxCell> &cells, float 
 /* ------------------------------------------------------------------ 属性ごとの見た目（登録表・部品）の検査 */
 
 using AfxCheck = std::function<void(bool, const std::string &)>;
+//! 読む物が無くて飛ばした検査（合否に数えず、`SKIP` の行と終わりの件数に出す。黙って通さない）。
+using AfxSkip = std::function<void(const std::string &)>;
 
 //! 上へたどって `presentation/bridge/attack_fx_attr_names.h` を探し、対の表 `{ AttributeType::X, "名前" },` の名前を拾う（ゲーム本体側の名前の一覧）。
 bool afx_core_attr_names(std::vector<std::string> &names, std::string &where)
@@ -830,7 +832,7 @@ void afx_parts_demo(const FxSpec &spec, int px, int py, int tx, int ty, float t,
 }
 
 //! 登録表・全属性の流し・共通の部品の検査（窓も GL も要らない）。
-void afx_style_checks(const AfxCheck &check)
+void afx_style_checks(const AfxCheck &check, const AfxSkip &skip)
 {
     // ---------------------------------------------------------------- 登録表とゲーム本体側の名前の突き合わせ
     {
@@ -838,9 +840,16 @@ void afx_style_checks(const AfxCheck &check)
         std::vector<std::string> core_names;
         std::string where;
         const bool found = afx_core_attr_names(core_names, where);
-        check(found && (core_names.size() >= 100u),
-            "登録表: ゲーム本体側の属性の名前の一覧（presentation/bridge/attack_fx_attr_names.h）を読める（リポジトリ直下で実行する。"
-                + std::to_string(core_names.size()) + " 個 " + where + "）");
+        // 一覧はゲーム本体の**ソース**（`presentation/bridge/attack_fx_attr_names.h`）を読む。配布物（Linux・Android）にはソースを入れないので、
+        // 無いときは、一覧を使う検査（読める・画面側に無い名前・画面側だけの名前・変愚の系統の数・寄せ先が一覧にある）だけを飛ばすと言って数える
+        // （開発ツリーで流したときは全部走る。2026-10-23 の Linux の配布物での 4 件の失敗）。
+        if (found) {
+            check(core_names.size() >= 100u,
+                "登録表: ゲーム本体側の属性の名前の一覧（presentation/bridge/attack_fx_attr_names.h）を読める（リポジトリ直下で実行する。"
+                    + std::to_string(core_names.size()) + " 個 " + where + "）");
+        } else {
+            skip("登録表: ゲーム本体側の属性の名前の一覧（presentation/bridge/attack_fx_attr_names.h）を読める — ソースが無い（配布物）ので、一覧を使う検査（以下の SKIP）を飛ばす");
+        }
         const FxStyleRegistry &reg = fx_style_registry();
         // 変愚の名前の一覧（`attack_fx_attr_names.h`）に、Frox・幻想蛮怒の専用の見た目の名前（`attack_fx_core_attr_aliases.h`）を足したものが、
         // 登録表と 1 字も違わない。変愚の名前の突き合わせは弱めない（`hengband_count` 個は、これまでどおり全部が登録表にある）。
@@ -880,8 +889,13 @@ void afx_style_checks(const AfxCheck &check)
         for (const std::string &m : extra) {
             extra_list += " " + m;
         }
-        check(missing.empty(), "登録表: ゲーム本体側の名前で、画面側に登録の無いものが 0（" + std::to_string(missing.size()) + " 個" + missing_list + "）");
-        check(extra.empty(), "登録表: 画面側の登録で、ゲーム本体側に無い名前（綴りの違い）が 0（" + std::to_string(extra.size()) + " 個" + extra_list + "）");
+        if (found) {
+            check(missing.empty(), "登録表: ゲーム本体側の名前で、画面側に登録の無いものが 0（" + std::to_string(missing.size()) + " 個" + missing_list + "）");
+            check(extra.empty(), "登録表: 画面側の登録で、ゲーム本体側に無い名前（綴りの違い）が 0（" + std::to_string(extra.size()) + " 個" + extra_list + "）");
+        } else {
+            skip("登録表: ゲーム本体側の名前で、画面側に登録の無いものが 0 — 名前の一覧が読めないので飛ばす");
+            skip("登録表: 画面側の登録で、ゲーム本体側に無い名前（綴りの違い）が 0 — 名前の一覧が読めないので飛ばす");
+        }
         check(reg.duplicate_count() == 0, "登録表: 同じ名前を 2 度登録していない（" + std::to_string(reg.duplicate_count()) + " 件）");
         int counts[7]{};
         bool families_ok = true;
@@ -913,8 +927,12 @@ void afx_style_checks(const AfxCheck &check)
             "登録表: どの属性も 7 つの系統（変愚の 4 つ・Frox・幻想蛮怒・Sil-Q）のどれかに登録されている（Frox " + std::to_string(frox_own.size()) + " 個・幻想蛮怒 "
                 + std::to_string(genso_own.size()) + " 個・Sil-Q " + std::to_string(silq_own.size()) + " 個）");
         // 変愚の名前の数は変わっていない（足した分は Frox・幻想蛮怒の専用だけ）。
-        check((static_cast<std::size_t>(counts[0] + counts[1] + counts[2] + counts[3])) == hengband_count,
-            "登録表: 変愚の 4 つの系統の登録数が、変愚の名前の一覧の数と同じ（" + std::to_string(hengband_count) + "）");
+        if (found) {
+            check((static_cast<std::size_t>(counts[0] + counts[1] + counts[2] + counts[3])) == hengband_count,
+                "登録表: 変愚の 4 つの系統の登録数が、変愚の名前の一覧の数と同じ（" + std::to_string(hengband_count) + "）");
+        } else {
+            skip("登録表: 変愚の 4 つの系統の登録数が、変愚の名前の一覧の数と同じ — 名前の一覧が読めないので飛ばす");
+        }
         // Frox の名前は `fc_`、幻想蛮怒の名前は `gb_` で始まる（変愚の名前とぶつからない）。
         bool prefix_ok = true;
         for (const std::string &n : frox_own) {
@@ -946,7 +964,8 @@ void afx_style_checks(const AfxCheck &check)
                     }
                     seen.push_back(alias[i].core_name);
                     const std::string target = alias[i].look_name;
-                    if ((fx_find_style(target) == nullptr) || (std::find(core_names.begin(), hengband_end, target) == hengband_end)) {
+                    //! 寄せ先が変愚の名前の一覧にあること（一覧が読めない配布物では飛ばし、登録表にあることだけを見る）
+                    if ((fx_find_style(target) == nullptr) || (found && (std::find(core_names.begin(), hengband_end, target) == hengband_end))) {
                         bad += std::string(" 寄せ先なし ") + tag + ":" + alias[i].core_name + "→" + target;
                     }
                 }
@@ -959,6 +978,9 @@ void afx_style_checks(const AfxCheck &check)
                 sizeof(attack_fx::kSilqAliases) / sizeof(attack_fx::kSilqAliases[0]), "silq");
             // TOband は専用の見た目が無く、寄せる表だけ（寄せ先がすべて変愚の名前＝登録表にあること）。
             scan(nullptr, 0, attack_fx::kTobandAliases, sizeof(attack_fx::kTobandAliases) / sizeof(attack_fx::kTobandAliases[0]), "toband");
+            if (!found) {
+                skip("寄せる表: 寄せ先が変愚の名前の一覧にある — 名前の一覧が読めないので飛ばす（下の検査は、寄せ先が登録表にあることだけを見る）");
+            }
             check(bad.empty(), "寄せる表: コア名が重ならず、専用の見た目と寄せ先（変愚の名前）がすべて登録表にある" + bad);
             check((std::string(attack_fx::frox_look_name("storm")) == "fc_storm") && (std::string(attack_fx::frox_look_name("arrow")) == "missile")
                     && (std::string(attack_fx::frox_look_name("fire")) == "fire") && (std::string(attack_fx::gensoband_look_name("tornado")) == "gb_tornado")
@@ -1615,6 +1637,7 @@ int run_attack_fx_check(const AppOptions &options, const std::string &out_stem)
 {
     int failures = 0;
     int passes = 0;
+    int skips = 0;
     const auto check = [&](bool ok, const std::string &what) {
         if (ok) {
             ++passes;
@@ -1623,6 +1646,10 @@ int run_attack_fx_check(const AppOptions &options, const std::string &out_stem)
             ++failures;
             std::fprintf(stderr, "  **FAIL** %s\n", what.c_str());
         }
+    };
+    const auto skip = [&](const std::string &what) {
+        ++skips;
+        std::fprintf(stderr, "  SKIP %s\n", what.c_str());
     };
 
     const VoxelFxParams &P = kParams;
@@ -1754,7 +1781,7 @@ int run_attack_fx_check(const AppOptions &options, const std::string &out_stem)
     }
     const bool picture_mode = !picks.empty();
     fx_sprite_set_dir("assets/fx"); //!< 絵の板（どくろなど）。リポジトリ直下で実行する
-    afx_style_checks(check);
+    afx_style_checks(check, skip);
 
     /* ======================================================== (1) 数で確かめる（CPU だけ） */
 
@@ -3536,7 +3563,7 @@ int run_attack_fx_check(const AppOptions &options, const std::string &out_stem)
     SDL_GL_DeleteContext(window.context);
     SDL_DestroyWindow(window.window);
     SDL_Quit();
-    std::fprintf(stderr, "[hd2d] attack-fx-check: PASS %d / FAIL %d\n", passes, failures);
+    std::fprintf(stderr, "[hd2d] attack-fx-check: PASS %d / FAIL %d / SKIP %d\n", passes, failures, skips);
     std::fprintf(stderr, "[hd2d] RESULT: %s\n", (failures == 0) ? "PASS" : "FAIL");
     return (failures == 0) ? 0 : 1;
 }

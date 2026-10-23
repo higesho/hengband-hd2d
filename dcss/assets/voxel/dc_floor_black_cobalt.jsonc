@@ -1,0 +1,77 @@
+// dc_floor_black_cobalt — プレハブ定義（設計書 §7）。`dc_floor_black_cobalt.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 black_cobalt01（dngn/floor/black_cobalt01）。タイルに合わせた凹凸（stone。出 284・へこみ 351。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_black_cobalt",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "152A2A",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "6A6A6A",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "9F9F9F",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "D4D4D4",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "353535",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "003535",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "004F4F",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "006A6A",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "009F9F",
+      "material": "stone"
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+// dc_wall_metal_iron — プレハブ定義（設計書 §7）。`dc_wall_metal_iron.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 iron0-0（dngn/wall/iron0-0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_metal_iron",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "353535",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "090909",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "3D3D3D",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "545454",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "878787",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "292929",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "171717",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "6C6C6C",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "C1C1C1",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "E0E0E0",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "A3A3A3",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "7A7A7A",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "373737",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "4C4C4C",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "151515",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "080808",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "252525",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "616161",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "E6E6E6",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "AEAEAE",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "939393",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "CACACA",
+      "material": "stone"
+    }
+  ]
+}

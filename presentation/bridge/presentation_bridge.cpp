@@ -3304,7 +3304,11 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
          */
         {
             std::string subject;
-            if (const std::size_t open = text.rfind('['); open != std::string::npos) {
+            if (command_prompt.look_row_cut) {
+                // 名前が長く、終わりの操作の案内が桁の端で落ちた行（`look_row_was_cut()`）。落ちた案内の頭の `[` だけを外し、
+                // 頭の `[<経験値>]` やアイテムの `[4,+0]` は説明に残す。
+                subject = std::string(look_row_cut_subject(text));
+            } else if (const std::size_t open = text.rfind('['); open != std::string::npos) {
                 subject = text.substr(0, open);
             }
             const auto trim = [](std::string &s) {

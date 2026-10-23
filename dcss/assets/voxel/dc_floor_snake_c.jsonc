@@ -1,0 +1,147 @@
+// dc_floor_snake_c — プレハブ定義（設計書 §7）。`dc_floor_snake_c.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 snake-c0（dngn/floor/snake-c0）。タイルに合わせた凹凸（stone。出 242・へこみ 261。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_snake_c",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "212A09",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "24200E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "352B06",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "11280A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "283A0E",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "453509",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "354E13",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "434509",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "233A0E",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "262305",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "2F3506",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "414E13",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "436118",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "141508",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "051509",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "15360D",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "56540A",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "333315",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "332B15",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "131502",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "43371D",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "526819",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "43421D",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "061C0A",
+      "material": "stone"
+    }
+  ]
+}

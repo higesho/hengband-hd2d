@@ -1,0 +1,137 @@
+// dc_statue_orc_idol — プレハブ定義（設計書 §7）。`dc_statue_orc_idol.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の像 orcish_idol（dngn/statues/orcish_idol）。台を一から作り、人形は絵の輪郭を丸み付きの浮き彫りにして台に載せた（tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_statue_orc_idol",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "66361B",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "804322",
+      "material": "wood"
+    },
+    {
+      "i": 3,
+      "rgb": "571E0D",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "C3913A",
+      "material": "metal"
+    },
+    {
+      "i": 5,
+      "rgb": "89100A",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "AB140C",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "CCB676",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "FFE494",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "CA3131",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "FC3D3D",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "A57A31",
+      "material": "metal"
+    },
+    {
+      "i": 12,
+      "rgb": "CE993D",
+      "material": "metal"
+    },
+    {
+      "i": 13,
+      "rgb": "4A190A",
+      "material": "wood"
+    },
+    {
+      "i": 14,
+      "rgb": "5C1F0D",
+      "material": "wood"
+    },
+    {
+      "i": 15,
+      "rgb": "6C381C",
+      "material": "wood"
+    },
+    {
+      "i": 16,
+      "rgb": "874623",
+      "material": "wood"
+    },
+    {
+      "i": 17,
+      "rgb": "4C0000",
+      "material": "wood"
+    },
+    {
+      "i": 18,
+      "rgb": "5F0000",
+      "material": "wood"
+    },
+    {
+      "i": 19,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "210B0B",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "290E0E",
+      "material": "wood"
+    }
+  ]
+}

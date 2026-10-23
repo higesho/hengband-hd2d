@@ -5,6 +5,9 @@
 #
 # 前提: アセット生成済み（android\build-assets-hd2d\assets.manifest がある）。
 # 無ければ先に  python tools\build_android_hd2d_assets.py  を回すこと。
+# DCSS（12 本目のコア）を入れるには、その前に  python tools\dcss\prepare_android_gen.py --refresh  を回しておくこと
+# （原作の tilegen がホストでしか走らないので、ヘッダ・タイルの表・実行時のデータを先に作る。Build-Hd2dApk.ps1 は自分で回す）。
+# 回していないと libdcsscore.so が組まれず APK に DCSS が入らない——下の 1 の後で APK の中を調べ、無ければ止める。
 
 $ErrorActionPreference = 'Stop'
 
@@ -26,6 +29,20 @@ try {
 }
 if (-not (Test-Path $apkSrc)) { throw "APK がありません: $apkSrc" }
 
+# APK の中にコアの .so が全部あることを確かめる（DCSS の生成物が無いと、DCSS だけ黙って抜ける）。
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$expectedCores = @('libhengcore.so','libtangcore.so','libgensocore.so','libsilcore.so','libfroxcore.so','librogue2core.so','librogue36core.so','librogue54core.so','libangbandcore.so','libumoriacore.so','libtobandcore.so','libdcsscore.so')
+$zip = [System.IO.Compression.ZipFile]::OpenRead($apkSrc)
+try {
+    foreach ($core in $expectedCores) {
+        if (-not ($zip.Entries | Where-Object { $_.FullName -eq "lib/arm64-v8a/$core" })) {
+            throw "APK に lib/arm64-v8a/$core がありません（DCSS なら先に python tools\dcss\prepare_android_gen.py --refresh と python tools\build_android_hd2d_assets.py）"
+        }
+    }
+} finally {
+    $zip.Dispose()
+}
+
 # 2. 置く
 New-Item -ItemType Directory -Force $distDir | Out-Null
 Copy-Item $apkSrc (Join-Path $distDir $apkName) -Force
@@ -45,7 +62,7 @@ $readme = @"
 2. 起動
      ライブラリ → 絞り込み「提供元不明のアプリ」 → 変愚蛮怒
      初回はゲームデータの展開（約 250MB）で 1 分ほど待つ。
-     展開の後に**ゲームコアの選択**が出る（変愚蛮怒／短愚蛮怒）。
+     展開の後に**ゲームコアの選択**が出る（12 本。変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria・Dungeon Crawl Stone Soup 日本語版）。
      スティックか十字で選んで A。次からは前回選んだコアにカーソルが載る。
 
 3. 操作（Quest Touch。割り当ては 機能メニュー > 割り当て で変更可）

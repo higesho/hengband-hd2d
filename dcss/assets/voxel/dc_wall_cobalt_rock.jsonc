@@ -1,0 +1,152 @@
+// dc_wall_cobalt_rock — プレハブ定義（設計書 §7）。`dc_wall_cobalt_rock.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 cobalt_rock1（dngn/wall/cobalt_rock1）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_cobalt_rock",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "142A2A",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "353535",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "1F1F1F",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "009797",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "007A7A",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "004848",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "005959",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "484848",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "003535",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "002B2B",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "001F1F",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "595959",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "303030",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "1C1C1C",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "505050",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "008888",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "006E6E",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "005050",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "004141",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "003030",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "414141",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "002727",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "001C1C",
+      "material": "stone"
+    }
+  ]
+}

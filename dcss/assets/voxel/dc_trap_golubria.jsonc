@@ -1,0 +1,142 @@
+// dc_trap_golubria — プレハブ定義（設計書 §7）。`dc_trap_golubria.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 passage_of_golubria（dngn/traps/passage_of_golubria）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_trap_golubria",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "168B1C",
+      "material": "plant"
+    },
+    {
+      "i": 3,
+      "rgb": "126A1B",
+      "material": "plant"
+    },
+    {
+      "i": 4,
+      "rgb": "0C3E15",
+      "material": "plant"
+    },
+    {
+      "i": 5,
+      "rgb": "1BA822",
+      "material": "plant"
+    },
+    {
+      "i": 6,
+      "rgb": "20C628",
+      "material": "plant"
+    },
+    {
+      "i": 7,
+      "rgb": "168020",
+      "material": "plant"
+    },
+    {
+      "i": 8,
+      "rgb": "1A9726",
+      "material": "plant"
+    },
+    {
+      "i": 9,
+      "rgb": "11591E",
+      "material": "plant"
+    },
+    {
+      "i": 10,
+      "rgb": "BAD690",
+      "material": "plant"
+    },
+    {
+      "i": 11,
+      "rgb": "DBFCA9",
+      "material": "plant"
+    },
+    {
+      "i": 12,
+      "rgb": "99B076",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "5AC825",
+      "material": "plant"
+    },
+    {
+      "i": 14,
+      "rgb": "6AEB2C",
+      "material": "plant"
+    },
+    {
+      "i": 15,
+      "rgb": "4AA41F",
+      "material": "plant"
+    },
+    {
+      "i": 16,
+      "rgb": "0E4C1A",
+      "material": "plant"
+    },
+    {
+      "i": 17,
+      "rgb": "90CD78",
+      "material": "plant"
+    },
+    {
+      "i": 18,
+      "rgb": "A9F18D",
+      "material": "plant"
+    },
+    {
+      "i": 19,
+      "rgb": "76A963",
+      "material": "plant"
+    },
+    {
+      "i": 20,
+      "rgb": "0D3318",
+      "material": "plant"
+    },
+    {
+      "i": 21,
+      "rgb": "092411",
+      "material": "plant"
+    },
+    {
+      "i": 22,
+      "rgb": "0B2B14",
+      "material": "plant"
+    }
+  ]
+}

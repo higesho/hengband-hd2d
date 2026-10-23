@@ -1004,6 +1004,59 @@ bool bot_json_would_hijack_stdout(const std::vector<std::string> &args)
 
 } // namespace
 
+bool hengband_core_run_selftest_option(std::string_view opt, int &exit_code)
+{
+    /*
+     * 文字幅の層（`src/locale/text-encoding.h`）の自己検査。
+     * **パイプもゲームも要らない**ので、握手の判定より先に返す。
+     * 内部 UTF-8 化はこの層へ呼び出しを移してから符号化を切り替える段取りなので、
+     * 移す途中で層が壊れていないかを、いつでも 1 行で確かめられるようにしておく。
+     */
+    if (opt == "--text-check") {
+        std::string report;
+        const bool ok = text::self_check(report);
+        //! 区切りは ASCII にする。em ダッシュは実行文字コード（CP932）に無い
+        std::fprintf(stderr, "[core] text-check: %s%s%s\n", ok ? "PASS" : "FAIL",
+            ok ? "" : " - ", report.c_str());
+        exit_code = ok ? 0 : 1;
+        return true;
+    }
+    /*
+     * Term の高さを変えてよい時の判定（`term_resize_allowed`）の自己検査。
+     * 問いの最中に高さを変えると、原作の `resize_map()` が行 0 の問いを消す（Android の個数の問い）。
+     * パイプもゲームも要らない。
+     */
+    if (opt == "--term-resize-check") {
+        int bad = 0;
+        const auto expect = [&](bool ok, const char *what) {
+            if (!ok) {
+                ++bad;
+                std::fprintf(stderr, "[core] term-resize-check: FAIL - %s\n", what);
+            }
+        };
+        expect(term_resize_allowed(false, false, 1), "no dungeon yet (title/birth): resize now");
+        expect(term_resize_allowed(true, true, 0), "dungeon, waiting for a command: resize now");
+        expect(!term_resize_allowed(true, false, 0), "dungeon, inside a prompt (quantity/yes-no/string): defer");
+        expect(!term_resize_allowed(true, false, 1), "dungeon, inside a menu/list: defer");
+        expect(!term_resize_allowed(true, true, 1), "dungeon, store command wait (inkey_flag is true but icky): defer");
+        std::fprintf(stderr, "[core] term-resize-check: %s\n", (bad == 0) ? "PASS" : "FAIL");
+        exit_code = (bad == 0) ? 0 : 1;
+        return true;
+    }
+    /*
+     * 選択肢の抽出・帯の組み立ての自己検査（`presentation::run_menu_choice_smoke()`）。
+     * 画面の文字列を合成して食わせるだけなので、パイプもゲームも要らない。
+     * 見る（l）の帯に名前を残す例（調-13）もここで走る。件数と落ちた行は標準エラーに出る。
+     */
+    if (opt == "--selftest") {
+        const int failed = presentation::run_menu_choice_smoke();
+        std::fprintf(stderr, "[core] selftest: menu choice smoke: %s\n", (failed == 0) ? "PASS" : "FAIL");
+        exit_code = (failed == 0) ? 0 : 1;
+        return true;
+    }
+    return false;
+}
+
 /*!
  * @brief プロトコル v1 のコア側本体（宣言は `platform/shared/core_protocol_main.h`）。
  * @details Windows は下の `main()` が stdio ハンドルで呼ぶ。Android は hd2d の
@@ -1330,50 +1383,11 @@ int main(int argc, char **argv)
     std::vector<std::string> args;
     for (int i = 1; i < argc; ++i) {
         const std::string_view opt = argv[i];
-        /*
-         * 文字幅の層（`src/locale/text-encoding.h`）の自己検査。
-         * **パイプもゲームも要らない**ので、握手の判定より先に返す。
-         * 内部 UTF-8 化はこの層へ呼び出しを移してから符号化を切り替える段取りなので、
-         * 移す途中で層が壊れていないかを、いつでも 1 行で確かめられるようにしておく。
-         */
-        if (opt == "--text-check") {
-            std::string report;
-            const bool ok = text::self_check(report);
-            //! 区切りは ASCII にする。em ダッシュは実行文字コード（CP932）に無い
-            std::fprintf(stderr, "[core] text-check: %s%s%s\n", ok ? "PASS" : "FAIL",
-                ok ? "" : " - ", report.c_str());
-            return ok ? 0 : 1;
-        }
-        /*
-         * Term の高さを変えてよい時の判定（`term_resize_allowed`）の自己検査。
-         * 問いの最中に高さを変えると、原作の `resize_map()` が行 0 の問いを消す（Android の個数の問い）。
-         * パイプもゲームも要らない。
-         */
-        if (opt == "--term-resize-check") {
-            int bad = 0;
-            const auto expect = [&](bool ok, const char *what) {
-                if (!ok) {
-                    ++bad;
-                    std::fprintf(stderr, "[core] term-resize-check: FAIL - %s\n", what);
-                }
-            };
-            expect(term_resize_allowed(false, false, 1), "no dungeon yet (title/birth): resize now");
-            expect(term_resize_allowed(true, true, 0), "dungeon, waiting for a command: resize now");
-            expect(!term_resize_allowed(true, false, 0), "dungeon, inside a prompt (quantity/yes-no/string): defer");
-            expect(!term_resize_allowed(true, false, 1), "dungeon, inside a menu/list: defer");
-            expect(!term_resize_allowed(true, true, 1), "dungeon, store command wait (inkey_flag is true but icky): defer");
-            std::fprintf(stderr, "[core] term-resize-check: %s\n", (bad == 0) ? "PASS" : "FAIL");
-            return (bad == 0) ? 0 : 1;
-        }
-        /*
-         * 選択肢の抽出・帯の組み立ての自己検査（`presentation::run_menu_choice_smoke()`）。
-         * 画面の文字列を合成して食わせるだけなので、パイプもゲームも要らない。
-         * 見る（l）の帯に名前を残す例（調-13）もここで走る。件数と落ちた行は標準エラーに出る。
-         */
-        if (opt == "--selftest") {
-            const int failed = presentation::run_menu_choice_smoke();
-            std::fprintf(stderr, "[core] selftest: menu choice smoke: %s\n", (failed == 0) ? "PASS" : "FAIL");
-            return (failed == 0) ? 0 : 1;
+        //! 自己検査（`--text-check`・`--term-resize-check`・`--selftest`。パイプもゲームも要らないので握手の判定より先に返す）。
+        //! 実体は `hengband_core_run_selftest_option()`（Linux の `main()` も同じ関数を呼ぶ）。
+        int selftest_exit = 0;
+        if (hengband_core_run_selftest_option(opt, selftest_exit)) {
+            return selftest_exit;
         }
         args.emplace_back(opt);
         if (opt == kUiProtocolArg) {

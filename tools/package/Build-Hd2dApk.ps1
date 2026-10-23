@@ -37,6 +37,9 @@ $coreSources = if ($env:HENGBAND_CORE_SOURCE_ROOT) { $env:HENGBAND_CORE_SOURCE_R
 if (-not $WithoutCores) {
     & python tools/core_sources/prepare.py --output $coreSources
     if ($LASTEXITCODE -ne 0) { throw '原作ソースの準備に失敗しました（Angband・Rogue 3.6/5.4・RogueClone2 の差分入りソースもここで再構成されます）' }
+    # DCSS は原作の tilegen がホストでしか走らないので、ヘッダとタイルの表・実行時のデータを先に作る（作業フォルダは roguelike-cores/dcss-android）。
+    & python tools/dcss/prepare_android_gen.py --refresh
+    if ($LASTEXITCODE -ne 0) { throw 'DCSS の生成物の準備に失敗しました（tools/dcss/prepare_android_gen.py）' }
 }
 
 
@@ -128,7 +131,7 @@ if ($LASTEXITCODE -ne 0) { throw 'APK のアセット・SDK 検査に失敗し�
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $apk))
 try {
-    $coreLibraries = @('libhengcore.so','libtangcore.so','libgensocore.so','libsilcore.so','libfroxcore.so','librogue2core.so','librogue36core.so','librogue54core.so','libangbandcore.so','libumoriacore.so','libtobandcore.so')
+    $coreLibraries = @('libhengcore.so','libtangcore.so','libgensocore.so','libsilcore.so','libfroxcore.so','librogue2core.so','librogue36core.so','librogue54core.so','libangbandcore.so','libumoriacore.so','libtobandcore.so','libdcsscore.so')
     # libopenal.so は画面側の音。
     # libmain.so が DT_NEEDED で引くので、入れ忘れると起動時に落ちる。
     $libraries = @('libmain.so', 'libopenal.so')

@@ -4,6 +4,7 @@
 #include "app/input_controller.h"
 #include "app/test_keyboard.h"
 #include "app/ui_probe.h"
+#include "dcss/dcss_touch.h"
 #include "app/app_clock.h"
 #include "ui/diagonal_only.h"
 #include "ui/key_binds.h"
@@ -720,6 +721,10 @@ void end_mouse_map_click(InputPumpContext &ctx, Uint8 button, int x, int y)
 bool pointer_blocked_by_vpad(const InputPumpContext &ctx, const SDL_Event &event)
 {
     if (!ctx.settings.vpad.show) {
+        return false;
+    }
+    if (ctx.dcss_touch) {
+        // DCSS: パッドのボタンに落ちた指は上の `on_event()` が食っている。残りの指（とそれから作ったマウスの出来事）はタッチとして通す。
         return false;
     }
     switch (event.type) {
@@ -1590,7 +1595,12 @@ void pump_sdl_events(InputPumpContext &ctx)
          * 一人称の視界に化けさせない。ボタンの外はいっさい触らず従来の道へ落とす。
          * 配置の編集画面が開いている間はポインタの出来事を全部ここが食う。
          */
-        if (ctx.vpad.on_event(event, ctx.settings.vpad, ctx.usable_area(), ctx.screen_w, ctx.screen_h)) {
+        // DCSS の指から作ったマウスの出来事は、パッドの当たりを通らない（指の押下の時点でパッドの外と決まっている）。
+        const bool dcss_synthetic_mouse = ctx.dcss_touch
+            && (((event.type == SDL_MOUSEMOTION) && (event.motion.which == hd2d::dcss::kTouchMouseId))
+                || ((event.type == SDL_MOUSEWHEEL) && (event.wheel.which == hd2d::dcss::kTouchMouseId))
+                || (((event.type == SDL_MOUSEBUTTONDOWN) || (event.type == SDL_MOUSEBUTTONUP)) && (event.button.which == hd2d::dcss::kTouchMouseId)));
+        if (!dcss_synthetic_mouse && ctx.vpad.on_event(event, ctx.settings.vpad, ctx.usable_area(), ctx.screen_w, ctx.screen_h)) {
             continue;
         }
         /*
@@ -1617,6 +1627,37 @@ void pump_sdl_events(InputPumpContext &ctx)
                 ctx.state.ime_dismissed = false;
             }
 #endif
+            continue;
+        }
+        /*
+         * DCSS のタッチ（段 7）。指の出来事は、原作の Android 版と同じ決まりでマウスの出来事に直して積み直し（`dcss_touch`）、ここでは何にもしない。
+         * 積み直した出来事は、このあとの窓・タブの欄・地図の既存のマウスの経路を通る。機能メニューが開いている間は、HD2D のメニューの指の道へ回す。
+         */
+        if (ctx.dcss_touch && ctx.floor_cutin.blocks_input()
+            && ((event.type == SDL_FINGERDOWN) || (event.type == SDL_FINGERMOTION) || (event.type == SDL_FINGERUP))) {
+            // カットイン（階の名前の幕）の間は、キーと同じく演出が指を食う。タップで進める（キーでは Enter・Space）。
+            if (event.type == SDL_FINGERDOWN) {
+                (void)ctx.floor_cutin.confirm();
+            }
+            continue;
+        }
+        if (ctx.dcss_touch && !ctx.feature_menu.is_open()
+            && ((event.type == SDL_FINGERDOWN) || (event.type == SDL_FINGERMOTION) || (event.type == SDL_FINGERUP))) {
+#if defined(__ANDROID__)
+            // 文字入力の問いの最中にキーボードを戻るキーで閉じたあとの、タップで出し直す道（下の同じ処理と同じ）。
+            if ((event.type == SDL_FINGERDOWN) && ctx.state.ime_prompt_open && ctx.state.ime_dismissed) {
+                SDL_StartTextInput();
+                ctx.state.ime_dismissed = false;
+                continue;
+            }
+#endif
+            bool ignore_down = false;
+            if (event.type == SDL_FINGERDOWN) {
+                const float fx = event.tfinger.x * static_cast<float>(ctx.screen_w);
+                const float fy = event.tfinger.y * static_cast<float>(ctx.screen_h);
+                ignore_down = ctx.settings.vpad.show && ctx.vpad.near_control(fx, fy, ctx.settings.vpad, ctx.usable_area());
+            }
+            ctx.dcss_touch(event, ignore_down);
             continue;
         }
         if(ctx.hud_state.targeting.active()&&!ctx.feature_menu.is_open()
@@ -1680,6 +1721,22 @@ void pump_sdl_events(InputPumpContext &ctx)
         }
         if (ctx.pad.on_event(event)) {
             continue; // パッドの出来事はパッドが食う
+        }
+        /*
+         * DCSS の窓の部品（段 U3）。申告 `dcss-ui` のコアだけ（`ctx.dcss_window` が空でなければ）。窓が開いている間のキー・文字・マウスは
+         * ここが全部食う。機能メニューが開いている間・カットインの間は渡さない（そちらが先）。HD2D が自分で使うキー
+         * （機能メニュー・Alt+Enter）は食わせない。
+         */
+        if (ctx.dcss_window && !ctx.feature_menu.is_open() && !ctx.floor_cutin.blocks_input()) {
+            bool reserved = false;
+            if (event.type == SDL_KEYDOWN) {
+                const SDL_Keycode rsym = event.key.keysym.sym;
+                reserved = (ctx.settings.key_binds.action_for(static_cast<int>(rsym), mods_from_sdl(event.key.keysym.mod)) == kActionFeatureMenu)
+                    || ((rsym == SDLK_RETURN) && ((event.key.keysym.mod & KMOD_ALT) != 0));
+            }
+            if (ctx.dcss_window(event, reserved)) {
+                continue;
+            }
         }
         /*
          * 一人称（おまけ）が**この 6 つのキーだけ**を持っているか。
@@ -1760,6 +1817,23 @@ void pump_sdl_events(InputPumpContext &ctx)
          *   Ctrl  + ホイール  … 水平画角
          * いまの値は画面に出ているので、気に入った値をそのまま `--camera=` に書ける。
          */
+        //! DCSS の区画（タブの欄ほか）。区画が食った押下はほかへ回さない。
+        if (ctx.dcss_mouse && (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN) && !ctx.feature_menu.is_open()) {
+            if (ctx.dcss_mouse(event)) {
+                continue;
+            }
+        }
+        //! DCSS の地図のマウス操作（段 U3・U4）。区画（上の `dcss_mouse`）が食わなかった動き・押下を、地図のマスに直して渡す。
+        if (ctx.dcss_map && (event.type == SDL_MOUSEMOTION || event.type == SDL_MOUSEBUTTONDOWN) && !ctx.feature_menu.is_open()
+            && !ctx.first_person.active) {
+            const int sx = (event.type == SDL_MOUSEMOTION) ? event.motion.x : event.button.x;
+            const int sy = (event.type == SDL_MOUSEMOTION) ? event.motion.y : event.button.y;
+            TargetingPoint cell{};
+            const bool on_map = pick_map_cell(ctx, sx, sy, cell);
+            if (ctx.dcss_map(event, on_map, cell.x - ctx.frame.player_gx, cell.y - ctx.frame.player_gy)) {
+                continue;
+            }
+        }
         if(event.type==SDL_MOUSEBUTTONDOWN&&ctx.feature_menu.is_open()) {
             if(event.button.which==SDL_TOUCH_MOUSEID)continue;
             if(event.button.button==SDL_BUTTON_LEFT)ctx.feature_menu.click_row(event.button.x,event.button.y,ctx.settings);

@@ -1,0 +1,107 @@
+// dc_gate_enter_trove — プレハブ定義（設計書 §7）。`dc_gate_enter_trove.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 trove_portal（dngn/gateways/trove_portal）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_trove",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "CEA741",
+      "material": "metal"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "D3BE52",
+      "material": "metal"
+    },
+    {
+      "i": 4,
+      "rgb": "F2C44D",
+      "material": "metal"
+    },
+    {
+      "i": 5,
+      "rgb": "F8E060",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "52441B",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "605020",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "2C1F13",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "342516",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "3D2914",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "483018",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "181A1B",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "1C1E20",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "251A0F",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "2B1F12",
+      "material": "stone"
+    }
+  ]
+}

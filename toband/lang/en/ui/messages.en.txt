@@ -46,19 +46,19 @@ E:You have no spellbook you can use!
 
 # cmd5.c:930  do_cmd_pray の god_name への代入  [裸の日本語]
 J:炎神ゾショネル
-E:Zoshonel the God of Fire
+E:Xoshonell, Goddess of Fire
 
 # cmd5.c:933  do_cmd_pray の god_name への代入  [裸の日本語]
 J:水神グルーザ
-E:Gruza the God of Water
+E:Greuza, Goddess of Water
 
 # cmd5.c:936  do_cmd_pray の god_name への代入  [裸の日本語]
 J:地神バーサ
-E:Bertha the God of Earth
+E:Vaasa, Goddess of Earth
 
 # cmd5.c:939  do_cmd_pray の god_name への代入  [裸の日本語]
 J:風神ハーネラ
-E:Hahnela the God of Wind
+E:Hahnela, Goddess of Wind
 
 # cmd5.c:943  do_cmd_pray の msg_format()  [裸の日本語]
 J:祈りは%sに届いた。
@@ -524,7 +524,8 @@ E:You gain speed in water.
 
 # spells2.c:190  self_knowledge の info[i++] への代入  [裸の日本語]
 J:あなたは水の中で電撃に弱くなり、それ以外のダメージが軽減される。
-E:You become vulnerable to electricity in water, and take reduced damage from everything else.
+E:In water you are weak to electricity; other damage is reduced.
+W:65
 
 # spells2.c:191  self_knowledge の info[i++] への代入  [裸の日本語]
 J:あなたは足元を水溜まりにすることができる。(コスト: 1)
@@ -2335,7 +2336,7 @@ E:and all that remained was your corpse, a bullet through the chest.
 
 # scores.c:1030  scores.c kingly() 戴冠の結末の口上（画面の中央から決まった桁で出す）
 J:その後、ヒッタイト人に統一されるまで、約千年もの間、
-E:For a thousand years after, until the Hittites unified the land,
+E:For a thousand years after, until the people of Heth unified the land,
 
 # scores.c:1031  scores.c kingly() 戴冠の結末の口上（画面の中央から決まった桁で出す）
 J:ヴァレリアの歴史は血と涙に彩られたという……。
@@ -2391,7 +2392,7 @@ E:You became the first ruler of the %s state of Valeria.
 
 # scores.c:1067  scores.c kingly() 戴冠の結末の口上（画面の中央から決まった桁で出す）
 J:以後、ヒッタイト人に統一されるまで、約千年もの間、
-E:For a thousand years until the Hittites unified the land,
+E:For a thousand years until the people of Heth unified the land,
 
 # scores.c:1068  scores.c kingly() 戴冠の結末の口上（画面の中央から決まった桁で出す）
 J:ヴァレリアは独立国家として
@@ -2416,7 +2417,7 @@ E:"Spill blood. Offer flesh. I am the master of the world."
 
 # scores.c:1077  scores.c kingly() 真のオウガの結末
 J:この後、ヒッタイト人に統一されるまで、約千年もの間、
-E:For a thousand years hence, until the Hittites unified the land,
+E:For a thousand years hence, until the people of Heth unified the land,
 
 # scores.c:1078  scores.c kingly() 真のオウガの結末
 J:ヴァレリアの歴史をうかがい知ることができるものは、
@@ -2756,15 +2757,15 @@ E:Error in file '%s.txt' at line %d.
 
 # artifact.c:2368  artifact_activate() ACT_SUMMON1 炎の女神
 J:炎の女神ゾショネルを召喚した！ 猛烈な熱風と炎が視界を覆い尽くす。
-E:You summon Zoshonel, the Goddess of Fire! A fierce blast of heat and flames fills your vision.
+E:You summon Xoshonell, the Goddess of Fire! A fierce blast of heat and flames fills your vision.
 
 # artifact.c:2376  ACT_SUMMON2 水の女神
 J:水の女神グルーザを召喚した！ 猛烈な氷柱と冷気の嵐が渦巻く。
-E:You summon Gruza, the Goddess of Water! A fierce storm of ice spikes and freezing air swirls around you.
+E:You summon Greuza, the Goddess of Water! A fierce storm of ice spikes and freezing air swirls around you.
 
 # artifact.c:2384  ACT_SUMMON3 大地の女神
 J:大地の女神バーサを召喚した！ 猛烈な無数の岩石が乱舞する。
-E:You summon Bertha, the Goddess of Earth! Countless fierce rocks dance wildly.
+E:You summon Vaasa, the Goddess of Earth! Countless fierce rocks dance wildly.
 
 # artifact.c:2392  ACT_SUMMON4 風の女神
 J:風の女神ハーネラを召喚した！ 猛烈な風圧と真空の刃が踊り狂う。
@@ -4053,10 +4054,10 @@ E:Infra-Vision:\s
 W:14
 
 # files.c:1599
-# 幅 14
+# 幅 11（人物表の 4 枚目の「中の列」の札と同じ鍵。値の桁は tb_head_len() が右の欄で 14 にそろえる）
 J:封魔空間  :
-E:AM Field    :\s
-W:14
+E:AM Field  :
+W:11
 
 # files.c:1600
 J:名前  :\s
@@ -4140,7 +4141,8 @@ E:...Now, you are exploring %s, level %d.
 
 # files.c:3934  fprintf（バルマムッサ）
 J:\s\sあなたはバルマムッサのウォルスタ人自治区住民を皆殺しにした。\n\n
-E:\s\sYou massacred all the residents of the Walister autonomous district of Balmamusa.\n\n
+E:\s\sYou massacred all the Walister residents of Balmamusa.\n\n
+W:78
 
 # files.c:3938
 J:\s\sあなたはバルマムッサの虐殺に反対し、解放軍と戦った。\n\n
@@ -4236,7 +4238,8 @@ E:[Reserve]\s
 
 # files.c:4550
 J:\nHP・MPは個人別。生存している控えは時間経過で徐々に回復する。\n\n
-E:\nHP and MP are tracked per character. Surviving reserve members slowly recover over time.\n\n
+E:\nHP and MP are per character. Reserve members who survive slowly recover.\n\n
+W:78
 
 # files.c:4551
 J:\s\s[操作中の人物・現在の状況]\n\n
@@ -6146,7 +6149,7 @@ E:%^s prays, "Great Hahnela, ruler of the wind gods... grant us the mighty prote
 
 # mspells1.c 機械抜きの写し間違い（tb_dup_en.py）: 上流が写したまま。日本語に合わせて訳した
 J:%s「火神を統べる偉大なるゾショネルよ…、我らに熱き炎の庇護を与えたまえ！」
-E:%^s prays, "Great Zoshonel, ruler of the fire gods... grant us the burning protection of flame!"
+E:%^s prays, "Great Xoshonell, ruler of the fire gods... grant us the burning protection of flame!"
 
 # mspells1.c 機械抜きの写し間違い（tb_dup_en.py）: 上流が写したまま。日本語に合わせて訳した
 J:%s「根性だけは認めてあげるわ…。でも、そこまでよ、デーモンローズ！」
@@ -6154,7 +6157,7 @@ E:%^s shouts, "I will give you credit for your guts... But this is as far as you
 
 # mspells1.c 機械抜きの写し間違い（tb_dup_en.py）: 上流が写したまま。日本語に合わせて訳した
 J:%s「大地神を統べる偉大なるバーサよ…、我らに優しき大地の庇護を与えたまえ！」
-E:%^s prays, "Great Bertha, ruler of the earth gods... grant us the gentle protection of the earth!"
+E:%^s prays, "Great Vaasa, ruler of the earth gods... grant us the gentle protection of the earth!"
 
 # mspells1.c 機械抜きの写し間違い（tb_dup_en.py）: 上流が写したまま。日本語に合わせて訳した
 J:%s「ロスローリアンの力をなめてもらっては困るのだよ…。ライアットバーン！」
@@ -6170,7 +6173,7 @@ E:%^s shouts, "You want to see my secret art?! You've got guts. Death Avenger (1
 
 # mspells1.c 機械抜きの写し間違い（tb_dup_en.py）: 上流が写したまま。日本語に合わせて訳した
 J:%s「水神を統べる偉大なるグルーザよ…、我らに清らかな水の庇護を与えたまえ！」
-E:%^s prays, "Great Gruza, ruler of the water gods... grant us the pure protection of water!"
+E:%^s prays, "Great Greuza, ruler of the water gods... grant us the pure protection of water!"
 
 # mspells1.c 機械抜きの写し間違い（tb_dup_en.py）: 上流が写したまま。日本語に合わせて訳した
 J:%s「真の騎士の誇りを貴様に見せてやろう！くらえッ！フレイミングデス！」
@@ -6646,7 +6649,8 @@ E:You left %s.
 
 # store.c:6018  綴りの誤りの直し（上流の英語のまま）
 J:i/e) 持ち物/装備の一覧
-E:i/e) Inventory/Equipment list
+E:i/e) Inventory/Equipment
+W:24
 
 # util.c:3705  綴りの誤りの直し（上流の英語のまま）
 J:情報
@@ -6726,15 +6730,15 @@ E:summon Pumpkinheads every 400+d200 turns
 
 # do-spell.c:1118  固有名詞を用語表の綴りへ
 J:デフゾショネル
-E:Deft Zoshonel
+E:Deft Xoshonell
 
 # do-spell.c:1425  固有名詞を用語表の綴りへ
 J:ゾショネルの加護
-E:Protection of Zoshonel
+E:Protection of Xoshonell
 
 # object1.c:1962  固有名詞を用語表の綴りへ
 J:デフゾショネル : 50 ターン毎
-E:Deft Zoshonel every 50 turns
+E:Deft Xoshonell every 50 turns
 
 # do-spell.c:1347  固有名詞を用語表の綴りへ
 J:スルトの狂焔
@@ -6770,7 +6774,8 @@ E:Weight %d.%d kg
 
 # autopick.c:3049  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:基本的な自動拾い設定ファイルをlib/pref/picktype.prfからコピーします。
-E:The basic auto-pickup settings file will be copied from lib/pref/picktype.prf.
+E:The basic settings will be copied from lib/pref/picktype.prf.
+W:72
 
 # bldg.c:1127  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:残すカードを決めて下さい(方向で移動, スペースで選択)。
@@ -7042,7 +7047,8 @@ E:You have the ability to sense the presence of dragons.
 
 # spells3.c:856  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:ここは最深到達階より浅い階です。この階に戻って来ますか？\s
-E:This is shallower than your deepest level. Reset recall depth to this level?\s
+E:Shallower than your deepest level. Reset recall depth here?\s
+W:70
 
 # store.c:542  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:こんなおいしい思いをしたら、真面目に働けなくなるなぁ。
@@ -7235,11 +7241,11 @@ E:went down the stairs
 
 # cmd4.c:8782  第 3 引数は「あと」＝残り（上流の英語は倒した数）。日本語の引数の順に英文を合わせた（上流の英語は引数の順が違い、同じ書式の並びなので読み込みの検査では通ってしまう。tb_argorder の確認で見つけた）
 J:\s- %d 体の%sを倒す。(あと %d 体)
-E:\s- kill %d %s (%d remaining).
+E:\n\s\s- kill %d %s (%d remaining).
 
 # cmd4.c:8798  第 2 引数は「あと」＝残り。日本語の引数の順に英文を合わせた（上流の英語は引数の順が違い、同じ書式の並びなので読み込みの検査では通ってしまう。tb_argorder の確認で見つけた）
 J:\s- %d 体のモンスターを倒す。(あと %d 体)
-E:\s- Kill %d monsters (%d remaining).
+E:\n\s\s- Kill %d monsters (%d remaining).
 
 # cmd4.c:8877  第 5 引数は「あと」＝残り。日本語の引数の順に英文を合わせた（上流の英語は引数の順が違い、同じ書式の並びなので読み込みの検査では通ってしまう。tb_argorder の確認で見つけた）
 J:%s (%d 階) - %d 体の%sを倒す。(あと %d 体)\n
@@ -7319,7 +7325,8 @@ E:Birth Options((*) affects score)
 
 # birth.c:1909  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:(スナップドラゴン武器を装備して死者の宮殿の98階からスタート)
-E:(Start from level 98 of the Palace of the Dead, equipped with a Snap Dragon weapon)
+E:(Start on level 98 of the Palace of the Dead with a Snap Dragon weapon)
+W:76
 
 # birth.c:1909  上流の英語の誤り（文法・綴り）を直した
 J:不正なスナップドラゴン武器なのでスコアには記録されません。
@@ -7515,7 +7522,7 @@ E:You are turning into a living statue...
 
 # object1.c:1928  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:プレイ／サモンバーサ : 300 ターン毎
-E:Pray / Summon Bertha every 300 turns
+E:Pray / Summon Vaasa every 300 turns
 
 # do-spell.c:1027  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:古代の龍召喚
@@ -7931,11 +7938,11 @@ E:shooting star strike at any time
 
 # object1.c:1910  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:プレイ／サモンゾショネル : 300 ターン毎
-E:Pray / Summon Zoshonel every 300 turns
+E:Pray / Summon Xoshonell every 300 turns
 
 # object1.c:1919  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:プレイ／サモングルーザ : 300 ターン毎
-E:Pray / Summon Gruza every 300 turns
+E:Pray / Summon Greuza every 300 turns
 
 # object1.c:1937  日本語と中身が食い違う上流の英語を、日本語に合わせて訳し直した
 J:プレイ／サモンハーネラ : 300 ターン毎
@@ -8444,3 +8451,178 @@ E:Inventory list
 # アダプタが tb_tr() で引く字（tools/toband/catalog_keys_needed.en.txt から取り込み）
 J:セーブ
 E:Save
+
+# ----------------------------------------------------------------------
+# 用語の固定表（toband/lang/en/term_fixes.tsv）で直した上流の英語（2026-10-21）
+
+# 用語の固定表: \bcoverd\b -> covered（cmd6.c:4961）
+J:アミュレットが深い闇に覆われた...
+E:Your amulet is covered in pitch-darkness...
+
+# 用語の固定表: \bcoverd\b -> covered（cmd6.c:5024）
+J:アミュレットが赤い光に包まれた...
+E:Your amulet is covered in red light...
+
+# 用語の固定表: \bcoverd\b -> covered（cmd6.c:5039）
+J:アミュレットが青い光に包まれた...
+E:Your amulet is covered in blue light...
+
+# 用語の固定表: \bcoverd\b -> covered（cmd6.c:5054）
+J:アミュレットが黄色い光に包まれた...
+E:Your amulet is covered in yellow light...
+
+# 用語の固定表: \bcoverd\b -> covered（cmd6.c:5069）
+J:アミュレットが緑の光に包まれた...
+E:Your amulet is covered in green light...
+
+# 用語の固定表: \b(?:Gruza|Gluza)\b -> Greuza（do-spell.c:1499）
+J:デフグルーザ
+E:Deft Greuza
+
+# 用語の固定表: \b(?:Bertha|Barsa|Bersa)\b -> Vaasa（do-spell.c:1914）
+J:デフバーサ
+E:Deft Vaasa
+
+# 用語の固定表: \bZoshonel the (?:God of Fire|Fire God)\b -> Xoshonell, Goddess of Fire（effects.c:2497）
+J:炎の神ゾショネルの加護を得た。
+E:You are protected by Xoshonell, Goddess of Fire.
+
+# 用語の固定表: \bZoshonel the (?:God of Fire|Fire God)\b -> Xoshonell, Goddess of Fire（effects.c:2512）
+J:炎の神ゾショネルの加護がなくなった。
+E:You are no longer protected by Xoshonell, Goddess of Fire.
+
+# 用語の固定表: \b(?:Bertha|Barsa|Bersa)\b -> Vaasa（object1.c:1950）
+J:デフバーサ : 50 ターン毎
+E:Deft Vaasa every 50 turns
+
+# 用語の固定表: \b(?:Gruza|Gluza)\b -> Greuza（object1.c:1968）
+J:デフグルーザ : 50 ターン毎
+E:Deft Greuza every 50 turns
+
+# 用語の固定表: \bpsyonic\b -> psionic（spells1.c:7042）
+J:霊的エネルギーで精神が攻撃された。
+E:Your mind is blasted by psionic energy.
+
+# 用語の固定表: \binformations\b -> information（tables.c:2783）
+J:名前つきペットの情報を記録する
+E:Record information of named pets
+
+# 用語の固定表: \bMens Only\b -> Men Only（wizard1.c:849）
+J:男性専用
+E:Men Only
+
+# 用語の固定表: \bZoshonel\b -> Xoshonell（xtra1.c:386）
+J:ゾショネル
+E:Xoshonell
+
+# E5 files.c:3105  人物表の 3 枚目（能力値）の見出し。日本語の桁（+1 能力・+7 基本・+13 種族と装備・+28 合計・+35 現在）に置くので、英語もその桁に収まる語にした
+J:\s\s基本
+E:\s\sBase
+W:6
+
+# E5 files.c:3106
+J:\s\s種族\s\s装備\s
+E:\s\sRace\s\sEquip
+W:13
+
+# E5 files.c:3107
+J:合計
+E:Total
+W:6
+
+# E5 files.c:3108
+J:現在
+E:Curr.
+W:6
+
+# E5 store.c:6024  店の右の欄は桁 56 から 24 桁（画面は 80 桁）
+J:w/T) 装備する/はずす
+E:w/T) Wear/Take off
+W:24
+
+# E5 store.c:6028
+J:w/t) 装備する/はずす
+E:w/t) Wear/Take off
+W:24
+
+# E5 birth.c:1532  能力値を割り振る画面の 1 行（桁 10 から。80 桁に収める）
+J:コスト合計: %2d/%d  2/8/j/k で移動,  4/6/h/l で変更,  Enter で決定
+E:Total Cost %2d/%d.  2/8/j/k: move, 4/6/h/l: change, Enter: accept
+W:70
+
+# ----------------------------------------------------------------------
+# 用語の固定表（toband/lang/en/term_fixes.tsv）で直した上流の英語（2026-10-21）
+
+# 冠詞 a/an（上流の英語の誤り）: mspells1.c:3089
+J:%^sがアシッド・ボルトの呪文を唱えた。
+E:%^s casts an acid bolt.
+
+# 冠詞 a/an（上流の英語の誤り）: spells2.c:1472
+J:あなたは闘気の鎧に包まれている。
+E:You are surrounded with an aura shield.
+
+# E5 cmd4.c:8790 現在のクエストの 1 行目（名前と危険度）の後ろに続く「- kill …」を次の行へ送る（英語はクエスト名と敵の名前が長く、1 行だと 80 桁で切れる）
+J:\s- %sを倒す。
+E:\n\s\s- kill %s.
+
+J:\s- %sを見つけ出す。
+E:\n\s\s- Find out %s.
+
+J:\s- 探索する。
+E:\n\s\s- Search.
+
+J:\s- 全てのモンスターを倒す。
+E:\n\s\s- Kill all monsters.
+
+# E5 files.c:2090  人物表の右の欄（値は桁 68 から。12 桁に収める）。`Legendary [12]` は 14 桁で端を超える
+J:伝説的 [%d]
+E:Legend [%d]
+W:12
+
+# E5 files.c:2085
+J:神話的 [%d]
+E:Myth [%d]
+W:12
+
+# E5 tables.c  オプションの説明は 48 桁の欄（`%-48s: `）に収める
+J:アイテムに追加耐性/能力の略称を刻む
+E:Describe obj's extra resists by abbreviation
+W:47
+
+# E5 tables.c
+J:種族/職業で特別に必要なアイテムは壊さない
+E:Auto-destroyer leaves race/class-specific items
+W:47
+
+# E5 store.c:2495  店の品の表の見出し（桁 7）。ページ（桁 20 の `(Page 1)`）が上書きしないよう 13 桁以内
+J:商品の一覧
+E:Item List
+W:13
+
+# E5 store.c:5993  博物館の左の列（桁 27）。右の列（桁 56 の `w/t) Wear/Take off`）が上書きしないよう 28 桁以内
+J:r) アイテムの展示をやめる
+E:r) Remove an item.
+W:28
+
+# E5 bldg.c:4939 ほか  ダンジョンの名前の欄。英語の名前は 18 字まで（Palace of the Dead）なので欄を 18 桁にする（日本語は 12 バイト）
+J:%c) %c%-12s : 最大 %d 階
+E:%c) %c%-18s : Max level %d
+
+J:%c%-12s :  %3d 階\n
+E:%c%-18s :  level %3d\n
+
+J:\s\s\s%c%-12s: %3d 階\n
+E:\s\s\s%c%-18s: level %3d\n
+
+J:\s\s\s\s\s\s%c) %c%-12s : 最大 %d 階
+E:\s\s\s\s\s\s%c) %c%-18s : Max level %d
+
+# E5 cmd4.c:4775 知識〈敵〉の群の名。変愚の表にない 2 群（上流の英語の表に対が無く、日本語のまま残っていた）。日本語の群の欄は 23 桁・英語は 20 桁以内
+J:古代ドラゴン/ワイアーム
+E:Ancient Dragon/Wyrm
+W:20
+
+# E5 cmd4.c:4775
+J:上級デーモン
+E:Major Demon
+W:20

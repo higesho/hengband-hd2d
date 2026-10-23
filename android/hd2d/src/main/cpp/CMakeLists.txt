@@ -577,6 +577,12 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif()
 set_source_files_properties("${HB_SJIS_DIR}/toband/src/bldg.c"
     PROPERTIES COMPILE_OPTIONS "-include;angband.h;-include;party.h")
+#! Android の seccomp は setuid・setgid・setreuid・setregid を SIGSYS で殺す。原作の h-config.h は Android を知らないので SET_UID が立ち、
+#! files.c の safe_setuid_drop()/grab()（process_pref_file など多くの所から呼ばれる）がこれを呼んで、起動直後に落ちた
+#! （2026-10-22 の模擬機）。幻想蛮怒は原作の h-config.h が Android で SET_UID を立てないので起きない。TOband は原作を書き換えず、
+#! files.c だけ、この 4 つの呼び出しをアダプタ（tb_bootstrap.c）の何もしない関数へ向ける（Android では 1 人用なので権限の切り替えは要らない）。
+set_property(SOURCE "${HB_SJIS_DIR}/toband/src/files.c" APPEND PROPERTY COMPILE_DEFINITIONS
+    setuid=tb_android_nop_setid setgid=tb_android_nop_setid setreuid=tb_android_nop_setreid setregid=tb_android_nop_setreid)
 
 # ---- Sil-Q
 #
@@ -880,6 +886,10 @@ target_compile_definitions(umoriacore PRIVATE HENGBAND_ANDROID=1)
 target_compile_options(umoriacore PRIVATE -ffunction-sections -fdata-sections)
 target_link_options(umoriacore PRIVATE -Wl,--gc-sections)
 target_link_libraries(umoriacore PRIVATE log)
+
+# ---- DCSS 日本語版
+# 生成物（ヘッダ・タイルの表）はホストで先に作る（tools/dcss/prepare_android_gen.py）。無いときは組まない。
+include("${HB_ROOT}/tools/core_sources/dcss_android_core.cmake")
 
 endif() # HENGBAND_BUILD_CORES
 

@@ -1,0 +1,1269 @@
+# 来歴が CC0 と確認できていない絵の一覧（github.com/crawl/tiles の TILES_UNDER_UNKNOWN_LICENSE.md の全項目と、今の木の突き合わせ）。
+# 道具: tools/dcss/tile_provenance.py。一覧の主旨: 「2010 年時点で持ち主が不明、または作者に連絡が付かなかった」絵（配布のパッケージから外されている）。
+# 区分: 同じパス＝読み替えたパスが今の木にある／同名のみ＝ファイル名だけ一致（同じ絵とは限らない）／今の木に無い＝消された・改名された。
+# 原作で使う＝今の木の rltiles/dc-*.txt の定義が指す絵（map_tile_defs.py の読み取り。%compose などは追っていない）。
+# 節	一覧の記載	区分	今の木の絵	原作で使う	本案件で使う
+(無題の節)	active_ballistomycete.png	今の木に無い			
+(無題の節)	arrow1.png	同名のみ（無題の節は名前だけ）	effect/arrow1.png | item/weapon/ranged/arrow1.png	はい | はい	 | 
+(無題の節)	arrow2.png	同名のみ（無題の節は名前だけ）	effect/arrow2.png | item/weapon/ranged/arrow2.png	はい | はい	 | 
+(無題の節)	ballistomycete.png	同名のみ（無題の節は名前だけ）	mon/fungi_plants/ballistomycete.png	はい	
+(無題の節)	berserk.png	同名のみ（無題の節は名前だけ）	misc/icons/berserk.png	はい	
+(無題の節)	bush.png	同名のみ（無題の節は名前だけ）	mon/fungi_plants/bush.png	はい	
+(無題の節)	bush_burning.png	同名のみ（無題の節は名前だけ）	mon/fungi_plants/bush_burning.png	はい	
+(無題の節)	crossbow_bolt1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/crossbow_bolt1.png	はい	
+(無題の節)	crossbow_bolt2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/crossbow_bolt2.png	はい	
+(無題の節)	dart-p.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/dart-p.png	はい	
+(無題の節)	dart1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/dart1.png	はい	
+(無題の節)	dart2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/dart2.png	はい	
+(無題の節)	demonblade.png	同名のみ（無題の節は名前だけ）	player/hand1/demonblade.png	はい	
+(無題の節)	dngn_altar_fedhas.png	今の木に無い			
+(無題の節)	dngn_altar_fedhas2.png	今の木に無い			
+(無題の節)	dowan.png	同名のみ（無題の節は名前だけ）	mon/unique/dowan.png	はい	
+(無題の節)	duvessa.png	同名のみ（無題の節は名前だけ）	mon/unique/duvessa.png	はい	
+(無題の節)	flaming_corpse.png	今の木に無い			
+(無題の節)	fungus.png	今の木に無い			
+(無題の節)	gravestone_blank.png	同名のみ（無題の節は名前だけ）	dngn/vaults/gravestone_blank.png	はい	
+(無題の節)	gravestone_ornate.png	同名のみ（無題の節は名前だけ）	UNUSED/features/gravestone_ornate.png	いいえ	
+(無題の節)	gravestone_writing1.png	同名のみ（無題の節は名前だけ）	dngn/vaults/gravestone_writing1.png	はい	
+(無題の節)	gravestone_writing2.png	同名のみ（無題の節は名前だけ）	dngn/vaults/gravestone_writing2.png	はい	
+(無題の節)	i-agility.png	今の木に無い			
+(無題の節)	i-brilliance.png	同名のみ（無題の節は名前だけ）	item/potion/i-brilliance.png	はい	
+(無題の節)	i-silence.png	同名のみ（無題の節は名前だけ）	item/scroll/i-silence.png	はい	
+(無題の節)	i-sleep.png	同名のみ（無題の節は名前だけ）	item/weapon/brands/i-sleep.png	はい	
+(無題の節)	stealth.png	同名のみ（無題の節は名前だけ）	gui/skills/stealth.png	はい	
+(無題の節)	ice_cave_portal.png	同名のみ（無題の節は名前だけ）	dngn/gateways/ice_cave_portal.png	はい	dc_gate_ice_cave_portal
+(無題の節)	indicator_1.png	同名のみ（無題の節は名前だけ）	effect/indicator_1.png	はい	
+(無題の節)	indicator_2.png	同名のみ（無題の節は名前だけ）	effect/indicator_2.png	はい	
+(無題の節)	indicator_3.png	同名のみ（無題の節は名前だけ）	effect/indicator_3.png	はい	
+(無題の節)	indicator_4.png	同名のみ（無題の節は名前だけ）	effect/indicator_4.png	はい	
+(無題の節)	indicator_5.png	同名のみ（無題の節は名前だけ）	effect/indicator_5.png	はい	
+(無題の節)	indicator_6.png	同名のみ（無題の節は名前だけ）	effect/indicator_6.png	はい	
+(無題の節)	indicator_7.png	同名のみ（無題の節は名前だけ）	effect/indicator_7.png	はい	
+(無題の節)	indicator_8.png	同名のみ（無題の節は名前だけ）	effect/indicator_8.png	はい	
+(無題の節)	javelin1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/javelin1.png | effect/javelin1.png	はい | はい	 | 
+(無題の節)	javelin2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/javelin2.png | effect/javelin2.png	はい | はい	 | 
+(無題の節)	kenku.png	今の木に無い			
+(無題の節)	khufu.png	同名のみ（無題の節は名前だけ）	mon/unique/khufu.png	はい	
+(無題の節)	mold_small1.png	同名のみ（無題の節は名前だけ）	misc/mold_small1.png	はい	
+(無題の節)	mold_small2.png	同名のみ（無題の節は名前だけ）	misc/mold_small2.png	はい	
+(無題の節)	mold_small3.png	同名のみ（無題の節は名前だけ）	misc/mold_small3.png	はい	
+(無題の節)	mold_small4.png	同名のみ（無題の節は名前だけ）	misc/mold_small4.png	はい	
+(無題の節)	needle-p.png	同名のみ（無題の節は名前だけ）	UNUSED/weapons/needle-p.png	いいえ	
+(無題の節)	needle1.png	同名のみ（無題の節は名前だけ）	effect/needle1.png | UNUSED/weapons/needle1.png	はい | いいえ	 | 
+(無題の節)	needle2.png	同名のみ（無題の節は名前だけ）	effect/needle2.png | UNUSED/weapons/needle2.png	はい | いいえ	 | 
+(無題の節)	nikola.png	同名のみ（無題の節は名前だけ）	mon/unique/nikola.png	はい	
+(無題の節)	pikel.png	同名のみ（無題の節は名前だけ）	mon/unique/pikel.png	はい	
+(無題の節)	reaping-2.png	同名のみ（無題の節は名前だけ）	UNUSED/other/reaping-2.png	いいえ	
+(無題の節)	reaping-3.png	同名のみ（無題の節は名前だけ）	UNUSED/other/reaping-3.png	いいえ	
+(無題の節)	rune_snake.png	同名のみ（無題の節は名前だけ）	item/misc/runes/rune_snake.png | item/misc/uncollected_runes/rune_snake.png	はい | はい	 | 
+(無題の節)	sewer_portal.png	同名のみ（無題の節は名前だけ）	dngn/gateways/sewer_portal.png	はい	dc_gate_sewer_portal
+(無題の節)	silver_arrow1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_arrow1.png	はい	
+(無題の節)	silver_arrow2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_arrow2.png	はい	
+(無題の節)	silver_crossbow_bolt1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_crossbow_bolt1.png	はい	
+(無題の節)	silver_crossbow_bolt2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_crossbow_bolt2.png	はい	
+(無題の節)	silver_dart1.png	今の木に無い			
+(無題の節)	silver_dart2.png	今の木に無い			
+(無題の節)	silver_javelin1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_javelin1.png	はい	
+(無題の節)	silver_javelin2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_javelin2.png	はい	
+(無題の節)	silver_sling_bullet1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_sling_bullet1.png	はい	
+(無題の節)	silver_sling_bullet2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/silver_sling_bullet2.png	はい	
+(無題の節)	slave.png	同名のみ（無題の節は名前だけ）	mon/humanoids/humans/slave.png	いいえ	
+(無題の節)	slime_creature.png	同名のみ（無題の節は名前だけ）	mon/amorphous/slime_creature.png	はい	
+(無題の節)	slime_creature2.png	同名のみ（無題の節は名前だけ）	mon/amorphous/slime_creature2.png	はい	
+(無題の節)	slime_creature3.png	同名のみ（無題の節は名前だけ）	mon/amorphous/slime_creature3.png	はい	
+(無題の節)	slime_creature4.png	同名のみ（無題の節は名前だけ）	mon/amorphous/slime_creature4.png	はい	
+(無題の節)	slime_creature5.png	同名のみ（無題の節は名前だけ）	mon/amorphous/slime_creature5.png	はい	
+(無題の節)	steel_arrow1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_arrow1.png	はい	
+(無題の節)	steel_arrow2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_arrow2.png	はい	
+(無題の節)	steel_crossbow_bolt1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_crossbow_bolt1.png	はい	
+(無題の節)	steel_crossbow_bolt2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_crossbow_bolt2.png	はい	
+(無題の節)	steel_dart1.png	今の木に無い			
+(無題の節)	steel_dart2.png	今の木に無い			
+(無題の節)	steel_javelin1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_javelin1.png	はい	
+(無題の節)	steel_javelin2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_javelin2.png	はい	
+(無題の節)	steel_sling_bullet1.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_sling_bullet1.png	はい	
+(無題の節)	steel_sling_bullet2.png	同名のみ（無題の節は名前だけ）	item/weapon/ranged/steel_sling_bullet2.png	はい	
+(無題の節)	silver_sling_bullet_runed0.png	同名のみ（無題の節は名前だけ）	effect/silver_sling_bullet_runed0.png	はい	
+(無題の節)	silver_sling_bullet0.png	同名のみ（無題の節は名前だけ）	effect/silver_sling_bullet0.png	はい	
+(無題の節)	sling_bullet_runed0.png	同名のみ（無題の節は名前だけ）	effect/sling_bullet_runed0.png	はい	
+(無題の節)	steel_sling_bullet_runed0.png	同名のみ（無題の節は名前だけ）	effect/steel_sling_bullet_runed0.png	はい	
+(無題の節)	steel_sling_bullet0.png	同名のみ（無題の節は名前だけ）	effect/steel_sling_bullet0.png	はい	
+(無題の節)	toadstool_left.png	同名のみ（無題の節は名前だけ）	mon/fungi_plants/toadstool_left.png	はい	
+(無題の節)	toadstool_right.png	同名のみ（無題の節は名前だけ）	mon/fungi_plants/toadstool_right.png	はい	
+(無題の節)	transparent_flesh1.png	同名のみ（無題の節は名前だけ）	dngn/wall/transparent_flesh1.png	はい	
+(無題の節)	transparent_flesh2.png	同名のみ（無題の節は名前だけ）	dngn/wall/transparent_flesh2.png	はい	
+(無題の節)	transparent_flesh3.png	同名のみ（無題の節は名前だけ）	dngn/wall/transparent_flesh3.png	はい	
+(無題の節)	transparent_flesh4.png	同名のみ（無題の節は名前だけ）	dngn/wall/transparent_flesh4.png	はい	
+(無題の節)	transparent_flesh5.png	同名のみ（無題の節は名前だけ）	dngn/wall/transparent_flesh5.png	はい	
+(無題の節)	transparent_flesh6.png	同名のみ（無題の節は名前だけ）	dngn/wall/transparent_flesh6.png	はい	
+(無題の節)	tree1.png	同名のみ（無題の節は名前だけ）	dngn/trees/tree1.png	はい	dc_tree
+(無題の節)	tree1_dead.png	今の木に無い			
+(無題の節)	tree2.png	同名のみ（無題の節は名前だけ）	dngn/trees/tree2.png	はい	
+(無題の節)	tree2_dead.png	今の木に無い			
+(無題の節)	vine-covered_golem.png	今の木に無い			
+(無題の節)	volcano_portal.png	同名のみ（無題の節は名前だけ）	dngn/gateways/volcano_portal.png	はい	dc_gate_volcano_portal
+(無題の節)	wizlab_portal0.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal0.png	はい	dc_gate_wizlab_portal
+(無題の節)	wizlab_portal1.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal1.png	はい	
+(無題の節)	wizlab_portal2.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal2.png	はい	
+(無題の節)	wizlab_portal3.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal3.png	はい	
+(無題の節)	wizlab_portal4.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal4.png	はい	
+(無題の節)	wizlab_portal5.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal5.png	はい	
+(無題の節)	wizlab_portal6.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal6.png	はい	
+(無題の節)	wizlab_portal7.png	同名のみ（無題の節は名前だけ）	dngn/gateways/wizlab_portal7.png	はい	
+(無題の節)	wizlab_portal8.png	今の木に無い			
+(無題の節)	zombie_bat.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_bat.png	はい	
+(無題の節)	zombie_bee.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_bee.png	はい	
+(無題の節)	zombie_bug.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_bug.png	はい	
+(無題の節)	zombie_centaur.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_centaur.png	はい	
+(無題の節)	zombie_dragon.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_dragon.png	はい	
+(無題の節)	zombie_fish.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_fish.png	はい	
+(無題の節)	zombie_hydra1.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_hydra1.png	はい	
+(無題の節)	zombie_hydra2.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_hydra2.png	はい	
+(無題の節)	zombie_hydra3.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_hydra3.png	はい	
+(無題の節)	zombie_hydra4.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_hydra4.png	はい	
+(無題の節)	zombie_hydra5.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_hydra5.png	はい	
+(無題の節)	zombie_large.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_large.png	はい	
+(無題の節)	zombie_naga.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_naga.png	はい	
+(無題の節)	zombie_quadruped_large.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_quadruped_large.png	はい	
+(無題の節)	zombie_quadruped_small.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_quadruped_small.png	はい	
+(無題の節)	zombie_small.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_small.png	はい	
+(無題の節)	zombie_snake.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_snake.png	はい	
+(無題の節)	zombie_spider.png	今の木に無い			
+(無題の節)	zombie_worm.png	同名のみ（無題の節は名前だけ）	mon/undead/zombies/zombie_worm.png	はい	
+These are all stolen from nethack, and the nethack license appears to apply. So 	crawl-ref/source/rltiles/player/felids/cat1.png	同じパス	player/felids/cat1.png	はい	
+These are all stolen from nethack, and the nethack license appears to apply. So 	crawl-ref/source/rltiles/player/felids/cat2.png	同じパス	player/felids/cat2.png	はい	
+These are all stolen from nethack, and the nethack license appears to apply. So 	crawl-ref/source/rltiles/player/felids/cat3.png	同じパス	player/felids/cat3.png	はい	
+These are all stolen from nethack, and the nethack license appears to apply. So 	crawl-ref/source/rltiles/player/felids/cat4.png	同じパス	player/felids/cat4.png	はい	
+These are all stolen from nethack, and the nethack license appears to apply. So 	crawl-ref/source/rltiles/player/felids/cat5.png	同じパス	player/felids/cat5.png	はい	
+Doesnt and hyperactiveChipmunk	rltiles/mon/undead/zombies/zombie_juggernaut.png	同じパス	mon/undead/zombies/zombie_juggernaut.png	はい	
+Ironfoot	rltiles/mon/demons/ice_fiend.png	同じパス	mon/demons/ice_fiend.png	はい	
+Ironfoot	rltiles/mon/unique/antaeus.png	同じパス	mon/unique/antaeus.png	はい	
+Lantier	rltiles/dc-mon/undead/zombies/zombie_draconian.png	同じパス	mon/undead/zombies/zombie_draconian.png	はい	
+Lantier	rltiles/dc-mon/undead/zombies/zombie_griffon.png	今の木に無い			
+Lantier	rltiles/dc-mon/undead/zombies/zombie_harpy.png	同じパス	mon/undead/zombies/zombie_harpy.png	はい	
+Lantier	rltiles/dc-mon/undead/zombies/zombie_quadruped_winged.png	同じパス	mon/undead/zombies/zombie_quadruped_winged.png	はい	
+Lantier	rltiles/dc-mon/undead/zombies/zombie_troll.png	同じパス	mon/undead/zombies/zombie_troll.png	はい	
+Robsoie	rltiles/dc-mon/undead/skeletons/skeleton_toad.png	今の木に無い			
+Robsoie	rltiles/dc-mon/undead/spectrals/spectral_toad.png	今の木に無い			
+Tapsu	rltiles/mon/animals/bennu.png	同じパス	mon/animals/bennu.png	はい	
+Team Impy	rltiles/mon/minotaur.png	同名のみ	mon/demihumanoids/minotaur.png	はい	
+Team Impy	rltiles/player/base/djinni.png	今の木に無い			
+Team Impy	rltiles/player/base/djinni_f.png	今の木に無い			
+Team Impy	rltiles/player/base/djinni_m.png	今の木に無い			
+Team Impy	rltiles/player/base/human2_f.png	同じパス	player/base/human2_f.png	はい	
+Team Impy	rltiles/player/base/human2_m.png	同じパス	player/base/human2_m.png	はい	
+Team Impy	rltiles/player/base/human3_f.png	同じパス	player/base/human3_f.png	はい	
+Team Impy	rltiles/player/base/human3_m.png	同じパス	player/base/human3_m.png	はい	
+Team Impy	rltiles/player/base/human_dark_f.png	今の木に無い			
+Team Impy	rltiles/player/base/human_dark_m.png	今の木に無い			
+Team Impy	rltiles/player/base/merfolk_f.png	同じパス	player/base/merfolk_f.png	はい	
+Team Impy	rltiles/player/base/merfolk_m.png	同じパス	player/base/merfolk_m.png	はい	
+Team Impy	rltiles/player/base/merfolk_water_f.png	同じパス	player/base/merfolk_water_f.png	はい	
+Team Impy	rltiles/player/base/merfolk_water_m.png	同じパス	player/base/merfolk_water_m.png	はい	
+Team Impy	rltiles/player/base/minotaur_f.png	同じパス	player/base/minotaur_f.png	はい	
+Team Impy	rltiles/player/base/minotaur_m.png	同じパス	player/base/minotaur_m.png	はい	
+Team Impy	rltiles/player/base/ogre_f.png	今の木に無い			
+Team Impy	rltiles/player/base/ogre_m.png	今の木に無い			
+Team Impy	rltiles/player/base/orc_f.png	同じパス	player/base/orc_f.png	はい	
+Team Impy	rltiles/player/base/orc_m.png	同じパス	player/base/orc_m.png	はい	
+Team Impy	rltiles/player/base/troll_f.png	同じパス	player/base/troll_f.png	はい	
+Team Impy	rltiles/player/base/troll_m.png	同じパス	player/base/troll_m.png	はい	
+Team Impy	rltiles/player/beard/bushy_green.png	同じパス	player/beard/bushy_green.png	はい	
+Team Impy	rltiles/player/beard/muttonchops_green.png	同じパス	player/beard/muttonchops_green.png	はい	
+Team Impy	rltiles/player/beard/wizard.png	同じパス	player/beard/wizard.png	はい	
+Team Impy	rltiles/player/hair/chopsticks.png	同じパス	player/hair/chopsticks.png	はい	
+Team Impy	rltiles/player/hair/curly_yellow.png	同じパス	player/hair/curly_yellow.png	はい	
+Team Impy	rltiles/player/hair/elf_brown.png	同じパス	player/hair/elf_brown.png	はい	
+Team Impy	rltiles/player/hair/elf_red.png	同じパス	player/hair/elf_red.png	はい	
+Team Impy	rltiles/player/hair/elf_white.png	同じパス	player/hair/elf_white.png	はい	
+Team Impy	rltiles/player/hair/elf_yellow.png	同じパス	player/hair/elf_yellow.png	はい	
+Team Impy	rltiles/player/hair/full_brown.png	同じパス	player/hair/full_brown.png	はい	
+Team Impy	rltiles/player/hair/headband.png	同じパス	player/hair/headband.png	はい	
+Team Impy	rltiles/player/hair/hightail.png	同じパス	player/hair/hightail.png	はい	
+Team Impy	rltiles/player/hair/hightails_brown.png	同じパス	player/hair/hightails_brown.png	はい	
+Team Impy	rltiles/player/hair/mountain_man.png	同じパス	player/hair/mountain_man.png	はい	
+Team Impy	rltiles/player/hair/part2_red.png	同じパス	player/hair/part2_red.png	はい	
+Team Impy	rltiles/player/hair/part_blue.png	同じパス	player/hair/part_blue.png	はい	
+Team Impy	rltiles/player/hair/pigtails_green.png	同じパス	player/hair/pigtails_green.png	はい	
+Team Impy	rltiles/player/hair/queue.png	同じパス	player/hair/queue.png	はい	
+Team Impy	rltiles/player/hair/ribbons_black.png	同じパス	player/hair/ribbons_black.png	はい	
+Team Impy	rltiles/player/hair/short_brown.png	同じパス	player/hair/short_brown.png	はい	
+Team Impy	rltiles/player/hair/spriggan1.png	同じパス	player/hair/spriggan1.png	はい	
+Team Impy	rltiles/player/hair/spriggan2.png	同じパス	player/hair/spriggan2.png	はい	
+Team Impy	rltiles/player/hair/spriggan3.png	同じパス	player/hair/spriggan3.png	はい	
+Team Impy	rltiles/player/hair/sweep.png	同じパス	player/hair/sweep.png	はい	
+Team Impy	rltiles/player/hair/topknot.png	同じパス	player/hair/topknot.png	はい	
+Team Impy	rltiles/player/hair/topknot2.png	同じパス	player/hair/topknot2.png	はい	
+Team Impy	rltiles/player/hair/troll.png	同じパス	player/hair/troll.png	はい	
+Thrall	rltiles/mon/orc_warlord.png	同名のみ	mon/humanoids/orcs/orc_warlord.png	はい	
+dd	rltiles/dngn/floor/lava0.png	今の木に無い			
+dd	rltiles/dngn/floor/lava00.png	同じパス	dngn/floor/lava00.png	はい	dc_lava
+dd	rltiles/dngn/floor/lava01.png	同じパス	dngn/floor/lava01.png	はい	
+dd	rltiles/dngn/floor/lava02.png	同じパス	dngn/floor/lava02.png	はい	
+dd	rltiles/dngn/floor/lava03.png	同じパス	dngn/floor/lava03.png	はい	
+dd	rltiles/dngn/floor/lava04.png	同じパス	dngn/floor/lava04.png	はい	
+dd	rltiles/dngn/floor/lava05.png	同じパス	dngn/floor/lava05.png	はい	
+dd	rltiles/dngn/floor/lava06.png	同じパス	dngn/floor/lava06.png	はい	
+dd	rltiles/dngn/floor/lava07.png	同じパス	dngn/floor/lava07.png	はい	
+dd	rltiles/dngn/floor/lava08.png	同じパス	dngn/floor/lava08.png	はい	
+dd	rltiles/dngn/floor/lava09.png	同じパス	dngn/floor/lava09.png	はい	
+dd	rltiles/dngn/floor/lava1.png	今の木に無い			
+dd	rltiles/dngn/floor/lava10.png	同じパス	dngn/floor/lava10.png	はい	
+dd	rltiles/dngn/floor/lava11.png	同じパス	dngn/floor/lava11.png	はい	
+dd	rltiles/dngn/floor/lava2.png	今の木に無い			
+dd	rltiles/dngn/floor/lava3.png	今の木に無い			
+dd	rltiles/gui/abilities/bat_form.png	同名のみ	UNUSED/gui/bat_form.png | player/transform/bat_form.png	いいえ | はい	 | 
+dd	rltiles/gui/abilities/blink.png	同じパス	gui/abilities/blink.png	はい	
+dd	rltiles/gui/abilities/bottle_blood.png	同名のみ	UNUSED/gui/bottle_blood.png	いいえ	
+dd	rltiles/gui/abilities/breathe_energy.png	同じパス	gui/abilities/breathe_energy.png	はい	
+dd	rltiles/gui/abilities/breathe_fire.png	同じパス	gui/abilities/breathe_fire.png	はい	
+dd	rltiles/gui/abilities/breathe_frost.png	同じパス	gui/abilities/breathe_frost.png	はい	
+dd	rltiles/gui/abilities/breathe_lightning.png	同じパス	gui/abilities/breathe_lightning.png	はい	
+dd	rltiles/gui/abilities/breathe_mephitic.png	同じパス	gui/abilities/breathe_mephitic.png	はい	
+dd	rltiles/gui/abilities/breathe_poison.png	同じパス	gui/abilities/breathe_poison.png	はい	
+dd	rltiles/gui/abilities/breathe_steam.png	同じパス	gui/abilities/breathe_steam.png	はい	
+dd	rltiles/gui/abilities/breathe_sticky_flame.png	今の木に無い			
+dd	rltiles/gui/abilities/delayed_fireball.png	今の木に無い			
+dd	rltiles/gui/abilities/end_transformation.png	同じパス	gui/abilities/end_transformation.png	はい	
+dd	rltiles/gui/abilities/evoke_berserk.png	同名のみ	UNUSED/gui/evoke_berserk.png	いいえ	
+dd	rltiles/gui/abilities/evoke_blink.png	今の木に無い			
+dd	rltiles/gui/abilities/evoke_invisibility.png	同じパス	gui/abilities/evoke_invisibility.png	はい	
+dd	rltiles/gui/abilities/evoke_invisibility_end.png	今の木に無い			
+dd	rltiles/gui/abilities/evoke_levitate.png	今の木に無い			
+dd	rltiles/gui/abilities/evoke_levitate_end.png	今の木に無い			
+dd	rltiles/gui/abilities/evoke_teleport.png	同名のみ	UNUSED/gui/evoke_teleport.png	いいえ	
+dd	rltiles/gui/abilities/flight.png	今の木に無い			
+dd	rltiles/gui/abilities/flight_end.png	今の木に無い			
+dd	rltiles/gui/abilities/hellfire.png	今の木に無い			
+dd	rltiles/gui/abilities/mummy_restoration.png	同名のみ	UNUSED/gui/mummy_restoration.png	いいえ	
+dd	rltiles/gui/abilities/recharge.png	今の木に無い			
+dd	rltiles/gui/abilities/spit_acid.png	同名のみ	gui/spells/monster/spit_acid.png	はい	
+dd	rltiles/gui/abilities/spit_poison.png	同じパス	gui/abilities/spit_poison.png	はい	
+dd	rltiles/gui/commands/ability.png	同じパス	gui/commands/ability.png	はい	
+dd	rltiles/gui/commands/autofight.png	同じパス	gui/commands/autofight.png	はい	
+dd	rltiles/gui/commands/butcher.png	同じパス	gui/commands/butcher.png	いいえ	
+dd	rltiles/gui/commands/cast_spell.png	同じパス	gui/commands/cast_spell.png	はい	
+dd	rltiles/gui/commands/chardump.png	同じパス	gui/commands/chardump.png	はい	
+dd	rltiles/gui/commands/doll_editor.png	同じパス	gui/commands/doll_editor.png	はい	
+dd	rltiles/gui/commands/drop.png	同じパス	gui/commands/drop.png	はい	
+dd	rltiles/gui/commands/droplast.png	同名のみ	UNUSED/gui/droplast.png	いいえ	
+dd	rltiles/gui/commands/explore.png	同じパス	gui/commands/explore.png	はい	
+dd	rltiles/gui/commands/help.png	同じパス	gui/commands/help.png	はい	
+dd	rltiles/gui/commands/inventory.png	同じパス	gui/commands/inventory.png	はい	
+dd	rltiles/gui/commands/known_items.png	同じパス	gui/commands/known_items.png	はい	
+dd	rltiles/gui/commands/memorise.png	同じパス	gui/commands/memorise.png	はい	
+dd	rltiles/gui/commands/message_history.png	同じパス	gui/commands/message_history.png	はい	
+dd	rltiles/gui/commands/mutations.png	同じパス	gui/commands/mutations.png	はい	
+dd	rltiles/gui/commands/overmap.png	同じパス	gui/commands/overmap.png	はい	
+dd	rltiles/gui/commands/overview.png	同じパス	gui/commands/overview.png	はい	
+dd	rltiles/gui/commands/pray.png	今の木に無い			
+dd	rltiles/gui/commands/quicksave.png	同じパス	gui/commands/quicksave.png	はい	
+dd	rltiles/gui/commands/religion.png	同じパス	gui/commands/religion.png	はい	
+dd	rltiles/gui/commands/resting.png	同じパス	gui/commands/resting.png	はい	
+dd	rltiles/gui/commands/skills.png	同じパス	gui/commands/skills.png	はい	
+dd	rltiles/gui/commands/stash_search.png	同じパス	gui/commands/stash_search.png	はい	
+dd	rltiles/gui/commands/status.png	同じパス	gui/commands/status.png	はい	
+dd	rltiles/gui/commands/travel.png	同じパス	gui/commands/travel.png	はい	
+dd	rltiles/gui/commands/waiting.png	同じパス	gui/commands/waiting.png	はい	
+dd	rltiles/gui/invocations/ashenzari_scry.png	同じパス	gui/invocations/ashenzari_scry.png	いいえ	
+dd	rltiles/gui/invocations/ashenzari_transfer_knowledge.png	同じパス	gui/invocations/ashenzari_transfer_knowledge.png	いいえ	
+dd	rltiles/gui/invocations/ashenzari_transfer_knowledge_end.png	同じパス	gui/invocations/ashenzari_transfer_knowledge_end.png	いいえ	
+dd	rltiles/gui/invocations/beogh_recall.png	同じパス	gui/invocations/beogh_recall.png	はい	
+dd	rltiles/gui/invocations/beogh_smite.png	同じパス	gui/invocations/beogh_smite.png	はい	
+dd	rltiles/gui/invocations/cheibriados_bend_time.png	同じパス	gui/invocations/cheibriados_bend_time.png	はい	
+dd	rltiles/gui/invocations/cheibriados_slouch.png	同じパス	gui/invocations/cheibriados_slouch.png	はい	
+dd	rltiles/gui/invocations/cheibriados_temporal_distortion.png	同じパス	gui/invocations/cheibriados_temporal_distortion.png	はい	
+dd	rltiles/gui/invocations/cheibriados_time_step.png	同じパス	gui/invocations/cheibriados_time_step.png	はい	
+dd	rltiles/gui/invocations/elyvilon_divine_protection.png	今の木に無い			
+dd	rltiles/gui/invocations/elyvilon_divine_vigour.png	同じパス	gui/invocations/elyvilon_divine_vigour.png	はい	
+dd	rltiles/gui/invocations/elyvilon_greater_healing.png	今の木に無い			
+dd	rltiles/gui/invocations/elyvilon_greater_self_healing.png	今の木に無い			
+dd	rltiles/gui/invocations/elyvilon_lesser_healing.png	同じパス	gui/invocations/elyvilon_lesser_healing.png	はい	
+dd	rltiles/gui/invocations/elyvilon_lesser_self_healing.png	今の木に無い			
+dd	rltiles/gui/invocations/elyvilon_purification.png	同じパス	gui/invocations/elyvilon_purification.png	はい	
+dd	rltiles/gui/invocations/fedhas_evolution.png	今の木に無い			
+dd	rltiles/gui/invocations/fedhas_plant_ring.png	今の木に無い			
+dd	rltiles/gui/invocations/fedhas_rain.png	今の木に無い			
+dd	rltiles/gui/invocations/fedhas_spawn_spores.png	今の木に無い			
+dd	rltiles/gui/invocations/fedhas_sunlight.png	今の木に無い			
+dd	rltiles/gui/invocations/jiyva_cure_bad_mutations.png	今の木に無い			
+dd	rltiles/gui/invocations/jiyva_paralyse_jelly.png	今の木に無い			
+dd	rltiles/gui/invocations/jiyva_request_jelly.png	今の木に無い			
+dd	rltiles/gui/invocations/jiyva_slimify.png	同じパス	gui/invocations/jiyva_slimify.png	はい	
+dd	rltiles/gui/invocations/kiku_receive_corpses.png	今の木に無い			
+dd	rltiles/gui/invocations/kiku_torment.png	今の木に無い			
+dd	rltiles/gui/invocations/lugonu_banish.png	同じパス	gui/invocations/lugonu_banish.png	はい	
+dd	rltiles/gui/invocations/lugonu_bend_space.png	同名のみ	UNUSED/gui/lugonu_bend_space.png	いいえ	
+dd	rltiles/gui/invocations/lugonu_corrupt.png	同じパス	gui/invocations/lugonu_corrupt.png	はい	
+dd	rltiles/gui/invocations/lugonu_enter_abyss.png	同じパス	gui/invocations/lugonu_enter_abyss.png	はい	
+dd	rltiles/gui/invocations/lugonu_exit_abyss.png	同じパス	gui/invocations/lugonu_exit_abyss.png	はい	
+dd	rltiles/gui/invocations/makhleb_greater_servant.png	同じパス	gui/invocations/makhleb_greater_servant.png	はい	
+dd	rltiles/gui/invocations/makhleb_lesser_servant.png	同じパス	gui/invocations/makhleb_lesser_servant.png	はい	
+dd	rltiles/gui/invocations/makhleb_major_destruction.png	同じパス	gui/invocations/makhleb_major_destruction.png	はい	
+dd	rltiles/gui/invocations/makhleb_minor_destruction.png	同じパス	gui/invocations/makhleb_minor_destruction.png	はい	
+dd	rltiles/gui/invocations/nemelex_deal_four.png	同じパス	gui/invocations/nemelex_deal_four.png	はい	
+dd	rltiles/gui/invocations/nemelex_draw_one.png	今の木に無い			
+dd	rltiles/gui/invocations/nemelex_peek_at_two.png	今の木に無い			
+dd	rltiles/gui/invocations/nemelex_stack_five.png	同じパス	gui/invocations/nemelex_stack_five.png	はい	
+dd	rltiles/gui/invocations/nemelex_triple_draw.png	同じパス	gui/invocations/nemelex_triple_draw.png	はい	
+dd	rltiles/gui/invocations/okawaru_finesse.png	同じパス	gui/invocations/okawaru_finesse.png	はい	
+dd	rltiles/gui/invocations/okawaru_heroism.png	同じパス	gui/invocations/okawaru_heroism.png	はい	
+dd	rltiles/gui/invocations/renounce.png	同じパス	gui/invocations/renounce.png	はい	
+dd	rltiles/gui/invocations/sif_muna_amnesia.png	同じパス	gui/invocations/sif_muna_amnesia.png	はい	
+dd	rltiles/gui/invocations/sif_muna_channel.png	同じパス	gui/invocations/sif_muna_channel.png	はい	
+dd	rltiles/gui/invocations/trog_berserk.png	同じパス	gui/invocations/trog_berserk.png	はい	
+dd	rltiles/gui/invocations/trog_brothers_in_arms.png	同じパス	gui/invocations/trog_brothers_in_arms.png	はい	
+dd	rltiles/gui/invocations/trog_burn_spellbooks.png	同名のみ	UNUSED/gui/trog_burn_spellbooks.png	いいえ	
+dd	rltiles/gui/invocations/trog_hand.png	同じパス	gui/invocations/trog_hand.png	はい	
+dd	rltiles/gui/invocations/tso_cleansing_flame.png	同じパス	gui/invocations/tso_cleansing_flame.png	はい	
+dd	rltiles/gui/invocations/tso_divine_shield.png	同じパス	gui/invocations/tso_divine_shield.png	はい	
+dd	rltiles/gui/invocations/tso_divine_warrior.png	同じパス	gui/invocations/tso_divine_warrior.png	はい	
+dd	rltiles/gui/invocations/yred_animate_dead.png	今の木に無い			
+dd	rltiles/gui/invocations/yred_animate_remains.png	今の木に無い			
+dd	rltiles/gui/invocations/yred_drain_life.png	今の木に無い			
+dd	rltiles/gui/invocations/yred_enslave_soul.png	今の木に無い			
+dd	rltiles/gui/invocations/yred_injury_mirror.png	今の木に無い			
+dd	rltiles/gui/invocations/yred_recall.png	同じパス	gui/invocations/yred_recall.png	はい	
+dd	rltiles/gui/invocations/zin_cure_mutations.png	同じパス	gui/invocations/zin_cure_mutations.png	はい	
+dd	rltiles/gui/invocations/zin_imprison.png	同じパス	gui/invocations/zin_imprison.png	はい	
+dd	rltiles/gui/invocations/zin_recite.png	同じパス	gui/invocations/zin_recite.png	はい	
+dd	rltiles/gui/invocations/zin_sanctuary.png	同じパス	gui/invocations/zin_sanctuary.png	はい	
+dd	rltiles/gui/invocations/zin_vitalisation.png	同じパス	gui/invocations/zin_vitalisation.png	はい	
+dd	rltiles/gui/tab_label_ability.png	同じパス	gui/tab_label_ability.png	いいえ	
+dd	rltiles/gui/tab_label_command.png	同じパス	gui/tab_label_command.png	いいえ	
+dd	rltiles/gui/tab_label_item.png	同じパス	gui/tab_label_item.png	いいえ	
+dd	rltiles/gui/tab_label_memorise.png	同じパス	gui/tab_label_memorise.png	いいえ	
+dd	rltiles/gui/tab_label_monster.png	同じパス	gui/tab_label_monster.png	いいえ	
+dd	rltiles/gui/tab_label_navigation.png	同じパス	gui/tab_label_navigation.png	いいえ	
+dd	rltiles/gui/tab_label_other.png	同名のみ	UNUSED/gui/tab_label_other.png	いいえ	
+dd	rltiles/gui/tab_label_skill.png	同じパス	gui/tab_label_skill.png	いいえ	
+dd	rltiles/gui/tab_label_spell.png	同じパス	gui/tab_label_spell.png	いいえ	
+dd	rltiles/gui/tab_mouseover.png	同じパス	gui/tab_mouseover.png	いいえ	
+dd	rltiles/gui/tab_selected.png	同じパス	gui/tab_selected.png	いいえ	
+dd	rltiles/gui/tab_unselected.png	同じパス	gui/tab_unselected.png	いいえ	
+dd	rltiles/gui/zotdef/acquirement.png	今の木に無い			
+dd	rltiles/gui/zotdef/alarm_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/altar.png	同名のみ	UNUSED/features/altar.png	いいえ	
+dd	rltiles/gui/zotdef/arrow_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/bazaar.png	今の木に無い			
+dd	rltiles/gui/zotdef/blade_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/bolt_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/burning_bush.png	今の木に無い			
+dd	rltiles/gui/zotdef/curse_skull.png	同名のみ	mon/undead/curse_skull.png	はい	
+dd	rltiles/gui/zotdef/dart_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/fungus.png	今の木に無い			
+dd	rltiles/gui/zotdef/gold.png	同名のみ	item/book/gold.png | item/ring/gold.png	はい | はい	 | 
+dd	rltiles/gui/zotdef/ice_statue.png	同名のみ	mon/statues/ice_statue.png	はい	
+dd	rltiles/gui/zotdef/lightning_spire.png	同名のみ	mon/statues/lightning_spire.png	はい	
+dd	rltiles/gui/zotdef/needle_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/net_trap.png	同名のみ	effect/net_trap.png	はい	
+dd	rltiles/gui/zotdef/ocs.png	今の木に無い			
+dd	rltiles/gui/zotdef/oklob_circle.png	今の木に無い			
+dd	rltiles/gui/zotdef/oklob_plant.png	同名のみ	mon/fungi_plants/oklob_plant.png	はい	
+dd	rltiles/gui/zotdef/oklob_sapling.png	同名のみ	mon/fungi_plants/oklob_sapling.png	はい	
+dd	rltiles/gui/zotdef/plant.png	今の木に無い			
+dd	rltiles/gui/zotdef/remove_curse.png	今の木に無い			
+dd	rltiles/gui/zotdef/sage.png	今の木に無い			
+dd	rltiles/gui/zotdef/silver_statue.png	今の木に無い			
+dd	rltiles/gui/zotdef/spear_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/spore.png	同名のみ	item/talisman/spore.png	はい	
+dd	rltiles/gui/zotdef/teleport.png	同名のみ	dngn/traps/teleport.png | gui/spells/monster/teleport.png	はい | いいえ	dc_trap_teleport | 
+dd	rltiles/gui/zotdef/teleport_trap.png	今の木に無い			
+dd	rltiles/gui/zotdef/water.png	同名のみ	item/talisman/water.png	はい	
+dd	rltiles/item/armour/crystal_plate.png	同じパス	item/armour/crystal_plate.png	はい	
+dd	rltiles/item/armour/crystal_plate2.png	同じパス	item/armour/crystal_plate2.png	はい	
+dd	rltiles/item/armour/crystal_plate3.png	同じパス	item/armour/crystal_plate3.png	はい	
+dd	rltiles/item/armour/crystal_plate4.png	今の木に無い			
+dd	rltiles/item/weapon/artefact/spwpn_demon_axe.png	同じパス	item/weapon/artefact/spwpn_demon_axe.png	いいえ	
+dd	rltiles/item/weapon/bardiche1.png	同じパス	item/weapon/bardiche1.png	はい	
+dd	rltiles/item/weapon/bardiche2.png	同じパス	item/weapon/bardiche2.png	はい	
+dd	rltiles/item/weapon/bardiche3.png	同じパス	item/weapon/bardiche3.png	はい	
+dd	rltiles/item/weapon/battle_axe1.png	同じパス	item/weapon/battle_axe1.png	はい	
+dd	rltiles/item/weapon/battle_axe2.png	同じパス	item/weapon/battle_axe2.png	はい	
+dd	rltiles/item/weapon/battle_axe3.png	同じパス	item/weapon/battle_axe3.png	はい	
+dd	rltiles/item/weapon/broad_axe1.png	同じパス	item/weapon/broad_axe1.png	はい	
+dd	rltiles/item/weapon/broad_axe2.png	同じパス	item/weapon/broad_axe2.png	はい	
+dd	rltiles/item/weapon/broad_axe3.png	同じパス	item/weapon/broad_axe3.png	はい	
+dd	rltiles/item/weapon/demon_trident.png	同じパス	item/weapon/demon_trident.png	はい	
+dd	rltiles/item/weapon/dwarven_battle_axe1.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_battle_axe2.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_broad_axe1.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_broad_axe2.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_executioner_axe1.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_executioner_axe2.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_sabre1.png	今の木に無い			
+dd	rltiles/item/weapon/dwarven_sabre2.png	今の木に無い			
+dd	rltiles/item/weapon/elven_sabre1.png	今の木に無い			
+dd	rltiles/item/weapon/elven_sabre2.png	今の木に無い			
+dd	rltiles/item/weapon/executioner_axe1.png	同じパス	item/weapon/executioner_axe1.png	はい	
+dd	rltiles/item/weapon/executioner_axe2.png	同じパス	item/weapon/executioner_axe2.png	はい	
+dd	rltiles/item/weapon/executioner_axe3.png	同じパス	item/weapon/executioner_axe3.png	はい	
+dd	rltiles/item/weapon/glaive1.png	同じパス	item/weapon/glaive1.png	はい	
+dd	rltiles/item/weapon/glaive2.png	同じパス	item/weapon/glaive2.png	はい	
+dd	rltiles/item/weapon/glaive3.png	同じパス	item/weapon/glaive3.png	はい	
+dd	rltiles/item/weapon/halberd1.png	同じパス	item/weapon/halberd1.png	はい	
+dd	rltiles/item/weapon/halberd2.png	同じパス	item/weapon/halberd2.png	はい	
+dd	rltiles/item/weapon/halberd3.png	同じパス	item/weapon/halberd3.png	はい	
+dd	rltiles/item/weapon/lajatang1.png	同じパス	item/weapon/lajatang1.png	はい	
+dd	rltiles/item/weapon/lajatang2.png	同じパス	item/weapon/lajatang2.png	はい	
+dd	rltiles/item/weapon/lajatang3.png	同じパス	item/weapon/lajatang3.png	はい	
+dd	rltiles/item/weapon/orcish_bardiche.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_bardiche2.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_battle_axe1.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_battle_axe2.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_broad_axe1.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_broad_axe2.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_executioner_axe1.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_executioner_axe2.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_halberd1.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_halberd2.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_sabre1.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_sabre2.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_trident1.png	今の木に無い			
+dd	rltiles/item/weapon/orcish_trident2.png	今の木に無い			
+dd	rltiles/item/weapon/quickblade.png	今の木に無い			
+dd	rltiles/item/weapon/quickblade1.png	同じパス	item/weapon/quickblade1.png	はい	
+dd	rltiles/item/weapon/quickblade2.png	同じパス	item/weapon/quickblade2.png	はい	
+dd	rltiles/item/weapon/quickblade3.png	同じパス	item/weapon/quickblade3.png	はい	
+dd	rltiles/item/weapon/sabre1.png	今の木に無い			
+dd	rltiles/item/weapon/sabre1_silver.png	今の木に無い			
+dd	rltiles/item/weapon/sabre2.png	今の木に無い			
+dd	rltiles/item/weapon/sabre3.png	今の木に無い			
+dd	rltiles/item/weapon/staff.png	同じパス	item/weapon/staff.png	はい	
+dd	rltiles/item/weapon/trident1.png	同じパス	item/weapon/trident1.png	はい	
+dd	rltiles/item/weapon/trident2.png	同じパス	item/weapon/trident2.png	はい	
+dd	rltiles/item/weapon/trident3.png	同じパス	item/weapon/trident3.png	はい	
+dd	rltiles/item/weapon/trishula.png	同じパス	item/weapon/trishula.png	はい	
+dd	rltiles/item/weapon/war_axe1.png	同じパス	item/weapon/war_axe1.png	はい	
+dd	rltiles/item/weapon/war_axe2.png	同じパス	item/weapon/war_axe2.png	はい	
+dd	rltiles/item/weapon/war_axe3.png	同じパス	item/weapon/war_axe3.png	はい	
+dd	rltiles/misc/slot.png	同じパス	misc/slot.png	はい	
+dd	rltiles/misc/slot_eq.png	同じパス	misc/slot_eq.png	はい	
+dd	rltiles/misc/slot_eq_cursed.png	同じパス	misc/slot_eq_cursed.png	はい	
+dd	rltiles/mon/fungi_plants/active_ballistomycete.png	今の木に無い			
+dd	rltiles/mon/fungi_plants/ballistomycete.png	同じパス	mon/fungi_plants/ballistomycete.png	はい	
+dd	rltiles/mon/fungi_plants/fungus.png	今の木に無い			
+dd	rltiles/mon/fungi_plants/fungus1.png	同じパス	mon/fungi_plants/fungus1.png	はい	
+dd	rltiles/mon/fungi_plants/fungus2.png	同じパス	mon/fungi_plants/fungus2.png	はい	
+dd	rltiles/mon/fungi_plants/fungus3.png	同じパス	mon/fungi_plants/fungus3.png	はい	
+dd	rltiles/mon/fungi_plants/fungus4.png	同じパス	mon/fungi_plants/fungus4.png	はい	
+dd	rltiles/mon/fungi_plants/fungus5.png	同じパス	mon/fungi_plants/fungus5.png	はい	
+dd	rltiles/mon/fungi_plants/fungus6.png	同じパス	mon/fungi_plants/fungus6.png	はい	
+dd	rltiles/mon/fungi_plants/fungus7.png	同じパス	mon/fungi_plants/fungus7.png	はい	
+dd	rltiles/mon/fungi_plants/fungus8.png	同じパス	mon/fungi_plants/fungus8.png	はい	
+dd	rltiles/mon/fungi_plants/fungus9.png	同じパス	mon/fungi_plants/fungus9.png	はい	
+dd	rltiles/mon/fungi_plants/hyperactive_ballistomycete.png	今の木に無い			
+dd	rltiles/mon/fungi_plants/toadstool_left.png	同じパス	mon/fungi_plants/toadstool_left.png	はい	
+dd	rltiles/mon/fungi_plants/toadstool_right.png	同じパス	mon/fungi_plants/toadstool_right.png	はい	
+dd	rltiles/mon/undead/greater_mummy.png	今の木に無い			
+dd	rltiles/mon/undead/guardian_mummy.png	同じパス	mon/undead/guardian_mummy.png	はい	
+dd	rltiles/mon/undead/mummy.png	同じパス	mon/undead/mummy.png	はい	
+dd	rltiles/mon/undead/mummy_priest.png	同じパス	mon/undead/mummy_priest.png	はい	
+dd	rltiles/mon/unique/khufu.png	同じパス	mon/unique/khufu.png	はい	
+dd	rltiles/mon/unique/menkaure.png	同じパス	mon/unique/menkaure.png	はい	
+dd	rltiles/player/body/crystal_plate.png	同じパス	player/body/crystal_plate.png	はい	
+dd	rltiles/player/body/crystal_plate2.png	同じパス	player/body/crystal_plate2.png	はい	
+dd	rltiles/player/body/crystal_plate3.png	同じパス	player/body/crystal_plate3.png	はい	
+dd	rltiles/player/hand1/artefact/dire_lajatang.png	今の木に無い			
+dd	rltiles/player/hand1/lajatang1.png	同じパス	player/hand1/lajatang1.png	はい	
+dd	rltiles/player/hand1/lajatang2.png	同じパス	player/hand1/lajatang2.png	はい	
+dd	rltiles/player/hand1/lajatang3.png	同じパス	player/hand1/lajatang3.png	はい	
+Un67	rltiles/item/weapon/staff.png	同じパス	item/weapon/staff.png	はい	
+dtsund	rltiles/effect/halo_range.png	同じパス	effect/halo_range.png	はい	
+lingerstink	rltiles/mon/unique/asterion.png	同じパス	mon/unique/asterion.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_E.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_E.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_N.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_N.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_NE.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_NE.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_NW.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_NW.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_S.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_S.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_SE.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_SE.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_SW.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_SW.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/ends/kraken_tentacle_W.png	同名のみ	mon/tentacles/kraken_ends/kraken_tentacle_W.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_E.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_E.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_N.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_N.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_NE.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_NE.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_NW.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_NW.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_S.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_S.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_SE.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_SE.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_SW.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_SW.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_W.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_W.png	はい	
+psyshvl	rltiles/dc-mon/animals/tentacles/segments/kraken_tentacle_segment_water_water.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_water_water.png	はい	
+psyshvl	rltiles/dc-mon/demigod.png	同名のみ	mon/humanoids/demigod.png	はい	
+psyshvl	rltiles/dc-mon/draco/draco-base-grey.png	同じパス	mon/draco/draco-base-grey.png	はい	
+psyshvl	rltiles/dc-mon/fungi_plants/oklob_sapling.png	同じパス	mon/fungi_plants/oklob_sapling.png	はい	
+psyshvl	rltiles/dc-mon/holy/spirit.png	同名のみ	UNUSED/monsters/spirit.png	いいえ	
+psyshvl	rltiles/dc-mon/kraken/corner_piece_NE.png	今の木に無い			
+psyshvl	rltiles/dc-mon/kraken/corner_piece_NW.png	今の木に無い			
+psyshvl	rltiles/dc-mon/kraken/corner_piece_SE.png	今の木に無い			
+psyshvl	rltiles/dc-mon/kraken/corner_piece_SW.png	今の木に無い			
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_E.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_E.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_N.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_N.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_NE.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_NE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_NW.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_NW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_S.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_S.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_SE.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_SW.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_ends/eldritch_tentacle_W.png	同名のみ	mon/tentacles/eldritch_ends/eldritch_tentacle_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_E.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_E.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_N.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_N.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_NE.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_NE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_NW.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_NW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_S.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_S.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_SE.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_SW.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_portal/eldritch_tentacle_portal_W.png	同名のみ	mon/tentacles/eldritch_portal/eldritch_tentacle_portal_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_E_N.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_E_N.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_E_NW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_E_NW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_E_S.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_E_S.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_E_SW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_E_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_E_W.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_E_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_NE_NW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_NE_NW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_NE_SE.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_NE_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_NE_SW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_NE_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_NW_SE.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_NW_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_NW_SW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_NW_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_N_S.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_N_S.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_N_SE.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_N_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_N_SW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_N_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_N_W.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_N_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_SE_SW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_SE_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_S_NE.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_S_NE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_S_NW.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_S_NW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_S_W.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_S_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_W_NE.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_W_NE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/eldritch_segments/eldritch_tentacle_segment_W_SE.png	同名のみ	mon/tentacles/eldritch_segments/eldritch_tentacle_segment_W_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_E_N.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_E_N.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_E_S.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_E_S.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_E_W.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_E_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_NE_SW.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_NE_SW.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_NW_SE.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_NW_SE.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_N_S.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_N_S.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_N_W.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_N_W.png	はい	
+psyshvl	rltiles/dc-mon/kraken/segments/kraken_tentacle_segment_S_W.png	同名のみ	mon/tentacles/kraken_segments/kraken_tentacle_segment_S_W.png	はい	
+psyshvl	rltiles/dc-mon/sky_beast.png	同名のみ	mon/animals/sky_beast.png	はい	
+psyshvl	rltiles/dc-mon/spriggan/spriggan_assassin.png	同名のみ	UNUSED/monsters/spriggan_assassin.png	いいえ	
+psyshvl	rltiles/player/transform/lich_form.png	今の木に無い			
+psyshvl	rltiles/player/transform/lich_form_centaur.png	同名のみ	UNUSED/player/lich_form_centaur.png	いいえ	
+psyshvl	rltiles/player/transform/lich_form_humanoid.png	同じパス	player/transform/lich_form_humanoid.png	はい	
+psyshvl	rltiles/player/transform/lich_form_naga.png	同じパス	player/transform/lich_form_naga.png	はい	
+psyshvl	rltiles/spells/summoning/malign_gateway.png	同名のみ	gui/spells/summoning/malign_gateway.png	はい	
+wad	rltiles/UNUSED/monsters/plants/bloom_plant_01.png	同じパス	UNUSED/monsters/plants/bloom_plant_01.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/bloom_plant_02.png	同じパス	UNUSED/monsters/plants/bloom_plant_02.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/flytrap_plant_digest_morph.png	今の木に無い			
+wad	rltiles/UNUSED/monsters/plants/flytrap_plant_digest_morph_mellow.png	今の木に無い			
+wad	rltiles/UNUSED/monsters/plants/flytrap_plant_open_morph.png	同じパス	UNUSED/monsters/plants/flytrap_plant_open_morph.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/flytrap_plant_open_morph_mellow.png	同じパス	UNUSED/monsters/plants/flytrap_plant_open_morph_mellow.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/fruit_plant_01.png	同じパス	UNUSED/monsters/plants/fruit_plant_01.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/fruit_plant_02.png	同じパス	UNUSED/monsters/plants/fruit_plant_02.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/magic_mushroom_01.png	同じパス	UNUSED/monsters/plants/magic_mushroom_01.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/magic_mushroom_02.png	同じパス	UNUSED/monsters/plants/magic_mushroom_02.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/magic_mushroom_03.png	今の木に無い			
+wad	rltiles/UNUSED/monsters/plants/magic_mushroom_04.png	同じパス	UNUSED/monsters/plants/magic_mushroom_04.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/magic_mushroom_05.png	同じパス	UNUSED/monsters/plants/magic_mushroom_05.png	いいえ	
+wad	rltiles/UNUSED/monsters/plants/poison_pollen.png	同じパス	UNUSED/monsters/plants/poison_pollen.png	いいえ	
+wad	rltiles/dc-dngn/floor/woodground01.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground02.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground03.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground04.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground05.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground06.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground07.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground08.png	今の木に無い			
+wad	rltiles/dc-dngn/floor/woodground09.png	今の木に無い			
+wad	rltiles/dc-dngn/vaults/brick_dark_leak.png	同じパス	dngn/vaults/brick_dark_leak.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant.png	今の木に無い			
+wad	rltiles/dc-mon/fungi_plants/plant_01.png	同じパス	mon/fungi_plants/plant_01.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_02.png	同じパス	mon/fungi_plants/plant_02.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_03.png	同じパス	mon/fungi_plants/plant_03.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_04.png	同じパス	mon/fungi_plants/plant_04.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_05.png	同じパス	mon/fungi_plants/plant_05.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_06.png	同じパス	mon/fungi_plants/plant_06.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_07.png	同じパス	mon/fungi_plants/plant_07.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_08.png	同じパス	mon/fungi_plants/plant_08.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_09.png	同じパス	mon/fungi_plants/plant_09.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_10.png	同じパス	mon/fungi_plants/plant_10.png	はい	
+wad	rltiles/dc-mon/fungi_plants/plant_11.png	今の木に無い			
+wad	rltiles/dngn/trees/tree10.png	同じパス	dngn/trees/tree10.png	はい	
+wad	rltiles/dngn/trees/tree10_red.png	今の木に無い			
+wad	rltiles/dngn/trees/tree11.png	同じパス	dngn/trees/tree11.png	はい	
+wad	rltiles/dngn/trees/tree12.png	同じパス	dngn/trees/tree12.png	はい	
+wad	rltiles/dngn/trees/tree13.png	同じパス	dngn/trees/tree13.png	はい	
+wad	rltiles/dngn/trees/tree14.png	今の木に無い			
+wad	rltiles/dngn/trees/tree14a.png	今の木に無い			
+wad	rltiles/dngn/trees/tree14b.png	今の木に無い			
+wad	rltiles/dngn/trees/tree14c.png	今の木に無い			
+wad	rltiles/dngn/trees/tree15.png	今の木に無い			
+wad	rltiles/dngn/trees/tree15a.png	今の木に無い			
+wad	rltiles/dngn/trees/tree16.png	今の木に無い			
+wad	rltiles/dngn/trees/tree3.png	同じパス	dngn/trees/tree3.png	はい	
+wad	rltiles/dngn/trees/tree4.png	同じパス	dngn/trees/tree4.png	はい	
+wad	rltiles/dngn/trees/tree5.png	同じパス	dngn/trees/tree5.png	はい	
+wad	rltiles/dngn/trees/tree6.png	同じパス	dngn/trees/tree6.png	はい	
+wad	rltiles/dngn/trees/tree6_bright.png	今の木に無い			
+wad	rltiles/dngn/trees/tree6_yellow.png	今の木に無い			
+wad	rltiles/dngn/trees/tree7.png	同じパス	dngn/trees/tree7.png	はい	
+wad	rltiles/dngn/trees/tree7_red.png	今の木に無い			
+wad	rltiles/dngn/trees/tree8.png	同じパス	dngn/trees/tree8.png	はい	
+wad	rltiles/dngn/trees/tree9.png	同じパス	dngn/trees/tree9.png	はい	
+Bloax	rltiles/UNUSED/monsters/cacodemon.png	同じパス	UNUSED/monsters/cacodemon.png	いいえ	
+Bloax	rltiles/UNUSED/worn/lears_chain_mail.png	今の木に無い			
+Bloax	rltiles/dngn/altars/beogh.png	同じパス	dngn/altars/beogh.png	はい	dc_altar_beogh
+Bloax	rltiles/dngn/altars/dithmengos.png	今の木に無い			
+Bloax	rltiles/dngn/altars/dithmengos2.png	今の木に無い			
+Bloax	rltiles/dngn/altars/dithmengos3.png	今の木に無い			
+Bloax	rltiles/dngn/wall/ice_block0.png	同じパス	dngn/wall/ice_block0.png	はい	
+Bloax	rltiles/dngn/wall/ice_block1.png	同じパス	dngn/wall/ice_block1.png	はい	
+Bloax	rltiles/dngn/wall/ice_block2.png	同じパス	dngn/wall/ice_block2.png	はい	
+Bloax	rltiles/dngn/wall/ice_block3.png	同じパス	dngn/wall/ice_block3.png	はい	
+Bloax	rltiles/dngn/wall/ice_block4.png	同じパス	dngn/wall/ice_block4.png	はい	
+Bloax	rltiles/dngn/wall/ice_wall0.png	同じパス	dngn/wall/ice_wall0.png	はい	
+Bloax	rltiles/dngn/wall/ice_wall1.png	同じパス	dngn/wall/ice_wall1.png	はい	
+Bloax	rltiles/dngn/wall/ice_wall2.png	同じパス	dngn/wall/ice_wall2.png	はい	
+Bloax	rltiles/dngn/wall/ice_wall3.png	同じパス	dngn/wall/ice_wall3.png	はい	
+Bloax	rltiles/dngn/wall/ice_wall4.png	同じパス	dngn/wall/ice_wall4.png	はい	
+Bloax	rltiles/dngn/wall/icy_stone0.png	同じパス	dngn/wall/icy_stone0.png	はい	
+Bloax	rltiles/dngn/wall/icy_stone1.png	同じパス	dngn/wall/icy_stone1.png	はい	
+Bloax	rltiles/dngn/wall/icy_stone2.png	同じパス	dngn/wall/icy_stone2.png	はい	
+Bloax	rltiles/dngn/wall/icy_stone3.png	同じパス	dngn/wall/icy_stone3.png	はい	
+Bloax	rltiles/dngn/wall/icy_stone4.png	同じパス	dngn/wall/icy_stone4.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall0.png	同じパス	dngn/wall/metal_wall0.png	はい	dc_wall_metal_01
+Bloax	rltiles/dngn/wall/metal_wall1.png	同じパス	dngn/wall/metal_wall1.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall2.png	同じパス	dngn/wall/metal_wall2.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall3.png	同じパス	dngn/wall/metal_wall3.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall4.png	同じパス	dngn/wall/metal_wall4.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall5.png	同じパス	dngn/wall/metal_wall5.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall6.png	同じパス	dngn/wall/metal_wall6.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall7.png	同じパス	dngn/wall/metal_wall7.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall8.png	同じパス	dngn/wall/metal_wall8.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_brown.png	今の木に無い			
+Bloax	rltiles/dngn/wall/metal_wall_red0.png	同じパス	dngn/wall/metal_wall_red0.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red1.png	同じパス	dngn/wall/metal_wall_red1.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red2.png	同じパス	dngn/wall/metal_wall_red2.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red3.png	同じパス	dngn/wall/metal_wall_red3.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red4.png	同じパス	dngn/wall/metal_wall_red4.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red5.png	同じパス	dngn/wall/metal_wall_red5.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red6.png	同じパス	dngn/wall/metal_wall_red6.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red7.png	同じパス	dngn/wall/metal_wall_red7.png	はい	
+Bloax	rltiles/dngn/wall/metal_wall_red8.png	同じパス	dngn/wall/metal_wall_red8.png	はい	
+Bloax	rltiles/dngn/wall/spider00.png	同じパス	dngn/wall/spider00.png	はい	
+Bloax	rltiles/dngn/wall/spider01.png	同じパス	dngn/wall/spider01.png	はい	
+Bloax	rltiles/dngn/wall/spider02.png	同じパス	dngn/wall/spider02.png	はい	
+Bloax	rltiles/dngn/wall/spider03.png	同じパス	dngn/wall/spider03.png	はい	
+Bloax	rltiles/dngn/wall/spider04.png	同じパス	dngn/wall/spider04.png	はい	
+Bloax	rltiles/dngn/wall/spider05.png	同じパス	dngn/wall/spider05.png	はい	
+Bloax	rltiles/dngn/wall/spider06.png	同じパス	dngn/wall/spider06.png	はい	
+Bloax	rltiles/dngn/wall/spider07.png	同じパス	dngn/wall/spider07.png	はい	
+Bloax	rltiles/dngn/wall/spider08.png	同じパス	dngn/wall/spider08.png	はい	
+Bloax	rltiles/dngn/wall/spider09.png	同じパス	dngn/wall/spider09.png	はい	
+Bloax	rltiles/dngn/wall/spider10.png	同じパス	dngn/wall/spider10.png	はい	
+Bloax	rltiles/dngn/wall/spider11.png	同じパス	dngn/wall/spider11.png	はい	
+Bloax	rltiles/dngn/wall/spider12.png	同じパス	dngn/wall/spider12.png	はい	
+Bloax	rltiles/dngn/wall/spider13.png	同じパス	dngn/wall/spider13.png	はい	
+Bloax	rltiles/dngn/wall/spider14.png	同じパス	dngn/wall/spider14.png	はい	
+Bloax	rltiles/dngn/wall/spider15.png	同じパス	dngn/wall/spider15.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone00.png	同じパス	dngn/wall/vault_stone00.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone01.png	同じパス	dngn/wall/vault_stone01.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone02.png	同じパス	dngn/wall/vault_stone02.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone03.png	同じパス	dngn/wall/vault_stone03.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone04.png	同じパス	dngn/wall/vault_stone04.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone05.png	同じパス	dngn/wall/vault_stone05.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone06.png	同じパス	dngn/wall/vault_stone06.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone07.png	同じパス	dngn/wall/vault_stone07.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone08.png	同じパス	dngn/wall/vault_stone08.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone09.png	同じパス	dngn/wall/vault_stone09.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone10.png	同じパス	dngn/wall/vault_stone10.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone11.png	同じパス	dngn/wall/vault_stone11.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone12.png	同じパス	dngn/wall/vault_stone12.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone13.png	同じパス	dngn/wall/vault_stone13.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone14.png	同じパス	dngn/wall/vault_stone14.png	はい	
+Bloax	rltiles/dngn/wall/vault_stone15.png	同じパス	dngn/wall/vault_stone15.png	はい	
+Bloax	rltiles/effect/hellfire.png	今の木に無い			
+Bloax	rltiles/gui/invocations/nemelex_deal_four.png	同じパス	gui/invocations/nemelex_deal_four.png	はい	
+Bloax	rltiles/gui/invocations/nemelex_draw_one.png	今の木に無い			
+Bloax	rltiles/gui/invocations/nemelex_peek_at_two.png	今の木に無い			
+Bloax	rltiles/gui/invocations/nemelex_stack_five.png	同じパス	gui/invocations/nemelex_stack_five.png	はい	
+Bloax	rltiles/gui/invocations/nemelex_triple_draw.png	同じパス	gui/invocations/nemelex_triple_draw.png	はい	
+Bloax	rltiles/gui/spells/enchantment/corona.png	同じパス	gui/spells/enchantment/corona.png	はい	
+Bloax	rltiles/gui/spells/summoning/summon_horrible_things.png	同じパス	gui/spells/summoning/summon_horrible_things.png	はい	
+Bloax	rltiles/item/armour/artefact/urand_gong.png	同じパス	item/armour/artefact/urand_gong.png	いいえ	
+Bloax	rltiles/item/armour/artefact/urand_moon_troll_leather_armour.png	同じパス	item/armour/artefact/urand_moon_troll_leather_armour.png	いいえ	
+Bloax	rltiles/item/armour/artefact/urand_spider.png	同じパス	item/armour/artefact/urand_spider.png	いいえ	
+Bloax	rltiles/item/armour/chain_mail1.png	同じパス	item/armour/chain_mail1.png	はい	dc_arm_chain_mail
+Bloax	rltiles/item/armour/chain_mail2.png	同じパス	item/armour/chain_mail2.png	はい	
+Bloax	rltiles/item/armour/chain_mail3.png	同じパス	item/armour/chain_mail3.png	はい	
+Bloax	rltiles/item/armour/green_dragon_scale_mail.png	今の木に無い			
+Bloax	rltiles/item/armour/green_dragon_scales.png	今の木に無い			
+Bloax	rltiles/item/armour/red_dragon_scale_mail.png	今の木に無い			
+Bloax	rltiles/item/armour/red_dragon_scales.png	今の木に無い			
+Bloax	rltiles/item/armour/troll_hide.png	同名のみ	player/body/troll_hide.png	はい	
+Bloax	rltiles/item/armour/troll_leather_armour.png	同じパス	item/armour/troll_leather_armour.png	はい	
+Bloax	rltiles/item/misc/misc_sack.png	同じパス	item/misc/misc_sack.png	はい	
+Bloax	rltiles/item/weapon/artefact/spwpn_demon_axe.png	同じパス	item/weapon/artefact/spwpn_demon_axe.png	いいえ	
+Bloax	rltiles/item/weapon/artefact/spwpn_singing_sword.png	同じパス	item/weapon/artefact/spwpn_singing_sword.png	いいえ	
+Bloax	rltiles/item/weapon/artefact/urand_dark_maul.png	同じパス	item/weapon/artefact/urand_dark_maul.png	いいえ	
+Bloax	rltiles/item/weapon/artefact/urand_leech.png	同じパス	item/weapon/artefact/urand_leech.png	いいえ	
+Bloax	rltiles/item/weapon/artefact/urand_spellbinder.png	同じパス	item/weapon/artefact/urand_spellbinder.png	いいえ	
+Bloax	rltiles/item/weapon/blessed_blade.png	同じパス	item/weapon/blessed_blade.png	はい	
+Bloax	rltiles/item/weapon/cutlass2.png	同名のみ	UNUSED/weapons/cutlass2.png	いいえ	
+Bloax	rltiles/item/weapon/dagger2.png	同じパス	item/weapon/dagger2.png	はい	
+Bloax	rltiles/item/weapon/demon_blade.png	同じパス	item/weapon/demon_blade.png	はい	
+Bloax	rltiles/item/weapon/demon_blade2.png	同じパス	item/weapon/demon_blade2.png	はい	
+Bloax	rltiles/item/weapon/demon_blade3.png	同じパス	item/weapon/demon_blade3.png	はい	
+Bloax	rltiles/item/weapon/demon_trident.png	同じパス	item/weapon/demon_trident.png	はい	
+Bloax	rltiles/item/weapon/demon_trident2.png	同じパス	item/weapon/demon_trident2.png	はい	
+Bloax	rltiles/item/weapon/demon_trident3.png	同じパス	item/weapon/demon_trident3.png	はい	
+Bloax	rltiles/item/weapon/demon_whip.png	同じパス	item/weapon/demon_whip.png	はい	
+Bloax	rltiles/item/weapon/demon_whip2.png	同じパス	item/weapon/demon_whip2.png	はい	
+Bloax	rltiles/item/weapon/demon_whip3.png	同じパス	item/weapon/demon_whip3.png	はい	
+Bloax	rltiles/item/weapon/greatsword2.png	同じパス	item/weapon/greatsword2.png	はい	
+Bloax	rltiles/item/weapon/long_sword2.png	同じパス	item/weapon/long_sword2.png	はい	
+Bloax	rltiles/item/weapon/ranged/triple_crossbow.png	同じパス	item/weapon/ranged/triple_crossbow.png	はい	
+Bloax	rltiles/item/weapon/ranged/triple_crossbow2.png	同じパス	item/weapon/ranged/triple_crossbow2.png	はい	
+Bloax	rltiles/item/weapon/sacred_scourge.png	同じパス	item/weapon/sacred_scourge.png	はい	
+Bloax	rltiles/item/weapon/scimitar2.png	同じパス	item/weapon/scimitar2.png	はい	
+Bloax	rltiles/item/weapon/trishula.png	同じパス	item/weapon/trishula.png	はい	
+Bloax	rltiles/mon/abyss/thrashing_horror.png	同じパス	mon/abyss/thrashing_horror.png	はい	
+Bloax	rltiles/mon/amorphous/acid_blob.png	同じパス	mon/amorphous/acid_blob.png	はい	
+Bloax	rltiles/mon/animals/butterfly2.png	同じパス	mon/animals/butterfly2.png	はい	
+Bloax	rltiles/mon/animals/butterfly5.png	同じパス	mon/animals/butterfly5.png	はい	
+Bloax	rltiles/mon/animals/ghost_crab.png	同じパス	mon/animals/ghost_crab.png	はい	
+Bloax	rltiles/mon/animals/goliath_beetle.png	同じパス	mon/animals/goliath_beetle.png	いいえ	
+Bloax	rltiles/mon/animals/green_rat.png	同じパス	mon/animals/green_rat.png	はい	
+Bloax	rltiles/mon/animals/grey_rat.png	今の木に無い			
+Bloax	rltiles/mon/animals/komodo_dragon.png	同じパス	mon/animals/komodo_dragon.png	はい	
+Bloax	rltiles/mon/animals/orange_rat.png	同じパス	mon/animals/orange_rat.png	はい	
+Bloax	rltiles/mon/animals/rat.png	同じパス	mon/animals/rat.png	はい	
+Bloax	rltiles/mon/animals/shard_shrike.png	同じパス	mon/animals/shard_shrike.png	はい	
+Bloax	rltiles/mon/animals/torpor_snail.png	同じパス	mon/animals/torpor_snail.png	はい	
+Bloax	rltiles/mon/aquatic/octopode.png	同じパス	mon/aquatic/octopode.png	はい	
+Bloax	rltiles/mon/aquatic/octopode_crusher.png	今の木に無い			
+Bloax	rltiles/mon/centaur-melee.png	同名のみ	mon/demihumanoids/taurs/centaur-melee.png	はい	
+Bloax	rltiles/mon/centaur.png	同名のみ	mon/demihumanoids/taurs/centaur.png	はい	
+Bloax	rltiles/mon/centaur_warrior-melee.png	同名のみ	mon/demihumanoids/taurs/centaur_warrior-melee.png	はい	
+Bloax	rltiles/mon/centaur_warrior.png	同名のみ	mon/demihumanoids/taurs/centaur_warrior.png	はい	
+Bloax	rltiles/mon/demons/lemure.png	同じパス	mon/demons/lemure.png	はい	
+Bloax	rltiles/mon/demons/shadow_demon.png	同じパス	mon/demons/shadow_demon.png	はい	
+Bloax	rltiles/mon/demons/tentacled_monstrosity.png	同名のみ	mon/aberrations/tentacled_monstrosity.png	はい	
+Bloax	rltiles/mon/demons/ugly_thing.png	同名のみ	mon/aberrations/ugly_thing.png	はい	
+Bloax	rltiles/mon/demons/ugly_thing1.png	同名のみ	mon/aberrations/ugly_thing1.png	はい	
+Bloax	rltiles/mon/demons/ugly_thing2.png	同名のみ	mon/aberrations/ugly_thing2.png	はい	
+Bloax	rltiles/mon/demons/ugly_thing3.png	同名のみ	mon/aberrations/ugly_thing3.png	はい	
+Bloax	rltiles/mon/demons/ugly_thing4.png	同名のみ	mon/aberrations/ugly_thing4.png	はい	
+Bloax	rltiles/mon/demons/ugly_thing5.png	同名のみ	mon/aberrations/ugly_thing5.png	はい	
+Bloax	rltiles/mon/demons/very_ugly_thing.png	同名のみ	mon/aberrations/very_ugly_thing.png	はい	
+Bloax	rltiles/mon/demons/very_ugly_thing1.png	同名のみ	mon/aberrations/very_ugly_thing1.png	はい	
+Bloax	rltiles/mon/demons/very_ugly_thing2.png	同名のみ	mon/aberrations/very_ugly_thing2.png	はい	
+Bloax	rltiles/mon/demons/very_ugly_thing3.png	同名のみ	mon/aberrations/very_ugly_thing3.png	はい	
+Bloax	rltiles/mon/demons/very_ugly_thing4.png	同名のみ	mon/aberrations/very_ugly_thing4.png	はい	
+Bloax	rltiles/mon/demons/very_ugly_thing5.png	同名のみ	mon/aberrations/very_ugly_thing5.png	はい	
+Bloax	rltiles/mon/dragons/death_drake.png	同じパス	mon/dragons/death_drake.png	はい	
+Bloax	rltiles/mon/dragons/fire_dragon.png	同じパス	mon/dragons/fire_dragon.png	はい	
+Bloax	rltiles/mon/dragons/fire_drake.png	今の木に無い			
+Bloax	rltiles/mon/dragons/iron_dragon.png	同じパス	mon/dragons/iron_dragon.png	はい	
+Bloax	rltiles/mon/dragons/lindwurm.png	同じパス	mon/dragons/lindwurm.png	はい	
+Bloax	rltiles/mon/dragons/mottled_dragon.png	今の木に無い			
+Bloax	rltiles/mon/dragons/steam_dragon.png	同じパス	mon/dragons/steam_dragon.png	はい	
+Bloax	rltiles/mon/dragons/swamp_drake.png	同じパス	mon/dragons/swamp_drake.png	はい	
+Bloax	rltiles/mon/dragons/wind_drake.png	同じパス	mon/dragons/wind_drake.png	はい	
+Bloax	rltiles/mon/fungi_plants/giant_spore.png	今の木に無い			
+Bloax	rltiles/mon/giant_orange_brain.png	今の木に無い			
+Bloax	rltiles/mon/holy/pearl_dragon.png	同じパス	mon/holy/pearl_dragon.png	はい	
+Bloax	rltiles/mon/nonliving/gargoyle.png	同じパス	mon/nonliving/gargoyle.png	はい	
+Bloax	rltiles/mon/nonliving/molten_gargoyle.png	同じパス	mon/nonliving/molten_gargoyle.png	はい	
+Bloax	rltiles/mon/nonliving/orb_of_destruction1.png	同じパス	mon/nonliving/orb_of_destruction1.png	はい	
+Bloax	rltiles/mon/nonliving/orb_of_destruction2.png	同じパス	mon/nonliving/orb_of_destruction2.png	はい	
+Bloax	rltiles/mon/nonliving/orb_of_destruction3.png	同じパス	mon/nonliving/orb_of_destruction3.png	はい	
+Bloax	rltiles/mon/nonliving/war_gargoyle.png	同じパス	mon/nonliving/war_gargoyle.png	はい	
+Bloax	rltiles/mon/sprint/meatlord.png	同じパス	mon/sprint/meatlord.png	はい	
+Bloax	rltiles/mon/statues/obsidian_statue.png	同じパス	mon/statues/obsidian_statue.png	はい	
+Bloax	rltiles/mon/undead/death_scarab.png	同じパス	mon/undead/death_scarab.png	はい	
+Bloax	rltiles/mon/undead/freezing_wraith.png	同じパス	mon/undead/freezing_wraith.png	はい	
+Bloax	rltiles/mon/undead/wraith.png	同じパス	mon/undead/wraith.png	はい	
+Bloax	rltiles/mon/undead/zombies/crab.png	今の木に無い			
+Bloax	rltiles/mon/undead/zombies/spiked_turtle.png	今の木に無い			
+Bloax	rltiles/mon/undead/zombies/turtle.png	今の木に無い			
+Bloax	rltiles/mon/unique/dowan.png	同じパス	mon/unique/dowan.png	はい	
+Bloax	rltiles/mon/unique/dowan2.png	同じパス	mon/unique/dowan2.png	はい	
+Bloax	rltiles/mon/unique/duvessa.png	同じパス	mon/unique/duvessa.png	はい	
+Bloax	rltiles/mon/unique/duvessa2.png	同じパス	mon/unique/duvessa2.png	はい	
+Bloax	rltiles/mon/unique/frances.png	同じパス	mon/unique/frances.png	はい	
+Bloax	rltiles/mon/unique/louise.png	同じパス	mon/unique/louise.png	はい	
+Bloax	rltiles/player/body/chainmail.png	同じパス	player/body/chainmail.png	はい	
+Bloax	rltiles/player/body/chainmail2.png	同じパス	player/body/chainmail2.png	はい	
+Bloax	rltiles/player/body/chainmail3.png	同じパス	player/body/chainmail3.png	はい	
+Bloax	rltiles/player/body/crystal_plate.png	同じパス	player/body/crystal_plate.png	はい	
+Bloax	rltiles/player/body/crystal_plate2.png	同じパス	player/body/crystal_plate2.png	はい	
+Bloax	rltiles/player/body/crystal_plate3.png	同じパス	player/body/crystal_plate3.png	はい	
+Bloax	rltiles/player/body/dragonarm_green.png	今の木に無い			
+Bloax	rltiles/player/body/dragonarm_red.png	同じパス	player/body/dragonarm_red.png	はい	
+Bloax	rltiles/player/body/dragonsc_green.png	今の木に無い			
+Bloax	rltiles/player/body/dragonsc_red.png	今の木に無い			
+Bloax	rltiles/player/body/lears_chain_mail.png	今の木に無い			
+Bloax	rltiles/player/body/lears_hauberk.png	同じパス	player/body/lears_hauberk.png	はい	
+Bloax	rltiles/player/body/leather_armour.png	同じパス	player/body/leather_armour.png	はい	
+Bloax	rltiles/player/body/leather_armour2.png	同じパス	player/body/leather_armour2.png	はい	
+Bloax	rltiles/player/body/leather_armour3.png	同じパス	player/body/leather_armour3.png	はい	
+Bloax	rltiles/player/body/moon_troll_leather_armour.png	同じパス	player/body/moon_troll_leather_armour.png	はい	
+Bloax	rltiles/player/body/plate.png	同じパス	player/body/plate.png	はい	
+Bloax	rltiles/player/body/plate2.png	同じパス	player/body/plate2.png	はい	
+Bloax	rltiles/player/body/plate3.png	同じパス	player/body/plate3.png	はい	
+Bloax	rltiles/player/body/ringmail.png	同じパス	player/body/ringmail.png	はい	
+Bloax	rltiles/player/body/ringmail2.png	同じパス	player/body/ringmail2.png	はい	
+Bloax	rltiles/player/body/ringmail3.png	同じパス	player/body/ringmail3.png	はい	
+Bloax	rltiles/player/body/scalemail.png	同じパス	player/body/scalemail.png	はい	
+Bloax	rltiles/player/body/scalemail2.png	同じパス	player/body/scalemail2.png	はい	
+Bloax	rltiles/player/body/scalemail3.png	同じパス	player/body/scalemail3.png	はい	
+Bloax	rltiles/player/body/scalemail_light.png	同じパス	player/body/scalemail_light.png	はい	
+Bloax	rltiles/player/body/troll_hide.png	同じパス	player/body/troll_hide.png	はい	
+Bloax	rltiles/player/body/troll_leather.png	同じパス	player/body/troll_leather.png	はい	
+Bloax	rltiles/player/hand1/artefact/capt_cutlass.png	同じパス	player/hand1/artefact/capt_cutlass.png	はい	
+Bloax	rltiles/player/hand1/artefact/dark_maul.png	同じパス	player/hand1/artefact/dark_maul.png	はい	
+Bloax	rltiles/player/hand1/artefact/demon_axe.png	同じパス	player/hand1/artefact/demon_axe.png	はい	
+Bloax	rltiles/player/hand1/artefact/leech.png	同じパス	player/hand1/artefact/leech.png	はい	
+Bloax	rltiles/player/hand1/artefact/singing_sword.png	同じパス	player/hand1/artefact/singing_sword.png	はい	
+Bloax	rltiles/player/hand1/artefact/spellbinder.png	同じパス	player/hand1/artefact/spellbinder.png	はい	
+Bloax	rltiles/player/hand2/shield_gong.png	今の木に無い			
+Bloax	rltiles/player/head/pumpkin.png	同じパス	player/head/pumpkin.png	はい	
+Bloax	rltiles/player/transform/lich_form_felid.png	同じパス	player/transform/lich_form_felid.png	はい	
+Bloax	rltiles/player/transform/spider_form.png	同じパス	player/transform/spider_form.png	はい	
+Bloax	rltiles/player/transform/statue_form_octopode.png	同じパス	player/transform/statue_form_octopode.png	はい	
+white_noise	dat/tiles/title_white_noise_grabbing_the_orb.png	今の木に無い			
+white_noise	rltiles/dngn/closed_door_crypt.png	同名のみ	dngn/doors/closed_door_crypt.png	はい	
+white_noise	rltiles/dngn/floor/crypt0.png	同じパス	dngn/floor/crypt0.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt1.png	同じパス	dngn/floor/crypt1.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt2.png	同じパス	dngn/floor/crypt2.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt3.png	同じパス	dngn/floor/crypt3.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt4.png	同じパス	dngn/floor/crypt4.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt5.png	同じパス	dngn/floor/crypt5.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt6.png	同じパス	dngn/floor/crypt6.png	いいえ	
+white_noise	rltiles/dngn/floor/crypt7.png	同じパス	dngn/floor/crypt7.png	いいえ	
+white_noise	rltiles/dngn/gate_closed_left_crypt.png	同名のみ	dngn/doors/gate_closed_left_crypt.png	はい	
+white_noise	rltiles/dngn/gate_closed_middle_crypt.png	同名のみ	dngn/doors/gate_closed_middle_crypt.png	はい	
+white_noise	rltiles/dngn/gate_closed_right_crypt.png	同名のみ	dngn/doors/gate_closed_right_crypt.png	はい	
+white_noise	rltiles/dngn/gate_open_left_crypt.png	同名のみ	dngn/doors/gate_open_left_crypt.png	はい	
+white_noise	rltiles/dngn/gate_open_middle_crypt.png	同名のみ	dngn/doors/gate_open_middle_crypt.png	はい	
+white_noise	rltiles/dngn/gate_open_right_crypt.png	同名のみ	dngn/doors/gate_open_right_crypt.png	はい	
+white_noise	rltiles/dngn/gateways/enter.png	同じパス	dngn/gateways/enter.png	はい	dc_gate_enter_legacy
+white_noise	rltiles/dngn/gateways/enter_elf.png	同じパス	dngn/gateways/enter_elf.png	はい	dc_gate_enter_elf
+white_noise	rltiles/dngn/gateways/enter_shoals.png	同じパス	dngn/gateways/enter_shoals.png	はい	dc_gate_enter_shoals
+white_noise	rltiles/dngn/gateways/enter_slime.png	同じパス	dngn/gateways/enter_slime.png	はい	dc_gate_enter_slime
+white_noise	rltiles/dngn/gateways/enter_swamp.png	同じパス	dngn/gateways/enter_swamp.png	はい	dc_gate_enter_swamp
+white_noise	rltiles/dngn/gateways/enter_temple.png	同じパス	dngn/gateways/enter_temple.png	はい	dc_gate_enter_temple
+white_noise	rltiles/dngn/gateways/escape_hatch_down.png	同じパス	dngn/gateways/escape_hatch_down.png	はい	dc_hatch_down
+white_noise	rltiles/dngn/gateways/escape_hatch_up.png	同じパス	dngn/gateways/escape_hatch_up.png	はい	dc_hatch_up
+white_noise	rltiles/dngn/gateways/exit_crypt.png	同じパス	dngn/gateways/exit_crypt.png	はい	dc_gate_exit_crypt
+white_noise	rltiles/dngn/gateways/exit_dungeon.png	同じパス	dngn/gateways/exit_dungeon.png	はい	dc_stairs_exit_dungeon
+white_noise	rltiles/dngn/gateways/exit_elf.png	同じパス	dngn/gateways/exit_elf.png	はい	dc_gate_exit_elf
+white_noise	rltiles/dngn/gateways/exit_lair.png	同じパス	dngn/gateways/exit_lair.png	はい	dc_gate_exit_lair
+white_noise	rltiles/dngn/gateways/exit_orc.png	同じパス	dngn/gateways/exit_orc.png	はい	dc_gate_exit_orc
+white_noise	rltiles/dngn/gateways/exit_shoals.png	同じパス	dngn/gateways/exit_shoals.png	はい	dc_gate_exit_shoals
+white_noise	rltiles/dngn/gateways/exit_slime.png	同じパス	dngn/gateways/exit_slime.png	はい	dc_gate_exit_slime
+white_noise	rltiles/dngn/gateways/exit_snake.png	同じパス	dngn/gateways/exit_snake.png	はい	dc_gate_exit_snake
+white_noise	rltiles/dngn/gateways/exit_spider.png	同じパス	dngn/gateways/exit_spider.png	はい	dc_gate_exit_spider
+white_noise	rltiles/dngn/gateways/exit_swamp.png	同じパス	dngn/gateways/exit_swamp.png	はい	dc_gate_exit_swamp
+white_noise	rltiles/dngn/gateways/exit_temple.png	同じパス	dngn/gateways/exit_temple.png	はい	dc_gate_exit_temple
+white_noise	rltiles/dngn/gateways/exit_tomb.png	同じパス	dngn/gateways/exit_tomb.png	はい	dc_gate_exit_tomb
+white_noise	rltiles/dngn/gateways/exit_vaults.png	同じパス	dngn/gateways/exit_vaults.png	はい	dc_gate_exit_vaults
+white_noise	rltiles/dngn/gateways/return.png	同じパス	dngn/gateways/return.png	はい	dc_gate_return_legacy
+white_noise	rltiles/dngn/gateways/sewer_portal.png	同じパス	dngn/gateways/sewer_portal.png	はい	dc_gate_sewer_portal
+white_noise	rltiles/dngn/gateways/sewer_portal_rusted.png	同じパス	dngn/gateways/sewer_portal_rusted.png	はい	
+white_noise	rltiles/dngn/gateways/shoals_stairs_down.png	同じパス	dngn/gateways/shoals_stairs_down.png	はい	
+white_noise	rltiles/dngn/gateways/shoals_stairs_up.png	同じパス	dngn/gateways/shoals_stairs_up.png	はい	
+white_noise	rltiles/dngn/gateways/stone_stairs_down.png	同じパス	dngn/gateways/stone_stairs_down.png	はい	dc_stairs_down,dc_stairs_up
+white_noise	rltiles/dngn/gateways/stone_stairs_up.png	同じパス	dngn/gateways/stone_stairs_up.png	はい	dc_stairs_up
+white_noise	rltiles/dngn/grate.png	同じパス	dngn/grate.png	はい	dc_grate
+white_noise	rltiles/dngn/open_door_crypt.png	同名のみ	dngn/doors/open_door_crypt.png	はい	
+white_noise	rltiles/dngn/shops/abandoned_shop.png	同じパス	dngn/shops/abandoned_shop.png	はい	dc_shop_abandoned
+white_noise	rltiles/dngn/shops/enter_shop.png	同じパス	dngn/shops/enter_shop.png	いいえ	
+white_noise	rltiles/dngn/shops/shop_armour.png	同じパス	dngn/shops/shop_armour.png	はい	dc_shop_armour
+white_noise	rltiles/dngn/shops/shop_books.png	同じパス	dngn/shops/shop_books.png	はい	dc_shop_book
+white_noise	rltiles/dngn/shops/shop_food.png	同じパス	dngn/shops/shop_food.png	はい	
+white_noise	rltiles/dngn/shops/shop_general.png	同じパス	dngn/shops/shop_general.png	はい	dc_shop_general
+white_noise	rltiles/dngn/shops/shop_jewellery.png	同じパス	dngn/shops/shop_jewellery.png	はい	dc_shop_jewellery
+white_noise	rltiles/dngn/shops/shop_potions.png	同じパス	dngn/shops/shop_potions.png	はい	dc_shop_potion
+white_noise	rltiles/dngn/shops/shop_scrolls.png	同じパス	dngn/shops/shop_scrolls.png	はい	dc_shop_scroll
+white_noise	rltiles/dngn/shops/shop_wands.png	同じパス	dngn/shops/shop_wands.png	はい	
+white_noise	rltiles/dngn/shops/shop_weapon.png	同じパス	dngn/shops/shop_weapon.png	はい	dc_shop_weapon
+white_noise	rltiles/dngn/vgate_closed_down_crypt.png	同名のみ	dngn/doors/vgate_closed_down_crypt.png	はい	
+white_noise	rltiles/dngn/vgate_closed_middle_crypt.png	同名のみ	dngn/doors/vgate_closed_middle_crypt.png	はい	
+white_noise	rltiles/dngn/vgate_closed_up_crypt.png	同名のみ	dngn/doors/vgate_closed_up_crypt.png	はい	
+white_noise	rltiles/dngn/vgate_open_down_crypt.png	同名のみ	dngn/doors/vgate_open_down_crypt.png	はい	
+white_noise	rltiles/dngn/vgate_open_middle_crypt.png	同名のみ	dngn/doors/vgate_open_middle_crypt.png	はい	
+white_noise	rltiles/dngn/vgate_open_up_crypt.png	同名のみ	dngn/doors/vgate_open_up_crypt.png	はい	
+white_noise	rltiles/dngn/wall/banners/banner1.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark0.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark1.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark2.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark3.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark4.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark5.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark6.png	今の木に無い			
+white_noise	rltiles/dngn/wall/brick_dark_1_0.png	同じパス	dngn/wall/brick_dark_1_0.png	はい	dc_wall_rock
+white_noise	rltiles/dngn/wall/brick_dark_1_1.png	同じパス	dngn/wall/brick_dark_1_1.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_10.png	同じパス	dngn/wall/brick_dark_1_10.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_11.png	同じパス	dngn/wall/brick_dark_1_11.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_2.png	同じパス	dngn/wall/brick_dark_1_2.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_3.png	同じパス	dngn/wall/brick_dark_1_3.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_4.png	同じパス	dngn/wall/brick_dark_1_4.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_5.png	同じパス	dngn/wall/brick_dark_1_5.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_6.png	同じパス	dngn/wall/brick_dark_1_6.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_7.png	同じパス	dngn/wall/brick_dark_1_7.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_8.png	同じパス	dngn/wall/brick_dark_1_8.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_1_9.png	同じパス	dngn/wall/brick_dark_1_9.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_0.png	同じパス	dngn/wall/brick_dark_2_0.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_1.png	同じパス	dngn/wall/brick_dark_2_1.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_10.png	同じパス	dngn/wall/brick_dark_2_10.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_11.png	同じパス	dngn/wall/brick_dark_2_11.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_2.png	同じパス	dngn/wall/brick_dark_2_2.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_3.png	同じパス	dngn/wall/brick_dark_2_3.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_4.png	同じパス	dngn/wall/brick_dark_2_4.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_5.png	同じパス	dngn/wall/brick_dark_2_5.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_6.png	同じパス	dngn/wall/brick_dark_2_6.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_7.png	同じパス	dngn/wall/brick_dark_2_7.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_8.png	同じパス	dngn/wall/brick_dark_2_8.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_2_9.png	同じパス	dngn/wall/brick_dark_2_9.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_0.png	同じパス	dngn/wall/brick_dark_3_0.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_1.png	同じパス	dngn/wall/brick_dark_3_1.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_10.png	同じパス	dngn/wall/brick_dark_3_10.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_11.png	同じパス	dngn/wall/brick_dark_3_11.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_12.png	同じパス	dngn/wall/brick_dark_3_12.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_13.png	同じパス	dngn/wall/brick_dark_3_13.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_14.png	同じパス	dngn/wall/brick_dark_3_14.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_15.png	同じパス	dngn/wall/brick_dark_3_15.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_2.png	同じパス	dngn/wall/brick_dark_3_2.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_3.png	同じパス	dngn/wall/brick_dark_3_3.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_4.png	同じパス	dngn/wall/brick_dark_3_4.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_5.png	同じパス	dngn/wall/brick_dark_3_5.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_6.png	同じパス	dngn/wall/brick_dark_3_6.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_7.png	同じパス	dngn/wall/brick_dark_3_7.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_8.png	同じパス	dngn/wall/brick_dark_3_8.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_3_9.png	同じパス	dngn/wall/brick_dark_3_9.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_0.png	同じパス	dngn/wall/brick_dark_4_0.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_1.png	同じパス	dngn/wall/brick_dark_4_1.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_10.png	同じパス	dngn/wall/brick_dark_4_10.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_11.png	同じパス	dngn/wall/brick_dark_4_11.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_12.png	同じパス	dngn/wall/brick_dark_4_12.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_13.png	同じパス	dngn/wall/brick_dark_4_13.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_14.png	同じパス	dngn/wall/brick_dark_4_14.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_15.png	同じパス	dngn/wall/brick_dark_4_15.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_2.png	同じパス	dngn/wall/brick_dark_4_2.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_3.png	同じパス	dngn/wall/brick_dark_4_3.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_4.png	同じパス	dngn/wall/brick_dark_4_4.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_5.png	同じパス	dngn/wall/brick_dark_4_5.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_6.png	同じパス	dngn/wall/brick_dark_4_6.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_7.png	同じパス	dngn/wall/brick_dark_4_7.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_8.png	同じパス	dngn/wall/brick_dark_4_8.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_4_9.png	同じパス	dngn/wall/brick_dark_4_9.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_0.png	同じパス	dngn/wall/brick_dark_5_0.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_1.png	同じパス	dngn/wall/brick_dark_5_1.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_10.png	同じパス	dngn/wall/brick_dark_5_10.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_11.png	同じパス	dngn/wall/brick_dark_5_11.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_12.png	同じパス	dngn/wall/brick_dark_5_12.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_13.png	同じパス	dngn/wall/brick_dark_5_13.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_14.png	同じパス	dngn/wall/brick_dark_5_14.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_15.png	同じパス	dngn/wall/brick_dark_5_15.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_16.png	同じパス	dngn/wall/brick_dark_5_16.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_17.png	同じパス	dngn/wall/brick_dark_5_17.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_18.png	同じパス	dngn/wall/brick_dark_5_18.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_19.png	同じパス	dngn/wall/brick_dark_5_19.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_2.png	同じパス	dngn/wall/brick_dark_5_2.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_3.png	同じパス	dngn/wall/brick_dark_5_3.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_4.png	同じパス	dngn/wall/brick_dark_5_4.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_5.png	同じパス	dngn/wall/brick_dark_5_5.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_6.png	同じパス	dngn/wall/brick_dark_5_6.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_7.png	同じパス	dngn/wall/brick_dark_5_7.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_8.png	同じパス	dngn/wall/brick_dark_5_8.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_5_9.png	同じパス	dngn/wall/brick_dark_5_9.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_0.png	同じパス	dngn/wall/brick_dark_6_0.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_1.png	同じパス	dngn/wall/brick_dark_6_1.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_10.png	同じパス	dngn/wall/brick_dark_6_10.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_11.png	同じパス	dngn/wall/brick_dark_6_11.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_12.png	同じパス	dngn/wall/brick_dark_6_12.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_13.png	同じパス	dngn/wall/brick_dark_6_13.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_14.png	同じパス	dngn/wall/brick_dark_6_14.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_15.png	同じパス	dngn/wall/brick_dark_6_15.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_16.png	同じパス	dngn/wall/brick_dark_6_16.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_17.png	同じパス	dngn/wall/brick_dark_6_17.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_18.png	同じパス	dngn/wall/brick_dark_6_18.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_19.png	同じパス	dngn/wall/brick_dark_6_19.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_2.png	同じパス	dngn/wall/brick_dark_6_2.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_3.png	同じパス	dngn/wall/brick_dark_6_3.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_4.png	同じパス	dngn/wall/brick_dark_6_4.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_5.png	同じパス	dngn/wall/brick_dark_6_5.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_6.png	同じパス	dngn/wall/brick_dark_6_6.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_7.png	同じパス	dngn/wall/brick_dark_6_7.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_8.png	同じパス	dngn/wall/brick_dark_6_8.png	はい	
+white_noise	rltiles/dngn/wall/brick_dark_6_9.png	同じパス	dngn/wall/brick_dark_6_9.png	はい	
+white_noise	rltiles/dngn/wall/crypt-metal0.png	同じパス	dngn/wall/crypt-metal0.png	はい	
+white_noise	rltiles/dngn/wall/crypt-metal1.png	同じパス	dngn/wall/crypt-metal1.png	はい	
+white_noise	rltiles/dngn/wall/crypt-metal2.png	同じパス	dngn/wall/crypt-metal2.png	はい	
+white_noise	rltiles/dngn/wall/crypt-metal3.png	同じパス	dngn/wall/crypt-metal3.png	はい	
+white_noise	rltiles/dngn/wall/crypt-metal4.png	同じパス	dngn/wall/crypt-metal4.png	はい	
+white_noise	rltiles/dngn/wall/crypt0.png	同じパス	dngn/wall/crypt0.png	はい	
+white_noise	rltiles/dngn/wall/crypt1.png	同じパス	dngn/wall/crypt1.png	はい	
+white_noise	rltiles/dngn/wall/crypt2.png	同じパス	dngn/wall/crypt2.png	はい	
+white_noise	rltiles/dngn/wall/crypt3.png	同じパス	dngn/wall/crypt3.png	はい	
+white_noise	rltiles/dngn/wall/crypt4.png	同じパス	dngn/wall/crypt4.png	はい	
+white_noise	rltiles/dngn/wall/crypt5.png	同じパス	dngn/wall/crypt5.png	はい	
+white_noise	rltiles/dngn/wall/crypt6.png	同じパス	dngn/wall/crypt6.png	はい	
+white_noise	rltiles/dngn/wall/crypt7.png	同じパス	dngn/wall/crypt7.png	はい	
+white_noise	rltiles/dngn/wall/crypt8.png	同じパス	dngn/wall/crypt8.png	はい	
+white_noise	rltiles/dngn/wall/crypt9.png	同じパス	dngn/wall/crypt9.png	はい	
+white_noise	rltiles/dngn/wall/stone_brick1.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick10.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick11.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick12.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick2.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick3.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick4.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick5.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick6.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick7.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick8.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_brick9.png	今の木に無い			
+white_noise	rltiles/dngn/wall/stone_smooth0.png	同じパス	dngn/wall/stone_smooth0.png	はい	
+white_noise	rltiles/dngn/wall/stone_smooth1.png	同じパス	dngn/wall/stone_smooth1.png	はい	
+white_noise	rltiles/dngn/wall/stone_smooth2.png	同じパス	dngn/wall/stone_smooth2.png	はい	
+white_noise	rltiles/dngn/wall/stone_smooth3.png	同じパス	dngn/wall/stone_smooth3.png	はい	
+white_noise	rltiles/dngn/wall/torches/torch0.png	今の木に無い			
+white_noise	rltiles/dngn/wall/torches/torch1.png	今の木に無い			
+white_noise	rltiles/dngn/wall/torches/torch2.png	同名のみ	player/hand2/misc/torch2.png	はい	
+white_noise	rltiles/dngn/wall/torches/torch3.png	今の木に無い			
+white_noise	rltiles/dngn/wall/torches/torch4.png	今の木に無い			
+white_noise	rltiles/dngn/water/deep_water_murky.png	同じパス	dngn/water/deep_water_murky.png	はい	
+white_noise	rltiles/dngn/water/deep_water_murky2.png	同じパス	dngn/water/deep_water_murky2.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_bl.png	同じパス	dngn/water/murky_bord_bl.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_br.png	同じパス	dngn/water/murky_bord_br.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_btm.png	同じパス	dngn/water/murky_bord_btm.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_lft.png	同じパス	dngn/water/murky_bord_lft.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_rgt.png	同じパス	dngn/water/murky_bord_rgt.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_tl.png	同じパス	dngn/water/murky_bord_tl.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_top.png	同じパス	dngn/water/murky_bord_top.png	はい	
+white_noise	rltiles/dngn/water/murky_bord_tr.png	同じパス	dngn/water/murky_bord_tr.png	はい	
+white_noise	rltiles/dngn/water/open_sea.png	同じパス	dngn/water/open_sea.png	はい	dc_water_open_sea
+white_noise	rltiles/dngn/water/open_sea2.png	同じパス	dngn/water/open_sea2.png	はい	
+white_noise	rltiles/dngn/water/shallow_water_murky.png	同じパス	dngn/water/shallow_water_murky.png	はい	
+white_noise	rltiles/dngn/water/shallow_water_murky2.png	同じパス	dngn/water/shallow_water_murky2.png	はい	
+white_noise	rltiles/dngn/water/shallow_water_murky_disturbance.png	同じパス	dngn/water/shallow_water_murky_disturbance.png	はい	
+white_noise	rltiles/dngn/water/shallow_water_murky_disturbance2.png	同じパス	dngn/water/shallow_water_murky_disturbance2.png	はい	
+white_noise	rltiles/effect/silenced.png	同じパス	effect/silenced.png	はい	
+white_noise	rltiles/item/food/bone.png	同名のみ	item/amulet/bone.png	はい	
+white_noise	rltiles/item/food/bone1.png	同じパス	item/food/bone1.png	はい	
+white_noise	rltiles/item/food/bone2.png	同じパス	item/food/bone2.png	はい	
+white_noise	rltiles/item/food/bone3.png	同じパス	item/food/bone3.png	はい	
+white_noise	rltiles/item/food/bone4.png	同じパス	item/food/bone4.png	はい	
+white_noise	rltiles/item/food/bone_humanoid1.png	同じパス	item/food/bone_humanoid1.png	はい	
+white_noise	rltiles/item/food/bone_humanoid2.png	同じパス	item/food/bone_humanoid2.png	はい	
+white_noise	rltiles/item/food/bone_humanoid3.png	同じパス	item/food/bone_humanoid3.png	はい	
+white_noise	rltiles/item/food/bone_humanoid4.png	同じパス	item/food/bone_humanoid4.png	はい	
+white_noise	rltiles/item/misc/misc_bottle.png	同じパス	item/misc/misc_bottle.png	はい	
+white_noise	rltiles/item/ring/agate.png	同じパス	item/ring/agate.png	はい	
+white_noise	rltiles/item/ring/artefact/urand_mage.png	同じパス	item/ring/artefact/urand_mage.png	いいえ	
+white_noise	rltiles/item/ring/artefact/urand_robustness.png	今の木に無い			
+white_noise	rltiles/item/ring/artefact/urand_shaolin.png	今の木に無い			
+white_noise	rltiles/item/ring/brass.png	同じパス	item/ring/brass.png	はい	
+white_noise	rltiles/item/ring/bronze.png	同じパス	item/ring/bronze.png	はい	
+white_noise	rltiles/item/ring/clay.png	同じパス	item/ring/clay.png	はい	
+white_noise	rltiles/item/ring/copper.png	同じパス	item/ring/copper.png	はい	
+white_noise	rltiles/item/ring/coral.png	同じパス	item/ring/coral.png	はい	
+white_noise	rltiles/item/ring/diamond.png	同じパス	item/ring/diamond.png	はい	
+white_noise	rltiles/item/ring/emerald.png	同じパス	item/ring/emerald.png	はい	
+white_noise	rltiles/item/ring/glass.png	同じパス	item/ring/glass.png	はい	
+white_noise	rltiles/item/ring/gold.png	同じパス	item/ring/gold.png	はい	
+white_noise	rltiles/item/ring/gold_blue.png	同じパス	item/ring/gold_blue.png	はい	
+white_noise	rltiles/item/ring/gold_green.png	同じパス	item/ring/gold_green.png	はい	
+white_noise	rltiles/item/ring/gold_red.png	同じパス	item/ring/gold_red.png	はい	
+white_noise	rltiles/item/ring/granite.png	同じパス	item/ring/granite.png	はい	
+white_noise	rltiles/item/ring/iron.png	同じパス	item/ring/iron.png	はい	
+white_noise	rltiles/item/ring/ivory.png	同じパス	item/ring/ivory.png	はい	
+white_noise	rltiles/item/ring/jade.png	同じパス	item/ring/jade.png	はい	
+white_noise	rltiles/item/ring/moonstone.png	同じパス	item/ring/moonstone.png	はい	
+white_noise	rltiles/item/ring/opal.png	同じパス	item/ring/opal.png	はい	
+white_noise	rltiles/item/ring/pearl.png	同じパス	item/ring/pearl.png	はい	
+white_noise	rltiles/item/ring/plain_black.png	同じパス	item/ring/plain_black.png	はい	
+white_noise	rltiles/item/ring/plain_red.png	同じパス	item/ring/plain_red.png	はい	
+white_noise	rltiles/item/ring/plain_yellow.png	同じパス	item/ring/plain_yellow.png	はい	
+white_noise	rltiles/item/ring/randarts/anvil.png	同じパス	item/ring/randarts/anvil.png	はい	
+white_noise	rltiles/item/ring/randarts/blood.png	同じパス	item/ring/randarts/blood.png	はい	
+white_noise	rltiles/item/ring/randarts/bronze-flower.png	同じパス	item/ring/randarts/bronze-flower.png	はい	
+white_noise	rltiles/item/ring/randarts/dark.png	同じパス	item/ring/randarts/dark.png	はい	
+white_noise	rltiles/item/ring/randarts/double.png	同じパス	item/ring/randarts/double.png	はい	
+white_noise	rltiles/item/ring/randarts/eye.png	同じパス	item/ring/randarts/eye.png	はい	
+white_noise	rltiles/item/ring/randarts/fire.png	同じパス	item/ring/randarts/fire.png	はい	
+white_noise	rltiles/item/ring/randarts/flower.png	同じパス	item/ring/randarts/flower.png	はい	
+white_noise	rltiles/item/ring/randarts/four-colour.png	同じパス	item/ring/randarts/four-colour.png	はい	
+white_noise	rltiles/item/ring/randarts/green.png	同じパス	item/ring/randarts/green.png	はい	
+white_noise	rltiles/item/ring/randarts/ice.png	同じパス	item/ring/randarts/ice.png	はい	
+white_noise	rltiles/item/ring/randarts/pink.png	同じパス	item/ring/randarts/pink.png	はい	
+white_noise	rltiles/item/ring/randarts/red-blue.png	同じパス	item/ring/randarts/red-blue.png	はい	
+white_noise	rltiles/item/ring/randarts/snake.png	同じパス	item/ring/randarts/snake.png	はい	
+white_noise	rltiles/item/ring/randarts/zircon.png	同じパス	item/ring/randarts/zircon.png	はい	
+white_noise	rltiles/item/ring/silver.png	同じパス	item/ring/silver.png	はい	
+white_noise	rltiles/item/ring/steel.png	同じパス	item/ring/steel.png	はい	
+white_noise	rltiles/item/ring/tiger_eye.png	同じパス	item/ring/tiger_eye.png	はい	
+white_noise	rltiles/item/ring/wooden.png	同じパス	item/ring/wooden.png	はい	
+white_noise	rltiles/mon/animals/alligator.png	同じパス	mon/animals/alligator.png	はい	
+white_noise	rltiles/mon/animals/crocodile.png	同じパス	mon/animals/crocodile.png	はい	
+white_noise	rltiles/mon/animals/giant_gecko.png	今の木に無い			
+white_noise	rltiles/mon/animals/vampire_bat.png	同じパス	mon/animals/vampire_bat.png	はい	
+white_noise	rltiles/mon/animals/warg.png	同じパス	mon/animals/warg.png	はい	
+white_noise	rltiles/mon/fungi_plants/active_ballistomycete.png	今の木に無い			
+white_noise	rltiles/mon/fungi_plants/ballistomycete.png	同じパス	mon/fungi_plants/ballistomycete.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus.png	今の木に無い			
+white_noise	rltiles/mon/fungi_plants/fungus1.png	同じパス	mon/fungi_plants/fungus1.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus2.png	同じパス	mon/fungi_plants/fungus2.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus3.png	同じパス	mon/fungi_plants/fungus3.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus4.png	同じパス	mon/fungi_plants/fungus4.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus5.png	同じパス	mon/fungi_plants/fungus5.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus6.png	同じパス	mon/fungi_plants/fungus6.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus7.png	同じパス	mon/fungi_plants/fungus7.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus8.png	同じパス	mon/fungi_plants/fungus8.png	はい	
+white_noise	rltiles/mon/fungi_plants/fungus9.png	同じパス	mon/fungi_plants/fungus9.png	はい	
+white_noise	rltiles/mon/fungi_plants/hyperactive_ballistomycete.png	今の木に無い			
+white_noise	rltiles/mon/fungi_plants/toadstool_left.png	同じパス	mon/fungi_plants/toadstool_left.png	はい	
+white_noise	rltiles/mon/fungi_plants/toadstool_right.png	同じパス	mon/fungi_plants/toadstool_right.png	はい	
+white_noise	rltiles/mon/undead/curse_toe.png	同じパス	mon/undead/curse_toe.png	はい	
+white_noise	rltiles/mon/undead/greater_mummy.png	今の木に無い			
+white_noise	rltiles/mon/undead/guardian_mummy.png	同じパス	mon/undead/guardian_mummy.png	はい	
+white_noise	rltiles/mon/undead/mummy.png	同じパス	mon/undead/mummy.png	はい	
+white_noise	rltiles/mon/undead/mummy_priest.png	同じパス	mon/undead/mummy_priest.png	はい	
+white_noise	rltiles/mon/unique/arachne.png	同じパス	mon/unique/arachne.png	はい	
+white_noise	rltiles/mon/unique/arachne_staveless.png	同じパス	mon/unique/arachne_staveless.png	はい	
+white_noise	rltiles/mon/unique/khufu.png	同じパス	mon/unique/khufu.png	はい	
+white_noise	rltiles/mon/unique/menkaure.png	同じパス	mon/unique/menkaure.png	はい	
+Aygtets	rltiles/mon/undead/skeletons/skeleton_drake.png	同名のみ	UNUSED/monsters/skeletons/skeleton_drake.png	いいえ	
+Aygtets	rltiles/mon/undead/skeletons/skeleton_lizard.png	同名のみ	UNUSED/monsters/skeletons/skeleton_lizard.png	いいえ	
+Aygtets	rltiles/mon/undead/skeletons/skeleton_quadruped_winged.png	同名のみ	UNUSED/monsters/skeletons/skeleton_quadruped_winged.png	いいえ	
+Aygtets	rltiles/mon/undead/skeletons/skeleton_turtle.png	同名のみ	UNUSED/monsters/skeletons/skeleton_turtle.png	いいえ	
+Pingas	rltiles/player/hand1/misc/tentacle.png	同名のみ	player/hand2/misc/tentacle.png	いいえ	
+Pingas	rltiles/player/hand2/misc/tentacle.png	同じパス	player/hand2/misc/tentacle.png	いいえ	
+Pingas	rltiles/item/armour/headgear/helmet_horned.png	今の木に無い			
+Pingas	rltiles/item/armour/headgear/helmet_plumed.png	今の木に無い			
+Pingas	rltiles/item/armour/headgear/helmet_spiked.png	今の木に無い			
+Pingas	rltiles/item/armour/headgear/helmet_winged.png	今の木に無い			
+Xion350	rltiles/player/base/gargoyle_brown_f.png	同じパス	player/base/gargoyle_brown_f.png	はい	
+Xion350	rltiles/player/base/gargoyle_brown_m.png	同じパス	player/base/gargoyle_brown_m.png	はい	
+Xion350	rltiles/player/base/gargoyle_red_f.png	同じパス	player/base/gargoyle_red_f.png	はい	
+Xion350	rltiles/player/base/gargoyle_red_m.png	同じパス	player/base/gargoyle_red_m.png	はい	
+benhanson	rltiles/mon/undead/zombies/zombie_beetle.png	同じパス	mon/undead/zombies/zombie_beetle.png	はい	
+Varsovie	rltiles/dc-mon/vault/ancient_champion.png	同名のみ	mon/undead/ancient_champion.png	はい	
+Varsovie	rltiles/dc-mon/vault/cloud_mage.png	同じパス	mon/vault/cloud_mage.png	はい	
+Varsovie	rltiles/dc-mon/vault/deep_elf_elementalist.png	今の木に無い			
+Varsovie	rltiles/dc-mon/vault/master_elementalist.png	同じパス	mon/vault/master_elementalist.png	はい	
+LordBistian	rltiles/gui/spells/earth/leda's_liquefaction.png	今の木に無い			
+Terence Reeves	rltiles/player/beard/full_black.png	同じパス	player/beard/full_black.png	はい	
+Terence Reeves	rltiles/player/beard/full_blonde.png	同じパス	player/beard/full_blonde.png	はい	
+Terence Reeves	rltiles/player/beard/full_brown.png	同じパス	player/beard/full_brown.png	はい	
+Terence Reeves	rltiles/player/beard/full_green.png	同じパス	player/beard/full_green.png	はい	
+Terence Reeves	rltiles/player/beard/full_red.png	同じパス	player/beard/full_red.png	はい	
+Terence Reeves	rltiles/player/beard/full_white.png	同じパス	player/beard/full_white.png	はい	
+Terence Reeves	rltiles/player/beard/garibaldi_black.png	同じパス	player/beard/garibaldi_black.png	はい	
+Terence Reeves	rltiles/player/beard/garibaldi_blonde.png	同じパス	player/beard/garibaldi_blonde.png	はい	
+Terence Reeves	rltiles/player/beard/garibaldi_brown.png	同じパス	player/beard/garibaldi_brown.png	はい	
+Terence Reeves	rltiles/player/beard/garibaldi_green.png	同じパス	player/beard/garibaldi_green.png	はい	
+Terence Reeves	rltiles/player/beard/garibaldi_red.png	同じパス	player/beard/garibaldi_red.png	はい	
+Terence Reeves	rltiles/player/beard/garibaldi_white.png	同じパス	player/beard/garibaldi_white.png	はい	
+Terence Reeves	rltiles/player/beard/long_black.png	同名のみ	player/hair/long_black.png	はい	
+Terence Reeves	rltiles/player/beard/long_green.png	今の木に無い			
+Terence Reeves	rltiles/player/beard/long_red.png	同名のみ	player/boots/long_red.png | player/hair/long_red.png | player/legs/long_red.png	はい | はい | はい	 |  | 
+Terence Reeves	rltiles/player/beard/long_white.png	同名のみ	player/hair/long_white.png | player/boots/long_white.png	はい | はい	 | 
+Terence Reeves	rltiles/player/beard/long_yellow.png	同名のみ	player/hair/long_yellow.png	はい	
+Terence Reeves	rltiles/player/beard/medium_black.png	同じパス	player/beard/medium_black.png	はい	
+Terence Reeves	rltiles/player/beard/medium_blonde.png	同じパス	player/beard/medium_blonde.png	はい	
+Terence Reeves	rltiles/player/beard/medium_brown.png	同じパス	player/beard/medium_brown.png	はい	
+Terence Reeves	rltiles/player/beard/medium_green.png	同じパス	player/beard/medium_green.png	はい	
+Terence Reeves	rltiles/player/beard/medium_red.png	同じパス	player/beard/medium_red.png	はい	
+Terence Reeves	rltiles/player/beard/medium_white.png	同じパス	player/beard/medium_white.png	はい	
+Terence Reeves	rltiles/player/beard/scarf.png	同じパス	player/beard/scarf.png	はい	
+Terence Reeves	rltiles/player/beard/short_black.png	同じパス	player/beard/short_black.png	はい	
+Terence Reeves	rltiles/player/beard/short_blonde.png	同じパス	player/beard/short_blonde.png	はい	
+Terence Reeves	rltiles/player/beard/short_brown.png	同じパス	player/beard/short_brown.png	はい	
+Terence Reeves	rltiles/player/beard/short_green.png	同じパス	player/beard/short_green.png	はい	
+Terence Reeves	rltiles/player/beard/short_red.png	同じパス	player/beard/short_red.png	はい	
+Terence Reeves	rltiles/player/beard/short_white.png	同じパス	player/beard/short_white.png	はい	
+Terence Reeves	rltiles/player/beard/short_yellow.png	同名のみ	player/hair/short_yellow.png	はい	
+Terence Reeves	rltiles/player/beard/stubble_black.png	同じパス	player/beard/stubble_black.png	はい	
+Terence Reeves	rltiles/player/beard/stubble_blonde.png	同じパス	player/beard/stubble_blonde.png	はい	
+Terence Reeves	rltiles/player/beard/stubble_brown.png	同じパス	player/beard/stubble_brown.png	はい	
+Terence Reeves	rltiles/player/beard/stubble_green.png	同じパス	player/beard/stubble_green.png	はい	
+Terence Reeves	rltiles/player/beard/stubble_red.png	同じパス	player/beard/stubble_red.png	はい	
+Terence Reeves	rltiles/player/beard/stubble_white.png	同じパス	player/beard/stubble_white.png	はい	
+chilie	rltiles/player/hand1/ankus.png	今の木に無い			
+Peileppe	crawl-ref/source/dat/tiles/title_peileppe_bloax_eye.png	今の木に無い			
+Psiweapon	crawl-ref/source/dat/tiles/title_psiweapon_roxanne.png	今の木に無い			
+Psiweapon	crawl-ref/source/dat/tiles/title_psiweapon_kiku.png	今の木に無い			
+ShadyAmish	crawl-ref/source/dat/tiles/title_shadyamish_octm.png	今の木に無い			
+Malwyn	rltiles/dc-mon/animals/firecrab.png	今の木に無い			
+Malwyn	rltiles/dc-mon/animals/porcupine.png	今の木に無い			
+pete@(略)	rltiles/dc-dngn/traps/cobweb_E.png	同じパス	dngn/traps/cobweb_E.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_ES.png	同じパス	dngn/traps/cobweb_ES.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_ESW.png	同じパス	dngn/traps/cobweb_ESW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_EW.png	同じパス	dngn/traps/cobweb_EW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_N.png	同じパス	dngn/traps/cobweb_N.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NE.png	同じパス	dngn/traps/cobweb_NE.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NES.png	同じパス	dngn/traps/cobweb_NES.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NESW.png	同じパス	dngn/traps/cobweb_NESW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NEW.png	同じパス	dngn/traps/cobweb_NEW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NS.png	同じパス	dngn/traps/cobweb_NS.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NSW.png	同じパス	dngn/traps/cobweb_NSW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_NW.png	同じパス	dngn/traps/cobweb_NW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_S.png	同じパス	dngn/traps/cobweb_S.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_SW.png	同じパス	dngn/traps/cobweb_SW.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_W.png	同じパス	dngn/traps/cobweb_W.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_none.png	今の木に無い			
+pete@(略)	rltiles/dc-dngn/traps/cobweb_none_0.png	同じパス	dngn/traps/cobweb_none_0.png	はい	dc_trap_web
+pete@(略)	rltiles/dc-dngn/traps/cobweb_none_1.png	同じパス	dngn/traps/cobweb_none_1.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_none_2.png	同じパス	dngn/traps/cobweb_none_2.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_none_3.png	同じパス	dngn/traps/cobweb_none_3.png	はい	
+pete@(略)	rltiles/dc-dngn/traps/cobweb_none_4.png	同じパス	dngn/traps/cobweb_none_4.png	はい	
+pete@(略)	rltiles/dc-mon/animals/boulder_beetle_rolling0.png	同じパス	mon/animals/boulder_beetle_rolling0.png	はい	
+pete@(略)	rltiles/dc-mon/animals/boulder_beetle_rolling1.png	同じパス	mon/animals/boulder_beetle_rolling1.png	はい	
+pete@(略)	rltiles/dc-mon/animals/boulder_beetle_rolling2.png	同じパス	mon/animals/boulder_beetle_rolling2.png	はい	
+pete@(略)	rltiles/dc-mon/animals/boulder_beetle_rolling3.png	今の木に無い			
+pete@(略)	rltiles/effect/cloud_dust_trail0.png	今の木に無い			
+pete@(略)	rltiles/effect/cloud_dust_trail1.png	今の木に無い			
+pete@(略)	rltiles/effect/cloud_dust_trail2.png	今の木に無い			
+pete@(略)	rltiles/effect/cloud_dust_trail3.png	今の木に無い			
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/iron0.png	同じパス	dngn/floor/iron0.png	はい	dc_floor_iron
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/iron1.png	同じパス	dngn/floor/iron1.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/iron2.png	同じパス	dngn/floor/iron2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/iron3.png	同じパス	dngn/floor/iron3.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/iron4.png	同じパス	dngn/floor/iron4.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/iron5.png	同じパス	dngn/floor/iron5.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/dngn_metal_wall_cracked.png	今の木に無い			
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron0-0.png	同じパス	dngn/wall/iron0-0.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron0-2.png	同じパス	dngn/wall/iron0-2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron0-4.png	同じパス	dngn/wall/iron0-4.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron1-1.png	同じパス	dngn/wall/iron1-1.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron1-2.png	同じパス	dngn/wall/iron1-2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron1-3.png	同じパス	dngn/wall/iron1-3.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron1-4.png	同じパス	dngn/wall/iron1-4.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron2-0.png	同じパス	dngn/wall/iron2-0.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron2-1.png	同じパス	dngn/wall/iron2-1.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron2-2.png	同じパス	dngn/wall/iron2-2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron2-3.png	同じパス	dngn/wall/iron2-3.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron2-4.png	同じパス	dngn/wall/iron2-4.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron3-0.png	同じパス	dngn/wall/iron3-0.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron3-1.png	同じパス	dngn/wall/iron3-1.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron3-2.png	同じパス	dngn/wall/iron3-2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron3-3.png	同じパス	dngn/wall/iron3-3.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron4-0.png	同じパス	dngn/wall/iron4-0.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron4-2.png	同じパス	dngn/wall/iron4-2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron4-3.png	同じパス	dngn/wall/iron4-3.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron5-0.png	同じパス	dngn/wall/iron5-0.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/wall/iron5-2.png	同じパス	dngn/wall/iron5-2.png	はい	
+evilmike - evilmike@(略)	rltiles/effect/silenced.png	同じパス	effect/silenced.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/rough_red0.png	同じパス	dngn/floor/rough_red0.png	はい	dc_floor_rough
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/rough_red1.png	同じパス	dngn/floor/rough_red1.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/rough_red2.png	同じパス	dngn/floor/rough_red2.png	はい	
+evilmike - evilmike@(略)	rltiles/dc-dngn/floor/rough_red3.png	同じパス	dngn/floor/rough_red3.png	はい	
+Sage - SageBasilMint@(略)	rltiles/gui/spells/translocation/singularity.png	同名のみ	UNUSED/spells/singularity.png	いいえ	
+Sage - SageBasilMint@(略)	rltiles/mon/nonliving/singularity1.png	同名のみ	UNUSED/monsters/singularity1.png	いいえ	
+Sage - SageBasilMint@(略)	rltiles/mon/nonliving/singularity2.png	同名のみ	UNUSED/monsters/singularity2.png	いいえ	
+Sage - SageBasilMint@(略)	rltiles/mon/nonliving/singularity3.png	同名のみ	UNUSED/monsters/singularity3.png	いいえ	
+Sage - SageBasilMint@(略)	rltiles/mon/nonliving/singularity4.png	同名のみ	UNUSED/monsters/singularity4.png	いいえ	
+Sage - SageBasilMint@(略)	rltiles/player/base/vine_stalker_f.png	今の木に無い			
+Sage - SageBasilMint@(略)	rltiles/player/base/vine_stalker_m.png	今の木に無い			
+Jon Knapp thann@(略)	rltiles/misc/icons/glowing.png	同名のみ	UNUSED/gui/glowing.png	いいえ	
+Jon Knapp thann@(略)	rltiles/misc/icons/slowed.png	同じパス	misc/icons/slowed.png	はい	
+Thomas Holmes thomas@(略)	rltiles/gui/startup/high_scores.png	同じパス	gui/startup/high_scores.png	はい	

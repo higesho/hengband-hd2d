@@ -1,0 +1,172 @@
+// dc_gate_exit_crypt — プレハブ定義（設計書 §7）。`dc_gate_exit_crypt.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 exit_crypt（dngn/gateways/exit_crypt）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_exit_crypt",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "D9D9D9",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "B6B6B6",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "D6D6D6",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "332E29",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "3C3630",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "120D15",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "150F19",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "4A4758",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "575467",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "030303",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "080808",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "090909",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "0B0B08",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "0D0D09",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "6A6A6A",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "7D7D7D",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "9AB6BE",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "B5D6E0",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "6D4735",
+      "material": "wood"
+    },
+    {
+      "i": 22,
+      "rgb": "80543E",
+      "material": "wood"
+    },
+    {
+      "i": 23,
+      "rgb": "9F6747",
+      "material": "metal"
+    },
+    {
+      "i": 24,
+      "rgb": "BB7954",
+      "material": "metal"
+    },
+    {
+      "i": 25,
+      "rgb": "CA795E",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "EE8E6F",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "481E1E",
+      "material": "wood"
+    },
+    {
+      "i": 28,
+      "rgb": "552323",
+      "material": "wood"
+    }
+  ]
+}

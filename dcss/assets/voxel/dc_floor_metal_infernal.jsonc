@@ -1,0 +1,87 @@
+// dc_floor_metal_infernal — プレハブ定義（設計書 §7）。`dc_floor_metal_infernal.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 metal_infernal0（dngn/floor/metal_infernal0）。タイルに合わせた凹凸（stone。出 311・へこみ 354。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_metal_infernal",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "61040C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "FF0000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "EB0000",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "920000",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "490000",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "B70000",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "610000",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "FF0064",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "FF007A",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "4C3D15",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "300000",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "461500",
+      "material": "stone"
+    }
+  ]
+}

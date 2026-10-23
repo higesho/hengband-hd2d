@@ -1,0 +1,72 @@
+// dc_tree_mangrove — プレハブ定義（設計書 §7）。`dc_tree_mangrove.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の木 mangrove1（dngn/trees/mangrove1）を絵から解釈して一から作った（幹・枝・葉。色は絵から。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_tree_mangrove",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "56612C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "65743A",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "254C25",
+      "material": "plant"
+    },
+    {
+      "i": 4,
+      "rgb": "2A542A",
+      "material": "plant"
+    },
+    {
+      "i": 5,
+      "rgb": "316030",
+      "material": "plant"
+    },
+    {
+      "i": 6,
+      "rgb": "214120",
+      "material": "plant"
+    },
+    {
+      "i": 7,
+      "rgb": "397239",
+      "material": "plant"
+    },
+    {
+      "i": 8,
+      "rgb": "182D17",
+      "material": "stone"
+    }
+  ]
+}

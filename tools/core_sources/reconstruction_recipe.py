@@ -83,9 +83,10 @@ def build(archives, targets, preferred, transforms=None):
         'all_source_hashes_match':True}
     return recipe,report
 
-def materialize(recipe,read):
+def materialize(recipe,read,max_files=10000):
+    """max_files: files / inputs の上限。既定は 10000。manifest の項に 'max_files' があるコア（DCSS）だけ、prepare.py が引き上げる。"""
     if recipe['schema']!=SCHEMA:raise ValueError('Unsupported source recipe version')
-    if len(recipe['inputs'])>10000 or len(recipe['additions'])>50000 or len(recipe['files'])>10000:raise ValueError('Source recipe count limit exceeded')
+    if len(recipe['inputs'])>max_files or len(recipe['additions'])>50000 or len(recipe['files'])>max_files:raise ValueError('Source recipe count limit exceeded')
     if any(not safe_path(path) for path in recipe['files']):raise ValueError('Unsafe output path')
     inputs={}
     for key,spec in recipe['inputs'].items():

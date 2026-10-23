@@ -1,0 +1,127 @@
+// dc_gate_exit_depths — プレハブ定義（設計書 §7）。`dc_gate_exit_depths.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 return_depths（dngn/gateways/return_depths）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_exit_depths",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "A9A9A9",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "909090",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "C7C7C7",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "AAAAAA",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "7E7E7E",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "949494",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "686868",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "7A7A7A",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "595958",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "696968",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "070707",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "080808",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "272727",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "2E2E2E",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "383838",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "424242",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "4A4A4A",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "575757",
+      "material": "stone"
+    }
+  ]
+}

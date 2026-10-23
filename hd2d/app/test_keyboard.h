@@ -32,6 +32,7 @@ private:
     std::uint64_t line_{ 0 };
     bool enabled_{ false };
     int virtual_controller_index_{ -1 };
+    void *virtual_joystick_{ nullptr }; // `SDL_Joystick*`（試験用のコントローラーの軸を書くために開いた。`pad_axis`）
 };
 
 TestKeyboard &test_keyboard();

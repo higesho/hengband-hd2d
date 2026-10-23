@@ -72,6 +72,12 @@ public:
      */
     bool handshake(std::string &err);
 
+    /*!
+     * @brief `hello.features` に足す申告（`handshake` より前に呼ぶ。既定は空＝従来の `hello` と同じ）。
+     * @details DCSS のように、コアが「画面がこれを受けるなら応じる」と待っているものだけが使う（`dcss-webtiles`・`dcss-ui`）。
+     */
+    void set_hello_features(std::vector<std::string> features) { this->hello_features_ = std::move(features); }
+
     //! 握手で受け取った `hello_ack`。`handshake` が成功した後だけ意味を持つ。
     const presentation::HelloAckMessage &hello_ack() const { return this->ack_; }
 
@@ -113,10 +119,26 @@ public:
     //! コアから届いた `pad_commands` / `sub_panel_kinds` / `asset_manifest` を全部持っていく。
     std::vector<std::string> take_table_payloads();
 
+    /*!
+     * @brief コアから届いた `webtiles`（原作のウェブタイル版の JSON をそのまま包んだもの。`line` の字）と `dcss_ui`（アダプタが足す値）を、**届いた順に捨てずに**全部持っていく。
+     * @details 申告 `dcss-webtiles` に応じるコア（DCSS）だけが送る。ほかのコアでは常に空。
+     */
+    std::vector<std::string> take_webtiles_payloads();
+
     bool send_ui_state(const presentation::UiStateMessage &message);
     bool send_input_events(const presentation::InputEventsMessage &message);
     bool send_keys(const presentation::KeysMessage &message);
     bool send_quit_request();
+    /*!
+     * @brief DCSS: 原作のウェブタイル版の制御メッセージ 1 行（例 `{"msg":"key","keycode":13}`）を `webtiles_input` で送る。
+     * @details 申告 `dcss-webtiles` を名乗ったコアだけが受ける。ほかのコアへは送らないこと。
+     */
+    bool send_webtiles_input(const std::string &line);
+    /*!
+     * @brief DCSS: アダプタへの型つきの要求（`dcss_action` ほか）を、JSON 1 通のまま送る。
+     * @param type 種別の名前（記録に残す字。`payload` の `t` と同じ）
+     */
+    bool send_dcss_message(const char *type, const std::string &payload);
 
     bool exit_received() const;
     int exit_code() const;
@@ -161,6 +183,7 @@ private:
     //! Win32 のハンドル・スレッド・同期を隠す（この宣言に `<windows.h>` を持ち込まないため）。
     std::shared_ptr<Impl> impl_;
     presentation::HelloAckMessage ack_;
+    std::vector<std::string> hello_features_;
 };
 
 } // namespace hd2d

@@ -1,0 +1,97 @@
+// dc_floor_snake_d — プレハブ定義（設計書 §7）。`dc_floor_snake_d.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 snake-d0（dngn/floor/snake-d0）。タイルに合わせた凹凸（stone。出 234・へこみ 273。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_snake_d",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "282706",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "25210F",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "362C07",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "272405",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "473609",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "464709",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "313607",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "59560B",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "151608",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "131602",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "352C16",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "353516",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "46391E",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "46441E",
+      "material": "stone"
+    }
+  ]
+}

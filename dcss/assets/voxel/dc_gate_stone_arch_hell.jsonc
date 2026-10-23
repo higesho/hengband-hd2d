@@ -1,0 +1,127 @@
+// dc_gate_stone_arch_hell — プレハブ定義（設計書 §7）。`dc_gate_stone_arch_hell.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 stone_arch_hell（dngn/gateways/stone_arch_hell）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_stone_arch_hell",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "D9D9D9",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "979797",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "B2B2B2",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "838383",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "9A9A9A",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "D2D2D2",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "F7F7F7",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "B30000",
+      "material": "wood"
+    },
+    {
+      "i": 11,
+      "rgb": "D90000",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "D30000",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "FF0000",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "590000",
+      "material": "wood"
+    },
+    {
+      "i": 15,
+      "rgb": "690000",
+      "material": "wood"
+    },
+    {
+      "i": 16,
+      "rgb": "860000",
+      "material": "wood"
+    },
+    {
+      "i": 17,
+      "rgb": "9E0000",
+      "material": "wood"
+    },
+    {
+      "i": 18,
+      "rgb": "7E7894",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "948DAE",
+      "material": "stone"
+    }
+  ]
+}

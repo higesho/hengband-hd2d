@@ -1,0 +1,127 @@
+// dc_trap_dispersal — プレハブ定義（設計書 §7）。`dc_trap_dispersal.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 dispersal（dngn/traps/dispersal）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_trap_dispersal",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "780D3A",
+      "material": "wood"
+    },
+    {
+      "i": 3,
+      "rgb": "540D1B",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "910F47",
+      "material": "wood"
+    },
+    {
+      "i": 5,
+      "rgb": "AB1253",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "660F20",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "781226",
+      "material": "wood"
+    },
+    {
+      "i": 8,
+      "rgb": "A30F6C",
+      "material": "wood"
+    },
+    {
+      "i": 9,
+      "rgb": "C61383",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "E9169A",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "C947A2",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "ED54BF",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "A63B86",
+      "material": "wood"
+    },
+    {
+      "i": 14,
+      "rgb": "D582BC",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "FB99DD",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "B06B9B",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "D8B3CE",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "FED3F2",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "B294A9",
+      "material": "stone"
+    }
+  ]
+}

@@ -24,6 +24,7 @@
 #include "sq_menu.h"
 #include "bridge/symbol_prompt.h"
 #include "bridge/look_screen_cover.h"
+#include "bridge/prompt_semantics.h"
 #include "frame/message_more.h"
 
 #include "sq_lang_c.h"
@@ -46,6 +47,15 @@ constexpr int kRowCells = 256;
 
 //! 積む選択肢の上限。荷物袋は 23 枠なので普通は届かない（暴走よけ）。
 constexpr std::size_t kMenuChoiceMax = 64;
+
+/*!
+ * 見る（照準の途中）の行 0 の案内が、名前が長くて桁の端で落ちたとき（共用の `presentation::look_row_was_cut()`）の操作を決める記憶。
+ * 落ちた行からは `(t)arget, (m)anual` など 5 通りのどれかを読めないので、直前のフレームで読めた案内を使う
+ * （`fill_row0_prompt()` がフレームごとに `now` を `prev` へ移して空にする）。直前に読めた案内が無ければ、見るの最初のモード
+ * （注目地点を順に見る `<space>, <tab>, <dir>`）にする。
+ */
+const char *g_look_info_now = nullptr;
+const char *g_look_info_prev = nullptr;
 
 /*!
  * @brief セル 1 個ぶんを空白とみなすか。**`sq_frame.cpp` の同名の関数と同じ規則**。
@@ -177,7 +187,16 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
             break;
         }
     }
+    /*
+     * 案内が読めなかったが、名前が長くて桁の端で落ちた見る行（頭は `You see `・`You are ` など。普通の伝言と同じ書き出しなので
+     * 表示の幅が 78 桁以上のときだけ。`msg_print()` は 72 桁で折り返すので、伝言がこの幅に届くことは無い）。
+     */
+    const bool cut_look = (look_info == nullptr) && presentation::look_row_was_cut(text, presentation::LookRowHeads::SilQ);
+    if (cut_look) {
+        look_info = (g_look_info_prev != nullptr) ? g_look_info_prev : kLookInfos[4];
+    }
     if (look_info != nullptr) {
+        g_look_info_now = look_info;
         // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない（`look_screen_cover.h`）。
         if (presentation::look_screen_cover().covered(sq_screen_depth())) {
             out = PromptBar{};
@@ -205,7 +224,9 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
          */
         {
             std::string subject;
-            if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
+            //! 案内が落ちた行は共用の道具で取る（落ちた案内の頭の `[` だけを外す。アイテムの `[4,+0]` は説明に残る）。
+            if(cut_look)subject=std::string(presentation::look_row_cut_subject(text));
+            else if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
             const auto trim=[](std::string &s){while(!s.empty()&&s.back()==' ')s.pop_back();std::size_t i=0;while(i<s.size()&&s[i]==' ')++i;s.erase(0,i);};
             trim(subject);
             for(const char *const more:{"-more-",reinterpret_cast<const char *>(u8"-続く-")}){const std::string m(more);if(subject.size()>=m.size()&&subject.compare(subject.size()-m.size(),m.size(),m)==0){subject.erase(subject.size()-m.size());trim(subject);}}
@@ -623,6 +644,8 @@ void fill_row0_prompt(GameFrame &frame)
 }
 static void fill_row0_prompt_inner(GameFrame &frame)
 {
+    g_look_info_prev = g_look_info_now; // 見るの案内の記憶（`g_look_info_now` の説明を参照）
+    g_look_info_now = nullptr;
     frame.prompt = PromptBar{};
     frame.numeric = NumericInput{};
 
@@ -885,6 +908,28 @@ int menu_semantics_selftest_impl()
         check(parse_prompt_line(info_row("(t)arget, (a)uto, <dir>"),look)&&look.choices.size()==2&&look.choices[0].key=='a'&&look.choices[1].key=='t',"look auto mode (t)arget, (a)uto");
         check(parse_prompt_line(info_row("<space>, <tab>, <dir>"),look)&&look.choices.size()==2&&look.choices[0].key==' '&&look.choices[1].key=='\t',"look interesting <space>, <tab>");
         check(!parse_prompt_line("You see a floor.",look),"look text without info rejected");
+    }
+    {
+        // 名前が長くて、見る（照準の途中）の行 0 が Term の幅（80 桁）で切れ、末尾の案内が落ちた行でも帯が出る（共用の `presentation::look_row_was_cut()`）。
+        // 案内は読めないので、直前のフレームで読めた案内（`g_look_info_prev`）の操作を出す。無ければ注目地点を順に見る `<space>, <tab>`。
+        PromptBar look;
+        const std::string item_cut="You see a Pair of Leather Boots of Stealth (+1) [3,+0] <+2> that you are wearing"; // 80 桁。案内が丸ごと落ちた
+        const std::string monster_cut="You see a Very Large and Extremely Dangerous Cave Troll Chieftain (unhurt, asleep) [(r)e"; // 案内の頭が残った
+        g_look_info_prev=nullptr;
+        check(parse_prompt_line(item_cut,look)&&look.choices.size()==2&&look.choices[0].key==' '&&look.choices[1].key=='\t'
+              &&look.text_utf8.find("[3,+0]")!=std::string::npos&&look.text_utf8.find("[",look.text_utf8.find("[3,+0]")+6)==static_cast<std::size_t>(look.choices[0].begin)-1,
+              "cut look row without a remembered guide uses <space>, <tab> and keeps the item bracket");
+        g_look_info_prev="(t)arget, (m)anual, <dir>";
+        check(parse_prompt_line(monster_cut,look)&&look.choices.size()==2&&look.choices[0].key=='m'&&look.choices[1].key=='t'
+              &&look.text_utf8.find("(unhurt, asleep)")!=std::string::npos&&look.text_utf8.find("[(r)e")==std::string::npos,
+              "cut look row uses the remembered guide and drops the clipped guide");
+        g_look_info_prev=nullptr;
+        check(!parse_prompt_line(item_cut.substr(0,77),look),"look row narrower than 78 columns is not a cut look row (a message)");
+        check(!parse_prompt_line(std::string("You see a Pair of Leather Boots of Stealth (+1) [3,+0] <+2> that you are wearing now -more-"),look),"-more- line is not a cut look row");
+        check(parse_prompt_line(std::string("You see a Pair of Leather Boots of Stealth (+1) [3,+0] <+2> [(r)ecall, (m)anual, <dir>]"),look)&&look.choices.size()==1&&look.choices[0].key=='m',
+              "a long row that still has its whole guide reads the keys from the row");
+        g_look_info_now=nullptr;
+        g_look_info_prev=nullptr;
     }
     {
         // タイトルの取消（判-17）：タイトルが入力を待つ間だけ Esc を「やめる」（d）に読み替える。ほかのキーと、待っていない間の Esc は素通し。

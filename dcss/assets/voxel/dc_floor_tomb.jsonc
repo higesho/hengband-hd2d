@@ -1,0 +1,67 @@
+// dc_floor_tomb — プレハブ定義（設計書 §7）。`dc_floor_tomb.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 tomb0（dngn/floor/tomb0）。タイルに合わせた凹凸（stone。出 296・へこみ 424。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_tomb",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "242424",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "5E5E5E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "747474",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "4A4A4A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "2E2E2E",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "3D3D3D",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "161616",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "232323",
+      "material": "stone"
+    }
+  ]
+}

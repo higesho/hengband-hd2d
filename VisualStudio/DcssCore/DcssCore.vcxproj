@@ -1,0 +1,603 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  DcssCore.vcxproj ── Dungeon Crawl Stone Soup（日本語版）のコア側の実行ファイル。
+
+  正本: dcss/adapter/README.md
+
+  原作は日本語版のフォーク（github.com/higesho/crawl-ja、タグ 0.34.1-ja4）。
+  **原作の .cc は一切書き換えない。**組み立てに使う物は次の 3 つ。
+
+    DcssSourceRoot   原作の crawl-ref/source（.cc をここから読む）
+    DcssGenRoot      生成物の置き場（util/gen-all.py と tilegen の出力。species-data.h・mon-data.h・
+                     config.h・build.h・rltiles/tiledef-*.cc など）。dcss/adapter/prepare_gen.py が作る。
+                     原作の写しを汚さないよう、既定では写しの複製を別の場所に作ってそこへ出す。
+    DcssAdapterRoot  このリポジトリの dcss/adapter（端末の層とソケットの互換版）
+
+  ## 組み方
+  原作のウェブタイル版（USE_TILE_WEB）を、Windows で動く形に差し替えて組む。
+    - 端末の層（curses / libw32c）は dcss/adapter/libhd2d.cpp が置き換える。
+      libunix.cc の -headless の分岐と同じ振る舞いで、描画せず tiles.* に伝えるだけ。
+    - tileweb.cc の POSIX のソケット・select・シグナルは、dcss/adapter/shim/ の互換ヘッダ
+      （sys/socket.h・sys/un.h・sys/time.h）が宣言し、dcss_posix_shim.cpp が実体を持つ。
+      送り先は標準出力（または環境変数 DCSS_JSON_OUT のファイル）、受け口は標準入力の行。
+  付属ライブラリ（lua・sqlite・pcre・zlib）は原作の contrib の C ソースを直接この exe に入れる。
+
+  ## 構成は x64 だけ
+  画面（HengbandHd2d.exe）は x64。コアは別プロセスでパイプはバイト列なので混在しても
+  よいが、DCSS は 64 ビットの整数を多用するので x64 に揃える。Hengband.sln にはまだ載せていない。
+
+  ## 組む前に
+    python dcss/adapter/prepare_gen.py に短い作業フォルダを渡して実行（perl・python・PyYAML・cl が要る。dcss/adapter/README.md 参照）
+  その後
+    MSBuild DcssCore.vcxproj /p:Configuration=Release /p:Platform=x64 /p:DcssGenRoot=<作業フォルダ>\gen
+-->
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5C0D1B7E-3A42-4F6B-8E19-6D2A7C94B1F3}</ProjectGuid>
+    <RootNamespace>DcssCore</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <!-- 原作の置き場。既定は tools/core_sources/prepare.py が作る roguelike-cores\build-sources\dcss（原作の写しは書き換えない。
+ 「原作の再構成と Linux」）。 -->
+    <DcssSourceRoot Condition="'$(DcssSourceRoot)'=='' And '$(DCSS_SOURCE_ROOT)'!=''">$(DCSS_SOURCE_ROOT)</DcssSourceRoot>
+    <DcssSourceRoot Condition="'$(DcssSourceRoot)'==''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\roguelike-cores\build-sources\dcss\crawl-ref\source'))</DcssSourceRoot>
+    <!-- 生成物の置き場。既定は原作の置き場そのもの（その場で生成する運用のとき）。 -->
+    <DcssGenRoot Condition="'$(DcssGenRoot)'=='' And '$(DCSS_GEN_ROOT)'!=''">$(DCSS_GEN_ROOT)</DcssGenRoot>
+    <DcssGenRoot Condition="'$(DcssGenRoot)'==''">$(DcssSourceRoot)</DcssGenRoot>
+    <DcssAdapterRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\dcss\adapter'))</DcssAdapterRoot>
+    <DcssRepoRoot>$([MSBuild]::EnsureTrailingSlash('$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..'))'))</DcssRepoRoot>
+    <!-- 成果物はリポジトリ直下（ほかのコアと同格）。検査では /p:OutDir= で一時フォルダへ向ける（コマンドラインの値が勝つので、ここは無条件に書く。
+         条件つきだと MSBuild の既定の OutDir（x64\Release\）が先に入っていて効かなかった）。中間物は Release-x64\（.gitignore 済み）。 -->
+    <OutDir>..\..\</OutDir>
+    <IntDir>$(Configuration)-x64\</IntDir>
+    <TargetName>DcssCore</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <Target Name="RequireDcssSources" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(DcssSourceRoot)\AppHdr.cc')" Text="DCSS の原作ソースが見つかりません: $(DcssSourceRoot)。/p:DcssSourceRoot= で crawl-ref/source を指してください。" />
+    <Error Condition="!Exists('$(DcssGenRoot)\mon-data.h')" Text="DCSS の生成物がありません: $(DcssGenRoot)。先に python dcss/adapter/prepare_gen.py --work &lt;作業フォルダ&gt; を実行し、/p:DcssGenRoot=&lt;作業フォルダ&gt;\gen を指してください。" />
+  </Target>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <SDLCheck>false</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>AppHdr.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <ConformanceMode>false</ConformanceMode>
+      <AdditionalOptions>/utf-8 /bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4138;4244;4267;4996;4146;4309;4005;4819;4101;4018;4800;4834;4455;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <!--
+        並びが効く。生成物 → 互換ヘッダ（sys/*.h）→ 原作 の順。原作に同名の物は無いが、
+        sys/un.h・sys/socket.h・sys/time.h は MSVC に無いので、このフォルダの物が使われる。
+        MSVC/include は原作が Windows 用に持っている sys/param.h。
+      -->
+      <AdditionalIncludeDirectories>$(DcssGenRoot);$(DcssGenRoot)\rltiles;$(DcssAdapterRoot);$(DcssAdapterRoot)\shim;$(DcssSourceRoot);$(DcssSourceRoot)\MSVC\include;$(DcssSourceRoot)\rltiles;$(DcssSourceRoot)\contrib\lua\src;$(DcssSourceRoot)\contrib\sqlite;$(DcssSourceRoot)\contrib\pcre;$(DcssSourceRoot)\contrib\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_USE_MATH_DEFINES;_ALLOW_KEYWORD_MACROS;__STDC_LIMIT_MACROS;WIZARD;CLUA_BINDINGS;USE_TILE;USE_TILE_WEB;PCRE_STATIC;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <!-- 窓は持たない。標準出力がプロトコル（いまは仮の JSON の行）、標準エラーがログ。 -->
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>winmm.lib;shell32.lib;user32.lib;advapi32.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+    </Link>
+  </ItemDefinitionGroup>
+  <!-- 原作の C++。Makefile.obj の OBJECTS + TILES_OBJECTS + WEBTILES_OBJECTS から、
+       tileweb.cc（下で別扱い）と端末の層 libunix.cc / libw32c.cc を除き、main.cc と version.cc を足した物。
+       端末の層は dcss/adapter/libhd2d.cpp が置き換える。 -->
+  <ItemGroup>
+    <!-- 原作の AppHdr.cc は pcre.lib などのリンク指示を持つので使わず、同じ役の dcss_pch.cpp を使う。 -->
+    <ClCompile Include="$(DcssAdapterRoot)\dcss_pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssSourceRoot)\ability.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\abyss.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\acquire.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\act-iter.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\actor-los.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\actor.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\adjust.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\areas.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\arena.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\artefact.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\attack.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\attitude-change.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\beam.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\behold.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\bitary.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\bloodspatter.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\branch-data-json.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\branch.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\chardump.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\cio.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\cloud.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\clua.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\cluautil.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\colour.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\command.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\coord-circle.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\coord.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\coordit.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\corpse.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\crash.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ctest.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dactions.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\database.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dbg-asrt.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dbg-maps.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dbg-objstat.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dbg-scan.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dbg-util.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\death-curse.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\decks.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\delay.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\describe-god.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\describe-spells.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\describe.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgl-message.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-delve.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-event.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-height.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-irregular-box.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-layouts.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-overview.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-proclayouts.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-shoals.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dgn-swamp.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\directn.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dlua.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\domino.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\dungeon.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\end.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\english.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\errors.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\evoke.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\exclude.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\exercise.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\fearmonger.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\feature.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\fight.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\files.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\fineff.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\format.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\fprop.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\game-options.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\geom2d.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ghost.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-abil.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-blessing.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-companions.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-conduct.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-item.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-menu.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-passive.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-prayer.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\god-wrath.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\hash.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\hints.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\hiscores.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\initfile.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\invent.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\item-name.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\item-prop.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\item-use.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\items.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\japanese.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\jobs.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\json.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\kills.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\known-items.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-colour.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-crawl.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-debug.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgn.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgnbld.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgnevt.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgngrd.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgnit.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgnlvl.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgnmon.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-dgntil.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-feat.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-file.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-global.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-item.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-los.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-mapgrd.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-mapmrk.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-moninf.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-mons.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-option.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-spells.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-subvault.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-travel.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-view.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-wiz.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\l-you.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\lang-fake.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\lev-pand.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\libutil.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\loading-screen.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\lookup-help.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\los-def.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\los.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\losglobal.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\losparam.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\luaterp.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\macro.cc" />
+    <!-- main.cc: ウェブタイル版の UTF-8 ロケール確認が nl_langinfo(CODESET) を使う（Windows には無い）。
+         互換の定義を /FI で先頭に差す。強制インクルードはプリコンパイル済みヘッダと両立しないので、このファイルだけ使わない。 -->
+    <ClCompile Include="$(DcssSourceRoot)\main.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>$(DcssAdapterRoot)\shim\dcss_force_langinfo.h</ForcedIncludeFiles>
+      <!-- 原作の main() は dcss_original_main に名前を替える（原作の行は書き換えない）。本物の main() は dcss/adapter/dcss_main.cpp。 -->
+      <PreprocessorDefinitions>main=dcss_original_main;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(DcssSourceRoot)\makeitem.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\map-knowledge.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mapdef.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mapmark.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\maps.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\maybe-bool.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\melee-attack.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\menu.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\message-stream.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\message.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\misc.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-abil.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-act.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-aura.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-behv.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-cast.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-clone.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-death.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-ench.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-explode.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-gear.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-info.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-movetarget.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-pathfind.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-pick.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-place.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-poly.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-project.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-speak.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-tentacle.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-transit.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mon-util.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\monster.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\movement.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\mutation.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\nearby-danger.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\newgame.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ng-init-branches.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ng-init.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ng-input.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ng-restr.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ng-setup.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ng-wanderer.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\notes.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\orb.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ouch.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\outer-menu.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\output.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\package.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\pattern.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\pcg.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\perlin.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\piety-info.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\place-info.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\place.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\playable.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\player-act.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\player-equip.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\player-notices.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\player-reacts.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\player-stats.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\player.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\potion.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\precision-menu.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\prompt.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\quiver.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\randbook.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\random-var.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\random.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ranged-attack.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ray.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\religion.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\scroller.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\shopping.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\shout.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\show.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\showsymb.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\skill-menu.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\skills.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\sound.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\species.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-book.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-cast.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-clouds.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-damage.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-goditem.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-miscast.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-monench.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-other.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-selfench.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-summoning.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-transloc.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-util.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-vortex.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\spl-zap.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\sprint.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\sqldbm.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\stairs.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\startup.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\stash.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\state.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\status.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\stepdown.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\store.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\stringutil.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\syscalls.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tags.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\target-compass.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\target.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\teleport.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\terrain.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\throw.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tilecell.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tiledoll.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tilemcache.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tilepick-p.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tilepick.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tileview.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tileweb-text.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\timed-effects.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\transform.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\traps.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\travel.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\tutorial.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\ui.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\uncancel.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\unicode.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\version.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\view.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\viewchar.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\viewgeom.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\viewmap.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wcwidth.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wiz-dgn.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wiz-dump.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wiz-fsim.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wiz-item.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wiz-mon.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wiz-you.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\wizard.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\worley.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\xom.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\zot.cc" />
+    <ClCompile Include="$(DcssSourceRoot)\prebuilt\levcomp.lex.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>YY_NO_UNISTD_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="$(DcssSourceRoot)\prebuilt\levcomp.tab.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <!-- 生成物（タイルの表）。prepare_gen.py が util/gen-all.py と tilegen で作り、DcssGenRoot に置く。 -->
+  <ItemGroup>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-dngn.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-feat.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-floor.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-gui.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-icons.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-main.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-player.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-wall.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(DcssGenRoot)\rltiles\tiledef-unrand.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <!-- ウェブタイル版の送受信（tileweb.cc）。POSIX のソケットまわりは dcss/adapter/shim の互換ヘッダで差し替える。
+       _WINSOCKAPI_ は windows.h が winsock.h を引き込んで timeval・select を二重に宣言するのを防ぐ。
+       プリコンパイル済みヘッダは使わない（この定義だけ他のファイルと違うため）。 -->
+  <ItemGroup>
+    <ClCompile Include="$(DcssSourceRoot)\tileweb.cc">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemGroup>
+  <!-- アダプタ（このリポジトリの新規コード）。 -->
+  <ItemGroup>
+    <ClCompile Include="$(DcssAdapterRoot)\libhd2d.cpp" />
+    <ClCompile Include="$(DcssAdapterRoot)\dcss_posix_shim.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PreprocessorDefinitions>_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemGroup>
+  <!--
+    プロトコル v1 の層（画面 HengbandHd2d.exe とパイプで話す）。原作のヘッダは 1 本も引かない別の TU（C++20）。
+    共用の TU（presentation/frame の符号化、platform/portable）は他のコアと同じファイルをそのまま組む（1 バイトも変えない）。
+    プリコンパイル済みヘッダは使わない。BOM の無い UTF-8 なので /utf-8（TobandCore.vcxproj の /source-charset:utf-8 と同じ理由。この exe は全体が /utf-8）。
+  -->
+  <ItemGroup>
+    <ClCompile Include="$(DcssAdapterRoot)\dcss_main.cpp" />
+    <ClCompile Include="$(DcssAdapterRoot)\dcss_frame.cpp" />
+    <ClCompile Include="$(DcssRepoRoot)presentation\frame\frame_codec.cpp" />
+    <ClCompile Include="$(DcssRepoRoot)presentation\frame\protocol_messages.cpp" />
+    <ClCompile Include="$(DcssRepoRoot)presentation\frame\protocol_transport.cpp" />
+    <ClCompile Include="$(DcssRepoRoot)platform\portable\legacy_os.cpp" />
+    <ClCompile Include="$(DcssRepoRoot)presentation\bridge\input_event_adapter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- 上の 7 本だけに掛ける設定（原作の C++14 の設定を上書きする）。 -->
+    <ClCompile Update="$(DcssAdapterRoot)\dcss_main.cpp;$(DcssAdapterRoot)\dcss_frame.cpp;$(DcssRepoRoot)presentation\frame\frame_codec.cpp;$(DcssRepoRoot)presentation\frame\protocol_messages.cpp;$(DcssRepoRoot)presentation\frame\protocol_transport.cpp;$(DcssRepoRoot)platform\portable\legacy_os.cpp;$(DcssRepoRoot)presentation\bridge\input_event_adapter.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>/utf-8 /bigobj</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(DcssAdapterRoot);$(DcssRepoRoot)presentation;$(DcssRepoRoot)platform;$(DcssRepoRoot)third_party\cpp\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemGroup>
+  <!-- 付属ライブラリ（C）。原作の contrib/MSVC/*.vcxproj と同じ内容を、この 1 つの exe に直接入れる。 -->
+  <ItemGroup>
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lapi.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lauxlib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lbaselib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lcode.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lcorolib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lctype.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ldblib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ldebug.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ldo.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ldump.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lfunc.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lgc.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\linit.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\liolib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\llex.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lmathlib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lmem.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\loadlib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lobject.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lopcodes.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\loslib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lparser.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lstate.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lstring.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lstrlib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ltable.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ltablib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\ltm.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lundump.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lutf8lib.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lvm.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\lua\src\lzio.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\sqlite\sqlite3.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_chartables.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_compile.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_config.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_dfa_exec.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_exec.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_fullinfo.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_get.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_globals.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_maketables.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_newline.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_ord2utf8.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_refcount.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_study.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_tables.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_ucd.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_valid_utf8.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_version.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\pcre\pcre_xclass.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\adler32.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\compress.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\crc32.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\deflate.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\infback.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\inffast.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\inflate.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\inftrees.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\trees.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\uncompr.c" />
+    <ClCompile Include="$(DcssSourceRoot)\contrib\zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Update="$(DcssSourceRoot)\contrib\**\*.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAs>CompileAsC</CompileAs>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <AdditionalIncludeDirectories>$(DcssSourceRoot)\contrib\lua\src;$(DcssSourceRoot)\contrib\sqlite;$(DcssSourceRoot)\contrib\pcre;$(DcssSourceRoot)\contrib\zlib</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <AdditionalOptions></AdditionalOptions>
+    </ClCompile>
+    <ClCompile Update="$(DcssSourceRoot)\contrib\sqlite\sqlite3.c">
+      <PreprocessorDefinitions>SQLITE_OMIT_AUTHORIZATION;SQLITE_OMIT_AUTOVACUUM;SQLITE_OMIT_COMPLETE;SQLITE_OMIT_BLOB_LITERAL;SQLITE_OMIT_COMPOUND_SELECT;SQLITE_OMIT_CONFLICT_CLAUSE;SQLITE_OMIT_DATETIME_FUNCS;SQLITE_OMIT_EXPLAIN;SQLITE_OMIT_INTEGRITY_CHECK;SQLITE_OMIT_PAGER_PRAGMAS;SQLITE_OMIT_PROGRESS_CALLBACK;SQLITE_OMIT_SCHEMA_PRAGMAS;SQLITE_OMIT_SCHEMA_VERSION_PRAGMAS;SQLITE_OMIT_TCL_VARIABLE;SQLITE_OMIT_LOAD_EXTENSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Update="$(DcssSourceRoot)\contrib\pcre\*.c">
+      <PreprocessorDefinitions>HAVE_CONFIG_H;PCRE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\dcss\adapter\dcss_posix_shim.h" />
+    <ClInclude Include="..\..\dcss\adapter\shim\sys\socket.h" />
+    <ClInclude Include="..\..\dcss\adapter\shim\sys\time.h" />
+    <ClInclude Include="..\..\dcss\adapter\shim\sys\un.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

@@ -1,0 +1,72 @@
+// dc_altar_ashenzari — プレハブ定義（設計書 §7）。`dc_altar_ashenzari.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 ashenzari（dngn/altars/ashenzari）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_ashenzari",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "50453C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "64564B",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "1B1614",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "9FA59A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "7E7878",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "8D8686",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "716C6C",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "F46022",
+      "material": "clean"
+    }
+  ]
+}

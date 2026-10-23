@@ -1,0 +1,157 @@
+// dc_wall_bars — プレハブ定義（設計書 §7）。`dc_wall_bars.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 bars_red01（dngn/wall/bars_red01）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_bars",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "571818",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "5A1616",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "3D0F0F",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "1E0808",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "872929",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "781E1E",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "C63232",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "AC2C2C",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "BA2E2E",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "D45454",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "982C2C",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "CD3B3B",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "C97D7D",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "511414",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "370E0E",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "1B0707",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "7A2525",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "6C1B1B",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "A72929",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "B22D2D",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "9B2828",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "BF4C4C",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "892828",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "B83535",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "B57070",
+      "material": "stone"
+    }
+  ]
+}

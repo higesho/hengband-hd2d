@@ -27,6 +27,7 @@
 #include <vector>
 
 extern "C" void r2_autosave_set_path(const char *path);
+extern "C" void r2_autosave_recover(const char *path);
 extern "C" void r2_options_set_path(const char *path);
 extern "C" void r2_options_load(void);
 extern "C" void r2_autosave_invalidate(void);
@@ -727,6 +728,8 @@ int run_protocol_handles(presentation::TransportHandle in, presentation::Transpo
         std::fprintf(stderr, "[rogue2] discarded incompatible autosave = %s\n", legacy_save_path.c_str());
     }
     r2_autosave_set_path(save_path.c_str());
+    // 置き換えに失敗したまま終わった完全な保存（autosave-v4.r2.pending）が autosave より新しければ使う（Windows だけ）。
+    r2_autosave_recover(save_path.c_str());
     /*
      * 設定画面の値は原作ではセーブに入らない。HD2D 版で保存した値を、ゲーム開始前に戻す。
      * 環境変数 ROGUEOPTS があれば、原作の init() がそのあとで上書きする。

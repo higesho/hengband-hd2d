@@ -1,0 +1,102 @@
+// dc_floor_swamp — プレハブ定義（設計書 §7）。`dc_floor_swamp.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 swamp0（dngn/floor/swamp0）。タイルに合わせた凹凸（organic。出 322・へこみ 333。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_swamp",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "352006",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "240200",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "242400",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "2E2E00",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "2E0800",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "482308",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "58330D",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "7B4918",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "9D6024",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "482808",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "353601",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "483708",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "360A01",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "582C0D",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "58450D",
+      "material": "stone"
+    }
+  ]
+}

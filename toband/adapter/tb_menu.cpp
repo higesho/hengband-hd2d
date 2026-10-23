@@ -23,6 +23,7 @@
 #include "bridge/input_event_adapter.h"
 #include "bridge/symbol_prompt.h"
 #include "bridge/look_screen_cover.h"
+#include "bridge/prompt_semantics.h"
 #include "frame/message_more.h"
 
 #include "tb_lang_c.h" //GB: english layer #33 - the prompt-bar labels never reach Term, so #1 cannot see them
@@ -91,6 +92,23 @@ const std::string &utf8_of(const char *sjis, std::size_t len)
 }
 
 /*!
+ * @brief 見る `l` の行が Term の幅（80 桁）で切れ、終わりの操作の案内（`<dir>`・`q止`）が落ちた行か。
+ * @details 原作の `target_set_aux()` は行 0 に `[??]Target:<名前>(Level ???, <状態>, <属性>) [r, q,t,p,o,+,-,<dir>]`
+ * （日本語は `[??]ターゲット:<名前>(レベル???, …) [r思 q止 t決 p自 o現 +次 -前]`）を出す。名前が長い敵・品・地形では、案内が
+ * 80 桁の外へ出て落ちる（英語は名前が 26 字以上。日本語は全角 8 字ほどから）。落ちた行は `<dir>`／`q止` を含まないので、
+ * 以前は見る帯と見分けられず、フレームに帯が載らなかった（パッドの案内が消える）。
+ * 見る行は必ず頭が `Target:`／`ターゲット:`（敵の行は直前に `[<経験値>]`）で始まり、ほかの問いや伝言にこの頭は無い。
+ * 切れた行は桁の端まで字が詰まっているので、表示の幅が 70 桁以上であることも求める（短い行を誤って拾わない）。
+ * `-more-`／`-続く-` で終わる伝言の行は含めない。
+ */
+bool look_row_was_cut(const std::string &text)
+{
+    // 判定は共用（`presentation/bridge/prompt_semantics.h`。変愚蛮怒・短愚蛮怒・幻想蛮怒・Frox・Sil-Q も同じ道具を使う）。
+    // 以前はここに同じ中身を持っていた。
+    return presentation::look_row_was_cut(text, presentation::LookRowHeads::Hengband);
+}
+
+/*!
  * @brief 行 0（またはミラーの 1 行）が `y/n` 系のプロンプトなら選択肢へ持ち上げる。
  * @details 表は**画面に出る文字列そのもの**。出どころは順に
  * `util.c:3956`（`[y/n]` / `[Y/n]` / `[(O)k/(C)ancel]`）・`cmd3.c:2309`（`[y/n/Auto]`）・
@@ -109,8 +127,11 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
         return false;
     }
 
-    if ((text.find("<dir>") != std::string::npos || text.find(reinterpret_cast<const char *>(u8"q止")) != std::string::npos)
-        && text.find('p') != std::string::npos && (text.find('+') != std::string::npos || text.find('-') != std::string::npos)) {
+    //! 名前が長くて案内が 80 桁の外へ落ちた行（`look_row_was_cut`）。案内の中身は読めないので、見る `l` の操作はどれも出す。
+    const bool cut_look = look_row_was_cut(text);
+    if (cut_look
+        || ((text.find("<dir>") != std::string::npos || text.find(reinterpret_cast<const char *>(u8"q止")) != std::string::npos)
+            && text.find('p') != std::string::npos && (text.find('+') != std::string::npos || text.find('-') != std::string::npos))) {
         // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない（`look_screen_cover.h`）。
         if (presentation::look_screen_cover().covered(tb_screen_depth())) {
             out = PromptBar{};
@@ -128,18 +149,20 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
          */
         {
             std::string subject;
-            if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
+            //! 案内が落ちた行は共用の道具で取る（落ちた案内の頭の `[` だけを外す。頭の `[<経験値>]` は説明に残る）。
+            if(cut_look)subject=std::string(presentation::look_row_cut_subject(text));
+            else if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
             const auto trim=[](std::string &s){while(!s.empty()&&s.back()==' ')s.pop_back();std::size_t i=0;while(i<s.size()&&s[i]==' ')++i;s.erase(0,i);};
             trim(subject);
             for(const char *const more:{"-more-",reinterpret_cast<const char *>(u8"-続く-")}){const std::string m(more);if(subject.size()>=m.size()&&subject.compare(subject.size()-m.size(),m.size(),m)==0){subject.erase(subject.size()-m.size());trim(subject);}}
             out.text_utf8+=subject;
         }
-        if(text.find('+')!=std::string::npos)add('+',reinterpret_cast<const char *>(u8"次の注目地点"),"Next interesting");
-        if(text.find('-')!=std::string::npos)add('-',reinterpret_cast<const char *>(u8"前の注目地点"),"Previous interesting");
+        if(cut_look||text.find('+')!=std::string::npos)add('+',reinterpret_cast<const char *>(u8"次の注目地点"),"Next interesting");
+        if(cut_look||text.find('-')!=std::string::npos)add('-',reinterpret_cast<const char *>(u8"前の注目地点"),"Previous interesting");
         add('p',reinterpret_cast<const char *>(u8"自分の位置へ戻る"),"Recenter on player");
         if(text.find("m,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"m近"))!=std::string::npos)add('m',reinterpret_cast<const char *>(u8"近い注目地点へ"),"Nearest interesting");
-        if(text.find("o,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"o現"))!=std::string::npos)add('o',reinterpret_cast<const char *>(u8"現在位置を自由に見る"),"Manual/current mode");
-        if(text.find("t")!=std::string::npos)add('t',reinterpret_cast<const char *>(u8"ここを対象にする"),"Select target");
+        if(cut_look||text.find("o,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"o現"))!=std::string::npos)add('o',reinterpret_cast<const char *>(u8"現在位置を自由に見る"),"Manual/current mode");
+        if(cut_look?presentation::look_row_is_monster(text):text.find("t")!=std::string::npos)add('t',reinterpret_cast<const char *>(u8"ここを対象にする"),"Select target");
         out.footer_utf8=ja?reinterpret_cast<const char *>(u8"LB/RB: 操作を選ぶ  A/Enter: 実行  十字キー: カーソル移動"):"LB/RB: select action  A/Enter: run  D-pad: move look cursor";
         return !out.choices.empty();
     }
@@ -2269,6 +2292,40 @@ int menu_semantics_selftest()
             if (ok) ++look_ok;
         }
         std::fprintf(stderr, "[toband] menu selftest: look band name %d/3 ok\n", look_ok);
+    }
+    {
+        //! 見る `l` の行が Term の幅（80 桁）で切れて、案内（`<dir>`・`q止`）が落ちた行でも、帯が出て名前が残る（`look_row_was_cut`）。
+        struct CutCase { const char *name; std::string row; std::string subject; bool band; };
+        const auto u8s = [](const char8_t *s) { return std::string(reinterpret_cast<const char *>(s)); };
+        const std::array<CutCase, 7> cut_cases{{
+            // 英語: 名前 26 字。案内が `<di` で切れる（80 桁ちょうど）
+            {"cut_en_tail_clipped", "[??]Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq) [r, q,t,p,o,+,-,<di", "[??]Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq)", true},
+            // 英語: 案内が丸ごと落ちる（名前が長い）。説明は残った字の全部
+            {"cut_en_tail_gone", "[??]Target:Demunza, the God of the Underworld and Demon Realm(Level ???, unhurt, A", "[??]Target:Demunza, the God of the Underworld and Demon Realm(Level ???, unhurt, A", true},
+            // 英語: 品の行（頭に `[<経験値>]` が無い）
+            {"cut_en_item", "Target:a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0] [q,t,p,o,+", "Target:a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0]", true},
+            // 日本語: 案内（`q止 …`）が落ちる
+            {"cut_ja_tail_gone", u8s(u8"[??]ターゲット:グレーター・サイバー・ワイアーム・天使・デーモン・苔(レベル???, 無傷, 地) [r思 q止 t決 p自 o現 +次"), u8s(u8"[??]ターゲット:グレーター・サイバー・ワイアーム・天使・デーモン・苔(レベル???, 無傷, 地)"), true},
+            // 日本語: 名前の途中で切れる
+            {"cut_ja_in_name", u8s(u8"[??]ターゲット:ブラックマーケットのエージェントの強欲に染まる白銀の弱虫『サイモン』のそのまた弟子"), u8s(u8"[??]ターゲット:ブラックマーケットのエージェントの強欲に染まる白銀の弱虫『サイモン』のそのまた弟子"), true},
+            // 短い行（切れていない。案内も無い）は帯にしない
+            {"short_target_line", "Target:a Cave spider", "", false},
+            // 伝言の `-more-` で終わる行は帯にしない
+            {"more_line", "Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq) and so on and on -more-", "", false}}};
+        int cut_ok = 0;
+        for (const CutCase &cc : cut_cases) {
+            PromptBar band;
+            const bool got = parse_prompt_line(cc.row, band);
+            bool ok = (got == cc.band);
+            if (ok && cc.band) {
+                ok = (band.text_utf8.find(cc.subject) != std::string::npos) && prompt_has_key(band, '+') && prompt_has_key(band, '-')
+                    && prompt_has_key(band, 'p') && prompt_has_key(band, 'o');
+            }
+            if (!ok) std::fprintf(stderr, "[toband] menu selftest cut look case %s got=%d band=\"%s\"\n", cc.name, got ? 1 : 0, band.text_utf8.c_str());
+            check(ok, "Look band appears for a row cut at the Term width");
+            if (ok) ++cut_ok;
+        }
+        std::fprintf(stderr, "[toband] menu selftest: cut look band %d/7 ok\n", cut_ok);
     }
     {
         GameFrame frame;

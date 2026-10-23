@@ -1,0 +1,127 @@
+// dc_gate_enter_snake — プレハブ定義（設計書 §7）。`dc_gate_enter_snake.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 enter_snake（dngn/gateways/enter_snake）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_snake",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "C8D93F",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "63761F",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "EBFF4A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "748B24",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "D90000",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "FF0000",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "303A10",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "424F14",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "A6C634",
+      "material": "plant"
+    },
+    {
+      "i": 11,
+      "rgb": "D9D949",
+      "material": "metal"
+    },
+    {
+      "i": 12,
+      "rgb": "394413",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "4E5D18",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "C3E93D",
+      "material": "plant"
+    },
+    {
+      "i": 15,
+      "rgb": "FFFF56",
+      "material": "metal"
+    },
+    {
+      "i": 16,
+      "rgb": "141806",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "181C07",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "202609",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "262D0B",
+      "material": "stone"
+    }
+  ]
+}

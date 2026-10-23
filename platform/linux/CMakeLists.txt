@@ -17,7 +17,7 @@ if(DEFINED ENV{HENGBAND_CORE_SOURCE_ROOT})
     set(HB_DEFAULT_CORE_ROOT "$ENV{HENGBAND_CORE_SOURCE_ROOT}")
 endif()
 set(HB_CORE_SOURCE_ROOT "${HB_DEFAULT_CORE_ROOT}" CACHE PATH "Verified external core sources")
-option(HENGBAND_BUILD_CORES "Build all ten game cores" ON)
+option(HENGBAND_BUILD_CORES "Build all twelve game cores" ON)
 if(HENGBAND_BUILD_CORES AND NOT EXISTS "${HB_CORE_SOURCE_ROOT}/.prepared.json")
     message(FATAL_ERROR "Prepare external sources with tools/core_sources/prepare.py or set HB_CORE_SOURCE_ROOT")
 endif()
@@ -36,7 +36,9 @@ if(HB_CCACHE)
     # directory (legacy-src/, generated headers, PCH) still hits the cache. pch_defines and
     # time_macros are required for ccache to accept precompiled headers. The user's global
     # ccache config is left alone.
-    set(HB_CCACHE_LAUNCHER "${CMAKE_COMMAND}" -E env "CCACHE_BASEDIR=${CMAKE_BINARY_DIR}" "CCACHE_SLOPPINESS=pch_defines,time_macros" "CCACHE_PCH_EXTSUM=true" "${HB_CCACHE}")
+    # ccache_launcher.sh runs ccache for everything except the generation of the .gch itself:
+    # a cached .gch can carry the MD5 of an older byte-different header (see that script).
+    set(HB_CCACHE_LAUNCHER "${CMAKE_COMMAND}" -E env "CCACHE_BASEDIR=${CMAKE_BINARY_DIR}" "CCACHE_SLOPPINESS=pch_defines,time_macros" "CCACHE_PCH_EXTSUM=true" /bin/sh "${CMAKE_CURRENT_LIST_DIR}/ccache_launcher.sh" "${HB_CCACHE}")
     set(CMAKE_C_COMPILER_LAUNCHER "${HB_CCACHE_LAUNCHER}")
     set(CMAKE_CXX_COMPILER_LAUNCHER "${HB_CCACHE_LAUNCHER}")
 endif()
@@ -121,7 +123,9 @@ target_include_directories(TangbandCore BEFORE PRIVATE "${HB_GENERATED_INCLUDE_D
 # ccache would hash the 180 MB .gch, which embeds the build directory path, so every new build
 # directory missed. With CCACHE_PCH_EXTSUM ccache reads <pch>.sum instead; write a hash of the
 # preprocessed header (no paths, -P) so the key still changes whenever the PCH content or the
-# flags change.
+# flags change. This key is for the object files only: the .gch itself is generated without
+# ccache (ccache_launcher.sh), because the preprocessed text does not see the header bytes that
+# the .gch records.
 if(HB_CCACHE)
     foreach(core HengbandCore TangbandCore)
         get_target_property(inc ${core} INCLUDE_DIRECTORIES)
@@ -376,6 +380,9 @@ hb_rogue_legacy(Rogue36Core "${HB_TARGET_GENERATED_ROOT}/rogue36/patched-src" 36
     "${HB_ROOT}/rogue36/adapter/r36_main.cpp" "${HB_ROOT}/rogue_legacy/adapter/compat/r36_build_config.h")
 hb_rogue_legacy(Rogue54Core "${HB_TARGET_GENERATED_ROOT}/rogue54/patched-src" 54 r54_game_main
     "${HB_ROOT}/rogue54/adapter/r54_main.cpp" "${HB_ROOT}/rogue_legacy/adapter/compat/r54_build_config.h")
+
+# Dungeon Crawl Stone Soup (Japanese edition, `DcssCore`). On by default (-DHENGBAND_BUILD_DCSS=OFF skips it); see the file for the build layers.
+include("${HB_ROOT}/tools/core_sources/dcss_core.cmake")
 
 # Enable the original secure temporary-file implementation where it is compiled.
 set_source_files_properties(

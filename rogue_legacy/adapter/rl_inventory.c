@@ -333,6 +333,29 @@ int rl_status_effects(rl_status_effect *out, int cap)
 }
 
 /*
+ * テスト用の乱数の種（環境変数 HENGBAND_TEST_SEED。正の整数）。原作 5.4 の SEED は魔法使いモードでしか読まれず、
+ * 3.6 の SEED は読まれるがスコアを記録しなくなる。そこで、原作が種を決めたあと（main.c の `seed = dnum;`）・階を作る前
+ * （init_probs / init_names / new_level）に必ず通る initscr() から 1 回だけ、種を上書きする（原作のソースは書き換えない）。
+ * **環境変数が無い・正の整数でないときは何もしない**（挙動は 1 ビットも変わらない）。保存したゲームを読むときは、
+ * 原作が読み込みの中で種を書き戻すので、この上書きは残らない。ほかの Rogue 系の入口（RogueClone2 の R2_TEST_SEED）と同じ形。
+ */
+void rl_test_seed_apply(void)
+{
+    extern int seed;
+    static int done = 0;
+    const char *env;
+    long value;
+    if (done) return;
+    done = 1;
+    env = getenv("HENGBAND_TEST_SEED");
+    if (env == NULL || env[0] == 0) return;
+    value = atol(env);
+    if (value <= 0 || value > 0x7fffffffL) return;
+    seed = (int)value;
+    dnum = (int)value;
+}
+
+/*
  * テスト用の状態の付与（環境変数 HENGBAND_TEST_STATUS。カンマ区切り）。画面の入力の経路の検査（スクリーンショット）と
  * プロトコルの検査（tools/rogue_legacy/status_effects_smoke.py）が、乱数に頼らず状態のアイコンを確かめるための足場
  * （変愚の HD2D_TEST_FORCE_IMAGE と同じ扱い）。**環境変数が無ければ何もしない**。ゲームのルールは変えない——

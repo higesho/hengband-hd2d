@@ -332,6 +332,13 @@ struct UiLayout {
     RectPx term_overlay{};
 
     /*!
+     * @brief 主面の飾り（地図の外を塗る素材）を出さない。
+     * @details DCSS の画面の部品（`hd2d/dcss/`）が窓の地図の外を自分で埋めるとき、`apply_dcss_layout` が真にする。
+     * 既定は偽（ほかのコアは今までどおり）。
+     */
+    bool main_panel_design_off{ false };
+
+    /*!
      * @brief 仕切りを掴む帯。**下段が `grip[0..2]`（縦棒）、右列が `grip[3..4]`（横棒）**。
      * @details **描く絵と当たり判定を同じ矩形から作る**ので、掴めるように見えて掴めない所が
      * できない（必守制約 3 の親戚）。その仕切りが無い作り・枚数のときは空。

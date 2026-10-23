@@ -2395,6 +2395,52 @@ int run_sdl_input_check()
         check(ordinary_yes.kind==presentation::CommandPromptKind::None&&ordinary_yes.keys.empty(),"Ordinary [y/n] prompt is not hijacked");
         const auto force=presentation::analyze_command_prompt("Choose discipline, w for the Force");
         check(force.kind==presentation::CommandPromptKind::Force&&force.keys==std::vector<int>({'w',27}),"Force prompt semantics");
+        // 名前が長くて見る行が桁の端（80 桁）で切れ、終わりの操作の案内が落ちた行（共用の look_row_was_cut）。
+        {
+            using presentation::LookRowHeads;
+            const auto u8c=[](const char8_t*s){return std::string(reinterpret_cast<const char*>(s));};
+            const std::string en_monster="[??]Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq) [r, q,t,p,o,+,-,<di";
+            const auto cut_monster=presentation::analyze_command_prompt(en_monster);
+            check(cut_monster.kind==presentation::CommandPromptKind::Look&&cut_monster.look_row_cut
+                &&cut_monster.keys==std::vector<int>({'+','-','p','o','t'}),"Cut look row (English monster) is a Look prompt with the monster keys");
+            const std::string en_item="Target:a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0] [q,p,o,+";
+            const auto cut_item=presentation::analyze_command_prompt(en_item);
+            check(cut_item.kind==presentation::CommandPromptKind::Look&&cut_item.look_row_cut
+                &&cut_item.keys==std::vector<int>({'+','-','p','o'}),"Cut look row (English item) has no target key");
+            const std::string ja_gone=u8c(u8"[??]ターゲット:グレーター・サイバー・ワイアーム・天使・デーモン・苔(レベル???, 無傷, 地)");
+            const auto cut_ja=presentation::analyze_command_prompt(ja_gone);
+            check(cut_ja.kind==presentation::CommandPromptKind::Look&&cut_ja.look_row_cut,"Cut look row (Japanese, guide gone) is a Look prompt");
+            const std::string ja_part=ja_gone+u8c(u8" [r思 q止 t決 p自 o現 +次");
+            const auto part_ja=presentation::analyze_command_prompt(ja_part);
+            check(part_ja.kind==presentation::CommandPromptKind::Look&&part_ja.look_row_cut,"Cut look row (Japanese, guide partly left) is a Look prompt");
+            const std::string whole_en="[042]Target:Grip, Farmer Maggot's Dog the Barking(Level 5, unhurt, Aq) [r, q,t,p,o,+,-,<dir>]";
+            const auto whole=presentation::analyze_command_prompt(whole_en);
+            check(whole.kind==presentation::CommandPromptKind::Look&&!whole.look_row_cut&&!presentation::look_row_was_cut(whole_en),
+                "A long look row with its whole guide is read from the guide, not treated as cut");
+            check(presentation::analyze_command_prompt("Target:a Cave spider").kind==presentation::CommandPromptKind::None,"A short Target: line is not a look prompt");
+            check(presentation::analyze_command_prompt("Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq) and so on and on -more-").kind==presentation::CommandPromptKind::None,
+                "A -more- line is not a look prompt");
+            check(!presentation::look_row_was_cut("You see a Pair of Leather Boots of Stealth (+1) [3,+0] <+2> that you are wearing"),
+                "You see ... is not a cut look row for the Hengband heads");
+            // Frox: 頭は `Target: `・`Feature: `・`Monster: `・`Position: `。
+            const std::string frox_cut="Monster: Grip, Farmer Maggot's Dog the Bounding and Barking (Asleep) (Rng 3) [r,/,x,q,t";
+            check(presentation::look_row_was_cut(frox_cut,LookRowHeads::Frox)&&presentation::look_row_was_cut("Position: "+frox_cut.substr(9),LookRowHeads::Frox),
+                "Frox cut look row");
+            check(!presentation::look_row_was_cut(frox_cut,LookRowHeads::Hengband)&&!presentation::look_row_was_cut("Monster: a Cave spider",LookRowHeads::Frox)
+                &&!presentation::look_row_was_cut(frox_cut+",p,o,x,j,+,-,?,<dir>]",LookRowHeads::Frox),
+                "Frox cut look row: other heads, short rows and rows with the whole guide are not cut");
+            // Sil-Q: 頭が普通の伝言と同じ書き出しなので 78 桁以上。
+            const std::string sq_cut="You see a Pair of Leather Boots of Stealth (+1) [3,+0] <+2> that you are wearing";
+            check(presentation::look_row_was_cut(sq_cut,LookRowHeads::SilQ)&&!presentation::look_row_was_cut(sq_cut.substr(0,77),LookRowHeads::SilQ)
+                &&!presentation::look_row_was_cut(sq_cut+" -more-",LookRowHeads::SilQ),"Sil-Q cut look row needs 78 columns and no -more-");
+            // 表示の幅: 全角は 2 桁、半角カナは 1 桁。
+            check(presentation::look_row_display_width(u8c(u8"ターゲット:"))==11&&presentation::look_row_display_width(u8c(u8"ｱｲ"))==2&&presentation::look_row_display_width("abc")==3,
+                "Display width counts full-width as 2 and half-width kana as 1");
+            // 説明の字: 閉じていない最後の `[` は落とし、閉じた `[`（頭の経験値・アイテムの情報）は残す。
+            check(presentation::look_row_cut_subject("abc [r, q")=="abc "&&presentation::look_row_cut_subject("[??]Target:x")=="[??]Target:x"
+                &&presentation::look_row_cut_subject("Target:y [2,+0]")=="Target:y [2,+0]"&&presentation::look_row_cut_subject(en_item)=="Target:a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0] ",
+                "Cut look row subject drops only the unclosed bracket");
+        }
     }
     {
         GameFrame look;

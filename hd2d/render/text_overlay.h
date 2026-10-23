@@ -51,10 +51,24 @@ public:
      * @param[out] err 失敗の理由。
      */
     bool init(int px, std::string &err);
+    /*!
+     * @brief 指定したフォントのファイルだけを開いて初期化する（DCSS の画面の部品が BIZ UDゴシックを使うための入口）。
+     * @details **開けなければ失敗を返す**（候補の表へは落ちない。呼ぶ側が次の候補を試す）。
+     * `init(px, err)` の動きは変えない。`ttc_index` は .ttc の中の何番目の書体か（0 = 先頭）。
+     */
+    bool init_with_font(int px, const std::string &font_path, int ttc_index, std::string &err);
     void shutdown();
 
+    /*!
+     * @brief 全角の字の送り幅を `px` 画素に揃える（0 で既定＝字の持つ送り幅）。
+     * @details DCSS の画面の部品が使う（原作の字は全角を半角のちょうど 2 倍に揃える加工が入っている。。
+     * 15 画素の BIZ UDゴシックは半角 7.5 → 8、全角 15 だが、原作は 16 で並べる）。呼ばなければ何も変わらない。
+     * 半角の 1.5 倍より広い送り幅の字を全角と見なす。
+     */
+    void set_wide_advance(int px) { wide_advance_ = px; }
+
     //! 半角 1 文字ぶんのマス目（全角はこの 2 倍）。
-    int cell_w() const { return scaled_font_?std::max(1,int(scaled_font_->cell_w_/layout_scale_+.5f)):cell_w_; }
+    int cell_w() const { return scaled_font_?std::max(1,int(scaled_font_->narrow_cell_w()/layout_scale_+.5f)):cell_w_; }
     int cell_h() const { return scaled_font_?std::max(1,int(scaled_font_->cell_h_/layout_scale_+.5f)):cell_h_; }
     void set_layout_scale(float scale);
     float layout_scale() const {return layout_scale_;}
@@ -90,9 +104,12 @@ public:
      * @details 流れるアイコンの名前に使う（等速で流すので、画素の端数も出す。端で出入りする字は
      * 字の途中で切る）。切るのは字の板（四角）で、`u` 座標も同じ割合で詰める。
      * `layout_scale` が 1 でないとき（メニューの倍率の中）は、切らずに整数の位置で描く。
+     * `x_scale` は**横だけ**の倍率（既定 1 = 縮めない）。字の高さは `scale` のまま、字の幅・送りだけを `x_scale` 倍にする
+     * （状態アイコンの名前が、字の高さを保ったままアイコンの幅に収まらないときだけ使う。`hd2d/ui/orb_hud.cpp`）。
+     * `layout_scale` が 1 でないときは効かない（普通の大きさで描く）。
      */
     int draw_sized_clipped(float x, int y, std::string_view utf8, const TextColor &color, float scale, int max_width,
-        float clip_x0, float clip_x1);
+        float clip_x0, float clip_x1, float x_scale = 1.f);
     int measure_sized(std::string_view utf8, float scale);
     int cell_h_sized(float scale);
     //! `scale` が実際に使う字の高さ（画素）。縮める限界を画素で比べたいときに使う。
@@ -122,11 +139,13 @@ private:
     int last_replacement_{ 0 };
     bool last_clipped_{ false };
     int draw_clipped_impl(float x, int y, std::string_view utf8, const TextColor &color, int max_width, float clip_x0,
-        float clip_x1);
+        float clip_x1, float x_scale);
     void flush_base();
     //! `draw_sized` 系が使うフォント。普通の大きさ（または `layout_scale` が 1 でない）なら自分自身。
     TextOverlay *sized_font(float scale);
     float layout_scale_{1.f};
+    int wide_advance_{0}; //!< `set_wide_advance`。0 = 使わない
+    int narrow_advance_{0}; //!< 半角の送り幅の指定（0 = 字の持つ送り幅）。`set_layout_scale` が作る拡大した字にだけ入る（下の説明）
     int font_px_{16};
     TextOverlay *scaled_font_{nullptr};
     std::unordered_map<int,std::unique_ptr<TextOverlay>> scaled_fonts_;
@@ -156,10 +175,23 @@ private:
     int atlas_side_{1024}; // Larger fonts retain enough room for Japanese glyphs.
 
     const Glyph *glyph_for(std::uint32_t codepoint);
+    //! 字の送り幅（`set_wide_advance` があれば全角はそれに揃える）。
+    float advance_of(const Glyph &glyph) const
+    {
+        if ((wide_advance_ > 0) && (glyph.w * 2 > cell_w_ * 3)) {
+            return static_cast<float>(wide_advance_);
+        }
+        return (narrow_advance_ > 0) ? static_cast<float>(narrow_advance_) : static_cast<float>(glyph.w);
+    }
+    //! 半角の桁の幅（`narrow_advance_` があればそれ）。
+    int narrow_cell_w() const { return (narrow_advance_ > 0) ? narrow_advance_ : cell_w_; }
     //! UTF-8 を 1 符号位置ずつ取り出す。壊れたバイトは U+FFFD 扱いで 1 バイト進める。
     static std::uint32_t next_codepoint(std::string_view text, std::size_t &pos);
 
     ::TTF_Font *font_{ nullptr };
+    //! 空でなければ `init()` の候補の表の代わりにこのファイルだけを開く（`init_with_font`）。
+    std::string forced_font_path_;
+    int forced_font_index_{ 0 };
     gl::GLuint program_{ 0 };
     gl::GLuint vao_{ 0 };
     gl::GLuint vbo_{ 0 };

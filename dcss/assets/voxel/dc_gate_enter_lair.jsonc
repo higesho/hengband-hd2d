@@ -1,0 +1,157 @@
+// dc_gate_enter_lair — プレハブ定義（設計書 §7）。`dc_gate_enter_lair.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 enter_lair（dngn/gateways/enter_lair）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_lair",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "578A01",
+      "material": "plant"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "165A01",
+      "material": "plant"
+    },
+    {
+      "i": 4,
+      "rgb": "66A201",
+      "material": "plant"
+    },
+    {
+      "i": 5,
+      "rgb": "1A6A01",
+      "material": "plant"
+    },
+    {
+      "i": 6,
+      "rgb": "886600",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "6D5200",
+      "material": "wood"
+    },
+    {
+      "i": 8,
+      "rgb": "362900",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "A07800",
+      "material": "metal"
+    },
+    {
+      "i": 10,
+      "rgb": "806000",
+      "material": "wood"
+    },
+    {
+      "i": 11,
+      "rgb": "523D00",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "291F00",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "302400",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "604800",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "403000",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "3B7401",
+      "material": "plant"
+    },
+    {
+      "i": 17,
+      "rgb": "A37A00",
+      "material": "metal"
+    },
+    {
+      "i": 18,
+      "rgb": "C09000",
+      "material": "metal"
+    },
+    {
+      "i": 19,
+      "rgb": "458901",
+      "material": "plant"
+    },
+    {
+      "i": 20,
+      "rgb": "BE8F00",
+      "material": "metal"
+    },
+    {
+      "i": 21,
+      "rgb": "E0A800",
+      "material": "metal"
+    },
+    {
+      "i": 22,
+      "rgb": "0B4E01",
+      "material": "plant"
+    },
+    {
+      "i": 23,
+      "rgb": "0D5C01",
+      "material": "plant"
+    },
+    {
+      "i": 24,
+      "rgb": "140000",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "180000",
+      "material": "stone"
+    }
+  ]
+}

@@ -1,0 +1,982 @@
+// dc_wall_ice — プレハブ定義（設計書 §7）。`dc_wall_ice.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 ice_wall0（dngn/wall/ice_wall0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_ice",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "383A8F",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "0D085E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "0A064C",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "1B118E",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "3722BE",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "555CDA",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "6C7FE9",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "6272E4",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "606EE2",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "5256D8",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "4C48D2",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "4B44D1",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "4F4DD5",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "4437CB",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "4232C9",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "3924C0",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "3420B9",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "2B1BAC",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "321FB6",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "3622BC",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "281AA8",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "2F1DB2",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "2D1CAF",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "301EB4",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "3D2AC4",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "402EC7",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "473BCD",
+      "material": "stone"
+    },
+    {
+      "i": 28,
+      "rgb": "5D6ADF",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "6473E4",
+      "material": "stone"
+    },
+    {
+      "i": 30,
+      "rgb": "6A7CE8",
+      "material": "stone"
+    },
+    {
+      "i": 31,
+      "rgb": "687AE7",
+      "material": "stone"
+    },
+    {
+      "i": 32,
+      "rgb": "616FE3",
+      "material": "stone"
+    },
+    {
+      "i": 33,
+      "rgb": "4F4CD4",
+      "material": "stone"
+    },
+    {
+      "i": 34,
+      "rgb": "5050D6",
+      "material": "stone"
+    },
+    {
+      "i": 35,
+      "rgb": "2518A3",
+      "material": "stone"
+    },
+    {
+      "i": 36,
+      "rgb": "3C26C3",
+      "material": "stone"
+    },
+    {
+      "i": 37,
+      "rgb": "4234C9",
+      "material": "stone"
+    },
+    {
+      "i": 38,
+      "rgb": "5B67DE",
+      "material": "stone"
+    },
+    {
+      "i": 39,
+      "rgb": "86A6F3",
+      "material": "stone"
+    },
+    {
+      "i": 40,
+      "rgb": "7389ED",
+      "material": "stone"
+    },
+    {
+      "i": 41,
+      "rgb": "748BEE",
+      "material": "stone"
+    },
+    {
+      "i": 42,
+      "rgb": "6E81EA",
+      "material": "stone"
+    },
+    {
+      "i": 43,
+      "rgb": "575FDB",
+      "material": "stone"
+    },
+    {
+      "i": 44,
+      "rgb": "5358D8",
+      "material": "stone"
+    },
+    {
+      "i": 45,
+      "rgb": "4438CB",
+      "material": "stone"
+    },
+    {
+      "i": 46,
+      "rgb": "87AAF4",
+      "material": "stone"
+    },
+    {
+      "i": 47,
+      "rgb": "95BCF8",
+      "material": "stone"
+    },
+    {
+      "i": 48,
+      "rgb": "8AADF4",
+      "material": "stone"
+    },
+    {
+      "i": 49,
+      "rgb": "82A0F3",
+      "material": "stone"
+    },
+    {
+      "i": 50,
+      "rgb": "6575E5",
+      "material": "stone"
+    },
+    {
+      "i": 51,
+      "rgb": "5965DC",
+      "material": "stone"
+    },
+    {
+      "i": 52,
+      "rgb": "6777E6",
+      "material": "stone"
+    },
+    {
+      "i": 53,
+      "rgb": "3D29C4",
+      "material": "stone"
+    },
+    {
+      "i": 54,
+      "rgb": "463ACD",
+      "material": "stone"
+    },
+    {
+      "i": 55,
+      "rgb": "8BAEF6",
+      "material": "stone"
+    },
+    {
+      "i": 56,
+      "rgb": "7D99F0",
+      "material": "stone"
+    },
+    {
+      "i": 57,
+      "rgb": "6473E5",
+      "material": "stone"
+    },
+    {
+      "i": 58,
+      "rgb": "5762DA",
+      "material": "stone"
+    },
+    {
+      "i": 59,
+      "rgb": "7993EF",
+      "material": "stone"
+    },
+    {
+      "i": 60,
+      "rgb": "7289ED",
+      "material": "stone"
+    },
+    {
+      "i": 61,
+      "rgb": "22169D",
+      "material": "stone"
+    },
+    {
+      "i": 62,
+      "rgb": "4941D0",
+      "material": "stone"
+    },
+    {
+      "i": 63,
+      "rgb": "7A95EF",
+      "material": "stone"
+    },
+    {
+      "i": 64,
+      "rgb": "8DAFF6",
+      "material": "stone"
+    },
+    {
+      "i": 65,
+      "rgb": "7F9CF1",
+      "material": "stone"
+    },
+    {
+      "i": 66,
+      "rgb": "4A42D0",
+      "material": "stone"
+    },
+    {
+      "i": 67,
+      "rgb": "2C1BA5",
+      "material": "stone"
+    },
+    {
+      "i": 68,
+      "rgb": "483ECE",
+      "material": "stone"
+    },
+    {
+      "i": 69,
+      "rgb": "768EEE",
+      "material": "stone"
+    },
+    {
+      "i": 70,
+      "rgb": "7790EE",
+      "material": "stone"
+    },
+    {
+      "i": 71,
+      "rgb": "5154D6",
+      "material": "stone"
+    },
+    {
+      "i": 72,
+      "rgb": "90B4F7",
+      "material": "stone"
+    },
+    {
+      "i": 73,
+      "rgb": "4030C8",
+      "material": "stone"
+    },
+    {
+      "i": 74,
+      "rgb": "92B7F7",
+      "material": "stone"
+    },
+    {
+      "i": 75,
+      "rgb": "89ABF4",
+      "material": "stone"
+    },
+    {
+      "i": 76,
+      "rgb": "98BFF8",
+      "material": "stone"
+    },
+    {
+      "i": 77,
+      "rgb": "9AC2F9",
+      "material": "stone"
+    },
+    {
+      "i": 78,
+      "rgb": "8EB2F6",
+      "material": "stone"
+    },
+    {
+      "i": 79,
+      "rgb": "94BAF8",
+      "material": "stone"
+    },
+    {
+      "i": 80,
+      "rgb": "A1CAFA",
+      "material": "stone"
+    },
+    {
+      "i": 81,
+      "rgb": "4E59D0",
+      "material": "stone"
+    },
+    {
+      "i": 82,
+      "rgb": "5B74D8",
+      "material": "stone"
+    },
+    {
+      "i": 83,
+      "rgb": "6B88E3",
+      "material": "stone"
+    },
+    {
+      "i": 84,
+      "rgb": "A5CEFB",
+      "material": "stone"
+    },
+    {
+      "i": 85,
+      "rgb": "94BAF5",
+      "material": "stone"
+    },
+    {
+      "i": 86,
+      "rgb": "7590EB",
+      "material": "stone"
+    },
+    {
+      "i": 87,
+      "rgb": "9DC5F9",
+      "material": "stone"
+    },
+    {
+      "i": 88,
+      "rgb": "A8D2FB",
+      "material": "stone"
+    },
+    {
+      "i": 89,
+      "rgb": "97BDF7",
+      "material": "stone"
+    },
+    {
+      "i": 90,
+      "rgb": "7187EB",
+      "material": "stone"
+    },
+    {
+      "i": 91,
+      "rgb": "AED8FC",
+      "material": "stone"
+    },
+    {
+      "i": 92,
+      "rgb": "B6DFFD",
+      "material": "stone"
+    },
+    {
+      "i": 93,
+      "rgb": "B1DAFD",
+      "material": "stone"
+    },
+    {
+      "i": 94,
+      "rgb": "9AC1F9",
+      "material": "stone"
+    },
+    {
+      "i": 95,
+      "rgb": "9EC7FA",
+      "material": "stone"
+    },
+    {
+      "i": 96,
+      "rgb": "4744BF",
+      "material": "stone"
+    },
+    {
+      "i": 97,
+      "rgb": "7590DB",
+      "material": "stone"
+    },
+    {
+      "i": 98,
+      "rgb": "82A2DE",
+      "material": "stone"
+    },
+    {
+      "i": 99,
+      "rgb": "8DB1E0",
+      "material": "stone"
+    },
+    {
+      "i": 100,
+      "rgb": "7F9EDD",
+      "material": "stone"
+    },
+    {
+      "i": 101,
+      "rgb": "91B6E1",
+      "material": "stone"
+    },
+    {
+      "i": 102,
+      "rgb": "94B9E2",
+      "material": "stone"
+    },
+    {
+      "i": 103,
+      "rgb": "8BAFE0",
+      "material": "stone"
+    },
+    {
+      "i": 104,
+      "rgb": "89ACDF",
+      "material": "stone"
+    },
+    {
+      "i": 105,
+      "rgb": "7D9DDD",
+      "material": "stone"
+    },
+    {
+      "i": 106,
+      "rgb": "728CD9",
+      "material": "stone"
+    },
+    {
+      "i": 107,
+      "rgb": "6D84D7",
+      "material": "stone"
+    },
+    {
+      "i": 108,
+      "rgb": "6A80D6",
+      "material": "stone"
+    },
+    {
+      "i": 109,
+      "rgb": "687DD6",
+      "material": "stone"
+    },
+    {
+      "i": 110,
+      "rgb": "5D6BCF",
+      "material": "stone"
+    },
+    {
+      "i": 111,
+      "rgb": "525DC8",
+      "material": "stone"
+    },
+    {
+      "i": 112,
+      "rgb": "4A4DC2",
+      "material": "stone"
+    },
+    {
+      "i": 113,
+      "rgb": "3B2DB5",
+      "material": "stone"
+    },
+    {
+      "i": 114,
+      "rgb": "3D32B7",
+      "material": "stone"
+    },
+    {
+      "i": 115,
+      "rgb": "3F34B8",
+      "material": "stone"
+    },
+    {
+      "i": 116,
+      "rgb": "2A1AA0",
+      "material": "stone"
+    },
+    {
+      "i": 117,
+      "rgb": "27189B",
+      "material": "stone"
+    },
+    {
+      "i": 118,
+      "rgb": "0C0755",
+      "material": "stone"
+    },
+    {
+      "i": 119,
+      "rgb": "090544",
+      "material": "stone"
+    },
+    {
+      "i": 120,
+      "rgb": "80A0DD",
+      "material": "stone"
+    },
+    {
+      "i": 121,
+      "rgb": "667AD4",
+      "material": "stone"
+    },
+    {
+      "i": 122,
+      "rgb": "6B82D6",
+      "material": "stone"
+    },
+    {
+      "i": 123,
+      "rgb": "6982D4",
+      "material": "stone"
+    },
+    {
+      "i": 124,
+      "rgb": "708AD8",
+      "material": "stone"
+    },
+    {
+      "i": 125,
+      "rgb": "7A99DC",
+      "material": "stone"
+    },
+    {
+      "i": 126,
+      "rgb": "7995DB",
+      "material": "stone"
+    },
+    {
+      "i": 127,
+      "rgb": "5E6ED0",
+      "material": "stone"
+    },
+    {
+      "i": 128,
+      "rgb": "4E56C5",
+      "material": "stone"
+    },
+    {
+      "i": 129,
+      "rgb": "494CC1",
+      "material": "stone"
+    },
+    {
+      "i": 130,
+      "rgb": "4848C1",
+      "material": "stone"
+    },
+    {
+      "i": 131,
+      "rgb": "4C53C4",
+      "material": "stone"
+    },
+    {
+      "i": 132,
+      "rgb": "4441BD",
+      "material": "stone"
+    },
+    {
+      "i": 133,
+      "rgb": "3725B0",
+      "material": "stone"
+    },
+    {
+      "i": 134,
+      "rgb": "2B1BA2",
+      "material": "stone"
+    },
+    {
+      "i": 135,
+      "rgb": "3320AD",
+      "material": "stone"
+    },
+    {
+      "i": 136,
+      "rgb": "3A29B3",
+      "material": "stone"
+    },
+    {
+      "i": 137,
+      "rgb": "3726B0",
+      "material": "stone"
+    },
+    {
+      "i": 138,
+      "rgb": "83A5DE",
+      "material": "stone"
+    },
+    {
+      "i": 139,
+      "rgb": "7994DB",
+      "material": "stone"
+    },
+    {
+      "i": 140,
+      "rgb": "6374D3",
+      "material": "stone"
+    },
+    {
+      "i": 141,
+      "rgb": "5F70D1",
+      "material": "stone"
+    },
+    {
+      "i": 142,
+      "rgb": "607ACC",
+      "material": "stone"
+    },
+    {
+      "i": 143,
+      "rgb": "677BD5",
+      "material": "stone"
+    },
+    {
+      "i": 144,
+      "rgb": "5B69CE",
+      "material": "stone"
+    },
+    {
+      "i": 145,
+      "rgb": "545FC9",
+      "material": "stone"
+    },
+    {
+      "i": 146,
+      "rgb": "423ABB",
+      "material": "stone"
+    },
+    {
+      "i": 147,
+      "rgb": "4035B8",
+      "material": "stone"
+    },
+    {
+      "i": 148,
+      "rgb": "4138B9",
+      "material": "stone"
+    },
+    {
+      "i": 149,
+      "rgb": "443DBC",
+      "material": "stone"
+    },
+    {
+      "i": 150,
+      "rgb": "28199E",
+      "material": "stone"
+    },
+    {
+      "i": 151,
+      "rgb": "3B2FB5",
+      "material": "stone"
+    },
+    {
+      "i": 152,
+      "rgb": "88AADE",
+      "material": "stone"
+    },
+    {
+      "i": 153,
+      "rgb": "7C9CDC",
+      "material": "stone"
+    },
+    {
+      "i": 154,
+      "rgb": "5663CB",
+      "material": "stone"
+    },
+    {
+      "i": 155,
+      "rgb": "5A68CD",
+      "material": "stone"
+    },
+    {
+      "i": 156,
+      "rgb": "2F1DA6",
+      "material": "stone"
+    },
+    {
+      "i": 157,
+      "rgb": "211693",
+      "material": "stone"
+    },
+    {
+      "i": 158,
+      "rgb": "86A9DF",
+      "material": "stone"
+    },
+    {
+      "i": 159,
+      "rgb": "97BDE2",
+      "material": "stone"
+    },
+    {
+      "i": 160,
+      "rgb": "4745C0",
+      "material": "stone"
+    },
+    {
+      "i": 161,
+      "rgb": "241797",
+      "material": "stone"
+    },
+    {
+      "i": 162,
+      "rgb": "2D1CA4",
+      "material": "stone"
+    },
+    {
+      "i": 163,
+      "rgb": "3622B0",
+      "material": "stone"
+    },
+    {
+      "i": 164,
+      "rgb": "5867CD",
+      "material": "stone"
+    },
+    {
+      "i": 165,
+      "rgb": "5A68CE",
+      "material": "stone"
+    },
+    {
+      "i": 166,
+      "rgb": "433BBB",
+      "material": "stone"
+    },
+    {
+      "i": 167,
+      "rgb": "321FAB",
+      "material": "stone"
+    },
+    {
+      "i": 168,
+      "rgb": "311FA9",
+      "material": "stone"
+    },
+    {
+      "i": 169,
+      "rgb": "7B9ADC",
+      "material": "stone"
+    },
+    {
+      "i": 170,
+      "rgb": "4B4FC2",
+      "material": "stone"
+    },
+    {
+      "i": 171,
+      "rgb": "3A2BB4",
+      "material": "stone"
+    },
+    {
+      "i": 172,
+      "rgb": "5764CC",
+      "material": "stone"
+    },
+    {
+      "i": 173,
+      "rgb": "505BC6",
+      "material": "stone"
+    },
+    {
+      "i": 174,
+      "rgb": "1F148D",
+      "material": "stone"
+    },
+    {
+      "i": 175,
+      "rgb": "6E86D7",
+      "material": "stone"
+    },
+    {
+      "i": 176,
+      "rgb": "180F80",
+      "material": "stone"
+    },
+    {
+      "i": 177,
+      "rgb": "4E58C4",
+      "material": "stone"
+    },
+    {
+      "i": 178,
+      "rgb": "8BAEE0",
+      "material": "stone"
+    },
+    {
+      "i": 179,
+      "rgb": "8EB3E1",
+      "material": "stone"
+    },
+    {
+      "i": 180,
+      "rgb": "5268C2",
+      "material": "stone"
+    },
+    {
+      "i": 181,
+      "rgb": "281894",
+      "material": "stone"
+    },
+    {
+      "i": 182,
+      "rgb": "85A7DF",
+      "material": "stone"
+    },
+    {
+      "i": 183,
+      "rgb": "4650BB",
+      "material": "stone"
+    },
+    {
+      "i": 184,
+      "rgb": "7D9EDC",
+      "material": "stone"
+    },
+    {
+      "i": 185,
+      "rgb": "85A7DC",
+      "material": "stone"
+    },
+    {
+      "i": 186,
+      "rgb": "9DC2E3",
+      "material": "stone"
+    },
+    {
+      "i": 187,
+      "rgb": "6172D2",
+      "material": "stone"
+    },
+    {
+      "i": 188,
+      "rgb": "9FC4E4",
+      "material": "stone"
+    },
+    {
+      "i": 189,
+      "rgb": "A4C9E4",
+      "material": "stone"
+    },
+    {
+      "i": 190,
+      "rgb": "687BD5",
+      "material": "stone"
+    }
+  ]
+}

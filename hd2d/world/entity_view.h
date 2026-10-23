@@ -152,6 +152,21 @@ struct EntityView {
     /*! @} */
 };
 
+/*!
+ * @brief 画面の部品が決めた足元の輪（DCSS。態度・強さの段階を色の輪で示す。 の 6・7）。
+ * @details マスで指す。`EntityTracker::build` に渡したときだけ、そのマスの敵の足元に輪を足す
+ * （渡さなければ従来どおり。警戒度の輪 `monster_alerts` とは別の経路）。輪はなめらかな位置に置く。
+ */
+struct RingTint {
+    int gx{ 0 };
+    int gy{ 0 };
+    float radius{ 0.42f }; //!< 外周の半径（マス単位）
+    float r{ 1.f };
+    float g{ 1.f };
+    float b{ 1.f };
+    float a{ 0.85f };
+};
+
 class EntityTracker {
 public:
     /*!
@@ -179,8 +194,13 @@ public:
         float dt, EntityView &out, bool hide_player = false, float player_min_speed = 0.f,
         const SlabFacing &facing = SlabFacing{}, GlyphAtlas *glyphs = nullptr,
         float glyph_height_cells = 0.8f, GlyphAtlas *fallback_glyphs = nullptr,
-        bool model_player = false);
+        bool model_player = false, const std::vector<RingTint> *ring_tints = nullptr,
+        float slab_back_shift = 0.f);
 
+    /*!
+     * @note `slab_back_shift`（マス。既定 0 = 従来どおり）: 板をマスの中でカメラから遠い側へずらす量（DCSS は 0.2。足元の輪が板の手前に見えるように。
+     * 板の中心・カットアウェイが見る位置もそのぶんずれる）。
+     */
     //! フロアが変わったときに呼ぶ（覚えている位置を捨てる）。
     void reset();
 

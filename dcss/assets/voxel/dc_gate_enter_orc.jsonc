@@ -1,0 +1,217 @@
+// dc_gate_enter_orc — プレハブ定義（設計書 §7）。`dc_gate_enter_orc.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 enter_orc（dngn/gateways/enter_orc）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_orc",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "59312A",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "472926",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "A6564B",
+      "material": "wood"
+    },
+    {
+      "i": 5,
+      "rgb": "D9D900",
+      "material": "metal"
+    },
+    {
+      "i": 6,
+      "rgb": "CC9900",
+      "material": "metal"
+    },
+    {
+      "i": 7,
+      "rgb": "693A32",
+      "material": "wood"
+    },
+    {
+      "i": 8,
+      "rgb": "54302D",
+      "material": "wood"
+    },
+    {
+      "i": 9,
+      "rgb": "C36558",
+      "material": "metal"
+    },
+    {
+      "i": 10,
+      "rgb": "997300",
+      "material": "metal"
+    },
+    {
+      "i": 11,
+      "rgb": "FFFF00",
+      "material": "metal"
+    },
+    {
+      "i": 12,
+      "rgb": "F0B400",
+      "material": "metal"
+    },
+    {
+      "i": 13,
+      "rgb": "7E423B",
+      "material": "wood"
+    },
+    {
+      "i": 14,
+      "rgb": "944E45",
+      "material": "wood"
+    },
+    {
+      "i": 15,
+      "rgb": "B48700",
+      "material": "metal"
+    },
+    {
+      "i": 16,
+      "rgb": "CA6659",
+      "material": "metal"
+    },
+    {
+      "i": 17,
+      "rgb": "EE7869",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "4C3900",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "5A4300",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "4C2600",
+      "material": "wood"
+    },
+    {
+      "i": 21,
+      "rgb": "5A2D00",
+      "material": "wood"
+    },
+    {
+      "i": 22,
+      "rgb": "994C00",
+      "material": "wood"
+    },
+    {
+      "i": 23,
+      "rgb": "B45A00",
+      "material": "wood"
+    },
+    {
+      "i": 24,
+      "rgb": "CC6600",
+      "material": "metal"
+    },
+    {
+      "i": 25,
+      "rgb": "F07800",
+      "material": "metal"
+    },
+    {
+      "i": 26,
+      "rgb": "262600",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "2D2D00",
+      "material": "stone"
+    },
+    {
+      "i": 28,
+      "rgb": "D98000",
+      "material": "metal"
+    },
+    {
+      "i": 29,
+      "rgb": "FF9600",
+      "material": "metal"
+    },
+    {
+      "i": 30,
+      "rgb": "663300",
+      "material": "wood"
+    },
+    {
+      "i": 31,
+      "rgb": "783C00",
+      "material": "wood"
+    },
+    {
+      "i": 32,
+      "rgb": "333300",
+      "material": "stone"
+    },
+    {
+      "i": 33,
+      "rgb": "3C3C00",
+      "material": "stone"
+    },
+    {
+      "i": 34,
+      "rgb": "4C1300",
+      "material": "wood"
+    },
+    {
+      "i": 35,
+      "rgb": "5A1600",
+      "material": "wood"
+    },
+    {
+      "i": 36,
+      "rgb": "D9BF00",
+      "material": "metal"
+    },
+    {
+      "i": 37,
+      "rgb": "FFE100",
+      "material": "metal"
+    }
+  ]
+}

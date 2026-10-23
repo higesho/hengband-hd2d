@@ -30,6 +30,7 @@
 #include "bridge/input_event_adapter.h"
 #include "bridge/symbol_prompt.h"
 #include "bridge/look_screen_cover.h"
+#include "bridge/prompt_semantics.h"
 #include "frame/message_more.h"
 #include "frame/targeting_codec.h"
 #include "bridge/modern_content.h"
@@ -375,7 +376,13 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
         return false;
     }
 
-    if (text.find("<dir>") != std::string::npos && text.find("q,") != std::string::npos && text.find("p,") != std::string::npos) {
+    /*
+     * 名前が長くて案内が 80 桁の外へ落ちた行（共用の `presentation::look_row_was_cut()`。頭は `Target: `・`Feature: `・
+     * `Monster: `・`Position: `）。案内の中身は読めないので、頭が決めるモード（`xtra2.c` の `target_set_aux()`。`Position: ` は
+     * 自由に動く `m` のモード、ほかは `o` のモード）の案内を仮に置き、同じ道で操作を出す。`j`（`(`）は配置で綴りが違うので出さない。
+     */
+    const bool cut_look = presentation::look_row_was_cut(text, presentation::LookRowHeads::Frox);
+    if (cut_look || (text.find("<dir>") != std::string::npos && text.find("q,") != std::string::npos && text.find("p,") != std::string::npos)) {
         // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない（`look_screen_cover.h`）。
         if (presentation::look_screen_cover().covered(fc_screen_depth())) {
             out = PromptBar{};
@@ -390,24 +397,28 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
          */
         {
             std::string subject;
-            if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
+            //! 案内が落ちた行は共用の道具で取る（落ちた案内の頭の `[` だけを外す。アイテムの `[4,+0]` は説明に残る）。
+            if(cut_look)subject=std::string(presentation::look_row_cut_subject(text));
+            else if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
             const auto trim=[](std::string &s){while(!s.empty()&&s.back()==' ')s.pop_back();std::size_t i=0;while(i<s.size()&&s[i]==' ')++i;s.erase(0,i);};
             trim(subject);
             for(const char *const more:{"-more-",reinterpret_cast<const char *>(u8"-続く-")}){const std::string m(more);if(subject.size()>=m.size()&&subject.compare(subject.size()-m.size(),m.size(),m)==0){subject.erase(subject.size()-m.size());trim(subject);}}
             out.text_utf8+=subject;
         }
-        if(text.find('+')!=std::string::npos)add('+',"Next interesting");
-        if(text.find('-')!=std::string::npos)add('-',"Previous interesting");
+        //! 操作を読む字。切れていなければ行そのもの。切れていれば、頭が示すモードの案内（上のコメント）。
+        const std::string keys_text = !cut_look ? text : (text.starts_with("Position: ") ? std::string("q,t,p,m,x,+,-,?,<dir>") : std::string("q,t,p,o,x,+,-,?,<dir>"));
+        if(keys_text.find('+')!=std::string::npos)add('+',"Next interesting");
+        if(keys_text.find('-')!=std::string::npos)add('-',"Previous interesting");
         add('p',"Recenter on player");
-        if(text.find("m,")!=std::string::npos)add('m',"Nearest interesting");
-        if(text.find("o,")!=std::string::npos)add('o',"Manual/current mode");
-        if(text.find("t,")!=std::string::npos)add('t',"Select target");
-        if(text.find("?,")!=std::string::npos)add('?',"Targeting help");
-        if(text.find("x,")!=std::string::npos)add('x',"Toggle monster visibility");
-        if(text.find("j,")!=std::string::npos)add('j',"Set travel destination");
-        else if(text.find("(,")!=std::string::npos)add('(',"Set travel destination");
+        if(keys_text.find("m,")!=std::string::npos)add('m',"Nearest interesting");
+        if(keys_text.find("o,")!=std::string::npos)add('o',"Manual/current mode");
+        if(keys_text.find("t,")!=std::string::npos)add('t',"Select target");
+        if(keys_text.find("?,")!=std::string::npos)add('?',"Targeting help");
+        if(keys_text.find("x,")!=std::string::npos)add('x',"Toggle monster visibility");
+        if(keys_text.find("j,")!=std::string::npos)add('j',"Set travel destination");
+        else if(keys_text.find("(,")!=std::string::npos)add('(',"Set travel destination");
         //! 日本語も英語も `[r,/,…]`（モンスターの思い出・アイテムの調査。`xtra2.c` の `target_set_aux()`）。最後に足す（先頭の「次の注目点」が既定の札のまま変わらないように）。見た先に何も無いときは `[q,p,…]` で `r` が無い。
-        if(text.find("[r,")!=std::string::npos)add('r',"Recall");
+        if(cut_look||text.find("[r,")!=std::string::npos)add('r',"Recall");
         out.footer_utf8=ui_label("LB/RB: select action  A/Enter: run  D-pad: move look cursor");
         return !out.choices.empty();
     }
@@ -2107,7 +2118,8 @@ static void fill_row0_prompt_inner(GameFrame &frame)
             if (y == 0) {
                 std::string whole = term_row_text(0);
                 while (!whole.empty() && whole.back() == ' ') whole.pop_back();
-                if (whole.find("<dir>") != std::string::npos && parse_prompt_line(whole, prompt)) {
+                if ((whole.find("<dir>") != std::string::npos || presentation::look_row_was_cut(whole, presentation::LookRowHeads::Frox))
+                    && parse_prompt_line(whole, prompt)) {
                     whole_row = true;
                 }
             }
@@ -2497,6 +2509,38 @@ int audit_semantics_selftest()
             "look band drops the -more- mark (cho-13)");
         check(keeps(utf8_of(u8"ジャイアント・ホワイト・マウス (睡眠中) (距離 3) [r,/,x,q,p,o,x,j,+,-,?,<dir>]"), utf8_of(u8"ジャイアント・ホワイト・マウス (睡眠中) (距離 3)")),
             "ja look band keeps the monster being looked at (cho-13)");
+    }
+    {
+        //! 名前が長くて、見る（l）の行が Term の幅（80 桁）で切れ、終わりの操作の案内が落ちた行でも帯が出る（共用の `presentation::look_row_was_cut()`）。
+        //! 頭は `Target: `・`Feature: `・`Monster: `・`Position: `。`Position: `（自由に動く `m` のモード）は `m` を出し `o` を出さない。
+        PromptBar cut;
+        const auto cut_band = [&](const std::string &row, const char *subject) {
+            if (!parse_prompt_line(row, cut) || cut.choices.empty()) return false;
+            const std::size_t at = cut.text_utf8.find(subject);
+            return at != std::string::npos && cut.text_utf8.find('[', at + std::strlen(subject)) == static_cast<std::size_t>(cut.choices.front().begin) - 1;
+        };
+        check(cut_band("Monster: Grip, Farmer Maggot's Dog the Bounding and Barking (Asleep) (Rng 3) [r,/,x,q,t",
+                  "Monster: Grip, Farmer Maggot's Dog the Bounding and Barking (Asleep) (Rng 3)")
+                && prompt_has_key(cut, '+') && prompt_has_key(cut, '-') && prompt_has_key(cut, 'p') && prompt_has_key(cut, 'o')
+                && prompt_has_key(cut, 't') && prompt_has_key(cut, 'r') && !prompt_has_key(cut, 'm'),
+            "cut look band appears for a long monster name (Monster:)");
+        check(cut_band("Feature: a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0] [r,/,q,",
+                  "Feature: a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0]")
+                && prompt_has_key(cut, 'o'),
+            "cut look band keeps the item bracket (Feature:)");
+        check(cut_band("Position: a Potion of Resist Heat and Cold of the Very Long Name of Testing Indeed [2,+0",
+                  "Position: a Potion of Resist Heat and Cold of the Very Long Name of Testing Indeed")
+                && prompt_has_key(cut, 'm') && !prompt_has_key(cut, 'o'),
+            "cut look band in the free (m) mode (Position:)");
+        check(cut_band(utf8_of(u8"Monster: ジャイアント・ホワイト・マウスの長い名前のテスト用の怪物 (睡眠中) (距離 3) [r,/,x,q,t,p,"),
+                  utf8_of(u8"Monster: ジャイアント・ホワイト・マウスの長い名前のテスト用の怪物 (睡眠中) (距離 3)")),
+            "ja cut look band for a long monster name");
+        check(!parse_prompt_line("Monster: a Cave spider", cut), "short Monster: line is not a look band");
+        check(!parse_prompt_line("Monster: Grip, Farmer Maggot's Dog the Bounding and Barking (Asleep) (Rng 3) -more-", cut),
+            "-more- line is not a look band");
+        check(parse_prompt_line("Monster: Grip, Farmer Maggot's Dog the Bounding and Barking (Asleep) (Rng 3) [r,/,x,q,t,p,o,x,j,+,-,?,<dir>]", cut)
+                && prompt_has_key(cut, 'j'),
+            "a long row that still has its whole guide reads the keys from the row");
     }
     {
         PromptBar prompt;

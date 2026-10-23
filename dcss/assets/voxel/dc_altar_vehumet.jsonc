@@ -1,0 +1,67 @@
+// dc_altar_vehumet — プレハブ定義（設計書 §7）。`dc_altar_vehumet.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 vehumet1（dngn/altars/vehumet1）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_vehumet",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "79C2B2",
+      "material": "plant"
+    },
+    {
+      "i": 2,
+      "rgb": "97F2DF",
+      "material": "plant"
+    },
+    {
+      "i": 3,
+      "rgb": "515151",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "FAFAFA",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "1C6068",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "5AEBE1",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "96FFF5",
+      "material": "clean"
+    }
+  ]
+}

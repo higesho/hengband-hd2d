@@ -1,0 +1,97 @@
+// dc_rune_binding_sigil — プレハブ定義（設計書 §7）。`dc_rune_binding_sigil.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 binding_sigil（dngn/traps/binding_sigil）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_rune_binding_sigil",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "300AAD",
+      "material": "clean"
+    },
+    {
+      "i": 3,
+      "rgb": "3A0CD2",
+      "material": "clean"
+    },
+    {
+      "i": 4,
+      "rgb": "440EF7",
+      "material": "clean"
+    },
+    {
+      "i": 5,
+      "rgb": "430CB2",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "520ED9",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "6011FF",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "9160D9",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "AB71FF",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "784FB2",
+      "material": "clean"
+    },
+    {
+      "i": 11,
+      "rgb": "BAA4D9",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "DBC1FF",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "9987B2",
+      "material": "stone"
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+// dc_altar_makhleb — プレハブ定義（設計書 §7）。`dc_altar_makhleb.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 makhleb_flame1（dngn/altars/makhleb_flame1）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_makhleb",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "32212A",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "3E2934",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "140D18",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "81776A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "56383C",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "674348",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "4D3236",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "F05A14",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "FFAA28",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "FFEB78",
+      "material": "clean"
+    }
+  ]
+}

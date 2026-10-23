@@ -48,6 +48,8 @@ typedef struct rl_status_effect {
 int rl_status_effects(rl_status_effect *out, int cap);
 /* 状態のアイコンの集め方の自己検査（`--selftest-status` から）。0 なら全部合った。 */
 int rl_status_effects_selftest(void);
+/* テスト用: 環境変数 HENGBAND_TEST_SEED（正の整数）があれば、最初の 1 回だけ原作の乱数の種を上書きする（initscr から呼ぶ）。無ければ何もしない。 */
+void rl_test_seed_apply(void);
 /* テスト用: 環境変数 HENGBAND_TEST_STATUS があれば、ゲームが始まった最初の 1 回だけ本物の状態の旗を付ける。無ければ何もしない。 */
 void rl_test_status_apply(void);
 /* テスト用: 環境変数 HENGBAND_TEST_FX_ITEMS があれば、ゲームが始まった最初の 1 回だけ、指定した杖・巻物・武器を持ち物へ足す。無ければ何もしない。 */

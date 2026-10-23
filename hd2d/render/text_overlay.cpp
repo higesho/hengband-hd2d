@@ -150,11 +150,21 @@ bool TextOverlay::init(int px, std::string &err)
         }
     }
 
-    for (const char *const path : kFontCandidates) {
-        this->font_ = TTF_OpenFont(path, px);
+    if (!this->forced_font_path_.empty()) {
+        this->font_ = TTF_OpenFontIndex(this->forced_font_path_.c_str(), px, this->forced_font_index_);
         if (this->font_ != nullptr) {
-            std::fprintf(stderr, "[hd2d] text font: %s (%dpx)\n", path, px);
-            break;
+            std::fprintf(stderr, "[hd2d] text font: %s (%dpx)\n", this->forced_font_path_.c_str(), px);
+        } else {
+            err = "指定のフォントを開けませんでした: " + this->forced_font_path_;
+            return false;
+        }
+    } else {
+        for (const char *const path : kFontCandidates) {
+            this->font_ = TTF_OpenFont(path, px);
+            if (this->font_ != nullptr) {
+                std::fprintf(stderr, "[hd2d] text font: %s (%dpx)\n", path, px);
+                break;
+            }
         }
     }
     if (this->font_ == nullptr) {
@@ -213,6 +223,17 @@ bool TextOverlay::init(int px, std::string &err)
         return false;
     }
     return true;
+}
+
+bool TextOverlay::init_with_font(int px, const std::string &font_path, int ttc_index, std::string &err)
+{
+    this->forced_font_path_ = font_path;
+    this->forced_font_index_ = ttc_index;
+    const bool ok = this->init(px, err);
+    if (!ok) {
+        this->forced_font_path_.clear();
+    }
+    return ok;
 }
 
 void TextOverlay::shutdown()
@@ -357,7 +378,15 @@ void TextOverlay::set_layout_scale(float scale) {
     auto found=scaled_fonts_.find(pixels);
     if(found==scaled_fonts_.end()) {
         auto font=std::make_unique<TextOverlay>();std::string error;
-        if(!font->init(pixels,error)){font->shutdown();layout_scale_=1.f;return;}
+        /*
+         * `init_with_font` で開いた字（DCSS の BIZ UDゴシック）は、拡大した字も同じファイルで開く。
+         * `set_wide_advance` を指定してあるときは、拡大した字の桁の幅を「論理の桁の幅 x 倍率」に固定する
+         * （全角 = wide_advance_ x 倍率、半角 = その半分）。拡大した字の自然な送り幅は丸めの違いで論理の桁とずれ、
+         * 長い行の字が桁の背景の四角から少しずつずれるため。指定の無い字（ほかのコア）の動きは変えない。
+         */
+        const bool opened=forced_font_path_.empty()?font->init(pixels,error):font->init_with_font(pixels,forced_font_path_,forced_font_index_,error);
+        if(!opened){font->shutdown();layout_scale_=1.f;return;}
+        if(wide_advance_>0){font->wide_advance_=int(wide_advance_*layout_scale_+.5f);font->narrow_advance_=font->wide_advance_/2;}
         font->begin(screen_w_,screen_h_);
         found=scaled_fonts_.emplace(pixels,std::move(font)).first;
     }
@@ -420,7 +449,7 @@ int TextOverlay::draw_raw(int x, int y, std::string_view utf8, const TextColor &
         }
         const Glyph *const glyph = this->glyph_for(cp);
         // **字の右端で切る。**途中まで描くと半分の字が残って読めない。
-        if ((max_width > 0) && ((pen_x + static_cast<float>(glyph->w)) > limit)) {
+        if ((max_width > 0) && ((pen_x + this->advance_of(*glyph)) > limit)) {
             this->last_consumed_ = char_start; //!< 問い合わせには描いた分だけを渡す
             this->last_clipped_ = true;
             break;
@@ -447,7 +476,7 @@ int TextOverlay::draw_raw(int x, int y, std::string_view utf8, const TextColor &
             this->vertices_.push_back(c);
             this->vertices_.push_back(d);
         }
-        pen_x += static_cast<float>(glyph->w);
+        pen_x += this->advance_of(*glyph);
     }
     this->last_width_ = static_cast<int>(pen_x) - x;
     return static_cast<int>(pen_x) - x;
@@ -471,7 +500,7 @@ std::size_t TextOverlay::fit_bytes(std::string_view utf8, int max_width)
     while (pos < utf8.size()) {
         const std::uint32_t cp = next_codepoint(utf8, pos);
         const float advance = (cp == '\t') ? static_cast<float>(this->cell_w_ * 4)
-                                           : static_cast<float>(this->glyph_for(cp)->w);
+                                           : this->advance_of(*this->glyph_for(cp));
         // **字の右端で切る**（`draw()` と同じ規則。途中まで描くと半分の字が残る）。
         if ((pen_x + advance) > limit) {
             return fits;
@@ -489,7 +518,7 @@ int TextOverlay::measure(std::string_view utf8)
     std::size_t pos = 0;
     while (pos < utf8.size()) {
         const std::uint32_t cp = next_codepoint(utf8, pos);
-        width += (cp == '\t') ? (this->cell_w_ * 4) : this->glyph_for(cp)->w;
+        width += (cp == '\t') ? (this->cell_w_ * 4) : static_cast<int>(this->advance_of(*this->glyph_for(cp)));
     }
     return width;
 }
@@ -529,17 +558,17 @@ int TextOverlay::draw_sized(int x, int y, std::string_view utf8, const TextColor
 }
 
 int TextOverlay::draw_sized_clipped(float x, int y, std::string_view utf8, const TextColor &color, float scale,
-    int max_width, float clip_x0, float clip_x1)
+    int max_width, float clip_x0, float clip_x1, float x_scale)
 {
     TextOverlay *const font = this->sized_font(scale);
     if (font->scaled_font_ != nullptr) {
         return font->draw(static_cast<int>(std::lround(x)), y, utf8, color, max_width);
     }
-    return font->draw_clipped_impl(x, y, utf8, color, max_width, clip_x0, clip_x1);
+    return font->draw_clipped_impl(x, y, utf8, color, max_width, clip_x0, clip_x1, x_scale);
 }
 
 int TextOverlay::draw_clipped_impl(float x, int y, std::string_view utf8, const TextColor &color, int max_width,
-    float clip_x0, float clip_x1)
+    float clip_x0, float clip_x1, float x_scale)
 {
     float pen_x = x;
     const float pen_y = static_cast<float>(y);
@@ -559,11 +588,13 @@ int TextOverlay::draw_clipped_impl(float x, int y, std::string_view utf8, const 
             continue;
         }
         const Glyph *const glyph = this->glyph_for(cp);
-        if ((max_width > 0) && ((pen_x + static_cast<float>(glyph->w)) > limit)) {
+        const float glyph_w = static_cast<float>(glyph->w) * x_scale; //!< 横だけ縮める（既定は 1 倍 = そのまま）
+        //! 横を縮めた字の幅は小数なので、足し算の誤差で最後の字が幅の上限をほんの少し超えても切らない。
+        if ((max_width > 0) && ((pen_x + glyph_w) > (limit + 0.01f))) {
             width_clipped = true;
             break;
         }
-        if (((pen_x + static_cast<float>(glyph->w)) > clip_x0) && (pen_x < clip_x1)) {
+        if (((pen_x + glyph_w) > clip_x0) && (pen_x < clip_x1)) {
             if (glyph->missing) {
                 ++missing;
             }
@@ -573,7 +604,7 @@ int TextOverlay::draw_clipped_impl(float x, int y, std::string_view utf8, const 
         }
         if (glyph->drawable) {
             float x0 = pen_x;
-            float x1 = pen_x + static_cast<float>(glyph->w);
+            float x1 = pen_x + glyph_w;
             const float y0 = pen_y;
             const float y1 = pen_y + static_cast<float>(glyph->h);
             float u0 = glyph->u0;
@@ -602,7 +633,7 @@ int TextOverlay::draw_clipped_impl(float x, int y, std::string_view utf8, const 
                 this->vertices_.push_back(d);
             }
         }
-        pen_x += static_cast<float>(glyph->w);
+        pen_x += glyph_w;
     }
     if (ui_probe().enabled() && (color.a > 0.01f) && (seen_end > seen_begin)) {
         ProbeTextStyle style;

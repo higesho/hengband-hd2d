@@ -696,7 +696,56 @@ void draw_frame_as_text(TextOverlay &text, const GameFrame &frame, const std::st
  * 手前の地面に穴が開く。`Cutaway` の約束 2）。立つものは掛ける。
  * 戻るときカットアウェイの倍率は 1 のままである（呼び手が次の描画で設定し直すこと）。
  */
-void draw_library_color(VoxelRenderer &renderer, PrefabLibrary &library, const TerrainView &terrain)
+std::size_t LibraryDeferred::instance_count() const
+{
+    std::size_t n = 0;
+    for (const auto &item : this->items) {
+        n += item.second.size();
+    }
+    return n;
+}
+
+namespace {
+
+//! そのインスタンスの足元のマス（プレハブの接地の各マス）のどれかが `occupied` にあるか。
+bool library_instance_occupied(const LibraryEntry &entry, const InstanceData &inst, const std::unordered_set<std::uint32_t> &occupied)
+{
+    const int base_x = static_cast<int>(std::floor(inst.x + entry.anchor_x + 0.01f));
+    const int base_y = static_cast<int>(std::floor(inst.y + entry.anchor_y + 0.01f));
+    const auto &foot = entry.prefab.footprint;
+    if (foot.empty()) {
+        return occupied.count(occupied_cell_key(base_x, base_y)) != 0;
+    }
+    for (const auto &cell : foot) {
+        if (occupied.count(occupied_cell_key(base_x + (cell.first - foot.front().first), base_y + (cell.second - foot.front().second))) != 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+} // namespace
+
+void draw_library_deferred(VoxelRenderer &renderer, PrefabLibrary &library, const LibraryDeferred &deferred)
+{
+    if (deferred.items.empty()) {
+        return;
+    }
+    renderer.set_cutaway_scale(1.f);
+    glDepthMask(GL_FALSE);
+    for (const auto &item : deferred.items) {
+        LibraryEntry &entry = library.entry_mut(item.first);
+        if (item.second.empty() || !entry.gpu_ready) {
+            continue;
+        }
+        renderer.draw_instanced(entry.gpu, item.second.data(), item.second.size(),
+            library.motions_of(item.first), library.motion_count_of(item.first));
+    }
+    glDepthMask(GL_TRUE);
+}
+
+void draw_library_color(VoxelRenderer &renderer, PrefabLibrary &library, const TerrainView &terrain,
+    const std::unordered_set<std::uint32_t> *occupied, LibraryDeferred *deferred)
 {
     /*
      * **ライブラリの置き場所が無ければ何もしない。**`TerrainView::lib` はライブラリを渡して組んだときだけ
@@ -721,6 +770,22 @@ void draw_library_color(VoxelRenderer &renderer, PrefabLibrary &library, const T
         const auto &bucket = terrain.lib[static_cast<std::size_t>(i)];
         LibraryEntry &entry = library.entry_mut(i);
         if (bucket.empty() || !entry.gpu_ready || entry.is_ground) {
+            continue;
+        }
+        if ((occupied != nullptr) && (deferred != nullptr) && !occupied->empty() && entry.is_object()) {
+            //! 実体と同じマスのオブジェクトは後ろへ回す（残りはここで描く）。
+            std::vector<InstanceData> keep;
+            std::vector<InstanceData> later;
+            keep.reserve(bucket.size());
+            for (const InstanceData &inst : bucket) {
+                (library_instance_occupied(entry, inst, *occupied) ? later : keep).push_back(inst);
+            }
+            if (!later.empty()) {
+                deferred->items.emplace_back(i, std::move(later));
+            }
+            if (!keep.empty()) {
+                renderer.draw_instanced(entry.gpu, keep.data(), keep.size(), library.motions_of(i), library.motion_count_of(i));
+            }
             continue;
         }
         renderer.draw_instanced(entry.gpu, bucket.data(), bucket.size(),

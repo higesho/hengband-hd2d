@@ -1,0 +1,42 @@
+// dc_grate — プレハブ定義（設計書 §7）。`dc_grate.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の鉄格子 grate（dngn/grate）。縦の棒と横の桟（向こうが見える。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_grate",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "909267",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "787A4F",
+      "material": "stone"
+    }
+  ]
+}

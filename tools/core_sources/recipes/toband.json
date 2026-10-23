@@ -750,6 +750,10 @@
       "encoding": "utf8",
       "text": "{"
     },
+    "02435477ec25930805843809d250193868a7efbc566e7050147faa90c2ac07e7": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - the sidebar is 12 columns wide"
+    },
     "0543a6d57b503046e5ad217a0e4c3646a4d889652701dd4e6f7df860e58a82d0": {
       "encoding": "utf8",
       "text": "\tstr = tb_tr(str); //TB: english layer #19 - all 19 callers pass text that is wrapped before it is drawn\n"
@@ -757,6 +761,10 @@
     "058a9a4c71bebb150ad86f0a7b37f6f921f363b5b87197daaf2253394d248f48": {
       "encoding": "utf8",
       "text": "); //TB: #35\n\tstrcpy(KEY_SHIELDS, \"shields\"); //TB: #35\n\tstrcpy(KEY_LAUNCHERS, \"launchers\"); //TB: #35\n\tstrcpy(KEY_RINGS, \"rings\"); //TB: #35\n\tstrcpy(KEY_AMULETS, \"amulets\"); //TB: #35\n\tstrcpy(KEY_SUITS, \"suits\"); //TB: #35\n\tstrcpy(KEY_CLOAKS, \"cloaks\"); //TB: #35\n\tstrcpy(KEY_HELMS, \"helms\"); //TB: #35\n\tstrcpy(KEY_GLOVES, \"gloves\"); //TB: #35\n\tstrcpy(KEY_BOOTS, \"boots\"); //TB: #35\n\tstrcpy(KEY_SMALL_SWORDS, "
+    },
+    "06375066571bd5a59d18caffc6817c92cea9ddc9fa2c8f8ec7f65a75a080df2c": {
+      "encoding": "utf8",
+      "text": "layer #12 - equipment list: start column"
     },
     "0688d33c15aa96a7ab3274c0de405dbee7bb6930a7896c835b293e445c2f19d9": {
       "encoding": "utf8",
@@ -766,13 +774,25 @@
       "encoding": "utf8",
       "text": "\t\t\t\tif (tb_lang_enabled()) //TB: english layer #12 - \"<verb> by <cause> on ...\" (the japanese order of the arguments is (cause, verb))\n\t\t\t\t{\n\t\t\t\t\tif (!cdun) strnfmt(out_val+13, sizeof(out_val)-13, \"  %s by %s on the surface\", tb_tr(die_verb), the_score.how);\n\t\t\t\t\telse strnfmt(out_val+13, sizeof(out_val)-13, \"  %s by %s on dungeon level %d\", tb_tr(die_verb), the_score.how, cdun);\n\t\t\t\t}\n\t\t\t\telse if (!cdun)\n\t\t\t\t\ttb_"
     },
+    "088a412885097b09d66022b31ef5b5696a5d1da2200b08ade2dede48a6c53d6c": {
+      "encoding": "utf8",
+      "text": "tb_clip"
+    },
     "0bf04c2241a0ee4891b8ac33fd034108f5b644a755f12df8c4bb66d3fa1995c5": {
       "encoding": "utf8",
       "text": "); //TB: #35\n\tstrcpy(KEY_AXES, \"axes\"); //TB: #35\n\tstrcpy(KEY_SPEARS, \"spears\"); //TB: #35\n\tstrcpy(KEY_LANCES, \"lances\"); //TB: #35\n\tstrcpy(KEY_CLAWS, \"claws\"); //TB: #35\n\tstrcpy(KEY_SCYTHES, \"scythes\"); //TB: #35\n\tstrcpy(KEY_WHIPS, \"whips\"); //TB: #35\n\tstrcpy(KEY_HAMMERS, \"hammers\"); //TB: #35\n\tstrcpy(KEY_STAFFS, \"staffs\"); //TB: #35\n\tstrcpy(KEY_FANS, \"fans\"); //TB: #35\n\tstrcpy(KEY_BOWS, \"bows\"); //TB: #35\n\tstrcpy(KEY_GUNS, \"guns\"); //TB: #35\n}\n\n#define MATCH_KEY(KEY) (!strncmp(ptr, KEY, strlen(KEY))\\\n     ? (ptr += strlen(KEY), (' '==*ptr) ? ptr++ : 0, TRUE) : FALSE) //TB: #35 strlen: the keywords change at run time\n#define MATCH_KEY2(KEY) (!strncmp(ptr, KEY, strlen(KEY))\\\n     ? (prev_ptr = ptr, ptr += strlen(KEY), (' '==*ptr) ? ptr++ : 0, TRUE) : FALSE) //TB: #35\n\n#define ADD_KEY(KEY) (strcat(ptr, KEY), tb_lang_enabled() ? strcat(ptr, \" \") : ptr) //TB: #35 english keywords are followed by a space\n"
     },
+    "0c6b6fc43d842b9ff01385ba1b0a312ecbf4979fc6f36155ce150a25bdd0eca2": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - the frame is as wide as the english labels"
+    },
     "0de025a3d4f16634e5e1434aa1e0b123777fb1bcdb51a806ec0436da7564706d": {
       "encoding": "utf8",
       "text": " { //TB: english layer #13 - recall: innate attacks, english sentence"
+    },
+    "0f6f42af9da736381e91a7b70be1bec551d98c9cea0764a15a714906f2ec15c4": {
+      "encoding": "utf8",
+      "text": ", 69 - col"
     },
     "0fc9d9a34ab5afbbf26e6260ff6282eeedbbdeb78f4b669ce52d41e43835a019": {
       "encoding": "utf8",
@@ -781,6 +801,22 @@
     "100df627a45e73e332520be4357dc4502eebbff07e6536e649569d24b699be42": {
       "encoding": "utf8",
       "text": "\tif (tb_lang_enabled()) //TB: english layer #12 - the label is 9 columns wide: one english word (storm > strong wind > rain/temperature)\n\t{\n\t\tstatic cptr rain_en[4][2] = {{\"Clear\", \"Clear\"}, {\"Cloudy\", \"Cloudy\"}, {\"Rain\", \"Snow\"}, {\"Downpour\", \"Snow\"}};\n\t\tconst int rain_lv = weather_level(weather[WEATHER_RAIN]);\n\t\tconst int wind_lv = weather_level(weather[WEATHER_WIND]);\n\t\tconst int temp_half = weather_level(weather[WEATHER_TEMP]) / 2;\n\t\tif ((rain_lv == 3) && (wind_lv == 3)) strcpy(buf, temp_half ? \"Blizzard\" : \"Storm\");\n\t\telse if (wind_lv >= 2) strncpy(buf, tb_tr(weather_table[WEATHER_WIND][wind_lv].title), 9);\n\t\telse strcpy(buf, (rain_lv == 3 && temp_half) ? \"Blizzard\" : rain_en[rain_lv][temp_half]);\n\t\tbuf[9] = 0;\n\t}\n\telse "
+    },
+    "129e52f417ee667ad4d873a1f552747953d228d7d20c604d237f65b479b6d552": {
+      "encoding": "utf8",
+      "text": "(tb_fit"
+    },
+    "134f197e967c2ba889d51015a684528b4c279f2c180c123510c1ed5ea28768f7": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - translate before the 4-byte cut"
+    },
+    "140a509ccc3b5862f2700f148f8867f58efdd461c389758643b46f1ce96662e3": {
+      "encoding": "utf8",
+      "text": "\t\t\ttb_sprintf(out_val, "
+    },
+    "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d": {
+      "encoding": "utf8",
+      "text": "layer #12 - state label (5 columns)"
     },
     "1532821fed2d6f4ed2e86e5806323414057bde81c7bc3db839fabbf8de841115": {
       "encoding": "utf8",
@@ -798,6 +834,10 @@
       "encoding": "utf8",
       "text": "d"
     },
+    "18cc0df97e185040d63df4770e243bb872365c307d36da33bb7f0793c2b97b48": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - equipment list: start column"
+    },
     "18f9c362a116454843cd7ecbcd35b0b6e23aa3fc0e68adf332fb7ae2a5437c10": {
       "encoding": "utf8",
       "text": "ence"
@@ -813,6 +853,10 @@
     "1f75522f485e8876d0193b58a254796a8194d8b579095145e367fa9254fecb39": {
       "encoding": "utf8",
       "text": "layer #13 - jverb conjugates japanese verbs"
+    },
+    "1f83947839cb26297c5217ea0680a1fc1df1aa8e2b65e7f2f5de4cd26ca6729b": {
+      "encoding": "utf8",
+      "text": "layer #12 - speed label (9 columns)"
     },
     "1fabb023411d0ff77d968a1674043fd8dd1bd045b7e1c3a873733d8d0d687b5f": {
       "encoding": "utf8",
@@ -830,6 +874,10 @@
       "encoding": "utf8",
       "text": "); //TB: #35\n\tstrcpy(KEY_SPELLBOOKS, "
     },
+    "24c727377ee456c196d8a7b69404a311b1315a2fb9d18fdbb0c57203affa3f0c": {
+      "encoding": "utf8",
+      "text": "layer #12 - hunger label"
+    },
     "29147b9a47272b1c2a59c7ac2012bb96a330b98cbc5efd7aa6da298506d6c525": {
       "encoding": "utf8",
       "text": "/* TB: english layer #31 - the english labels of the status bar (the #else side above, copied) */\n"
@@ -838,9 +886,17 @@
       "encoding": "utf8",
       "text": "\t\t\tif (tb_lang_enabled()) "
     },
+    "2a0b6287a0e65cff2844cf0887b1c19d960385071c4a0da3d90cfea2c3824e3f": {
+      "encoding": "utf8",
+      "text": "ace"
+    },
     "2add246f95f898698959c718ec84aebd633544edda7c629ffebb7870c8c784ec": {
       "encoding": "utf8",
       "text": " //TB: english layer #19 - break english text at spaces, not after every letter"
+    },
+    "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9": {
+      "encoding": "utf8",
+      "text": "\t"
     },
     "2bcc08572b18770d35a6d13ea1ce8d01b2dabb7a5c7826717284599e103cacda": {
       "encoding": "utf8",
@@ -850,17 +906,21 @@
       "encoding": "utf8",
       "text": "\tprompt = tb_tr(prompt); //TB: english layer #24 - \"[y/n]\" is appended below, so #1 only ever sees the whole line\n"
     },
+    "2dd761aade5cbc00755a8e2e3cc3f4016737c85e6a97789a4cb9e5acb670f9e0": {
+      "encoding": "utf8",
+      "text": "12), "
+    },
     "3128440183b7bf40fce21725c9399f65d987ed26c375ac7fd3d8e4d4d816fb3e": {
       "encoding": "utf8",
       "text": "\tstatic"
     },
-    "328d2554d0f9b48ba849d245226d2bf87e33bfd21b7fed06b1d848668111f522": {
-      "encoding": "utf8",
-      "text": "\t\tsprintf(buf, \"%c - %s.\", sym, tb_tr(ident_info[i]) + 2); //TB: english layer #23 - look up the whole element (\"K:...\") before skipping the symbol\n\n"
-    },
     "3363cf24197792c2e7b0cda78a3d6aabcf969973a97cc21cbe265c44a19db93b": {
       "encoding": "utf8",
       "text": " { //TB: english layer #13 - jverb conjugates japanese verbs"
+    },
+    "33b0c5194556593a48d8cca6cebe26fc230b3f9cb9d217a7a7d564942e9c1e95": {
+      "encoding": "utf8",
+      "text": "\tif (tb_lang_enabled()) { labels[0] = \"F\"; labels[1] = \"A\"; labels[2] = \"E\"; labels[3] = \"W\"; } //TB: english layer #12 - the 12-column sidebar holds one letter\n"
     },
     "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068": {
       "encoding": "utf8",
@@ -877,6 +937,10 @@
     "389877bd9f6bf2efa73899135e8ff58a88f4a1da7538e089b34e5457768118f7": {
       "encoding": "cp932",
       "text": "tb_tr(\"》\")"
+    },
+    "3b76ef2b9d7fcf0aacfd6cf877227dc5a47e62db7640fdb1a87d68816c0c7663": {
+      "encoding": "utf8",
+      "text": "layer #12 - equipment list: item column"
     },
     "3f79bb7b435b05321651daefd374cdc681dc06faa65e374e38337b88ca046dea": {
       "encoding": "utf8",
@@ -922,6 +986,10 @@
       "encoding": "utf8",
       "text": "r"
     },
+    "46d04cdef64f8de29d60c637d1a82a770f536023f24dbea63ee66dcf607d88b7": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - equipment list: item column"
+    },
     "4a2326c64ab2287ead87a51d07628f24c245cbf1147a2065707456d732594cba": {
       "encoding": "utf8",
       "text": "don"
@@ -938,6 +1006,10 @@
       "encoding": "utf8",
       "text": "ve"
     },
+    "4cea53e1a4f93a7a225b5d1f544676aa9662bc908bdbe1e92414b8e0bfde7bf2": {
+      "encoding": "utf8",
+      "text": "tb_tr(\"\\x91\\xce\\x8f\\xdb\\x95\\x90\\x8a\\xed:\")); //TB: english layer #32 - the label of the weapon list"
+    },
     "5058b6f93004488a52e20a5df78508c564398b29925207fe8e00a973cc3f96ea": {
       "encoding": "utf8",
       "text": "/TB:"
@@ -950,6 +1022,10 @@
       "encoding": "utf8",
       "text": " */"
     },
+    "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c": {
+      "encoding": "utf8",
+      "text": "\t} "
+    },
     "5aaf37f19a4e87b7a11e0edec0a04440beefca578369a35d2225751f51718dba": {
       "encoding": "utf8",
       "text": "\t\t\t\t\t{\n\t\t\t\t\t\tstrcat(buf, tb_tr(weapon_skill_name[i]));\n\t\t\t\t\t\tstrcat(buf, \" or \");\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tbuf[strlen(buf) - 4] = 0;\n\t\t\t\tstrcat(buf, \" in your dominant hand.\");\n"
@@ -961,6 +1037,10 @@
     "5ddadfeffaa8be931222ff72afcb84cc7f9f91c2e2c7dc66e48cd91d2f1edf37": {
       "encoding": "utf8",
       "text": "b_lang_enabled() ? to_desc_en : t"
+    },
+    "5e363c98d3e0ad3d45ff18480c0f1776d850cdeb955ab1300f15592dccacc1b9": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - speed label (9 columns)"
     },
     "608c173f28d7882e0056204e29a95edf6057c779566555307436c135f5575873": {
       "encoding": "utf8",
@@ -1030,9 +1110,25 @@
       "encoding": "utf8",
       "text": "\tif (tb_lang_enabled()) { short_elem_name[0] = \"F:\"; short_elem_name[1] = \"A:\"; short_elem_name[2] = \"E:\"; short_elem_name[3] = \"W:\"; } //TB: english layer #12 - element letters of the look line\n"
     },
+    "780d89baf9e79a6cbbb8b80e06b1e49465f00f083c063508fc9aaa698c29cb90": {
+      "encoding": "utf8",
+      "text": "\t\ttb_sprintf(buf, \"%c - %s.\", sym, tb_tr(ident_info[i]) + 2); //TB: english layer #23 - look up the whole element (\"K:...\") before skipping the symbol\n\n"
+    },
+    "790053dcb58a73e289fb796f79f592968466a4c24372b8fea6b7860120055563": {
+      "encoding": "utf8",
+      "text": ", col, len"
+    },
+    "7a4bcb5645f842c6ee3d261d0ee930b3f95fd2752f6d8320117fdf8dd4ce453c": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - hunger label"
+    },
     "7e74c3174c1a7b0aa93b8eb409a341f1b1411d30197341d6db06d620080bbe78": {
       "encoding": "utf8",
       "text": " //TB: english layer #35 - the ^ mark is always usable in english"
+    },
+    "7e8424ee591f6e892e2b3524873891deabbc917335555bc3ea73b55f235ab897": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #32 - the ability name comes from a japanese table"
     },
     "7ee0a6aea916330f53642770fe109e59c0d7d6139f0bc702609029b0124cce4c": {
       "encoding": "utf8",
@@ -1050,6 +1146,18 @@
       "encoding": "utf8",
       "text": "\t\t\t\t"
     },
+    "851c4e085cf304f0c4cc0863f7f7161920436fc3945a795654661e35a4425795": {
+      "encoding": "utf8",
+      "text": "\tif (tb_lang_enabled()) sprintf(kazu_str, \"%d\", (int)o_ptr->number); //TB: english layer #12 - no japanese counter word\n"
+    },
+    "866efa61177e15b55f19787bca699ce093ce82f4318b4295c02d53940d3b221e": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #32 - the weapon type names come from a japanese table"
+    },
+    "876f7ab0510c80de4cb78d76c3fdb0c9d0efc763b84d87552f0b1b9154641908": {
+      "encoding": "utf8",
+      "text": "layer #12 - equipment list: label width"
+    },
     "8873ba70a0f6a06d4af2ed8c1c7bbe428dc2db1b07146e171e2539423e8fb0e6": {
       "encoding": "utf8",
       "text": "else "
@@ -1065,6 +1173,10 @@
     "8a9dd8d244414fa074bd0638e1d1f409ddebbdba22be34e905eaa9ca046933ad": {
       "encoding": "utf8",
       "text": "layer #12 - look line: target_set_aux english branch"
+    },
+    "8ba4b67a25e6f9fe51a91587f501efd950ca03e52456d9dc19444e47381ab5d1": {
+      "encoding": "utf8",
+      "text": "(tb_tr"
     },
     "8c24b79451641952fe73a19bed61c698da55388ef01f7045fd5d04421ca4c04a": {
       "encoding": "utf8",
@@ -1082,13 +1194,17 @@
       "encoding": "utf8",
       "text": "48"
     },
+    "99411b6555fa38551f1042594c50da9444a46498d7ac4a30f88a4cb6392df61d": {
+      "encoding": "utf8",
+      "text": "tb_lang_enabled() ? \"%-11s %6d\" : "
+    },
     "9a5c9ffafc25d55039452ed0d5087562b8a554fa979690311b0db4e9ff7abc1b": {
       "encoding": "utf8",
       "text": "\t\tfprintf(user_fp, "
     },
-    "9ee57ecbdcfff617ec05085ec42b93c33f3dca3264d32f5c99295d0da48c3862": {
+    "9e50aa1b2a91f065a2d1ce414a13872488c47b5b38e9c92d84f954e4c75bd87b": {
       "encoding": "utf8",
-      "text": "\t\t\tsprintf(out_val, "
+      "text": " /*TB: english layer #12 - essence names are up to 11 characters*/"
     },
     "a1b7f6fecd037d70887423c1d753f7f500552d22cdbaa86dee00ffa2903d8aee": {
       "encoding": "utf8",
@@ -1098,9 +1214,25 @@
       "encoding": "utf8",
       "text": "tb_lang_enabled() ? TRUE : "
     },
+    "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611": {
+      "encoding": "utf8",
+      "text": "\t}"
+    },
     "a80768c1820ca0f59a7050e7b51600ac66f71ab8c1910c0fffd61bbd2a3f1b5c": {
       "encoding": "utf8",
       "text": " //TB: english layer #5 - an english word is not broken at '('"
+    },
+    "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - state label (5 columns)"
+    },
+    "aba49879e2c085dcee6666c15df19dcb2cbfa0bd2a904d6afc607f314f58ed63": {
+      "encoding": "utf8",
+      "text": " /*TB: english layer #12 - spell names are up to 23 characters*/"
+    },
+    "ad7fc5d203ee0ec4baf53fd17eab1e7bf356ed835ea66ffb67def5cfe8416270": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - equipment list: label"
     },
     "ad9a67fefa847de87753df6794a0ae466431e76ad1fb4db58fbbe836d1dde0e7": {
       "encoding": "utf8",
@@ -1114,13 +1246,21 @@
       "encoding": "utf8",
       "text": "()) { //TB: "
     },
+    "af9c912c4ca219e0cb7befa9140ea49f605a54a9846be4b23c34f9226dfd4155": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - depth label: surface / quest / level"
+    },
+    "afd99404267c38ade110869f6c92c05efab5702ca92f69879821f57f93565447": {
+      "encoding": "utf8",
+      "text": "\tif (tb_object_desc_en(buf, o_ptr, mode)) return; //TB: english layer #6 - rebuild the name in english grammar (tb_name_en.c)\n\n"
+    },
+    "b1392e174474fc59d158ba5c67a2c83b1f895b2047b4048c7fdb5fdf3f61cef7": {
+      "encoding": "utf8",
+      "text": "\t\ttb_sprintf(buf, \"%c - %s.\", sym, tb_tr(ident_info[i]) + 2); //TB: english layer #23\n\n"
+    },
     "b248f3a07ed279359a59cf85afa9c05f4aebaad9062fb94b52d5053837d9248b": {
       "encoding": "utf8",
       "text": "};\n\nstatic void tb_bar_labels_en(void) //TB: #31\n{\n\tstatic int done = 0;\n\tint i;\n\n\tif (done || !tb_lang_enabled()) return;\n\tdone = 1;\n\tfor (i = 0; bar[i].sstr && bar_en[i].sstr; i++)\n\t{\n\t\tbar[i].sstr = bar_en[i].sstr;\n\t\tbar[i].lstr = bar_en[i].lstr;\n\t}\n}\n\n"
-    },
-    "b29b0cdc583aabf51d1a6296dbe7f187e592eca21349bda68d2e71001f0e0456": {
-      "encoding": "utf8",
-      "text": "\n\tif (tb_object_desc_en(buf, o_ptr, mode)) return; //TB: english layer #6 - rebuild the name in english grammar (tb_name_en.c)\n"
     },
     "b43a2a18680ec30ca91e71e9538f337a4f9f5e3a3565414ebb03b58a757dd853": {
       "encoding": "utf8",
@@ -1129,6 +1269,10 @@
     "b45acea049005c6992023f418672d7ce297375c1c945e6a38a1d5a68ce7b675c": {
       "encoding": "utf8",
       "text": "\t\t\tif (tb_lang_enabled()) s3 =\"\"; //TB: english layer #12\n"
+    },
+    "b5915cbe91df184b1e68518a339b9874d38a25a3e64de352c6dae3792588b25d": {
+      "encoding": "utf8",
+      "text": "pth label: sur"
     },
     "b6234d2ea0d6022be63db80d7b80e221097fe4a469dc44febcd2a9241effdeba": {
       "encoding": "utf8",
@@ -1158,9 +1302,17 @@
       "encoding": "utf8",
       "text": "\t\tif (tb_lang_enabled()) name = "
     },
+    "c42d54c2e095eab3afc172b7dfa1b9c119ba70ffad7a44eb8614aa4491955ecc": {
+      "encoding": "utf8",
+      "text": "b_head_"
+    },
     "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6": {
       "encoding": "utf8",
       "text": " (!tb_lang_enable"
+    },
+    "c9083a4a1657f6e0cbb63b68968c55116404d81eb75c8db65bc7fe7af2e25949": {
+      "encoding": "utf8",
+      "text": "        if (tb_lang_enabled()) label = i ? \"D\" : \"A\"; //TB: english layer #12\n"
     },
     "ca581af01d99c778c4ee1d658d10f45b13ebbe1d33a74d0e13649bcbaf04011f": {
       "encoding": "utf8",
@@ -1177,6 +1329,10 @@
     "cdc904448e62fec742062816f061e650dfa07eb3dbdf78fce71e1c95d8e3ea67": {
       "encoding": "utf8",
       "text": "} //TB: "
+    },
+    "cebd6598699c4472ca164414d04bf59e666d73a74ea416e68505266e08c48f17": {
+      "encoding": "utf8",
+      "text": " tb_lang_enabled() ? \"%c/%c) %-25.25s\" :"
     },
     "cf9ed935cb000ba24f1b5cc6f1de1bb95a12140f26baa3921e597ef0a0a9e555": {
       "encoding": "utf8",
@@ -1214,9 +1370,17 @@
       "encoding": "utf8",
       "text": "layer"
     },
+    "db2f2569a20f5b621309b5d8cefea73127b96f62fe4a6c8996dbd7fba01514c2": {
+      "encoding": "utf8",
+      "text": " (!tb_lang_enabled()) { //TB: english layer #12 - "
+    },
     "de86974a8f75ea931ccfbeea5c6a01dce8b24bb5e9198ff88494cdf953bdcf36": {
       "encoding": "utf8",
       "text": "tb_lang_file("
+    },
+    "de9d1df801f5ce6f503d4f2281f4815a3ea473cd37293ff8820e96d079e233b6": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - the name column ends before the symbol (column 70)"
     },
     "df8cfa654bfdd33338244571784bc13122357fc0f6aa1a1008d74f6ed5c06841": {
       "encoding": "utf8",
@@ -1230,9 +1394,17 @@
       "encoding": "utf8",
       "text": "{ "
     },
+    "e251b5564730bcf8d50183bd83f67f644cecce9458b87453894b80f8bb10c147": {
+      "encoding": "utf8",
+      "text": "/ quest / level"
+    },
     "e362e69d574a8a8deceb3474674f84502372f3c7e30007f1b94e4962b2c33b79": {
       "encoding": "utf8",
       "text": " tb_lang_enabled() ? \"All\" :"
+    },
+    "e36bf7d5f3443d67bfb91af0bc0659f9f20c2f62b12ff76aca0c833e1586989a": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - measure the label in english so that the value never overwrites it"
     },
     "e4c1ed251d938ecc478fa434938e19a8eb7c6dd352f41b5da04ad6b23a05ea3a": {
       "encoding": "utf8",
@@ -1254,6 +1426,14 @@
       "encoding": "utf8",
       "text": "); //TB: #35\n\tstrcpy(KEY_MORE_THAN, \"more than\"); //TB: #35\n\tstrcpy(KEY_DICE, \" dice\"); //TB: #35\n\tstrcpy(KEY_MORE_BONUS, "
     },
+    "e9d6fbd0fb36d4311645600742c84762319cb7edd5f59364c624556d2fc089e8": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - the equipment label (Right hand, On body ...) is built with a plain sprintf"
+    },
+    "eb584f23b50cd7c30510bb8cf0fa83574de13e1bdde49dae324db3845bc87d58": {
+      "encoding": "utf8",
+      "text": " //TB: english layer #12 - centre the english text, not the japanese one"
+    },
     "ed42e0eca1617dfe42720a3e630cc5e9d1ad1224332ee2a81c0480b9a990835e": {
       "encoding": "utf8",
       "text": "\t\t\tif (tb_lang_enabled()) //TB: english layer #12 - \"A or B\" in an english sentence (the names are joined by a japanese particle)\n\t\t\t{\n\t\t\t\tstrcpy(buf, \"To use this special blow, you must wield \");\n"
@@ -1265,10 +1445,6 @@
     "eebc776031a56fb715423d4a2a6bd9ad09ace6f05a4572a93b517f6c9cf00ad2": {
       "encoding": "utf8",
       "text": "\n\t\t\t\t\t\t"
-    },
-    "eecc12cd16c8ce1169b42c903857ef67f82728d1a199475ef0c63a0cc1129619": {
-      "encoding": "utf8",
-      "text": "\t\tsprintf(buf, \"%c - %s.\", sym, tb_tr(ident_info[i]) + 2); //TB: english layer #23\n\n"
     },
     "eee79d301b2ae563015575eb73b1527f2659b9b2b2ee54a570a7fc12d7f07212": {
       "encoding": "utf8",
@@ -1302,6 +1478,10 @@
       "encoding": "utf8",
       "text": "layer #30"
     },
+    "fc8a3a0bcb2e5d973403c32bf33db8505a31244ab99ee104724cbbaef235ec44": {
+      "encoding": "utf8",
+      "text": "layer #12 - equipment list: label"
+    },
     "fd1b3e5909a2e21ec71eb0b110d47e9fbde2d179cd7317c44b7fefadffd2595b": {
       "encoding": "utf8",
       "text": "\t{TERM_VIOLET, \"Hu\", \"Halluc\"},\n"
@@ -1313,6 +1493,10 @@
     "fe4ab82a9497e85bee9b5351bd36df99f0882240a67da8fe849030fc35e03f5a": {
       "encoding": "utf8",
       "text": " //TB: english layer #9 - open the english twin of the help file"
+    },
+    "fea1081cba4b5ceaaf6676f173513e0e9536f4b294595cd65d1f0dfa178f2c93": {
+      "encoding": "utf8",
+      "text": " { //TB: english layer #12 - equipment list: label width"
     }
   },
   "files": {
@@ -1349,7 +1533,7 @@
       ]
     },
     "autopick.c": {
-      "sha256": "64ef5dd46e67b3d232f4420347a71e2605a32a542f6c7f2af4a00a9933487092",
+      "sha256": "889f0fd97da0c83fd5206da52eb5f05e1520e5df19524d4fb7bb4a6ef7eb8456",
       "operations": [
         [
           "copy",
@@ -2447,7 +2631,27 @@
           "copy",
           "i00005",
           15187,
-          4521
+          1531
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00005",
+          16718,
+          2563
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00005",
+          19281,
+          427
         ],
         [
           "add",
@@ -2517,7 +2721,17 @@
           "copy",
           "i00005",
           47105,
-          1139
+          56
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00005",
+          47161,
+          1083
         ],
         [
           "add",
@@ -2527,7 +2741,17 @@
           "copy",
           "i00005",
           48244,
-          8753
+          56
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00005",
+          48300,
+          8697
         ],
         [
           "add",
@@ -2703,18 +2927,98 @@
           "copy",
           "i00005",
           73014,
-          73120
+          30973
+        ],
+        [
+          "add",
+          "8ba4b67a25e6f9fe51a91587f501efd950ca03e52456d9dc19444e47381ab5d1"
+        ],
+        [
+          "copy",
+          "i00005",
+          103987,
+          19
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00005",
+          104006,
+          1
+        ],
+        [
+          "add",
+          "0c6b6fc43d842b9ff01385ba1b0a312ecbf4979fc6f36155ce150a25bdd0eca2"
+        ],
+        [
+          "copy",
+          "i00005",
+          104007,
+          29572
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00005",
+          133579,
+          7
+        ],
+        [
+          "add",
+          "d478e626a6959e31e22a61451c13d639699877b187e44505f89c98b686c6d845"
+        ],
+        [
+          "copy",
+          "i00005",
+          133586,
+          12548
         ]
       ]
     },
     "birth.c": {
-      "sha256": "c7b07720ce05c016eb07b391b6ca38e1d28a51e860895f17cba0417ab86e0770",
+      "sha256": "1e34f5c03876a9f07c2b09b2855eb7ddae2aeff6c6b7834f9a5db1cb1a0aa436",
       "operations": [
         [
           "copy",
           "i00007",
           0,
-          23152
+          20420
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          20420,
+          124
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          20544,
+          2466
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          23010,
+          142
         ],
         [
           "add",
@@ -2754,7 +3058,27 @@
           "copy",
           "i00007",
           23529,
-          12550
+          2235
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          25764,
+          9648
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          35412,
+          667
         ],
         [
           "add",
@@ -2774,7 +3098,47 @@
           "copy",
           "i00007",
           36396,
-          12803
+          718
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          37114,
+          1778
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          38892,
+          2197
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          41089,
+          5118
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          46207,
+          2992
         ],
         [
           "add",
@@ -2784,7 +3148,17 @@
           "copy",
           "i00007",
           49199,
-          260
+          101
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          49300,
+          159
         ],
         [
           "add",
@@ -2794,7 +3168,17 @@
           "copy",
           "i00007",
           49459,
-          273
+          111
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          49570,
+          162
         ],
         [
           "add",
@@ -2804,7 +3188,17 @@
           "copy",
           "i00007",
           49732,
-          280
+          115
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          49847,
+          165
         ],
         [
           "add",
@@ -2814,7 +3208,17 @@
           "copy",
           "i00007",
           50012,
-          1997
+          104
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00007",
+          50116,
+          1893
         ],
         [
           "add",
@@ -3109,13 +3513,33 @@
       ]
     },
     "bldg.c": {
-      "sha256": "6edbc7cf4973e370a8c897c2c9c9d5bdfbf85ad570a3bdcf9d9bc3d3771725ff",
+      "sha256": "7106967910761b14d6ae1175abf4f0187c50c9597b8e525434b93ef723811310",
       "operations": [
         [
           "copy",
           "i00009",
           0,
-          26956
+          1151
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          1151,
+          1099
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          2250,
+          24706
         ],
         [
           "add",
@@ -3225,7 +3649,17 @@
           "copy",
           "i00009",
           35776,
-          163
+          60
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          35836,
+          103
         ],
         [
           "add",
@@ -3245,7 +3679,17 @@
           "copy",
           "i00009",
           36094,
-          2084
+          1244
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          37338,
+          840
         ],
         [
           "add",
@@ -3255,7 +3699,17 @@
           "copy",
           "i00009",
           38178,
-          838
+          53
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          38231,
+          785
         ],
         [
           "add",
@@ -3265,7 +3719,17 @@
           "copy",
           "i00009",
           39016,
-          883
+          53
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          39069,
+          830
         ],
         [
           "add",
@@ -3275,7 +3739,17 @@
           "copy",
           "i00009",
           39899,
-          969
+          53
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          39952,
+          916
         ],
         [
           "add",
@@ -3285,7 +3759,17 @@
           "copy",
           "i00009",
           40868,
-          1005
+          53
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          40921,
+          952
         ],
         [
           "add",
@@ -3295,7 +3779,17 @@
           "copy",
           "i00009",
           41873,
-          5383
+          54
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          41927,
+          5329
         ],
         [
           "add",
@@ -3431,7 +3925,67 @@
           "copy",
           "i00009",
           82969,
-          1130
+          231
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          83200,
+          115
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          83315,
+          512
+        ],
+        [
+          "add",
+          "4cea53e1a4f93a7a225b5d1f544676aa9662bc908bdbe1e92414b8e0bfde7bf2"
+        ],
+        [
+          "copy",
+          "i00009",
+          83840,
+          124
+        ],
+        [
+          "add",
+          "90711c036c91725a27402a4d3bc0c4ac8b1e3a93d6b8c22fc1f828a521a513f2"
+        ],
+        [
+          "copy",
+          "i00009",
+          83964,
+          21
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00009",
+          83985,
+          1
+        ],
+        [
+          "add",
+          "866efa61177e15b55f19787bca699ce093ce82f4318b4295c02d53940d3b221e"
+        ],
+        [
+          "copy",
+          "i00009",
+          83986,
+          113
         ],
         [
           "add",
@@ -3451,7 +4005,17 @@
           "copy",
           "i00009",
           86273,
-          2861
+          53
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          86326,
+          2808
         ],
         [
           "add",
@@ -3461,7 +4025,27 @@
           "copy",
           "i00009",
           89134,
-          5271
+          117
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          89251,
+          2513
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          91764,
+          2641
         ],
         [
           "add",
@@ -3471,17 +4055,47 @@
           "copy",
           "i00009",
           94405,
-          134
+          46
         ],
         [
           "add",
-          "328d2554d0f9b48ba849d245226d2bf87e33bfd21b7fed06b1d848668111f522"
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          94451,
+          88
+        ],
+        [
+          "add",
+          "780d89baf9e79a6cbbb8b80e06b1e49465f00f083c063508fc9aaa698c29cb90"
         ],
         [
           "copy",
           "i00009",
           94591,
-          26152
+          24
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          94615,
+          52
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          94667,
+          26076
         ],
         [
           "add",
@@ -3491,7 +4105,17 @@
           "copy",
           "i00009",
           120743,
-          14247
+          115
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00009",
+          120858,
+          14132
         ]
       ]
     },
@@ -3507,13 +4131,23 @@
       ]
     },
     "cmd1.c": {
-      "sha256": "4cc31c626bbb7daa0235cfd87014809e807d140a04e5aaac6ae52a93877fb0f1",
+      "sha256": "1239e61b29a1564e6c693efecac882bf83077834b89fab937eb68d1043779a9d",
       "operations": [
         [
           "copy",
           "i00013",
           0,
-          26149
+          20189
+        ],
+        [
+          "add",
+          "851c4e085cf304f0c4cc0863f7f7161920436fc3945a795654661e35a4425795"
+        ],
+        [
+          "copy",
+          "i00013",
+          20189,
+          5960
         ],
         [
           "add",
@@ -3523,23 +4157,43 @@
           "copy",
           "i00013",
           26149,
-          85051
+          57
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00013",
+          26206,
+          84994
         ]
       ]
     },
     "cmd2.c": {
-      "sha256": "15ccbf0e2347d6df19112487549c95dfb7e46b0d95167285e2d14cb01bc32ad0",
+      "sha256": "e0c85f8061e264d6c658f25c1aa12dc6dc36d00d3dc51a384b27a73d04f66ecf",
       "operations": [
         [
           "copy",
           "i00015",
           0,
-          106591
+          79054
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00015",
+          79054,
+          27537
         ]
       ]
     },
     "cmd3.c": {
-      "sha256": "cdd63dccb33f9463a56e68a8f8e2da5a1f3199c10e942f848ff742c89edc364d",
+      "sha256": "f25a6a6e6ca4561b41292bc96a85baf1254c1e9156b927a443e0122c335819dc",
       "operations": [
         [
           "copy",
@@ -3575,7 +4229,17 @@
           "copy",
           "i00017",
           8146,
-          10710
+          72
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          8218,
+          10638
         ],
         [
           "add",
@@ -3585,7 +4249,37 @@
           "copy",
           "i00017",
           18856,
-          13175
+          70
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          18926,
+          12751
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          31677,
+          145
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          31822,
+          209
         ],
         [
           "add",
@@ -3615,22 +4309,52 @@
           "copy",
           "i00017",
           36349,
-          134
+          46
         ],
         [
           "add",
-          "eecc12cd16c8ce1169b42c903857ef67f82728d1a199475ef0c63a0cc1129619"
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          36395,
+          88
+        ],
+        [
+          "add",
+          "b1392e174474fc59d158ba5c67a2c83b1f895b2047b4048c7fdb5fdf3f61cef7"
         ],
         [
           "copy",
           "i00017",
           36535,
-          4045
+          24
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          36559,
+          52
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00017",
+          36611,
+          3969
         ]
       ]
     },
     "cmd4.c": {
-      "sha256": "8925661f9deae01077ddcbdb41b9829c1dc9d42f70614b5774c5cc9561867b25",
+      "sha256": "d5f74eea508dcd35815d481b6f19677a771d35cb8ba6cbb0c3bf33fb0978f217",
       "operations": [
         [
           "copy",
@@ -3736,7 +4460,27 @@
           "copy",
           "i00019",
           4083,
-          2486
+          1301
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          5384,
+          105
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          5489,
+          1080
         ],
         [
           "add",
@@ -3746,7 +4490,17 @@
           "copy",
           "i00019",
           6569,
-          297
+          92
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          6661,
+          205
         ],
         [
           "add",
@@ -4626,7 +5380,27 @@
           "copy",
           "i00019",
           18086,
-          2943
+          2619
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          20705,
+          61
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          20766,
+          263
         ],
         [
           "add",
@@ -4636,7 +5410,17 @@
           "copy",
           "i00019",
           21029,
-          659
+          68
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          21097,
+          591
         ],
         [
           "add",
@@ -4646,7 +5430,17 @@
           "copy",
           "i00019",
           21688,
-          220
+          60
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          21748,
+          160
         ],
         [
           "add",
@@ -4656,7 +5450,47 @@
           "copy",
           "i00019",
           21908,
-          11770
+          55
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          21963,
+          377
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          22340,
+          61
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          22401,
+          4222
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          26623,
+          7055
         ],
         [
           "add",
@@ -4666,7 +5500,37 @@
           "copy",
           "i00019",
           33678,
-          3505
+          79
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          33757,
+          659
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          34416,
+          7
+        ],
+        [
+          "add",
+          "d478e626a6959e31e22a61451c13d639699877b187e44505f89c98b686c6d845"
+        ],
+        [
+          "copy",
+          "i00019",
+          34423,
+          2760
         ],
         [
           "add",
@@ -4676,7 +5540,37 @@
           "copy",
           "i00019",
           37183,
-          2643
+          96
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          37279,
+          299
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          37578,
+          7
+        ],
+        [
+          "add",
+          "d478e626a6959e31e22a61451c13d639699877b187e44505f89c98b686c6d845"
+        ],
+        [
+          "copy",
+          "i00019",
+          37585,
+          2241
         ],
         [
           "add",
@@ -4686,7 +5580,37 @@
           "copy",
           "i00019",
           39826,
-          13982
+          104
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          39930,
+          643
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          40573,
+          7
+        ],
+        [
+          "add",
+          "d478e626a6959e31e22a61451c13d639699877b187e44505f89c98b686c6d845"
+        ],
+        [
+          "copy",
+          "i00019",
+          40580,
+          13228
         ],
         [
           "add",
@@ -4776,7 +5700,57 @@
           "copy",
           "i00019",
           56782,
-          13028
+          2507
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          59289,
+          957
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          60246,
+          2853
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          63099,
+          5796
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          68895,
+          594
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          69489,
+          321
         ],
         [
           "add",
@@ -4816,7 +5790,17 @@
           "copy",
           "i00019",
           70274,
-          1062
+          744
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          71018,
+          318
         ],
         [
           "add",
@@ -4856,7 +5840,17 @@
           "copy",
           "i00019",
           72100,
-          1058
+          740
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          72840,
+          318
         ],
         [
           "add",
@@ -4896,7 +5890,27 @@
           "copy",
           "i00019",
           73669,
-          10776
+          9790
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          83459,
+          668
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          84127,
+          318
         ],
         [
           "add",
@@ -6536,7 +7550,37 @@
           "copy",
           "i00019",
           133722,
-          25444
+          7376
+        ],
+        [
+          "add",
+          "088a412885097b09d66022b31ef5b5696a5d1da2200b08ade2dede48a6c53d6c"
+        ],
+        [
+          "copy",
+          "i00019",
+          141098,
+          21
+        ],
+        [
+          "add",
+          "0f6f42af9da736381e91a7b70be1bec551d98c9cea0764a15a714906f2ec15c4"
+        ],
+        [
+          "copy",
+          "i00019",
+          141119,
+          17
+        ],
+        [
+          "add",
+          "de9d1df801f5ce6f503d4f2281f4815a3ea473cd37293ff8820e96d079e233b6"
+        ],
+        [
+          "copy",
+          "i00019",
+          141136,
+          18030
         ],
         [
           "add",
@@ -6686,7 +7730,17 @@
           "copy",
           "i00019",
           169771,
-          278
+          146
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          169917,
+          132
         ],
         [
           "add",
@@ -6696,7 +7750,17 @@
           "copy",
           "i00019",
           170049,
-          175
+          49
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          170098,
+          126
         ],
         [
           "add",
@@ -6716,7 +7780,17 @@
           "copy",
           "i00019",
           170587,
-          177
+          55
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          170642,
+          122
         ],
         [
           "add",
@@ -6746,7 +7820,17 @@
           "copy",
           "i00019",
           171065,
-          295
+          98
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          171163,
+          197
         ],
         [
           "add",
@@ -6776,7 +7860,17 @@
           "copy",
           "i00019",
           172227,
-          427
+          211
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          172438,
+          216
         ],
         [
           "add",
@@ -6786,7 +7880,17 @@
           "copy",
           "i00019",
           172654,
-          359
+          107
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          172761,
+          252
         ],
         [
           "add",
@@ -6876,7 +7980,17 @@
           "copy",
           "i00019",
           174658,
-          322
+          131
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          174789,
+          191
         ],
         [
           "add",
@@ -6926,7 +8040,17 @@
           "copy",
           "i00019",
           176073,
-          355
+          141
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          176214,
+          214
         ],
         [
           "add",
@@ -6936,7 +8060,17 @@
           "copy",
           "i00019",
           176428,
-          321
+          131
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          176559,
+          190
         ],
         [
           "add",
@@ -6986,7 +8120,17 @@
           "copy",
           "i00019",
           177365,
-          286
+          117
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00019",
+          177482,
+          169
         ],
         [
           "add",
@@ -7351,7 +8495,7 @@
       ]
     },
     "cmd5.c": {
-      "sha256": "d4366274d55edcfc2be1cb891146be5551940ce537da66e73423bf691691dd35",
+      "sha256": "9b248dd6c756839b806fec920b548da01bfd14fa24e0ff11274526869bde1405",
       "operations": [
         [
           "copy",
@@ -7519,7 +8663,17 @@
           "copy",
           "i00021",
           26120,
-          428
+          91
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00021",
+          26211,
+          337
         ],
         [
           "add",
@@ -7529,7 +8683,17 @@
           "copy",
           "i00021",
           26548,
-          1030
+          71
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00021",
+          26619,
+          959
         ],
         [
           "add",
@@ -7539,7 +8703,17 @@
           "copy",
           "i00021",
           27578,
-          9516
+          52
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00021",
+          27630,
+          9464
         ],
         [
           "add",
@@ -7569,7 +8743,17 @@
           "copy",
           "i00021",
           37201,
-          379
+          146
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00021",
+          37347,
+          233
         ],
         [
           "add",
@@ -8049,7 +9233,17 @@
           "copy",
           "i00021",
           41847,
-          6075
+          1422
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00021",
+          43269,
+          4653
         ]
       ]
     },
@@ -8097,7 +9291,7 @@
       ]
     },
     "dungeon.c": {
-      "sha256": "b0d79658b593bb0cd1edffd4334b2c2bfdf3d60cd50421ce697849851c9e8bd2",
+      "sha256": "fce4eb314bbdb1fa350bfef59a313b406cb75850e6138514418f33593d48c3f1",
       "operations": [
         [
           "copy",
@@ -8113,7 +9307,17 @@
           "copy",
           "i00029",
           21209,
-          798
+          56
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          21265,
+          742
         ],
         [
           "add",
@@ -8123,7 +9327,87 @@
           "copy",
           "i00029",
           22007,
-          94835
+          57
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          22064,
+          87592
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          109656,
+          140
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          109796,
+          56
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          109852,
+          153
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          110005,
+          56
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          110061,
+          147
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          110208,
+          269
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          110477,
+          6365
         ],
         [
           "add",
@@ -8133,7 +9417,17 @@
           "copy",
           "i00029",
           116842,
-          4968
+          54
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          116896,
+          4914
         ],
         [
           "add",
@@ -8143,12 +9437,22 @@
           "copy",
           "i00029",
           121810,
-          3258
+          54
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00029",
+          121864,
+          3204
         ]
       ]
     },
     "effects.c": {
-      "sha256": "057ce9ad2b501a2f0a1dae044f560c491e3efb19f502ecbe11a0f2fea6f24495",
+      "sha256": "30712946a169c15bd5bef4e335519dc056c31b1197be9dfebee731dbf4c8ccb7",
       "operations": [
         [
           "copy",
@@ -8174,7 +9478,17 @@
           "copy",
           "i00031",
           75442,
-          539
+          501
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          75943,
+          38
         ],
         [
           "add",
@@ -8184,7 +9498,27 @@
           "copy",
           "i00031",
           75981,
-          171
+          50
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          76031,
+          38
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          76069,
+          83
         ],
         [
           "add",
@@ -8204,7 +9538,17 @@
           "copy",
           "i00031",
           81176,
-          362
+          88
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          81264,
+          274
         ],
         [
           "add",
@@ -8214,7 +9558,17 @@
           "copy",
           "i00031",
           81538,
-          159
+          67
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          81605,
+          92
         ],
         [
           "add",
@@ -8270,7 +9624,17 @@
           "copy",
           "i00031",
           89013,
-          157
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          89017,
+          153
         ],
         [
           "add",
@@ -8290,7 +9654,17 @@
           "copy",
           "i00031",
           89175,
-          93
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          89179,
+          89
         ],
         [
           "add",
@@ -8320,7 +9694,17 @@
           "copy",
           "i00031",
           89918,
-          166
+          80
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          89998,
+          86
         ],
         [
           "add",
@@ -8330,7 +9714,17 @@
           "copy",
           "i00031",
           90084,
-          2177
+          122
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          90206,
+          2055
         ],
         [
           "add",
@@ -8340,7 +9734,17 @@
           "copy",
           "i00031",
           92261,
-          12664
+          61
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00031",
+          92322,
+          12603
         ]
       ]
     },
@@ -8508,7 +9912,7 @@
       ]
     },
     "files.c": {
-      "sha256": "c1d3f6ca35c483b48c8f9a6ed2603447ff78109b90475a57193c1ff7b4cadab6",
+      "sha256": "2a56ddb9572cead2b9ddc829f871a48c1f80e60627d1b29604afb7a335b2479e",
       "operations": [
         [
           "copy",
@@ -8524,7 +9928,53 @@
           "copy",
           "i00039",
           365,
-          37852
+          33794
+        ],
+        [
+          "copy",
+          "i00039",
+          34160,
+          1
+        ],
+        [
+          "add",
+          "c42d54c2e095eab3afc172b7dfa1b9c119ba70ffad7a44eb8614aa4491955ecc"
+        ],
+        [
+          "copy",
+          "i00039",
+          34162,
+          8
+        ],
+        [
+          "add",
+          "790053dcb58a73e289fb796f79f592968466a4c24372b8fea6b7860120055563"
+        ],
+        [
+          "copy",
+          "i00039",
+          34170,
+          2
+        ],
+        [
+          "add",
+          "e36bf7d5f3443d67bfb91af0bc0659f9f20c2f62b12ff76aca0c833e1586989a"
+        ],
+        [
+          "copy",
+          "i00039",
+          34172,
+          122
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          34294,
+          3923
         ],
         [
           "add",
@@ -8674,7 +10124,17 @@
           "copy",
           "i00039",
           86724,
-          733
+          121
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          86845,
+          612
         ],
         [
           "add",
@@ -8684,7 +10144,17 @@
           "copy",
           "i00039",
           87457,
-          462
+          95
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          87552,
+          367
         ],
         [
           "add",
@@ -8694,7 +10164,17 @@
           "copy",
           "i00039",
           87919,
-          295
+          130
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          88049,
+          165
         ],
         [
           "add",
@@ -8704,7 +10184,17 @@
           "copy",
           "i00039",
           88214,
-          321
+          114
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          88328,
+          207
         ],
         [
           "add",
@@ -8714,7 +10204,17 @@
           "copy",
           "i00039",
           88535,
-          533
+          71
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          88606,
+          462
         ],
         [
           "add",
@@ -8724,7 +10224,17 @@
           "copy",
           "i00039",
           89068,
-          240
+          108
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          89176,
+          132
         ],
         [
           "add",
@@ -8734,7 +10244,17 @@
           "copy",
           "i00039",
           89308,
-          1461
+          96
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          89404,
+          1365
         ],
         [
           "add",
@@ -10374,7 +11894,17 @@
           "copy",
           "i00039",
           114093,
-          5375
+          79
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          114172,
+          5296
         ],
         [
           "add",
@@ -10384,7 +11914,17 @@
           "copy",
           "i00039",
           119468,
-          185
+          56
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          119524,
+          129
         ],
         [
           "add",
@@ -10424,7 +11964,17 @@
           "copy",
           "i00039",
           119780,
-          477
+          60
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          119840,
+          417
         ],
         [
           "add",
@@ -10434,7 +11984,97 @@
           "copy",
           "i00039",
           120257,
-          19758
+          60
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          120317,
+          7727
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          128044,
+          3868
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          131912,
+          114
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          132026,
+          117
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          132143,
+          5915
+        ],
+        [
+          "add",
+          "90711c036c91725a27402a4d3bc0c4ac8b1e3a93d6b8c22fc1f828a521a513f2"
+        ],
+        [
+          "copy",
+          "i00039",
+          138058,
+          4
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00039",
+          138062,
+          1
+        ],
+        [
+          "add",
+          "eb584f23b50cd7c30510bb8cf0fa83574de13e1bdde49dae324db3845bc87d58"
+        ],
+        [
+          "copy",
+          "i00039",
+          138063,
+          86
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          138149,
+          1866
         ],
         [
           "add",
@@ -10464,7 +12104,27 @@
           "copy",
           "i00039",
           140378,
-          2559
+          1427
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          141805,
+          298
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          142103,
+          834
         ],
         [
           "add",
@@ -10504,7 +12164,27 @@
           "copy",
           "i00039",
           143186,
-          10117
+          146
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          143332,
+          566
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00039",
+          143898,
+          9405
         ],
         [
           "add",
@@ -10519,7 +12199,7 @@
       ]
     },
     "flavor.c": {
-      "sha256": "699b04b6bdd4387823a5f872312761cccf0c8d017d73a685889d0cb46f72cf15",
+      "sha256": "05eb75146e03f40a6f6f6f17cf1f5705c381f6fb6b7778b72bf293a310058b06",
       "operations": [
         [
           "copy",
@@ -10595,28 +12275,98 @@
           "copy",
           "i00041",
           24340,
-          3853
+          3854
         ],
         [
           "add",
-          "b29b0cdc583aabf51d1a6296dbe7f187e592eca21349bda68d2e71001f0e0456"
+          "afd99404267c38ade110869f6c92c05efab5702ca92f69879821f57f93565447"
         ],
         [
           "copy",
           "i00041",
-          28193,
-          31268
+          28194,
+          1261
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00041",
+          29455,
+          169
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00041",
+          29624,
+          122
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00041",
+          29746,
+          337
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00041",
+          30083,
+          29378
         ]
       ]
     },
     "floors.c": {
-      "sha256": "853ad5e7415a6d7799e9196f2b13eae7dabbd16de5701ab682866e4a742e6344",
+      "sha256": "a719a900b2157ae26469d77a7feffbbdedb8717efc8a15760e5e50397bf42798",
       "operations": [
         [
           "copy",
           "i00043",
           0,
-          35962
+          949
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00043",
+          949,
+          1944
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00043",
+          2893,
+          1000
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00043",
+          3893,
+          32069
         ]
       ]
     },
@@ -10742,24 +12492,64 @@
       ]
     },
     "init1.c": {
-      "sha256": "7fce577427192e17e881ebc32eab3016e72b28c75c7eb851f56a310504ed9f94",
+      "sha256": "6fb8bdb05783b8a975367a86bb84ce89a74d311d22605cf14b5810b3b6eea425",
       "operations": [
         [
           "copy",
           "i00067",
           0,
-          109882
+          24752
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00067",
+          24752,
+          418
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00067",
+          25170,
+          421
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00067",
+          25591,
+          84291
         ]
       ]
     },
     "init2.c": {
-      "sha256": "4c520b4f4d6fd08ee33d15865ecd73a079a577c0ef48d976e2387e106e4abe7e",
+      "sha256": "da79612f41853809bd42a334e73861a72f9d80beac49f6249109b254908bf4e8",
       "operations": [
         [
           "copy",
           "i00069",
           0,
-          47504
+          6081
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00069",
+          6081,
+          41423
         ],
         [
           "add",
@@ -10769,7 +12559,17 @@
           "copy",
           "i00069",
           47504,
-          1241
+          64
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00069",
+          47568,
+          1177
         ],
         [
           "add",
@@ -10779,7 +12579,27 @@
           "copy",
           "i00069",
           48745,
-          6948
+          61
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00069",
+          48806,
+          6051
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00069",
+          54857,
+          836
         ]
       ]
     },
@@ -10795,13 +12615,23 @@
       ]
     },
     "load.c": {
-      "sha256": "fa629ecb95d7f3877b0e9ddd69bdc0f393a427605bd3cb207d9c48b55b3ff05a",
+      "sha256": "402a913b2e34192747cd02bd37790139a7fc1bda590eccd39bfa995c4876e655",
       "operations": [
         [
           "copy",
           "i00073",
           0,
-          76483
+          75637
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00073",
+          75637,
+          846
         ]
       ]
     },
@@ -13165,7 +14995,7 @@
       ]
     },
     "monster2.c": {
-      "sha256": "cfe7c385738366099d5ce036f6659bb29e325b0496405786d776f569a349e25d",
+      "sha256": "b0920346604a66972c8757f774ff033b4cc3cd5d0fb4eb0baad321c1f3302b58",
       "operations": [
         [
           "copy",
@@ -13201,7 +15031,17 @@
           "copy",
           "i00101",
           38539,
-          1505
+          45
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00101",
+          38584,
+          1460
         ],
         [
           "add",
@@ -13211,7 +15051,17 @@
           "copy",
           "i00101",
           40044,
-          76666
+          59
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00101",
+          40103,
+          76607
         ],
         [
           "add",
@@ -13221,7 +15071,47 @@
           "copy",
           "i00101",
           116710,
-          4743
+          110
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00101",
+          116820,
+          88
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00101",
+          116908,
+          124
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00101",
+          117032,
+          50
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00101",
+          117082,
+          4371
         ]
       ]
     },
@@ -14010,13 +15900,33 @@
       ]
     },
     "object1.c": {
-      "sha256": "e17f7f88edf0ba580dc9e7051510736b321dc3a9fffdb1f22d06b12c5d7deb7a",
+      "sha256": "eacac397a14f3feac0f876a3324083cfa03ea796e7bc6947dcb098b55ad23914",
       "operations": [
         [
           "copy",
           "i00111",
           0,
-          45267
+          1813
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          1813,
+          42502
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          44315,
+          952
         ],
         [
           "add",
@@ -14026,7 +15936,17 @@
           "copy",
           "i00111",
           45267,
-          31134
+          94
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          45361,
+          31040
         ],
         [
           "add",
@@ -14036,7 +15956,17 @@
           "copy",
           "i00111",
           76401,
-          342
+          91
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          76492,
+          251
         ],
         [
           "add",
@@ -14046,7 +15976,37 @@
           "copy",
           "i00111",
           76743,
-          18798
+          6124
+        ],
+        [
+          "add",
+          "90711c036c91725a27402a4d3bc0c4ac8b1e3a93d6b8c22fc1f828a521a513f2"
+        ],
+        [
+          "copy",
+          "i00111",
+          82867,
+          2
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00111",
+          82869,
+          1
+        ],
+        [
+          "add",
+          "e9d6fbd0fb36d4311645600742c84762319cb7edd5f59364c624556d2fc089e8"
+        ],
+        [
+          "copy",
+          "i00111",
+          82870,
+          12671
         ],
         [
           "add",
@@ -14056,7 +16016,247 @@
           "copy",
           "i00111",
           95545,
-          3560
+          2657
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00111",
+          98203,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00111",
+          98205,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00111",
+          98206,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00111",
+          98208,
+          1
+        ],
+        [
+          "add",
+          "876f7ab0510c80de4cb78d76c3fdb0c9d0efc763b84d87552f0b1b9154641908"
+        ],
+        [
+          "copy",
+          "i00111",
+          98211,
+          38
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00111",
+          98250,
+          4
+        ],
+        [
+          "add",
+          "fea1081cba4b5ceaaf6676f173513e0e9536f4b294595cd65d1f0dfa178f2c93"
+        ],
+        [
+          "copy",
+          "i00111",
+          98254,
+          38
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00111",
+          98298,
+          50
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00111",
+          98349,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00111",
+          98351,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00111",
+          98352,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00111",
+          98354,
+          1
+        ],
+        [
+          "add",
+          "876f7ab0510c80de4cb78d76c3fdb0c9d0efc763b84d87552f0b1b9154641908"
+        ],
+        [
+          "copy",
+          "i00111",
+          98357,
+          34
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00111",
+          98392,
+          4
+        ],
+        [
+          "add",
+          "fea1081cba4b5ceaaf6676f173513e0e9536f4b294595cd65d1f0dfa178f2c93"
+        ],
+        [
+          "copy",
+          "i00111",
+          98396,
+          35
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00111",
+          98437,
+          246
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00111",
+          98684,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00111",
+          98686,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00111",
+          98687,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00111",
+          98689,
+          1
+        ],
+        [
+          "add",
+          "06375066571bd5a59d18caffc6817c92cea9ddc9fa2c8f8ec7f65a75a080df2c"
+        ],
+        [
+          "copy",
+          "i00111",
+          98692,
+          47
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00111",
+          98740,
+          4
+        ],
+        [
+          "add",
+          "18cc0df97e185040d63df4770e243bb872365c307d36da33bb7f0793c2b97b48"
+        ],
+        [
+          "copy",
+          "i00111",
+          98744,
+          47
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00111",
+          98797,
+          308
         ],
         [
           "add",
@@ -14066,7 +16266,187 @@
           "copy",
           "i00111",
           99109,
-          2759
+          726
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00111",
+          99836,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00111",
+          99838,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00111",
+          99839,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00111",
+          99841,
+          1
+        ],
+        [
+          "add",
+          "fc8a3a0bcb2e5d973403c32bf33db8505a31244ab99ee104724cbbaef235ec44"
+        ],
+        [
+          "copy",
+          "i00111",
+          99844,
+          10
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          99854,
+          44
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00111",
+          99899,
+          4
+        ],
+        [
+          "add",
+          "ad7fc5d203ee0ec4baf53fd17eab1e7bf356ed835ea66ffb67def5cfe8416270"
+        ],
+        [
+          "copy",
+          "i00111",
+          99903,
+          10
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          99913,
+          45
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00111",
+          99964,
+          72
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00111",
+          100037,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00111",
+          100039,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00111",
+          100040,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00111",
+          100042,
+          1
+        ],
+        [
+          "add",
+          "3b76ef2b9d7fcf0aacfd6cf877227dc5a47e62db7640fdb1a87d68816c0c7663"
+        ],
+        [
+          "copy",
+          "i00111",
+          100045,
+          60
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00111",
+          100106,
+          4
+        ],
+        [
+          "add",
+          "46d04cdef64f8de29d60c637d1a82a770f536023f24dbea63ee66dcf607d88b7"
+        ],
+        [
+          "copy",
+          "i00111",
+          100110,
+          61
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00111",
+          100177,
+          1691
         ],
         [
           "add",
@@ -14076,7 +16456,17 @@
           "copy",
           "i00111",
           101868,
-          8844
+          63
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          101931,
+          8781
         ],
         [
           "add",
@@ -14126,7 +16516,17 @@
           "copy",
           "i00111",
           112421,
-          9814
+          152
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          112573,
+          9662
         ],
         [
           "add",
@@ -14536,7 +16936,17 @@
           "copy",
           "i00111",
           133115,
-          15571
+          155
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          133270,
+          15416
         ],
         [
           "add",
@@ -14546,12 +16956,22 @@
           "copy",
           "i00111",
           148686,
-          522
+          62
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00111",
+          148748,
+          460
         ]
       ]
     },
     "object2.c": {
-      "sha256": "d56e1845e7e2854c679f480f995afaa70491c29d0a3081eaea3383067db2ff40",
+      "sha256": "cc499efe6e641d1a760acf1dd4128d861f0cf3f6f116637f9d86d728d06e34ae",
       "operations": [
         [
           "copy",
@@ -14567,7 +16987,77 @@
           "copy",
           "i00113",
           202309,
-          31075
+          500
+        ],
+        [
+          "add",
+          "99411b6555fa38551f1042594c50da9444a46498d7ac4a30f88a4cb6392df61d"
+        ],
+        [
+          "copy",
+          "i00113",
+          202809,
+          11
+        ],
+        [
+          "add",
+          "9e50aa1b2a91f065a2d1ce414a13872488c47b5b38e9c92d84f954e4c75bd87b"
+        ],
+        [
+          "copy",
+          "i00113",
+          202820,
+          4476
+        ],
+        [
+          "add",
+          "90711c036c91725a27402a4d3bc0c4ac8b1e3a93d6b8c22fc1f828a521a513f2"
+        ],
+        [
+          "copy",
+          "i00113",
+          207296,
+          70
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00113",
+          207366,
+          1
+        ],
+        [
+          "add",
+          "7e8424ee591f6e892e2b3524873891deabbc917335555bc3ea73b55f235ab897"
+        ],
+        [
+          "copy",
+          "i00113",
+          207367,
+          332
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00113",
+          207699,
+          119
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00113",
+          207818,
+          25566
         ]
       ]
     },
@@ -14822,13 +17312,33 @@
       ]
     },
     "rooms.c": {
-      "sha256": "92f2ea90f66c3486fae922bc5545a6dde80b7a54e31c8088f80f3b8129a80931",
+      "sha256": "af4084b715979c8787235854ca488ad98d761ecf68e949dda912a09faaa87392",
       "operations": [
         [
           "copy",
           "i00135",
           0,
-          137138
+          40842
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00135",
+          40842,
+          1039
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00135",
+          41881,
+          95257
         ]
       ]
     },
@@ -14844,18 +17354,28 @@
       ]
     },
     "save.c": {
-      "sha256": "317fcf5eb682b6fc897edad81e2ff74f70150e423a4bc5cfb2fe35377159d834",
+      "sha256": "e759fef65233214edf614efd41b89a34962a1f48a8d0b7970d087cad9a2a3fdc",
       "operations": [
         [
           "copy",
           "i00139",
           0,
-          46875
+          45820
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00139",
+          45820,
+          1055
         ]
       ]
     },
     "scores.c": {
-      "sha256": "f8a94d3ed7ed306641f3f4cd0ee69176f977270c4bfd4d957c903a13d4055027",
+      "sha256": "773e4a79bad1f42343a41355acc0a3cb2a1b8d02cb3a9e5b58d50442a7573e17",
       "operations": [
         [
           "copy",
@@ -14871,7 +17391,17 @@
           "copy",
           "i00141",
           4049,
-          2080
+          1866
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          5915,
+          214
         ],
         [
           "add",
@@ -14881,7 +17411,17 @@
           "copy",
           "i00141",
           6129,
-          704
+          194
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          6323,
+          510
         ],
         [
           "add",
@@ -15031,7 +17571,37 @@
           "copy",
           "i00141",
           8665,
-          832
+          154
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          8819,
+          108
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          8927,
+          478
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          9405,
+          92
         ],
         [
           "add",
@@ -15041,7 +17611,47 @@
           "copy",
           "i00141",
           9497,
-          7248
+          125
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          9622,
+          2193
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          11815,
+          355
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          12170,
+          2503
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          14673,
+          2072
         ],
         [
           "add",
@@ -15051,7 +17661,17 @@
           "copy",
           "i00141",
           16745,
-          300
+          122
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          16867,
+          178
         ],
         [
           "add",
@@ -15061,7 +17681,17 @@
           "copy",
           "i00141",
           17045,
-          766
+          125
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          17170,
+          641
         ],
         [
           "add",
@@ -15071,7 +17701,17 @@
           "copy",
           "i00141",
           17811,
-          840
+          71
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          17882,
+          769
         ],
         [
           "add",
@@ -15081,7 +17721,17 @@
           "copy",
           "i00141",
           18651,
-          429
+          128
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          18779,
+          301
         ],
         [
           "add",
@@ -15091,7 +17741,17 @@
           "copy",
           "i00141",
           19080,
-          11961
+          128
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00141",
+          19208,
+          11833
         ]
       ]
     },
@@ -15107,7 +17767,7 @@
       ]
     },
     "spells2.c": {
-      "sha256": "8e3b52bb9a8868afd39cf4fa7e376e2a5b4b0813268ddaff633181bec0af2f95",
+      "sha256": "ac4818c090d1a1d3c0545a0e4bb9bb63689fff900d5d9ab59f1bd0a2bcf03918",
       "operations": [
         [
           "copy",
@@ -15123,7 +17783,17 @@
           "copy",
           "i00145",
           1878,
-          807
+          221
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00145",
+          2099,
+          586
         ],
         [
           "add",
@@ -15183,7 +17853,27 @@
           "copy",
           "i00145",
           57145,
-          30258
+          41
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00145",
+          57186,
+          7
+        ],
+        [
+          "add",
+          "d478e626a6959e31e22a61451c13d639699877b187e44505f89c98b686c6d845"
+        ],
+        [
+          "copy",
+          "i00145",
+          57193,
+          30210
         ],
         [
           "add",
@@ -15203,12 +17893,32 @@
           "copy",
           "i00145",
           87567,
-          76338
+          184
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00145",
+          87751,
+          166
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00145",
+          87917,
+          75988
         ]
       ]
     },
     "spells3.c": {
-      "sha256": "090ba4fb96477f4be5379b7ce1a77ab22f0a05ad268363b8932366baf42b0436",
+      "sha256": "508543e4a0ad74e3ea06996cf97bc1455c8b8e430e8cd19114168b81e9d9bcb7",
       "operations": [
         [
           "copy",
@@ -15224,7 +17934,17 @@
           "copy",
           "i00147",
           16947,
-          2884
+          120
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00147",
+          17067,
+          2764
         ],
         [
           "add",
@@ -15244,7 +17964,17 @@
           "copy",
           "i00147",
           40101,
-          38045
+          65
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00147",
+          40166,
+          37980
         ],
         [
           "add",
@@ -15264,7 +17994,37 @@
           "copy",
           "i00147",
           78158,
-          5238
+          245
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00147",
+          78403,
+          16
+        ],
+        [
+          "add",
+          "cebd6598699c4472ca164414d04bf59e666d73a74ea416e68505266e08c48f17"
+        ],
+        [
+          "copy",
+          "i00147",
+          78419,
+          18
+        ],
+        [
+          "add",
+          "aba49879e2c085dcee6666c15df19dcb2cbfa0bd2a904d6afc607f314f58ed63"
+        ],
+        [
+          "copy",
+          "i00147",
+          78437,
+          4959
         ],
         [
           "add",
@@ -15284,7 +18044,37 @@
           "copy",
           "i00147",
           83422,
-          706
+          514
+        ],
+        [
+          "add",
+          "90711c036c91725a27402a4d3bc0c4ac8b1e3a93d6b8c22fc1f828a521a513f2"
+        ],
+        [
+          "copy",
+          "i00147",
+          83936,
+          24
+        ],
+        [
+          "add",
+          "ba5ec51d07a4ac0e951608704431d59a02b21a4e951acc10505a8dc407c501ee"
+        ],
+        [
+          "copy",
+          "i00147",
+          83960,
+          5
+        ],
+        [
+          "add",
+          "134f197e967c2ba889d51015a684528b4c279f2c180c123510c1ed5ea28768f7"
+        ],
+        [
+          "copy",
+          "i00147",
+          83965,
+          163
         ],
         [
           "add",
@@ -15382,12 +18172,22 @@
           "copy",
           "i00147",
           130175,
-          50019
+          73
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00147",
+          130248,
+          49946
         ]
       ]
     },
     "store.c": {
-      "sha256": "8d67671ff8e516ae17c03f81dbdd12ffc28698cc9af94b4750ac3ad15c7b2f7a",
+      "sha256": "ec1e5be9f571d6a7cc374fa23667c804ee23da416f2f2601954ad8131ff78734",
       "operations": [
         [
           "copy",
@@ -15403,7 +18203,27 @@
           "copy",
           "i00149",
           49515,
-          5190
+          3960
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          53475,
+          113
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          53588,
+          1117
         ],
         [
           "add",
@@ -15413,7 +18233,17 @@
           "copy",
           "i00149",
           54705,
-          2101
+          188
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          54893,
+          1913
         ],
         [
           "add",
@@ -15423,7 +18253,77 @@
           "copy",
           "i00149",
           56806,
-          5835
+          41
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          56847,
+          133
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          56980,
+          65
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          57045,
+          154
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          57199,
+          65
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          57264,
+          100
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          57364,
+          3857
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          61221,
+          1420
         ],
         [
           "add",
@@ -15433,7 +18333,17 @@
           "copy",
           "i00149",
           62648,
-          4311
+          2751
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          65399,
+          1560
         ],
         [
           "add",
@@ -15483,7 +18393,27 @@
           "copy",
           "i00149",
           68498,
-          19332
+          5894
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          74392,
+          83
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          74475,
+          13355
         ],
         [
           "add",
@@ -15493,7 +18423,37 @@
           "copy",
           "i00149",
           87830,
-          11272
+          5958
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          93788,
+          128
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          93916,
+          660
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          94576,
+          4526
         ],
         [
           "add",
@@ -15503,7 +18463,27 @@
           "copy",
           "i00149",
           99109,
-          487
+          53
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          99162,
+          7
+        ],
+        [
+          "add",
+          "d478e626a6959e31e22a61451c13d639699877b187e44505f89c98b686c6d845"
+        ],
+        [
+          "copy",
+          "i00149",
+          99169,
+          427
         ],
         [
           "add",
@@ -15513,7 +18493,17 @@
           "copy",
           "i00149",
           99596,
-          2238
+          117
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          99713,
+          2121
         ],
         [
           "add",
@@ -15543,7 +18533,17 @@
           "copy",
           "i00149",
           109191,
-          24798
+          51
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00149",
+          109242,
+          24747
         ]
       ]
     },
@@ -15592,7 +18592,7 @@
       ]
     },
     "util.c": {
-      "sha256": "58a223193bb6c726eb4bee0f2d8a604a6ef0dfa9df93b59f31fdd86a3097811d",
+      "sha256": "2233d98c61751230726d139f51de1ff12dc72245510ddbeff94984f4a09ae185",
       "operations": [
         [
           "copy",
@@ -15608,7 +18608,17 @@
           "copy",
           "i00159",
           9854,
-          47566
+          37117
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00159",
+          46971,
+          10449
         ],
         [
           "add",
@@ -16047,13 +19057,55 @@
       ]
     },
     "xtra1.c": {
-      "sha256": "200424583e9fb5e0b52e8200c9d64edfebb44cb2757f4be0d4a8ddee1a070afe",
+      "sha256": "6355a7f9594cca9c2e883e3004c5ae01ccd99367bea67a935ee138d7832cc863",
       "operations": [
         [
           "copy",
           "i00169",
           0,
-          12546
+          540
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00169",
+          540,
+          3859
+        ],
+        [
+          "copy",
+          "i00169",
+          4409,
+          43
+        ],
+        [
+          "add",
+          "33b0c5194556593a48d8cca6cebe26fc230b3f9cb9d217a7a7d564942e9c1e95"
+        ],
+        [
+          "copy",
+          "i00169",
+          4504,
+          873
+        ],
+        [
+          "copy",
+          "i00169",
+          5387,
+          38
+        ],
+        [
+          "add",
+          "c9083a4a1657f6e0cbb63b68968c55116404d81eb75c8db65bc7fe7af2e25949"
+        ],
+        [
+          "copy",
+          "i00169",
+          5474,
+          7072
         ],
         [
           "add",
@@ -16109,7 +19161,311 @@
           "copy",
           "i00169",
           13029,
-          10098
+          5150
+        ],
+        [
+          "add",
+          "129e52f417ee667ad4d873a1f552747953d228d7d20c604d237f65b479b6d552"
+        ],
+        [
+          "copy",
+          "i00169",
+          18179,
+          24
+        ],
+        [
+          "add",
+          "2dd761aade5cbc00755a8e2e3cc3f4016737c85e6a97789a4cb9e5acb670f9e0"
+        ],
+        [
+          "copy",
+          "i00169",
+          18203,
+          22
+        ],
+        [
+          "add",
+          "02435477ec25930805843809d250193868a7efbc566e7050147faa90c2ac07e7"
+        ],
+        [
+          "copy",
+          "i00169",
+          18225,
+          4510
+        ],
+        [
+          "copy",
+          "i00169",
+          22736,
+          2
+        ],
+        [
+          "add",
+          "db2f2569a20f5b621309b5d8cefea73127b96f62fe4a6c8996dbd7fba01514c2"
+        ],
+        [
+          "copy",
+          "i00169",
+          22738,
+          2
+        ],
+        [
+          "add",
+          "b5915cbe91df184b1e68518a339b9874d38a25a3e64de352c6dae3792588b25d"
+        ],
+        [
+          "copy",
+          "i00169",
+          22740,
+          1
+        ],
+        [
+          "add",
+          "2a0b6287a0e65cff2844cf0887b1c19d960385071c4a0da3d90cfea2c3824e3f"
+        ],
+        [
+          "copy",
+          "i00169",
+          22741,
+          1
+        ],
+        [
+          "add",
+          "e251b5564730bcf8d50183bd83f67f644cecce9458b87453894b80f8bb10c147"
+        ],
+        [
+          "copy",
+          "i00169",
+          22744,
+          27
+        ],
+        [
+          "add",
+          "73db0c6d11af07e1ef0183371a67bf990a4398f49f14d77afa57239c54e3920b"
+        ],
+        [
+          "copy",
+          "i00169",
+          22772,
+          4
+        ],
+        [
+          "add",
+          "af9c912c4ca219e0cb7befa9140ea49f605a54a9846be4b23c34f9226dfd4155"
+        ],
+        [
+          "copy",
+          "i00169",
+          22776,
+          28
+        ],
+        [
+          "add",
+          "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+        ],
+        [
+          "copy",
+          "i00169",
+          22810,
+          55
+        ],
+        [
+          "copy",
+          "i00169",
+          22866,
+          2
+        ],
+        [
+          "add",
+          "db2f2569a20f5b621309b5d8cefea73127b96f62fe4a6c8996dbd7fba01514c2"
+        ],
+        [
+          "copy",
+          "i00169",
+          22868,
+          2
+        ],
+        [
+          "add",
+          "b5915cbe91df184b1e68518a339b9874d38a25a3e64de352c6dae3792588b25d"
+        ],
+        [
+          "copy",
+          "i00169",
+          22870,
+          1
+        ],
+        [
+          "add",
+          "2a0b6287a0e65cff2844cf0887b1c19d960385071c4a0da3d90cfea2c3824e3f"
+        ],
+        [
+          "copy",
+          "i00169",
+          22871,
+          1
+        ],
+        [
+          "add",
+          "e251b5564730bcf8d50183bd83f67f644cecce9458b87453894b80f8bb10c147"
+        ],
+        [
+          "copy",
+          "i00169",
+          22874,
+          27
+        ],
+        [
+          "add",
+          "73db0c6d11af07e1ef0183371a67bf990a4398f49f14d77afa57239c54e3920b"
+        ],
+        [
+          "copy",
+          "i00169",
+          22902,
+          4
+        ],
+        [
+          "add",
+          "af9c912c4ca219e0cb7befa9140ea49f605a54a9846be4b23c34f9226dfd4155"
+        ],
+        [
+          "copy",
+          "i00169",
+          22906,
+          28
+        ],
+        [
+          "add",
+          "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+        ],
+        [
+          "copy",
+          "i00169",
+          22940,
+          33
+        ],
+        [
+          "copy",
+          "i00169",
+          22974,
+          2
+        ],
+        [
+          "add",
+          "db2f2569a20f5b621309b5d8cefea73127b96f62fe4a6c8996dbd7fba01514c2"
+        ],
+        [
+          "copy",
+          "i00169",
+          22976,
+          2
+        ],
+        [
+          "add",
+          "b5915cbe91df184b1e68518a339b9874d38a25a3e64de352c6dae3792588b25d"
+        ],
+        [
+          "copy",
+          "i00169",
+          22978,
+          1
+        ],
+        [
+          "add",
+          "2a0b6287a0e65cff2844cf0887b1c19d960385071c4a0da3d90cfea2c3824e3f"
+        ],
+        [
+          "copy",
+          "i00169",
+          22979,
+          1
+        ],
+        [
+          "add",
+          "e251b5564730bcf8d50183bd83f67f644cecce9458b87453894b80f8bb10c147"
+        ],
+        [
+          "copy",
+          "i00169",
+          22982,
+          51
+        ],
+        [
+          "add",
+          "73db0c6d11af07e1ef0183371a67bf990a4398f49f14d77afa57239c54e3920b"
+        ],
+        [
+          "copy",
+          "i00169",
+          23034,
+          4
+        ],
+        [
+          "add",
+          "af9c912c4ca219e0cb7befa9140ea49f605a54a9846be4b23c34f9226dfd4155"
+        ],
+        [
+          "copy",
+          "i00169",
+          23038,
+          51
+        ],
+        [
+          "add",
+          "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+        ],
+        [
+          "copy",
+          "i00169",
+          23095,
+          14
+        ],
+        [
+          "copy",
+          "i00169",
+          23110,
+          2
+        ],
+        [
+          "add",
+          "db2f2569a20f5b621309b5d8cefea73127b96f62fe4a6c8996dbd7fba01514c2"
+        ],
+        [
+          "copy",
+          "i00169",
+          23112,
+          2
+        ],
+        [
+          "add",
+          "b5915cbe91df184b1e68518a339b9874d38a25a3e64de352c6dae3792588b25d"
+        ],
+        [
+          "copy",
+          "i00169",
+          23114,
+          1
+        ],
+        [
+          "add",
+          "2a0b6287a0e65cff2844cf0887b1c19d960385071c4a0da3d90cfea2c3824e3f"
+        ],
+        [
+          "copy",
+          "i00169",
+          23115,
+          1
+        ],
+        [
+          "add",
+          "e251b5564730bcf8d50183bd83f67f644cecce9458b87453894b80f8bb10c147"
+        ],
+        [
+          "copy",
+          "i00169",
+          23118,
+          9
         ],
         [
           "add",
@@ -16119,7 +19475,37 @@
           "copy",
           "i00169",
           23127,
-          1584
+          37
+        ],
+        [
+          "add",
+          "73db0c6d11af07e1ef0183371a67bf990a4398f49f14d77afa57239c54e3920b"
+        ],
+        [
+          "copy",
+          "i00169",
+          23165,
+          4
+        ],
+        [
+          "add",
+          "af9c912c4ca219e0cb7befa9140ea49f605a54a9846be4b23c34f9226dfd4155"
+        ],
+        [
+          "copy",
+          "i00169",
+          23169,
+          47
+        ],
+        [
+          "add",
+          "d10b36aa74a59bcf4a88185837f658afaf3646eff2bb16c3928d0e9335e945d2"
+        ],
+        [
+          "copy",
+          "i00169",
+          23222,
+          1489
         ],
         [
           "add",
@@ -16139,7 +19525,1237 @@
           "copy",
           "i00169",
           24808,
-          17491
+          118
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00169",
+          24926,
+          536
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          25463,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          25465,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          25466,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          25468,
+          1
+        ],
+        [
+          "add",
+          "24c727377ee456c196d8a7b69404a311b1315a2fb9d18fdbb0c57203affa3f0c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25471,
+          58
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25530,
+          4
+        ],
+        [
+          "add",
+          "7a4bcb5645f842c6ee3d261d0ee930b3f95fd2752f6d8320117fdf8dd4ce453c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25534,
+          58
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          25598,
+          59
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          25658,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          25660,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          25661,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          25663,
+          1
+        ],
+        [
+          "add",
+          "24c727377ee456c196d8a7b69404a311b1315a2fb9d18fdbb0c57203affa3f0c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25666,
+          61
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25728,
+          4
+        ],
+        [
+          "add",
+          "7a4bcb5645f842c6ee3d261d0ee930b3f95fd2752f6d8320117fdf8dd4ce453c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25732,
+          61
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          25799,
+          62
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          25862,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          25864,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          25865,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          25867,
+          1
+        ],
+        [
+          "add",
+          "24c727377ee456c196d8a7b69404a311b1315a2fb9d18fdbb0c57203affa3f0c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25870,
+          61
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25932,
+          4
+        ],
+        [
+          "add",
+          "7a4bcb5645f842c6ee3d261d0ee930b3f95fd2752f6d8320117fdf8dd4ce453c"
+        ],
+        [
+          "copy",
+          "i00169",
+          25936,
+          61
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          26003,
+          178
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          26182,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          26184,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          26185,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          26187,
+          1
+        ],
+        [
+          "add",
+          "24c727377ee456c196d8a7b69404a311b1315a2fb9d18fdbb0c57203affa3f0c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26190,
+          62
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26253,
+          4
+        ],
+        [
+          "add",
+          "7a4bcb5645f842c6ee3d261d0ee930b3f95fd2752f6d8320117fdf8dd4ce453c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26257,
+          62
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          26325,
+          29
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          26355,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          26357,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          26358,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          26360,
+          1
+        ],
+        [
+          "add",
+          "24c727377ee456c196d8a7b69404a311b1315a2fb9d18fdbb0c57203affa3f0c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26363,
+          60
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26424,
+          4
+        ],
+        [
+          "add",
+          "7a4bcb5645f842c6ee3d261d0ee930b3f95fd2752f6d8320117fdf8dd4ce453c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26428,
+          60
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          26494,
+          401
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          26896,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          26898,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          26899,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          26901,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          26904,
+          53
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          26958,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          26962,
+          53
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          27021,
+          17
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          27039,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          27041,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          27042,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          27044,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          27047,
+          47
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          27095,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          27099,
+          47
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          27152,
+          89
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          27242,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          27244,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          27245,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          27247,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          27250,
+          27
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          27278,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          27282,
+          27
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          27315,
+          83
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          27399,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          27401,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          27402,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          27404,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          27407,
+          27
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          27435,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          27439,
+          27
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          27472,
+          938
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          28411,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          28413,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          28414,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          28416,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          28419,
+          27
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          28447,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          28451,
+          27
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          28484,
+          46
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          28531,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          28533,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          28534,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          28536,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          28539,
+          27
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          28567,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          28571,
+          27
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          28604,
+          48
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          28653,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          28655,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          28656,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          28658,
+          1
+        ],
+        [
+          "add",
+          "14cc444a7d1838f14267e94e5c77d2959514cc2a87a69a6fc4240b8336e34b1d"
+        ],
+        [
+          "copy",
+          "i00169",
+          28661,
+          27
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          28689,
+          4
+        ],
+        [
+          "add",
+          "a9a9aa5ea210ce171425bd6ad18fb32e463a2e5de4b3c26c8aa701a1511113d4"
+        ],
+        [
+          "copy",
+          "i00169",
+          28693,
+          27
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          28726,
+          1003
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          29730,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          29732,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          29733,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          29735,
+          1
+        ],
+        [
+          "add",
+          "1f83947839cb26297c5217ea0680a1fc1df1aa8e2b65e7f2f5de4cd26ca6729b"
+        ],
+        [
+          "copy",
+          "i00169",
+          29738,
+          3
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00169",
+          29741,
+          71
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          29813,
+          4
+        ],
+        [
+          "add",
+          "5e363c98d3e0ad3d45ff18480c0f1776d850cdeb955ab1300f15592dccacc1b9"
+        ],
+        [
+          "copy",
+          "i00169",
+          29817,
+          41
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          29864,
+          416
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          30281,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          30283,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          30284,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          30286,
+          1
+        ],
+        [
+          "add",
+          "1f83947839cb26297c5217ea0680a1fc1df1aa8e2b65e7f2f5de4cd26ca6729b"
+        ],
+        [
+          "copy",
+          "i00169",
+          30289,
+          3
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00169",
+          30292,
+          71
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          30364,
+          4
+        ],
+        [
+          "add",
+          "5e363c98d3e0ad3d45ff18480c0f1776d850cdeb955ab1300f15592dccacc1b9"
+        ],
+        [
+          "copy",
+          "i00169",
+          30368,
+          41
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          30415,
+          53
+        ],
+        [
+          "add",
+          "2b4c342f5433ebe591a1da77e013d1b72475562d48578dca8b84bac6651c3cb9"
+        ],
+        [
+          "copy",
+          "i00169",
+          30469,
+          2
+        ],
+        [
+          "add",
+          "c8a0f72e83473b7490bf0951beb0782373bdf9c1f2d7313030f7487beff930a6"
+        ],
+        [
+          "copy",
+          "i00169",
+          30471,
+          1
+        ],
+        [
+          "add",
+          "af32631e6b4f9cc1adf65e3a4d073f47bfb2777a3d9c7d83ae831788037b0bb7"
+        ],
+        [
+          "copy",
+          "i00169",
+          30472,
+          1
+        ],
+        [
+          "add",
+          "4bc7ec60e03d20be811316899a80be184b309ea402c3322f0e0d0c305dbcf101"
+        ],
+        [
+          "copy",
+          "i00169",
+          30474,
+          1
+        ],
+        [
+          "add",
+          "1f83947839cb26297c5217ea0680a1fc1df1aa8e2b65e7f2f5de4cd26ca6729b"
+        ],
+        [
+          "copy",
+          "i00169",
+          30477,
+          26
+        ],
+        [
+          "add",
+          "5663b39d5ecff3781e2ee08f71b74780764e7fe5a7c70f00915d666da9946a8c"
+        ],
+        [
+          "copy",
+          "i00169",
+          30504,
+          4
+        ],
+        [
+          "add",
+          "5e363c98d3e0ad3d45ff18480c0f1776d850cdeb955ab1300f15592dccacc1b9"
+        ],
+        [
+          "copy",
+          "i00169",
+          30508,
+          26
+        ],
+        [
+          "add",
+          "a32a3bb7121485ebcbc1a2b6af585ccc5f6a4c4bc1e997911fcdb895e6692611"
+        ],
+        [
+          "copy",
+          "i00169",
+          30540,
+          11759
         ],
         [
           "add",
@@ -16149,7 +20765,27 @@
           "copy",
           "i00169",
           42299,
-          488
+          60
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00169",
+          42359,
+          189
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00169",
+          42548,
+          239
         ],
         [
           "add",
@@ -16164,7 +20800,7 @@
       ]
     },
     "xtra2.c": {
-      "sha256": "c4981c1f849831d27b58b97a05b76d559508cf562a0fa8525fac8643fa3dc8ae",
+      "sha256": "e15002ed96c9e4023fc2a55fa5a0e0d58915dbed78772caa08f87db942a497e6",
       "operations": [
         [
           "copy",
@@ -16202,7 +20838,17 @@
           "copy",
           "i00171",
           85971,
-          407
+          204
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          86175,
+          203
         ],
         [
           "copy",
@@ -16568,7 +21214,17 @@
           "copy",
           "i00171",
           90626,
-          62
+          3
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          90629,
+          59
         ],
         [
           "add",
@@ -16588,7 +21244,17 @@
           "copy",
           "i00171",
           90693,
-          62
+          3
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          90696,
+          59
         ],
         [
           "add",
@@ -16720,7 +21386,17 @@
           "copy",
           "i00171",
           92271,
-          94
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          92275,
+          90
         ],
         [
           "add",
@@ -16740,7 +21416,17 @@
           "copy",
           "i00171",
           92370,
-          106
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          92374,
+          102
         ],
         [
           "add",
@@ -16826,7 +21512,17 @@
           "copy",
           "i00171",
           92779,
-          51
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          92783,
+          47
         ],
         [
           "add",
@@ -17112,7 +21808,17 @@
           "copy",
           "i00171",
           94192,
-          64
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          94196,
+          60
         ],
         [
           "add",
@@ -17132,7 +21838,17 @@
           "copy",
           "i00171",
           94261,
-          65
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          94265,
+          61
         ],
         [
           "add",
@@ -17370,7 +22086,17 @@
           "copy",
           "i00171",
           95103,
-          65
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          95107,
+          61
         ],
         [
           "add",
@@ -17578,7 +22304,17 @@
           "copy",
           "i00171",
           95968,
-          70
+          5
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          95973,
+          65
         ],
         [
           "add",
@@ -17598,7 +22334,17 @@
           "copy",
           "i00171",
           96043,
-          71
+          5
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          96048,
+          66
         ],
         [
           "add",
@@ -17684,7 +22430,17 @@
           "copy",
           "i00171",
           96497,
-          92
+          5
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          96502,
+          87
         ],
         [
           "add",
@@ -17770,7 +22526,17 @@
           "copy",
           "i00171",
           97223,
-          96
+          5
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          97228,
+          91
         ],
         [
           "add",
@@ -17826,7 +22592,17 @@
           "copy",
           "i00171",
           98574,
-          64
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          98578,
+          60
         ],
         [
           "add",
@@ -17846,7 +22622,17 @@
           "copy",
           "i00171",
           98643,
-          65
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          98647,
+          61
         ],
         [
           "add",
@@ -18540,7 +23326,17 @@
           "copy",
           "i00171",
           102004,
-          39
+          3
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          102007,
+          36
         ],
         [
           "add",
@@ -18560,7 +23356,17 @@
           "copy",
           "i00171",
           102048,
-          51
+          3
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          102051,
+          48
         ],
         [
           "add",
@@ -18574,7 +23380,7 @@
         ],
         [
           "add",
-          "9ee57ecbdcfff617ec05085ec42b93c33f3dca3264d32f5c99295d0da48c3862"
+          "140a509ccc3b5862f2700f148f8867f58efdd461c389758643b46f1ce96662e3"
         ],
         [
           "copy",
@@ -18636,7 +23442,17 @@
           "copy",
           "i00171",
           102550,
-          48
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          102554,
+          44
         ],
         [
           "add",
@@ -18656,7 +23472,17 @@
           "copy",
           "i00171",
           102603,
-          37
+          4
+        ],
+        [
+          "add",
+          "441ab184cbff4400aff7d1bfb9f0400ef701c050a604a6d31a7d382c68a442f4"
+        ],
+        [
+          "copy",
+          "i00171",
+          102607,
+          33
         ],
         [
           "add",

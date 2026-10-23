@@ -147,6 +147,31 @@ struct InputPumpContext {
     std::function<void(presentation::InputEventWire &)> turn_screen_move; //!< 画面基準の `move` を世界基準へ
 
     InputBatch &batch; //!< このフレームの入力結果。パッドも同じ場所へ積む。
+    /*!
+     * DCSS の画面の区画（タブの欄ほか。`hd2d/dcss/`）へのマウス。申告 `dcss-ui` のコアだけが渡す（空なら何もしない）。
+     * 動き（`SDL_MOUSEMOTION`）と押下（`SDL_MOUSEBUTTONDOWN`）を、機能メニューが開いていないときに最初に見せる。
+     * 真を返したら、その出来事は区画が食った（ほかへ回さない）。
+     */
+    std::function<bool(const SDL_Event &)> dcss_mouse;
+    /*!
+     * DCSS の窓の部品（段 U3。メニュー・説明・作成の格子ほか。`hd2d/dcss/dcss_windows.h`）への出来事。申告 `dcss-ui` のコアだけが渡す（空なら何もしない）。
+     * 窓が開いている間（と、1 行の文字入力の間）は、キー・文字・マウスをここが全部食う（窓の中のキーが HD2D の別の操作に化けないため）。
+     * 第 2 引数は「HD2D が自分で使うキー（機能メニュー・Alt+Enter）か」。真を返したら出来事は食われた（ほかへ回さない）。
+     */
+    std::function<bool(const SDL_Event &, bool)> dcss_window;
+    /*!
+     * DCSS の地図のマウス操作（段 U3・U4。左右のクリック・ツールチップ。`hd2d/dcss/dcss_mouse.h`）。申告 `dcss-ui` のコアだけが渡す（空なら何もしない）。
+     * 動き（`SDL_MOUSEMOTION`）と押下（`SDL_MOUSEBUTTONDOWN`）を、ほかの区画（`dcss_mouse`）が食わなかったあとで見せる。引数は
+     * 「マウスの位置が地図の見えているマスの上か」と「プレイヤーのマスから見たそのマスの相対」。真を返したら食った（歩く・狙うへ回さない）。
+     */
+    std::function<bool(const SDL_Event &, bool, int, int)> dcss_map;
+    /*!
+     * DCSS のタッチ（段 7。`hd2d/dcss/dcss_touch.h`）。申告 `dcss-ui` のコアだけが渡す（空なら何もしない）。指の出来事（`SDL_FINGER*`）を受けて、
+     * 原作の Android 版と同じ決まりのマウスの出来事（`which` = `dcss::kTouchMouseId`）を `SDL_PushEvent` で積み直す。第 2 引数は「この指の押下をなかったことにするか」
+     * （仮想パッドのボタンの近く）。渡したコアでは、仮想パッドを出している間も**パッドのボタンの外の指**は捨てず、ここへ流す
+     * （`pointer_blocked_by_vpad`。決めたこと 2026-10-14 は DCSS には当てない——調整役の決定 D29）。
+     */
+    std::function<void(const SDL_Event &, bool)> dcss_touch;
 
 };
 

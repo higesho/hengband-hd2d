@@ -322,6 +322,24 @@ public:
     float right_stick_y() const;
     /*! @} */
 
+    /*!
+     * @brief 右スティックの生の値（SDL の -32768〜32767。死区の処理をしない）。繋がっていなければ 0。
+     * @details DCSS（`dcss/dcss_pad.h`）の疑似カーソルが、原作の `cursor_motion` と同じ曲線（円の死区 8000 から 2 乗）で使う。
+     */
+    void right_stick_raw(int &x, int &y) const;
+
+    /*!
+     * @brief 十字・左スティックの方向の出し方を、原作の DCSS の日本語版のタイル版に合わせる（既定は偽 = 従来どおり）。
+     * @details 偽のときは従来どおり（1 歩目 → 260ms 待つ → 90ms ごと。入れ替えはすぐ出す）。
+     * 真のときは原作の `gamepad_state::update` と同じ:
+     * - 中立から 1 方向が入ったら 40ms 待つ。その間に 2 つ目が来たら斜めとして出し、短く叩いて離したら叩いた向きを 1 回出す
+     *   （十字の 2 つのボタンはわずかにずれて届くので、すぐ出すと狙った斜めの前に縦か横へ 1 歩出てしまう）。
+     * - 押し続けは 1 回目のあと 200ms（`tile_key_repeat_delay`）待ち、以降 90ms ごと。
+     * - 斜めから片方だけ先に離したときは出さない（待ちを数え直し、押し続けたときだけリピートで出す）。
+     * 申告 `dcss-ui` のコアだけが立てる。
+     */
+    void set_original_timing(bool on) { this->original_timing_ = on; }
+
     //! 「握ったまま」を全部忘れる（焦点を失ったとき・メニューを開いたとき）。
     void forget_hold();
 
@@ -359,12 +377,21 @@ private:
     std::uint32_t next_repeat_ms_{ 0 };
     //! **一度中立を見るまで受け付けない**（約束 2）。
     bool rearm_pending_{ true };
+    //! 原作の DCSS の方向の出し方（`set_original_timing`）。
+    bool original_timing_{ false };
+    bool pending_{ false }; //!< 中立から 1 方向が入り、斜めの 2 つ目を待っている
+    std::uint32_t pending_since_ms_{ 0 };
+    int pending_dx_{ 0 };
+    int pending_dy_{ 0 };
 
     //! 左スティックのラッチ（-1 / 0 / +1）。死区の出入りにヒステリシスを持たせる（約束 3）。
     int stick_x_{ 0 };
     int stick_y_{ 0 };
     //! 左スティックの生の値（−32768〜32767）。斜め移動限定のとき、角度で斜めへ寄せるのに使う。
     int stick_raw_x_{ 0 };
+    //! 右スティックの生の値（軸の出来事で更新。`right_stick_raw`。DCSS の疑似カーソル用）。
+    int right_raw_x_{ 0 };
+    int right_raw_y_{ 0 };
     int stick_raw_y_{ 0 };
     //! 斜め移動限定の間だけ真（`set_diagonal_only`）。
     bool diagonal_only_{ false };

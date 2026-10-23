@@ -3,7 +3,7 @@
     ボクセル HD2D の配布物を作る（Windows・x64）。
 
 .DESCRIPTION
-    画面（HengbandHd2d.exe）と 11 本のコア、要る DLL、素材とデータを 1 つの箱へ入れて zip にする。
+    画面（HengbandHd2d.exe）と 12 本のコア、要る DLL、素材とデータを 1 つの箱へ入れて zip にする。
     案内は日本語（はじめに.txt）と英語（README.txt）の 2 つを入れる。
 
     **上流の `Build-Windows-Release-Package.ps1` とは別物である。**あちらは 2D の
@@ -71,6 +71,9 @@ if ($Rebuild) {
         if ($LASTEXITCODE -ne 0) { throw 'Angband の Windows コア組み立てに失敗しました' }
         & python tools/umoria/build_windows.py
         if ($LASTEXITCODE -ne 0) { throw 'Umoria の Windows コア組み立てに失敗しました' }
+        # DCSS は x64 のコア（ほかは Win32）。生成物 → 組み立て → 実行時のデータ（dcss/lib）を 1 本で行う。
+        & python tools/dcss/build_core.py
+        if ($LASTEXITCODE -ne 0) { throw 'DCSS の Windows コア組み立てに失敗しました' }
     }
 }
 
@@ -78,7 +81,7 @@ if ($Rebuild) {
 # 開発用UIの実行ファイルを配布物へコピーしない。
 
 # --- 詰めるもの ---------------------------------------------------------------
-# 画面（x64）と 11 本のコア（Win32）。**コアは単体では動かない**（画面が子として起こす）。
+# 画面（x64）と 12 本のコア（DcssCore だけ x64、ほかは Win32）。**コアは単体では動かない**（画面が子として起こす）。
 # 画面。箱の直下に置く（遊ぶときに起動するのはこれ）。
 $executables = @(
     'HengbandHd2d.exe'
@@ -99,7 +102,8 @@ $coreExecutables = @(
     'Rogue36Core.exe',    # Rogue 3.6.4
     'Rogue54Core.exe',    # Rogue 5.4.4
     'AngbandCore.exe',    # Angband
-    'UmoriaCore.exe'      # Umoria 5.7
+    'UmoriaCore.exe',     # Umoria 5.7
+    'DcssCore.exe'        # Dungeon Crawl Stone Soup 日本語版
 )
 
 # `dumpbin /dependents` の推移閉包（2026-08-23 実測）。**画面だけが要る。**
@@ -209,7 +213,7 @@ if (-not $WithoutCores) {
 # RogueClone2 は原作の配布条件 (2)「すべてのドキュメントを付属させること」のため、原作の資料を licenses\RogueClone2 に添える
 # （コアを入れるときだけ）。作り方は tools/package/license_docs.py（Linux・Android の配布物と共通）。
 $licenseDocsArgs = @('tools/package/license_docs.py', '--dest', (Join-Path $stage 'licenses'), '--windows-runtime')
-if ($WithoutCores) { $licenseDocsArgs += '--no-rogue2' } else { $licenseDocsArgs += @('--upstream', $rogueUpstream) }
+if ($WithoutCores) { $licenseDocsArgs += '--no-rogue2' } else { $licenseDocsArgs += @('--upstream', $rogueUpstream, '--dcss') }
 & python @licenseDocsArgs
 if ($LASTEXITCODE -ne 0) { throw '使用許諾の文書の作成に失敗しました（tools/package/license_docs.py）' }
 
@@ -313,6 +317,26 @@ if (-not $WithoutCores) {
     }
 }
 
+# **DCSS の実行時データ**。コアは `<データの根>/dcss/lib`（箱の直下の `dcss\lib`）を原作の CRAWL_DIR にする。
+# 読むだけの物（dat・docs・settings = 原作のデータ、tiles = 怪物・アイテム・プレイヤーの板をその場で作る材料のタイルの画像ページ）だけを詰める。
+# `dcss\lib` の開発ツリーの中身は遊んだ跡（saves・morgue・slabs・init.txt・hd2d_last_name.txt）を含むので、**丸ごとは写さない**。
+# saves・morgue・slabs は、コアが初回の起動で作る（`prepare_crawl_dir`）。slabs は起動の間だけのキャッシュ（D21）。
+if (-not $WithoutCores) {
+    $dcssLib = 'dcss/lib'
+    foreach ($sub in @('dat', 'docs', 'settings', 'tiles')) {
+        if (-not (Test-Path (Join-Path $dcssLib $sub))) { throw "$dcssLib/$sub がありません`n  先にこれを走らせること: python tools/dcss/build_core.py（または tools/dcss/prepare_runtime_data.py）" }
+    }
+    # 生成物（原作のデータの中の dlua/tags.lua など）が入っていること。無いと DCSS は起動途中で止まる。
+    foreach ($must in @('dat/dlua/tags.lua', 'docs/FAQ.html')) {
+        if (-not (Test-Path (Join-Path $dcssLib $must))) { throw "$dcssLib/$must がありません（生成物が写っていない。python tools/dcss/build_core.py）" }
+    }
+    foreach ($sub in @('dat', 'docs', 'settings', 'tiles')) {
+        $dst = Join-Path $stage "dcss/lib/$sub"
+        New-Item -ItemType Directory -Force (Split-Path -Parent $dst) | Out-Null
+        Copy-Item -Recurse (Join-Path $dcssLib $sub) $dst
+    }
+}
+
 # 新UIのアイテムは実行時にボクセル板を描くため、タイル画像をコピーしない。
 # コアデータ内の旧2Dタイルも配布ステージから除く。
 $legacyTileDirs = @('lib/xtra/graf','tangband/lib/xtra/graf','gensoband/lib/xtra/graf','toband/lib/xtra/graf','silq/lib/xtra/graf','frox/lib/xtra/graf')
@@ -392,8 +416,8 @@ $notes = @"
     入っていないと、ウィンドウが出る前に終了します。
 
 入っているもの
-  画面 1 つと、11 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria）。
-  セーブデータは各ゲームの lib\save（Angband は箱の直下の angband\save、Umoria は umoria）に書き込まれます。
+  画面 1 つと、12 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria・Dungeon Crawl Stone Soup 日本語版）。
+  セーブデータは各ゲームの lib\save（Angband は箱の直下の angband\save、Umoria は umoria、Dungeon Crawl Stone Soup は dcss\lib\saves）に書き込まれます。
 
 設定
   hd2d.cfg が実行ファイルと同じ場所に作られます。ゲーム内の機能メニューからも変更できます。
@@ -406,12 +430,12 @@ English
   See README.txt.
 "@
 if ($WithoutCores) {
-    $notes = $notes.Replace('画面 1 つと、11 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria）。', '画面とインポート用コンパイラーを同梱しています。ゲームコアの実行ファイルは含みません。')
+    $notes = $notes.Replace('画面 1 つと、12 のゲーム（変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・RogueClone2・Rogue 3.6・Rogue 5.4・Angband・Umoria・Dungeon Crawl Stone Soup 日本語版）。', '画面とインポート用コンパイラーを同梱しています。ゲームコアの実行ファイルは含みません。')
     $notes = $notes.Replace('ゲーム本体（コア）の exe は cores\ の中にあります。画面側から起動されるので、', '取り込んだコアはアプリ専用の保存先に登録されます。画面側から起動されるので、')
     $notes += "`r`n初回は「コアをインポート」から対応版の原作ソース ZIP を選択して、ビルド・登録してください。`r`n"
 }
-if (-not $IncludeCompiler) { $notes += "`r`nこの配布版は10コア同梱です。コアを取り込んでビルドする機能は含みません。`r`n" }
-$notes += "`r`nタイル画像は同梱していません。店・所持品・品物選択のアイコンは、原作の記号と色を使ったボクセル板で表示します。`r`n"
+if (-not $IncludeCompiler) { $notes += "`r`nこの配布版は12コア同梱です。コアを取り込んでビルドする機能は含みません。`r`n" }
+$notes += "`r`nタイル画像は同梱していません。店・所持品・品物選択のアイコンは、原作の記号と色を使ったボクセル板で表示します。`r`nただし Dungeon Crawl Stone Soup だけは、原作のタイルの画像（主に CC0）を同梱し、怪物・アイテム・プレイヤーの板をそこから作ります（使用許諾と来歴は licenses\Dcss-* と THIRD-PARTY-NOTICES.txt）。`r`n"
 $notesPath = Join-Path $stage 'はじめに.txt'
 [System.IO.File]::WriteAllText($notesPath, $notes, (New-Object System.Text.UTF8Encoding $true))
 
@@ -431,8 +455,8 @@ Requirements
     Without it, the program exits before a window appears.
 
 What is included
-  One screen and eleven games (Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria).
-  Save files are written to each game's lib\save directory (Angband: angband\save next to this folder; Umoria: umoria).
+  One screen and twelve games (Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria, Dungeon Crawl Stone Soup Japanese edition).
+  Save files are written to each game's lib\save directory (Angband: angband\save next to this folder; Umoria: umoria; Dungeon Crawl Stone Soup: dcss\lib\saves).
 
 Settings
   hd2d.cfg is created next to the executable. You can also change the settings
@@ -447,12 +471,12 @@ Japanese
   See はじめに.txt.
 "@
 if ($WithoutCores) {
-    $notesEn = $notesEn.Replace('One screen and eleven games (Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria).', 'The UI and import compiler are included. Game core executables are not included.')
+    $notesEn = $notesEn.Replace('One screen and twelve games (Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband, RogueClone2, Rogue 3.6, Rogue 5.4, Angband, Umoria, Dungeon Crawl Stone Soup Japanese edition).', 'The UI and import compiler are included. Game core executables are not included.')
     $notesEn = $notesEn.Replace('The game core executables are in cores\. They are started by the screen side,', 'Imported cores are stored in application data. They are started by the UI,')
     $notesEn += "`r`nChoose Import core, select an original source ZIP for a supported version, then build and register it.`r`n"
 }
-if (-not $IncludeCompiler) { $notesEn += "`r`nThis package includes eleven prebuilt cores. Core import and compilation are not included.`r`n" }
-$notesEn += "`r`nTile images are not included. Shop, inventory and item-selection icons render the existing voxel board assets.`r`n"
+if (-not $IncludeCompiler) { $notesEn += "`r`nThis package includes twelve prebuilt cores. Core import and compilation are not included.`r`n" }
+$notesEn += "`r`nTile images are not included. Shop, inventory and item-selection icons render the existing voxel board assets.`r`nThe exception is Dungeon Crawl Stone Soup, which ships the original game''s tile pages (mostly CC0) and builds its monster, item and player boards from them (licences and provenance: licenses\Dcss-* and THIRD-PARTY-NOTICES.txt).`r`n"
 $notesEnPath = Join-Path $stage 'README.txt'
 [System.IO.File]::WriteAllText($notesEnPath, $notesEn, (New-Object System.Text.UTF8Encoding $true))
 

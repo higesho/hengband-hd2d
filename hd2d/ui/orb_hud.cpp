@@ -461,7 +461,7 @@ void draw_fitted_text(TextOverlay &text, const RectPx &band, const std::string &
     const int h = text.cell_h_sized(fit.scale);
     color.a *= geo.alpha;
     text.draw_sized_clipped(static_cast<float>(band.x) + (static_cast<float>(band.w - w) * 0.5f) + geo.frac_x,
-        band.y + ((band.h - h) / 2), s, color, fit.scale, band.w, geo.clip_x0, geo.clip_x1);
+        band.y + ((band.h - h) / 2), s, color, fit.scale, band.w, geo.clip_x0, geo.clip_x1, fit.x_scale);
 }
 
 //! 名前を帯の中に描く。2 行なら 1 行ずつ `line_h` の高さの段に、各行を中央ぞろえで。
@@ -897,8 +897,14 @@ FittedText fit_with_reference(TextOverlay &text, std::string_view utf8, int targ
     }
     out.scale = scale_of_px(text, ref_px);
     out.width = text.measure_sized(utf8, out.scale);
-    if ((out.width <= target_w) || (display_columns(utf8) <= kStatusTextReferenceColumns)) {
-        out.overflow = out.width > target_w; // 4 文字以内なのに収まらないのは、等幅でないフォントのとき
+    if (out.width <= target_w) {
+        return out;
+    }
+    if (display_columns(utf8) <= kStatusTextReferenceColumns) {
+        //! 全角 4 文字ぶん以内の名前は基準の大きさのまま。それでも収まらないとき（半角 8 字が全角 4 字より広いフォント。
+        //! Linux・Android）は、字の高さを保って横だけ縮め、アイコンの幅に収める（幅を広げない）。
+        out.x_scale = static_cast<float>(target_w) / static_cast<float>(out.width);
+        out.width = target_w;
         return out;
     }
     const int base = text.base_px();
@@ -1265,11 +1271,18 @@ PermanentIconLayout layout_permanent_icons(TextOverlay &text, const UiLayout &la
         Column col;
         bool bad_after = bad_started;
         //! 状態列に近い側の列から決める。ミニマップと横が重なる列だけ、縦の範囲を狭める。
-        for (int attempt = 0; attempt < 2; ++attempt) {
+        //! 名前の行（`layout.hud`）に実際に重なった列も、その行の上で止めて組み直す（行の高いフォント〔Linux・Android の 8x24〕で、
+        //! 分割配置の 1280x720 では、名前の行が列の縦の範囲に入って重なった。2026-10-22。重ならない列は従来のまま）。
+        bool narrow_mm = false;
+        bool narrow_hud = false;
+        for (int attempt = 0; attempt < 3; ++attempt) {
             col = Column{};
             bad_after = bad_started;
-            col.top = (attempt == 0) ? top : mm_top;
-            col.bottom = (attempt == 0) ? bottom : mm_bottom;
+            col.top = narrow_mm ? mm_top : top;
+            col.bottom = narrow_mm ? mm_bottom : bottom;
+            if (narrow_hud) {
+                col.bottom = std::min(col.bottom, layout.hud.y - gap);
+            }
             int y = col.top;
             for (std::size_t i = next; i < order.size(); ++i) {
                 const Order &o = order[i];
@@ -1293,10 +1306,26 @@ PermanentIconLayout layout_permanent_icons(TextOverlay &text, const UiLayout &la
             }
             col.x = right ? (start_x - used - col.w) : (start_x + used);
             const bool hits_minimap = !mm.empty() && (col.x < (mm.x + mm.w + gap)) && ((col.x + col.w) > (mm.x - gap));
-            if ((attempt == 0) && hits_minimap && ((mm_top != top) || (mm_bottom != bottom))) {
-                continue; // ミニマップを避けた範囲で組み直す
+            bool hits_hud = false;
+            if (!layout.hud.empty() && !narrow_hud && (layout.hud.y > col.top)) {
+                for (const Slot &slot : col.slots) {
+                    const RectPx cell{ col.x, slot.y, col.w, item_height(slot.name) };
+                    hits_hud = hits_hud || ((cell.x < (layout.hud.x + layout.hud.w)) && ((cell.x + cell.w) > layout.hud.x)
+                        && (cell.y < (layout.hud.y + layout.hud.h)) && ((cell.y + cell.h) > layout.hud.y));
+                }
             }
-            break;
+            bool again = false;
+            if (!narrow_mm && hits_minimap && ((mm_top != top) || (mm_bottom != bottom))) {
+                narrow_mm = true;
+                again = true; // ミニマップを避けた範囲で組み直す
+            }
+            if (hits_hud) {
+                narrow_hud = true;
+                again = true; // 名前の行の上で止めて組み直す
+            }
+            if (!again) {
+                break;
+            }
         }
         const bool inside = right ? (col.x >= x_limit) : ((col.x + col.w) <= x_limit);
         if (col.slots.empty() || !inside) {

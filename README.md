@@ -7,7 +7,7 @@
 ## 日本語
 
 変愚蛮怒（Hengband）を 3D 表示にした派生版です。画面部分を新しく作り、
-変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2 の 11 本を
+変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2・Dungeon Crawl Stone Soup の 12 本を
 同じ画面で遊べるようにしました。
 
 作者: Higesho
@@ -17,7 +17,7 @@
 
 ### ダウンロード
 
-ビルド済みのものを Releases に置いています。ボクセルモデルや音などの素材も入っています（タイル画像は入っていません）。
+ビルド済みのものを Releases に置いています。ボクセルモデルや音などの素材も入っています（タイル画像は入っていません。ただし Dungeon Crawl Stone Soup だけは、原作のタイルの画像を入れています）。
 
 - Windows: [HengbandHD-win.zip](https://github.com/higesho/hengband-hd2d/releases/latest/download/HengbandHD-win.zip)
 - Android: [HengbandHD-android.apk](https://github.com/higesho/hengband-hd2d/releases/latest/download/HengbandHD-android.apk)
@@ -33,10 +33,10 @@
 - **Linux**: tar.gz を展開して `./HengbandHd2d.sh` を起動してください。OpenGL 4.5 が使える環境が要ります。詳しくは展開した中の `README-linux.txt` を見てください。
 - **Android**: apk をインストールしてください（arm64-v8a）。
 
-現在の配布物は 11 本のコアを組み込み済みで、原作の ZIP を取り込んでコンパイルする機能（`tools/core_import/`）は
+現在の配布物は 12 本のコアを組み込み済みで、原作の ZIP を取り込んでコンパイルする機能（`tools/core_import/`）は
 ソースにはありますが、配布物には含めていません。
 
-### 11 本のゲーム
+### 12 本のゲーム
 
 | ゲーム | 説明 |
 | --- | --- |
@@ -50,6 +50,7 @@
 | Umoria | Umoria 5.7 系です。日本語化しました |
 | Rogue 3.6 / Rogue 5.4 | 古典の Rogue です。英語表示にも対応しました |
 | RogueClone2 | Rogue のクローン（RogueClone2）です。日本語版をもとにしています |
+| Dungeon Crawl Stone Soup | Dungeon Crawl Stone Soup 0.34.1 の日本語版（crawl-ja）です。原作のタイルの絵をボクセルや板にして立体で表示します |
 
 それぞれ独立した実行ファイルで、画面とは独自のプロトコルで通信します。
 画面側はゲームごとの固有の知識を持たず、コアが自分の名前と機能を伝え、画面がそれに合わせます。
@@ -62,7 +63,7 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 
 - 3D 表示（`hd2d/`）。OpenGL 4.6 で、影・被写界深度・ブルーム・昼夜と天候があります
 - 画面とコアを別プロセスに分け、パイプで通信するようにしました（`presentation/` `platform/`）
-- 9 つのゲームを追加しました（`gensoband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/`）
+- 11 のゲームを追加しました（`gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` `dcss/`）
 - Android、Meta Quest、VR（OpenXR）に移植しました
 - 視点モード 4 種類、TRON 風の表示、リアルタイムモード
 - 幻想蛮怒の英語版、Sil-Q と FroxComposband の日本語版
@@ -90,6 +91,7 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 | --- | --- | --- |
 | `hengband` | <https://github.com/hengband/hengband>（変愚蛮怒 3.0.2.5-Beta） | `18b10d6ea5fd234c119053e0a209c90aede21fa4`。短愚蛮怒のために同じリポジトリの `43106a70d7057dc6c506bac96b0888ecdaddb4b8`（3.0.2.4-Beta）も要ります |
 | `gensoband` | <https://github.com/asamayim/gensoband> | `fc4418078a62db9fae2915c8b6ab24a063609093` |
+| `toband` | <https://github.com/rmgames0-eng/Toband2-PR10-fork>（TOband R3。タグ r3-20261016） | `5c298634e8c30c7d91ef0fd0f13fc00692364eaa` |
 | `silq` | <https://github.com/sil-quirk/sil-q> | `d0355bf97e873ba10e6b364aa127bc5ebbbd05f1` |
 | `frox` | <https://github.com/Gliktch/froxcomposband> | `c7641efca8caf6069aa9a71a4b5c8547a64013be` |
 | `angband` | <https://github.com/angband/angband>（4.2.6） | `f3082213b73f3e463e3d0d60bff4b00462beae6e` |
@@ -97,6 +99,7 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 | `rogue2` | <https://github.com/suzukiiichiro/Rogue2.Official>（RogueClone2） | `895a468ab632c7ba05d88b706ac1db478dffbbe8` |
 | `rogue36` | usotopr/newrogue3.6（Rogue 3.6.4） | `570c8825d867ee4da1f03f9fd5309bb9c454a26e` |
 | `rogue54` | Davidslv/rogue（Rogue 5.4.4） | `f4653c2a2ee6981a73abe9dfda055134285e1e79` |
+| `crawl-ja` | <https://github.com/higesho/crawl-ja>（Dungeon Crawl Stone Soup 0.34.1 日本語版。タグ 0.34.1-ja4。上流は <https://github.com/crawl/crawl>） | `486469c29a45a39d4a79494a73e31d2fd88d40ea` |
 
 用意したら、次の 2 つを実行します。
 
@@ -109,8 +112,8 @@ python tools/core_sources/prepare_original_data.py
   `../roguelike-cores/build-sources/` に再構成し、全ファイルを SHA-256 で検証します。
   詳しくは [原作ソースの準備](tools/core_sources/README.md) を参照してください。
 - `prepare_original_data.py` は、組み立てと配布物が読む**原作のゲームデータ**を固定版から写します。
-  Angband の `lib/{gamedata,customize,screens,help}`（`angband/lib/` の下）と、RogueClone2 の日本語のメッセージ表
-  （原作の `mesg_J` を `rogue2/mesg` へ）です。これらはこのリポジトリに含めておらず、`.gitignore` で追跡の対象から外してあります。
+  Angband の `lib/{gamedata,customize,screens,help}`（`angband/lib/` の下）、RogueClone2 の日本語のメッセージ表
+  （原作の `mesg_J` を `rogue2/mesg` へ）、TOband の `lib/`（原作は EUC-JP なので CP932 にして `toband/lib/` へ）です。これらはこのリポジトリに含めておらず、`.gitignore` で追跡の対象から外してあります。
   写していない場合、`tools/rogue2/build_windows.py` は自動で写し、`tools/angband/build_windows.py` も自動で原作から写します。
   配布物を作る `tools/package/` と `tools/build_android_hd2d_assets.py` は、写していなければ止まります。
 
@@ -143,6 +146,10 @@ Angband・Umoria・Rogue 系の 5 本（`AngbandCore.exe` `UmoriaCore.exe` `Rogu
 Visual Studio の解には入っていません。`tools/angband/build_windows.py` `tools/umoria/build_windows.py`
 `tools/rogue_legacy/build_windows.py` `tools/rogue2/build_windows.py` で組みます。
 同梱コンパイラー（LLVM-MinGW。版と SHA-256 は `tools/core_import/toolchains.json`）を `core-import/toolchain/` に用意してください。
+
+Dungeon Crawl Stone Soup（`DcssCore.exe`）も Visual Studio の解には入っていません。`python -u tools/dcss/build_core.py` で、
+原作の複製・組む前の生成物の作成・`VisualStudio/DcssCore/DcssCore.vcxproj` のビルド・実行時のデータ（`dcss/lib/`。追跡しません）の準備を順に行います
+（手順の詳細は `dcss/adapter/README.md`）。
 
 #### 動かすために要る素材
 
@@ -202,7 +209,7 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 | `presentation/` | コア側の描画データの作成とプロトコル |
 | `platform/` | Windows / Android / Linux の起動処理 |
 | `tools/core_sources/` | 外部原作の版固定、必要なパッチ、ソースとデータの準備 |
-| `gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` | コア別アダプター・翻訳・ゲームデータ。原作の src と原作のゲームデータは外部で管理 |
+| `gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` `dcss/` | コア別アダプター・翻訳・ゲームデータ。原作の src と原作のゲームデータは外部で管理（`dcss/assets/` にはボクセルの素材と、使ったタイルの来歴の記録を含めています） |
 | `tools/targeting/` | 原作ソースへ狙いの表示などの呼び出しを足す書き換え |
 | `tools/voxel/` | ボクセルモデルの生成 |
 | `tools/hd2d_verify/` | 動作確認用のスクリプト |
@@ -229,15 +236,17 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 系統ごとに違います。[LICENSE](LICENSE) と [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) をご覧ください。
 
 - 変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・FroxComposband、画面、共通コード、アダプターは Moria/Angband 使用許諾です。非営利での配布は可能で、著作権表記と使用許諾文を含める必要があります
+- TOband のクエスト「ブリュンヒルド強奪」のマップだけは NetHack General Public License です（[LICENSE](LICENSE) の §1.3）
 - Sil-Q は GPL v2 と Angband 使用許諾のデュアルライセンスです
 - Angband は GPL v2 で配布します（原作は GPL v2 と Angband 使用許諾の二重許諾で、GPL v2 を選んでいます）
 - Umoria は GPL v3 です
+- Dungeon Crawl Stone Soup（日本語版）は GPL v2 以降です（タイルの絵の大半は CC0。付属ライブラリ lua・pcre・sqlite・zlib と字は各自の許諾）。原文は配布物の `licenses/Dcss-*` にあります
 - Rogue 3.6 / Rogue 5.4 は BSD 3 条項です
 - RogueClone2 は原作者の条件（営利目的で販売しない・資料を添付する・制限を加えない）に従います
-- GPL のコア（Angband・Umoria）の対応するソースの入手のしかたは [LICENSE](LICENSE) の §8 に書いてあります。
+- GPL のコア（Angband・Umoria・Dungeon Crawl Stone Soup）の対応するソースの入手のしかたは [LICENSE](LICENSE) の §8 に書いてあります。
   上流の固定版（上の「原作の用意」の表）と、このリポジトリのレシピ・アダプターから、`tools/core_sources/prepare.py` が再構成します
 - 許諾の違うコアが同じ配布物に入ることについて、事実を [LICENSE](LICENSE) の §7 に書いてあります
-- タイル画像は画像生成 AI（Stable Diffusion）で作ったものです（配布していません）。利用にあたっては各自でご確認ください
+- タイル画像は画像生成 AI（Stable Diffusion）で作ったものです（配布していません。Dungeon Crawl Stone Soup のタイルは原作のものを配布しています）。利用にあたっては各自でご確認ください
 
 ### 謝辞
 
@@ -249,8 +258,8 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 ## English
 
 A fork of Hengband with a 3D display. The screen side was written from scratch,
-and eleven games can be played on it: Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband,
-Angband, Umoria, Rogue 3.6, Rogue 5.4 and RogueClone2.
+and twelve games can be played on it: Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband,
+Angband, Umoria, Rogue 3.6, Rogue 5.4, RogueClone2 and Dungeon Crawl Stone Soup.
 
 Author: Higesho
 
@@ -259,7 +268,7 @@ This is an unofficial fork and is not related to the official
 
 ### Download
 
-Prebuilt packages are on the Releases page. They include the voxel models and sounds (the tile images are not included).
+Prebuilt packages are on the Releases page. They include the voxel models and sounds (the tile images are not included, except that Dungeon Crawl Stone Soup ships the original game's own tile images).
 
 - Windows: [HengbandHD-win.zip](https://github.com/higesho/hengband-hd2d/releases/latest/download/HengbandHD-win.zip)
 - Android: [HengbandHD-android.apk](https://github.com/higesho/hengband-hd2d/releases/latest/download/HengbandHD-android.apk)
@@ -275,10 +284,10 @@ Project page: <https://higesho.github.io/>
 - **Linux**: unpack the tar.gz and run `./HengbandHd2d.sh`. It needs OpenGL 4.5. See `README-linux.txt` inside the package.
 - **Android**: install the apk (arm64-v8a).
 
-The current packages contain the eleven prebuilt cores. The feature that imports and compiles upstream source ZIPs
+The current packages contain the twelve prebuilt cores. The feature that imports and compiles upstream source ZIPs
 (`tools/core_import/`) is in the source but is not included in the packages.
 
-### The eleven games
+### The twelve games
 
 | Game | Description |
 | --- | --- |
@@ -292,6 +301,7 @@ The current packages contain the eleven prebuilt cores. The feature that imports
 | Umoria | Umoria 5.7 series, translated into Japanese |
 | Rogue 3.6 / Rogue 5.4 | The classic Rogue, also with English display |
 | RogueClone2 | A Rogue clone (RogueClone2), based on its Japanese edition |
+| Dungeon Crawl Stone Soup | Dungeon Crawl Stone Soup 0.34.1, Japanese edition (crawl-ja). The original game's tiles are shown in 3D as voxel models and boards |
 
 Each game is a separate executable and talks to the screen through a small protocol.
 The screen side has no game-specific knowledge; each core reports its name and features, and the screen adapts.
@@ -304,7 +314,7 @@ Added:
 
 - A 3D display (`hd2d/`) using OpenGL 4.6, with shadows, depth of field, bloom, day/night and weather
 - The screen and the core now run as separate processes and talk over a pipe (`presentation/` `platform/`)
-- Nine more games (`gensoband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/`)
+- Eleven more games (`gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` `dcss/`)
 - Ports to Android, Meta Quest and VR (OpenXR)
 - Four view modes, a TRON-style look, and a real-time mode
 - An English version of Gensoband, and Japanese versions of Sil-Q and FroxComposband
@@ -332,6 +342,7 @@ The commits are also in `tools/core_sources/manifest.json`.
 | --- | --- | --- |
 | `hengband` | <https://github.com/hengband/hengband> (Hengband 3.0.2.5-Beta) | `18b10d6ea5fd234c119053e0a209c90aede21fa4`. Tangband also needs `43106a70d7057dc6c506bac96b0888ecdaddb4b8` (3.0.2.4-Beta) of the same repository |
 | `gensoband` | <https://github.com/asamayim/gensoband> | `fc4418078a62db9fae2915c8b6ab24a063609093` |
+| `toband` | <https://github.com/rmgames0-eng/Toband2-PR10-fork> (TOband R3, tag r3-20261016) | `5c298634e8c30c7d91ef0fd0f13fc00692364eaa` |
 | `silq` | <https://github.com/sil-quirk/sil-q> | `d0355bf97e873ba10e6b364aa127bc5ebbbd05f1` |
 | `frox` | <https://github.com/Gliktch/froxcomposband> | `c7641efca8caf6069aa9a71a4b5c8547a64013be` |
 | `angband` | <https://github.com/angband/angband> (4.2.6) | `f3082213b73f3e463e3d0d60bff4b00462beae6e` |
@@ -339,6 +350,7 @@ The commits are also in `tools/core_sources/manifest.json`.
 | `rogue2` | <https://github.com/suzukiiichiro/Rogue2.Official> (RogueClone2) | `895a468ab632c7ba05d88b706ac1db478dffbbe8` |
 | `rogue36` | usotopr/newrogue3.6 (Rogue 3.6.4) | `570c8825d867ee4da1f03f9fd5309bb9c454a26e` |
 | `rogue54` | Davidslv/rogue (Rogue 5.4.4) | `f4653c2a2ee6981a73abe9dfda055134285e1e79` |
+| `crawl-ja` | <https://github.com/higesho/crawl-ja> (Dungeon Crawl Stone Soup 0.34.1, Japanese edition, tag 0.34.1-ja4; upstream: <https://github.com/crawl/crawl>) | `486469c29a45a39d4a79494a73e31d2fd88d40ea` |
 
 Then run these two commands:
 
@@ -351,8 +363,8 @@ python tools/core_sources/prepare_original_data.py
   and this repository's recipes (`tools/core_sources/recipes/`), and verifies every file with SHA-256.
   See [source preparation](tools/core_sources/README.md).
 - `prepare_original_data.py` copies the **upstream game data** that the builds and packages read, from the pinned commits:
-  Angband's `lib/{gamedata,customize,screens,help}` (into `angband/lib/`) and RogueClone2's Japanese message table
-  (upstream `mesg_J` to `rogue2/mesg`). They are not in this repository and are excluded by `.gitignore`.
+  Angband's `lib/{gamedata,customize,screens,help}` (into `angband/lib/`), RogueClone2's Japanese message table
+  (upstream `mesg_J` to `rogue2/mesg`) and TOband's `lib/` (upstream is EUC-JP; converted to CP932 into `toband/lib/`). They are not in this repository and are excluded by `.gitignore`.
   If they are missing, `tools/rogue2/build_windows.py` copies them automatically, and `tools/angband/build_windows.py` copies the Angband data from the upstream working tree.
   The packaging scripts (`tools/package/` and `tools/build_android_hd2d_assets.py`) stop when they are missing.
 
@@ -384,6 +396,10 @@ The Angband, Umoria and Rogue cores (`AngbandCore.exe`, `UmoriaCore.exe`, `Rogue
 are not in the Visual Studio solution. Build them with `tools/angband/build_windows.py`, `tools/umoria/build_windows.py`,
 `tools/rogue_legacy/build_windows.py` and `tools/rogue2/build_windows.py`. They need the bundled compiler
 (LLVM-MinGW; version and SHA-256 are in `tools/core_import/toolchains.json`) in `core-import/toolchain/`.
+
+The Dungeon Crawl Stone Soup core (`DcssCore.exe`) is not in the Visual Studio solution either. `python -u tools/dcss/build_core.py` runs, in order,
+cloning the upstream, generating the files needed before compiling, building `VisualStudio/DcssCore/DcssCore.vcxproj`, and preparing the runtime data
+(`dcss/lib/`, not tracked). See `dcss/adapter/README.md` for the details.
 
 #### Assets needed to run
 
@@ -443,7 +459,7 @@ See the comment at the top of each script for details.
 | `presentation/` | Core-side rendering data and the protocol |
 | `platform/` | Entry points for Windows, Android and Linux |
 | `tools/core_sources/` | Pinned external sources, patches, and preparation of the sources and data |
-| `gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` | Adapters, translations and game data; the upstream src and upstream game data are external |
+| `gensoband/` `toband/` `silq/` `frox/` `tangband/` `angband/` `umoria/` `rogue2/` `rogue36/` `rogue54/` `rogue_legacy/` `dcss/` | Adapters, translations and game data; the upstream src and upstream game data are external (`dcss/assets/` holds the voxel assets and the provenance records of the tiles used) |
 | `tools/targeting/` | Rewrites that add calls (target display and so on) to the upstream sources |
 | `tools/voxel/` | Voxel model generation |
 | `tools/hd2d_verify/` | Verification scripts |
@@ -471,16 +487,18 @@ Different parts are under different licenses. See [LICENSE](LICENSE) and [THIRD-
 
 - Hengband, Tangband, Gensoband, TOband and FroxComposband, the screen, the shared code and the adapters are under the Moria/Angband license. Non-commercial distribution is allowed,
   and all copies must include the copyright notice and the license text
+- The map of TOband's quest "Brunhild" alone is under the NetHack General Public License (§1.3 of [LICENSE](LICENSE))
 - Sil-Q is dual-licensed under GPL v2 and the Angband license
 - Angband is distributed under GPL v2 (the upstream dual license is GPL v2 or the Angband license; GPL v2 is chosen)
 - Umoria is under GPL v3
+- Dungeon Crawl Stone Soup (Japanese edition) is under GPL v2 or later (most tiles are CC0; the bundled Lua, PCRE, SQLite, zlib and the font have their own licenses). The texts are in `licenses/Dcss-*` of the package
 - Rogue 3.6 and Rogue 5.4 are under the BSD 3-clause license
 - RogueClone2 follows its author's conditions (no sale for profit, attach the documents, no further restrictions)
-- How to get the corresponding source of the GPL cores (Angband and Umoria) is in §8 of [LICENSE](LICENSE):
+- How to get the corresponding source of the GPL cores (Angband, Umoria and Dungeon Crawl Stone Soup) is in §8 of [LICENSE](LICENSE):
   the pinned upstream versions (the table in "Original sources") plus this repository's recipes and adapters,
   reconstructed by `tools/core_sources/prepare.py`
 - The facts about cores under different licenses in one package are in §7 of [LICENSE](LICENSE)
-- The tile images were generated with an image generation AI (Stable Diffusion) and are not distributed. Please check the terms for your own use
+- The tile images were generated with an image generation AI (Stable Diffusion) and are not distributed (the tiles of Dungeon Crawl Stone Soup are the original game's and are distributed). Please check the terms for your own use
 
 ### Acknowledgements
 

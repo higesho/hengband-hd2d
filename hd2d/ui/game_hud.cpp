@@ -1484,7 +1484,7 @@ bool drag_grip(const UiLayout &layout, int grip, int x, int y, SubSplit &split)
 
 // Fill only the screen margin outside the scene. The map/3D viewport is never covered.
 void draw_main_panel_design(UiPaint &paint,const UiLayout &layout,int theme) {
-    if(theme<0)return;
+    if(theme<0||layout.main_panel_design_off)return;
     const auto skin=modern_skin(theme);const auto &area=layout.content;const auto &scene=layout.scene;
     if(!panel_transparent()) {
         const int x0=std::max(area.x,scene.x),y0=std::max(area.y,scene.y);

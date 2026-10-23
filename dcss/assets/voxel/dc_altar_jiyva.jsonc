@@ -1,0 +1,72 @@
+// dc_altar_jiyva — プレハブ定義（設計書 §7）。`dc_altar_jiyva.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 jiyva01（dngn/altars/jiyva01）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_jiyva",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "01271E",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "013125",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "061510",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "185D11",
+      "material": "plant"
+    },
+    {
+      "i": 5,
+      "rgb": "248236",
+      "material": "plant"
+    },
+    {
+      "i": 6,
+      "rgb": "1D682B",
+      "material": "plant"
+    },
+    {
+      "i": 7,
+      "rgb": "40C84E",
+      "material": "plant"
+    },
+    {
+      "i": 8,
+      "rgb": "C8FFAA",
+      "material": "plant"
+    }
+  ]
+}

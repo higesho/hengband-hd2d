@@ -1,0 +1,107 @@
+// dc_floor_salt_01 — プレハブ定義（設計書 §7）。`dc_floor_salt_01.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 endless_salt0（dngn/floor/endless_salt0）。タイルに合わせた凹凸（stone。出 221・へこみ 170。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_salt_01",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "7D7D76",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "858583",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "878787",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "9C9D92",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "A0A194",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "969696",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "B2B2AE",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "C8C7C0",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "8E8E8C",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "C8CAAD",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "8C8C8C",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "EEEAD4",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "898989",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "8A8A8A",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "9C9B99",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "A4A597",
+      "material": "stone"
+    }
+  ]
+}

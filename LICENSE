@@ -19,12 +19,14 @@ additional terms.
 | --- | --- | --- |
 | 変愚蛮怒・短愚蛮怒・幻想蛮怒・FroxComposband、画面（`hd2d/`）、共通コード（`presentation/` `platform/`）、アダプタ、ツール | Moria / Angband 使用許諾（営利目的の配布を認めない） | §1 |
 | Angband・Umoria のコアに組み込まれる、この派生版の作者のコード（`angband/adapter/` `umoria/adapter/` と、それらが組み込む `presentation/` `platform/` のファイル） | §1 に加えて GPL v2 以降でも提供 | §7 |
+| Dungeon Crawl Stone Soup（DCSS）日本語版のコアに組み込まれる、この派生版の作者のコード（`dcss/adapter/` と、それが組み込む `presentation/` `platform/` のファイル） | §1 に加えて GPL v2 以降でも提供 | §7 |
 | TOband（`toband/`） | §1 と同じ Moria / Angband 使用許諾＋変愚蛮怒の追加条項。クエスト「ブリュンヒルド強奪」のマップは NetHack General Public License | §1.3 |
 | Sil-Q | GPL v2 または Angband 使用許諾 | §2 |
 | Angband 4.2.6 | GPL v2（原作の二重許諾から GPL v2 を選ぶ） | §3 |
 | Umoria 5.7 系 | GPL v3 | §4 |
 | Rogue 3.6 / Rogue 5.4 | BSD 3 条項 | §5 |
 | RogueClone2 | 原作者の条件（営利目的で販売しない・資料を添付する・制限を加えない） | §6 |
+| Dungeon Crawl Stone Soup 0.34.1 日本語版 | GPL v2 以降（タイルの絵の大半は CC0。付属ライブラリ lua・pcre・sqlite・zlib と字は各自の許諾） | §11 |
 
 ---
 
@@ -178,7 +180,7 @@ RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ�
 ## 7. 許諾の違うコアが同じ配布物に入ることについて
 
 - 配布物は、画面（`HengbandHd2d.exe`）と、ゲームごとのコアの実行ファイル（`HengbandCore.exe`
-  `AngbandCore.exe` `UmoriaCore.exe` など 10 本）でできています。それぞれ別の実行ファイルです。
+  `AngbandCore.exe` `UmoriaCore.exe` `DcssCore.exe` など 12 本）でできています。それぞれ別の実行ファイルです。
 - 画面はコアを子プロセスとして起動し、パイプで、この派生版のプロトコル（バージョン 1）を使って
   やりとりします。画面とコア、コアどうしは、ライブラリとしてリンクされていません。
 - 画面のソース（`hd2d/`）に、Angband・Umoria・Rogue 系の原作のコードは含まれていません。
@@ -197,16 +199,28 @@ RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ�
   原作のコードを含みません。
 - これにより、`AngbandCore.exe` は全体を GPL v2、`UmoriaCore.exe` は全体を GPL v3 の条件で
   配布します。§1 の営利目的の配布の制限は、この 2 つの実行ファイルには加えません。
+- **同じく、DCSS のコア（`DcssCore.exe`）に組み込まれる、この派生版の作者のコードも、§1 の使用許諾に加えて
+  GNU GPL v2 以降（GPL v2 or later）でも提供します。** 対象は `dcss/adapter/` と、これが組み込む
+  `presentation/frame/frame_codec.cpp` `protocol_messages.cpp` `protocol_transport.cpp`
+  `presentation/bridge/input_event_adapter.cpp` `platform/portable/legacy_os.cpp` と、それらが取り込むヘッダー
+  （`VisualStudio/DcssCore/DcssCore.vcxproj`・`tools/core_sources/dcss_core.cmake` が組み込むもの）です。
+  これらは変愚蛮怒の原作のコードを含みません。これにより `DcssCore.exe` は全体を GPL v2 以降の条件で配布し、
+  §1 の営利目的の配布の制限はこの実行ファイルには加えません。画面のソース（`hd2d/dcss/`）は `DcssCore.exe` に
+  含まれません（別の実行ファイル `HengbandHd2d.exe` の一部です）。
 - The author of this derivative also licenses their own code that is built into the Angband and
   Umoria cores (listed above) under the GNU GPL, version 2 or (at your option) any later version,
   in addition to the license in §1. `AngbandCore.exe` is therefore distributed under GPL v2 and
   `UmoriaCore.exe` under GPL v3 as a whole.
+- Likewise, the author licenses their own code that is built into the DCSS core (`dcss/adapter/` and the
+  `presentation/` and `platform/` files it builds in, listed above) under the GNU GPL, version 2 or (at your
+  option) any later version, in addition to the license in §1. `DcssCore.exe` is therefore distributed under
+  GPL v2 or later as a whole. The screen code for DCSS (`hd2d/dcss/`) is part of `HengbandHd2d.exe`, not of the core.
 
 ---
 
-## 8. GPL のコア（Angband・Umoria）の対応するソース
+## 8. GPL のコア（Angband・Umoria・DCSS）の対応するソース
 
-`AngbandCore.exe`（GPL v2）と `UmoriaCore.exe`（GPL v3）の対応するソースは、次の 2 つを
+`AngbandCore.exe`（GPL v2）と `UmoriaCore.exe`（GPL v3）と `DcssCore.exe`（GPL v2 以降）の対応するソースは、次の 2 つを
 組み合わせて得られます。
 
 1. **上流の固定版**（原作そのまま）
@@ -215,12 +229,13 @@ RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ�
    | --- | --- | --- |
    | Angband 4.2.6 | <https://github.com/angband/angband> | `f3082213b73f3e463e3d0d60bff4b00462beae6e`（タグ 4.2.6） |
    | Umoria 5.7.15 | <https://github.com/dungeons-of-moria/umoria> | `3bf8abc4f76812810e59d738492c7b61fb8f1bb6` |
+   | DCSS 0.34.1 日本語版（上流は <https://github.com/crawl/crawl>） | <https://github.com/higesho/crawl-ja> | `486469c29a45a39d4a79494a73e31d2fd88d40ea`（タグ 0.34.1-ja4） |
 
    コミットは `tools/core_sources/manifest.json` にも書いてあります。
 2. **このリポジトリ**: 原作との差分の定義（`tools/core_sources/recipes/angband.json`
-   `tools/core_sources/recipes/umoria.json`）、アダプタ（`angband/adapter/` `umoria/adapter/`）、
+   `tools/core_sources/recipes/umoria.json` `tools/core_sources/recipes/dcss.json`）、アダプタ（`angband/adapter/` `umoria/adapter/` `dcss/adapter/`）、
    共通のコード（`presentation/` `platform/` `third_party/cpp/`）、組み立ての手順
-   （`tools/angband/` `tools/umoria/` `tools/targeting/`）。配布物と同じ版には、その配布物を
+   （`tools/angband/` `tools/umoria/` `tools/dcss/` `tools/targeting/`）。配布物と同じ版には、その配布物を
    作ったリリースのタグ（またはコミット）を使ってください。
 
 手順（詳しくは `README.md` の「ビルド」）:
@@ -233,10 +248,13 @@ python tools/core_sources/prepare.py                # 原作の固定版とレ�
 python tools/core_sources/prepare_original_data.py  # Angband の lib/ など、原作のデータを写す
 python tools/angband/build_windows.py               # AngbandCore.exe
 python tools/umoria/build_windows.py                # UmoriaCore.exe
+python tools/dcss/build_core.py                     # DcssCore.exe（DCSS の生成物 → 組み立て → 実行時のデータ）
 ```
 
 `prepare.py` は、固定コミットのオブジェクトから範囲を取り出して再構成した全ファイルを
 SHA-256 で検証します。このリポジトリのレシピに、原作のソースの本文は含まれていません。
+DCSS は、原作のファイルを 1 行も書き換えずにそのまま範囲コピーします（付属ライブラリ lua・pcre・sqlite・zlib の固定コミットも
+レシピが指します）。
 
 ---
 
@@ -245,6 +263,7 @@ SHA-256 で検証します。このリポジトリのレシピに、原作のソ
 ボクセルモデル（`.vox`）・音の素材は、このリポジトリに含めていません。これらを含む
 ビルド済みのパッケージは <https://github.com/higesho/hengband-hd2d/releases> にあります。
 タイル画像（全部で約 2.2GB）は、このリポジトリにも、現在の配布物にも含めていません。
+**ただし DCSS だけは、原作のタイルの画像ページ・画面の部品が使う絵・そこから作ったボクセルのモデルを配布物に含めます**（§11）。
 
 - ボクセルモデルは `tools/voxel/` の Python スクリプトで生成したものです
 - タイル画像は画像生成 AI（ComfyUI / Stable Diffusion）で生成したものです（配布していません）。
@@ -265,3 +284,32 @@ SHA-256 で検証します。このリポジトリのレシピに、原作のソ
 The authors assume no responsibility for any damage caused by the use of
 this program.
 ```
+
+---
+
+## 11. Dungeon Crawl Stone Soup 0.34.1 日本語版（`dcss/`）
+
+DCSS は GNU GPL v2、またはそれ以降の版（GPL v2 or later）です。原作の `LICENSE`（GPL v2 の全文と、
+別の許諾の部分の一覧を含む）は配布物の `licenses/Dcss-LICENSE.txt` として入ります。この派生版は DCSS のコア
+（`DcssCore.exe` とその Android／Linux の実行ファイル）を **GPL v2 以降で**配布します。
+
+- 日本語版（<https://github.com/higesho/crawl-ja>、タグ 0.34.1-ja4）は、上流の DCSS
+  （<https://github.com/crawl/crawl>）の日本語化の派生で、同じ `LICENSE` に従います。
+  著作者の名簿は `licenses/Dcss-CREDITS.txt`（上流の `CREDITS.txt`）にあります。
+- 上流の `LICENSE` が挙げる別の許諾の部分（すべて GPL と両立します）のうち、コアに組み込まれるのは
+  CC0／パブリックドメイン（タイルの大半・`perlin.cc`）、MIT（`json.cc`・`worley.cc`）、Apache v2 または MIT（`pcg.cc`）です。
+  付属ライブラリは Lua（MIT）・PCRE（BSD）・SQLite（著作権の放棄）・zlib（zlib 使用許諾）で、
+  原文を `licenses/Dcss-*` に添えています（`THIRD-PARTY-NOTICES.txt` に一覧があります）。
+- **ソースの入手**: §8 のとおりです。上流の日本語版の固定コミット（`486469c29a45a39d4a79494a73e31d2fd88d40ea`）と、
+  このリポジトリのレシピ（`tools/core_sources/recipes/dcss.json`）・アダプタ（`dcss/adapter/`）・画面の部品（`hd2d/dcss/`）・
+  組み立ての道具（`tools/dcss/`）を組み合わせて、`tools/core_sources/prepare.py` が再構成します。
+  原作の行の書き換えは 0 件です。
+- **タイルの絵**: 上流の `LICENSE` は「タイルと絵の大半は CC0。古い物は事情が複雑なことがある。1 枚ごとの来歴は
+  <https://github.com/crawl/tiles>」と書いています。この派生版は、原作が使っているタイルをそのまま使います。
+  配布物に入るのは、原作のタイルの画像ページ（`dcss/lib/tiles/`・`assets/ui/dcss/`）と、そこから作ったボクセルのモデル（`assets/voxel/dc_*`）です。
+  使ったタイル 265 枚のうち 48 枚は、上流が「CC0 と確認できない」とする一覧に載っています（主に入口・階段・ポータル・店の絵）。
+  一覧との突き合わせは `licenses/Dcss-tiles-used-provenance.tsv`（使った絵の区分）と
+  `licenses/Dcss-tiles-unclear-provenance.tsv`（上流の一覧の全項目）にあります。作者の表記を求める記載は、
+  上流の一覧・作者の名簿・`LICENSE` のどれにもありません。
+- **字**: 原作の区画の字に BIZ UDGothic Regular（SIL Open Font License 1.1）を使います。全文は配布物の
+  `assets/fonts/dcss/OFL.txt` にあります。

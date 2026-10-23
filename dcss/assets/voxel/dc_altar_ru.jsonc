@@ -1,0 +1,72 @@
+// dc_altar_ru — プレハブ定義（設計書 §7）。`dc_altar_ru.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 ru（dngn/altars/ru）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_ru",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "333333",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "404040",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "090909",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "868686",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "868C94",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "A1A8B2",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "C0343E",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "547CEA",
+      "material": "clean"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+// dc_altar_gozag — プレハブ定義（設計書 §7）。`dc_altar_gozag.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 gozag0（dngn/altars/gozag0）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_gozag",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "BA9C3F",
+      "material": "metal"
+    },
+    {
+      "i": 2,
+      "rgb": "E8C34F",
+      "material": "metal"
+    },
+    {
+      "i": 3,
+      "rgb": "896A1A",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "F8EAA7",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "E4B634",
+      "material": "metal"
+    },
+    {
+      "i": 6,
+      "rgb": "FBC839",
+      "material": "metal"
+    },
+    {
+      "i": 7,
+      "rgb": "FFE046",
+      "material": "metal"
+    },
+    {
+      "i": 8,
+      "rgb": "FFF8BE",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "FFEE96",
+      "material": "clean"
+    }
+  ]
+}

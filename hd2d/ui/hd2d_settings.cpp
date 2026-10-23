@@ -283,6 +283,8 @@ bool Hd2dSettings::differs_from(const Hd2dSettings &other) const
         || (this->ascii_panel_px != other.ascii_panel_px)
         || (this->entity_style != other.entity_style)
         || (this->entity_slab_screen_aligned != other.entity_slab_screen_aligned)
+        || (this->core_defaults_rev != other.core_defaults_rev)
+        || (this->dcss_pad_binds != other.dcss_pad_binds)
         || (this->entity_glyph_pct != other.entity_glyph_pct)
         || (this->scene_look != other.scene_look) || (this->tron_sky != other.tron_sky)
         || (this->tron_face_glyph != other.tron_face_glyph)
@@ -550,6 +552,10 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
                                                   : Hd2dSettings::EntityStyle::Slab;
         } else if (key == "entity_slab_screen_aligned") {
             out.entity_slab_screen_aligned = (std::atoi(value.c_str()) != 0);
+        } else if (key == "core_defaults_rev") {
+            out.core_defaults_rev = std::max(0, std::atoi(value.c_str()));
+        } else if (key == "dcss_pad_binds") {
+            out.dcss_pad_binds = value;
         } else if (key == "look") {
             //! 画調。**綴りで書く**（他の軸と同じ流儀）。
             SceneLookKind look = Hd2dSettings{}.scene_look;
@@ -834,6 +840,12 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
          << '\n';
     file << "# ボクセル板の向き（0 = 従来のワールド基準 / 1 = 常に画面平面へ正対）。\n";
     file << "entity_slab_screen_aligned=" << (settings.entity_slab_screen_aligned ? 1 : 0) << '\n';
+    file << "# そのコアの既定の改訂（コアごとの既定を 1 度だけ当てるための印。手で直さない）。\n";
+    file << "core_defaults_rev=" << settings.core_defaults_rev << '\n';
+    if (!settings.dcss_pad_binds.empty()) { //!< DCSS だけの値。空なら書かない（ほかのコアの cfg を増やさない）
+        file << "# DCSS のゲームパッドの割り当て（画面で変えた分だけ。X:CMD_PICKUP,LB+Y:none の形）。\n";
+        file << "dcss_pad_binds=" << settings.dcss_pad_binds << '\n';
+    }
     file << "entity_glyph=" << settings.entity_glyph_pct << '\n';
     //! 画調。**読む側の綴りと 1 対 1。**
     file << "# 画調（standard = 従来の絵 / tron = 黒い面にネオンの線）。\n";

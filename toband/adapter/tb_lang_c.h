@@ -133,6 +133,41 @@ const char *tb_lang_file(const char *name);
 void tb_lang_set_en_help(int on);
 
 /*!
+ * @brief 人物表の札の長さ（フック **#12**。`files.c` の `display_player_one_line()` の `head_len`）。
+ * @param head 札の原文（CP932。日本語）
+ * @param col 札を置く桁
+ * @param len 欄の幅（負は「札の後ろに値を続ける」欄）
+ * @return 値を置く位置までの字数
+ *
+ * @details 原作は値の桁を**日本語の札の長さ**で決めている。英語の札のほうが長いと値が札を上書きする
+ * （`Blows/Ro  1`）ので、英語のときは英語の札で測る。右の欄（`col == 54`・値が札に続く欄）は、英語の札が
+ * 14 桁にそろえて訳してあるので、短い札（`AM Field  :`）でも値の桁を 14 にそろえる。日本語のときは今までどおり。
+ */
+int tb_head_len(const char *head, int col, int len);
+
+/*!
+ * @brief 英語のとき、字を `width` 字までに切って返す（フック **#12**。知識の画面の敵の名前の欄）。
+ * @param s 字（CP932）
+ * @param width 欄の幅（桁）
+ * @return 日本語のとき・収まるときは `s` のまま。英語で長いときは、切った字（静的な寿命）
+ *
+ * @details 敵の名前の欄の右に記号（桁 70）と殺害数（桁 73）が続く。日本語の名前は 20 桁ほどだが、英語の名前は 59 字まである
+ * （`The Blubbering idiot, agent of black market, Simon the weak`）ので、欄を超えた分は右の記号と数に重なって読めなくなる。
+ */
+const char *tb_clip(const char *s, int width);
+
+/*!
+ * @brief 英語のとき、字が `width` 字を超えるなら、`width - 1` 字に切って `.` を付けて返す（フック **#12**。左の状態欄のクラス名）。
+ * @param s 字（CP932）
+ * @param width 欄の幅（桁）
+ * @return 日本語のとき・収まるときは `s` のまま。英語で長いときは、切った字（静的な寿命）
+ *
+ * @details 左の状態欄は 12 桁。英語のクラス名は 16 字まで（`Knight-Commander`）あり、そのまま出すと `Knight-Comma` と中途半端に切れる。
+ * 切れたと分かる印として `.` を付ける（`Knight-Comm.`）。
+ */
+const char *tb_fit(const char *s, int width);
+
+/*!
  * @brief `fprintf()` の代わり（フック **#29**。§11.13）。
  * @param fff 書き出し先
  * @param fmt 書式（CP932）

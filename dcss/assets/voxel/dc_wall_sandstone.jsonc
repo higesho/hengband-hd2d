@@ -1,0 +1,97 @@
+// dc_wall_sandstone — プレハブ定義（設計書 §7）。`dc_wall_sandstone.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 sandstone_wall0（dngn/wall/sandstone_wall0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_sandstone",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "836D2C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "C0A040",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "605020",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "806A2A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "E0BA4A",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "A08535",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "F8E060",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "907830",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "735F26",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "56481D",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "AD903A",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "DFCA56",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "CAA743",
+      "material": "stone"
+    }
+  ]
+}

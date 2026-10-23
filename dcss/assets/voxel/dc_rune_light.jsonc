@@ -1,0 +1,152 @@
+// dc_rune_light — プレハブ定義（設計書 §7）。`dc_rune_light.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 runelight0（dngn/floor/runelight0）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_rune_light",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "003131",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "1D1D1D",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "002929",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "003E3E",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "334DB2",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "003A3A",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "004B4B",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "005858",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "3E5ED9",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "496EFF",
+      "material": "clean"
+    },
+    {
+      "i": 11,
+      "rgb": "141414",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "002525",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "002C2C",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "001F1F",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "001D1D",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "001414",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "96D9D9",
+      "material": "clean"
+    },
+    {
+      "i": 18,
+      "rgb": "B0FFFF",
+      "material": "clean"
+    },
+    {
+      "i": 19,
+      "rgb": "7BB2B2",
+      "material": "clean"
+    },
+    {
+      "i": 20,
+      "rgb": "D9D9D9",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "B2B2B2",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "191919",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "001919",
+      "material": "stone"
+    }
+  ]
+}

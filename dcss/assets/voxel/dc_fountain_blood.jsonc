@@ -1,0 +1,77 @@
+// dc_fountain_blood — プレハブ定義（設計書 §7）。`dc_fountain_blood.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の噴水 blood_fountain（dngn/decor/blood_fountain）を絵から解釈して一から作った（水盤・水・くびれた柱と波打つ鉢・噴き出し口と落ちる水。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_fountain_blood",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "9A9A9A",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "C0C0C0",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "BC0E12",
+      "material": "clean"
+    },
+    {
+      "i": 4,
+      "rgb": "D81015",
+      "material": "clean"
+    },
+    {
+      "i": 5,
+      "rgb": "707070",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "4E4E4E",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "E19394",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "F0C9CA",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "FF1419",
+      "material": "clean"
+    }
+  ]
+}

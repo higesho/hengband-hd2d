@@ -1,0 +1,62 @@
+// dc_altar_kikubaaqudgha — プレハブ定義（設計書 §7）。`dc_altar_kikubaaqudgha.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 kikubaaqudgha（dngn/altars/kikubaaqudgha）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_kikubaaqudgha",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "818181",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "A1A1A1",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "353535",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "CACACA",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "D6D0BE",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "282422",
+      "material": "stone"
+    }
+  ]
+}

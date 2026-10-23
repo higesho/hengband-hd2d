@@ -1,0 +1,62 @@
+// dc_altar_yredelemnul — プレハブ定義（設計書 §7）。`dc_altar_yredelemnul.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 yredelemnul（dngn/altars/yredelemnul）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_yredelemnul",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "321C5E",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "3E2376",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "141414",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "C54AE5",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "24202C",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "A040DC",
+      "material": "clean"
+    }
+  ]
+}

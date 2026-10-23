@@ -2,6 +2,7 @@
 #include "rl_curses_api.h"
 #include "rl_host.h"
 #include "rl_i18n.h"
+#include "rl_inventory_api.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -358,6 +359,7 @@ WINDOW *initscr(void)
     }
     g_initialized = 1;
     g_ended = 0;
+    rl_test_seed_apply(); /* 環境変数 HENGBAND_TEST_SEED が無ければ何もしない（検査用の乱数の種） */
     return stdscr;
 }
 

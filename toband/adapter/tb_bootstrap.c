@@ -210,18 +210,49 @@ static int tb_validate_lib_dirs(void)
     if (!tb_validate_dir(ANGBAND_DIR_SAVE, 0)) {
         return 0;
     }
+#if defined(__ANDROID__)
+    /* Android の APK は空のディレクトリを持てない（lib/user は遊んだ跡の置き場で、中身が空）ので、無ければ作る。 */
+    if (!tb_validate_dir(ANGBAND_DIR_USER, 0)) {
+        return 0;
+    }
+#else
     if (!tb_validate_dir(ANGBAND_DIR_USER, 1)) {
         return 0;
     }
-    if (!tb_validate_dir(ANGBAND_DIR_XTRA, 1)) {
+#endif
+    /*
+     * xtra は無ければ作る（先方の main-win.c は必須にしているが、当方は絵・フォントを自前で持ち、
+     * 中身は効果音の sound.cfg だけ）。Android の素材は効果音を除くので xtra が空になって APK に入らず、
+     * 必須のままだと「required directory is missing」で起動できなかった。
+     * Frox は同じ理由で xtra を見ていない（fc_bootstrap.c の fc_validate_lib_dirs）。
+     */
+    if (!tb_validate_dir(ANGBAND_DIR_XTRA, 0)) {
         return 0;
     }
 
     return 1;
 }
 
-#if defined(HENGBAND_DESKTOP_LINUX)
+#if defined(__ANDROID__)
+/* files.c の safe_setuid_drop()/grab() が呼ぶ setuid・setgid・setreuid・setregid の代わり（android/hd2d/src/main/cpp/CMakeLists.txt が files.c にだけ差し替える）。 */
+int tb_android_nop_setid(unsigned int id)
+{
+    (void)id;
+    return 0;
+}
+int tb_android_nop_setreid(unsigned int real, unsigned int effective)
+{
+    (void)real;
+    (void)effective;
+    return 0;
+}
+#endif
+
+#if defined(HENGBAND_DESKTOP_LINUX) || defined(__ANDROID__)
 // The Linux launcher supplies a separate data root for the current user.
+// Android も同じ（原作の h-config.h は Android を知らないので SET_UID が立ち、z-config.h の PRIVATE_USER_PATH で
+// USER が "~/.angband/TOband-R3" になる。アプリの中には HOME が無く、`required directory is missing` で始まらなかった。
+// 幻想蛮怒の h-config.h は Android で SET_UID を立てない。2026-10-22 に Android の模擬機で確かめた）。
 // Initialize the original Unix identity fields before any permission check.
 static void tb_linux_user_paths(const char *root)
 {
@@ -315,7 +346,7 @@ int tb_bootstrap(const char *lib_dir)
 
     /* **buffer は書き換えられる。** init_file_paths() は tail に部分名を継ぎ足す。 */
     init_file_paths(path);
-#if defined(HENGBAND_DESKTOP_LINUX)
+#if defined(HENGBAND_DESKTOP_LINUX) || defined(__ANDROID__)
     tb_linux_user_paths(lib_dir);
 #endif
 
@@ -519,11 +550,11 @@ void tb_shutdown_and_quit(void)
             p_ptr->is_dead = FALSE;
         }
 
-        (void)do_cmd_write_nikki(NIKKI_GAMESTART, 0, "----ゲーム中断----");
+        (void)do_cmd_write_nikki(NIKKI_GAMESTART, 0, tb_tr("----ゲーム中断----"));
 
         p_ptr->panic_save = 1;
         signals_ignore_tstp();
-        strcpy(p_ptr->died_from, "(緊急セーブ)");
+        strcpy(p_ptr->died_from, tb_tr("(緊急セーブ)"));
 
         saved = save_player();
         fprintf(stderr, "[toband] forced save %s\n", saved ? "succeeded" : "FAILED");

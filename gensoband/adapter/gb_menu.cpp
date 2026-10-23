@@ -23,6 +23,7 @@
 #include "bridge/input_event_adapter.h"
 #include "bridge/symbol_prompt.h"
 #include "bridge/look_screen_cover.h"
+#include "bridge/prompt_semantics.h"
 #include "frame/message_more.h"
 
 #include "gb_lang_c.h" //GB: english layer #33 - the prompt-bar labels never reach Term, so #1 cannot see them
@@ -87,8 +88,12 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
         return false;
     }
 
-    if ((text.find("<dir>") != std::string::npos || text.find(reinterpret_cast<const char *>(u8"q止")) != std::string::npos)
-        && text.find('p') != std::string::npos && (text.find('+') != std::string::npos || text.find('-') != std::string::npos)) {
+    //! 名前が長くて案内が 80 桁の外へ落ちた行（共用の `presentation::look_row_was_cut()`。TOband と同じ頭 `Target:`／`ターゲット:`）。
+    //! 案内の中身は読めないので、見る `l` の操作はどれも出す（敵の行は `t` も）。
+    const bool cut_look = presentation::look_row_was_cut(text, presentation::LookRowHeads::Hengband);
+    if (cut_look
+        || ((text.find("<dir>") != std::string::npos || text.find(reinterpret_cast<const char *>(u8"q止")) != std::string::npos)
+            && text.find('p') != std::string::npos && (text.find('+') != std::string::npos || text.find('-') != std::string::npos))) {
         // 見る・狙うの途中で `r`（モンスターの思い出）などが画面を退避して重なっている間は、帯を作らない（`look_screen_cover.h`）。
         if (presentation::look_screen_cover().covered(gb_screen_depth())) {
             out = PromptBar{};
@@ -106,18 +111,20 @@ bool parse_prompt_line(const std::string &raw, PromptBar &out)
          */
         {
             std::string subject;
-            if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
+            //! 案内が落ちた行は共用の道具で取る（落ちた案内の頭の `[` だけを外す。頭の `[<経験値>]`・アイテムの `[4,+0]` は説明に残る）。
+            if(cut_look)subject=std::string(presentation::look_row_cut_subject(text));
+            else if(const std::size_t open=text.rfind('[');open!=std::string::npos)subject=text.substr(0,open);
             const auto trim=[](std::string &s){while(!s.empty()&&s.back()==' ')s.pop_back();std::size_t i=0;while(i<s.size()&&s[i]==' ')++i;s.erase(0,i);};
             trim(subject);
             for(const char *const more:{"-more-",reinterpret_cast<const char *>(u8"-続く-")}){const std::string m(more);if(subject.size()>=m.size()&&subject.compare(subject.size()-m.size(),m.size(),m)==0){subject.erase(subject.size()-m.size());trim(subject);}}
             out.text_utf8+=subject;
         }
-        if(text.find('+')!=std::string::npos)add('+',reinterpret_cast<const char *>(u8"次の注目地点"),"Next interesting");
-        if(text.find('-')!=std::string::npos)add('-',reinterpret_cast<const char *>(u8"前の注目地点"),"Previous interesting");
+        if(cut_look||text.find('+')!=std::string::npos)add('+',reinterpret_cast<const char *>(u8"次の注目地点"),"Next interesting");
+        if(cut_look||text.find('-')!=std::string::npos)add('-',reinterpret_cast<const char *>(u8"前の注目地点"),"Previous interesting");
         add('p',reinterpret_cast<const char *>(u8"自分の位置へ戻る"),"Recenter on player");
         if(text.find("m,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"m近"))!=std::string::npos)add('m',reinterpret_cast<const char *>(u8"近い注目地点へ"),"Nearest interesting");
-        if(text.find("o,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"o現"))!=std::string::npos)add('o',reinterpret_cast<const char *>(u8"現在位置を自由に見る"),"Manual/current mode");
-        if(text.find("t")!=std::string::npos)add('t',reinterpret_cast<const char *>(u8"ここを対象にする"),"Select target");
+        if(cut_look||text.find("o,")!=std::string::npos||text.find(reinterpret_cast<const char *>(u8"o現"))!=std::string::npos)add('o',reinterpret_cast<const char *>(u8"現在位置を自由に見る"),"Manual/current mode");
+        if(cut_look?presentation::look_row_is_monster(text):text.find("t")!=std::string::npos)add('t',reinterpret_cast<const char *>(u8"ここを対象にする"),"Select target");
         out.footer_utf8=ja?reinterpret_cast<const char *>(u8"LB/RB: 操作を選ぶ  A/Enter: 実行  十字キー: カーソル移動"):"LB/RB: select action  A/Enter: run  D-pad: move look cursor";
         return !out.choices.empty();
     }
@@ -1764,6 +1771,34 @@ int menu_semantics_selftest()
             if (ok) ++look_ok;
         }
         std::fprintf(stderr, "[gensoband] menu selftest: look band name %d/3 ok\n", look_ok);
+    }
+    {
+        //! 見る `l` の行が Term の幅（80 桁）で切れて、案内（`<dir>`・`q止`）が落ちた行でも、帯が出て名前が残る（共用の `presentation::look_row_was_cut()`）。
+        //! 敵の行（頭に `[<経験値>]`）だけ `t` が出る。
+        struct CutCase { const char *name; std::string row; std::string subject; bool band; bool target_key; };
+        const auto u8s = [](const char8_t *s) { return std::string(reinterpret_cast<const char *>(s)); };
+        const std::array<CutCase, 7> cut_cases{{
+            {"cut_en_tail_clipped", "[??]Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq) [r, q,t,p,o,+,-,<di", "[??]Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq)", true, true},
+            {"cut_en_tail_gone", "[??]Target:Demunza, the God of the Underworld and Demon Realm(Level ???, unhurt, A", "[??]Target:Demunza, the God of the Underworld and Demon Realm(Level ???, unhurt, A", true, true},
+            {"cut_en_item", "Target:a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0] [q,p,o,+", "Target:a Potion of Resist Heat and Cold of the Very Long Name of Testing [2,+0]", true, false},
+            {"cut_ja_tail_gone", u8s(u8"[??]ターゲット:グレーター・サイバー・ワイアーム・天使・デーモン・苔(レベル???, 無傷, 地) [r思 q止 t決 p自 o現 +次"), u8s(u8"[??]ターゲット:グレーター・サイバー・ワイアーム・天使・デーモン・苔(レベル???, 無傷, 地)"), true, true},
+            {"cut_ja_in_name", u8s(u8"ターゲット:ブラックマーケットのエージェントの強欲に染まる白銀の弱虫『サイモン』のそのまた弟子の弟子の弟子"), u8s(u8"ターゲット:ブラックマーケットのエージェントの強欲に染まる白銀の弱虫『サイモン』のそのまた弟子の弟子の弟子"), true, false},
+            {"short_target_line", "Target:a Cave spider", "", false, false},
+            {"more_line", "Target:Dercynus the Heavy Drinker(Level ???, unhurt, Aq) and so on and on -more-", "", false, false}}};
+        int cut_ok = 0;
+        for (const CutCase &cc : cut_cases) {
+            PromptBar band;
+            const bool got = parse_prompt_line(cc.row, band);
+            bool ok = (got == cc.band);
+            if (ok && cc.band) {
+                ok = (band.text_utf8.find(cc.subject) != std::string::npos) && prompt_has_key(band, '+') && prompt_has_key(band, '-')
+                    && prompt_has_key(band, 'p') && prompt_has_key(band, 'o') && (prompt_has_key(band, 't') == cc.target_key);
+            }
+            if (!ok) std::fprintf(stderr, "[gensoband] menu selftest cut look case %s got=%d band=\"%s\"\n", cc.name, got ? 1 : 0, band.text_utf8.c_str());
+            check(ok, "Genso Look band appears for a row cut at the Term width");
+            if (ok) ++cut_ok;
+        }
+        std::fprintf(stderr, "[gensoband] menu selftest: cut look band %d/7 ok\n", cut_ok);
     }
     {
         GameFrame frame;

@@ -1,0 +1,72 @@
+// dc_altar_dithmenos — プレハブ定義（設計書 §7）。`dc_altar_dithmenos.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 dithmenos1（dngn/altars/dithmenos1）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_dithmenos",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "101010",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "141414",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "130036",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "363636",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "160E22",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "B048E0",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "7832AA",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "6E5496",
+      "material": "stone"
+    }
+  ]
+}

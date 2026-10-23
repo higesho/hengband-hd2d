@@ -1,0 +1,195 @@
+# TOband 英語の用語の固定表（旧い形 -> 正しい形）。読むのは tools/toband/tb_terms.py。
+# 正本 11.7。書式: パターン<TAB>置き換え<TAB>範囲<TAB>註
+#   パターンは Python の正規表現（大文字小文字を区別する）。置き換えは \1 で捕獲を使える。
+#   範囲: all / text（説明文・ヘルプ・無作為の文・カタログ）/ edit / name / file / help / pref / catalog（コンマで足せる）
+#   上から順に当てる（長い形を先に、短い形を後に）。置き換えの結果が表のどのパターンにも当たらないこと（--selftest）。
+# 使い道: (1) build_en_edit.py が lib-en/edit の作者の英語の行に当てる
+#         (2) check_en.py / check_catalog.py が、旧い形が残っていないか数える
+#         (3) tb_terms.py --apply-sources が lang/en/{file,help,edit} の訳に当てる
+# 拠り所は用語表（glossary_tsv/）と、その追加の節（決めたこと 2026-10-21「用語表は今の案で確定」）。
+
+# ---- 神（四大神・ほか）。追加の節 #1〜#18 ----
+\bZoshonel the (?:God of Fire|Fire God)\b	Xoshonell, Goddess of Fire	all	炎の神ゾショネル
+\bZoshonel\b	Xoshonell	all	ゾショネル
+\bGruza the (?:God of Water|Water God)\b	Greuza, Goddess of Water	all	水の神グルーザ
+\b(?:Gruza|Gluza)\b	Greuza	all	グルーザ
+\b(?:Bertha the God of Earth|Barsa the Earth God)\b	Vaasa, Goddess of Earth	all	大地の神バーサ
+\b(?:Bertha|Barsa|Bersa)\b	Vaasa	all	バーサ
+\b(?:Hanera the Wind God|Hahnela the God of Wind)\b	Hahnela, Goddess of Wind	all	風の神ハーネラ
+\bHanera\b	Hahnela	all	ハーネラ
+\b(Xoshonell|Greuza|Vaasa|Hahnela), the god of\b	\1, the goddess of	all	四大神は女神（追加の節 #1〜#4）
+\b(Euros|Boreas|Zephyros|Notos) the (East|North|West|South) Wind God\b	\1, God of the \2 Wind	all	四風神
+\bZephyrus\b	Zephyros	all	『ゼピュロス』の綴り
+\bBasuku the Sea God\b	Vasque, God of the Sea	all	海の神バスク
+\bBasque\b	Vasque	all	バスク（村の名 Vasque にそろえる）
+\bPhilaha the Sun God\b	Philaha, the God of the Sun	all	太陽神フィラーハ
+\bFilarhh\b	Philaha	all	フィラーハ
+\bAsmode the Dark God\b	Ashmedai, the Dark God	all	暗黒神アスモデ
+\bAsmode\b	Ashmedai	all	アスモデ
+\bIshtalle\b	Ishtar	all	イシュタル
+\bFelana\b	Fellana	all	フェルアーナ
+\bHolp the God of Wisdom\b	Holp, the God of Wisdom	all	知神ホルプ
+\bBora the Sky God\b	Bora, the Celestial	all	天神ボラ
+\bVora\b	Bora	all	ボラ
+\bAnem the Earth God\b	Anem, the Terrestrial	all	地神アネム
+\bthe Goddess Heket\b	Heket, the Goddess	all	女神ヘケト
+
+# ---- 人物 ----
+\bKing Fix Tristan Xenobia\b	King Pheryx Tristan Xenobia	all	追加の節 #22
+\bDenam Pavel, the hero of Golyat\b	Denam Pavel, the Hero of Golyat	all	追加の節 #23
+(?<!Poison )\bDenim\b	Denam	all	デニム（Poison Denim は別のユニーク）
+\bBrigadier (?!General\b)Vogras\b	Brigadier General Vogras	all	追加の節 #30
+\bVolgras\b	Vogras	all	ヴォグラス
+\bHouse Ovelis\b	House Oberyth	all	追加の節 #32
+\bFather Donalt Presance\b	Father Donnalto Presance	all	追加の節 #39
+\bMoruba\b	Mreuva Phoraena	edit,help,catalog	追加の節 #40
+\bMoruba\b	Mreuva	file	追加の節 #40（せりふは名だけ）
+\bManafloa\b	Mannaflora Befonda	all	追加の節 #41
+\bZapan Illudus\b	Xapan Illudas	all	ザパン・イリューダス
+
+# ---- 国・勢力・地名 ----
+\bof Zenobian\b	of Xenobia	all	ゼノビアの（追加の節 #49）
+\bZenobian\b	Xenobian	all	ゼノビアの民族名
+\bZenobia\b	Xenobia	all	ゼノビア
+\bWalstanian(s?)\b	Walister\1	all	ウォルスタ人（旧い綴り）
+\bGargastan(i?)\b	Galgastan\1	all	ガルガスタン（旧い綴り。F: のフラグ名は大文字なので当たらない）
+\bBacrum\b	Bakram	all	バクラム（旧い綴り）
+(?<![A-Za-z_])Cortani(?![A-Za-z_])	Coritanae Keep	all	コリタニ（W:E: の行。用語表 places.tsv の W:3）
+\bRime City\b	The Arkhaiopolis of Rhime	all	古都ライム（W:E: の行。用語表 places.tsv の W:4）
+\bof Gamp\b	of Ganpp	all	追加の節 #50
+\bGamp\b	Ganpp	all	ガンプ
+\bthe Mine Barmamutha\b	the Balmamusa Mine	all	鉱山 Barmamutha
+(?<![A-Za-z_])Barmamutha(?![A-Za-z_])	Balmamusa	all	バルマムッサ（クエストの文書名 q_Barmamutha_*.txt は触らない）
+\bBolmarkan Cloak	Bowmarka Cloak	all	追加の節 #52
+\bCloak of Bowmarka\b	Bowmarka Cloak	all	追加の節 #52
+\bXenobian Knights\b	Xenobian Holy Knights	all	追加の節 #55・#56
+\bGalgastan royal army\b	Galgastan army	all	追加の節 #54
+\bMage Corps\b	Xenobian Mages Regiment	all	追加の節 #57
+\bthe Dragoon Corps\b	the Wyrmknights	all	追加の節 #58
+\bRoshfelism\b	the Church of Roshfel	all	追加の節 #97
+\bthe Hittites\b	the people of Heth	all	追加の節 #62
+\bSunken Ship Ramunzen\b	wreck of the Rhamsen	all	追加の節 #81（the wreck of the Rhamsen）
+\bDalmuud\b	Dalmuhd	all	追加の節 #65
+\bMuspelheim\b	Muspelm	all	追加の節 #66
+\bQuatriga\b	Qadriga	all	追加の節 #70
+\bRai Sea\b	Sea of Rai	all	追加の節 #75
+\bDragon[- ][Tt]ongue magic\b	Draconic Magic	all	追加の節 #92
+\bFour Divine Wind Weapons\b	Wind God Weapons	all	追加の節 #94
+\bBalder\b	Baldr	all	追加の節 #95
+\b(\d[\d,]*) goth\b	\1 Goth	text	通貨 Goth（追加の節 #90）
+\bChapter (\d): \"	Chapter \1, "	all	章題の引用はコンマで区切る
+\bChapter (\d) \"	Chapter \1, "	all	章題の引用はコンマで区切る（担当で区切りが割れていた）
+\"You Ask Me to Dirty My Hands\?\"	"Do You Ask Me to Dirty My Hands?"	all	第 1 章の題（追加の節 #110）
+\bMermaid's \"Flooding\"	Mermaid's "Flood"	help	追加の節 #104
+
+# ---- 地名・ダンジョン名（d_info の説明などに残る作者の旧い綴り）。用語表 places.tsv の案にそろえる ----
+\bForest of Swansea\b	Psonji Weald	all	ダンジョン 7
+\bSwansea\b	Psonji	all	ダンジョン 7
+\bForest of Nymlahaba\b	Neimrahava Wood	all	ダンジョン 13
+\bNymlahaba\b	Neimrahava	all	ダンジョン 13
+\bTynemounth Hills\b	Tynemouth Hill	all	ダンジョン 3
+\bTynemounth\b	Tynemouth	all	ダンジョン 3
+\bThe Ballder Desert\b	Boulder Sands	all	ダンジョン 4
+\bBallder\b	Boulder	all	ダンジョン 4
+\bMadolath Ice Field\b	Madura Drift	all	ダンジョン 5
+\bMadolath\b	Madura	all	ダンジョン 5
+\b(?:The )?Mount Weobley\b	Mount Weobry	all	ダンジョン 8
+\bMt\. Weobley\b	Mount Weobry	all	ダンジョン 8
+\bWeobley\b	Weobry	all	ダンジョン 8
+\bZord Marshland\b	Xeod Moors	all	ダンジョン 11
+\bBrigantes\b	Brigantys	all	ダンジョン 12
+(?<![A-Za-z_])Armorica(?![A-Za-z_])	Almorica	all	アルモリカ（クエストの文書名 q_Armorica.txt は触らない）
+\bCharch\b	Church	all	教会（作者の綴りの誤り）
+
+# ---- 職業・種族の名前（空白入りの形 -> 用語表の形。p_class / p_race の N: と $CLASS / $RACE が返す名前にそろえる）----
+(?<!, the )\bTerror Knight(s?)\b	Terror-Knight\1	text	職業 3
+(?<!, the )\bBeast Tamer(s?)\b	Beast-Tamer\1	text	職業 4
+\bBeastTamer(s?)\b	Beast-Tamer\1	text	職業 4（作者の綴り）
+(?<!, the )\bDragon Tamer(s?)\b	Dragon-Tamer\1	text	職業 14
+\bDragonTamer(s?)\b	Dragon-Tamer\1	text	職業 14（作者の綴り）
+\bNinja Master(s?)\b	Ninja-Master\1	text	職業 27
+(?<!, the )\bWhite Knight(s?)\b	White-Knight\1	text	職業 24
+\bKnight Commander(s?)\b	Knight-Commander\1	text	職業 40（称号 T: は別）
+\bDark Element(s?)\b	Dark-Element\1	text	職業 39（称号 T: は別）
+\bMad Halloween(s?)\b	Mad-Halloween\1	text	種族 11
+(?<!, the )\bAngel[ -]Knight(s?)\b	Divine-Knight\1	text	職業 20（用語表は Divine-Knight）
+(?<!, the )\bTemple[ -]Knight(s?)\b	Templar\1	text	職業 23（用語表は Templar）
+\bRelics Knight(s?)\b	Relics-Knight\1	text	職業 36
+\bEnigma Hunter(s?)\b	Enigma-Hunter\1	text	職業 37
+(?<!, the )\bSword[ -][Mm]aster(s?)\b	Swordmaster\1	text	職業 5（用語表は Swordmaster）
+\bGunner(s?)\b	Fusilier\1	help	職業 22（用語表は Fusilier）
+\(Sirene\)	(Siren)	edit	職業 16 のエゴ（Siren）
+\bPumpkin-Head\b	Pumpkinhead	help,file,catalog	種族 7
+\bPumpkin Head\b	Pumpkinhead	text	種族 7
+\bFairy Monks\b	Faerie Monks	help	種族 3 に合わせた綴り
+
+# ---- ペットの名（petnam_j.txt。追加の節 #132〜#144。用語表は読みのローマ字か既存の綴りを採る）----
+^Darkwind$	Yamikaze	file	ペットの名
+^Phantasm$	Genmu	file	ペットの名
+^Celestial$	Seiten	file	ペットの名
+^Snowwind$	Yukikaze	file	ペットの名
+^Skydance$	Tenbu	file	ペットの名
+^Thunderbolt$	Raiden	file	ペットの名
+^Shiden$	Siden	file	ペットの名
+^Ars Nova$	Arsnova	file	ペットの名
+^Degelus$	Degeros	file	ペットの名
+^Peripanos$	Peripanus	file	ペットの名
+^Porteusbolos$	Porteusboros	file	ペットの名
+^Keies$	Ceyx	file	ペットの名
+^Monerus$	Monelus	file	ペットの名
+
+# ---- 綴りの誤り（作者・上流の英語に残る物）----
+\buntramelled\b	untrammelled	all	
+\bstuuned\b	stunned	all	
+\bintellingence\b	intelligence	all	
+\bhesistant\b	hesitant	all	
+\bmagicly\b	magically	all	
+\bwating\b	waiting	all	
+\bbelligrent\b	belligerent	all	
+\bsinnously\b	sinuously	all	
+\bcrackes\b	crackles	all	
+\bunpenetrable\b	impenetrable	all	
+(?<=creature )tha(?= *$)	that	edit	行末で切れた that
+\bcauses a earthquake\b	causes an earthquake	all	冠詞 a/an
+\bas an reward\b	as a reward	all	冠詞 a/an
+\bis an goblin\b	is a goblin	all	冠詞 a/an
+\bcasts a acid bolt\b	casts an acid bolt	all	冠詞 a/an
+\ba aura shield\b	an aura shield	all	冠詞 a/an
+\bwith may long\b	with many long	edit	柳じじいの描写（トールキンの引用の写し間違い）
+(?<=D:)lingered hands	fingered hands	edit	同上（long- / fingered と割れた行の頭）
+(?<=\S) +$		name	名前の行の末尾の空白（k_info 576 の Death Scythe）。名前が `Death Scythe ` になる
+\bAssasin\b	Assassin	all	
+\bMithhril\b	Mithril	all	
+\bKeoneke\b	Koeneke	all	Robert A. Koeneke（Moria の作者）
+\bHiroyuko\b	Hiroyuki	all	
+\bbegger\b	beggar	all	
+\btoghether\b	together	all	
+\bdescendents\b	descendants	all	
+\bvisable\b	visible	all	
+\binformations\b	information	all	
+\bsorceror\b	sorcerer	all	
+\b100 eliable\b	100% reliable	help	
+\bcoverd\b	covered	all	
+\bmens only\b	men only	all	
+\bMens Only\b	Men Only	all	
+\bPower::Mistletoe\b	Power:Mistletoe	edit	k_info 322（フレーバー名の区切りが 2 つ）
+\bgreate\b	great	all	
+\bpsyonic\b	psionic	all	
+\bstonning\b	stoning	all	
+\bnormaly\b	normally	all	
+\bpoluted\b	polluted	all	
+\bdisappered\b	disappeared	all	
+\bhullcinating\b	hallucinating	all	
+\bligntning\b	lightning	all	
+\brivived\b	revived	all	
+\bcontroled\b	controlled	all	
+\belememt\b	element	all	
+\btargert\b	target	all	
+\bdescover\b	discover	all	
+\bconposite\b	composite	all	
+\bstaies\b	stairs	all	
+\bautomaticaly\b	automatically	all	
+\brandome\b	random	all	
+\brightous\b	righteous	all	
+\bGoddly\b	Godly	all	
+\bAttakcs\b	Attacks	all	

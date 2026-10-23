@@ -1,0 +1,82 @@
+// dc_altar_fedhas — プレハブ定義（設計書 §7）。`dc_altar_fedhas.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 fedhas（dngn/altars/fedhas）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_fedhas",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "1F3D3B",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "274C4A",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "320C28",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "39954E",
+      "material": "plant"
+    },
+    {
+      "i": 5,
+      "rgb": "6C4236",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "613B31",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "E8B840",
+      "material": "metal"
+    },
+    {
+      "i": 8,
+      "rgb": "3C8C3E",
+      "material": "plant"
+    },
+    {
+      "i": 9,
+      "rgb": "2E7034",
+      "material": "plant"
+    },
+    {
+      "i": 10,
+      "rgb": "963CAA",
+      "material": "stone"
+    }
+  ]
+}

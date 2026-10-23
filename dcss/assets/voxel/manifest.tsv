@@ -1,0 +1,310 @@
+# 作ったプレハブの一覧（tools/dcss/gen_dcss_terrain.py が書く）: 名前、種類、元の絵、DCSS の地形定義
+dc_altar_ashenzari	altar	dngn/altars/ashenzari	DNGN_ALTAR_ASHENZARI
+dc_altar_beogh	altar	dngn/altars/beogh	DNGN_ALTAR_BEOGH
+dc_altar_cheibriados	altar	dngn/altars/cheibriados	DNGN_ALTAR_CHEIBRIADOS
+dc_altar_dithmenos	altar	dngn/altars/dithmenos1	DNGN_ALTAR_DITHMENOS
+dc_altar_ecumenical	altar	dngn/altars/ecumenical	DNGN_ALTAR_ECUMENICAL
+dc_altar_elyvilon	altar	dngn/altars/elyvilon	DNGN_ALTAR_ELYVILON
+dc_altar_fedhas	altar	dngn/altars/fedhas	DNGN_ALTAR_FEDHAS
+dc_altar_gozag	altar	dngn/altars/gozag0	DNGN_ALTAR_GOZAG
+dc_altar_hepliaklqana	altar	dngn/altars/hep0	DNGN_ALTAR_HEPLIAKLQANA
+dc_altar_ignis	altar	dngn/altars/ignis	DNGN_ALTAR_IGNIS
+dc_altar_jiyva	altar	dngn/altars/jiyva01	DNGN_ALTAR_JIYVA
+dc_altar_kikubaaqudgha	altar	dngn/altars/kikubaaqudgha	DNGN_ALTAR_KIKUBAAQUDGHA
+dc_altar_lugonu	altar	dngn/altars/lugonu	DNGN_ALTAR_LUGONU
+dc_altar_makhleb	altar	dngn/altars/makhleb_flame1	DNGN_ALTAR_MAKHLEB
+dc_altar_nemelex_xobeh	altar	dngn/altars/nemelex1	DNGN_ALTAR_NEMELEX_XOBEH
+dc_altar_okawaru	altar	dngn/altars/okawaru	DNGN_ALTAR_OKAWARU
+dc_altar_pakellas	altar	dngn/altars/pakellas0	DNGN_ALTAR_PAKELLAS
+dc_altar_qazlal	altar	dngn/altars/qazlal0	DNGN_ALTAR_QAZLAL
+dc_altar_ru	altar	dngn/altars/ru	DNGN_ALTAR_RU
+dc_altar_shining_one	altar	dngn/altars/shining_one	DNGN_ALTAR_SHINING_ONE
+dc_altar_sif_muna	altar	dngn/altars/sif_muna1	DNGN_ALTAR_SIF_MUNA
+dc_altar_trog	altar	dngn/altars/trog	DNGN_ALTAR_TROG
+dc_altar_unknown	altar	dngn/altars/unknown	DNGN_UNKNOWN_ALTAR
+dc_altar_uskayaw	altar	dngn/altars/uskayaw	DNGN_ALTAR_USKAYAW
+dc_altar_vehumet	altar	dngn/altars/vehumet1	DNGN_ALTAR_VEHUMET
+dc_altar_wu_jian	altar	dngn/altars/wu_jian	DNGN_ALTAR_WU_JIAN
+dc_altar_xom	altar	dngn/altars/xom0	DNGN_ALTAR_XOM
+dc_altar_yredelemnul	altar	dngn/altars/yredelemnul	DNGN_ALTAR_YREDELEMNUL
+dc_altar_zin	altar	dngn/altars/zin1	DNGN_ALTAR_ZIN
+dc_cache_baked	cache	dngn/decor/cache_of_baked_goods_1	DNGN_CACHE_OF_BAKED_GOODS
+dc_cache_fruit	cache	dngn/decor/cache_of_fruit_0	DNGN_CACHE_OF_FRUIT
+dc_cache_meat	cache	dngn/decor/cache_of_meat_0	DNGN_CACHE_OF_MEAT
+dc_dais_orb	dais	dngn/vaults/orb_dais	DNGN_ORB_DAIS
+dc_door_broken	door	dngn/doors/broken_door	DNGN_BROKEN_DOOR
+dc_door_broken_ew	door	dngn/doors/broken_door	
+dc_door_clear_broken	door	dngn/doors/broken_clear_door	DNGN_BROKEN_CLEAR_DOOR
+dc_door_clear_broken_ew	door	dngn/doors/broken_clear_door	
+dc_door_clear_closed	door	dngn/doors/closed_clear_door	DNGN_CLOSED_CLEAR_DOOR
+dc_door_clear_closed_ew	door	dngn/doors/closed_clear_door	
+dc_door_clear_open	door	dngn/doors/open_clear_door	DNGN_OPEN_CLEAR_DOOR
+dc_door_clear_open_ew	door	dngn/doors/open_clear_door	
+dc_door_clear_runed	door	dngn/doors/runed_clear_door	DNGN_RUNED_CLEAR_DOOR
+dc_door_clear_runed_ew	door	dngn/doors/runed_clear_door	
+dc_door_clear_sealed	door	dngn/doors/sealed_clear_door	DNGN_SEALED_CLEAR_DOOR
+dc_door_clear_sealed_ew	door	dngn/doors/sealed_clear_door	
+dc_door_closed	door	dngn/doors/closed_door	DNGN_CLOSED_DOOR
+dc_door_closed_ew	door	dngn/doors/closed_door	
+dc_door_open	door	dngn/doors/open_door	DNGN_OPEN_DOOR
+dc_door_open_ew	door	dngn/doors/open_door	
+dc_door_runed	door	dngn/doors/runed_door	DNGN_RUNED_DOOR
+dc_door_runed_ew	door	dngn/doors/runed_door	
+dc_door_sealed	door	dngn/doors/sealed_door	DNGN_SEALED_DOOR
+dc_door_sealed_ew	door	dngn/doors/sealed_door	
+dc_floor_black_cobalt	floor	dngn/floor/black_cobalt01	
+dc_floor_blade	floor	dngn/floor/blade_floor0	
+dc_floor_cage	floor	dngn/floor/cage0	
+dc_floor_cobble_blood	floor	dngn/floor/cobble_blood1	
+dc_floor_crypt	floor	dngn/floor/crypt_domino_1a	
+dc_floor_crystal	floor	dngn/floor/crystal0	
+dc_floor_crystal_squares	floor	dngn/floor/crystal_floor0	
+dc_floor_decor_01	floor	dngn/decor/decorative_floor	DNGN_DECORATIVE_FLOOR
+dc_floor_demonic	floor	dngn/floor/demonic_red1	
+dc_floor_depthstone	floor	dngn/floor/depthstone_floor0	
+dc_floor_dirt	floor	dngn/floor/dirt0	
+dc_floor_etched	floor	dngn/floor/etched0	
+dc_floor_frozen	floor	dngn/floor/frozen0	
+dc_floor_gauntlet	floor	dngn/floor/gauntlet0	
+dc_floor_grass	floor	dngn/floor/grass/grass0	
+dc_floor_grass_dark	floor	dngn/floor/grass/grass-dark0	
+dc_floor_green_bones	floor	dngn/floor/green_bones01	
+dc_floor_grey_dirt	floor	dngn/floor/grey_dirt0	DNGN_FLOOR
+dc_floor_grey_dirt_b	floor	dngn/floor/grey_dirt_b_0	
+dc_floor_hall	floor	dngn/floor/mesh0	
+dc_floor_ice	floor	dngn/floor/ice0	
+dc_floor_icy	floor	dngn/floor/icy_floor0	
+dc_floor_infernal	floor	dngn/floor/infernal01	
+dc_floor_infernal_blank	floor	dngn/floor/infernal_blank	
+dc_floor_iron	floor	dngn/floor/iron0	
+dc_floor_lair	floor	dngn/floor/lair0	
+dc_floor_limestone	floor	dngn/floor/limestone0	
+dc_floor_marble	floor	dngn/floor/marble_floor1	
+dc_floor_metal_gold	floor	dngn/floor/metal_gold0	
+dc_floor_metal_infernal	floor	dngn/floor/metal_infernal0	
+dc_floor_metal_silver	floor	dngn/floor/metal_silver0	
+dc_floor_mosaic	floor	dngn/floor/mosaic0	
+dc_floor_moss	floor	dngn/floor/moss0	
+dc_floor_mud	liquid	dngn/water/liquefaction1	DNGN_MUD
+dc_floor_mud_floor	floor	dngn/floor/mud0	
+dc_floor_mystic_chasm	floor	dngn/floor/mystic_chasm0	
+dc_floor_necropolis_grass	floor	dngn/floor/necropolis_grass_1	
+dc_floor_necropolis_square_grass	floor	dngn/floor/necropolis_square_grass_1	
+dc_floor_necropolis_squares	floor	dngn/floor/necropolis_squares_1	
+dc_floor_nerves	floor	dngn/floor/floor_nerves0	
+dc_floor_orc	floor	dngn/floor/orc0	
+dc_floor_pebble	floor	dngn/floor/pebble_brown0	
+dc_floor_rough	floor	dngn/floor/rough_red0	
+dc_floor_salt	floor	dngn/floor/salt0	
+dc_floor_salt_01	floor	dngn/floor/endless_salt0	DNGN_ENDLESS_SALT
+dc_floor_sand	floor	dngn/floor/sand1	
+dc_floor_sandstone	floor	dngn/floor/sandstone_floor0	
+dc_floor_seismorock	floor	dngn/floor/seismorock0	
+dc_floor_slime	floor	dngn/floor/bog_green0	
+dc_floor_slime_acidic	floor	dngn/floor/acidic_floor0	
+dc_floor_snake_a	floor	dngn/floor/snake-a0	
+dc_floor_snake_c	floor	dngn/floor/snake-c0	
+dc_floor_snake_d	floor	dngn/floor/snake-d0	
+dc_floor_spider	floor	dngn/floor/spider00	
+dc_floor_sprouting_ruin	floor	dngn/floor/sprouting_ruin00	
+dc_floor_sprouting_squares	floor	dngn/floor/sprouting_squares00	
+dc_floor_sprouting_stone	floor	dngn/floor/sprouting_stone00	
+dc_floor_studio	floor	dngn/floor/studio0	
+dc_floor_swamp	floor	dngn/floor/swamp0	
+dc_floor_tomb	floor	dngn/floor/tomb0	
+dc_floor_vault	floor	dngn/floor/rect_gray0	
+dc_floor_vines	floor	dngn/floor/floor_vines0	
+dc_floor_volcanic	floor	dngn/floor/volcanic_floor0	
+dc_floor_w_marble	floor	dngn/floor/white_marble0	
+dc_floor_zot_diamonds	floor	dngn/floor/zot_diamonds0	
+dc_fountain_blood	fountain	dngn/decor/blood_fountain	DNGN_FOUNTAIN_BLOOD
+dc_fountain_blue	fountain	dngn/decor/blue_fountain	DNGN_FOUNTAIN_BLUE
+dc_fountain_dry	fountain	dngn/decor/dry_fountain	DNGN_DRY_FOUNTAIN_BLUE DNGN_DRY_FOUNTAIN_SPARKLING DNGN_DRY_FOUNTAIN_BLOOD DNGN_DRY_FOUNTAIN
+dc_fountain_eyes	fountain	dngn/decor/eyes_fountain	DNGN_FOUNTAIN_EYES
+dc_fountain_sparkling	fountain	dngn/decor/sparkling_fountain	DNGN_FOUNTAIN_SPARKLING
+dc_gate_abyssal_stair	gate	dngn/gateways/abyssal_stair	DNGN_ABYSSAL_STAIR
+dc_gate_enter_abyss	gate	dngn/gateways/enter_abyss1	DNGN_ENTER_ABYSS DNGN_EXIT_THROUGH_ABYSS
+dc_gate_enter_bailey	gate	dngn/gateways/bailey_portal	DNGN_ENTER_BAILEY
+dc_gate_enter_bazaar	gate	dngn/gateways/bazaar_portal	DNGN_ENTER_BAZAAR
+dc_gate_enter_cocytus	gate	dngn/gateways/enter_cocytus1	DNGN_ENTER_COCYTUS
+dc_gate_enter_crypt	gate	dngn/gateways/enter_crypt	DNGN_ENTER_CRYPT
+dc_gate_enter_depths	gate	dngn/gateways/enter_depths	DNGN_ENTER_DEPTHS
+dc_gate_enter_desolation	gate	dngn/gateways/desolation_portal	DNGN_ENTER_DESOLATION
+dc_gate_enter_dis	gate	dngn/gateways/enter_dis1	DNGN_ENTER_DIS
+dc_gate_enter_elf	gate	dngn/gateways/enter_elf	DNGN_ENTER_ELF
+dc_gate_enter_gauntlet	gate	dngn/gateways/gauntlet_portal	DNGN_ENTER_GAUNTLET
+dc_gate_enter_gehenna	gate	dngn/gateways/enter_gehenna1	DNGN_ENTER_GEHENNA
+dc_gate_enter_hell	gate	dngn/gateways/enter_hell1	DNGN_ENTER_HELL
+dc_gate_enter_lair	gate	dngn/gateways/enter_lair	DNGN_ENTER_LAIR
+dc_gate_enter_legacy	gate	dngn/gateways/enter	DNGN_ENTER_DWARF DNGN_ENTER_BLADE DNGN_ENTER_FOREST
+dc_gate_enter_necropolis	gate	dngn/gateways/necropolis_portal	DNGN_ENTER_NECROPOLIS
+dc_gate_enter_orc	gate	dngn/gateways/enter_orc	DNGN_ENTER_ORC
+dc_gate_enter_ossuary	gate	dngn/gateways/ossuary_portal	DNGN_ENTER_OSSUARY
+dc_gate_enter_pandemonium	gate	dngn/gateways/enter_pandemonium	DNGN_ENTER_PANDEMONIUM
+dc_gate_enter_shoals	gate	dngn/gateways/enter_shoals	DNGN_ENTER_SHOALS
+dc_gate_enter_slime	gate	dngn/gateways/enter_slime	DNGN_ENTER_SLIME
+dc_gate_enter_snake	gate	dngn/gateways/enter_snake	DNGN_ENTER_SNAKE
+dc_gate_enter_spider	gate	dngn/gateways/enter_spider	DNGN_ENTER_SPIDER
+dc_gate_enter_swamp	gate	dngn/gateways/enter_swamp	DNGN_ENTER_SWAMP
+dc_gate_enter_tartarus	gate	dngn/gateways/enter_tartarus1	DNGN_ENTER_TARTARUS
+dc_gate_enter_temple	gate	dngn/gateways/enter_temple	DNGN_ENTER_TEMPLE
+dc_gate_enter_tomb	gate	dngn/gateways/enter_tomb	DNGN_ENTER_TOMB
+dc_gate_enter_trove	gate	dngn/gateways/trove_portal	DNGN_ENTER_TROVE
+dc_gate_enter_vaults	gate	dngn/gateways/enter_vaults_open	DNGN_ENTER_VAULTS
+dc_gate_enter_vaults_closed	gate	dngn/gateways/enter_vaults_closed	EXIT_VAULTS/CLOSED
+dc_gate_enter_ziggurat	gate	dngn/gateways/zig_portal	DNGN_ENTER_ZIGGURAT
+dc_gate_enter_zot	gate	dngn/gateways/enter_zot_closed	DNGN_ENTER_ZOT
+dc_gate_enter_zot_open	gate	dngn/gateways/enter_zot_open	ENTER_ZOT/OPEN
+dc_gate_exit_abyss	gate	dngn/gateways/exit_abyss	DNGN_EXIT_ABYSS
+dc_gate_exit_bailey	gate	dngn/gateways/bailey_exit	DNGN_EXIT_BAILEY
+dc_gate_exit_crucible	gate	dngn/gateways/crucible_exit	DNGN_EXIT_CRUCIBLE
+dc_gate_exit_crypt	gate	dngn/gateways/exit_crypt	DNGN_EXIT_CRYPT
+dc_gate_exit_depths	gate	dngn/gateways/return_depths	DNGN_EXIT_DEPTHS
+dc_gate_exit_desolation	gate	dngn/gateways/desolation_exit	DNGN_EXIT_DESOLATION
+dc_gate_exit_elf	gate	dngn/gateways/exit_elf	DNGN_EXIT_ELF
+dc_gate_exit_hell	gate	dngn/gateways/return_hell	DNGN_EXIT_HELL
+dc_gate_exit_lair	gate	dngn/gateways/exit_lair	DNGN_EXIT_LAIR
+dc_gate_exit_necropolis	gate	dngn/gateways/necropolis_exit0	DNGN_EXIT_NECROPOLIS
+dc_gate_exit_orc	gate	dngn/gateways/exit_orc	DNGN_EXIT_ORC
+dc_gate_exit_ossuary	gate	dngn/gateways/ossuary_exit	DNGN_EXIT_OSSUARY
+dc_gate_exit_pandemonium	gate	dngn/gateways/exit_pandemonium	DNGN_EXIT_PANDEMONIUM
+dc_gate_exit_sewer	gate	dngn/gateways/sewer_exit	DNGN_EXIT_SEWER
+dc_gate_exit_shoals	gate	dngn/gateways/exit_shoals	DNGN_EXIT_SHOALS
+dc_gate_exit_slime	gate	dngn/gateways/exit_slime	DNGN_EXIT_SLIME
+dc_gate_exit_snake	gate	dngn/gateways/exit_snake	DNGN_EXIT_SNAKE
+dc_gate_exit_spider	gate	dngn/gateways/exit_spider	DNGN_EXIT_SPIDER
+dc_gate_exit_swamp	gate	dngn/gateways/exit_swamp	DNGN_EXIT_SWAMP
+dc_gate_exit_temple	gate	dngn/gateways/exit_temple	DNGN_EXIT_TEMPLE
+dc_gate_exit_tomb	gate	dngn/gateways/exit_tomb	DNGN_EXIT_TOMB
+dc_gate_exit_vaults	gate	dngn/gateways/exit_vaults	DNGN_EXIT_VAULTS
+dc_gate_exit_volcano	gate	dngn/gateways/volcano_exit	DNGN_EXIT_VOLCANO
+dc_gate_exit_zot	gate	dngn/gateways/return_zot	DNGN_EXIT_ZOT
+dc_gate_expired	gate	dngn/gateways/expired_portal	DNGN_EXPIRED_PORTAL
+dc_gate_ice_cave_portal	gate	dngn/gateways/ice_cave_portal	DNGN_ENTER_ICE_CAVE DNGN_EXIT_ICE_CAVE
+dc_gate_malign	gate	dngn/gateways/starry_portal	DNGN_MALIGN_GATEWAY
+dc_gate_portal	gate	dngn/gateways/portal	DNGN_ENTER_LABYRINTH DNGN_ENTER_PORTAL_VAULT DNGN_EXIT_PORTAL_VAULT DNGN_EXIT_ZIGGURAT DNGN_EXIT_BAZAAR DNGN_EXIT_TROVE DNGN_ENTER_ARENA DNGN_EXIT_ARENA DNGN_ENTER_CRUCIBLE
+dc_gate_return_legacy	gate	dngn/gateways/return	DNGN_EXIT_DWARF DNGN_EXIT_BLADE DNGN_EXIT_FOREST
+dc_gate_return_vestibule	gate	dngn/gateways/return_vestibule	DNGN_EXIT_DIS DNGN_EXIT_GEHENNA DNGN_EXIT_COCYTUS DNGN_EXIT_TARTARUS
+dc_gate_sewer_portal	gate	dngn/gateways/sewer_portal	DNGN_ENTER_SEWER
+dc_gate_stone_arch	gate	dngn/gateways/stone_arch	DNGN_STONE_ARCH
+dc_gate_stone_arch_hell	gate	dngn/gateways/stone_arch_hell	STONE_ARCH/HELL
+dc_gate_transit_pandemonium	gate	dngn/gateways/transit_pandemonium	DNGN_TRANSIT_PANDEMONIUM
+dc_gate_unknown	gate	dngn/gateways/portal_unknown	DNGN_UNKNOWN_PORTAL
+dc_gate_volcano_portal	gate	dngn/gateways/volcano_portal	DNGN_ENTER_VOLCANO
+dc_gate_wizlab_portal	gate	dngn/gateways/wizlab_portal0	DNGN_ENTER_WIZLAB DNGN_EXIT_WIZLAB
+dc_grate	grate	dngn/grate	DNGN_GRATE
+dc_hatch_down	decal	dngn/gateways/escape_hatch_down	DNGN_ESCAPE_HATCH_DOWN
+dc_hatch_up	decal	dngn/gateways/escape_hatch_up	DNGN_ESCAPE_HATCH_UP DNGN_EXIT_LABYRINTH DNGN_EXIT_GAUNTLET
+dc_lava	liquid	dngn/floor/lava00	DNGN_LAVA
+dc_lava_sea	liquid	dngn/floor/lava_sea0000	DNGN_LAVA_SEA
+dc_rune_binding_sigil	decal	dngn/traps/binding_sigil	DNGN_BINDING_SIGIL
+dc_rune_light	decal	dngn/floor/runelight0	DNGN_RUNELIGHT
+dc_shop_abandoned	gate	dngn/shops/abandoned_shop	DNGN_ABANDONED_SHOP
+dc_shop_armour	shop	dngn/shops/shop_armour	ENTER_SHOP/ARMOUR
+dc_shop_book	shop	dngn/shops/shop_books	ENTER_SHOP/BOOK
+dc_shop_general	shop	dngn/shops/shop_general	DNGN_ENTER_SHOP ENTER_SHOP/GENERAL
+dc_shop_jewellery	shop	dngn/shops/shop_jewellery	ENTER_SHOP/JEWELLERY
+dc_shop_potion	shop	dngn/shops/shop_potions	ENTER_SHOP/POTION
+dc_shop_scroll	shop	dngn/shops/shop_scrolls	ENTER_SHOP/SCROLL
+dc_shop_weapon	shop	dngn/shops/shop_weapon	ENTER_SHOP/WEAPON
+dc_stairs_down	stairs_down	dngn/gateways/stone_stairs_down	DNGN_STONE_STAIRS_DOWN_I DNGN_STONE_STAIRS_DOWN_II DNGN_STONE_STAIRS_DOWN_III
+dc_stairs_exit_dungeon	gate	dngn/gateways/exit_dungeon	DNGN_EXIT_DUNGEON
+dc_stairs_sealed_down	stairs_down	dngn/gateways/sealed_stairs_down	DNGN_SEALED_STAIRS_DOWN
+dc_stairs_sealed_up	gate	dngn/gateways/sealed_stairs_up	DNGN_SEALED_STAIRS_UP
+dc_stairs_up	stairs_up	dngn/gateways/stone_stairs_up	DNGN_STONE_STAIRS_UP_I DNGN_STONE_STAIRS_UP_II DNGN_STONE_STAIRS_UP_III
+dc_statue_granite	statue	dngn/statues/statue_dwarf	DNGN_GRANITE_STATUE
+dc_statue_metal	statue	dngn/statues/metal_statue	DNGN_METAL_STATUE
+dc_statue_orc_idol	statue	dngn/statues/orcish_idol	DNGN_ORCISH_IDOL
+dc_statue_zot_entropy	statue	dngn/statues/zot_entropy_orb_statue	ZOT_STATUE/ENTROPY
+dc_statue_zot_fire	statue	dngn/statues/zot_fire_orb_statue	DNGN_ZOT_STATUE ZOT_STATUE/FIRE
+dc_statue_zot_winter	statue	dngn/statues/zot_winter_orb_statue	ZOT_STATUE/WINTER
+dc_transporter	gate	dngn/transporter	DNGN_TRANSPORTER
+dc_transporter_landing	decal	dngn/transporter_landing_site	DNGN_TRANSPORTER_LANDING
+dc_trap_alarm	decal	dngn/traps/alarm	DNGN_TRAP_ALARM
+dc_trap_archmage	decal	dngn/traps/archmage	DNGN_TRAP_ARCHMAGE
+dc_trap_bolt	decal	dngn/traps/bolt	DNGN_TRAP_MECHANICAL DNGN_TRAP_BOLT
+dc_trap_devourer	decal	dngn/traps/devourer	DNGN_TRAP_DEVOURER
+dc_trap_dispersal	decal	dngn/traps/dispersal	DNGN_TRAP_DISPERSAL
+dc_trap_dispersal_off	decal	dngn/traps/dispersal_inactive	DNGN_TRAP_DISPERSAL_INACTIVE
+dc_trap_golubria	decal	dngn/traps/passage_of_golubria	DNGN_TELEPORTER DNGN_PASSAGE_OF_GOLUBRIA
+dc_trap_harlequin	decal	dngn/traps/harlequin0	DNGN_TRAP_HARLEQUIN
+dc_trap_net	decal	dngn/traps/net	DNGN_TRAP_NET
+dc_trap_plate	decal	dngn/traps/pressure_plate	DNGN_TRAP_PLATE
+dc_trap_shaft	pit	dngn/traps/shaft	DNGN_TRAP_SHAFT
+dc_trap_spear	decal	dngn/traps/spear	DNGN_TRAP_SPEAR
+dc_trap_teleport	decal	dngn/traps/teleport	DNGN_TRAP_TELEPORT
+dc_trap_teleport_perm	decal	dngn/traps/teleport_permanent	DNGN_TRAP_TELEPORT_PERMANENT
+dc_trap_tyrant	decal	dngn/traps/tyrant	DNGN_TRAP_TYRANT
+dc_trap_web	decal	dngn/traps/cobweb_none_0	DNGN_TRAP_WEB
+dc_trap_zot	decal	dngn/traps/zot	DNGN_TRAP_ZOT
+dc_tree	tree	dngn/trees/tree1	DNGN_TREE
+dc_tree_demonic	tree	dngn/trees/tree_demonic1	DNGN_DEMONIC_TREE
+dc_tree_mangrove	tree	dngn/trees/mangrove1	DNGN_MANGROVE
+dc_tree_petrified	tree	dngn/trees/tree_petrified1	DNGN_PETRIFIED_TREE ZOT_STATUE/UNKNOWN
+dc_wall_abyss	wall	dngn/wall/abyss/abyss0	
+dc_wall_bars	wall	dngn/wall/bars_red01	
+dc_wall_brick	wall	dngn/wall/brick_brown0	
+dc_wall_brick_dark_2	wall	dngn/wall/brick_dark_2_0	
+dc_wall_brick_dark_3	wall	dngn/wall/brick_dark_3_0	
+dc_wall_brick_dark_4	wall	dngn/wall/brick_dark_4_0	
+dc_wall_brick_dark_5	wall	dngn/wall/brick_dark_5_0	
+dc_wall_brick_dark_6	wall	dngn/wall/brick_dark_6_0	
+dc_wall_brick_vines	wall	dngn/wall/brick_brown-vines0	
+dc_wall_catacombs	wall	dngn/wall/catacombs0	
+dc_wall_clear_permarock	wall	dngn/wall/permarock_clear_red0	DNGN_CLEAR_PERMAROCK_WALL
+dc_wall_clear_rock	wall	dngn/wall/transparent_wall	DNGN_CLEAR_ROCK_WALL
+dc_wall_clear_stone	wall	dngn/wall/transparent_stone	DNGN_CLEAR_STONE_WALL
+dc_wall_cobalt_rock	wall	dngn/wall/cobalt_rock1	
+dc_wall_cobalt_stone	wall	dngn/wall/cobalt_stone01	
+dc_wall_crypt	wall	dngn/wall/crypt0	
+dc_wall_crypt_metal	wall	dngn/wall/crypt-metal0	
+dc_wall_crystal_01	wall	dngn/wall/crystal_wall_green	DNGN_CRYSTAL_WALL
+dc_wall_depths_crystal	wall	dngn/wall/crystal_wall_depths_0	
+dc_wall_depths_metal	wall	dngn/wall/wall_metal_depths0	
+dc_wall_depths_metal_leafy	wall	dngn/wall/wall_metal_depths_leafy0	
+dc_wall_desolation	wall	dngn/wall/desolation1	
+dc_wall_emerald	wall	dngn/wall/emerald1	
+dc_wall_flesh	wall	dngn/wall/wall_flesh0	
+dc_wall_frigid	wall	dngn/wall/rime_wall0	DNGN_FRIGID_WALL
+dc_wall_hall	wall	dngn/wall/relief0	
+dc_wall_hell	wall	dngn/wall/hell01	
+dc_wall_ice	wall	dngn/wall/ice_wall0	
+dc_wall_ice_block	wall	dngn/wall/ice_block0	
+dc_wall_icy_stone	wall	dngn/wall/icy_stone0	
+dc_wall_lab_metal	wall	dngn/wall/lab-metal0	
+dc_wall_lab_rock	wall	dngn/wall/lab-rock0	
+dc_wall_lab_stone	wall	dngn/wall/lab-stone0	
+dc_wall_lair	wall	dngn/wall/lair0	
+dc_wall_metal_01	wall	dngn/wall/metal_wall0	DNGN_METAL_WALL
+dc_wall_metal_iron	wall	dngn/wall/iron0-0	
+dc_wall_metal_zot	wall	dngn/wall/wall_metal_zot0	
+dc_wall_oozing	wall	dngn/wall/wall_oozing0	
+dc_wall_orc	wall	dngn/wall/orc0	
+dc_wall_pebble	wall	dngn/wall/pebble_red0	
+dc_wall_permarock	wall	dngn/wall/permarock_red0	DNGN_PERMAROCK_WALL
+dc_wall_rock	wall	dngn/wall/brick_dark_1_0	DNGN_ROCK_WALL
+dc_wall_rock_crypt	wall	dngn/wall/rock_wall_crypt0	
+dc_wall_sandstone	wall	dngn/wall/sandstone_wall0	
+dc_wall_shoals	wall	dngn/wall/shoals_wall1	
+dc_wall_slimy	wall	dngn/wall/slime0	DNGN_SLIMY_WALL
+dc_wall_snake	wall	dngn/wall/snake0	
+dc_wall_spider	wall	dngn/wall/spider00	
+dc_wall_spike_launcher	wall	dngn/wall/spike_launcher	DNGN_SPIKE_LAUNCHER
+dc_wall_stone	wall	dngn/wall/stone2_gray0	DNGN_STONE_WALL
+dc_wall_stone_mossy	wall	dngn/wall/stone_mossy0	
+dc_wall_stone_smooth	wall	dngn/wall/stone_smooth0	
+dc_wall_stone_wall_vault	wall	dngn/wall/vault_stone00	
+dc_wall_tomb	wall	dngn/wall/tomb0	
+dc_wall_undead	wall	dngn/wall/undead0	
+dc_wall_vault	wall	dngn/wall/vault0	
+dc_wall_vaults_crystal	wall	dngn/wall/vaults-crystal0	
+dc_wall_vaults_metal	wall	dngn/wall/vaults-metal0	
+dc_wall_vines	wall	dngn/wall/wall_vines0	
+dc_wall_volcanic	wall	dngn/wall/volcanic_wall0	
+dc_wall_zot_cyan	wall	dngn/wall/zot_blue0	
+dc_wall_zot_red	wall	dngn/wall/zot_blue0	
+dc_wall_zot_yellow	wall	dngn/wall/zot_blue0	
+dc_water_deep	liquid	dngn/water/deep_water	DNGN_DEEP_WATER
+dc_water_open_sea	liquid	dngn/water/open_sea	DNGN_OPEN_SEA
+dc_water_shallow	liquid	dngn/water/shallow_water	DNGN_SHALLOW_WATER
+dc_water_toxic_bog	liquid	dngn/water/toxic_bog1	DNGN_TOXIC_BOG

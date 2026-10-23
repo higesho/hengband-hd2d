@@ -1,0 +1,112 @@
+// dc_altar_ignis — プレハブ定義（設計書 §7）。`dc_altar_ignis.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 ignis（dngn/altars/ignis）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_ignis",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "4C444C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "BBA693",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "C1AB97",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "C6B09B",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "D1B9A4",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "CBB4A0",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "D6BEA8",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "B19D8B",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "B6A28F",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "E1C8B0",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "DBC3AC",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "E6CCB5",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "EBD1B9",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "F1D6BD",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "FF7E1E",
+      "material": "clean"
+    },
+    {
+      "i": 16,
+      "rgb": "FFDC5A",
+      "material": "clean"
+    }
+  ]
+}

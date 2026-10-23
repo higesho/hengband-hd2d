@@ -253,7 +253,7 @@ EntityTracker::Track &EntityTracker::advance(std::uint32_t key, float target_x, 
 void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, SlabLibrary &slabs,
     VoxelRenderer &renderer, float dt, EntityView &out, bool hide_player, float player_min_speed,
     const SlabFacing &facing, GlyphAtlas *glyph_atlas, float glyph_height_cells,
-    GlyphAtlas *fallback_glyphs, bool model_player)
+    GlyphAtlas *fallback_glyphs, bool model_player, const std::vector<RingTint> *ring_tints, float slab_back_shift)
 {
     //! **アスキー実体**。字が焼けないなら板へ落ちる。
     const bool ascii = (glyph_atlas != nullptr) && glyph_atlas->ready();
@@ -403,6 +403,24 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
                 out.rings.push_back(make_ring(track.x, track.y, kRingRadius, ring_color_of(level),
                     ring_alpha_now(level, this->elapsed_)));
             }
+            //! 画面の部品が渡した色の輪（DCSS。無ければ何もしない）。同じマスに複数あれば内側から順に重ねる。
+            if (ring_tints != nullptr) {
+                for (const RingTint &tint : *ring_tints) {
+                    if ((tint.gx != cell.gx) || (tint.gy != cell.gy)) {
+                        continue;
+                    }
+                    GroundRingInstance ring;
+                    ring.x = track.x;
+                    ring.y = track.y;
+                    ring.z = kRingLift;
+                    ring.radius = tint.radius;
+                    ring.r = tint.r;
+                    ring.g = tint.g;
+                    ring.b = tint.b;
+                    ring.a = tint.a;
+                    out.rings.push_back(ring);
+                }
+            }
         }
 
         if (is_player && (hide_player || model_player)) {
@@ -495,6 +513,15 @@ void EntityTracker::build(const GameFrame &frame, const TileCatalog &catalog, Sl
             slot.inst.y += 0.5f * toward_y;
             slot.cx += 0.5f * toward_x;
             slot.cy += 0.5f * toward_y;
+        }
+        if (slab_back_shift != 0.f) {
+            //! カメラから遠い側（板の向きの反対）へ。上の「手前の辺へ置く」と同じ向きの式。
+            const float away_x = std::sin(slot.inst.yaw);
+            const float away_y = -std::cos(slot.inst.yaw);
+            slot.inst.x += slab_back_shift * away_x;
+            slot.inst.y += slab_back_shift * away_y;
+            slot.cx += slab_back_shift * away_x;
+            slot.cy += slab_back_shift * away_y;
         }
         out.slabs.push_back(slot);
         if (is_player || is_monster) {

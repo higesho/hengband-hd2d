@@ -261,6 +261,14 @@ int status_text_reference_px(TextOverlay &text, int icon_px);
  */
 struct FittedText {
     float scale{ 1.f };
+    /*!
+     * 横だけの倍率（1 = 縮めない）。**基準の大きさ・全角 4 文字以内（表示上の幅 8 以内）の名前が、基準の大きさでもアイコンの幅に
+     * 収まらないときだけ** 1 未満になる（字の高さは基準のまま、横だけ縮めて `target_w` に収める。幅は `target_w`）。
+     * 収まる名前は 1 のまま（Windows の MS ゴシックでは 8 桁が全角 4 字と同じ幅なので、どの名前も 1。Linux・Android の等幅フォントは
+     * 半角 8 字が全角 4 字より広く、英語の名前が 2 画素ほどはみ出すので 1 未満になる。決めたこと 2026-10-22）。
+     * 描くときは `TextOverlay::draw_sized_clipped` の `x_scale` へ渡す。
+     */
+    float x_scale{ 1.f };
     //! 幅。2 行のときは長いほうの行の幅。
     int width{ 0 };
     //! 下限でも `target_w` に収まらなかった。

@@ -1,0 +1,112 @@
+// dc_trap_alarm — プレハブ定義（設計書 §7）。`dc_trap_alarm.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 alarm（dngn/traps/alarm）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_trap_alarm",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "A9890B",
+      "material": "metal"
+    },
+    {
+      "i": 3,
+      "rgb": "9B610D",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "B0A168",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "CDA70E",
+      "material": "metal"
+    },
+    {
+      "i": 6,
+      "rgb": "F1C410",
+      "material": "metal"
+    },
+    {
+      "i": 7,
+      "rgb": "BD7510",
+      "material": "metal"
+    },
+    {
+      "i": 8,
+      "rgb": "DE8A13",
+      "material": "metal"
+    },
+    {
+      "i": 9,
+      "rgb": "D5C47E",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "FBE694",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "6F370D",
+      "material": "wood"
+    },
+    {
+      "i": 12,
+      "rgb": "87420F",
+      "material": "wood"
+    },
+    {
+      "i": 13,
+      "rgb": "9F4E12",
+      "material": "wood"
+    },
+    {
+      "i": 14,
+      "rgb": "532106",
+      "material": "wood"
+    },
+    {
+      "i": 15,
+      "rgb": "642808",
+      "material": "wood"
+    },
+    {
+      "i": 16,
+      "rgb": "762F09",
+      "material": "wood"
+    }
+  ]
+}

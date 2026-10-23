@@ -493,6 +493,77 @@ toband/lib/file/nethack-license.txt. The score report of the upstream build
 
 ---------------------------------------------------------
 
+Dungeon Crawl Stone Soup 0.34.1, Japanese edition (crawl-ja, tag 0.34.1-ja4) - GNU General Public License v2 or later
+https://github.com/crawl/crawl (upstream)
+https://github.com/higesho/crawl-ja (Japanese edition)
+
+Copyright 1997-2025 Linley Henzell, the dev team, and the contributors
+(see licenses/Dcss-CREDITS.txt, the upstream CREDITS.txt).
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version. This distribution of the DCSS core (DcssCore.exe and its Android/Linux
+counterparts) is made under the GNU General Public License, version 2 or (at
+your option) any later version. The upstream LICENSE file, which contains the
+full text of the GPL version 2 and the list of the parts under other licences,
+is distributed as licenses/Dcss-LICENSE.txt (the GPL version 2 is also
+licenses/GPL-2.0.txt; in the Android package assets/licenses/). This program is
+distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Parts of the upstream source under other licences, all compatible with the GPL
+(from the upstream LICENSE): 3-clause BSD (MSVC/stdint.h); 2-clause BSD (all
+contributions by Steve Noonan and Jesse Luehrs); Public Domain / CC0 (most of
+the tiles, perlin.cc, perlin.h; CC0 text: licenses/Dcss-CC0.txt); MIT (json.cc,
+json.h, worley.cc, worley.h; Steve Worley's note: licenses/Dcss-worley.txt);
+Apache v2 or MIT (pcg.cc). The files for the web server and the test suites
+(webserver/, catch2-tests/) are not part of this build.
+
+Libraries bundled in the upstream source (crawl-ref/source/contrib) and
+compiled into the core: Lua (MIT licence, Copyright (C) 1994-2006 Lua.org,
+PUC-Rio; licenses/Dcss-lua-LICENSE.txt), PCRE (BSD licence, Copyright (c)
+1997-2014 University of Cambridge and others; licenses/Dcss-pcre-LICENCE.txt),
+SQLite (the source says "The author disclaims copyright" and carries a blessing in place of a legal notice; licenses/Dcss-sqlite-README.txt) and zlib (zlib licence,
+Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler;
+licenses/Dcss-zlib-README.txt).
+
+Corresponding source: the Japanese edition source at the pinned commit
+486469c29a45a39d4a79494a73e31d2fd88d40ea (tag 0.34.1-ja4) from
+https://github.com/higesho/crawl-ja, together with this project's recipe
+(tools/core_sources/recipes/dcss.json) and adapters (dcss/adapter/, the screen
+parts hd2d/dcss/ and the build scripts), which tools/core_sources/prepare.py
+combines into the source that is compiled. The recipe copies the upstream files
+unchanged; no line of the upstream source is rewritten. See LICENSE section 8
+and README.md ("Original sources") in the source repository
+https://github.com/higesho/hengband-hd2d.
+
+Tiles. The majority of Crawl's tiles and artwork are released under CC0, and the
+upstream LICENSE says the licensing of older pieces may be complex (the upstream
+list of tiles under unknown licence: https://github.com/crawl/tiles). This
+distribution of the DCSS core includes the original game's tile image pages
+(dcss/lib/tiles and assets/ui/dcss; the screen cuts the tiles of monsters, items
+and the player out of them and builds voxel boards at run time), and voxel
+objects and boards made from those tiles (assets/voxel/dc_*). The tiles are used
+as the original game uses them. 48 of the 265 tiles used for the voxel objects
+and boards are listed in the upstream list of tiles whose provenance could not
+be confirmed as CC0 (mostly dngn/gateways and dngn/shops). The tiles used and
+the result of the comparison with the upstream list are in
+licenses/Dcss-tiles-used-provenance.tsv and
+licenses/Dcss-tiles-unclear-provenance.tsv. Neither the upstream list, its
+artist list nor LICENSE states an attribution requirement. The statement in
+LICENSE section 9 that tile images are not included is about the AI-generated
+tile images of the other games; the DCSS tile pages above are the original
+game's own.
+
+Font. The screen draws the DCSS regions with BIZ UDGothic Regular
+(assets/fonts/dcss/BIZUDGothic-Regular.ttf), Copyright 2022 The BIZ UDGothic
+Project Authors (https://github.com/googlefonts/morisawa-biz-ud-gothic), under
+the SIL Open Font License, Version 1.1 (assets/fonts/dcss/OFL.txt).
+
+---------------------------------------------------------
+
 Rogue 3.6 (NewRogue 3.6.4) - BSD 3-clause licence
 usotopr/newrogue3.6, commit 570c8825d867ee4da1f03f9fd5309bb9c454a26e
 

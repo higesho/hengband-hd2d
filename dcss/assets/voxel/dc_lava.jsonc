@@ -1,0 +1,627 @@
+// dc_lava — プレハブ定義（設計書 §7）。`dc_lava.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 lava00（dngn/floor/lava00）。タイルに合わせた凹凸（liquid。出 279・へこみ 507。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_lava",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "4A0905",
+      "material": "clean"
+    },
+    {
+      "i": 2,
+      "rgb": "CB0D0A",
+      "material": "clean"
+    },
+    {
+      "i": 3,
+      "rgb": "C60D0D",
+      "material": "clean"
+    },
+    {
+      "i": 4,
+      "rgb": "C60606",
+      "material": "clean"
+    },
+    {
+      "i": 5,
+      "rgb": "450606",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "5F0808",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "320808",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "FF4A00",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "0F0808",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "CB0605",
+      "material": "clean"
+    },
+    {
+      "i": 11,
+      "rgb": "110606",
+      "material": "clean"
+    },
+    {
+      "i": 12,
+      "rgb": "1A0606",
+      "material": "clean"
+    },
+    {
+      "i": 13,
+      "rgb": "160606",
+      "material": "clean"
+    },
+    {
+      "i": 14,
+      "rgb": "390606",
+      "material": "clean"
+    },
+    {
+      "i": 15,
+      "rgb": "660606",
+      "material": "clean"
+    },
+    {
+      "i": 16,
+      "rgb": "CD0A05",
+      "material": "clean"
+    },
+    {
+      "i": 17,
+      "rgb": "D40D05",
+      "material": "clean"
+    },
+    {
+      "i": 18,
+      "rgb": "CD0D05",
+      "material": "clean"
+    },
+    {
+      "i": 19,
+      "rgb": "390806",
+      "material": "clean"
+    },
+    {
+      "i": 20,
+      "rgb": "FF1301",
+      "material": "clean"
+    },
+    {
+      "i": 21,
+      "rgb": "FFF374",
+      "material": "clean"
+    },
+    {
+      "i": 22,
+      "rgb": "A20C06",
+      "material": "clean"
+    },
+    {
+      "i": 23,
+      "rgb": "0F0F0F",
+      "material": "clean"
+    },
+    {
+      "i": 24,
+      "rgb": "0F0806",
+      "material": "clean"
+    },
+    {
+      "i": 25,
+      "rgb": "D10605",
+      "material": "clean"
+    },
+    {
+      "i": 26,
+      "rgb": "3E0606",
+      "material": "clean"
+    },
+    {
+      "i": 27,
+      "rgb": "610606",
+      "material": "clean"
+    },
+    {
+      "i": 28,
+      "rgb": "FF0A03",
+      "material": "clean"
+    },
+    {
+      "i": 29,
+      "rgb": "CD0605",
+      "material": "clean"
+    },
+    {
+      "i": 30,
+      "rgb": "D40505",
+      "material": "clean"
+    },
+    {
+      "i": 31,
+      "rgb": "FF5A00",
+      "material": "clean"
+    },
+    {
+      "i": 32,
+      "rgb": "970A05",
+      "material": "clean"
+    },
+    {
+      "i": 33,
+      "rgb": "A50C05",
+      "material": "clean"
+    },
+    {
+      "i": 34,
+      "rgb": "660A06",
+      "material": "clean"
+    },
+    {
+      "i": 35,
+      "rgb": "470806",
+      "material": "clean"
+    },
+    {
+      "i": 36,
+      "rgb": "110808",
+      "material": "clean"
+    },
+    {
+      "i": 37,
+      "rgb": "0F0606",
+      "material": "clean"
+    },
+    {
+      "i": 38,
+      "rgb": "970605",
+      "material": "clean"
+    },
+    {
+      "i": 39,
+      "rgb": "FF3900",
+      "material": "clean"
+    },
+    {
+      "i": 40,
+      "rgb": "610A0A",
+      "material": "clean"
+    },
+    {
+      "i": 41,
+      "rgb": "9B0505",
+      "material": "clean"
+    },
+    {
+      "i": 42,
+      "rgb": "300606",
+      "material": "clean"
+    },
+    {
+      "i": 43,
+      "rgb": "400808",
+      "material": "clean"
+    },
+    {
+      "i": 44,
+      "rgb": "CA0606",
+      "material": "clean"
+    },
+    {
+      "i": 45,
+      "rgb": "470606",
+      "material": "clean"
+    },
+    {
+      "i": 46,
+      "rgb": "A30605",
+      "material": "clean"
+    },
+    {
+      "i": 47,
+      "rgb": "6A0606",
+      "material": "clean"
+    },
+    {
+      "i": 48,
+      "rgb": "FA0C05",
+      "material": "clean"
+    },
+    {
+      "i": 49,
+      "rgb": "FF5100",
+      "material": "clean"
+    },
+    {
+      "i": 50,
+      "rgb": "FF1401",
+      "material": "clean"
+    },
+    {
+      "i": 51,
+      "rgb": "C60505",
+      "material": "clean"
+    },
+    {
+      "i": 52,
+      "rgb": "5F0606",
+      "material": "clean"
+    },
+    {
+      "i": 53,
+      "rgb": "500606",
+      "material": "clean"
+    },
+    {
+      "i": 54,
+      "rgb": "370606",
+      "material": "clean"
+    },
+    {
+      "i": 55,
+      "rgb": "FC0D03",
+      "material": "clean"
+    },
+    {
+      "i": 56,
+      "rgb": "210808",
+      "material": "clean"
+    },
+    {
+      "i": 57,
+      "rgb": "130808",
+      "material": "clean"
+    },
+    {
+      "i": 58,
+      "rgb": "A20505",
+      "material": "clean"
+    },
+    {
+      "i": 59,
+      "rgb": "FF0A01",
+      "material": "clean"
+    },
+    {
+      "i": 60,
+      "rgb": "130606",
+      "material": "clean"
+    },
+    {
+      "i": 61,
+      "rgb": "300D0D",
+      "material": "clean"
+    },
+    {
+      "i": 62,
+      "rgb": "5E0808",
+      "material": "clean"
+    },
+    {
+      "i": 63,
+      "rgb": "320606",
+      "material": "clean"
+    },
+    {
+      "i": 64,
+      "rgb": "260606",
+      "material": "clean"
+    },
+    {
+      "i": 65,
+      "rgb": "180606",
+      "material": "clean"
+    },
+    {
+      "i": 66,
+      "rgb": "820605",
+      "material": "clean"
+    },
+    {
+      "i": 67,
+      "rgb": "140606",
+      "material": "clean"
+    },
+    {
+      "i": 68,
+      "rgb": "FFB536",
+      "material": "clean"
+    },
+    {
+      "i": 69,
+      "rgb": "FF921B",
+      "material": "clean"
+    },
+    {
+      "i": 70,
+      "rgb": "C60605",
+      "material": "clean"
+    },
+    {
+      "i": 71,
+      "rgb": "CF0505",
+      "material": "clean"
+    },
+    {
+      "i": 72,
+      "rgb": "280606",
+      "material": "clean"
+    },
+    {
+      "i": 73,
+      "rgb": "FF5700",
+      "material": "clean"
+    },
+    {
+      "i": 74,
+      "rgb": "FF0803",
+      "material": "clean"
+    },
+    {
+      "i": 75,
+      "rgb": "360606",
+      "material": "clean"
+    },
+    {
+      "i": 76,
+      "rgb": "900505",
+      "material": "clean"
+    },
+    {
+      "i": 77,
+      "rgb": "680606",
+      "material": "clean"
+    },
+    {
+      "i": 78,
+      "rgb": "FF4700",
+      "material": "clean"
+    },
+    {
+      "i": 79,
+      "rgb": "CB0505",
+      "material": "clean"
+    },
+    {
+      "i": 80,
+      "rgb": "CA0505",
+      "material": "clean"
+    },
+    {
+      "i": 81,
+      "rgb": "B60505",
+      "material": "clean"
+    },
+    {
+      "i": 82,
+      "rgb": "5A0606",
+      "material": "clean"
+    },
+    {
+      "i": 83,
+      "rgb": "CD0505",
+      "material": "clean"
+    },
+    {
+      "i": 84,
+      "rgb": "870505",
+      "material": "clean"
+    },
+    {
+      "i": 85,
+      "rgb": "340606",
+      "material": "clean"
+    },
+    {
+      "i": 86,
+      "rgb": "AF0505",
+      "material": "clean"
+    },
+    {
+      "i": 87,
+      "rgb": "650606",
+      "material": "clean"
+    },
+    {
+      "i": 88,
+      "rgb": "B30505",
+      "material": "clean"
+    },
+    {
+      "i": 89,
+      "rgb": "420606",
+      "material": "clean"
+    },
+    {
+      "i": 90,
+      "rgb": "220606",
+      "material": "clean"
+    },
+    {
+      "i": 91,
+      "rgb": "EE0803",
+      "material": "clean"
+    },
+    {
+      "i": 92,
+      "rgb": "800505",
+      "material": "clean"
+    },
+    {
+      "i": 93,
+      "rgb": "630606",
+      "material": "clean"
+    },
+    {
+      "i": 94,
+      "rgb": "FF1303",
+      "material": "clean"
+    },
+    {
+      "i": 95,
+      "rgb": "390F0A",
+      "material": "clean"
+    },
+    {
+      "i": 96,
+      "rgb": "570606",
+      "material": "clean"
+    },
+    {
+      "i": 97,
+      "rgb": "D80605",
+      "material": "clean"
+    },
+    {
+      "i": 98,
+      "rgb": "FF4900",
+      "material": "clean"
+    },
+    {
+      "i": 99,
+      "rgb": "A50505",
+      "material": "clean"
+    },
+    {
+      "i": 100,
+      "rgb": "D10D06",
+      "material": "clean"
+    },
+    {
+      "i": 101,
+      "rgb": "920A06",
+      "material": "clean"
+    },
+    {
+      "i": 102,
+      "rgb": "630806",
+      "material": "clean"
+    },
+    {
+      "i": 103,
+      "rgb": "580606",
+      "material": "clean"
+    },
+    {
+      "i": 104,
+      "rgb": "2F0606",
+      "material": "clean"
+    },
+    {
+      "i": 105,
+      "rgb": "3B0606",
+      "material": "clean"
+    },
+    {
+      "i": 106,
+      "rgb": "860A05",
+      "material": "clean"
+    },
+    {
+      "i": 107,
+      "rgb": "4C0606",
+      "material": "clean"
+    },
+    {
+      "i": 108,
+      "rgb": "A70C05",
+      "material": "clean"
+    },
+    {
+      "i": 109,
+      "rgb": "6A0A06",
+      "material": "clean"
+    },
+    {
+      "i": 110,
+      "rgb": "570A06",
+      "material": "clean"
+    },
+    {
+      "i": 111,
+      "rgb": "280806",
+      "material": "clean"
+    },
+    {
+      "i": 112,
+      "rgb": "5E0606",
+      "material": "clean"
+    },
+    {
+      "i": 113,
+      "rgb": "FFDB4E",
+      "material": "clean"
+    },
+    {
+      "i": 114,
+      "rgb": "C60D05",
+      "material": "clean"
+    },
+    {
+      "i": 115,
+      "rgb": "D20505",
+      "material": "clean"
+    },
+    {
+      "i": 116,
+      "rgb": "FF4E00",
+      "material": "clean"
+    },
+    {
+      "i": 117,
+      "rgb": "4E0A06",
+      "material": "clean"
+    },
+    {
+      "i": 118,
+      "rgb": "C10505",
+      "material": "clean"
+    },
+    {
+      "i": 119,
+      "rgb": "420605",
+      "material": "clean"
+    },
+    {
+      "i": 120,
+      "rgb": "BD0A06",
+      "material": "clean"
+    }
+  ]
+}

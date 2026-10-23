@@ -48,6 +48,8 @@ from pathlib import Path
 from queue import Empty, Queue
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "gate"))
+import idle_wait  # noqa: E402  待ち方（コアが待機に戻るまで。「待ち方とセーブの決まり」）
 CORE = REPO / "GensobandCore.exe"
 SAVE_DIR = REPO / "gensoband" / "lib" / "save"
 
@@ -156,6 +158,7 @@ class Session:
     def __init__(self, work: Path, tag: str, extra_args=(), savefile=None):
         self.work = work
         self.tag = tag
+        self.savefile = savefile
         self.err_path = work / f"gb_{tag}_stderr.log"
         self._errfp = self.err_path.open("wb")
         args = [str(CORE), "--ui-protocol=stdio"]
@@ -188,6 +191,7 @@ class Session:
             except Empty:
                 continue
             seen += 1
+            self.last_msg_t = time.monotonic()
             self.counts[kind] = self.counts.get(kind, 0) + 1
             if kind == "frame":
                 self.frames.append(obj)
@@ -204,17 +208,30 @@ class Session:
             elif kind == "fatal":
                 self.fatal = obj
 
-    def settle(self, quiet_rounds=2, slice_s=0.9, cap_s=25.0):
-        """静かになるまで受け取る（キー 1 個ぶんの反応を取り切る）。"""
+    def settle(self, quiet_rounds=2, slice_s=0.9, cap_s=25.0, until=None, after_msg=False):
+        """キー 1 個ぶんの反応を取り切る。
+
+        既定は「コアが待機に戻ったら次へ」（`idle_wait.settle_idle`。フレームが届くか、コアが忙しい間は待つ）。
+        `quiet_rounds`・`slice_s` は従来の「静かになるまでの固定の待ち」の引数で、`HD2D_SETTLE_LEGACY=1` のとき
+        （または CPU のサイクル数が読めないとき）だけ使う。`cap_s` は待つ上限。
+        `until`（`Session` を受けて真偽を返す関数）を渡すと、期待した表示が出た時点で返る（出なければ上限まで待って False）。
+        """
+        if not idle_wait.legacy():
+            r = idle_wait.settle_idle(self, cap_s=cap_s, until=until, after_msg=after_msg)
+            if r is not None:
+                return r
         quiet = 0
         end = time.monotonic() + cap_s
         while time.monotonic() < end:
             if self.drain(slice_s) == 0:
                 quiet += 1
                 if quiet >= quiet_rounds:
-                    return
+                    break
             else:
                 quiet = 0
+            if until is not None and until(self):
+                return True
+        return until(self) if until is not None else True
 
     # ------------------------------------------------------------------ 使い方
     def hello(self, ui_name="gb_protocol_driver.py"):
@@ -271,8 +288,9 @@ class Session:
 
     def wait_for(self, predicate, timeout=120.0):
         end = time.monotonic() + timeout
+        step = 1.0 if idle_wait.legacy() else 0.03
         while time.monotonic() < end:
-            self.drain(1.0)
+            self.drain(step)
             if self.frames and predicate(self):
                 return True
         return False
@@ -577,9 +595,23 @@ def cmd_m0(work: Path):
 #! **設計 §1 制約 7 の「合成フレームの PNG を見る」を置き換えるものではない**
 #! ——ここが見るのはワイヤに載ったかどうかだけで、画に出たかは別に見ること。
 
+def wait_town(s, timeout=45.0):
+    """起動の直後に、セーブを読み込んで町に立つのを待つ（セーブが無ければ、誕生の画面で止まるのを待つ）。
+
+    コアが待機に戻るまで待ち、町に立っていれば真。立っていなくても、枠のセーブのファイルがあるなら（読み込みが遅いだけ）
+    町に立つまで `timeout` を上限に待つ。セーブが無いときは 45 秒待たずに偽を返す。
+    """
+    s.settle(cap_s=timeout)
+    if ingame_frame(s) is not None:
+        return True
+    if s.savefile and (SAVE_DIR / s.savefile).is_file():
+        return s.wait_for(lambda x: ingame_frame(x) is not None, timeout=timeout)
+    return False
+
+
 def reach_ingame(s, work, tag):
     """在るセーブで入る。無ければ誕生画面を歩いて作る。"""
-    if s.wait_for(lambda x: ingame_frame(x) is not None, timeout=45):
+    if wait_town(s, 45):
         return True
     print(f"[{tag}] no save; walking the birth screens")
     for k in parse_script(BIRTH_SCRIPT):

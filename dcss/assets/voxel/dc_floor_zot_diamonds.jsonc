@@ -1,0 +1,232 @@
+// dc_floor_zot_diamonds — プレハブ定義（設計書 §7）。`dc_floor_zot_diamonds.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 zot_diamonds0（dngn/floor/zot_diamonds0）。タイルに合わせた凹凸（stone。出 272・へこみ 265。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_zot_diamonds",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "1A204D",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "211534",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "15153B",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "231539",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "211A49",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "281540",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "2F1A4E",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "2D1747",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "131540",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "0E214E",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "1A1745",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "261A4E",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "23215A",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "2D1A47",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "493983",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "342868",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "232155",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "0E499D",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "47459A",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "342153",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "07366B",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "072A5C",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "3B215C",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "131C42",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "342F8A",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "3B3277",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "133983",
+      "material": "stone"
+    },
+    {
+      "i": 28,
+      "rgb": "282A6B",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "2A1C55",
+      "material": "stone"
+    },
+    {
+      "i": 30,
+      "rgb": "093B85",
+      "material": "stone"
+    },
+    {
+      "i": 31,
+      "rgb": "101C47",
+      "material": "stone"
+    },
+    {
+      "i": 32,
+      "rgb": "613487",
+      "material": "stone"
+    },
+    {
+      "i": 33,
+      "rgb": "132155",
+      "material": "stone"
+    },
+    {
+      "i": 34,
+      "rgb": "1C1742",
+      "material": "stone"
+    },
+    {
+      "i": 35,
+      "rgb": "261A39",
+      "material": "stone"
+    },
+    {
+      "i": 36,
+      "rgb": "281A3D",
+      "material": "stone"
+    },
+    {
+      "i": 37,
+      "rgb": "28215F",
+      "material": "stone"
+    },
+    {
+      "i": 38,
+      "rgb": "341C53",
+      "material": "stone"
+    },
+    {
+      "i": 39,
+      "rgb": "402364",
+      "material": "stone"
+    },
+    {
+      "i": 40,
+      "rgb": "452868",
+      "material": "stone"
+    },
+    {
+      "i": 41,
+      "rgb": "1E1A4C",
+      "material": "stone"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+// dc_altar_cheibriados — プレハブ定義（設計書 §7）。`dc_altar_cheibriados.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 cheibriados（dngn/altars/cheibriados）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_cheibriados",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "7C541E",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "9B6926",
+      "material": "metal"
+    },
+    {
+      "i": 3,
+      "rgb": "382306",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "C1A85F",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "76502A",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "E8CC7C",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "FFE088",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "BACE4E",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "8CAA58",
+      "material": "plant"
+    }
+  ]
+}

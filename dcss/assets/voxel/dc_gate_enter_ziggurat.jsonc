@@ -1,0 +1,117 @@
+// dc_gate_enter_ziggurat — プレハブ定義（設計書 §7）。`dc_gate_enter_ziggurat.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 zig_portal（dngn/gateways/zig_portal）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_ziggurat",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "D3BE52",
+      "material": "metal"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "CEA741",
+      "material": "metal"
+    },
+    {
+      "i": 4,
+      "rgb": "52441B",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "F8E060",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "F2C44D",
+      "material": "metal"
+    },
+    {
+      "i": 7,
+      "rgb": "605020",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "621F9E",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "7324BA",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "2F260F",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "372D12",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "90742C",
+      "material": "wood"
+    },
+    {
+      "i": 13,
+      "rgb": "AA8834",
+      "material": "metal"
+    },
+    {
+      "i": 14,
+      "rgb": "510A49",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "5F0C56",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "6D5A24",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "806A2A",
+      "material": "stone"
+    }
+  ]
+}

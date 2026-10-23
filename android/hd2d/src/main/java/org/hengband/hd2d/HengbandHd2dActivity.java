@@ -98,6 +98,12 @@ public class HengbandHd2dActivity extends SDLActivity {
         super.onCreate(savedInstanceState);
         // ローグライクは「考えている時間」が長い。放っておくと画面が消える。
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // 画面全体を覆う SDLSurface にキーボード（ハードウェアのキー・adb のキー入力）で焦点が来ると、OS が窓の縁に黄緑の細い線（既定の焦点の強調）を
+        // 描く。ゲームの絵ではなく OS の描画なので、こちらの描画を全部止めても残る。ゲームは自分で選択の強調を描くので切る。
+        final android.view.View surfaceView = mSurface;
+        if (surfaceView != null) {
+            surfaceView.setDefaultFocusHighlightEnabled(false);
+        }
     }
 
     /**

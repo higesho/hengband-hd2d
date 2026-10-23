@@ -1,0 +1,62 @@
+// dc_floor_crystal — プレハブ定義（設計書 §7）。`dc_floor_crystal.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 crystal0（dngn/floor/crystal0）。タイルに合わせた凹凸（stone。出 314・へこみ 252。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_crystal",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "112C2C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "2B5858",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "214E4E",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "143939",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "1A4343",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "112F2F",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "0A2121",
+      "material": "stone"
+    }
+  ]
+}

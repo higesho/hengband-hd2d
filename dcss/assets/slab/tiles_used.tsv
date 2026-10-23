@@ -1,0 +1,18 @@
+# 使った絵の一覧（rltiles からの相対パス、使った名前）。道具が書く。来歴の突き合わせは tools/dcss/tile_provenance.py。
+item/armour/chain_mail1	dc_arm_chain_mail
+item/food/apple	dc_food_apple
+item/potion/brown	dc_pot_ambrosia,dc_pot_brown
+item/potion/i-ambrosia	dc_pot_ambrosia
+item/potion/i-label	dc_pot_ambrosia
+item/scroll/i-blinking	dc_scr_blinking
+item/scroll/scroll	dc_scr_blinking
+item/scroll/scroll-purple	dc_scr_blinking
+item/wand/gem_iron	dc_wand_flame
+item/wand/i-flame	dc_wand_flame
+item/weapon/dagger	dc_wpn_dagger
+mon/animals/adder	dc_mons_adder
+mon/animals/bat	dc_mons_bat
+mon/animals/jackal	dc_mons_jackal
+mon/humanoids/dwarf	dc_mons_dwarf
+mon/humanoids/ogre	dc_mons_ogre
+mon/humanoids/orcs/orc	dc_mons_orc

@@ -1,0 +1,117 @@
+// dc_wall_tomb — プレハブ定義（設計書 §7）。`dc_wall_tomb.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 tomb0（dngn/wall/tomb0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_tomb",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "584300",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "E0A800",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "A07800",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "604800",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "806000",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "FFC000",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "C09000",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "202000",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "302400",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "CA9700",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "906C00",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "1D1D00",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "2B2000",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "564100",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "AD8200",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "735600",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "E6AD00",
+      "material": "stone"
+    }
+  ]
+}

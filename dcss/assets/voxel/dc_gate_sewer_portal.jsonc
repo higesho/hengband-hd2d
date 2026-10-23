@@ -1,0 +1,257 @@
+// dc_gate_sewer_portal — プレハブ定義（設計書 §7）。`dc_gate_sewer_portal.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 sewer_portal（dngn/gateways/sewer_portal）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_sewer_portal",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "61615C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "795242",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "494941",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "72726C",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "8E604E",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "56564C",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "583D30",
+      "material": "wood"
+    },
+    {
+      "i": 9,
+      "rgb": "797972",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "8E8E86",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "976753",
+      "material": "metal"
+    },
+    {
+      "i": 12,
+      "rgb": "B27962",
+      "material": "wood"
+    },
+    {
+      "i": 13,
+      "rgb": "684838",
+      "material": "wood"
+    },
+    {
+      "i": 14,
+      "rgb": "3D2A21",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "483127",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "30302D",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "393935",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "775345",
+      "material": "wood"
+    },
+    {
+      "i": 19,
+      "rgb": "8C6251",
+      "material": "wood"
+    },
+    {
+      "i": 20,
+      "rgb": "956955",
+      "material": "wood"
+    },
+    {
+      "i": 21,
+      "rgb": "AF7B64",
+      "material": "wood"
+    },
+    {
+      "i": 22,
+      "rgb": "0D0D0D",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "0F0F0F",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "42423D",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "4E4E48",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "1F1F1D",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "242422",
+      "material": "stone"
+    },
+    {
+      "i": 28,
+      "rgb": "1E230B",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "23290D",
+      "material": "stone"
+    },
+    {
+      "i": 30,
+      "rgb": "161616",
+      "material": "stone"
+    },
+    {
+      "i": 31,
+      "rgb": "1A1A1A",
+      "material": "stone"
+    },
+    {
+      "i": 32,
+      "rgb": "262F0E",
+      "material": "stone"
+    },
+    {
+      "i": 33,
+      "rgb": "2D3711",
+      "material": "stone"
+    },
+    {
+      "i": 34,
+      "rgb": "353F11",
+      "material": "stone"
+    },
+    {
+      "i": 35,
+      "rgb": "3E4A14",
+      "material": "stone"
+    },
+    {
+      "i": 36,
+      "rgb": "414C14",
+      "material": "stone"
+    },
+    {
+      "i": 37,
+      "rgb": "4C5918",
+      "material": "stone"
+    },
+    {
+      "i": 38,
+      "rgb": "4A5518",
+      "material": "stone"
+    },
+    {
+      "i": 39,
+      "rgb": "57641C",
+      "material": "stone"
+    },
+    {
+      "i": 40,
+      "rgb": "374C13",
+      "material": "stone"
+    },
+    {
+      "i": 41,
+      "rgb": "415A16",
+      "material": "stone"
+    },
+    {
+      "i": 42,
+      "rgb": "5E6A20",
+      "material": "stone"
+    },
+    {
+      "i": 43,
+      "rgb": "6E7D26",
+      "material": "stone"
+    },
+    {
+      "i": 44,
+      "rgb": "5E7925",
+      "material": "plant"
+    },
+    {
+      "i": 45,
+      "rgb": "6F8E2B",
+      "material": "plant"
+    }
+  ]
+}

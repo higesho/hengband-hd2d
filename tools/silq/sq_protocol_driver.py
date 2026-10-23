@@ -47,6 +47,8 @@ from pathlib import Path
 from queue import Empty, Queue
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "gate"))
+import idle_wait  # noqa: E402  待ち方（コアが待機に戻るまで。「待ち方とセーブの決まり」）
 CORE = REPO / "SilCore.exe"
 SAVE_DIR = REPO / "silq" / "lib" / "save"
 TERRAIN_MAP = REPO / "silq" / "tilework" / "terrain_map.csv"
@@ -189,6 +191,7 @@ class Session:
             except Empty:
                 continue
             seen += 1
+            self.last_msg_t = time.monotonic()
             self.counts[kind] = self.counts.get(kind, 0) + 1
             if kind == "frame":
                 self.frames.append(obj)
@@ -203,17 +206,30 @@ class Session:
             elif kind == "fatal":
                 self.fatal = obj
 
-    def settle(self, quiet_rounds=2, slice_s=0.9, cap_s=25.0):
-        """静かになるまで受け取る（キー 1 個ぶんの反応を取り切る）。"""
+    def settle(self, quiet_rounds=2, slice_s=0.9, cap_s=25.0, until=None, after_msg=False):
+        """キー 1 個ぶんの反応を取り切る。
+
+        既定は「コアが待機に戻ったら次へ」（`idle_wait.settle_idle`。フレームが届くか、コアが忙しい間は待つ）。
+        `quiet_rounds`・`slice_s` は従来の「静かになるまでの固定の待ち」の引数で、`HD2D_SETTLE_LEGACY=1` のとき
+        （または CPU のサイクル数が読めないとき）だけ使う。`cap_s` は待つ上限。
+        `until`（`Session` を受けて真偽を返す関数）を渡すと、期待した表示が出た時点で返る（出なければ上限まで待って False）。
+        """
+        if not idle_wait.legacy():
+            r = idle_wait.settle_idle(self, cap_s=cap_s, until=until, after_msg=after_msg)
+            if r is not None:
+                return r
         quiet = 0
         end = time.monotonic() + cap_s
         while time.monotonic() < end:
             if self.drain(slice_s) == 0:
                 quiet += 1
                 if quiet >= quiet_rounds:
-                    return
+                    break
             else:
                 quiet = 0
+            if until is not None and until(self):
+                return True
+        return until(self) if until is not None else True
 
     # ------------------------------------------------------------------ 使い方
     def hello(self, ui_name="sq_protocol_driver.py"):
@@ -258,8 +274,9 @@ class Session:
 
     def wait_for(self, predicate, timeout=120.0):
         end = time.monotonic() + timeout
+        step = 1.0 if idle_wait.legacy() else 0.03
         while time.monotonic() < end:
-            self.drain(1.0)
+            self.drain(step)
             if self.frames and predicate(self):
                 return True
         return False

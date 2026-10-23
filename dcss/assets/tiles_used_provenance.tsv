@@ -1,0 +1,268 @@
+# 本案件のプレハブ・板が使った絵の来歴の区分（tools/dcss/tile_provenance.py が書く）。
+# 区分: 一覧に載る＝CC0 と確認できていない（原作で実際に使われているのでそのまま使う。決めたこと 2026-10-21）／載らない＝一覧に無い（CC0 または公有の RLTiles 由来の見込み。作者の表記の義務はどこにも書かれていない）
+# 絵	区分	節	一致の種類	使った名前
+dngn/altars/ashenzari.png	載らない			dc_altar_ashenzari
+dngn/altars/beogh.png	一覧に載る	Bloax	同じパス	dc_altar_beogh
+dngn/altars/cheibriados.png	載らない			dc_altar_cheibriados
+dngn/altars/dithmenos1.png	載らない			dc_altar_dithmenos
+dngn/altars/ecumenical.png	載らない			dc_altar_ecumenical
+dngn/altars/elyvilon.png	載らない			dc_altar_elyvilon
+dngn/altars/fedhas.png	載らない			dc_altar_fedhas
+dngn/altars/gozag0.png	載らない			dc_altar_gozag
+dngn/altars/hep0.png	載らない			dc_altar_hepliaklqana
+dngn/altars/ignis.png	載らない			dc_altar_ignis
+dngn/altars/jiyva01.png	載らない			dc_altar_jiyva
+dngn/altars/kikubaaqudgha.png	載らない			dc_altar_kikubaaqudgha
+dngn/altars/lugonu.png	載らない			dc_altar_lugonu
+dngn/altars/makhleb_flame1.png	載らない			dc_altar_makhleb
+dngn/altars/nemelex1.png	載らない			dc_altar_nemelex_xobeh
+dngn/altars/okawaru.png	載らない			dc_altar_okawaru
+dngn/altars/pakellas0.png	載らない			dc_altar_pakellas
+dngn/altars/qazlal0.png	載らない			dc_altar_qazlal
+dngn/altars/ru.png	載らない			dc_altar_ru
+dngn/altars/shining_one.png	載らない			dc_altar_shining_one
+dngn/altars/sif_muna1.png	載らない			dc_altar_sif_muna
+dngn/altars/trog.png	載らない			dc_altar_trog
+dngn/altars/unknown.png	載らない			dc_altar_unknown
+dngn/altars/uskayaw.png	載らない			dc_altar_uskayaw
+dngn/altars/vehumet1.png	載らない			dc_altar_vehumet
+dngn/altars/wu_jian.png	載らない			dc_altar_wu_jian
+dngn/altars/xom0.png	載らない			dc_altar_xom
+dngn/altars/yredelemnul.png	載らない			dc_altar_yredelemnul
+dngn/altars/zin1.png	載らない			dc_altar_zin
+dngn/decor/blood_fountain.png	載らない			dc_fountain_blood
+dngn/decor/blue_fountain.png	載らない			dc_fountain_blue
+dngn/decor/cache_of_baked_goods_1.png	載らない			dc_cache_baked
+dngn/decor/cache_of_fruit_0.png	載らない			dc_cache_fruit
+dngn/decor/cache_of_meat_0.png	載らない			dc_cache_meat
+dngn/decor/decorative_floor.png	載らない			dc_floor_decor_01
+dngn/decor/dry_fountain.png	載らない			dc_fountain_blood,dc_fountain_blue,dc_fountain_dry,dc_fountain_eyes,dc_fountain_sparkling
+dngn/decor/eyes_fountain.png	載らない			dc_fountain_eyes
+dngn/decor/sparkling_fountain.png	載らない			dc_fountain_sparkling
+dngn/doors/broken_clear_door.png	載らない			dc_door_clear_broken,dc_door_clear_broken_ew
+dngn/doors/broken_door.png	載らない			dc_door_broken,dc_door_broken_ew
+dngn/doors/closed_clear_door.png	載らない			dc_door_clear_closed,dc_door_clear_closed_ew
+dngn/doors/closed_door.png	載らない			dc_door_closed,dc_door_closed_ew
+dngn/doors/open_clear_door.png	載らない			dc_door_clear_open,dc_door_clear_open_ew
+dngn/doors/open_door.png	載らない			dc_door_open,dc_door_open_ew
+dngn/doors/runed_clear_door.png	載らない			dc_door_clear_runed,dc_door_clear_runed_ew
+dngn/doors/runed_door.png	載らない			dc_door_runed,dc_door_runed_ew
+dngn/doors/sealed_clear_door.png	載らない			dc_door_clear_sealed,dc_door_clear_sealed_ew
+dngn/doors/sealed_door.png	載らない			dc_door_sealed,dc_door_sealed_ew
+dngn/floor/acidic_floor0.png	載らない			dc_floor_slime_acidic
+dngn/floor/black_cobalt01.png	載らない			dc_floor_black_cobalt
+dngn/floor/blade_floor0.png	載らない			dc_floor_blade
+dngn/floor/bog_green0.png	載らない			dc_floor_slime
+dngn/floor/cage0.png	載らない			dc_floor_cage
+dngn/floor/cobble_blood1.png	載らない			dc_floor_cobble_blood
+dngn/floor/crypt_domino_1a.png	載らない			dc_floor_crypt
+dngn/floor/crystal0.png	載らない			dc_floor_crystal
+dngn/floor/crystal_floor0.png	載らない			dc_floor_crystal_squares
+dngn/floor/demonic_red1.png	載らない			dc_floor_demonic
+dngn/floor/depthstone_floor0.png	載らない			dc_floor_depthstone
+dngn/floor/dirt0.png	載らない			dc_floor_dirt
+dngn/floor/endless_salt0.png	載らない			dc_floor_salt_01
+dngn/floor/etched0.png	載らない			dc_floor_etched
+dngn/floor/floor_nerves0.png	載らない			dc_floor_nerves
+dngn/floor/floor_vines0.png	載らない			dc_floor_vines
+dngn/floor/frozen0.png	載らない			dc_floor_frozen
+dngn/floor/gauntlet0.png	載らない			dc_floor_gauntlet
+dngn/floor/grass/grass-dark0.png	載らない			dc_floor_grass_dark
+dngn/floor/grass/grass0.png	載らない			dc_floor_grass
+dngn/floor/green_bones01.png	載らない			dc_floor_green_bones
+dngn/floor/grey_dirt0.png	載らない			dc_floor_grey_dirt
+dngn/floor/grey_dirt_b_0.png	載らない			dc_floor_grey_dirt_b
+dngn/floor/ice0.png	載らない			dc_floor_ice
+dngn/floor/icy_floor0.png	載らない			dc_floor_icy
+dngn/floor/infernal01.png	載らない			dc_floor_infernal
+dngn/floor/infernal_blank.png	載らない			dc_floor_infernal_blank
+dngn/floor/iron0.png	一覧に載る	evilmike - evilmike@(略)	同じパス	dc_floor_iron
+dngn/floor/lair0.png	載らない			dc_floor_lair
+dngn/floor/lava00.png	一覧に載る	dd	同じパス	dc_lava
+dngn/floor/lava_sea0000.png	載らない			dc_lava_sea
+dngn/floor/limestone0.png	載らない			dc_floor_limestone
+dngn/floor/marble_floor1.png	載らない			dc_floor_marble
+dngn/floor/mesh0.png	載らない			dc_floor_hall
+dngn/floor/metal_gold0.png	載らない			dc_floor_metal_gold
+dngn/floor/metal_infernal0.png	載らない			dc_floor_metal_infernal
+dngn/floor/metal_silver0.png	載らない			dc_floor_metal_silver
+dngn/floor/mosaic0.png	載らない			dc_floor_mosaic
+dngn/floor/moss0.png	載らない			dc_floor_moss
+dngn/floor/mud0.png	載らない			dc_floor_mud_floor
+dngn/floor/mystic_chasm0.png	載らない			dc_floor_mystic_chasm
+dngn/floor/necropolis_grass_1.png	載らない			dc_floor_necropolis_grass
+dngn/floor/necropolis_square_grass_1.png	載らない			dc_floor_necropolis_square_grass
+dngn/floor/necropolis_squares_1.png	載らない			dc_floor_necropolis_squares
+dngn/floor/orc0.png	載らない			dc_floor_orc
+dngn/floor/pebble_brown0.png	載らない			dc_floor_pebble
+dngn/floor/rect_gray0.png	載らない			dc_floor_vault
+dngn/floor/rough_red0.png	一覧に載る	evilmike - evilmike@(略)	同じパス	dc_floor_rough
+dngn/floor/runelight0.png	載らない			dc_rune_light
+dngn/floor/salt0.png	載らない			dc_floor_salt
+dngn/floor/sand1.png	載らない			dc_floor_sand
+dngn/floor/sandstone_floor0.png	載らない			dc_floor_sandstone
+dngn/floor/seismorock0.png	載らない			dc_floor_seismorock
+dngn/floor/snake-a0.png	載らない			dc_floor_snake_a
+dngn/floor/snake-c0.png	載らない			dc_floor_snake_c
+dngn/floor/snake-d0.png	載らない			dc_floor_snake_d
+dngn/floor/spider00.png	載らない			dc_floor_spider
+dngn/floor/sprouting_ruin00.png	載らない			dc_floor_sprouting_ruin
+dngn/floor/sprouting_squares00.png	載らない			dc_floor_sprouting_squares
+dngn/floor/sprouting_stone00.png	載らない			dc_floor_sprouting_stone
+dngn/floor/studio0.png	載らない			dc_floor_studio
+dngn/floor/swamp0.png	載らない			dc_floor_swamp
+dngn/floor/tomb0.png	載らない			dc_floor_tomb
+dngn/floor/volcanic_floor0.png	載らない			dc_floor_volcanic
+dngn/floor/white_marble0.png	載らない			dc_floor_w_marble
+dngn/floor/zot_diamonds0.png	載らない			dc_floor_zot_diamonds
+dngn/gateways/abyssal_stair.png	載らない			dc_gate_abyssal_stair
+dngn/gateways/bailey_exit.png	載らない			dc_gate_exit_bailey
+dngn/gateways/bailey_portal.png	載らない			dc_gate_enter_bailey
+dngn/gateways/bazaar_portal.png	載らない			dc_gate_enter_bazaar
+dngn/gateways/crucible_exit.png	載らない			dc_gate_exit_crucible
+dngn/gateways/desolation_exit.png	載らない			dc_gate_exit_desolation
+dngn/gateways/desolation_portal.png	載らない			dc_gate_enter_desolation
+dngn/gateways/enter.png	一覧に載る	white_noise	同じパス	dc_gate_enter_legacy
+dngn/gateways/enter_abyss1.png	載らない			dc_gate_enter_abyss
+dngn/gateways/enter_cocytus1.png	載らない			dc_gate_enter_cocytus
+dngn/gateways/enter_crypt.png	載らない			dc_gate_enter_crypt
+dngn/gateways/enter_depths.png	載らない			dc_gate_enter_depths
+dngn/gateways/enter_dis1.png	載らない			dc_gate_enter_dis
+dngn/gateways/enter_elf.png	一覧に載る	white_noise	同じパス	dc_gate_enter_elf
+dngn/gateways/enter_gehenna1.png	載らない			dc_gate_enter_gehenna
+dngn/gateways/enter_hell1.png	載らない			dc_gate_enter_hell
+dngn/gateways/enter_lair.png	載らない			dc_gate_enter_lair
+dngn/gateways/enter_orc.png	載らない			dc_gate_enter_orc
+dngn/gateways/enter_pandemonium.png	載らない			dc_gate_enter_pandemonium
+dngn/gateways/enter_shoals.png	一覧に載る	white_noise	同じパス	dc_gate_enter_shoals
+dngn/gateways/enter_slime.png	一覧に載る	white_noise	同じパス	dc_gate_enter_slime
+dngn/gateways/enter_snake.png	載らない			dc_gate_enter_snake
+dngn/gateways/enter_spider.png	載らない			dc_gate_enter_spider
+dngn/gateways/enter_swamp.png	一覧に載る	white_noise	同じパス	dc_gate_enter_swamp
+dngn/gateways/enter_tartarus1.png	載らない			dc_gate_enter_tartarus
+dngn/gateways/enter_temple.png	一覧に載る	white_noise	同じパス	dc_gate_enter_temple
+dngn/gateways/enter_tomb.png	載らない			dc_gate_enter_tomb
+dngn/gateways/enter_vaults_closed.png	載らない			dc_gate_enter_vaults_closed
+dngn/gateways/enter_vaults_open.png	載らない			dc_gate_enter_vaults
+dngn/gateways/enter_zot_closed.png	載らない			dc_gate_enter_zot
+dngn/gateways/enter_zot_open.png	載らない			dc_gate_enter_zot_open
+dngn/gateways/escape_hatch_down.png	一覧に載る	white_noise	同じパス	dc_hatch_down
+dngn/gateways/escape_hatch_up.png	一覧に載る	white_noise	同じパス	dc_hatch_up
+dngn/gateways/exit_abyss.png	載らない			dc_gate_exit_abyss
+dngn/gateways/exit_crypt.png	一覧に載る	white_noise	同じパス	dc_gate_exit_crypt
+dngn/gateways/exit_dungeon.png	一覧に載る	white_noise	同じパス	dc_stairs_exit_dungeon
+dngn/gateways/exit_elf.png	一覧に載る	white_noise	同じパス	dc_gate_exit_elf
+dngn/gateways/exit_lair.png	一覧に載る	white_noise	同じパス	dc_gate_exit_lair
+dngn/gateways/exit_orc.png	一覧に載る	white_noise	同じパス	dc_gate_exit_orc
+dngn/gateways/exit_pandemonium.png	載らない			dc_gate_exit_pandemonium
+dngn/gateways/exit_shoals.png	一覧に載る	white_noise	同じパス	dc_gate_exit_shoals
+dngn/gateways/exit_slime.png	一覧に載る	white_noise	同じパス	dc_gate_exit_slime
+dngn/gateways/exit_snake.png	一覧に載る	white_noise	同じパス	dc_gate_exit_snake
+dngn/gateways/exit_spider.png	一覧に載る	white_noise	同じパス	dc_gate_exit_spider
+dngn/gateways/exit_swamp.png	一覧に載る	white_noise	同じパス	dc_gate_exit_swamp
+dngn/gateways/exit_temple.png	一覧に載る	white_noise	同じパス	dc_gate_exit_temple
+dngn/gateways/exit_tomb.png	一覧に載る	white_noise	同じパス	dc_gate_exit_tomb
+dngn/gateways/exit_vaults.png	一覧に載る	white_noise	同じパス	dc_gate_exit_vaults
+dngn/gateways/expired_portal.png	載らない			dc_gate_expired
+dngn/gateways/gauntlet_portal.png	載らない			dc_gate_enter_gauntlet
+dngn/gateways/ice_cave_portal.png	一覧に載る	(無題の節)	同名のみ（無題の節は名前だけ）	dc_gate_ice_cave_portal
+dngn/gateways/necropolis_exit0.png	載らない			dc_gate_exit_necropolis
+dngn/gateways/necropolis_portal.png	載らない			dc_gate_enter_necropolis
+dngn/gateways/ossuary_exit.png	載らない			dc_gate_exit_ossuary
+dngn/gateways/ossuary_portal.png	載らない			dc_gate_enter_ossuary
+dngn/gateways/portal.png	載らない			dc_gate_portal
+dngn/gateways/portal_unknown.png	載らない			dc_gate_unknown
+dngn/gateways/return.png	一覧に載る	white_noise	同じパス	dc_gate_return_legacy
+dngn/gateways/return_depths.png	載らない			dc_gate_exit_depths
+dngn/gateways/return_hell.png	載らない			dc_gate_exit_hell
+dngn/gateways/return_vestibule.png	載らない			dc_gate_return_vestibule
+dngn/gateways/return_zot.png	載らない			dc_gate_exit_zot
+dngn/gateways/sealed_stairs_down.png	載らない			dc_stairs_sealed_down
+dngn/gateways/sealed_stairs_up.png	載らない			dc_stairs_sealed_up
+dngn/gateways/sewer_exit.png	載らない			dc_gate_exit_sewer
+dngn/gateways/sewer_portal.png	一覧に載る	white_noise	同じパス	dc_gate_sewer_portal
+dngn/gateways/starry_portal.png	載らない			dc_gate_malign
+dngn/gateways/stone_arch.png	載らない			dc_gate_stone_arch
+dngn/gateways/stone_arch_hell.png	載らない			dc_gate_stone_arch_hell
+dngn/gateways/stone_stairs_down.png	一覧に載る	white_noise	同じパス	dc_stairs_down,dc_stairs_up
+dngn/gateways/stone_stairs_up.png	一覧に載る	white_noise	同じパス	dc_stairs_up
+dngn/gateways/transit_pandemonium.png	載らない			dc_gate_transit_pandemonium
+dngn/gateways/trove_portal.png	載らない			dc_gate_enter_trove
+dngn/gateways/volcano_exit.png	載らない			dc_gate_exit_volcano
+dngn/gateways/volcano_portal.png	一覧に載る	(無題の節)	同名のみ（無題の節は名前だけ）	dc_gate_volcano_portal
+dngn/gateways/wizlab_portal0.png	一覧に載る	(無題の節)	同名のみ（無題の節は名前だけ）	dc_gate_wizlab_portal
+dngn/gateways/zig_portal.png	載らない			dc_gate_enter_ziggurat
+dngn/grate.png	一覧に載る	white_noise	同じパス	dc_grate
+dngn/shops/abandoned_shop.png	一覧に載る	white_noise	同じパス	dc_shop_abandoned
+dngn/shops/shop_armour.png	一覧に載る	white_noise	同じパス	dc_shop_armour
+dngn/shops/shop_books.png	一覧に載る	white_noise	同じパス	dc_shop_book
+dngn/shops/shop_general.png	一覧に載る	white_noise	同じパス	dc_shop_general
+dngn/shops/shop_jewellery.png	一覧に載る	white_noise	同じパス	dc_shop_jewellery
+dngn/shops/shop_potions.png	一覧に載る	white_noise	同じパス	dc_shop_potion
+dngn/shops/shop_scrolls.png	一覧に載る	white_noise	同じパス	dc_shop_scroll
+dngn/shops/shop_weapon.png	一覧に載る	white_noise	同じパス	dc_shop_weapon
+dngn/statues/metal_statue.png	載らない			dc_statue_metal
+dngn/statues/orcish_idol.png	載らない			dc_statue_orc_idol,figure
+dngn/statues/statue_dwarf.png	載らない			dc_statue_granite,figure
+dngn/statues/zot_entropy_orb_statue.png	載らない			dc_statue_zot_entropy
+dngn/statues/zot_fire_orb_statue.png	載らない			dc_statue_zot_fire
+dngn/statues/zot_winter_orb_statue.png	載らない			dc_statue_zot_winter
+dngn/transporter.png	載らない			dc_transporter
+dngn/transporter_landing_site.png	載らない			dc_transporter_landing
+dngn/traps/alarm.png	載らない			dc_trap_alarm
+dngn/traps/archmage.png	載らない			dc_trap_archmage
+dngn/traps/binding_sigil.png	載らない			dc_rune_binding_sigil
+dngn/traps/bolt.png	載らない			dc_trap_bolt
+dngn/traps/cobweb_none_0.png	一覧に載る	pete@(略)	同じパス	dc_trap_web
+dngn/traps/devourer.png	載らない			dc_trap_devourer
+dngn/traps/dispersal.png	載らない			dc_trap_dispersal
+dngn/traps/dispersal_inactive.png	載らない			dc_trap_dispersal_off
+dngn/traps/harlequin0.png	載らない			dc_trap_harlequin
+dngn/traps/net.png	載らない			dc_trap_net
+dngn/traps/passage_of_golubria.png	載らない			dc_trap_golubria
+dngn/traps/pressure_plate.png	載らない			dc_trap_plate
+dngn/traps/shaft.png	載らない			dc_trap_shaft
+dngn/traps/spear.png	載らない			dc_trap_spear
+dngn/traps/teleport.png	一覧に載る	dd	同名のみ	dc_trap_teleport
+dngn/traps/teleport_permanent.png	載らない			dc_trap_teleport_perm
+dngn/traps/tyrant.png	載らない			dc_trap_tyrant
+dngn/traps/zot.png	載らない			dc_trap_zot
+dngn/trees/mangrove1.png	載らない			dc_tree_mangrove
+dngn/trees/tree1.png	一覧に載る	(無題の節)	同名のみ（無題の節は名前だけ）	dc_tree
+dngn/trees/tree_demonic1.png	載らない			dc_tree_demonic
+dngn/trees/tree_petrified1.png	載らない			dc_tree_petrified
+dngn/vaults/orb_dais.png	載らない			dc_dais_orb
+dngn/wall/brick_dark_1_0.png	一覧に載る	white_noise	同じパス	dc_wall_rock
+dngn/wall/catacombs0.png	載らない			dc_wall_catacombs
+dngn/wall/crystal_wall_green.png	載らない			dc_wall_crystal_01
+dngn/wall/metal_wall0.png	一覧に載る	Bloax	同じパス	dc_wall_metal_01
+dngn/wall/permarock_clear_red0.png	載らない			dc_wall_clear_permarock
+dngn/wall/permarock_red0.png	載らない			dc_wall_permarock
+dngn/wall/rime_wall0.png	載らない			dc_wall_frigid
+dngn/wall/slime0.png	載らない			dc_wall_slimy
+dngn/wall/spike_launcher.png	載らない			dc_wall_spike_launcher
+dngn/wall/stone2_gray0.png	載らない			dc_wall_stone
+dngn/wall/transparent_stone.png	載らない			dc_wall_clear_stone
+dngn/wall/transparent_wall.png	載らない			dc_wall_clear_rock
+dngn/water/deep_water.png	載らない			dc_water_deep
+dngn/water/liquefaction1.png	載らない			dc_floor_mud
+dngn/water/open_sea.png	一覧に載る	white_noise	同じパス	dc_water_open_sea
+dngn/water/shallow_water.png	載らない			dc_water_shallow
+dngn/water/toxic_bog1.png	載らない			dc_water_toxic_bog
+item/armour/chain_mail1.png	一覧に載る	Bloax	同じパス	dc_arm_chain_mail
+item/food/apple.png	載らない			dc_food_apple
+item/potion/brown.png	載らない			dc_pot_ambrosia,dc_pot_brown
+item/potion/i-ambrosia.png	載らない			dc_pot_ambrosia
+item/potion/i-label.png	載らない			dc_pot_ambrosia
+item/scroll/i-blinking.png	載らない			dc_scr_blinking
+item/scroll/scroll-purple.png	載らない			dc_scr_blinking
+item/scroll/scroll.png	載らない			dc_scr_blinking
+item/wand/gem_iron.png	載らない			dc_wand_flame
+item/wand/i-flame.png	載らない			dc_wand_flame
+item/weapon/dagger.png	載らない			dc_wpn_dagger
+mon/animals/adder.png	載らない			dc_mons_adder
+mon/animals/bat.png	載らない			dc_mons_bat
+mon/animals/jackal.png	載らない			dc_mons_jackal
+mon/humanoids/dwarf.png	載らない			dc_mons_dwarf
+mon/humanoids/ogre.png	載らない			dc_mons_ogre
+mon/humanoids/orcs/orc.png	載らない			dc_mons_orc

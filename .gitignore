@@ -802,3 +802,11 @@ toband/lib/script/*
 # 訳文の正本は toband/lang/en/（追跡する）。
 toband/lib-en/
 toband/lib/data-en/
+
+# DCSS コア。DcssCore.exe は VisualStudio/DcssCore から組む成果物。
+# dcss/lib/ は原作の dat・docs・settings の写し（tools/dcss/prepare_runtime_data.py）と実行時に書くセーブ・説明文のデータベース。追跡しない。
+/DcssCore.exe
+/dcss/lib/
+
+# TOband の原作のデータの写し（tools/core_sources/prepare_original_data.py が固定版から写す）。公開ツリーでは追跡しない。
+/toband/lib/

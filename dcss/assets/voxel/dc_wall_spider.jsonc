@@ -1,0 +1,107 @@
+// dc_wall_spider — プレハブ定義（設計書 §7）。`dc_wall_spider.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 spider00（dngn/wall/spider00）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_spider",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "35272D",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "050906",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "221918",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "412F33",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "5A4252",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "7C5A70",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "A1738C",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "D799B3",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "040805",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "1F1616",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "3A2A2E",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "705165",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "513B4A",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "91687E",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "C28AA1",
+      "material": "stone"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+// dc_trap_shaft — プレハブ定義（設計書 §7）。`dc_trap_shaft.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の縦穴（dngn/traps/shaft）。絵の黒い染みの形に床の板を掘った（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_trap_shaft",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "3E3B37",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "58544E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "302D2A",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "515151",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "242424",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "2F2F2F",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "1A1A1A",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "141414",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "0B0B0B",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "000000",
+      "material": "stone"
+    }
+  ]
+}

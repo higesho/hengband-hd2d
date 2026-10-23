@@ -201,10 +201,10 @@ static const struct { const char *jp; const char *en; } en_fake_inscription[] = 
     { "\x8e\x8e\x82\xb5\x82\xbd" /* 試した */, "tried" },
 };
 
-/*! 偽の銘の割引 `30%引` → `30% off`。 */
+/*! 偽の銘の割引 `30%引き` → `30% off`。原作（`flavor.c`）は `"%引き"`。 */
 static void en_fix_discount(char *buf, size_t cap)
 {
-    static const char jp[] = "%\x88\xf8" /* %引 */;
+    static const char jp[] = "%\x88\xf8\x82\xab" /* %引き */;
     long pos;
     while ((pos = en_find(buf, jp)) >= 0) {
         en_cut(buf, (size_t)pos, sizeof(jp) - 1);

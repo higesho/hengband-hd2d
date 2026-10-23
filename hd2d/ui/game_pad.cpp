@@ -363,10 +363,13 @@ void GamePad::forget_direction_hold()
     this->held_dy_ = 0;
     this->next_repeat_ms_ = 0;
     this->rearm_pending_ = true;
+    this->pending_ = false;
     this->stick_x_ = 0;
     this->stick_y_ = 0;
     this->stick_raw_x_ = 0;
     this->stick_raw_y_ = 0;
+    this->right_raw_x_ = 0;
+    this->right_raw_y_ = 0;
     for (bool &down : this->dpad_) {
         down = false;
     }
@@ -484,6 +487,12 @@ bool GamePad::on_event(const SDL_Event &event)
             this->stick_y_ = latch(this->stick_y_, event.caxis.value);
             this->stick_raw_y_ = event.caxis.value;
             return true;
+        case SDL_CONTROLLER_AXIS_RIGHTX:
+            this->right_raw_x_ = event.caxis.value;
+            return true;
+        case SDL_CONTROLLER_AXIS_RIGHTY:
+            this->right_raw_y_ = event.caxis.value;
+            return true;
         case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
         case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: {
             const int which = (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT) ? 0 : 1;
@@ -528,6 +537,19 @@ float right_stick_axis(void *controller, SDL_GameControllerAxis axis)
 }
 
 } // namespace
+
+void GamePad::right_stick_raw(int &x, int &y) const
+{
+    x = 0;
+    y = 0;
+    if (this->controller_ != nullptr) {
+        x = this->right_raw_x_; //!< 軸の出来事から（実機でも SDL が同じ値の出来事を出す。試験の入口も同じ道で入れられる）
+        y = this->right_raw_y_;
+        return;
+    }
+    x = static_cast<int>(this->external_right_x_ * 32767.f);
+    y = static_cast<int>(this->external_right_y_ * 32767.f);
+}
 
 float GamePad::right_stick_x() const
 {
@@ -663,6 +685,79 @@ bool GamePad::poll_direction(std::uint32_t now_ms, bool focused, int &dx, int &d
     int now_dx = 0;
     int now_dy = 0;
     this->current_direction(now_dx, now_dy);
+
+    if (this->original_timing_) {
+        /*
+         * 原作の DCSS の日本語版のタイル版の出し方（`gamepad.cc` の `gamepad_state::update`。`set_original_timing`）。
+         * 約束 1・2 は上と下の共通の処理（焦点・中立を見るまで受け付けない）をそのまま使う。
+         */
+        constexpr std::uint32_t kCombineMs = 40; //!< 斜めの 2 つ目を待つ
+        constexpr std::uint32_t kFirstRepeatOriginalMs = 200; //!< `tile_key_repeat_delay` の既定
+        constexpr std::uint32_t kNextRepeatOriginalMs = 90;
+        if ((now_dx == 0) && (now_dy == 0)) {
+            const bool tapped = this->pending_; //!< 斜めの 2 つ目を待っている間に離した = 短く叩いた。取りこぼさず 1 回出す
+            this->pending_ = false;
+            this->held_dx_ = 0;
+            this->held_dy_ = 0;
+            this->rearm_pending_ = false;
+            if (tapped) {
+                dx = this->pending_dx_;
+                dy = this->pending_dy_;
+                return true;
+            }
+            return false;
+        }
+        if (this->rearm_pending_) {
+            return false;
+        }
+        const bool diagonal = (now_dx != 0) && (now_dy != 0);
+        const auto emit = [&]() {
+            this->held_dx_ = now_dx;
+            this->held_dy_ = now_dy;
+            this->pending_ = false;
+            this->next_repeat_ms_ = now_ms + kFirstRepeatOriginalMs;
+            dx = now_dx;
+            dy = now_dy;
+            return true;
+        };
+        if (this->pending_) {
+            this->pending_dx_ = now_dx;
+            this->pending_dy_ = now_dy;
+            if (diagonal || (now_ms >= (this->pending_since_ms_ + kCombineMs))) {
+                return emit();
+            }
+            return false;
+        }
+        if ((this->held_dx_ == 0) && (this->held_dy_ == 0)) {
+            // 中立から入った。斜めならすぐ出す。1 方向だけなら斜めの 2 つ目を少し待つ。
+            if (diagonal) {
+                return emit();
+            }
+            this->pending_ = true;
+            this->pending_since_ms_ = now_ms;
+            this->pending_dx_ = now_dx;
+            this->pending_dy_ = now_dy;
+            return false;
+        }
+        if ((now_dx == this->held_dx_) && (now_dy == this->held_dy_)) {
+            if (now_ms >= this->next_repeat_ms_) {
+                this->next_repeat_ms_ = now_ms + kNextRepeatOriginalMs;
+                dx = now_dx;
+                dy = now_dy;
+                return true;
+            }
+            return false;
+        }
+        const bool held_diagonal = (this->held_dx_ != 0) && (this->held_dy_ != 0);
+        if (held_diagonal && !diagonal && (((now_dx == this->held_dx_) && (now_dy == 0)) || ((now_dx == 0) && (now_dy == this->held_dy_)))) {
+            // 斜めから片方だけ先に離した。離す途中の一瞬を 1 歩にしない。押し続けたときだけ、待ちのあとで出す。
+            this->held_dx_ = now_dx;
+            this->held_dy_ = now_dy;
+            this->next_repeat_ms_ = now_ms + kFirstRepeatOriginalMs;
+            return false;
+        }
+        return emit(); // 曲がった・斜めへ足した。すぐ出し、待ちは数え直す
+    }
 
     if ((now_dx == 0) && (now_dy == 0)) {
         this->held_dx_ = 0;

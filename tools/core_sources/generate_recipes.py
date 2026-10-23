@@ -28,7 +28,18 @@ def original_files(upstream, source):
     path=upstream_path(source)
     raw=subprocess.check_output(['git','-C',str(repo),'-c','safe.directory='+repo.as_posix(),'archive','--format=tar',source['commit'],*([] if path=='.' else [path])])
     with tarfile.open(fileobj=io.BytesIO(raw)) as t:
-        return {m.name:t.extractfile(m).read() for m in t if m.isfile()}
+        files={m.name:t.extractfile(m).read() for m in t if m.isfile()}
+    # 原作が git のサブモジュールで持つ付属ライブラリ（DCSS の contrib/lua など）。親のコミットの archive には入らないので、
+    # 項目に 'submodules' があるときだけ、サブモジュール自身のリポジトリ（upstream からの相対）の固定コミットを足す。
+    # 名前は親の中の位置（upstream_prefix + path + '/' + ファイル名）。'submodules' の無い項目には何も起きない。
+    for sub in source.get('submodules',[]):
+        if not safe_path(sub['path']) or not safe_path(sub['repo']):raise ValueError('Unsafe submodule path')
+        subrepo=Path(upstream)/sub['repo']
+        raw=subprocess.check_output(['git','-C',str(subrepo),'-c','safe.directory='+subrepo.as_posix(),'archive','--format=tar',sub['commit']])
+        with tarfile.open(fileobj=io.BytesIO(raw)) as t:
+            for m in t:
+                if m.isfile():files[upstream_prefix(source)+sub['path']+'/'+m.name]=t.extractfile(m).read()
+    return files
 
 def generate(source,upstream,prepared):
     originals=original_files(upstream,source)

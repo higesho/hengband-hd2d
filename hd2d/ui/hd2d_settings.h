@@ -494,6 +494,17 @@ struct Hd2dSettings {
      */
     bool entity_slab_screen_aligned{ false };
     /*!
+     * @brief **コアごとの既定の改訂**（そのコアだけ既定を変えたときに上げる。DCSS の D24: 板を画面に正対させる）。
+     * @details 0 = そのコアの既定をまだ当てていない。コアごとの cfg が既にあるときも、改訂が上がっていれば 1 度だけ既定を当て直し、
+     * そのあとは遊ぶ人の選んだ値を残す。ほかのコアはこの値を読まない・変えない。
+     */
+    int core_defaults_rev{ 0 };
+    /*!
+     * @brief DCSS のゲームパッドの割り当て（遊ぶ人が画面で変えた分だけ。`X:CMD_PICKUP,LB+Y:none` の形。`dcss/dcss_pad.h`）。
+     * @details DCSS だけが読み書きする（原作の `pad_binds.txt` に当たる）。空 = すべて既定。ほかのコアはこの値を読まない・変えない。
+     */
+    std::string dcss_pad_binds;
+    /*!
      * @brief **画調**。
      *
      * @details 2026-08-19 に決めた「TRON 風の HD2D モード」。**独立したモードでは

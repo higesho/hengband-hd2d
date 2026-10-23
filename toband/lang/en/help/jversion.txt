@@ -65,7 +65,7 @@ Changes before TOband2
   A few other fixes.
 2003/01/24 TOband0.0.3fix7
   Added "Puddle" as a racial power that Mermaids can use at level 1.
-  Raised the level of the Mermaid's "Flooding" to 26.
+  Raised the level of the Mermaid's "Flood" to 26.
   Mermaids get a bonus to the safe distance of the Water magic spell "Diving".
   Changed the Magery magic spell "Mana Bolt" from a beam to a bolt.
   Renamed the Holy magic spell "Sword of Light" to "Godly spear".
@@ -144,21 +144,21 @@ Changes before TOband2
 2003/01/08 TOband0.0.3fix3
   Abolished the concept of hunger for Skeletons, Ghosts, Liches and Divine
     Knights.
-  Classes other than the Terror Knight are now allowed to use martial arts
+  Classes other than the Terror-Knight are now allowed to use martial arts
     techniques. Accordingly, adjusted the Martial Arts skill.
-  Lowered the base number of Martial Arts attacks of the Terror Knight.
+  Lowered the base number of Martial Arts attacks of the Terror-Knight.
   Martial arts techniques are now decided by skill level rather than by level.
   Weapon skills now have a larger influence on the number of attacks.
   Introduced the Black, Bronze and Gold series of wyrms.
   Dragon pits of the Bronze and Gold series now appear.
-  Fixed a bug where, for classes other than the Terror Knight, the
+  Fixed a bug where, for classes other than the Terror-Knight, the
     extra-attacks equipment did not take effect on Martial Arts.
   Fixed a bug where damage modifiers from Magical Weapon and the like were not
     reset even after entering the Arena.
-  Fixed it so that Mirror Shields made of mithril do not generate (Balder).
+  Fixed it so that Mirror Shields made of mithril do not generate (Baldr).
   Fixed a bug where, from bullets with a slay essence added, the slay essence
     could be recovered by extraction rather than by essence removal.
-  Fixed it so that Gunners also get the 99% discount when they make bullets
+  Fixed it so that Fusiliers also get the 99% discount when they make bullets
     from ore.
   Fixed it so that sleeping monsters are not initially generated in the air or
     over pits.
@@ -179,9 +179,9 @@ Changes before TOband2
   Fixed a bug where the Black Arrows of Arycelle the Archer had become the
     Black Bundle of Arrows of Arycelle the Archer.
   Adjusted the race and class tables.
-  Fixed it so that, when a Gunner adds essence, essences of abilities that the
+  Fixed it so that, when a Fusilier adds essence, essences of abilities that the
     bullet clearly has already are not added.
-  Fixed it so that Gunners can obtain essence from Extra Might and Extra Shots.
+  Fixed it so that Fusiliers can obtain essence from Extra Might and Extra Shots.
   Fixed a bug where Throw Pebble and Throw Grave were not correctly treated as
     blunt weapons.
   Fixed a bug where the Riding skill value was wrongly used in calculating the
@@ -195,10 +195,10 @@ Changes before TOband2
   With ironman_forward, the dungeon is not saved at all.
   The artifact spoiler now also describes extra abilities/resistances.
   Scrolls of Mundanity and essence extraction no longer erase inscriptions.
-  If a Gunner extracts essence with (d), it counts as identification, and if
+  If a Fusilier extracts essence with (d), it counts as identification, and if
     the option to apply auto-destroy at identification is enabled, the item can
     be made a target of destruction.
-  If a Gunner fails to enhance a firearm, the essence is no longer consumed,
+  If a Fusilier fails to enhance a firearm, the essence is no longer consumed,
     and firearm enhancement can now also be used on the gun you are wielding.
   Made the (Siren) ego cloak female-only.
   Armor random artifacts very rarely get a gender restriction.
@@ -215,7 +215,7 @@ Changes before TOband2
   Fixed a bug where the monster's HP and AC were not displayed at the time of
     monster probing.
   Fixed a bug in terrain generation.
-  Fixed several bugs in the Gunner commands.
+  Fixed several bugs in the Fusilier commands.
   Various other fixes.
 2002/12/29 TOband0.0.3
   Abolished the fixed values for weapons and skills and changed to a skill
@@ -233,8 +233,8 @@ Changes before TOband2
       levels remain forever.
     - For carried-over data, skill points/magic skill points are calculated
       from the current maximum experience and the classes you have experienced.
-  Added the new class "White Knight".
-  Once you change class to either the Templar or the White Knight, you can no
+  Added the new class "White-Knight".
+  Once you change class to either the Templar or the White-Knight, you can no
     longer change class to the other.
   Added the Scroll of Doppelganger.
   Merged in the code of Hengband 1.5.1. However, the change that makes Rations
@@ -262,14 +262,14 @@ Changes before TOband2
   Abolished the Holy magic spell "Blessed Blade".
   Various other fixes.
 2002/12/23 TOband0.0.2fix8
-  Gunners can now extract the blessed and unholy essences.
+  Fusiliers can now extract the blessed and unholy essences.
   Veins with treasure no longer appear in Almorica Castle.
   When terrain is set to floor, terrain that blocks the line of sight is now
     avoided as far as possible.
   Fixed a bug in the debug command ^A j where, if you cancelled without
     choosing a floor after choosing a dungeon, the floor stayed the same but
     internally you had entered a different dungeon.
-  Items and ore that a Gunner makes into bullets, and rockets made from shot,
+  Items and ore that a Fusilier makes into bullets, and rockets made from shot,
     are now also targets of auto-inscription.
   Various other fixes.
 2002/12/22 TOband0.0.2fix7
@@ -315,7 +315,7 @@ Changes before TOband2
     modifier, at most 1 non-ability modifier, plus the presence or absence of
     extra attacks.
   Greatly changed the ability modifiers of artifacts.
-  The Cloak of Bowmarka can no longer be given stealth.
+  The Bowmarka Cloak can no longer be given stealth.
   The Bat Cloak can no longer be given speed.
   Weapons of (Ishtar) can no longer be given dexterity.
   The Ring of Agony no longer lowers charisma.
@@ -411,7 +411,7 @@ Changes before TOband2
   Merged in the code of Hengband 1.3.0.
   Introduced a fear field that lowers the attack modifier of hostile beings
     without fear resistance.
-  The fear field is attached to the Terror Knight at level 15.
+  The fear field is attached to the Terror-Knight at level 15.
   Slightly increased the MD of the Templar.
   Changed the specification of the Lizardman's breath. When the innate element
     is water the power is specially raised, and at high levels they can
@@ -818,7 +818,7 @@ Version History
 2001/11/25 Ver. 1.0.7
   New artifacts and new monsters.
   Added explanations to some artifacts/monsters.
-  Holy Knight Captain -> Temple Knight.
+  Holy Knight Captain -> Templar.
   New class "Ninja".
   Auto-pickup related:
     - Keywords "identified ~", "*identified* ~", "unnamed ~", "collecting ~",
@@ -1091,7 +1091,7 @@ Version History
   Retiring after victory is also confirmed with '@'.
   Slightly changed the riding specification.
   Improved the monster thinking routines.
-  Kraknons / Fairy Monks have a smaller experience penalty.
+  Kraknons / Faerie Monks have a smaller experience penalty.
   Strengthened attack rods/wands/staffs.
   Slightly changed the specification of the number of attacks.
   Prevented deep recursion in dungeon generation.
@@ -1855,7 +1855,7 @@ Topi would like to thank:
         of Zangband and for various patches.
 
         Julian Lighton, who must have sent Topi more ideas, patches,
-        and bug reports, than all the others toghether.
+        and bug reports, than all the others together.
 
         Robert Ruehlmann, whose nice new main-dos.c enables SVGA
         graphics and even windows in ms-dos.
@@ -2014,7 +2014,7 @@ It would be difficult to list all of the changes between Angband 2.6.1
 and Angband 2.7.9, because many of them were made in passing during the
 massive code level cleanup. Many of the changes are invisible to the
 user, but still provide increased simplicity and efficiency, and
-decreased code size, or make other more visable changes possible. For
+decreased code size, or make other more visible changes possible. For
 example, the new "project()" code that handles all bolts, beams, and
 balls, the new "update_view()" code that simplifies line of sight
 computation, or the new "generate()" code that builds new levels in the
@@ -2156,7 +2156,7 @@ a new dungeon game called 'Rogue'.
 
 So yes, I was exposed to Rogue before Moria was even a gleam in my
 eye.  In fact, Rogue was directly responsible for millions of hours of
-play time wasted on Moria and its descendents...
+play time wasted on Moria and its descendants...
 
 Soon after playing Rogue (and man, was I HOOKED), I got a job in a
 different department as a student assistant in computers.  I worked on
@@ -2203,7 +2203,7 @@ used to win...
 Around 1985 I started sending out source to other universities.  Just
 before a OU / Texas football clash, I was asked to send a copy to the
 University of Texas...  I couldn't resist...  I modified it so that
-the begger on the town level was 'An OU football fan' and they moved
+the beggar on the town level was 'An OU football fan' and they moved
 at maximum rate.  They also multiplied at maximum rate...  So the
 first step you took and woke one up, it crossed the floor increasing
 to hundreds of them and pounded you into oblivion...  I soon received
@@ -2293,7 +2293,7 @@ and many others...
 
 
 
-Copyright (c) 1989 James E. Wilson, Robert A. Keoneke
+Copyright (c) 1989 James E. Wilson, Robert A. Koeneke
   This software may be copied and distributed for educational,
   research, and not for profit purposes provided that this copyright
   and statement are included in all such copies.

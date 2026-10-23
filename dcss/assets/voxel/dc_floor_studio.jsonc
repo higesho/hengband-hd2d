@@ -1,0 +1,67 @@
+// dc_floor_studio — プレハブ定義（設計書 §7）。`dc_floor_studio.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 studio0（dngn/floor/studio0）。タイルに合わせた凹凸（stone。出 182・へこみ 180。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_studio",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "2E201A",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "422F25",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "36251D",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "291715",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "1D0C0C",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "413C31",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "372B26",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "635E58",
+      "material": "stone"
+    }
+  ]
+}

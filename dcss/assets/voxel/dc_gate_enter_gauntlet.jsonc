@@ -1,0 +1,97 @@
+// dc_gate_enter_gauntlet — プレハブ定義（設計書 §7）。`dc_gate_enter_gauntlet.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 gauntlet_portal（dngn/gateways/gauntlet_portal）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_gauntlet",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "CCA785",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "B4794D",
+      "material": "metal"
+    },
+    {
+      "i": 4,
+      "rgb": "964E22",
+      "material": "wood"
+    },
+    {
+      "i": 5,
+      "rgb": "754C2F",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "F0C49D",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "D48E5B",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "B15C28",
+      "material": "wood"
+    },
+    {
+      "i": 9,
+      "rgb": "8A5937",
+      "material": "wood"
+    },
+    {
+      "i": 10,
+      "rgb": "71360F",
+      "material": "wood"
+    },
+    {
+      "i": 11,
+      "rgb": "854012",
+      "material": "wood"
+    },
+    {
+      "i": 12,
+      "rgb": "441908",
+      "material": "wood"
+    },
+    {
+      "i": 13,
+      "rgb": "501D09",
+      "material": "wood"
+    }
+  ]
+}

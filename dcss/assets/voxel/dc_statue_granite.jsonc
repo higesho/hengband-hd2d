@@ -1,0 +1,112 @@
+// dc_statue_granite — プレハブ定義（設計書 §7）。`dc_statue_granite.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の像 statue_dwarf（dngn/statues/statue_dwarf）。台を一から作り、人形は絵の輪郭を丸み付きの浮き彫りにして台に載せた（tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_statue_granite",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "403F4A",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "504F5C",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "2B2932",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "A3A39A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "7A7A7A",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "989898",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "CCCCCC",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "A5A586",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "CECEA8",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "41404A",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "51505D",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "222128",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "120E1A",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "161220",
+      "material": "stone"
+    }
+  ]
+}

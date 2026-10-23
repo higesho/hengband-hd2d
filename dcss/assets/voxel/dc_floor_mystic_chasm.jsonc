@@ -1,0 +1,172 @@
+// dc_floor_mystic_chasm — プレハブ定義（設計書 §7）。`dc_floor_mystic_chasm.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 mystic_chasm0（dngn/floor/mystic_chasm0）。タイルに合わせた凹凸（organic。出 254・へこみ 546。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_mystic_chasm",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "1F1A60",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "29114F",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "1E1460",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "221E93",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "5944D8",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "112C8C",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "11113A",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "412297",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "7B6AFF",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "3797FF",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "977BFF",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "4130C3",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "0D144B",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "4B30B6",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "5C4BF7",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "371871",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "301B82",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "1B186E",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "3329AB",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "1B63FA",
+      "material": "stone"
+    },
+    {
+      "i": 21,
+      "rgb": "110318",
+      "material": "stone"
+    },
+    {
+      "i": 22,
+      "rgb": "604BFF",
+      "material": "stone"
+    },
+    {
+      "i": 23,
+      "rgb": "5C4BFF",
+      "material": "stone"
+    },
+    {
+      "i": 24,
+      "rgb": "0D41D1",
+      "material": "stone"
+    },
+    {
+      "i": 25,
+      "rgb": "3D33DF",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "0D3AAF",
+      "material": "stone"
+    },
+    {
+      "i": 27,
+      "rgb": "03226E",
+      "material": "stone"
+    },
+    {
+      "i": 28,
+      "rgb": "376AFF",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "7B8CFF",
+      "material": "stone"
+    }
+  ]
+}

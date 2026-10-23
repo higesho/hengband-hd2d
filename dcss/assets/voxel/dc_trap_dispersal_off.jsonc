@@ -1,0 +1,127 @@
+// dc_trap_dispersal_off — プレハブ定義（設計書 §7）。`dc_trap_dispersal_off.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の床の印 dispersal_inactive（dngn/traps/dispersal_inactive）。絵の通り上から見て床に貼った厚み 1〜3 の浮き彫り（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_trap_dispersal_off",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "2B2B2B",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "343434",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "3D3D3D",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "1A1A1A",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "1F1F1F",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "161616",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "454545",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "545454",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "636363",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "656565",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "777777",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "535353",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "898989",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "A1A1A1",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "717171",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "ABABAB",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "C9C9C9",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "8D8D8D",
+      "material": "stone"
+    }
+  ]
+}

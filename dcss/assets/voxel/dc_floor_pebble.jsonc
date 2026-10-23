@@ -1,0 +1,62 @@
+// dc_floor_pebble — プレハブ定義（設計書 §7）。`dc_floor_pebble.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 pebble_brown0（dngn/floor/pebble_brown0）。タイルに合わせた凹凸（sand。出 276・へこみ 294。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_pebble",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "2F2211",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "291C0C",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "67542F",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "614B29",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "543E20",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "3A2915",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "473319",
+      "material": "stone"
+    }
+  ]
+}

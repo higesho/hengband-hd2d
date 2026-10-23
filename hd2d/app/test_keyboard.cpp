@@ -58,6 +58,7 @@ bool compile_test_key(const std::string &line, std::vector<SDL_Event> &events, s
             if (name != "id" && name != "key" && name != "text" && name != "ctrl" && name != "shift"
                 && name != "alt" && name != "numlock" && name != "repeat" && name != "drop_file" && name != "probe"
                 && name != "mouse_button" && name != "x" && name != "y" && name != "touch" && name != "pad_button" && name != "pressed"
+                && name != "pad_axis" && name != "value"
                 && name != "phase" && name != "finger" && name != "query" && name != "tap" && name != "wheel" && name != "quit" && name != "map" && name != "detail") {
                 throw std::runtime_error("unknown field: " + name);
             }
@@ -158,6 +159,19 @@ bool compile_test_key(const std::string &line, std::vector<SDL_Event> &events, s
             }
             return true; // 部品の探索は、描いたフレームを持つ `poll()` 側で行う。
         }
+        if(request.contains("pad_axis")) {
+            // コントローラーの軸（`leftx` `lefty` `rightx` `righty` `triggerleft` `triggerright`）を -32768〜32767 に倒す。
+            // 左スティック・トリガは出来事で、右スティックは `poll()` が試験用のコントローラーの軸にも書く（`GamePad` は右スティックを軸から読む）。
+            if(request.size()!=(request.contains("id")?3u:2u)||!request.contains("value")||!request["value"].is_number_integer()||!request["pad_axis"].is_string())
+                throw std::runtime_error("pad_axis requires an integer value and cannot be combined with other input");
+            const auto axis=SDL_GameControllerGetAxisFromString(request.at("pad_axis").get<std::string>().c_str());
+            if(axis==SDL_CONTROLLER_AXIS_INVALID)throw std::runtime_error("unknown controller axis");
+            const auto value=request["value"].get<long long>();
+            if(value<-32768||value>32767)throw std::runtime_error("controller axis value out of range");
+            SDL_Event event{};event.type=SDL_CONTROLLERAXISMOTION;event.caxis.axis=static_cast<Uint8>(axis);
+            event.caxis.value=static_cast<Sint16>(value);events.push_back(event);
+            return true;
+        }
         if(request.contains("pad_button")) {
             if(request.size()!=(request.contains("id")?3u:2u)||!request.contains("pressed")||!request["pressed"].is_boolean())
                 throw std::runtime_error("pad_button requires pressed and cannot be combined with other input");
@@ -201,6 +215,13 @@ bool compile_test_key(const std::string &line, std::vector<SDL_Event> &events, s
             const auto button = request.at("mouse_button").get<std::string>();
             const auto x = request["x"].get<long long>(), y = request["y"].get<long long>();
             if (x < 0 || x > 32767 || y < 0 || y > 32767) throw std::runtime_error("mouse coordinates out of range");
+            if (button == "move") {
+                // マウスを動かすだけ（ホバー・ツールチップの検査用）。押さない。
+                SDL_Event motion{}; motion.type = SDL_MOUSEMOTION;
+                motion.motion.x = static_cast<int>(x); motion.motion.y = static_cast<int>(y);
+                events.push_back(motion);
+                return true;
+            }
             const Uint8 code = button == "left" ? SDL_BUTTON_LEFT : button == "right" ? SDL_BUTTON_RIGHT : button == "middle" ? SDL_BUTTON_MIDDLE : 0;
             if (!code) throw std::runtime_error("unknown mouse button");
             SDL_Event down{}; down.type = SDL_MOUSEBUTTONDOWN;
@@ -409,7 +430,7 @@ void TestKeyboard::poll(const char *phase)
         }
         if (request.is_object() && request.contains("id") && request["id"].is_string()) { id = request["id"]; }
         int queued = 0;
-        if(ok&&request.contains("pad_button")&&virtual_controller_index_<0) {
+        if(ok&&(request.contains("pad_button")||request.contains("pad_axis"))&&virtual_controller_index_<0) {
 #if SDL_VERSION_ATLEAST(2,0,14)
             virtual_controller_index_=SDL_JoystickAttachVirtual(SDL_JOYSTICK_TYPE_GAMECONTROLLER,SDL_CONTROLLER_AXIS_MAX,SDL_CONTROLLER_BUTTON_MAX,0);
             if(virtual_controller_index_<0){ok=false;error=std::string("cannot attach test controller: ")+SDL_GetError();}
@@ -428,6 +449,16 @@ void TestKeyboard::poll(const char *phase)
                 ++queued;
             }
         }
+#if SDL_VERSION_ATLEAST(2,0,14)
+        if(ok&&request.contains("pad_axis")&&virtual_controller_index_>=0) {
+            //! 右スティック・トリガは `GamePad` が軸から読むので、試験用のコントローラーの軸そのものにも書く。
+            if(virtual_joystick_==nullptr)virtual_joystick_=SDL_JoystickOpen(virtual_controller_index_);
+            if(virtual_joystick_!=nullptr) {
+                const auto axis=SDL_GameControllerGetAxisFromString(request.at("pad_axis").get<std::string>().c_str());
+                (void)SDL_JoystickSetVirtualAxis(static_cast<SDL_Joystick*>(virtual_joystick_),static_cast<int>(axis),static_cast<Sint16>(request["value"].get<long long>()));
+            }
+        }
+#endif
         for (std::size_t i = static_cast<std::size_t>(queued); i < events.size(); ++i) {
             if (events[i].type == SDL_DROPFILE) SDL_free(events[i].drop.file);
         }

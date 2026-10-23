@@ -1,0 +1,77 @@
+// dc_altar_uskayaw — プレハブ定義（設計書 §7）。`dc_altar_uskayaw.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の祭壇 uskayaw（dngn/altars/uskayaw）を絵から解釈して一から作った（台と飾り。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_altar_uskayaw",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "321515",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "3F1A1A",
+      "material": "wood"
+    },
+    {
+      "i": 3,
+      "rgb": "010001",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "7C513D",
+      "material": "wood"
+    },
+    {
+      "i": 5,
+      "rgb": "7A3E20",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "EC862C",
+      "material": "metal"
+    },
+    {
+      "i": 7,
+      "rgb": "B02822",
+      "material": "wood"
+    },
+    {
+      "i": 8,
+      "rgb": "D23232",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "F0C83C",
+      "material": "metal"
+    }
+  ]
+}

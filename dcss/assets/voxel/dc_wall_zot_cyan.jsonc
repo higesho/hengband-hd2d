@@ -1,0 +1,117 @@
+// dc_wall_zot_cyan — プレハブ定義（設計書 §7）。`dc_wall_zot_cyan.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 zot_blue0（dngn/wall/zot_blue0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_zot_cyan",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "094551",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "0D6173",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "0A4956",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "06313A",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "05242B",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "107A90",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "1393AD",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "16ABCA",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "1AC3E6",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "0C5768",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "09424D",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "042027",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "052C34",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "0E6E82",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "11849C",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "17B0CF",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "149AB6",
+      "material": "stone"
+    }
+  ]
+}

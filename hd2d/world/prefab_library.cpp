@@ -197,6 +197,17 @@ bool PrefabLibrary::parse_rule(const void *json_node, TerrainRule &out, std::str
         err = "対応表の object_ew は object と同じ枚数にしてください（姿勢の対なので）";
         return false;
     }
+    //! 役割の印（`LibraryEntry::is_object`）。object だけに使われるプレハブを見分ける。
+    for (const std::vector<int> *list : { &out.object, &out.object_ew }) {
+        for (const int index : *list) {
+            this->entries_[static_cast<std::size_t>(index)].used_as_object = true;
+        }
+    }
+    for (const std::vector<int> *list : { &out.ground, &out.structure }) {
+        for (const int index : *list) {
+            this->entries_[static_cast<std::size_t>(index)].used_as_other = true;
+        }
+    }
     out.density = node.value("density", 1.f);
     out.jitter = node.value("jitter", 0.f);
     if (node.contains("emissive") && node["emissive"].is_array() && (node["emissive"].size() >= 3)) {

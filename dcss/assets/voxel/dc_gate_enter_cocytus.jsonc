@@ -1,0 +1,267 @@
+// dc_gate_enter_cocytus — プレハブ定義（設計書 §7）。`dc_gate_enter_cocytus.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 enter_cocytus1（dngn/gateways/enter_cocytus1）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_enter_cocytus",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "A2A2A2",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "BCBCBC",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "D6D6D6",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "A21503",
+      "material": "wood"
+    },
+    {
+      "i": 6,
+      "rgb": "BF1904",
+      "material": "wood"
+    },
+    {
+      "i": 7,
+      "rgb": "BFBFBF",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "DDDDDD",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "D9D9D9",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "FCFCFC",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "D9D914",
+      "material": "metal"
+    },
+    {
+      "i": 12,
+      "rgb": "FFFF17",
+      "material": "metal"
+    },
+    {
+      "i": 13,
+      "rgb": "636363",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "747474",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "FFFFFF",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "565656",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "656565",
+      "material": "stone"
+    },
+    {
+      "i": 18,
+      "rgb": "898989",
+      "material": "stone"
+    },
+    {
+      "i": 19,
+      "rgb": "A1A1A1",
+      "material": "stone"
+    },
+    {
+      "i": 20,
+      "rgb": "D9A808",
+      "material": "metal"
+    },
+    {
+      "i": 21,
+      "rgb": "FFC60A",
+      "material": "metal"
+    },
+    {
+      "i": 22,
+      "rgb": "D96F03",
+      "material": "metal"
+    },
+    {
+      "i": 23,
+      "rgb": "FF8304",
+      "material": "metal"
+    },
+    {
+      "i": 24,
+      "rgb": "740000",
+      "material": "wood"
+    },
+    {
+      "i": 25,
+      "rgb": "D90000",
+      "material": "stone"
+    },
+    {
+      "i": 26,
+      "rgb": "AF0000",
+      "material": "wood"
+    },
+    {
+      "i": 27,
+      "rgb": "890000",
+      "material": "wood"
+    },
+    {
+      "i": 28,
+      "rgb": "FF0000",
+      "material": "stone"
+    },
+    {
+      "i": 29,
+      "rgb": "3A0000",
+      "material": "wood"
+    },
+    {
+      "i": 30,
+      "rgb": "440000",
+      "material": "wood"
+    },
+    {
+      "i": 31,
+      "rgb": "CE0000",
+      "material": "stone"
+    },
+    {
+      "i": 32,
+      "rgb": "580000",
+      "material": "wood"
+    },
+    {
+      "i": 33,
+      "rgb": "670000",
+      "material": "wood"
+    },
+    {
+      "i": 34,
+      "rgb": "A4A4A4",
+      "material": "stone"
+    },
+    {
+      "i": 35,
+      "rgb": "C1C1C1",
+      "material": "stone"
+    },
+    {
+      "i": 36,
+      "rgb": "524E61",
+      "material": "stone"
+    },
+    {
+      "i": 37,
+      "rgb": "605C72",
+      "material": "stone"
+    },
+    {
+      "i": 38,
+      "rgb": "0074D9",
+      "material": "clean"
+    },
+    {
+      "i": 39,
+      "rgb": "0089FF",
+      "material": "clean"
+    },
+    {
+      "i": 40,
+      "rgb": "C9C9C9",
+      "material": "stone"
+    },
+    {
+      "i": 41,
+      "rgb": "EDEDED",
+      "material": "stone"
+    },
+    {
+      "i": 42,
+      "rgb": "000058",
+      "material": "stone"
+    },
+    {
+      "i": 43,
+      "rgb": "000067",
+      "material": "stone"
+    },
+    {
+      "i": 44,
+      "rgb": "0058AF",
+      "material": "clean"
+    },
+    {
+      "i": 45,
+      "rgb": "0067CE",
+      "material": "clean"
+    },
+    {
+      "i": 46,
+      "rgb": "303097",
+      "material": "stone"
+    },
+    {
+      "i": 47,
+      "rgb": "3838B2",
+      "material": "clean"
+    }
+  ]
+}

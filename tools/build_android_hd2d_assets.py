@@ -176,7 +176,9 @@ GENERATED_TREES = {
     "silq/lib-ja": "python tools/silq/build_ja_edit.py && python tools/silq/build_ja_help.py --all",
     "silq/lib-en": "python tools/silq/build_ja_help.py --all",
     "frox/lib-ja": "python tools/frox/fc_build_ja_edit.py",
-    "toband/lib-en": "python tools/toband/build_en_edit.py",
+    "toband/lib-en": "python tools/toband/build_en_edit.py && "
+                    "python tools/toband/build_en_file.py && "
+                    "python tools/toband/build_en_help.py",
 }
 
 LEGACY_TREES = (
@@ -486,9 +488,43 @@ def main() -> int:
             rel = dst.relative_to(OUT)
             extract_entries.append((rel.as_posix(), dst.stat().st_size))
 
+    # ---- DCSS 日本語版
+    # コアが実行時に読むのは `<データの根>/dcss/lib/{dat,docs,settings,tiles}`（`dcss_main.cpp` の prepare_crawl_dir。
+    # Android では データの根 = 展開先 = cwd）。**開発ツリーの dcss/lib は遊んだ跡（saves・morgue）が入っているので使わない**。
+    # `tools/dcss/prepare_android_gen.py` が作る `<作業>/lib`（原作の dat・docs・settings とタイルの画像ページ）を写す。
+    # 画面の側の部品（hd2d/dcss/）は `assets/ui/dcss/`（`std::ifstream`・`directory_iterator` で相対パスから読む＝APK の中だけでは足りない）と
+    # `assets/fonts/dcss/BIZUDGothic-Regular.ttf`（`std::filesystem::exists` で探す。Android・Quest・Linux の字。OFL）を使うので、この 2 つも展開する。
+    dcss_work = Path(os.environ.get("DCSS_ANDROID_WORK", str(REPO.parent / "roguelike-cores" / "dcss-android")))
+    dcss_lib_src = dcss_work / "lib"
+    if (dcss_work / ".android-ready").is_file() and (dcss_lib_src / "dat").is_dir():
+        dcss_count = 0
+        for sub in ("dat", "docs", "settings", "tiles"):
+            for src in sorted((dcss_lib_src / sub).rglob("*")):
+                if not src.is_file() or src.name.startswith("."):
+                    continue
+                dst = OUT / "dcss" / "lib" / src.relative_to(dcss_lib_src)
+                copy_if_changed(src, dst)
+                extract_entries.append((dst.relative_to(OUT).as_posix(), dst.stat().st_size))
+                dcss_count += 1
+        log(f"DCSS の実行時のデータ {dcss_count} ファイル（{dcss_lib_src}）")
+        dcss_font_files = copy_tree_verbatim("assets/fonts/dcss")
+        for dst in dcss_font_files:
+            extract_entries.append((dst.relative_to(OUT).as_posix(), dst.stat().st_size))
+        log(f"assets/fonts/dcss から {len(dcss_font_files)} ファイル")
+        # assets/ui は後で写す。assets/ui/dcss の展開の指定は、その後に足す（下）
+        dcss_extract_ui = True
+    else:
+        log("DCSS の実行時のデータが無い（python tools/dcss/prepare_android_gen.py を先に走らせる）。DCSS は APK に入らない")
+        dcss_extract_ui = False
+
     # ---- assets/ui（そのまま写す。展開しない＝APK の assets から IMG_Load）
     ui_files = copy_tree_verbatim("assets/ui")
     log(f"assets/ui から {len(ui_files)} ファイル（展開しない）")
+
+    if dcss_extract_ui:
+        for dst in sorted((OUT / "assets" / "ui" / "dcss").rglob("*")):
+            if dst.is_file() and not dst.name.startswith("."):
+                extract_entries.append((dst.relative_to(OUT).as_posix(), dst.stat().st_size))
 
     # ---- assets/fx（そのまま写す。展開しない＝APK の assets から IMG_Load）
     # 攻撃の視覚効果の絵の板（どくろなど。`hd2d/render/fx_styles/fx_parts.cpp` の
@@ -521,8 +557,15 @@ def main() -> int:
     android_docs += license_docs.copy_windows_runtime(
         licenses_out, ["SDL2", "SDL2_image", "SDL2_ttf", "freetype"], subdir="third-party")
     copy_if_changed(REPO / "angband" / "LICENSE.md", licenses_out / "Angband-LICENSE.md")
+    # Umoria の GPL v3（上の umoria/data の組み立てで原作の LICENSE が写してある）。Windows・Linux の配布物の licenses/ と同じ名前。
+    android_docs += license_docs.copy_umoria(licenses_out)
     if not args.without_rogue_licenses:
         android_docs += license_docs.copy_rogue2_docs(licenses_out)
+        # TOband（LICENSE §1.3）: Moria/Angband 使用許諾・日本語の使用許諾（UTF-8）・NetHack の使用許諾。原作の固定版から写す
+        android_docs += license_docs.copy_toband(licenses_out)
+    if dcss_extract_ui and not args.without_rogue_licenses:
+        # DCSS（GPL v2 以降）の使用許諾・著作者名簿・付属ライブラリの通知とタイルの来歴。Windows・Linux の配布物と同じ作り方。
+        android_docs += license_docs.copy_dcss(licenses_out)
     log(f"license documents: {len(android_docs) + 1}")
 
     # 同梱コンパイラーのヘッダー・パッチ・接続 SDK。実行ファイルは jniLibs へ別途配置する。

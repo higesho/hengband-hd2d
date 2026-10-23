@@ -50,6 +50,7 @@
 #include "assets/tile_catalog.h"
 #include "i18n/lang.h"
 #include "net/core_link.h"
+#include "dcss/dcss_ui.h" //!< DCSS（`dcss-ui` を申告したコアだけ。段 U1）
 #include "render/billboard_renderer.h"
 #include "render/glyph_atlas.h"
 #include "render/ground_ring.h"
@@ -671,6 +672,8 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
         { "Rogue 5.4", "Rogue54Core.exe" },
         { "Umoria", "UmoriaCore.exe" },
         { "Angband", "AngbandCore.exe" },
+        //! DCSS（Dungeon Crawl Stone Soup 日本語版）。表示名は固有名詞のまま（Sil-Q・Frox と同じ理由）。
+        { "DCSS", "DcssCore.exe" },
     };
     for (const Known &known : kKnown) {
         if (core_is_available(options, known.path)) {
@@ -685,7 +688,8 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
         { "FroxComposband", "FroxCore" }, { "RogueClone2", "Rogue2Core" },
         { "Rogue 3.6", "Rogue36Core" }, { "Rogue 5.4", "Rogue54Core" },
         { "Umoria", "UmoriaCore" },
-        { "Angband", "AngbandCore" }
+        { "Angband", "AngbandCore" },
+        { "DCSS", "DcssCore" }
     };
     for (const Known &known : kKnown) {
         if (core_is_available(options, known.path)) found.push_back({known.name, known.path});
@@ -716,6 +720,8 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
         { "Rogue 5.4", "librogue54core.so" },
         { "Umoria", "libumoriacore.so" },
         { "Angband", "libangbandcore.so" },
+        //! DCSS（日本語版）。生成物が無いと `.so` が組まれない（tools/core_sources/dcss_android_core.cmake）ので、その間は一覧に出ない。
+        { "DCSS", "libdcsscore.so" },
     };
     //! 並びも exe 版と同じにする（`kKnown` の順がそのまま画面の順になる）。
     for (const Known &known : kKnown) {
@@ -745,7 +751,8 @@ std::string core_key_for_path(const std::string &path)
     for (char &c : low) {
         c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
     }
-    const char *key = (low.find("toband") != std::string::npos)      ? "toband"
+    const char *key = (low.find("dcss") != std::string::npos)        ? "dcss"
+                      : (low.find("toband") != std::string::npos)    ? "toband"
                       : (low.find("rogue36") != std::string::npos)   ? "rogue36"
                       : (low.find("rogue54") != std::string::npos) ? "rogue54"
                       : (low.find("rogue2") != std::string::npos)  ? "rogue2"
@@ -973,11 +980,11 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
     };
     const ColumnLayout tall_layout = build_layout({
         { "rogue36", "rogue54", "rogue2", "umoria", "angband" },
-        { "heng", "tang", "genso", "sil", "frox", "toband" },
+        { "heng", "tang", "genso", "sil", "frox", "toband", "dcss" },
     }, 1);
     const ColumnLayout wide_layout = build_layout({
         { "rogue36", "rogue54", "rogue2", "umoria", "angband" },
-        { "heng", "tang", "genso", "frox", "toband" },
+        { "heng", "tang", "genso", "frox", "toband", "dcss" },
         { "sil" },
     }, 1);
     const auto layout_for = [&](int win_w, int win_h) -> const ColumnLayout & {
@@ -1750,6 +1757,14 @@ int run(const AppOptions &options)
          * 引数は `--light-range-check=` と同じく `forwarded_args` から拾う（共通の引数表を触らない）。
          * 値が空（`--attack-fx-check=`）なら書き出さずに検査だけ走る。
          */
+        for (const std::string &arg : options.forwarded_args) {
+            if (arg == "--dcss-fx-check") {
+                return dcss::run_dcss_fx_check(); //!< DCSS の攻撃の演出の部品だけの検査（窓・GL・コアなし。`dcss/dcss_fx_check.cpp`）
+            }
+            if (arg == "--dcss-touch-check") {
+                return dcss::dcss_touch_selftest(); //!< DCSS のタッチの決まりと名前の問いの検出の検査（窓・GL・コアなし。`dcss/dcss_touch.cpp`。0 = 全部通った）
+            }
+        }
         static const std::string kAttackFxCheckArg = "--attack-fx-check=";
         for (const std::string &arg : options.forwarded_args) {
             if (arg.compare(0, kAttackFxCheckArg.size(), kAttackFxCheckArg) == 0) {
@@ -2641,6 +2656,22 @@ int run(const AppOptions &options)
     double ms_decode = 0.0;
     double ms_present = 0.0;
     double ms_frame = 0.0;
+    /*
+     * 診断: 環境変数 `HD2D_SLOW_FRAME_MS=<ミリ秒>` を付けると、主ループの 1 周がその時間を超えたときに
+     * 費目ごとの時間を標準エラーへ 1 行出す。起動の主な区切りにも時刻の印を出す（`diag_mark`）。
+     * 付けなければ何もしない（`DCSS` の「画面が一瞬応答しない」の調査のために足した）。
+     */
+    const double slow_frame_ms = []() {
+        const char *v = std::getenv("HD2D_SLOW_FRAME_MS");
+        return ((v != nullptr) && (*v != '\0')) ? std::atof(v) : 0.0;
+    }();
+    const auto diag_mark = [&](const char *label) {
+        if (slow_frame_ms > 0.0) {
+            std::fprintf(stderr, "[hd2d] diag t=%llu ms: %s\n", static_cast<unsigned long long>(clock::ticks64()), label);
+        }
+    };
+    Uint64 diag_prev_loop_perf = 0;
+    diag_mark("run: 窓と描画の用意が済んだ（コアを起こす前）");
 
     // --- コアを起こして握手する ---
     /*!
@@ -2654,6 +2685,15 @@ int run(const AppOptions &options)
      * **コア名では決めない**（申告しないコアは、これまでのクリック移動のまま）。
      */
     bool core_map_click = false;
+    /*!
+     * @brief DCSS の画面の部品（握手でコアが `dcss-ui` を名乗ったときだけ作る。ほかのコアは空のまま 1 行も通らない）。
+     * @details 決めたこと D10。原作のタイル版の区画（ステータス・メッセージ・ミニマップ・タブの欄）を描き、立体の地図は
+     * その中のダンジョンの矩形に描く。。
+     */
+    std::unique_ptr<dcss::DcssUi> dcss_ui;
+    //! DCSS（D24）: 実体のあるマスと、実体の後ろへ回す地形のオブジェクト（毎フレーム作り直す）。
+    std::unordered_set<std::uint32_t> dcss_occupied;
+    LibraryDeferred dcss_deferred;
     CoreLink link;
     CoreLinkOptions link_options;
     link_options.forwarded_args = options.forwarded_args;
@@ -2715,6 +2755,7 @@ int run(const AppOptions &options)
         link_options.core_thread_main = options.core_thread_resolve("libhengcore.so");
     }
 #endif
+    diag_mark("link.start 前");
     if (!link.start(link_options, err)) {
         show_message(err);
         text.shutdown();
@@ -2723,6 +2764,21 @@ int run(const AppOptions &options)
         SDL_Quit();
         return 1;
     }
+    /*
+     * DCSS だけは、画面が原作の JSON を受けて自分で区画を描けると `hello` で申告する（コアは名乗り返す）。
+     * 握手より前にはコアの申告が分からないので、ここだけは起こすコアの名前（ファイル名）で決める。
+     * ほかのコアの `hello` は従来と 1 バイトも変わらない。
+     */
+    {
+        std::string lowered = core_choice;
+        for (char &c : lowered) {
+            c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
+        }
+        if (lowered.find("dcss") != std::string::npos) {
+            link.set_hello_features({ "dcss-webtiles", "dcss-ui" });
+        }
+    }
+    diag_mark("link.start 後・握手の前");
     if (!link.handshake(err)) {
         show_core_failure(link, err);
         link.shutdown();
@@ -2734,6 +2790,7 @@ int run(const AppOptions &options)
     }
     link.begin_receiving();
     const std::string title_line = build_title_line(link.hello_ack());
+    diag_mark("握手が済んだ");
 
     /*
      * ---- 玉の配置と素材（決めたこと 2026-10-11）----
@@ -2884,6 +2941,11 @@ int run(const AppOptions &options)
         if (core_map_click) {
             std::fprintf(stderr, "[hd2d] core declares \"map_click\"; map clicks and taps are sent to the core\n");
         }
+        //! DCSS の画面の部品（段 U1）。申告したコアだけ。
+        if (std::find(features.begin(), features.end(), "dcss-ui") != features.end()) {
+            dcss_ui = std::make_unique<dcss::DcssUi>();
+            std::fprintf(stderr, "[hd2d] core declares \"dcss-ui\"; the DCSS tile UI regions are drawn by the screen\n");
+        }
     }
 
     int screen_w = options.window_w;
@@ -3014,6 +3076,8 @@ int run(const AppOptions &options)
             settings.ascii_panel_px = stored.ascii_panel_px;
             settings.entity_style = stored.entity_style;
             settings.entity_slab_screen_aligned = stored.entity_slab_screen_aligned;
+            settings.core_defaults_rev = stored.core_defaults_rev;
+            settings.dcss_pad_binds = stored.dcss_pad_binds; //!< DCSS のゲームパッドの割り当て（`dcss/dcss_pad.h`）
             settings.entity_glyph_pct = stored.entity_glyph_pct;
             //! 状態列の位置と字の受け皿。
             //! **忘れると「覚えているのに効かない」**（tools/check_settings_carry.py が捕まえる）。
@@ -3208,6 +3272,32 @@ int run(const AppOptions &options)
             settings.sub_panel_kind[3], settings.sub_panel_kind[4], settings.sub_panel_kind[5],
             settings.sub_panel_kind[6]);
         (void)had_settings_file;
+        /*
+         * **DCSS だけ既定が違う設定**（D24。申告 `dcss-ui` のコア）: 板を画面に正対させる（横から見たような潰れが出ない）。
+         * 改訂（`core_defaults_rev`）が上がっているときだけ 1 度当てる。そのコアの cfg が既にあっても当て直すが、
+         * 当てた後は遊ぶ人の選んだ値が残る（メニューで切り替えられる）。ほかのコアはここを通らない。
+         */
+        constexpr int kDcssDefaultsRev = 2;
+        if (dcss_ui && (settings.core_defaults_rev < kDcssDefaultsRev)) {
+            if (settings.core_defaults_rev < 1) {
+                settings.entity_slab_screen_aligned = true;
+            }
+            /*
+             * 改訂 2（段 5。D12: 操作は原作に合わせる）: キーボードの F1 は原作の「ゲームメニュー」（`CMD_GAME_MENU`）なので、
+             * HD2D のコマンドメニューの既定の F1 を外す（機能メニューは F10 のまま）。外したキーは原作へ渡る。
+             */
+            if (settings.core_defaults_rev < 2) {
+                if (settings.key_binds.find(kActionCommandMenu).keycode == SDLK_F1) {
+                    settings.key_binds.clear(kActionCommandMenu);
+                }
+            }
+            settings.core_defaults_rev = kDcssDefaultsRev;
+        }
+        if (dcss_ui) {
+            std::fprintf(stderr, "[hd2d] DCSS の板の向き: 画面に正対=%d（既定の改訂 %d）\n", settings.entity_slab_screen_aligned ? 1 : 0, settings.core_defaults_rev);
+            dcss_ui->pad().load_line(settings.dcss_pad_binds); //!< ゲームパッドの割り当て（段 5）
+            pad.set_original_timing(true); //!< 十字の方向の出し方（40ms の斜めの合成・200ms のリピート）を原作に合わせる（段 5）
+        }
     }
     /*
      * **`--entity=` / `--original` は cfg より強い**（起動引数 > cfg > 既定）。
@@ -3485,6 +3575,60 @@ int run(const AppOptions &options)
         settings.sub_split, usable_area().x, usable_area().y,
         settings.vpad.show, false,
         settings.minimap_corner, settings.minimap_size_pct);
+    /*!
+     * @brief DCSS の配置を重ねる（`dcss-ui` を申告したコアだけ。ほかのコアでは何もしない）。
+     * @details 下の案内の帯は従来どおり出す。その高さを窓の下端から先に取り、残りを
+     * `DcssLayout::compute` の窓の大きさにする。立体の地図の矩形は原作のダンジョンの見える範囲へ差し替え、左の状態の欄・
+     * サブパネル・玉・ミニマップ・メッセージの帯は空にする（描く側は「置き場所が無い」と見て何も描かない）。
+     * ゲームに入る前（タイトル・キャラクター作成）は従来の配置のまま。
+     */
+    std::string dcss_last_description;
+    std::uint64_t dcss_last_serial = 0;
+    const auto apply_dcss_layout = [&](UiLayout &l) {
+        if (!dcss_ui) {
+            return;
+        }
+        const RectPx area = usable_area();
+        const int reserved = l.bottom_bar.empty() ? 0 : std::max(0, (area.y + area.h) - l.bottom_bar.y);
+        std::string dcss_err;
+        dcss_ui->set_language(std::string(i18n::current()));
+#if defined(__ANDROID__)
+        // Android・Quest は原作の Android 版と同じ字の大きさの表と窓の拡大で配置する（常に小さい配置になる。「Android・Quest の配置」）。
+        dcss_ui->use_android_profile(screen_w, screen_h);
+#endif
+        if (!dcss_ui->prepare(area.x, area.y, area.w, area.h, reserved, dcss_err)) {
+            if (dcss_last_description != dcss_err) {
+                dcss_last_description = dcss_err;
+                std::fprintf(stderr, "[hd2d] %s\n", dcss_err.c_str());
+            }
+            return;
+        }
+        if (dcss_ui->layout_serial() != dcss_last_serial) {
+            dcss_last_serial = dcss_ui->layout_serial();
+            dcss_last_description = dcss_ui->describe();
+            std::fprintf(stderr, "[hd2d] %s\n", dcss_last_description.c_str());
+        }
+        if (!dcss_ui->in_game()) {
+            return;
+        }
+        l.scene = dcss_ui->scene_rect();
+        l.status_col = RectPx{};
+        l.hud = RectPx{};
+        l.orb = RectPx{};
+        l.message_bar = RectPx{};
+        l.prompt_bar = RectPx{};
+        l.minimap = RectPx{};
+        l.minimap_area = RectPx{};
+        l.preview_menu = RectPx{};
+        l.main_panel_design_off = true;
+        for (RectPx &r : l.sub) {
+            r = RectPx{};
+        }
+        for (RectPx &r : l.grip) {
+            r = RectPx{};
+        }
+    };
+    apply_dcss_layout(layout);
 
     Camera camera;
     camera.pitch = settings.camera_pitch_deg * 0.0174533f;
@@ -3585,6 +3729,20 @@ int run(const AppOptions &options)
         link.replay_step();
         const Uint64 loop_started = clock::ticks64();
         const Uint64 loop_started_perf = clock::perf();
+        if (slow_frame_ms > 0.0) {
+            if (diag_prev_loop_perf != 0) {
+                const double gap = static_cast<double>(loop_started_perf - diag_prev_loop_perf) * 1000.0 / static_cast<double>(perf_freq);
+                if (gap >= slow_frame_ms) {
+                    std::fprintf(stderr,
+                        "[hd2d] diag t=%llu ms: slow-frame #%d gap=%.1f work=%.1f (decode=%.1f meaning=%.1f build=%.1f shadow=%.1f submit=%.1f post=%.1f present=%.1f) tail=%.1f\n",
+                        static_cast<unsigned long long>(clock::ticks64()), frame_index, gap, ms_frame, ms_decode, ms_meaning, ms_build,
+                        ms_shadow, ms_submit, ms_post, ms_present, gap - ms_frame);
+                }
+            } else {
+                diag_mark("主ループの最初の周");
+            }
+            diag_prev_loop_perf = loop_started_perf;
+        }
         // なめらか移動に使う経過秒。長すぎる間（読み込み中など）は 0.1 秒で頭打ちにする。
         const float frame_seconds = std::min(0.1f, static_cast<float>(loop_started - last_tick) / 1000.f);
         last_tick = loop_started;
@@ -3636,6 +3794,12 @@ int run(const AppOptions &options)
         //! (0) コアから届いた表。中身は `app/run_parts.cpp`。
         take_core_tables(link, tile_catalog, pad_commands, pad_keymap, pad_macros,
             settings, sub_panel_kind_choices);
+        //! DCSS: 原作の JSON の行（届いた順に全部）。申告したコアだけ。
+        if (dcss_ui) {
+            for (const std::string &payload : link.take_webtiles_payloads()) {
+                dcss_ui->ingest_payload(payload);
+            }
+        }
 
         // (a) 入力 → `input_event`（v1 §8.3）。**到着順を崩さない。**
         InputBatch input_batch;
@@ -3850,6 +4014,70 @@ int run(const AppOptions &options)
          * SDL の出来事を全部捌く。中身は `app/input_controller.cpp`（`pump_sdl_events`）。
          * 触るものが多いので束にして渡す（`InputPumpContext` の注記）。
          */
+        //! DCSS のタブの欄へのマウス（申告 `dcss-ui` のコアだけ。ほかのコアでは空のまま）。
+        std::function<bool(const SDL_Event &)> dcss_mouse_fn;
+        if (dcss_ui && dcss_ui->layout_ok() && dcss_ui->in_game() && !vr_frame_ready) {
+            dcss_mouse_fn = [&](const SDL_Event &e) -> bool {
+                dcss::DcssTabMouse m;
+                if (e.type == SDL_MOUSEMOTION) {
+                    m.kind = dcss::DcssTabMouse::Kind::Move;
+                    m.x = e.motion.x;
+                    m.y = e.motion.y;
+                } else {
+                    m.kind = dcss::DcssTabMouse::Kind::Press;
+                    m.x = e.button.x;
+                    m.y = e.button.y;
+                    m.button = (e.button.button == SDL_BUTTON_RIGHT) ? 3 : 1;
+                    if ((e.button.button != SDL_BUTTON_LEFT) && (e.button.button != SDL_BUTTON_RIGHT)) {
+                        return false;
+                    }
+                }
+                const SDL_Keymod mod = SDL_GetModState();
+                m.mods = (((mod & KMOD_SHIFT) != 0) ? 1 : 0) | (((mod & KMOD_CTRL) != 0) ? 2 : 0);
+                const bool consumed = dcss_ui->on_tab_mouse(m);
+                for (const dcss::DcssTabOutgoing &o : dcss_ui->take_tab_outgoing()) {
+                    if (o.webtiles) {
+                        (void)link.send_webtiles_input(o.text);
+                    } else {
+                        (void)link.send_dcss_message("dcss_action", o.text);
+                    }
+                }
+                return consumed;
+            };
+        }
+        //! DCSS の窓の部品（段 U3。申告 `dcss-ui` のコアだけ）。窓が食った出来事は、窓がコアへ送る行（原作の制御メッセージ）にして送る。
+        std::function<bool(const SDL_Event &, bool)> dcss_window_fn;
+        if (dcss_ui && !vr_frame_ready) {
+            dcss_window_fn = [&](const SDL_Event &e, bool reserved) -> bool {
+                const bool consumed = dcss_ui->on_back_key(e) || dcss_ui->on_window_event(e, reserved); // 戻るキー（Android）は Esc
+                for (const std::string &line : dcss_ui->take_window_outgoing()) {
+                    (void)link.send_webtiles_input(line);
+                }
+                return consumed;
+            };
+        }
+        //! DCSS の地図のマウス操作（段 U3・U4）。コアへ送る行（`click_cell`・`hd2d_*`）を取り出して送る。
+        std::function<bool(const SDL_Event &, bool, int, int)> dcss_map_fn;
+        if (dcss_ui && !vr_frame_ready) {
+            dcss_map_fn = [&](const SDL_Event &e, bool on_map, int dx, int dy) -> bool {
+                const bool consumed = dcss_ui->on_map_event(e, on_map, dx, dy);
+                for (const std::string &line : dcss_ui->take_map_outgoing()) {
+                    (void)link.send_webtiles_input(line);
+                }
+                return consumed;
+            };
+        }
+        //! DCSS のタッチ（段 7。申告 `dcss-ui` のコアだけ）。指の出来事を原作の Android 版と同じ決まりのマウスの出来事に直して積み直す（`dcss/dcss_touch.h`）。
+        std::function<void(const SDL_Event &, bool)> dcss_touch_fn;
+        if (dcss_ui && !vr_frame_ready) {
+            dcss_touch_fn = [&](const SDL_Event &e, bool ignore_down) {
+                std::vector<SDL_Event> synthesized;
+                dcss_ui->on_finger(e, screen_w, screen_h, SDL_GetTicks(), ignore_down, synthesized);
+                for (SDL_Event &m : synthesized) {
+                    (void)SDL_PushEvent(&m);
+                }
+            };
+        }
         InputPumpContext pump_ctx{
             .screen_w = screen_w,
             .screen_h = screen_h,
@@ -3879,8 +4107,23 @@ int run(const AppOptions &options)
             .turn_drives_movement = turn_drives_movement,
             .turn_screen_move = turn_screen_move,
             .batch = input_batch,
+            .dcss_mouse = dcss_mouse_fn,
+            .dcss_window = dcss_window_fn,
+            .dcss_map = dcss_map_fn,
+            .dcss_touch = dcss_touch_fn,
         };
         pump_sdl_events(pump_ctx);
+#if defined(__ANDROID__)
+        if (dcss_ui && dcss_ui->take_keyboard_toggle()) {
+            // 原作の `CMD_TOGGLE_KEYBOARD`（システム命令の欄・ゲームメニュー）: 画面のキーボードを出し入れする。
+            if (SDL_IsTextInputActive() == SDL_TRUE) {
+                SDL_StopTextInput();
+            } else {
+                SDL_StartTextInput();
+                ime_dismissed = false;
+            }
+        }
+#endif
         /*
          * (a') パッド（P8）。**キーと同じ道へ落とす**ので、割り当ても
          * カーソル操作も機能メニューもそのまま効く（専用の経路を作らない）。
@@ -3888,6 +4131,88 @@ int run(const AppOptions &options)
         {
             const bool focused = (SDL_GetWindowFlags(window.window) & SDL_WINDOW_INPUT_FOCUS) != 0
                 || (!options.test_input_file.empty()&&std::getenv("HD2D_TEST_HIDE_WINDOW")!=nullptr);
+            /*
+             * DCSS のパッドの出力を行う（段 5。`dcss/dcss_pad.h`）。申告 `dcss-ui` のコアだけが呼ぶ。
+             * コアへのキーは原作の制御メッセージ `{"msg":"key","keycode":N}`（負の数はコマンドや特殊キー。`-(CMD_*)` はキーマップを通らずそのコマンドが走る）、
+             * 窓の中は窓の部品へ SDL のキーを渡す（窓がコアへの送りを決める）、クリックは疑似カーソルの位置に SDL のマウスの出来事を積む
+             * （本物のマウスと同じ道を通る）。
+             */
+            //! 検査用: 環境変数 HD2D_DCSS_PAD_TRACE があれば、パッドが出したものを標準エラーへ 1 行ずつ出す（tools/dcss/dc_pad_check.py が読む）。
+            static const bool dcss_pad_trace = (std::getenv("HD2D_DCSS_PAD_TRACE") != nullptr);
+            const auto dcss_pad_apply = [&](const std::vector<dcss::DcssPadAction> &actions) {
+                using Kind = dcss::DcssPadAction::Kind;
+                for (const dcss::DcssPadAction &a : actions) {
+                    if (dcss_pad_trace && (a.kind != Kind::None)) {
+                        static const char *const kinds[] = { "none", "key", "window-key", "click", "feature-menu", "turn-view", "open-bindings", "slot-capture" };
+                        std::fprintf(stderr, "[dcss-pad] t=%u scene=%d %s key=%d sym=%d button=%d turn=%d slot=%d\n", static_cast<unsigned>(SDL_GetTicks()),
+                            static_cast<int>(dcss_ui->scene()), kinds[static_cast<int>(a.kind)], a.key, a.sym, a.button, a.turn, a.slot);
+                    }
+                    switch (a.kind) {
+                    case Kind::CoreKey:
+                        (void)link.send_webtiles_input("{\"msg\":\"key\",\"keycode\":" + std::to_string(a.key) + "}");
+                        break;
+                    case Kind::WindowKey: {
+                        if (dcss_window_fn) {
+                            SDL_Event key_event{};
+                            key_event.type = SDL_KEYDOWN;
+                            key_event.key.state = SDL_PRESSED;
+                            key_event.key.keysym.sym = a.sym;
+                            key_event.key.keysym.scancode = SDL_GetScancodeFromKey(a.sym);
+                            key_event.key.keysym.mod = 0;
+                            (void)dcss_window_fn(key_event, false);
+                        }
+                        break;
+                    }
+                    case Kind::Click: {
+                        int cx = 0;
+                        int cy = 0;
+                        if (!dcss_ui->pad().cursor_position(cx, cy)) {
+                            SDL_GetMouseState(&cx, &cy);
+                        }
+                        SDL_Event click{};
+                        click.type = SDL_MOUSEBUTTONDOWN;
+                        click.button.timestamp = SDL_GetTicks();
+                        click.button.which = dcss::kPadMouseId;
+                        click.button.button = (a.button == 3) ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT;
+                        click.button.state = SDL_PRESSED;
+                        click.button.clicks = 1;
+                        click.button.x = cx;
+                        click.button.y = cy;
+                        if (dcss_pad_trace) {
+                            std::fprintf(stderr, "[dcss-pad] click-at %d,%d\n", cx, cy);
+                        }
+                        (void)SDL_PushEvent(&click);
+                        click.type = SDL_MOUSEBUTTONUP;
+                        click.button.state = SDL_RELEASED;
+                        (void)SDL_PushEvent(&click);
+                        break;
+                    }
+                    case Kind::FeatureMenu:
+                        perform_action(kActionFeatureMenu);
+                        break;
+                    case Kind::TurnView:
+                        turn_view(a.turn);
+                        break;
+                    case Kind::OpenBindings:
+                        (void)dcss_ui->pad_screen().open();
+                        break;
+                    case Kind::SlotCapture:
+                        dcss_ui->pad_screen().on_slot(a.slot);
+                        break;
+                    case Kind::None:
+                        break;
+                    }
+                }
+                for (const std::string &line : dcss_ui->take_window_outgoing()) {
+                    (void)link.send_webtiles_input(line);
+                }
+                if (dcss_ui->pad().take_changed()) {
+                    settings.dcss_pad_binds = dcss_ui->pad().save_line(); //!< 割り当ての画面で変えた分を設定へ（cfg に書かれる）
+                }
+            };
+            if (dcss_ui && dcss_ui->pad().take_changed()) {
+                settings.dcss_pad_binds = dcss_ui->pad().save_line(); //!< 窓の操作（マウス・キー）で変えた分
+            }
             /*
              * ボタン 1 個ぶんの道筋。**物理パッドとバーチャルパッドの両方がここを通る**
              * （2026-08-12 に決めた。入口ごとに書くと片方だけ直された状態に必ずなる）。
@@ -3975,6 +4300,14 @@ int run(const AppOptions &options)
                     } else if (pressed == PadInput::A) {
                         feature_menu.handle(MenuNav::Confirm, settings);
                     }
+                    return;
+                }
+                /*
+                 * DCSS（申告 `dcss-ui` のコア。段 5）: 原作の日本語版のタイル版の割り当てと動き（`dcss/dcss_pad.h`）。HD2D の割り当て・
+                 * 機能メニューの Back・視点の操作は使わない（原作と割り当てがぶつかるため。D12）。ほかのコアはここを通らない。
+                 */
+                if (dcss_ui) {
+                    dcss_pad_apply(dcss_ui->pad().on_press(press, dcss_ui->scene(), dcss_ui->pad_screen().capturing()));
                     return;
                 }
                 /*
@@ -4139,6 +4472,23 @@ int run(const AppOptions &options)
                         nav = MenuNav::Right;
                     }
                     feature_menu.handle(nav, settings);
+                } else if (dcss_ui) {
+                    /*
+                     * DCSS（段 5）: 原作の日本語版のタイル版と同じキー（矢印・斜めは Home・PgUp・End・PgDn。窓の中は縦の成分だけ）。
+                     * 視点を回しているときは、コマンド待ち・狙いの向きを画面基準で回す（ほかのコアの十字・キーボードと同じ）。
+                     */
+                    const dcss::DcssPadScene dcss_scene = dcss_ui->scene();
+                    presentation::InputEventWire wire;
+                    wire.e = "move";
+                    wire.dx = pad_dx;
+                    wire.dy = pad_dy;
+                    if ((dcss_scene == dcss::DcssPadScene::Command) || (dcss_scene == dcss::DcssPadScene::Target)) {
+                        turn_screen_move(wire);
+                    }
+                    if (dcss_scene == dcss::DcssPadScene::Command) {
+                        click_path.cancel(); //!< 自分で歩き始めたら経路は捨てる
+                    }
+                    dcss_pad_apply({ dcss_ui->pad().on_direction(wire.dx, wire.dy, dcss_scene) });
                 } else if(hud_state.targeting.active()&&hud_state.targeting.extras_open()) {
                     if(pad_dy!=0)hud_state.targeting.step_extras(pad_dy<0?-1:1); // 一覧のカーソル（AH-54）
                 } else if(hud_state.targeting.active()) {
@@ -4337,7 +4687,46 @@ int run(const AppOptions &options)
              * | 横 | — | 方位を回す |
              * | 縦 | **見下ろし角**（2026-08-11 に決めた） | 仰角・俯角 |
              */
-            if (!feature_menu.is_open() && !vpad.editor_open() && frame_shows_map(frame)) {
+            if (dcss_ui) {
+                /*
+                 * DCSS（段 5。D11・D12）: 右スティックは視点ではなく**マウスのカーソル**（原作の `cursor_motion`。円の死区 8000 から 2 乗の曲線で
+                 * 1 秒あたり 60〜1400 画素）。カーソルは画面の中の疑似カーソルで、動かすたびに SDL のマウスの動きを積む（本物のマウスと同じ道を通る。
+                 * ツールチップ・窓の強調・地図のマスの説明が出る）。本物のマウスが動いたら、そちらを優先して疑似カーソルを消す。
+                 * 視点の操作（見下ろし角・回転）は原作が使っていない入力（同時押しの層）へ移した（`dcss/dcss_pad.cpp` の既定）。
+                 */
+                int mouse_x = 0;
+                int mouse_y = 0;
+                SDL_GetMouseState(&mouse_x, &mouse_y);
+                dcss_ui->pad().observe_mouse(mouse_x, mouse_y);
+                if (!feature_menu.is_open() && !vpad.editor_open()) {
+                    int raw_x = 0;
+                    int raw_y = 0;
+                    pad.right_stick_raw(raw_x, raw_y);
+                    raw_x = std::clamp(raw_x + static_cast<int>(vpad.right_stick_x() * 32767.f), -32768, 32767);
+                    raw_y = std::clamp(raw_y + static_cast<int>(vpad.right_stick_y() * 32767.f), -32768, 32767);
+                    int cursor_dx = 0;
+                    int cursor_dy = 0;
+                    if (dcss_ui->pad().cursor_motion(SDL_GetTicks(), focused, raw_x, raw_y, cursor_dx, cursor_dy)) {
+                        dcss_ui->pad().move_cursor(cursor_dx, cursor_dy, screen_w, screen_h);
+                        int cursor_x = 0;
+                        int cursor_y = 0;
+                        if (dcss_ui->pad().cursor_position(cursor_x, cursor_y)) {
+                            SDL_Event motion{};
+                            motion.type = SDL_MOUSEMOTION;
+                            motion.motion.timestamp = SDL_GetTicks();
+                            motion.motion.which = dcss::kPadMouseId;
+                            motion.motion.x = cursor_x;
+                            motion.motion.y = cursor_y;
+                            motion.motion.xrel = cursor_dx;
+                            motion.motion.yrel = cursor_dy;
+                            if (std::getenv("HD2D_DCSS_PAD_TRACE") != nullptr) {
+                                std::fprintf(stderr, "[dcss-pad] cursor %d,%d\n", cursor_x, cursor_y);
+                            }
+                            (void)SDL_PushEvent(&motion);
+                        }
+                    }
+                }
+            } else if (!feature_menu.is_open() && !vpad.editor_open() && frame_shows_map(frame)) {
                 /*
                  * バーチャルパッドの RS も同じ扱いで**足す**（触れていない側は 0 なので、
                  * 足しても取り合いにならない。両方倒したときだけ丸める）。
@@ -4614,6 +5003,30 @@ int run(const AppOptions &options)
          */
         const int chord_mask = pad.chord_mask() | vpad.chord_mask();
         hud_state.controller_binds = build_pad_bind_items(settings.pad, pad_commands, pad_macros, chord_mask, settings.modern_ui);
+        if (dcss_ui) {
+            /*
+             * DCSS（D19・段 5）: 並べるのは原作の割り当て（`dcss/dcss_pad.h`）。いまの待ち（コマンド・窓・狙い・その他）で替える。
+             * 右側のキーの案内も、HD2D の既定のキー（F1 のコマンドメニューなど）ではなく、原作が使っていないキーに置いた機能だけにする。
+             */
+            hud_state.controller_binds = dcss_ui->pad().guide_items(dcss_ui->scene(), chord_mask, dcss_ui->pad_screen().active());
+            const bool ja = (i18n::current() != "en");
+            const KeyBindEntry menu_key = settings.key_binds.find(kActionFeatureMenu);
+            const KeyBindEntry turn_left = settings.key_binds.find(kActionTurnLeft);
+            const KeyBindEntry turn_right = settings.key_binds.find(kActionTurnRight);
+            std::string hint;
+            if (menu_key.keycode != 0) {
+                hint += key_display_name(menu_key.keycode, menu_key.mods) + (ja ? ":機能メニュー  " : ":Feature menu  ");
+            }
+            if ((turn_left.keycode != 0) && (turn_right.keycode != 0)) {
+                hint += key_display_name(turn_left.keycode, turn_left.mods) + "/" + key_display_name(turn_right.keycode, turn_right.mods)
+                    + (ja ? ":視点回転" : ":Turn view");
+            }
+#if defined(__ANDROID__)
+            // Android・Quest（指で遊ぶ）: キーの案内は意味がないので、原作の Android 版のタッチの決まりを並べる（「段 7 のタッチ」）。
+            hint = ja ? "タップ:移動・攻撃  長押し:調べる  2本指:スクロール  戻る:取消" : "Tap:Move/Attack  Hold:Examine  2 fingers:Scroll  Back:Cancel";
+#endif
+            hud_state.ui_key_hint = hint;
+        }
         //! 上下の視点移動の入／切は設定が持つ（`FpsMode` は毎フレーム受け取るだけ）。
         first_person.vertical_look = settings.fps_vertical_look;
         //! ミニマップの自分を向きのある三角で描くため（一人称のときだけ。決めたこと）。
@@ -4703,7 +5116,7 @@ int run(const AppOptions &options)
          * 十字キーの上下（従来の UI は左右で桁も）で変えられるので、キーボードは要らない。出すと画面の下半分を覆い、
          * 使える高さが縮んで Term の高さまで変わっていた（コアの側は問いの最中に高さを変えないよう直した。141ee3efdf ほか）。
          */
-        const bool want_ime = wants_soft_keyboard(frame); //!< `input_controller.h`
+        const bool want_ime = wants_soft_keyboard(frame) || (dcss_ui && dcss_ui->wants_soft_keyboard()); //!< `input_controller.h`。DCSS は名前の問いも
         if (want_ime != ime_prompt_open) {
             ime_prompt_open = want_ime;
             ime_dismissed = false;
@@ -4775,6 +5188,9 @@ int run(const AppOptions &options)
             //! VR ではミニマップを右下へ（2026-08-14 に決めた。板は見上げる位置にある）。
             vr_frame_ready,
             settings.minimap_corner, settings.minimap_size_pct);
+        if (!vr_frame_ready) {
+            apply_dcss_layout(layout);
+        }
         if(frame.targeting.preview_only&&hud_state.modern.active()&&!feature_menu.is_open()&&!vr_frame_ready)
             layout_effect_preview(layout,menu_font_scale(settings.modern_font_level));
         /*
@@ -5398,7 +5814,8 @@ int run(const AppOptions &options)
                 ascii_entities ? &glyph_atlas : nullptr,
                 static_cast<float>(settings.entity_glyph_pct) / 100.f,
                 (settings.entity_glyph_fallback && glyph_ready) ? &glyph_atlas : nullptr,
-                model_player);
+                model_player, dcss_ui ? &dcss_ui->ring_tints() : nullptr,
+                dcss_ui ? 0.2f : 0.f); //!< DCSS（D24）: 板をマスの中で 2 割奥へ
             /*
              * 地面の凹凸（§6.3）。立っているマスの地面の持ち上げ量だけ実体も持ち上げる（足が埋まらないように）。
              * 量は地形が前のフレームで決めたもの（`terrain` はこの後で作り直す。階が替わった最初の 1 フレームだけずれる）。
@@ -5842,7 +6259,18 @@ int run(const AppOptions &options)
              * `camera.target` は使えない——揺れ（被弾）が足してあるし、
              * `MoveSmoothing::Entities` ではマスへ吸着したままだからである。
              */
-            const Vec3 torch_pos{ entity_view.player_x, entity_view.player_y, 0.f };
+            Vec3 torch_pos{ entity_view.player_x, entity_view.player_y, 0.f };
+            /*
+             * DCSS（`dcss-ui` のコア。D24）: 板を画面へ正対させると、板がカメラ側へ傾いて松明の前へ出る
+             * （松明はマスの中心の腰の高さ。板の足元はマスの手前の辺から 2 割奥）。すると自分の松明が板の正面を照らし、
+             * プレイヤーの板だけが白く飛ぶ（ほかの怪物には松明が無い）。松明を板の向こう側（カメラから遠い側）へ半マスほどずらして、
+             * 板を背にする。床や壁を照らす明るさは半マスのずれでほとんど変わらない。ほかのコアは通らない（従来どおり）。
+             */
+            if (dcss_ui && settings.entity_slab_screen_aligned && !vr_frame_ready) {
+                constexpr float kDcssTorchBack = 0.6f;
+                torch_pos.x += kDcssTorchBack * std::sin(camera.yaw);
+                torch_pos.y -= kDcssTorchBack * std::cos(camera.yaw);
+            }
             /*
              * **光の届く範囲**。松明の色と揺らぎは光源の種類
              * （`light_kind`）で変わる。揺らぎは松明だけで、`torch_flicker=0` なら止まる。
@@ -5926,6 +6354,23 @@ int run(const AppOptions &options)
                     return false;
                 };
                 attack_fx.evaluate(clock::ticks(), VoxelFxParams{}, fx_view, attack_fx_frame);
+            }
+            //! DCSS の立体の雲（段 3・D14）。半透明のボクセルとして攻撃の視覚効果のボクセルへ足す（描き手は同じ）。申告 `dcss-ui` のコアだけ。
+            if (dcss_ui && dcss_ui->in_game()) {
+                (void)dcss_ui->append_cloud_voxels(attack_fx_frame.voxels, world_seconds);
+                {
+                    //! DCSS の攻撃の演出（段 4。ビーム・矢・爆発・閃光の原作のタイルの絵。`dcss/dcss_fx.h`）。同じく攻撃の視覚効果のボクセルと点光源へ足す。
+                    const Vec3 dcss_forward = camera.forward();
+                    const Vec3 dcss_right = normalize(cross(Vec3{ 0.f, 0.f, 1.f }, dcss_forward));
+                    (void)dcss_ui->append_fx(attack_fx_frame, dcss_right, normalize(cross(dcss_forward, dcss_right)));
+                }
+                if (!attack_fx_frame.voxels.empty() && !optional_render.attack_fx.ready() && !optional_render.attack_fx_failed) {
+                    std::string fx_err;
+                    if (!optional_render.attack_fx.init(fx_err)) {
+                        optional_render.attack_fx_failed = true;
+                        std::fprintf(stderr, "[hd2d] 攻撃の視覚効果を用意できません: %s\n", fx_err.c_str());
+                    }
+                }
             }
             dropped_lights = collect_point_lights(frame, camera.target, lighting,
                 (frame.floor.kind != static_cast<int>(FloorKind::Surface)) ? 1.f
@@ -6271,7 +6716,24 @@ int run(const AppOptions &options)
                 renderer.set_shadow_scale(1.f);
                 if (library_ptr != nullptr) {
                     //! P10。ライブラリのバケット（地面はカットアウェイ 0・立つものは 1。中で切り替える）。
-                    draw_library_color(renderer, *library_ptr, terrain);
+                    //! DCSS（D24）: 実体のあるマスの地形のオブジェクト（扉・階段・祭壇・像など）は、壁などを描いた後に深度を書かずに描き、実体を手前にする。
+                    dcss_deferred.items.clear();
+                    dcss_occupied.clear();
+                    if (dcss_ui) {
+                        for (const auto &cell : frame.cells) {
+                            if ((cell.monster_id != 0) || (cell.object_id != 0) || ((cell.feature_flags & CELL_FEAT_PLAYER) != 0u)) {
+                                dcss_occupied.insert(occupied_cell_key(cell.gx, cell.gy));
+                            }
+                        }
+                    }
+                    draw_library_color(renderer, *library_ptr, terrain, dcss_ui ? &dcss_occupied : nullptr, dcss_ui ? &dcss_deferred : nullptr);
+                    if (dcss_ui && (std::getenv("HD2D_DCSS_LAYER_TRACE") != nullptr)) { //!< 検査用（tools/dcss/dc_d24_check.py）
+                        static std::size_t last_deferred = ~static_cast<std::size_t>(0);
+                        if (dcss_deferred.instance_count() != last_deferred) {
+                            last_deferred = dcss_deferred.instance_count();
+                            std::fprintf(stderr, "[dcss-layers] occupied=%zu deferred=%zu\n", dcss_occupied.size(), last_deferred);
+                        }
+                    }
                 }
                 renderer.set_cutaway_scale(1.f);
                 renderer.draw_instanced(wall_gpu, terrain.boxes.data(), terrain.boxes.size());
@@ -6295,6 +6757,9 @@ int run(const AppOptions &options)
                 if (!emissive_slabs.empty()) {
                     renderer.set_cutaway_scale(0.f);
                     renderer.draw_instanced(floor_gpu, emissive_slabs.data(), emissive_slabs.size());
+                }
+                if (!dcss_deferred.items.empty() && (library_ptr != nullptr)) {
+                    draw_library_deferred(renderer, *library_ptr, dcss_deferred);
                 }
                 // 実体は地形の後（地形を先に置くほうが素直）。
                 /*
@@ -6818,6 +7283,14 @@ int run(const AppOptions &options)
              * 前にあるときは新 UI の窓（後ろに残っている持ち物一覧など）だけは描かない（従来どおり）。
              * パネルの字が機能メニューの上に出ないよう、ここで一度流す。オリジナル UI は従来どおり。
              */
+            /*
+             * DCSS の区画（ステータス・メッセージ・ミニマップ・タブの欄）。**窓や HD2D の部品より先に**描いて流す
+             * （原作は窓の下にも区画を描き続ける）。自分の字は別の字なので、ここで下敷きのあとに流す。
+             */
+            if (dcss_ui && dcss_ui->layout_ok() && dcss_ui->in_game() && !vr_frame_ready) {
+                dcss_ui->draw(paint, images, screen_w, screen_h);
+                dcss_ui->flush_text();
+            }
             const bool menu_in_front = feature_menu.tab_navigation_active() || (hud_state.modern.active() && feature_menu.is_open());
             const bool hud_under_menu = settings.modern_ui && modern_window_keeps_hud(frame);
             if (!menu_in_front || hud_under_menu) {
@@ -6859,6 +7332,19 @@ int run(const AppOptions &options)
                     if (anchored) {
                         hud_state.targeting.draw_cursor_info(paint, text, vr_layout, hud_state.modern_theme, anchor_x, anchor_y);
                     }
+                }
+            }
+            /*
+             * DCSS の窓の部品（段 U3。メニュー・説明・作成の格子ほか）。HD2D の部品・DCSS の区画より**あと**（上）に描く
+             * （原作は窓の下にも区画を描き続け、窓は暗幕をかけて重なる）。下の層の四角・字を先に流す。
+             * 描きながら決まる送り先（`menu_scroll` ほか）は、ここで取り出して送る。
+             */
+            if (dcss_ui && !vr_frame_ready) {
+                paint.flush();
+                text.flush();
+                dcss_ui->draw_windows(paint, images, screen_w, screen_h);
+                for (const std::string &line : dcss_ui->take_window_outgoing()) {
+                    (void)link.send_webtiles_input(line);
                 }
             }
         }
@@ -6924,7 +7410,15 @@ int run(const AppOptions &options)
             paint.rect(RectPx{ 0, 0, screen_w, screen_h }, PaintColor{ 0.03f, 0.03f, 0.05f, 1.f });
         }
         if (!floor_cutin.active()) {
-            vpad.draw(paint, text, settings.vpad, usable_area(), pad_macros, chord_mask, settings.pad, pad_commands);
+            if (dcss_ui) {
+                //! DCSS（段 5）: 仮想パッドのボタンの名前も、パッドと同じ割り当て表（原作の割り当て）から出す。
+                PadBinds dcss_vpad_binds;
+                std::vector<PadCommand> dcss_vpad_commands;
+                dcss_ui->pad().fill_vpad_view(dcss_vpad_binds, dcss_vpad_commands);
+                vpad.draw(paint, text, settings.vpad, usable_area(), pad_macros, chord_mask, dcss_vpad_binds, dcss_vpad_commands);
+            } else {
+                vpad.draw(paint, text, settings.vpad, usable_area(), pad_macros, chord_mask, settings.pad, pad_commands);
+            }
         }
         //! 機能メニューは**いちばん上**（開いている間はこれが操作の対象なので）。
         feature_menu.draw(paint, text, layout, settings);
@@ -7113,13 +7607,41 @@ int run(const AppOptions &options)
             std::error_code shot_ec;
             if (std::filesystem::exists(trigger, shot_ec)) {
                 std::string shot_to;
+                bool opened = false;
                 {
                     std::ifstream in(trigger);
+                    opened = in.is_open();
                     std::getline(in, shot_to);
                 }
-                std::filesystem::remove(trigger, shot_ec);
-                if (!shot_to.empty()) {
-                    (void)save_framebuffer_bmp(shot_to, screen_w, screen_h);
+                /*
+                 * **開けなかった・まだ空のときは、消さずに次のフレームでやり直す。**
+                 * Windows では、置いた直後のファイルをほかのプロセス（ウイルス対策・インデックス作成など）が
+                 * 一瞬つかんでいて `ifstream` が開けないことがある。以前はそのまま消していたため、撮影の要求が
+                 * 黙って捨てられ、呼び手が時間切れまで待った（2026-10-23。DCSS の u1 が約 1 割落ちた原因。
+                 * 開けなかった回は `opened=0 len=0` で、画面自体は応答していた）。
+                 * 無限には待たない（書き手が空のファイルを置いたままのとき）。
+                 */
+                static int shot_unreadable_frames = 0;
+                constexpr int kShotUnreadableFrameLimit = 300;
+                if ((!opened || shot_to.empty()) && (shot_unreadable_frames < kShotUnreadableFrameLimit)) {
+                    ++shot_unreadable_frames;
+                    if (slow_frame_ms > 0.0) {
+                        std::fprintf(stderr, "[hd2d] diag t=%llu ms: shot trigger unreadable frame=%d opened=%d len=%zu (retry %d)\n",
+                            static_cast<unsigned long long>(clock::ticks64()), frame_index, opened ? 1 : 0, shot_to.size(),
+                            shot_unreadable_frames);
+                    }
+                } else {
+                    shot_unreadable_frames = 0;
+                    std::error_code remove_ec;
+                    const bool removed = std::filesystem::remove(trigger, remove_ec);
+                    if (slow_frame_ms > 0.0) {
+                        std::fprintf(stderr, "[hd2d] diag t=%llu ms: shot trigger frame=%d opened=%d len=%zu removed=%d remove_ec=%d\n",
+                            static_cast<unsigned long long>(clock::ticks64()), frame_index, opened ? 1 : 0, shot_to.size(),
+                            removed ? 1 : 0, remove_ec.value());
+                    }
+                    if (!shot_to.empty()) {
+                        (void)save_framebuffer_bmp(shot_to, screen_w, screen_h);
+                    }
                 }
             }
         }
@@ -7804,6 +8326,9 @@ int run(const AppOptions &options)
     weather_icons_image.unload();
     floor_cutin.shutdown();
     hud_state.modern.shutdown();
+    if (dcss_ui) {
+        dcss_ui->shutdown();
+    }
     images.shutdown();
     paint.shutdown();
     text.shutdown();

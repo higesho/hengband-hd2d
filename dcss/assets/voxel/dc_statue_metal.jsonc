@@ -1,0 +1,72 @@
+// dc_statue_metal — プレハブ定義（設計書 §7）。`dc_statue_metal.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の像 metal_statue（dngn/statues/metal_statue）。台と三角の金属枠を一から作った（tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_statue_metal",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "505050",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "646464",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "3A3332",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "D2D2B2",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "96A0B0",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "848D9B",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "727A86",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "CDD6E4",
+      "material": "stone"
+    }
+  ]
+}

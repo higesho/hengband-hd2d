@@ -1,0 +1,117 @@
+// dc_gate_exit_snake — プレハブ定義（設計書 §7）。`dc_gate_exit_snake.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の門 exit_snake（dngn/gateways/exit_snake）。輪郭の縁を厚み 11、内側を 5 にした立てた板。根元を 3 ボクセル足してある（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_gate_exit_snake",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "2F390F",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "414D14",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "60741E",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "A2C132",
+      "material": "plant"
+    },
+    {
+      "i": 6,
+      "rgb": "D9D947",
+      "material": "metal"
+    },
+    {
+      "i": 7,
+      "rgb": "374312",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "4C5B18",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "718823",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "BEE33B",
+      "material": "plant"
+    },
+    {
+      "i": 11,
+      "rgb": "FFFF53",
+      "material": "metal"
+    },
+    {
+      "i": 12,
+      "rgb": "C3D93D",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "E5FF48",
+      "material": "plant"
+    },
+    {
+      "i": 14,
+      "rgb": "141706",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "181B07",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "1F2509",
+      "material": "stone"
+    },
+    {
+      "i": 17,
+      "rgb": "252C0B",
+      "material": "stone"
+    }
+  ]
+}

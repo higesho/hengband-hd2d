@@ -1,0 +1,112 @@
+// dc_wall_depths_crystal — プレハブ定義（設計書 §7）。`dc_wall_depths_crystal.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の壁 crystal_wall_depths_0（dngn/wall/crystal_wall_depths_0）を 4 側面と天面に写し、明るさの差で 3 段の凹凸（出っ張り・基準・へこみ）を付けた（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_wall_depths_crystal",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "44325C",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000000",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "151937",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "1D1B4B",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "313165",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "424482",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "8152BA",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "BB71CB",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "DFA9DB",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "131632",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "1A1844",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "3B3D75",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "2C2C5B",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "744AA7",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "A866B7",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "C998C5",
+      "material": "stone"
+    }
+  ]
+}

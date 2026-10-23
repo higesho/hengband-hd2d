@@ -1,0 +1,82 @@
+// dc_floor_sprouting_stone — プレハブ定義（設計書 §7）。`dc_floor_sprouting_stone.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 sprouting_stone00（dngn/floor/sprouting_stone00）。タイルに合わせた凹凸（organic。出 282・へこみ 469。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_sprouting_stone",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "152E15",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "373737",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "222222",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "003500",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "002600",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "6C6C6C",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "002A02",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "535353",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "006A00",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "004F00",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "007C00",
+      "material": "stone"
+    }
+  ]
+}

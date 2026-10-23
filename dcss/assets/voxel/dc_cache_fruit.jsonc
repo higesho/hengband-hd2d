@@ -1,0 +1,92 @@
+// dc_cache_fruit — プレハブ定義（設計書 §7）。`dc_cache_fruit.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の隠し場所 cache_of_fruit_0（dngn/decor/cache_of_fruit_0）。木箱に山盛り（色は絵から。tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_cache_fruit",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "765030",
+      "material": "wood"
+    },
+    {
+      "i": 2,
+      "rgb": "462E1E",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "912A2A",
+      "material": "wood"
+    },
+    {
+      "i": 4,
+      "rgb": "BC3737",
+      "material": "wood"
+    },
+    {
+      "i": 5,
+      "rgb": "4B692F",
+      "material": "plant"
+    },
+    {
+      "i": 6,
+      "rgb": "62883D",
+      "material": "plant"
+    },
+    {
+      "i": 7,
+      "rgb": "C34E19",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "FE6520",
+      "material": "metal"
+    },
+    {
+      "i": 9,
+      "rgb": "A59B4E",
+      "material": "metal"
+    },
+    {
+      "i": 10,
+      "rgb": "D6CA65",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "323C39",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "414E4A",
+      "material": "stone"
+    }
+  ]
+}

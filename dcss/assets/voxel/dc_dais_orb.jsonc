@@ -1,0 +1,47 @@
+// dc_dais_orb — プレハブ定義（設計書 §7）。`dc_dais_orb.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS のオーブの台座 orb_dais（dngn/vaults/orb_dais）。三段の台（tools/dcss/gen_dcss_objects.py）
+{
+  "name": "dc_dais_orb",
+  "voxels_per_cell": 32,
+  "footprint": [
+    [
+      0,
+      0
+    ]
+  ],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "8B8B8B",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "BCBDCF",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "6F6F6F",
+      "material": "stone"
+    }
+  ]
+}

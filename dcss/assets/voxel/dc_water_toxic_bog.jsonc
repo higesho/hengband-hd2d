@@ -1,0 +1,192 @@
+// dc_water_toxic_bog — プレハブ定義（設計書 §7）。`dc_water_toxic_bog.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 toxic_bog1（dngn/water/toxic_bog1）。タイルに合わせた凹凸（liquid。出 165・へこみ 142。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_water_toxic_bog",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "172A0E",
+      "material": "clean"
+    },
+    {
+      "i": 2,
+      "rgb": "203F17",
+      "material": "clean"
+    },
+    {
+      "i": 3,
+      "rgb": "163614",
+      "material": "clean"
+    },
+    {
+      "i": 4,
+      "rgb": "1A3312",
+      "material": "clean"
+    },
+    {
+      "i": 5,
+      "rgb": "123311",
+      "material": "clean"
+    },
+    {
+      "i": 6,
+      "rgb": "162F0E",
+      "material": "clean"
+    },
+    {
+      "i": 7,
+      "rgb": "1D3615",
+      "material": "clean"
+    },
+    {
+      "i": 8,
+      "rgb": "1C3B13",
+      "material": "clean"
+    },
+    {
+      "i": 9,
+      "rgb": "24431A",
+      "material": "clean"
+    },
+    {
+      "i": 10,
+      "rgb": "40430D",
+      "material": "clean"
+    },
+    {
+      "i": 11,
+      "rgb": "194017",
+      "material": "clean"
+    },
+    {
+      "i": 12,
+      "rgb": "193810",
+      "material": "clean"
+    },
+    {
+      "i": 13,
+      "rgb": "16350D",
+      "material": "clean"
+    },
+    {
+      "i": 14,
+      "rgb": "0F2A0E",
+      "material": "clean"
+    },
+    {
+      "i": 15,
+      "rgb": "132C0B",
+      "material": "clean"
+    },
+    {
+      "i": 16,
+      "rgb": "234818",
+      "material": "clean"
+    },
+    {
+      "i": 17,
+      "rgb": "26451C",
+      "material": "clean"
+    },
+    {
+      "i": 18,
+      "rgb": "383C0D",
+      "material": "clean"
+    },
+    {
+      "i": 19,
+      "rgb": "2F340A",
+      "material": "clean"
+    },
+    {
+      "i": 20,
+      "rgb": "33380F",
+      "material": "clean"
+    },
+    {
+      "i": 21,
+      "rgb": "27501E",
+      "material": "clean"
+    },
+    {
+      "i": 22,
+      "rgb": "2A4819",
+      "material": "clean"
+    },
+    {
+      "i": 23,
+      "rgb": "213912",
+      "material": "clean"
+    },
+    {
+      "i": 24,
+      "rgb": "2C2D0B",
+      "material": "clean"
+    },
+    {
+      "i": 25,
+      "rgb": "353909",
+      "material": "clean"
+    },
+    {
+      "i": 26,
+      "rgb": "3B3F10",
+      "material": "clean"
+    },
+    {
+      "i": 27,
+      "rgb": "204D1B",
+      "material": "clean"
+    },
+    {
+      "i": 28,
+      "rgb": "292E0B",
+      "material": "clean"
+    },
+    {
+      "i": 29,
+      "rgb": "505413",
+      "material": "clean"
+    },
+    {
+      "i": 30,
+      "rgb": "494B0E",
+      "material": "clean"
+    },
+    {
+      "i": 31,
+      "rgb": "1F4414",
+      "material": "clean"
+    },
+    {
+      "i": 32,
+      "rgb": "122409",
+      "material": "clean"
+    },
+    {
+      "i": 33,
+      "rgb": "2D5A22",
+      "material": "clean"
+    }
+  ]
+}

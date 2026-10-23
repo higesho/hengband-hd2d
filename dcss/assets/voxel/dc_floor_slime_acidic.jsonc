@@ -1,0 +1,107 @@
+// dc_floor_slime_acidic — プレハブ定義（設計書 §7）。`dc_floor_slime_acidic.vox` と対で使う。
+// tools/voxel/export_vox.py が書き出したもの。手で直してよいが、
+// footprint を偽ると読み込み時の照合で落ちる（§7.2）。
+// DCSS の地面 acidic_floor0（dngn/floor/acidic_floor0）。タイルに合わせた凹凸（organic。出 292・へこみ 554。縁は基準の高さ）のボクセルの物（tools/dcss/gen_dcss_terrain.py）
+{
+  "name": "dc_floor_slime_acidic",
+  "voxels_per_cell": 32,
+  "footprint": [],
+  "anchor": [
+    0,
+    0
+  ],
+  "parts": [
+    {
+      "name": "main",
+      "voxels": "main",
+      "grounded": true,
+      "motion": {
+        "kind": "static"
+      },
+      "wind_k": 1.0
+    }
+  ],
+  "variants": [],
+  "palette": [
+    {
+      "i": 1,
+      "rgb": "033909",
+      "material": "stone"
+    },
+    {
+      "i": 2,
+      "rgb": "000400",
+      "material": "stone"
+    },
+    {
+      "i": 3,
+      "rgb": "010B03",
+      "material": "stone"
+    },
+    {
+      "i": 4,
+      "rgb": "00360D",
+      "material": "stone"
+    },
+    {
+      "i": 5,
+      "rgb": "003E0E",
+      "material": "stone"
+    },
+    {
+      "i": 6,
+      "rgb": "062A06",
+      "material": "stone"
+    },
+    {
+      "i": 7,
+      "rgb": "0B690B",
+      "material": "stone"
+    },
+    {
+      "i": 8,
+      "rgb": "109712",
+      "material": "stone"
+    },
+    {
+      "i": 9,
+      "rgb": "031804",
+      "material": "stone"
+    },
+    {
+      "i": 10,
+      "rgb": "00911D",
+      "material": "stone"
+    },
+    {
+      "i": 11,
+      "rgb": "031704",
+      "material": "stone"
+    },
+    {
+      "i": 12,
+      "rgb": "0DE313",
+      "material": "stone"
+    },
+    {
+      "i": 13,
+      "rgb": "030E03",
+      "material": "stone"
+    },
+    {
+      "i": 14,
+      "rgb": "031203",
+      "material": "stone"
+    },
+    {
+      "i": 15,
+      "rgb": "063806",
+      "material": "stone"
+    },
+    {
+      "i": 16,
+      "rgb": "00460E",
+      "material": "stone"
+    }
+  ]
+}

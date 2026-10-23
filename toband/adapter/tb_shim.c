@@ -106,6 +106,22 @@ int tb_character_generated(void)
     return character_generated ? 1 : 0;
 }
 
+/* モンスター・所持品・床の物の配列から、添字の要素を指すポインタを返す（添字の範囲は呼び出し側が守る）。 */
+static monster_type *tb_monster_slot(int idx)
+{
+    return &m_list[idx];
+}
+
+static object_type *tb_pack_slot(int idx)
+{
+    return &inventory[idx];
+}
+
+static object_type *tb_floor_obj(int idx)
+{
+    return &o_list[idx];
+}
+
 int tb_rogue_like_commands(void)
 {
     return rogue_like_commands ? 1 : 0;
@@ -129,7 +145,7 @@ int tb_read_item_line(int what, int index, char *out, int cap)
         return TB_ERR_ARG;
     }
     out[0] = 0;
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return 0;
     }
 
@@ -142,7 +158,7 @@ int tb_read_item_line(int what, int index, char *out, int cap)
     }
 
     for (i = from; i < to; i++) {
-        object_type *o_ptr = &inventory[i];
+        object_type *o_ptr = tb_pack_slot(i);
         char name[MAX_NLEN];
         char line[MAX_NLEN + 8];
 
@@ -244,7 +260,7 @@ static int tb_read_visible_monster_raw(int index, char *out, int cap)
     }
 
     for (i = 1; i < m_max; i++) {
-        monster_type *m_ptr = &m_list[i];
+        monster_type *m_ptr = tb_monster_slot(i);
         char name[MAX_NLEN];
 
         if (!m_ptr->r_idx) {
@@ -1036,7 +1052,7 @@ void tb_apply_cursor_mode(int enable)
     if (!enable) {
         return; /* 従来どおり（文字キー主体）。use_menu はコアに任せる */
     }
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return; /* タイトル・誕生画面はコアの別メニュー。触らない */
     }
     command_menu = TRUE; /* Enter ＝ コマンドメニュー */
@@ -1055,7 +1071,7 @@ static void tb_place_name(char *out, int cap)
     }
     out[0] = '\0';
 
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return;
     }
 
@@ -1089,7 +1105,7 @@ static void tb_depth_text(char *out, int cap)
     }
     out[0] = '\0';
 
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return;
     }
 
@@ -1135,7 +1151,7 @@ int tb_read_hud(tb_hud_data *out)
      * 誕生画面の途中経過（振り直し中の能力値など）を意味しない。**数値を出すのは
      * ゲームが始まってから**にする——半端な値を HUD に出すと画面側で嘘になる。
      */
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return TB_OK;
     }
 
@@ -1214,7 +1230,7 @@ int tb_floor_size(int *width, int *height)
 
 int tb_player_kind(int *pclass, int *prace)
 {
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return TB_ERR_STATE;
     }
     if (pclass) {
@@ -1228,7 +1244,7 @@ int tb_player_kind(int *pclass, int *prace)
 
 int tb_player_sex(int *psex)
 {
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return TB_ERR_STATE;
     }
     if (psex) {
@@ -1396,7 +1412,7 @@ void tb_elem_info(int y, int x, tb_info_span_fn span, tb_info_newline_fn newline
 
     /* 2. 見えているモンスター */
     if (c_ptr->m_idx && (c_ptr->m_idx < m_max) && m_list[c_ptr->m_idx].ml) {
-        monster_type *m_ptr = &m_list[c_ptr->m_idx];
+        monster_type *m_ptr = tb_monster_slot(c_ptr->m_idx);
         char acount[10];
         char m_name[80];
         const s16b elem = get_cur_melem(m_ptr);
@@ -1892,7 +1908,7 @@ static int tb_read_map_raw(int x0, int y0, int w, int h, tb_map_cell *out, int c
              * 変化・変装の敵で記号とタイルが食い違わないようにする。
              */
             if (c_ptr->m_idx > 0 && c_ptr->m_idx < m_max) {
-                monster_type *m_ptr = &m_list[c_ptr->m_idx];
+                monster_type *m_ptr = tb_monster_slot(c_ptr->m_idx);
                 if (m_ptr->r_idx && m_ptr->ml) {
                     cell->monster_id = (unsigned short)(m_ptr->ap_r_idx ? m_ptr->ap_r_idx : m_ptr->r_idx);
                     cell->monster_slot = (unsigned short)c_ptr->m_idx;
@@ -1923,7 +1939,7 @@ static int tb_read_map_raw(int x0, int y0, int w, int h, tb_map_cell *out, int c
                 s16b this_o_idx;
                 s16b next_o_idx = 0;
                 for (this_o_idx = c_ptr->o_idx; this_o_idx; this_o_idx = next_o_idx) {
-                    object_type *o_ptr = &o_list[this_o_idx];
+                    object_type *o_ptr = tb_floor_obj(this_o_idx);
                     next_o_idx = o_ptr->next_o_idx;
                     if (o_ptr->k_idx && (o_ptr->marked & OM_FOUND)) {
                         cell->object_id = (unsigned short)o_ptr->k_idx;
@@ -2256,7 +2272,7 @@ int tb_read_minimap(unsigned char *out, int cap)
             unsigned char kind;
 
             if (c_ptr->m_idx > 0 && c_ptr->m_idx < m_max) {
-                monster_type *m_ptr = &m_list[c_ptr->m_idx];
+                monster_type *m_ptr = tb_monster_slot(c_ptr->m_idx);
                 monster_here = (m_ptr->r_idx && m_ptr->ml) ? 1 : 0;
             }
             /* 未踏破は出さない。ただし見えている敵（テレパシー等）は出す。 */
@@ -2279,7 +2295,7 @@ int tb_read_minimap(unsigned char *out, int cap)
                 s16b this_o_idx;
                 s16b next_o_idx = 0;
                 for (this_o_idx = c_ptr->o_idx; this_o_idx; this_o_idx = next_o_idx) {
-                    object_type *o_ptr = &o_list[this_o_idx];
+                    object_type *o_ptr = tb_floor_obj(this_o_idx);
                     next_o_idx = o_ptr->next_o_idx;
                     if (o_ptr->k_idx && (o_ptr->marked & OM_FOUND)) {
                         kind = TB_MM_ITEM;
@@ -2417,7 +2433,7 @@ int tb_read_floor_info(tb_floor_info *out)
     out->day_minute = 720;
     out->daytime = 1;
 
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return TB_OK;
     }
 
@@ -2455,7 +2471,7 @@ int tb_read_weather(int out[3])
         return 0;
     }
     out[0] = out[1] = out[2] = 0;
-    if (!character_generated) {
+    if (!tb_character_generated()) {
         return 0;
     }
     for (i = 0; i < 3; i++) {
@@ -3032,7 +3048,7 @@ static void tb_perm_collect(tb_perm_ctx *c)
 
     memset(c, 0, sizeof(*c));
     for (i = INVEN_RARM; i < INVEN_TOTAL; i++) {
-        object_type *o_ptr = &inventory[i];
+        object_type *o_ptr = tb_pack_slot(i);
 
         if (!o_ptr->k_idx) {
             continue;
@@ -3056,7 +3072,7 @@ static int tb_perm_row_state(const tb_perm_ctx *c, const tb_perm_row *r)
 
     if (r->mode == TB_PM_CURSE) {
         for (i = INVEN_RARM; i < INVEN_TOTAL; i++) {
-            object_type *o_ptr = &inventory[i];
+            object_type *o_ptr = tb_pack_slot(i);
 
             if (o_ptr->k_idx && (o_ptr->curse_flags & (TRC_CURSED | TRC_HEAVY_CURSE | TRC_PERMA_CURSE))) {
                 return 1;
@@ -3411,8 +3427,11 @@ int tb_status_selftest(char *err, int cap, int *checked)
  *                                         入口から命じた cast / melee / place は働く。`all` は敵対している敵だけ
  *                                         （ペット・友好は止めない）で、あとから現れた敵対の敵も止める
  *   list                                  今の時刻（`info time turn=… player_x=… player_y=…`）と、階にいる敵の一覧
- *                                         （`info monster m_idx=… r_idx=… dx=… dy=… hostile=… visible=… hold=… energy=…`。
- *                                         dx・dy はプレイヤーからのずれ）を出す。読み取りだけ（検査が `m_idx` を知るための入口）
+ *                                         （`info monster m_idx=… r_idx=… dx=… dy=… hostile=… visible=… hold=… energy=… name=<名前>`。
+ *                                         dx・dy はプレイヤーからのずれ。`name=` は行の最後で、見るコマンドが使うのと同じ
+ *                                         `monster_desc()`（`MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE`）の名前。見るコマンドの行は
+ *                                         80 桁で切れて長い名前が映らないことがあるので、名前の確かめはこちらを読む）を出す。
+ *                                         読み取りだけ（検査が `m_idx` と名前を知るための入口。乱数の状態は動かさない）
  *
  * ## hold のしくみ（原作ソースは書き換えない）
  *
@@ -3688,7 +3707,7 @@ static int tbt_nearest_monster(void)
     int best = 0;
 
     for (i = 1; i < m_max; i++) {
-        monster_type *m_ptr = &m_list[i];
+        monster_type *m_ptr = tb_monster_slot(i);
 
         if (!m_ptr->r_idx || !m_ptr->ml || !is_hostile(m_ptr)) continue;
         if (!best || (m_ptr->cdis < m_list[best].cdis)) best = i;
@@ -3724,7 +3743,7 @@ static int tbt_resolve_target(const char *tok)
 /*! 指定の敵に、指定の魔法を撃たせる。撃たせたら 1。 */
 static int tbt_cast(int m_idx, const tbt_spell_def *sp)
 {
-    monster_type *m_ptr = &m_list[m_idx];
+    monster_type *m_ptr = tb_monster_slot(m_idx);
     const int r_idx = m_ptr->r_idx;
     monster_race *r_ptr = &r_info[r_idx];
     tbt_race_save save;
@@ -3798,7 +3817,7 @@ static int tbt_cast(int m_idx, const tbt_spell_def *sp)
 /*! 指定の敵に、プレイヤーへ直接攻撃させる。攻撃させたら 1。 */
 static int tbt_melee(int m_idx)
 {
-    monster_type *m_ptr = &m_list[m_idx];
+    monster_type *m_ptr = tb_monster_slot(m_idx);
     monster_race *r_ptr = &r_info[m_ptr->r_idx];
     const bool inkey_flag0 = inkey_flag;
     const bool inkey_base0 = inkey_base;
@@ -3854,7 +3873,7 @@ static int tbt_parse_int(const char *tok, int *out)
  * 古いマスと新しいマスの `lite_spot()`・光る敵なら `PU_MON_LITE`。 */
 static int tbt_place(int m_idx, int dx, int dy)
 {
-    monster_type *m_ptr = &m_list[m_idx];
+    monster_type *m_ptr = tb_monster_slot(m_idx);
     const int oy = m_ptr->fy;
     const int ox = m_ptr->fx;
     const int ny = py + dy;
@@ -3979,7 +3998,7 @@ static void tbt_hold_refresh(void)
     }
     if (tbt_hold_all) {
         for (i = 1; i < m_max; i++) {
-            monster_type *m_ptr = &m_list[i];
+            monster_type *m_ptr = tb_monster_slot(i);
 
             if (!m_ptr->r_idx || !is_hostile(m_ptr) || (tbt_hold_find(i) >= 0)) continue;
             if (tbt_hold_add(i, 1)) {
@@ -4044,12 +4063,18 @@ static void tbt_list_monsters(void)
 
     fprintf(stderr, "%s info time turn=%ld player_x=%d player_y=%d\n", tbt_tag, (long)turn, px, py);
     for (i = 1; i < m_max; i++) {
-        const monster_type *m_ptr = &m_list[i];
+        monster_type *m_ptr = tb_monster_slot(i);
+        char name[MAX_NLEN];
+        tb_rng_snapshot snap;
 
         if (!m_ptr->r_idx) continue;
-        fprintf(stderr, "%s info monster m_idx=%d r_idx=%d dx=%d dy=%d hostile=%d visible=%d hold=%d energy=%d\n", tbt_tag, i,
+        /* 名前は行の最後（空白を含むので、数の欄の読み取りを邪魔しない）。幻覚中の名前選びが乱数を引くので、状態を戻す。 */
+        tb_rng_save(&snap);
+        monster_desc(name, m_ptr, MD_ASSUME_VISIBLE | MD_INDEF_VISIBLE);
+        tb_rng_restore(&snap);
+        fprintf(stderr, "%s info monster m_idx=%d r_idx=%d dx=%d dy=%d hostile=%d visible=%d hold=%d energy=%d name=%s\n", tbt_tag, i,
                 (int)m_ptr->r_idx, (int)m_ptr->fx - px, (int)m_ptr->fy - py, is_hostile(m_ptr) ? 1 : 0, m_ptr->ml ? 1 : 0,
-                (tbt_hold_find(i) >= 0) ? 1 : 0, (int)m_ptr->energy_need);
+                (tbt_hold_find(i) >= 0) ? 1 : 0, (int)m_ptr->energy_need, name);
     }
 }
 
