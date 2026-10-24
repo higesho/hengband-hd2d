@@ -474,6 +474,41 @@ void DcssTabs::set_state(int input_mode, bool map_screen, bool japanese)
     }
 }
 
+void DcssTabs::set_gear_heading(bool enabled, bool others_visible)
+{
+    if ((enabled == this->gear_enabled_) && (others_visible == this->gear_others_visible_)) {
+        return;
+    }
+    this->gear_enabled_ = enabled;
+    this->gear_others_visible_ = others_visible;
+    if (!this->have_layout_ || this->regions_.empty()) {
+        return;
+    }
+    // 見出しを作り直す。選んだ見出しと中身を閉じているかは、そのまま持ち越す。
+    const int active = this->regions_[0].active;
+    const bool deactivated = this->regions_[0].deactivated;
+    this->rebuild_regions();
+    this->regions_[0].active = active;
+    this->regions_[0].deactivated = deactivated;
+    ++this->serial_;
+}
+
+bool DcssTabs::gear_heading(int &x, int &y, int &size) const
+{
+    if (this->regions_.empty()) {
+        return false;
+    }
+    for (const Heading &h : this->regions_[0].headings) {
+        if (h.tab == kTabGear) {
+            x = h.x;
+            y = h.y;
+            size = h.size;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool DcssTabs::tab_enabled_in_main(int tab) const
 {
     if ((tab < 0) || (tab >= kTabCount)) {
@@ -564,10 +599,16 @@ void DcssTabs::rebuild_regions()
         const int unit = std::max(1, L.tabs.cell_h);
         const int size = std::max(kIcon, (kIcon * unit) / 32);
         const int pitch = (((kIcon * 2) + 1) * unit) / 32;
-        for (int i = 0; (i < kTabCount) && (L.tabs.margin_x > 0); ++i) {
+        for (int i = 0; (i < kTabCount) && (L.tabs.margin_x > 0) && (!this->gear_enabled_ || this->gear_others_visible_); ++i) {
             const int y = this->origin_y_ + L.tabs.y + (i * pitch);
             const int x = this->origin_x_ + L.tabs.x + L.tabs.margin_x - size;
             main.headings.push_back({ i, 0, x, y, size, pitch });
+        }
+        if (this->gear_enabled_ && (L.tabs.margin_x > 0)) {
+            // 歯車（D31）は列の最後（下の端）。配置の計算が見出しの数に歯車を入れている（`DcssLayoutInput::extra_tab_headings`）ので、窓の高さに収まる。
+            const int y = this->origin_y_ + L.tabs.y + (kTabCount * pitch);
+            const int x = this->origin_x_ + L.tabs.x + L.tabs.margin_x - size;
+            main.headings.push_back({ kTabGear, 0, x, y, size, pitch });
         }
         // 中身は左端（窓の左）から格子で置く。
         main.sx = this->origin_x_;
@@ -972,6 +1013,11 @@ void DcssTabs::load_heading_images()
     }
     if (ok) {
         this->heading_images_loaded_ = true;
+        std::string gear_err;
+        this->tab_gear_label_ok_ = this->tab_gear_label_.load("assets/ui/dcss/tab_label_gear.png", gear_err); // 無くても遊べる（枠だけ）
+        if (!this->tab_gear_label_ok_) {
+            std::fprintf(stderr, "[hd2d] DCSS の歯車の見出しの絵を読めません: %s\n", gear_err.c_str());
+        }
     } else {
         this->heading_images_failed_ = true;
         std::fprintf(stderr, "[hd2d] DCSS のタブの見出しの絵を読めません: %s\n", err.c_str());
@@ -984,12 +1030,22 @@ void DcssTabs::draw_tab_headings(const UiImagePainter &images, const Region &r)
         return;
     }
     for (const Heading &h : r.headings) {
-        const bool selected = r.fixed || ((r.active == h.tab) && true);
+        const bool is_gear = (h.tab == kTabGear);
+        const bool selected = !is_gear && (r.fixed || ((r.active == h.tab) && true)); // 歯車は選んだ見出しにならない
         const bool over = (r.mouse_tab == h.tab);
         // 原作 `TabbedRegion::pack_buffers`: 選んだ > マウスを載せた > 選んでいない
         const UiImage &frame = selected ? this->tab_selected_ : (over ? this->tab_mouseover_ : this->tab_unselected_);
-        const UiImage &label = this->tab_labels_[static_cast<std::size_t>(h.tab)];
         const RectPx dst{ h.x, h.y, h.size, h.size };
+        if (is_gear && !this->tab_gear_label_ok_) {
+            // 歯車の絵が無いとき: 枠だけ。
+            if (h.size == kIcon) {
+                images.draw_crop(frame, dst, 0, 0, kIcon, kIcon, 1.f);
+            } else {
+                images.draw_region(frame, dst, 0.f, 0.f, 1.f, 1.f, 1.f);
+            }
+            continue;
+        }
+        const UiImage &label = is_gear ? this->tab_gear_label_ : this->tab_labels_[static_cast<std::size_t>(h.tab)];
         if (h.size == kIcon) {
             images.draw_crop(frame, dst, 0, 0, kIcon, kIcon, 1.f);
             images.draw_crop(label, dst, 0, 0, kIcon, kIcon, 1.f);
@@ -1073,6 +1129,8 @@ void DcssTabs::draw(const UiImagePainter &images, TextOverlay &label, int label_
         if ((r.mouse_tab != -1) && (r.mouse_tab >= 0) && (r.mouse_tab < kTabCount)) {
             // 原作 `TabbedRegion::draw_tag`: 見出しに載せたら、その名前を格子の上の 1 行に出す。
             desc = this->tab_name(r.mouse_tab);
+        } else if (r.mouse_tab == kTabGear) {
+            desc = this->japanese_ ? "機能メニュー" : "Feature menu"; // 歯車（D31）
         }
         if (!desc.empty()) {
             // 原作 `GridRegion::draw_desc`: 格子の頭の半マス上。小さい配置は区画の下端。
@@ -1165,6 +1223,16 @@ bool DcssTabs::on_mouse(const DcssTabMouse &ev)
         if (mouse_tab != r.mouse_tab) {
             r.mouse_tab = mouse_tab;
             ++this->serial_;
+        }
+        if (mouse_tab == kTabGear) {
+            // 歯車（D31）: 押すと機能メニューを開く要求を立てるだけ。選んだ見出しは替えず、地図・ほかの区画へも漏らさない。
+            if (press && (ev.button == 1)) {
+                this->gear_requested_ = true;
+            }
+            if (press) {
+                return true;
+            }
+            continue;
         }
         if (mouse_tab != -1) {
             if (press) {
@@ -1304,5 +1372,119 @@ std::string DcssTabs::describe() const
     }
     return s;
 }
+
+int dcss_gear_heading_selftest()
+{
+    int failures = 0;
+    const auto check = [&](bool ok, const char *what) {
+        if (!ok) {
+            std::fprintf(stderr, "[dcss-gear] selftest: FAIL %s\n", what);
+            ++failures;
+        }
+    };
+    // 縦 1080×2400 の端末（論理の窓 540×1200。下の案内の帯を引いて高さ 1100 とする。Android の 540 の行: crt 10・stat 12・msg 12・tip 10・lbl 10）。
+    const auto make_input = [](bool gear, bool icons) {
+        DcssLayoutInput in;
+        in.window_w = 540;
+        in.window_h = 1100;
+        const auto fm = [](int px) { return DcssFontMetrics{ px, px, px }; };
+        in.fonts.crt = fm(10);
+        in.fonts.msg = fm(12);
+        in.fonts.stat = fm(12);
+        in.fonts.tip = fm(10);
+        in.fonts.lbl = fm(10);
+        in.tile_map_pixels = 1;
+        in.tile_viewport_scale_pct = 100;
+        in.tile_map_scale_pct = 50;
+        in.show_tab_icons = icons;
+        in.extra_tab_headings = gear ? 1 : 0;
+        in.tab_column_always = gear;
+        return in;
+    };
+    const DcssLayout plain_hidden = DcssLayout::compute(make_input(false, false));
+    const DcssLayout plain_shown = DcssLayout::compute(make_input(false, true));
+    const DcssLayout gear_hidden = DcssLayout::compute(make_input(true, false));
+    const DcssLayout gear_shown = DcssLayout::compute(make_input(true, true));
+    check(plain_hidden.ok && plain_shown.ok && gear_hidden.ok && gear_shown.ok, "all four layouts are computed");
+    check(plain_hidden.small_layout && gear_shown.small_layout, "the layouts are the small layout");
+    // 歯車が無いとき（`extra_tab_headings` = 0）は原作の式のまま: 見出しの 1 マス = ((31 * 高さ / 9 / 20) - 1) / 2。
+    const int expect_plain = ((((32 - 1) * 1100) / 9 / 20) - 1) / 2;
+    check(plain_shown.tabs.cell_h == expect_plain, "without the gear the heading size follows the original formula");
+    check(plain_hidden.tabs.margin_x == 0, "without the gear and with the icons hidden the right column takes no width (unchanged)");
+    // 歯車があるときは見出し 10 個として数える。
+    const int expect_gear = ((((32 - 1) * 1100) / 10 / 20) - 1) / 2;
+    check(gear_shown.tabs.cell_h == expect_gear, "with the gear the heading count is 10 in the original formula");
+    check(gear_shown.tabs.cell_h < plain_shown.tabs.cell_h, "the headings get smaller to make room for the gear");
+    check(gear_hidden.tabs.margin_x > 0 && gear_hidden.tabs.margin_x == gear_shown.tabs.margin_x, "the column width is kept when the icons are hidden (the gear stays)");
+    const int unit = gear_shown.tabs.cell_h;
+    const int pitch = (((20 * 2) + 1) * unit) / 32;
+    const int size = std::max(20, (20 * unit) / 32);
+    check((kTabCount + 1) * pitch <= 1100, "ten headings fit in the window height");
+
+    for (const bool others_visible : { true, false }) {
+        DcssTabs t;
+        t.set_state(1, false, true);
+        (void)t.ingest_json("{}");
+        t.set_gear_heading(true, others_visible);
+        t.set_layout(others_visible ? gear_shown : gear_hidden, 0, 0);
+        int gx = 0;
+        int gy = 0;
+        int gs = 0;
+        check(t.gear_heading(gx, gy, gs), "the gear heading exists");
+        check(t.heading_count() == (others_visible ? kTabCount + 1 : 1), "heading count (gear only when the icons are hidden)");
+        check(gy == (kTabCount * pitch) + gear_shown.tabs.y && gs == size, "the gear is the last heading, same size as the others");
+        check(gy + gs <= 1100, "the gear is inside the window");
+        const int cx = gx + (gs / 2);
+        const int cy = gy + (gs / 2);
+        // 押す（左）: 要求が立つ。見出しは替わらない・コアへの要求は出ない。
+        DcssTabMouse press;
+        press.kind = DcssTabMouse::Kind::Press;
+        press.x = cx;
+        press.y = cy;
+        press.button = 1;
+        check(t.on_mouse(press), "pressing the gear is consumed");
+        check(t.take_gear_request(), "pressing the gear asks for the feature menu");
+        check(!t.take_gear_request(), "the request is taken once");
+        check(t.take_outgoing().empty(), "pressing the gear sends nothing to the core");
+        // 右クリックでは開かない（食うだけ）。
+        press.button = 3;
+        check(t.on_mouse(press) && !t.take_gear_request(), "a right click does not open the menu (but does not leak)");
+        // 命令待ちでないとき（`-more-`）は何もしない。
+        t.set_state(5, false, true);
+        press.button = 1;
+        check(!t.on_mouse(press) && !t.take_gear_request(), "the gear is inactive while not waiting for a command");
+        t.set_state(1, false, true);
+        // 動き（載せるだけ）は要求を立てない。
+        DcssTabMouse move = press;
+        move.kind = DcssTabMouse::Kind::Move;
+        check(!t.on_mouse(move) && !t.take_gear_request(), "hovering over the gear does nothing");
+        if (others_visible) {
+            // ほかの見出しを押すと、いつもどおり切り替わる（歯車で選んだ見出しが替わっていない）。
+            const std::string before = t.describe();
+            DcssTabMouse other = press;
+            other.x = gx;
+            other.y = (gear_shown.tabs.y + (2 * pitch)) + 2;
+            other.x = gx + 2;
+            check(t.on_mouse(other) && !t.take_gear_request(), "pressing another heading is still a tab switch");
+            check(t.describe() != before, "and the tab did switch");
+        }
+    }
+    // 歯車を外す。
+    {
+        DcssTabs t;
+        t.set_gear_heading(true, true);
+        t.set_layout(gear_shown, 0, 0);
+        t.set_gear_heading(false, true);
+        int gx = 0;
+        int gy = 0;
+        int gs = 0;
+        check(!t.gear_heading(gx, gy, gs) && t.heading_count() == kTabCount, "turning the gear off leaves the nine headings");
+    }
+    if (failures == 0) {
+        std::fprintf(stderr, "[dcss-gear] selftest: ok\n");
+    }
+    return failures;
+}
+
 
 } // namespace hd2d::dcss

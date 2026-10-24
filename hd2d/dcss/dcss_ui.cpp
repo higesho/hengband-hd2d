@@ -112,6 +112,10 @@ DcssUi::DcssUi()
 {
     // 割り当ての画面の窓（画面の側で積んだ窓）の操作は、コアへ送らずここへ渡す（段 5）。
     this->windows_.set_local_handler([this](const std::string &line) { this->pad_screen_.on_line(line); });
+    // 検査用: 環境変数 HD2D_DCSS_GEAR=1 で、Windows・Linux の小さい配置にも歯車を出す（既定は出さない。Android・Quest は `use_android_profile` で有効になる）。
+    if (const char *gear = std::getenv("HD2D_DCSS_GEAR"); (gear != nullptr) && (*gear == '1')) {
+        this->gear_enabled_ = true;
+    }
 }
 
 DcssUi::~DcssUi()
@@ -138,11 +142,13 @@ void DcssUi::use_android_profile(int display_w, int display_h)
         this->tabs_.set_android_extras(true);
         this->windows_.set_android_extras(true, [this]() { this->keyboard_toggle_ = true; });
         this->map_mouse_.set_tooltip_enabled(false);
+        this->gear_enabled_ = true; // 指だけで機能メニューを開く入口（右端の見出しの列の歯車。D31）
     }
     this->android_profile_ = true;
     this->display_w_ = display_w;
     this->display_h_ = display_h;
 }
+
 
 int DcssUi::glyph_y_shift() const
 {
@@ -302,6 +308,8 @@ bool DcssUi::prepare(int origin_x, int origin_y, int usable_w, int usable_h, int
         in.tile_map_scale_pct = this->android_.map_scale_pct;
         in.show_tab_icons = this->tab_icons_shown_; // 原作 `tilereg-tab.cc:73`: Android は既定で見出しの絵を出さない（ステータス欄を押すと切り替わる）
     }
+    in.extra_tab_headings = this->gear_enabled_ ? 1 : 0; // 歯車の見出しも見出しの数に入れて、窓の高さに収める（D31）
+    in.tab_column_always = this->gear_enabled_; // 見出しの絵を隠していても、歯車だけを出す列の幅を取る
     in.spell_count = this->tabs_.spell_count();
     in.ability_count = this->tabs_.ability_count();
 
@@ -309,7 +317,7 @@ bool DcssUi::prepare(int origin_x, int origin_y, int usable_w, int usable_h, int
         && (in.fonts.stat.size_px == this->last_input_.fonts.stat.size_px) && (in.fonts.msg.size_px == this->last_input_.fonts.msg.size_px)
         && (in.fonts.lbl.size_px == this->last_input_.fonts.lbl.size_px) && (in.tile_viewport_scale_pct == this->last_input_.tile_viewport_scale_pct)
         && (in.show_tab_icons == this->last_input_.show_tab_icons) && (in.spell_count == this->last_input_.spell_count)
-        && (in.ability_count == this->last_input_.ability_count);
+        && (in.ability_count == this->last_input_.ability_count) && (in.extra_tab_headings == this->last_input_.extra_tab_headings);
     if (!same) {
         this->layout_ = DcssLayout::compute(in);
         this->last_input_ = in;
@@ -342,6 +350,7 @@ bool DcssUi::prepare(int origin_x, int origin_y, int usable_w, int usable_h, int
             std::fprintf(stderr, "[hd2d] DCSS の攻撃の演出の絵を読めません: %s\n", ferr_text.c_str());
         }
     }
+    this->tabs_.set_gear_heading(this->gear_enabled_, this->tab_icons_shown_);
     this->tabs_.set_layout(this->layout_, this->origin_x_, this->origin_y_);
     {
         // 窓の部品の層は窓全体（原作の `UIRoot`）。字の大きさは窓の大きさの表の `tile_font_crt`。
@@ -545,6 +554,17 @@ void DcssUi::draw(UiPaint &paint, const UiImagePainter &images, int screen_w, in
     paint.flush();
     this->tabs_.set_state(this->model_.input_mode(), this->model_.map_screen(), this->japanese_);
     this->tabs_.draw(images, this->lbl_font_.text, this->layout_.tabs.cell_w, this->profile_.lbl_px);
+    {
+        // 検査の窓口: 歯車の見出しを押せる部品として記録する（`tap(id="dcss:gear")`。位置は窓の座標）。
+        int gx = 0;
+        int gy = 0;
+        int gs = 0;
+        UiProbe &probe = ui_probe();
+        if (probe.enabled() && this->tabs_.gear_heading(gx, gy, gs)) {
+            const int k = this->ui_scale_;
+            probe.button("歯車", ProbeRect{ gx * k, gy * k, gs * k, gs * k }, true, false, "dcss-gear", false, "dcss:gear");
+        }
+    }
     {
         const std::string d = this->tabs_.describe();
         if (d != this->last_tabs_described_) {

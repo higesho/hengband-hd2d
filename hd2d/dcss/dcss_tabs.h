@@ -163,6 +163,25 @@ public:
     std::vector<DcssTabOutgoing> take_outgoing();
 
     /*!
+     * 歯車の見出し（D31。HD2D の機能メニューの入口。原作には無い）。小さい配置の右端に縦に並ぶ見出しの列の最後（下の端）に、ほかの見出しと同じ大きさ・同じ枠で足す。
+     * 押すと `take_gear_request()` が真になるだけで、選んだ見出しは替わらない（地図・タブの切り替えへも漏れない）。
+     * @param enabled 真なら足す（配置に右端の列の幅があるときだけ。列の幅は `DcssLayoutInput::tab_column_always` で確保する）
+     * @param others_visible 偽ならほかの見出しは出さず、歯車だけを同じ場所に出す（原作の Android は既定で見出しの絵を隠す）
+     */
+    void set_gear_heading(bool enabled, bool others_visible);
+    //! 歯車が押されていれば真にして消す。
+    bool take_gear_request()
+    {
+        const bool v = this->gear_requested_;
+        this->gear_requested_ = false;
+        return v;
+    }
+    //! 検査用: 歯車の見出しの位置（窓の座標）と大きさ。無ければ偽。
+    bool gear_heading(int &x, int &y, int &size) const;
+    //! 検査用: 主の欄の見出しの数（歯車を含む）。
+    int heading_count() const { return this->regions_.empty() ? 0 : static_cast<int>(this->regions_[0].headings.size()); }
+
+    /*!
      * Android・Quest 用の足し物（原作の `tilereg-cmd.h`: `ct_system_commands` の末尾の `CMD_TOGGLE_KEYBOARD`。`#ifdef __ANDROID__`）。
      * システム命令の欄の 13 番目に「画面上のキーボードを表示/非表示にする」を足す。押すとコアへは送らず `take_keyboard_toggle()` が真になる
      * （画面の側でキーボードを出し入れする）。
@@ -278,6 +297,9 @@ private:
     int inv_page_{ 0 };
     bool android_extras_{ false };
     bool keyboard_toggle_{ false };
+    bool gear_enabled_{ false };
+    bool gear_others_visible_{ true };
+    bool gear_requested_{ false };
     std::vector<DcssTabOutgoing> outgoing_;
     std::uint64_t serial_{ 0 };
 
@@ -286,8 +308,13 @@ private:
     UiImage tab_unselected_;
     UiImage tab_mouseover_;
     UiImage tab_labels_[kTabCount];
+    UiImage tab_gear_label_; //!< 歯車の見出しの絵（`assets/ui/dcss/tab_label_gear.png`。無ければ枠だけ）
+    bool tab_gear_label_ok_{ false };
     bool heading_images_loaded_{ false };
     bool heading_images_failed_{ false };
 };
+
+//! 検査用: 歯車の見出し（D31）の自己検査。窓も GL も使わない。失敗した項目の数を返す。`dcss_touch_selftest` が呼ぶ（`--dcss-touch-check`）。
+int dcss_gear_heading_selftest();
 
 } // namespace hd2d::dcss

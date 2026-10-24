@@ -196,6 +196,17 @@ public:
     //! 小さい配置のタブの見出しの絵を出しているか（Android は既定で偽。ステータス欄を押すと切り替わる）。
     bool tab_icons_shown() const { return this->tab_icons_shown_; }
 
+    /*!
+     * 歯車の見出し（D31。`DcssTabs::set_gear_heading`）。小さい配置の右端に縦に並ぶ見出しの列の最後（下の端）に足し、押すと HD2D の機能メニューを開く入口にする。
+     * `use_android_profile` を呼んだ実行体（Android・Quest の 2D パネル）で有効になる。Windows・Linux は呼ばないので、窓が狭くて小さい配置になっても出ない
+     * （下の案内の帯の右端に `F10:機能メニュー` の字が出ていてキーボードから開けるため。呼べば同じ部品がそのまま働く。検査用の環境変数 `HD2D_DCSS_GEAR=1` でも出せる）。
+     */
+    void set_gear_enabled(bool enabled) { this->gear_enabled_ = enabled; }
+    bool gear_enabled() const { return this->gear_enabled_; }
+    //! 歯車の見出しが押されていれば真にして消す（呼ぶ側が機能メニューを開く）。
+    bool take_feature_menu_request() { return this->tabs_.take_gear_request(); }
+
+
     //! 検査用: 最後に組んだ格子の字（行ごと。ステータス欄・メッセージ欄）。
     std::vector<std::string> stat_lines() const;
     std::vector<std::string> message_lines() const;
@@ -266,6 +277,7 @@ private:
     FontSlot tip_font_; //!< ツールチップの字（原作 `tile_font_tip`）
     DcssTabs tabs_;
     DcssTouch touch_; //!< 指 → マウスの状態機械（段 7）
+    bool gear_enabled_{ false }; //!< 歯車の見出しを足すか（D31）
     bool tab_icons_shown_{ true }; //!< 小さい配置のタブの見出しの絵（Android は `use_android_profile` で偽にする）
     bool keyboard_toggle_{ false };
     std::vector<DcssTabOutgoing> region_out_; //!< ステータス欄・メッセージ欄の左クリックがコアへ送る要求

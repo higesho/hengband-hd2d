@@ -172,7 +172,6 @@ struct InputPumpContext {
      * （`pointer_blocked_by_vpad`。決めたこと 2026-10-14 は DCSS には当てない——調整役の決定 D29）。
      */
     std::function<void(const SDL_Event &, bool)> dcss_touch;
-
 };
 
 /*!

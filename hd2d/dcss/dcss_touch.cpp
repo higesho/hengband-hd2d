@@ -4,6 +4,7 @@
  */
 #include "dcss/dcss_touch.h"
 
+#include "dcss/dcss_tabs.h"
 #include "dcss/dcss_window.h"
 
 #include <algorithm>
@@ -329,6 +330,7 @@ int dcss_touch_selftest()
             check(!rt.name_prompt(), "a real line input is not the name prompt");
         }
     }
+    failures += dcss_gear_heading_selftest(); // 右端の見出しの列の歯車（D31）
     if (failures == 0) {
         std::fprintf(stderr, "[dcss-touch] selftest: ok\n");
     }

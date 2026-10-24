@@ -252,9 +252,9 @@ bool Planner::is_using_small_layout() const
 void Planner::set_tab_small_layout(bool small)
 {
     if (small) {
-        tab_.ox = in_.show_tab_icons ? in_.tab_icon_w : 0;
-        // 原作 `tilereg-tab.cc:447`: 左から順に整数で計算してから 2 で割る。
-        int scale = (in_.tile_sidebar_pixels - 1) * in_.window_h / kTabCount / in_.tab_icon_h - 1;
+        tab_.ox = (in_.show_tab_icons || in_.tab_column_always) ? in_.tab_icon_w : 0;
+        // 原作 `tilereg-tab.cc:447`: 左から順に整数で計算してから 2 で割る。歯車（`extra_tab_headings`）は見出し 1 つとして数に入れる。
+        int scale = (in_.tile_sidebar_pixels - 1) * in_.window_h / (kTabCount + in_.extra_tab_headings) / in_.tab_icon_h - 1;
         scale /= 2;
         tab_.dx = scale;
         tab_.dy = scale;

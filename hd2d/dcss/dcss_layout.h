@@ -75,6 +75,9 @@ enum DcssTab : int {
     kTabNavigation,
 };
 
+//! 歯車の見出しの番号（`DcssTab` の外。タブではない。押すと HD2D の機能メニューが開くだけで、選んだ見出しにはならない。D31）。
+inline constexpr int kTabGear = kTabCount;
+
 //! 1 種類の字の大きさと桁の幅・行の高さ（画素）。
 struct DcssFontMetrics {
     int size_px{ 0 }; //!< 字の大きさ（`tile_font_*_size`）。ラベルは見出しの余白の計算にも使う。
@@ -152,6 +155,10 @@ struct DcssLayoutInput {
     //! `tile_layout_priority`。"minimap"・"inventory" と、タブの名前（command・spell・ability・monster …）
     std::vector<std::string> layout_priority{ "minimap", "inventory", "command", "spell", "ability", "monster" };
     bool show_tab_icons{ true }; //!< 小さい配置で見出しの絵を出すか（Android は偽）
+    //! 見出しの数に足す物（HD2D の機能メニューの歯車。原作には無い。D31）。見出しの大きさを決める原作の式（`tilereg-tab.cc:447`）の `NUM_TABS` に足す。0 のときは原作のまま。
+    int extra_tab_headings{ 0 };
+    //! 真なら、小さい配置で見出しの絵を出さない（`show_tab_icons` が偽）ときも右端の列の幅を確保する（歯車だけを出すため。D31）。
+    bool tab_column_always{ false };
 
     // --- 見出しの絵の大きさ（`rltiles/gui/tab_*.png`）---
     int tab_icon_w{ 20 };

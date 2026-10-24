@@ -4035,6 +4035,9 @@ int run(const AppOptions &options)
                 const SDL_Keymod mod = SDL_GetModState();
                 m.mods = (((mod & KMOD_SHIFT) != 0) ? 1 : 0) | (((mod & KMOD_CTRL) != 0) ? 2 : 0);
                 const bool consumed = dcss_ui->on_tab_mouse(m);
+                if (dcss_ui->take_feature_menu_request()) {
+                    perform_action(kActionFeatureMenu); // 右端の見出しの列の歯車（D31）。F10 と同じ道で HD2D の機能メニューを開く
+                }
                 for (const dcss::DcssTabOutgoing &o : dcss_ui->take_tab_outgoing()) {
                     if (o.webtiles) {
                         (void)link.send_webtiles_input(o.text);

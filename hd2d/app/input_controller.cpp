@@ -1129,8 +1129,13 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
         if((event.key.keysym.mod&KMOD_CTRL)&&sym>=SDLK_a&&sym<=SDLK_z) {
             if(!event.key.repeat)ctx.feature_menu.handle_native_key(static_cast<int>(sym)&31,ctx.settings);return;
         }
-        if((sym==SDLK_ESCAPE||sym==SDLK_RETURN||sym==SDLK_KP_ENTER||sym==SDLK_BACKSPACE)
-            &&ctx.feature_menu.handle_native_key(sym==SDLK_ESCAPE?27:(sym==SDLK_BACKSPACE?8:13),ctx.settings))return;
+        /*
+         * DCSS（D31。申告 `dcss-ui` のコアだけ）: 歯車の見出しで開いた機能メニューを、Android の戻るキーでも閉じられるようにする（Esc と同じ扱い）。
+         * 指だけで出入りできるようにするため。`dcss_window` が空のコアでは `menu_sym` は `sym` のまま（挙動は変わらない）。
+         */
+        const SDL_Keycode menu_sym = (ctx.dcss_window && (sym == SDLK_AC_BACK)) ? static_cast<SDL_Keycode>(SDLK_ESCAPE) : sym;
+        if((menu_sym==SDLK_ESCAPE||sym==SDLK_RETURN||sym==SDLK_KP_ENTER||sym==SDLK_BACKSPACE)
+            &&ctx.feature_menu.handle_native_key(menu_sym==SDLK_ESCAPE?27:(sym==SDLK_BACKSPACE?8:13),ctx.settings))return;
         if(sym==SDLK_TAB && event.key.repeat==0) {ctx.feature_menu.handle(MenuNav::TogglePane,ctx.settings);return;}
         if(ctx.feature_menu.tab_navigation_active()) {
             if(event.key.repeat && (sym==SDLK_RETURN || sym==SDLK_KP_ENTER))return;
@@ -1139,7 +1144,7 @@ void pump_key_down(InputPumpContext &ctx, const SDL_Event &event, bool fps_owns_
             if(sym==SDLK_F2) {ctx.feature_menu.handle(MenuNav::Categories,ctx.settings);return;}
         }
         MenuNav nav = MenuNav::None;
-        switch (sym) {
+        switch (menu_sym) {
         case SDLK_UP:
         case SDLK_KP_8:
             nav = MenuNav::Up;
