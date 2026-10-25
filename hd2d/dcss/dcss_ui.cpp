@@ -112,6 +112,7 @@ DcssUi::DcssUi()
 {
     // 割り当ての画面の窓（画面の側で積んだ窓）の操作は、コアへ送らずここへ渡す（段 5）。
     this->windows_.set_local_handler([this](const std::string &line) { this->pad_screen_.on_line(line); });
+    this->binds_.set_pad_screen_opener([this]() { return this->pad_screen_.open(); }); // 操作の割り当ての「ゲームパッドの割り当ての画面を開く」行（D33）
     // 検査用: 環境変数 HD2D_DCSS_GEAR=1 で、Windows・Linux の小さい配置にも歯車を出す（既定は出さない。Android・Quest は `use_android_profile` で有効になる）。
     if (const char *gear = std::getenv("HD2D_DCSS_GEAR"); (gear != nullptr) && (*gear == '1')) {
         this->gear_enabled_ = true;
@@ -213,6 +214,8 @@ void DcssUi::ingest_payload(const std::string &payload)
             this->windows_.on_name_check(m.value("name", std::string()), m.value("exists", false)); // 名前の問いの Enter への返事（同じ名前のセーブが在るか）
         } else if (kind == "pad") {
             (void)this->pad_.ingest_table(m); // ゲームパッドの割り当てられるコマンドの表（番号・名前・いまのキー。段 5）
+        } else if (kind == "keymap") {
+            this->binds_.ingest_keymap(m); // キーボードの割り当て＝原作のキーマップ（操作の割り当ての表に映す。D33）
         }
     }
 }

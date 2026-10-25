@@ -2945,6 +2945,8 @@ int run(const AppOptions &options)
         if (std::find(features.begin(), features.end(), "dcss-ui") != features.end()) {
             dcss_ui = std::make_unique<dcss::DcssUi>();
             std::fprintf(stderr, "[hd2d] core declares \"dcss-ui\"; the DCSS tile UI regions are drawn by the screen\n");
+            //! D32: HD2D の側で出してよいメニューは機能メニューだけ。コマンドの画面・持ち物一覧は原作の画面（このコア専用の部品）で出す。
+            set_core_hides_commands(true);
         }
     }
 
@@ -3432,6 +3434,9 @@ int run(const AppOptions &options)
         settings.last_core = core_choice;
     }
     FeatureMenu feature_menu;
+    if (dcss_ui) {
+        feature_menu.set_external_binds(&dcss_ui->binds()); //!< D33: 操作の割り当ての表は、このコアの原作のキーマップ・ゲームパッドの枠（`dcss/dcss_binds.h`）
+    }
     /*
      * タブで持ち物一覧・原作の設定（Rogue）へ移るとき、**次の窓の中身が届くまで前のタブの
      * 画を描き続ける**ための写し（気づいたこと 2026-09-26「タブを切り替える際に一度別の画面を
@@ -3909,6 +3914,9 @@ int run(const AppOptions &options)
                 turn_view(1); //!< 同（既定 F6）
                 return;
             case kActionCommandMenu:
+                if (dcss_ui) {
+                    return; //!< D32: DCSS には HD2D のコマンドメニューは無い（割り当てを足されても開かない）
+                }
                 if (!top_menu_available()) {
                     return;
                 }

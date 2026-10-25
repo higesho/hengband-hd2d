@@ -36,6 +36,7 @@
 #include "dcss_posix_shim.h"
 #include "dcss_tabs_data.h" // 画面の部品（dcss-ui）のタブの欄の中身と操作（段 U2）
 #include "dcss_pad_data.h" // 画面の部品（dcss-ui）のゲームパッドの割り当てへ送る、割り当てられるコマンドの表（段 5。dcss_tabs_data.h の後）
+#include "dcss_keymap_data.h" // 画面の部品（dcss-ui）の操作の割り当てが読み書きする、キーボードの割り当て＝原作のキーマップ（D33。dcss_pad_data.h の後）
 #include "dcss_ui_mouse.h" // 画面の部品（dcss-ui）の地図のマウス操作（足元のクリック・ツールチップ。段 U3・U4）
 #include "dcss_ui_startup.h" // 画面の部品（dcss-ui）の開始メニューの中身（モードの一覧・セーブデータと人形。段 U3）
 
@@ -358,6 +359,12 @@ std::string dcss_adapter_handle_ui_line(const std::string &line, std::string &re
     if (line.find("\"hd2d_name_check\"") != std::string::npos)
     {
         reply = dcss_ui_startup::name_check_reply(line);
+        return std::string();
+    }
+    // 操作の割り当て（機能メニュー）のキーボードの割り当て＝原作のキーマップ（macro.txt の K:）の読み書き（D33）。
+    if (line.find("\"hd2d_keymap\"") != std::string::npos)
+    {
+        reply = dcss_keymap_data::handle(line);
         return std::string();
     }
     return dcss_ui_mouse::handle_line(line, reply);

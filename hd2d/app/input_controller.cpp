@@ -916,6 +916,11 @@ void pump_text_input(InputPumpContext &ctx, const SDL_Event &event)
     }
     ctx.batch.swallow_char = '\0';
     if (ctx.feature_menu.is_open()) {
+        if (ctx.feature_menu.waiting_for_key() && event.text.text[0] && (event.text.text[1] == '\0')
+            && (static_cast<unsigned char>(event.text.text[0]) < 128)
+            && ctx.feature_menu.handle_bind_text(static_cast<unsigned char>(event.text.text[0]), ctx.settings)) {
+            return; //!< DCSS（D33）の操作の割り当て: 打った字を、コアのキーの割り当てとして受け取った（ほかのコアでは入口が無く、偽が返る）
+        }
         if(!ctx.feature_menu.waiting_for_key()&&event.text.text[0]&&event.text.text[1]=='\0'&&static_cast<unsigned char>(event.text.text[0])<128)
             ctx.feature_menu.handle_native_key(static_cast<unsigned char>(event.text.text[0]),ctx.settings);
         return; // Never send a menu shortcut to the underlying game as well.

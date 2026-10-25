@@ -838,7 +838,11 @@ std::string UiProbe::snapshot_json(std::string_view poll_phase, std::string_view
         } else if (w.kind == "feature-menu") {
             Json rows = Json::array();
             for (const ProbeItem &i : w.items) {
-                rows.push_back(Json{ { "id", i.id }, { "label", i.label }, { "enabled", i.enabled } });
+                Json row{ { "id", i.id }, { "label", i.label }, { "enabled", i.enabled } };
+                if (!i.cols.empty()) {
+                    row["cols"] = i.cols; //!< 操作の割り当ての行: キーボードの欄・コントローラーの欄
+                }
+                rows.push_back(std::move(row));
             }
             menu = Json{ { "open", true }, { "tab", w.title }, { "stage", w.stage }, { "rows", std::move(rows) },
                 { "selected", w.selected } };

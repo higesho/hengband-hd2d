@@ -3,6 +3,7 @@
  * @brief `feature_menu.h` の実装。
  */
 #include "ui/feature_menu.h"
+#include "ui/external_binds.h"
 #include "app/ui_probe.h"
 #include "ui/menu_scale.h"
 #include "ui/menu_frame.h"
@@ -68,6 +69,9 @@ bool g_core_supports_realtime = true;
 //! コアが `audio` を申告したか（`feature_menu.h` の `set_core_supports_audio`）。
 bool g_core_supports_audio = true;
 
+//! HD2D の側でコマンドの画面・持ち物一覧を出さないか（`feature_menu.h` の `set_core_hides_commands`。DCSS の D32）。
+bool g_core_hides_commands = false;
+
 /*!
  * @brief その枠がいまの割り付けで**出るか**。
  * @details 出ない枠の行は値の欄でそう言う（行そのものは出し入れしない）。
@@ -115,6 +119,16 @@ void set_core_supports_audio(bool on)
 bool core_supports_audio()
 {
     return g_core_supports_audio;
+}
+
+void set_core_hides_commands(bool on)
+{
+    g_core_hides_commands = on;
+}
+
+bool core_hides_commands()
+{
+    return g_core_hides_commands;
 }
 
 namespace {
@@ -360,6 +374,12 @@ std::vector<FeatureMenu::Page> FeatureMenu::root_pages()
 #if !defined(__ANDROID__) || defined(HENGBAND_QUEST)
     pages.push_back(Page::Vr);
 #endif
+    //! DCSS（D32）: コマンドは原作の画面で出すので、入口に「コマンド」の節を並べない。
+    //! サブパネル（HD2D の画面の下・右の小さな欄）もこのコアの画面には描かれないので、節を並べない（D33）。
+    if (g_core_hides_commands) {
+        pages.erase(std::remove(pages.begin(), pages.end(), Page::Commands), pages.end());
+        pages.erase(std::remove(pages.begin(), pages.end(), Page::SubPanels), pages.end());
+    }
     return pages;
 }
 
@@ -683,6 +703,41 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
         rows.push_back(std::move(row));
     };
 
+    //! コアごとの割り当て（DCSS。D33）: 変えられない行・画面まわりの操作・コアのコマンドの行を、入口の向こうから並べる。HD2D のパッドの割り当て・マクロの案内は出さない。
+    if (this->ext_binds_ != nullptr) {
+        heading(i18n::tr("hd2d.ui.feature-menu.system-cannot-be-changed"));
+        for (const ExternalFixedRow &f : this->ext_binds_->fixed_rows()) {
+            BindRow row;
+            row.label = f.label;
+            row.fixed_keyboard = f.keyboard;
+            row.fixed_pad = f.pad;
+            row.fixed = true;
+            rows.push_back(std::move(row));
+        }
+        heading(i18n::tr("hd2d.ui.feature-menu.around-this-screen"));
+        for (const int action : ui_action_ids()) {
+            if (this->ext_binds_->hides_ui_action(action)) {
+                continue;
+            }
+            BindRow row;
+            row.action = action;
+            row.label = ui_action_label(action);
+            row.no_pad = !this->ext_binds_->ui_has_pad(action);
+            rows.push_back(std::move(row));
+        }
+        for (const ExternalBindRow &er : this->ext_binds_->rows()) {
+            BindRow row;
+            row.action = er.id;
+            row.label = er.label;
+            row.external = (er.id != 0);
+            row.open_row = er.open_row;
+            row.no_key = er.no_key;
+            row.no_pad = er.no_pad;
+            rows.push_back(std::move(row));
+        }
+        return rows;
+    }
+
     /*
      * **システムが押さえているものを最初に出す。**割り当てられないことを画面で言っておかないと、
      * 「決定を別のキーにしたいのにカーソルが止まらない」を不具合だと思われる。
@@ -703,6 +758,9 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
 
     heading(i18n::tr("hd2d.ui.feature-menu.around-this-screen"));
     for (const int action : ui_action_ids()) {
+        if (g_core_hides_commands && (action == kActionCommandMenu)) {
+            continue; //!< DCSS（D32）: コマンドメニューは無いので、割り当ての行も出さない
+        }
         BindRow row;
         row.action = action;
         row.label = ui_action_label(action);
@@ -727,7 +785,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
                                          : command.label_utf8;
         rows.push_back(std::move(row));
     }
-    if (this->pad_commands_.empty()) {
+    if (this->pad_commands_.empty() && !g_core_hides_commands) {
         //! 握手の直後はコアの一覧がまだ来ていない。**空の表を黙って出さない。**
         heading(i18n::tr("hd2d.ui.feature-menu.game-controls-the-list-from-the-core"));
     }
@@ -751,6 +809,15 @@ std::string FeatureMenu::bind_cell_value(const BindRow &row, int col, const Hd2d
     }
     if (row.action == kActionNone) {
         return std::string();
+    }
+    if (this->ext_binds_ != nullptr) {
+        if (row.external) {
+            return this->ext_binds_->cell(row.action, col);
+        }
+        if (col == 1) {
+            //! 画面まわりの操作のコントローラーの欄は、コアの割り当てから出す（HD2D のパッドの割り当ては効かない）。
+            return this->ext_binds_->ui_has_pad(row.action) ? this->ext_binds_->ui_pad_cell(row.action) : std::string();
+        }
     }
     if (col == 0) {
         const KeyBindEntry entry = settings.key_binds.find(row.action);
@@ -1674,6 +1741,9 @@ void FeatureMenu::open_commands(const Hd2dSettings &settings)
      * 「機能メニューを開いて 1 つ潜る」の 1 手が重いので、ボタン 1 つで届く道を作る。
      * 入口へ戻ったときに `コマンド …` が選ばれているように `root_cursor_` も置く。
      */
+    if (g_core_hides_commands) {
+        return; //!< DCSS（D32）: コマンドの画面は開かない（開く入口はキー・パッド・歯車のどれも機能メニューへ向く）
+    }
     this->open(settings);
     const std::vector<Page> pages = root_pages();
     const auto at = std::find(pages.begin(), pages.end(), Page::Commands);
@@ -1707,6 +1777,8 @@ void FeatureMenu::stop_waiting()
     this->waiting_ = false;
     this->wait_action_ = kActionNone;
     this->wait_col_ = 0;
+    this->wait_external_ = false;
+    this->pending_key_sym_ = 0;
     this->wait_since_ms_ = 0;
     this->wait_note_.clear();
 }
@@ -1715,7 +1787,31 @@ void FeatureMenu::update(std::uint32_t now_ms)
 {
     this->wait_now_ms_ = now_ms;
     if (!this->waiting_) {
+        this->pending_key_sym_ = 0;
         return;
+    }
+    if ((this->pending_key_sym_ != 0) && ((now_ms - this->pending_key_since_ms_) >= 60U) && (this->ext_binds_ != nullptr)
+        && this->wait_external_ && (this->wait_col_ == 0)) {
+        /*
+         * 印字キーを押したのに `SDL_TEXTINPUT` が来ない（Android の外付けキーボードなど。文字入力を止めてある）。
+         * キーの字から割り当てる。Shift つきの英字は大文字。Shift つきの記号は配列で字が変わるので受け取らない。
+         */
+        const int sym = this->pending_key_sym_;
+        const int mods = this->pending_key_mods_;
+        this->pending_key_sym_ = 0;
+        const bool letter = (sym >= 'a') && (sym <= 'z');
+        if (((mods & kModShift) != 0) && !letter) {
+            this->wait_note_ = (i18n::current() == "ja") ? "Shift つきの記号はここでは受け取れません（Shift なしのキーを押してください）"
+                                                           : "Shifted symbols cannot be read here (press the key without Shift)";
+        } else {
+            const int ch = (letter && ((mods & kModShift) != 0)) ? (sym - 'a' + 'A') : sym;
+            const std::string note = this->ext_binds_->assign_key(this->wait_action_, ch);
+            if (note.empty()) {
+                this->stop_waiting();
+                return;
+            }
+            this->wait_note_ = note;
+        }
     }
     /*
      * **15 秒未入力で降りる**。ESC を「割り当ての消去」に
@@ -1903,7 +1999,11 @@ void FeatureMenu::open_features(const Hd2dSettings &settings) {
      * （`restore_feature_tab()` の `inventory_requested_=true`）も、いまはここで
      * 打ち消さない——F1 で戻ってきたときと同じに扱う。
      */
-    if(!settings.modern_ui) {open(settings);return;}
+    if (this->ext_binds_ != nullptr) {
+        this->ext_binds_->on_open(); //!< 操作の割り当ての最新の中身を問い合わせる（DCSS。D33）
+    }
+    //! DCSS（D32）は新 UI でもコマンドのタブを持たず、入口（機能メニューそのものの項目）を直に開く。
+    if(!settings.modern_ui || g_core_hides_commands) {open(settings);return;}
     open_commands(settings);
 }
 
@@ -2449,7 +2549,11 @@ bool FeatureMenu::handle_bind_key(int keycode, int mods, Hd2dSettings &settings)
         if (!key_is_escape(keycode)) {
             return true;
         }
-        if (this->wait_col_ == 0) {
+        if (this->ext_binds_ != nullptr && this->wait_external_) {
+            this->ext_binds_->clear(this->wait_action_, this->wait_col_); //!< コアごとの割り当て: 足した分を消して既定へ戻す
+        } else if (this->ext_binds_ != nullptr && this->wait_col_ != 0) {
+            this->ext_binds_->clear_ui_pad(this->wait_action_);
+        } else if (this->wait_col_ == 0) {
             settings.key_binds.clear(this->wait_action_);
         } else {
             settings.pad.clear(this->wait_action_);
@@ -2459,6 +2563,36 @@ bool FeatureMenu::handle_bind_key(int keycode, int mods, Hd2dSettings &settings)
     }
     if (this->wait_col_ != 0) {
         //! コントローラーのマスを狙っている最中のキー入力。**キーボードへ書き換えない。**
+        return true;
+    }
+    if (this->wait_external_ && (this->ext_binds_ != nullptr)) {
+        /*
+         * コアごとの割り当て（DCSS。D33）のキーボードの列: コアへ渡るキーのコードで受ける。
+         * Ctrl+英字は 1〜26。印字文字は、続いて届く `SDL_TEXTINPUT`（`handle_bind_text`）で受ける
+         * （Shift や記号の解決を SDL に任せる）。それ以外（ファンクションキーなど）は受け取らず、変更モードのまま。
+         */
+        if (((mods & kModCtrl) != 0) && (keycode >= 'a') && (keycode <= 'z')) {
+            const int code = (keycode - 'a') + 1;
+            if ((code == 9) || (code == 10) || (code == 13)) {
+                this->wait_note_ = (i18n::current() == "ja" ? "このキーは割り当てられません（字・数字・記号・Ctrl+英字だけ）" : "This key cannot be bound (letters, digits, symbols and Ctrl+letter only)");
+                return true;
+            }
+            const std::string note = this->ext_binds_->assign_key(this->wait_action_, code);
+            if (note.empty()) {
+                this->stop_waiting();
+            } else {
+                this->wait_note_ = note;
+            }
+            return true;
+        }
+        if ((keycode > 0x20) && (keycode < 0x7f) && ((mods & (kModCtrl | kModAlt)) == 0)) {
+            //! 字は `handle_bind_text` が受ける。`SDL_TEXTINPUT` が来なければ `update()` が、このキーの字から割り当てる。
+            this->pending_key_sym_ = keycode;
+            this->pending_key_mods_ = mods;
+            this->pending_key_since_ms_ = this->wait_now_ms_;
+            return true;
+        }
+        this->wait_note_ = (i18n::current() == "ja" ? "このキーは割り当てられません（字・数字・記号・Ctrl+英字だけ）" : "This key cannot be bound (letters, digits, symbols and Ctrl+letter only)");
         return true;
     }
     (void)settings.key_binds.assign(this->wait_action_, keycode, mods);
@@ -2479,6 +2613,17 @@ bool FeatureMenu::handle_bind_pad(PadInput input, int mods, Hd2dSettings &settin
          */
         this->wait_note_ = pad_chord_display_name(input, mods) + i18n::tr("hd2d.ui.feature-menu.received")
             + i18n::tr("hd2d.ui.feature-menu.move-to-the-controller-column-with-the");
+        return true;
+    }
+    if (this->ext_binds_ != nullptr) {
+        //! コアごとの割り当て（DCSS。D33）: コアの枠（ボタン × 層）へ割り当てる。固定の枠・押しようのない枠は理由を返す。
+        const std::string note = this->wait_external_ ? this->ext_binds_->assign_pad(this->wait_action_, input, mods)
+                                                      : this->ext_binds_->assign_ui_pad(this->wait_action_, input, mods);
+        if (!note.empty()) {
+            this->wait_note_ = pad_chord_display_name(input, mods) + note;
+            return true;
+        }
+        this->stop_waiting();
         return true;
     }
     /*
@@ -2507,6 +2652,24 @@ bool FeatureMenu::handle_bind_pad(PadInput input, int mods, Hd2dSettings &settin
         return true;
     }
     this->stop_waiting();
+    return true;
+}
+
+bool FeatureMenu::handle_bind_text(int ch, Hd2dSettings &)
+{
+    if (!this->open_ || !this->waiting_ || (this->ext_binds_ == nullptr) || !this->wait_external_ || (this->wait_col_ != 0)) {
+        return false;
+    }
+    if ((ch <= 0x20) || (ch >= 0x7f)) {
+        return false;
+    }
+    this->pending_key_sym_ = 0;
+    const std::string note = this->ext_binds_->assign_key(this->wait_action_, ch);
+    if (note.empty()) {
+        this->stop_waiting();
+    } else {
+        this->wait_note_ = note;
+    }
     return true;
 }
 
@@ -2752,8 +2915,19 @@ void FeatureMenu::handle(MenuNav nav, Hd2dSettings &settings)
             if ((row.action == kActionNone) || row.fixed) {
                 break;
             }
+            if (row.open_row) {
+                //! 原作の割り当ての画面を開く行（DCSS。D33）。開いたらメニューは閉じる。
+                if ((this->ext_binds_ != nullptr) && this->ext_binds_->open_screen(row.action)) {
+                    this->close();
+                }
+                break;
+            }
+            if (((this->bind_col_ == 0) && row.no_key) || ((this->bind_col_ == 1) && row.no_pad)) {
+                break; //!< その列は割り当てられない
+            }
             this->waiting_ = true;
             this->wait_action_ = row.action;
+            this->wait_external_ = row.external;
             this->wait_col_ = this->bind_col_;
             this->wait_since_ms_ = this->wait_now_ms_;
             this->wait_note_.clear(); //!< 前の変更のときの説明を持ち越さない
@@ -3244,6 +3418,7 @@ void FeatureMenu::draw(UiPaint &paint,TextOverlay &text,const UiLayout &layout,c
         {const RectPx r=menu_scaled_rect(panel_rect(menu_logical_layout(layout,scope.scale,&text),&text,&settings),scope.scale);
          w.has_rect=true;w.rect=ProbeRect{r.x,r.y,r.w,r.h};}
         for(std::size_t i=0;i<painted_rows_.size();++i)if(painted_rows_[i].second==cursor_)w.selected=static_cast<int>(i);
+        if(page_==Page::Binds)for(std::size_t i=0;i<painted_items_.size();++i)if(painted_items_[i].selected)w.selected=static_cast<int>(i);
         ui_probe().window(std::move(w));
     }
 }
@@ -3478,6 +3653,11 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
         const BindRow &row = rows[static_cast<std::size_t>(i)];
         const bool picked = (i == this->cursor_);
         const bool heading = (row.action == kActionNone) && !row.fixed;
+        if (ui_probe().enabled() && !heading) {
+            //! 検査用の問い合わせ: 見えている行（番号・名前・キーボードの欄・コントローラーの欄・選ばれているか）。
+            painted_items_.push_back(ProbeItem{ std::to_string(row.action), row.label,
+                { this->bind_cell_value(row, 0, settings), this->bind_cell_value(row, 1, settings) }, true, picked });
+        }
         if (picked) {
             if(paint_theme_>=0)paint_modern_selection(paint,{box.x+8,y,box.w-16,cell_h},paint_theme_);
             else paint.rect(RectPx{ box.x + 2, y, box.w - 4, cell_h }, PaintColor{ 0.95f, 0.85f, 0.30f, 0.14f });
@@ -3537,6 +3717,9 @@ void FeatureMenu::draw_binds(UiPaint &paint, TextOverlay &text, const UiLayout &
             kHintColor, box.w - (cell_w * 2));
     }
     hint_y += cell_h;
+    if ((this->ext_binds_ != nullptr) && this->waiting_ && !this->wait_note_.empty()) {
+        return; //!< 受け取れなかった理由を、下の行へ重ねて出している間は、パッドの案内の行を出さない（字が重なる）
+    }
     //! **繋がっているかを必ず出す**（割り当てられるのに反応しない、が分からない）。
     const std::string pad_note = this->pad_connected_
         ? (i18n::tr("hd2d.ui.feature-menu.pad") + this->pad_name_)

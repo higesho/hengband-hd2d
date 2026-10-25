@@ -30,6 +30,7 @@
 #include "dcss/dcss_mouse.h"
 #include "dcss/dcss_model.h"
 #include "dcss/dcss_pad.h"
+#include "dcss/dcss_binds.h"
 #include "dcss/dcss_pad_screen.h"
 #include "dcss/dcss_prompt.h"
 #include "dcss/dcss_stat.h"
@@ -114,7 +115,14 @@ public:
     //! SDL の出来事 1 つを窓の部品へ見せる。窓が食ったら真。`reserved_key` は HD2D が自分で使うキー（機能メニュー・Alt+Enter）。
     bool on_window_event(const SDL_Event &event, bool reserved_key);
     //! 窓の部品がコアへ送る行（原作の制御メッセージ）を持っていく。
-    std::vector<std::string> take_window_outgoing() { return this->windows_.take_outgoing(); }
+    std::vector<std::string> take_window_outgoing()
+    {
+        std::vector<std::string> out = this->windows_.take_outgoing();
+        for (std::string &line : this->binds_.take_outgoing()) { // 操作の割り当て（D33）がコアへ送る行（キーマップの読み書き・`~` のキー）も同じ道で送る
+            out.push_back(std::move(line));
+        }
+        return out;
+    }
     //! 窓を描く（ゲームに入る前も含む）。下の層の四角・字・絵を流したあとで呼ぶ。
     void draw_windows(UiPaint &paint, const UiImagePainter &images, int screen_w, int screen_h);
     const DcssWindows &windows() const { return this->windows_; }
@@ -126,6 +134,8 @@ public:
     DcssPad &pad() { return this->pad_; }
     const DcssPad &pad() const { return this->pad_; }
     DcssPadScreen &pad_screen() { return this->pad_screen_; }
+    //! 機能メニューの「操作の割り当て」の表（D33。`dcss_binds.h`）。`FeatureMenu::set_external_binds` へ渡す。
+    DcssBinds &binds() { return this->binds_; }
     DcssPadScene scene() const { return DcssPad::scene_for(this->model_, this->windows_.captures_keys()); }
     //! 疑似カーソルを描く（`draw_windows` の最後に呼ばれる。右スティックが最後に動かした方のときだけ）。
     void draw_pad_cursor(UiPaint &paint);
@@ -270,6 +280,7 @@ private:
     DcssWindows windows_; //!< 窓の部品（段 U3）
     DcssPad pad_; //!< ゲームパッド（段 5）
     DcssPadScreen pad_screen_{ pad_, windows_ }; //!< 割り当ての画面（窓の部品へ積む）
+    DcssBinds binds_{ pad_ }; //!< 機能メニューの操作の割り当て（D33）
     DcssMapMouse map_mouse_; //!< 地図のマウス操作とツールチップ（段 U3・U4）
     DcssPromptView prompt_view_; //!< メッセージ欄の問いの押せる所（毎フレーム探し直す）
     int pointer_x_{ -1 }; //!< マウスの位置（論理の座標。まだ動いていなければ -1）

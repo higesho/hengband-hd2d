@@ -322,6 +322,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClCompile Include="..\..\hd2d\dcss\dcss_fx_check.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_marks.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_mouse.cpp" />
+    <ClCompile Include="..\..\hd2d\dcss\dcss_binds.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_pad.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_pad_screen.cpp" />
     <ClCompile Include="..\..\hd2d\dcss\dcss_prompt.cpp" />
@@ -440,6 +441,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\dcss\dcss_fx.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_marks.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_mouse.h" />
+    <ClInclude Include="..\..\hd2d\dcss\dcss_binds.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_pad.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_pad_screen.h" />
     <ClInclude Include="..\..\hd2d\dcss\dcss_prompt.h" />
@@ -453,6 +455,7 @@ copy /Y "$(HengbandSdlBinRelease)\jsoncpp.dll" "$(OutDir)"
     <ClInclude Include="..\..\hd2d\dcss\dcss_windows_internal.h" />
     <ClInclude Include="..\..\hd2d\ui\combat_fx_view.h" />
     <ClInclude Include="..\..\hd2d\i18n\lang.h" />
+    <ClInclude Include="..\..\hd2d\ui\external_binds.h" />
     <ClInclude Include="..\..\hd2d\ui\feature_menu.h" />
     <ClInclude Include="..\..\hd2d\ui\floor_cutin.h" />
     <ClInclude Include="..\..\hd2d\ui\game_hud.h" />

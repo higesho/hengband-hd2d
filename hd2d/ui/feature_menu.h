@@ -124,6 +124,10 @@ enum class MenuNav {
     TogglePane,
 };
 
+//! DCSS（D32）。説明は下の `set_core_hides_commands()`。クラスの中の関数が使うので先に宣言する。
+bool core_hides_commands();
+class ExternalBinds; //!< `ui/external_binds.h`（DCSS の割り当て。D33）
+
 class FeatureMenu {
 public:
     bool is_open() const { return this->open_; }
@@ -173,6 +177,16 @@ public:
      * @param mods 同時押しの層（`kPadModCtrl` 等）。**0 なら単独押し**。
      */
     bool handle_bind_pad(PadInput input, int mods, Hd2dSettings &settings);
+    /*!
+     * @brief 変更モード中に打たれた印字文字（`SDL_TEXTINPUT`）を、コアごとの割り当て（`set_external_binds`）のキーとして受け取る。
+     * @return 受け取ったら真。入口が無い・変更モードでない・キーボードの列でないときは偽（ほかのコアの扱いは変わらない）。
+     */
+    bool handle_bind_text(int ch, Hd2dSettings &settings);
+    /*!
+     * @brief 「操作の割り当て」の表を、コアごとの割り当て（DCSS の原作のキーマップ・ゲームパッドの枠。D33）へ向ける。無いとき（既定）は何も変わらない。
+     * @details 渡した入口は呼び出し側が持ち続ける。
+     */
+    void set_external_binds(ExternalBinds *binds) { this->ext_binds_ = binds; }
     //! いま割り当ての入力を待っているか。
     bool waiting_for_key() const { return this->waiting_; }
     //! 変更モードのまま `now_ms` まで来た。**15 秒未入力なら降りる。**毎フレーム呼ぶこと。
@@ -298,7 +312,7 @@ public:
     void set_pad_state(const std::vector<PadCommand> &commands, bool connected, const std::string &name)
     {
         if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
-        this->pad_commands_ = commands;
+        this->pad_commands_ = core_hides_commands() ? std::vector<PadCommand>{} : commands; //! DCSS（D32）: コマンドの一覧は持たない
         refresh_command_tabs();
         this->pad_connected_ = connected;
         this->pad_name_ = name;
@@ -314,7 +328,7 @@ public:
     void set_pad_commands(const std::vector<PadCommand> &commands)
     {
         if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
-        this->pad_commands_ = commands;
+        this->pad_commands_ = core_hides_commands() ? std::vector<PadCommand>{} : commands; //! DCSS（D32）: コマンドの一覧は持たない
         refresh_command_tabs();
     }
 
@@ -381,6 +395,13 @@ public:
         std::string fixed_pad;
         //! 固定行か（見出しでもなく、選べもしない）。
         bool fixed{ false };
+        //! コアごとの割り当て（`ExternalBinds`）の行か。値の欄・変更はそちらへ向かう。
+        bool external{ false };
+        //! 決定で割り当てを待たず、その場で実行する行（原作の割り当ての画面を開く）。
+        bool open_row{ false };
+        //! その列は割り当てられない（値の欄を空にし、決定を受けない）。
+        bool no_key{ false };
+        bool no_pad{ false };
     };
     //! 一覧の行を組む。**画面と操作の両方がこれを見る**（並びが 2 か所にあると必ずずれる）。
     std::vector<BindRow> bind_rows() const;
@@ -909,6 +930,13 @@ private:
     bool waiting_{ false };
     int wait_action_{ kActionNone }; //!< 変更モードで狙っている操作
     int wait_col_{ 0 }; //!< 変更モードで狙っている列
+    bool wait_external_{ false }; //!< 狙っている行がコアごとの割り当て（`ExternalBinds`）の行か
+    //! 割り当て待ちに押された印字キー（KEYDOWN）で、続く `SDL_TEXTINPUT` をまだ待っている物。`SDL_TEXTINPUT` が出ない環境
+    //! （Android の外付けキーボード。文字入力を止めてある）では、少し待って、キーの字から割り当てる（`update()`）。
+    int pending_key_sym_{ 0 };
+    int pending_key_mods_{ 0 };
+    std::uint32_t pending_key_since_ms_{ 0 };
+    ExternalBinds *ext_binds_{ nullptr }; //!< コアごとの割り当て（DCSS。D33）。無ければ既定の表
     std::uint32_t wait_since_ms_{ 0 };
     std::uint32_t wait_now_ms_{ 0 }; //!< `update()` が入れる「いま」。残り秒の表示に使う
     /*!
@@ -951,6 +979,15 @@ bool core_supports_realtime();
  */
 void set_core_supports_audio(bool on);
 bool core_supports_audio();
+/*!
+ * @brief コアが原作の画面でコマンド・持ち物を出すので、HD2D の側ではコマンドの画面・持ち物一覧を出さない（DCSS。D32）。
+ * @details 真のとき、機能メニューは**機能メニューそのものの項目だけ**（言語と各節）を並べる。入口に「コマンド」の節を並べず
+ * （`root_pages()`）、コアから届いたコマンドの一覧は持たず（`set_pad_state()`・`set_pad_commands()`）、コマンドの画面を
+ * 直に開く入口（`open_commands()`）は何もしない。呼ぶのは画面が `dcss-ui` の申告を受けたときだけ。既定は偽
+ * （ほかのコアの機能メニューは 1 項目も変わらない）。
+ */
+void set_core_hides_commands(bool on);
+bool core_hides_commands();
 /*! @} */
 
 } // namespace hd2d
