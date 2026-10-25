@@ -289,6 +289,31 @@ void DcssWindowStack::set_pregame(bool pregame)
         this->name_random_ = false;
         this->input_ = DcssTextInput{};
     }
+    if (!pregame) {
+        this->name_resume_ = false;
+        this->name_overwrite_ = false;
+    }
+}
+
+void DcssWindowStack::on_name_check(const std::string &name, bool exists)
+{
+    const auto trim = [](const std::string &t) {
+        const std::size_t b = t.find_first_not_of(' ');
+        return (b == std::string::npos) ? std::string() : t.substr(b, t.find_last_not_of(' ') - b + 1);
+    };
+    // 返事が来たとき、まだ同じ名前の問いが出ているときだけ（ゲームが始まった・名前を打ち直した後の遅い返事は捨てる）
+    if (this->name_prompt_ && exists && !this->name_overwrite_ && !this->name_random_ && (trim(name) == trim(this->input_.typed))) {
+        this->name_overwrite_ = true;
+        ++this->version_;
+    }
+}
+
+void DcssWindowStack::clear_name_overwrite()
+{
+    if (this->name_overwrite_) {
+        this->name_overwrite_ = false;
+        ++this->version_;
+    }
 }
 
 bool DcssWindowStack::ingest_line(const std::string &raw)
@@ -304,9 +329,20 @@ bool DcssWindowStack::ingest_line(const std::string &raw)
     const bool input_fresh = this->input_fresh_;
     this->input_fresh_ = false;
     if (this->name_prompt_ && ((kind == "menu") || (kind == "ui-push"))) {
+        // ja5: 名前の問いの最中の十字（カーソルのキー）で、同じ名前のセーブの上書きを訊くはい/いいえのメニュー（`tag` = `prompt`）が出る。
+        // それは作成の窓ではなく、閉じれば名前の問いへ戻る（コアの名前の入力欄はそのまま）。覚えておいて戻す。
+        const bool question = (kind == "menu") && (jstr(m, "tag") == "prompt");
+        if (question) {
+            this->name_resume_ = true;
+            this->name_saved_input_ = this->input_;
+            this->name_saved_random_ = this->name_random_;
+        }
         this->name_prompt_ = false; // 作成の窓へ戻った（名前の問いで Esc を押した）
         this->name_random_ = false;
+        this->name_overwrite_ = false;
         this->input_ = DcssTextInput{};
+    } else if (this->name_resume_ && ((kind == "ui-push") || ((kind == "menu") && (jstr(m, "tag") != "prompt")))) {
+        this->name_resume_ = false; // 確認ではなく作成の窓へ戻った
     }
     if (kind == "menu") {
         this->on_menu(m);
@@ -318,6 +354,13 @@ bool DcssWindowStack::ingest_line(const std::string &raw)
         this->on_menu_scroll(m);
     } else if (kind == "close_menu") {
         this->pop_menu_family();
+        if (this->name_resume_ && this->pregame_ && this->windows_.empty()) {
+            // 上書きの確認が閉じた（いいえ）。名前の問いへ戻る
+            this->name_resume_ = false;
+            this->name_prompt_ = true;
+            this->name_random_ = this->name_saved_random_;
+            this->input_ = this->name_saved_input_;
+        }
     } else if (kind == "close_all_menus") {
         const std::size_t before = this->windows_.size();
         this->windows_.erase(std::remove_if(this->windows_.begin(), this->windows_.end(),

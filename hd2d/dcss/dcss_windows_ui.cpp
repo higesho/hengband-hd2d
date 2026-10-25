@@ -174,9 +174,10 @@ struct ActionSpan {
 };
 
 /*!
- * @brief 説明の下の操作の文を、押せる 1 つずつに切る（ウェブ版 `ui-layouts.js` の `clickify_action` と同じ考え方）。
- * @details 区切りは「、」「,」と、終わりの「。」「.」。「または」「or 」の前置きは操作に含めない。
- * 操作は、区切りの間に `(x)` の形がある部分。押すキーは括弧の中の 1 字。
+ * @brief 説明の下の操作の行を、押せる 1 つずつに切る（ウェブ版 `ui-layouts.js` の `clickify_action` と同じ考え方）。
+ * @details 区切りは半角の空白 2 つ以上（ja5 の操作の行 `action_bar` は、操作を 2 つの空白で区切り、カーソルの操作を `[ ]` で囲む。
+ * ja4 までの「、」「。」区切りの文は ja5 で無くなった）。「または」「or 」の前置きは操作に含めない。
+ * 操作は、区切りの間に `(x)` の形がある部分。押すキーは括弧の中の 1 字。呪文の名前や案内の文には `(x)` が無いので押せる範囲にならない。
  */
 std::vector<ActionSpan> action_spans(const DcssStyledLine &line)
 {
@@ -185,10 +186,7 @@ std::vector<ActionSpan> action_spans(const DcssStyledLine &line)
     for (std::size_t i = 0; i < line.size(); ++i) {
         cell_x[i + 1] = cell_x[i] + dcss_cell_width(line[i].ch);
     }
-    const auto is_delim = [&](std::size_t i) {
-        const char32_t c = line[i].ch;
-        return (c == U'、') || (c == U',') || (c == U'。') || ((c == U'.') && ((i + 1 >= line.size()) || (line[i + 1].ch == U' ')));
-    };
+    const auto is_delim = [&](std::size_t i) { return (line[i].ch == U' ') && (i + 1 < line.size()) && (line[i + 1].ch == U' '); };
     const auto starts_with = [&](std::size_t i, const std::u32string &word) {
         if (i + word.size() > line.size()) {
             return false;
@@ -231,6 +229,68 @@ std::vector<ActionSpan> action_spans(const DcssStyledLine &line)
         seg = i + 1;
     }
     return out;
+}
+
+/*!
+ * @brief コアが説明の窓（品物・地形）の下へ送る操作の行を、カーソルの位置に `[ ]` を付けて作り直す。
+ * @details ja5 の `action_bar::text` は「前置き + 操作を 2 つの空白で並べた行 + 2 つの空白 + 案内 `(←→ で選んで Enter)`」。カーソルの操作は
+ * `[名前]`、ほかは ` 名前 `。コアはウェブへ最初の 1 回（カーソルは 0 番目）しか送らず、左右キーでカーソルが動いても `ui-state` が来ない。
+ * そのため画面が同じ動き（左右で 1 つずつ・端で回る）を覚えて、行を作り直す。Enter はコアがカーソルの操作を行う。
+ * 読み取れない形（`[ ]` が無い・案内が無い）のときは `count` を 0 にして元の文をそのまま返す。
+ */
+std::string action_bar_text(DcssWindow &w, const std::string &raw)
+{
+    w.bar_count = 0;
+    const std::size_t hint_at = raw.rfind("  (");
+    const std::size_t open = raw.find('[');
+    const std::size_t close = (open == std::string::npos) ? std::string::npos : raw.find(']', open);
+    if ((hint_at == std::string::npos) || (open == std::string::npos) || (close == std::string::npos) || (close > hint_at)) {
+        return raw;
+    }
+    const auto trim = [](std::string t) {
+        const std::size_t b = t.find_first_not_of(' ');
+        if (b == std::string::npos) {
+            return std::string();
+        }
+        return t.substr(b, t.find_last_not_of(' ') - b + 1);
+    };
+    std::vector<std::string> items;
+    items.push_back(trim(raw.substr(open + 1, close - open - 1)));
+    const std::string rest = raw.substr(close + 1, hint_at - close - 1);
+    std::size_t pos = 0;
+    while (pos < rest.size()) {
+        std::size_t next = rest.find("  ", pos);
+        // 空白 2 つ以上は 1 つの区切り（先頭・末尾の空白は操作ではない）
+        const std::string one = trim(rest.substr(pos, (next == std::string::npos) ? std::string::npos : next - pos));
+        if (!one.empty()) {
+            items.push_back(one);
+        }
+        if (next == std::string::npos) {
+            break;
+        }
+        pos = next + 2;
+    }
+    w.bar_count = static_cast<int>(items.size());
+    w.bar_cursor = std::clamp(w.bar_cursor, 0, w.bar_count - 1);
+    // コアの文は色の印を外した字（`tostring`）なので、操作のキー `<`（階段を上る）などの「<」は色の印と取り違えないよう二重にする
+    const auto esc = [](const std::string &t) {
+        std::string o;
+        for (const char c : t) {
+            o += c;
+            if (c == '<') {
+                o += '<';
+            }
+        }
+        return o;
+    };
+    std::string out = esc(raw.substr(0, open));
+    for (std::size_t i = 0; i < items.size(); ++i) {
+        if (i > 0) {
+            out += "  ";
+        }
+        out += (static_cast<int>(i) == w.bar_cursor) ? ("<yellow>[" + esc(items[i]) + "]</yellow>") : (" " + esc(items[i]) + " ");
+    }
+    return out + esc(raw.substr(hint_at));
 }
 
 } // namespace
@@ -428,7 +488,10 @@ void DcssWindows::draw_ui(DcssWindow &w, int depth, UiPaint &paint, const UiImag
             }
         }
         c.body = join_blocks(blocks);
-        c.footer = jstr(d, "actions");
+        const std::string actions = jstr(d, "actions");
+        if (!actions.empty()) {
+            c.footer = coloured(kCyan, action_bar_text(w, actions));
+        }
         c.footer_actions = true;
     } else if (type == "describe-item") {
         c.title = jstr(d, "title");
@@ -447,7 +510,7 @@ void DcssWindows::draw_ui(DcssWindow &w, int depth, UiPaint &paint, const UiImag
         c.body = trimmed(c.body);
         const std::string actions = jstr(d, "actions");
         if (!actions.empty()) {
-            c.footer = coloured(kCyan, actions);
+            c.footer = coloured(kCyan, action_bar_text(w, actions));
             c.footer_actions = true;
         }
     } else if (type == "describe-spell") {

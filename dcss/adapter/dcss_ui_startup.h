@@ -15,11 +15,13 @@
 // 呼び出しはゲームのスレッド（原作が出力を流すときに呼ばれる sink の中）。
 #pragma once
 
+#include <cstdlib>
 #include <string>
 #include <vector>
 
 #include "files.h"
 #include "game-type.h"
+#include "ng-input.h"
 #include "japanese.h"
 #include "player-save-info.h"
 #include "state.h"
@@ -137,6 +139,51 @@ static std::string build_json()
         o.raw("]}");
     }
     o.raw("]}");
+    return o.s;
+}
+
+/*!
+ * @brief 名前の問い（`newgame.cc` の `_choose_name`）で Enter を押した名前に、同じ名前のセーブがもう在るかを答える（`hd2d_name_check` の行。画面が Enter と一緒に送る）。
+ * @details `_choose_name` は、名前を確定したとき `save_exists(get_save_filename(名前))` で上書きかを決め、上書きなら「本当に上書きしますか？ [Y/n]」を自分の窓の文字に出して
+ * `Y` を待つ（`overwrite_prompt`）。**この窓はウェブへ送られない**（`push_ui_layout` を呼ばない）ので、画面からは待っていることが見えない。同じ関数・同じ規則（空の名前は
+ * 乱数の名前なので重ならない・`is_good_name` でなければ確定しない）で在るかを読み、画面へ `{"t":"dcss_ui","k":"name_check","name":…,"exists":…}` で返す。
+ * 呼ばれるのはゲームのスレッド（名前の問いが入力を待つ間）。
+ */
+static std::string name_check_reply(const std::string &line)
+{
+    std::string name;
+    const std::string pat = "\"name\":\"";
+    const std::size_t at = line.find(pat);
+    if (at != std::string::npos)
+    {
+        for (std::size_t i = at + pat.size(); i < line.size() && line[i] != '"'; ++i)
+        {
+            if (line[i] == '\\' && i + 1 < line.size())
+            {
+                ++i;
+                if (line[i] == 'u' && i + 4 < line.size())
+                {
+                    const unsigned cp = (unsigned)std::strtoul(line.substr(i + 1, 4).c_str(), nullptr, 16);
+                    if (cp < 0x80)
+                        name += (char)cp;
+                    i += 4;
+                }
+                else
+                    name += line[i];
+            }
+            else
+                name += line[i];
+        }
+    }
+    std::string trimmed = name;
+    trim_string(trimmed);
+    const bool exists = !trimmed.empty() && is_good_name(name, true) && save_exists(get_save_filename(trimmed));
+    dcss_tabs_data::Out o;
+    o.raw("{\"t\":\"dcss_ui\",\"k\":\"name_check\",\"name\":");
+    o.str(name);
+    o.raw(",\"exists\":");
+    o.raw(exists ? "true" : "false");
+    o.raw("}");
     return o.s;
 }
 

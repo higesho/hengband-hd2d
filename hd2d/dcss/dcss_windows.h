@@ -111,6 +111,8 @@ public:
     bool ingest_line(const std::string &line);
     //! アダプタが送る開始メニューの材料（`{"t":"dcss_ui","k":"startup",…}` の JSON 全体）を取り込む。
     bool ingest_startup(const nlohmann::json &message) { return dcss_parse_startup(message, this->startup_); }
+    //! 名前の問いの Enter への返事（アダプタの `name_check`）。同じ名前のセーブが在れば上書きの確認（はい・いいえ）を出す。
+    void on_name_check(const std::string &name, bool exists) { this->stack_.on_name_check(name, exists); }
     DcssWindowStack &stack() { return this->stack_; }
     const DcssWindowStack &stack() const { return this->stack_; }
 

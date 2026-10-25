@@ -39501,7 +39501,7 @@
       "output": "dcss",
       "upstream_repo": "crawl-ja",
       "upstream_path": ".",
-      "commit": "486469c29a45a39d4a79494a73e31d2fd88d40ea",
+      "commit": "3e2aef5912018a5a3065c3fa104dcfd0fb456485",
       "submodules": [
         {
           "path": "crawl-ref/source/contrib/lua",
@@ -39526,7 +39526,7 @@
       ],
       "max_files": 12000,
       "recipe": "recipes/dcss.json",
-      "recipe_sha256": "cfa9e76bf686ba68468709d5eb7ef1a1003308a63e375d643301718a7917fd44",
+      "recipe_sha256": "b9301e7263b302f1c13be9c9ce42a4452de4484a892745e2866cce10e9429a89",
       "files": {
         "LICENSE": {
           "sha256": "6ac5407d2f14c4c0fe30be4a5320653ad9658f04ca5a50b4bac1e82da82729a6"
@@ -39841,7 +39841,7 @@
           "sha256": "c325cf3ca18a3ca9ed5094b093c11f7899b2343459da045ab01c547370ea5835"
         },
         "crawl-ref/source/cio.h": {
-          "sha256": "afb156ceac6bdb9acf48f348d4ce35705a355724e254fa117726e1f7b2aedbb4"
+          "sha256": "467bc553b7b085db9b84badec9b67b171e6f0bd24f72e213dee3ae42b3b84a9e"
         },
         "crawl-ref/source/cleansing-flame-source-type.h": {
           "sha256": "5b88273446ee936b47d9a8398367adfa34abad79eb339c983af805ece613c809"
@@ -40645,7 +40645,7 @@
           "sha256": "68f843dfd6d4eef748d29ac7d6114f460b4c5503aece5a6859ca045d20cfa19e"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-jobs.txt": {
-          "sha256": "f445da42d1ec7d8c3eaec8d4c67738679f7a57db5f09874c76d1b52b655f4335"
+          "sha256": "d12962587727449a0e10d2bd1f5c6d24b3b6dd102318d26d5b5be5b4eead3c41"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-monsters.txt": {
           "sha256": "1deec849163b209c8d9b8ffec6204f3bd8e56ea745694f805bdfbb6591105375"
@@ -40657,7 +40657,7 @@
           "sha256": "0024a241c28bb22c87f5585bcb9c054e0b2e942cb9fc337ba6a62f98ba92dc16"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-species.txt": {
-          "sha256": "e7e8615942b90c0318eba819dda5687320c5cc348d0362e4eacc2219ce70e102"
+          "sha256": "61fc23e2edf6671488b5cacc767fde7763769fcb30f73a77df91a2085c55eff2"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-spells.txt": {
           "sha256": "6beb29098e83a51b7e925c29098c427386c722b34fb28b4abea2203597a8b256"
@@ -40687,13 +40687,13 @@
           "sha256": "e98fd5c2b9ff3a7cdd7a4d6a18b4cde6febb3ff630fb33baad9bb2b4ffe92754"
         },
         "crawl-ref/source/dat/database/ja/jtrans/describe.txt": {
-          "sha256": "e8eb7ce9cd1ea2ac6e01c3ba24a5497671ea775d80f4ab8deff5a036cf409e60"
+          "sha256": "310dad333f6c78b20467a39e93a97271890dc36126effcaaf95fe349e723627d"
         },
         "crawl-ref/source/dat/database/ja/jtrans/dgl-message.txt": {
           "sha256": "026ba8144d7e7c24caa33e00616a21bea068b222146205be739d10bf5767c35e"
         },
         "crawl-ref/source/dat/database/ja/jtrans/dgn-overview.txt": {
-          "sha256": "ca037b79b5066b46c7421f33ee8c9a7d2ceedf2913b91b4c02f02c5d6c1af9bb"
+          "sha256": "ea25094a77bb51acb3ddde57acb2b8af8811eb38bf2788365e1ad3c107b3d16a"
         },
         "crawl-ref/source/dat/database/ja/jtrans/directn.txt": {
           "sha256": "b599de42c6e0c6b05341e7285d84752ae353af2f89bc7c07543aeb87a5057b8b"
@@ -40729,7 +40729,7 @@
           "sha256": "2e877fca99c14adf55c8cf56f75ea1861f4b46010eccecb80976cb921ddd6d93"
         },
         "crawl-ref/source/dat/database/ja/jtrans/god-abil.txt": {
-          "sha256": "07c4c44d0a7e118e1e1202b058677733da912a3c109ac80c2bc887900fd79d95"
+          "sha256": "d1ab546f89f52790bd57116c74017b2a46da9d2c0a92d791707aeb914df1c605"
         },
         "crawl-ref/source/dat/database/ja/jtrans/god-blessing.txt": {
           "sha256": "2bc05910d2e65614417eb718d0094264bc271e4f458e6f5d3ea1fe769f56a4d5"
@@ -40759,7 +40759,7 @@
           "sha256": "9c27469ba9ea9fd11fe3963197445fe8259028e89c055ac747007044b2176a1c"
         },
         "crawl-ref/source/dat/database/ja/jtrans/invent.txt": {
-          "sha256": "08f83f67fa6365ff7acabc74cdf37aa6d9a62349f4b9f351367de461e38bc4fc"
+          "sha256": "30020a148141a047e56d6e5cb1cf36eff10253d2ebd1224a01e0fbf202ecce62"
         },
         "crawl-ref/source/dat/database/ja/jtrans/item-name.txt": {
           "sha256": "0c738f77fdb455aa3c7b7293ff3310c82a56b1d4e531f930e00d176557191350"
@@ -40858,7 +40858,7 @@
           "sha256": "058a41b4e2fd0424c759737297bf152d61fb6d1ad626728730f22a3c807551e1"
         },
         "crawl-ref/source/dat/database/ja/jtrans/monster.txt": {
-          "sha256": "903218bba5a63e2dbd07340846f8762849779399186c74bcf27fe981960e2506"
+          "sha256": "812042406309438e9f27c07c58d70867e2277ecd229f76b94aa14e729a90d9e7"
         },
         "crawl-ref/source/dat/database/ja/jtrans/movement.txt": {
           "sha256": "317d1f0af2d5534b3061a80b10950c8e7a09e83f5613a1afa7b3c1c4f38bf589"
@@ -40870,7 +40870,7 @@
           "sha256": "a5b5c7e6adaef1c730b3238b9cfbd98cf1857460541592c76ccb33da09da48a2"
         },
         "crawl-ref/source/dat/database/ja/jtrans/newgame.txt": {
-          "sha256": "917d8bd670912b7acd1bf2f8dda0aba946de68dd39abca6741fc2e68c336e136"
+          "sha256": "1612f512f5572a86ac21e6662ce7a5524cb6a8cc7eafd81d39af9a21f0fed56e"
         },
         "crawl-ref/source/dat/database/ja/jtrans/ng-input.txt": {
           "sha256": "9b32911e397878ff55fba0b34c9743c9b69216d8bf9c8194106ebfe02cf4bc14"
@@ -40885,7 +40885,7 @@
           "sha256": "8b14b7cd5d4438e52e47e5fd13580c443eee250fd92fe278630d79d16504d9ae"
         },
         "crawl-ref/source/dat/database/ja/jtrans/output.txt": {
-          "sha256": "fae0530b014aff4c48ba9cc335bd59d361997b742356ed04d0337841ccb6695c"
+          "sha256": "00e3ee0e6411ca800cbf5bfcd69af278c6dfe508d9c0a0296dabd821113b453d"
         },
         "crawl-ref/source/dat/database/ja/jtrans/player-act.txt": {
           "sha256": "f270f21f7c208d047867656df81dd6d7a22e71423ddf550c034fe3586cd049c5"
@@ -40903,13 +40903,13 @@
           "sha256": "87f3989d38765c8c36e9bbf23403748f249051cd7020d70815bf004381b81f49"
         },
         "crawl-ref/source/dat/database/ja/jtrans/player.txt": {
-          "sha256": "c6d5366ffeed104fad6c706c0702154397a14015dc62ee990923df5f2f8ccc10"
+          "sha256": "653432bc7fbcf0a0b11643d9c4556611dbdc78382024f04cc4d73360e88ba165"
         },
         "crawl-ref/source/dat/database/ja/jtrans/potion.txt": {
           "sha256": "fa343b488c8915f70cb18a6a921fe5352849e34bbb77c085dfba2f026bdb16b9"
         },
         "crawl-ref/source/dat/database/ja/jtrans/prompt.txt": {
-          "sha256": "550a11331a7a4508ceb767eeab2fe5e943b9b96c32707639242d7f958d2ea061"
+          "sha256": "8edc82b64b678912bfee55e5cb7d9d09055fee871769ce0d1ca07f03dd9eddb0"
         },
         "crawl-ref/source/dat/database/ja/jtrans/quiver.txt": {
           "sha256": "0cfdabb56999d607f658c50292f862bb4e11bdcceafa41c13f558fab4132d342"
@@ -45196,7 +45196,7 @@
           "sha256": "0d11f2f14c17bf6389f4e25107a4a298e2d88f336142d273690d0fae8c6f05f2"
         },
         "crawl-ref/source/database.cc": {
-          "sha256": "6aaa5edd47e6260eed3efc80f57e25ec700c7c9ef47063d0109df07efe424622"
+          "sha256": "1d22953402fc8a6346451b5762dae2797f966af84ef94b8ad4022bd110cfc892"
         },
         "crawl-ref/source/database.h": {
           "sha256": "e32d3c1ea52fb958e3df852c083db5f75d120eb006662b130b9b196ea1204170"
@@ -45244,7 +45244,7 @@
           "sha256": "5c03dcc49a0db0ec6ed9475892a38b9df684f3b7ea53154351dc2e4cd8367877"
         },
         "crawl-ref/source/decks.cc": {
-          "sha256": "6527efc6397614bbb615a6a8950f84ca492f3bbd1a0c2c95792b3ee25124fc8f"
+          "sha256": "6ad83c7ea7228fcbfeed305db2d4c06d8837047097e639d81d6623cfedbb8def"
         },
         "crawl-ref/source/decks.h": {
           "sha256": "fd0935f4615c49c22d46c5c4051fe9610cb43fc78be00ed8201947cf0f3c72d8"
@@ -45259,7 +45259,7 @@
           "sha256": "5e94fa192e0825234fd0b9916c865bf2de5daf7c6d10ed162fe72f20c7e91726"
         },
         "crawl-ref/source/describe-god.cc": {
-          "sha256": "cc71657425021ce516190a003ba4b05d0c288560d467a326ddc2540c98495b7c"
+          "sha256": "b245c38e4e052b21f474ff1f223efc6b1c7048c8f0a5c00c15b2075b42e5f000"
         },
         "crawl-ref/source/describe-god.h": {
           "sha256": "d20ee5bc6c3c66eaee607a4cb0bd52652673061ae41934f83f88aa13daed164e"
@@ -45271,7 +45271,7 @@
           "sha256": "9e0d532fdcdbe5e2e76330ec0e9537096cea3898e17b8c42bb710922712a4030"
         },
         "crawl-ref/source/describe.cc": {
-          "sha256": "54337d9adaac52be4f14c5f257e92e3bd1714d6a7a64e68cda0a4e15f9b2e140"
+          "sha256": "7d7907c1287a727697ce526584ca5f2903679cc6582ba072fce19fa164bb4b6c"
         },
         "crawl-ref/source/describe.h": {
           "sha256": "94310c0a060e0a79454e0f74ec20828b64d2248563fac9a54dc2c1801934dc34"
@@ -45316,7 +45316,7 @@
           "sha256": "ccab532c7a2091aec24e80c1789117fabb3c1ee449f5c3098d45abd974f95bd7"
         },
         "crawl-ref/source/dgn-overview.cc": {
-          "sha256": "3efdfc26ccb1df35fa432df6b0e5e0c41235d8d379c694ef78a2e1f212b68a7d"
+          "sha256": "7dd4d94c4e3c93daef231df060806a5d6fae271adb8e72da47fa5cc7c56a6968"
         },
         "crawl-ref/source/dgn-overview.h": {
           "sha256": "8dc65ed7d9aca5bb4d5682cdbb1fab8b7c17502cc26b3ecb836b91b90becd2ec"
@@ -46000,7 +46000,7 @@
           "sha256": "0239d6045d8d844255890cd04d7f3f9aad6f9bda7d29255598e0485ff14f5f87"
         },
         "crawl-ref/source/menu.cc": {
-          "sha256": "6f9ceb41a3a386b8a9fb49122c9f0446cdb453097731dc7c159475fa9eae9c9a"
+          "sha256": "9ec24a86cf329d1cffd0e953d64b293baf871806bfb7b3e3a0c4d154d5c1c32a"
         },
         "crawl-ref/source/menu.h": {
           "sha256": "b63ce4ee8534c802c4d61615376b715f9d3d633d9e6e6f27c84f1416226f8011"
@@ -46060,7 +46060,7 @@
           "sha256": "ffb882e9514cbfbb175a7a4a992c32f135970f523b403e4c1f930e113894a6eb"
         },
         "crawl-ref/source/mon-cast.cc": {
-          "sha256": "656b120a3763eb5336622ba9e6c0187036de6178b6e7d65a5eeeb9e332346651"
+          "sha256": "7b2fa7c63d7fed82571d6987935005256af842539e2f1143266856779ac4e343"
         },
         "crawl-ref/source/mon-cast.h": {
           "sha256": "e0d36e9e26050e9f6651cef221f726ba6c8c95a56948a1e4a832152ac1751e19"
@@ -46237,7 +46237,7 @@
           "sha256": "eddfff9edd6e13fba82ce3bf8b3394155b648ae95fee43d52c29d79c70cfd3a6"
         },
         "crawl-ref/source/newgame.cc": {
-          "sha256": "1dbb57431c30a6e7e7cdb9ce8032119acb748bc8251ba1fbf4659289b5e8dd11"
+          "sha256": "feab0d9b0d4f88c5cf04b3adc1650924903fcf1154b7b0a134db2d850d528915"
         },
         "crawl-ref/source/newgame.h": {
           "sha256": "f2bc96c56cf6eb25dcee9d4d25555ad3f6e8a5a5a71fc15c460eaf10b48bfeb1"
@@ -46321,7 +46321,7 @@
           "sha256": "434546096540061d0edbda2d127e10d7e569357baaa84f94a0bf4e27d3db3080"
         },
         "crawl-ref/source/output.cc": {
-          "sha256": "cde4a4900de3c8215fc9e790a1aa174d328bc12f8e93ad6ba047dc171498f803"
+          "sha256": "6b0d167fb4b424e234af241c0ef2e9396caf15ed40cc7838d2086b61e8074741"
         },
         "crawl-ref/source/output.h": {
           "sha256": "ac8c5f56cfdcb4133f8bc038912d8632f14c68918a3f15dd8334e8d8f3734dd0"
@@ -46438,10 +46438,10 @@
           "sha256": "c06a323a4623807b6f19129d48c95f4bf50c3f4ea66d62cc27e840188a247558"
         },
         "crawl-ref/source/prompt.cc": {
-          "sha256": "3ab98efc343d3b9dc643747a971433339d5dcf18cfa21a0535b8a266f0dadfd6"
+          "sha256": "09cfeca47641742fb806892413555b2a32f2795493f8a7632d76a5963e81024e"
         },
         "crawl-ref/source/prompt.h": {
-          "sha256": "e566ae64d704079eff980967bdd8db9a384be7190b285e5803ed29913fca9043"
+          "sha256": "7e3b8d6a17187db8f3fb83d8d417a903434d28e87933fe61c14517a1b02af25a"
         },
         "crawl-ref/source/pronoun-type.h": {
           "sha256": "12d41e7d8df73ccbce54fc69aadcc489d0ac7649af0da8bee8bedfb7638379ed"
@@ -71947,7 +71947,7 @@
           "sha256": "5488d20542a3ac689e7c3420a5c2de299b22ed4534569cc62aa24ff97c5ed63c"
         },
         "crawl-ref/source/teleport.cc": {
-          "sha256": "e4b101a4c119ab7b0a767f457aadda91347ad499d695837c80ca793dfe686a6c"
+          "sha256": "3416c562c411f55d11e5624a2c5743e58cadffc79d50d6789ba055e98f93ff3b"
         },
         "crawl-ref/source/teleport.h": {
           "sha256": "a09258d450f5ba43063d704d3edcc99b79bd531e96c4fc409e916509072a820a"
@@ -72481,7 +72481,7 @@
           "sha256": "9cfe4876998e78b41c964ffacc4ea0a3c30c53e85e118ccc35bfeac5a3f88287"
         },
         "crawl-ref/source/util/release_ver": {
-          "sha256": "2fb6e363e837d9082053c41b24618bc540241d94cd466577a7db2428807fdea9"
+          "sha256": "cd5b0fb4731599c5ff2076a34e1d1aebaed9c66f5a7c21294a8a34c09f450601"
         },
         "crawl-ref/source/util/remove_unused_headers.pl": {
           "sha256": "51ae8bbc919fb73813d7f78617cca5d4fdb6a81423a1918a212a361b2974b080"
@@ -72607,7 +72607,7 @@
           "sha256": "30eb6292423f8104abc697e9f582e53aa89d7b8126c832cd410f2ba514232fc6"
         },
         "crawl-ref/source/windowmanager-sdl.cc": {
-          "sha256": "cb9c12bbe240baf3393d08718ac72284e8d3fa62400414afe166a5e096101e4d"
+          "sha256": "78c183d945c952ac1dc3cc5fdcab54cc6dca55fa400b87d867f01883e3bb7c0b"
         },
         "crawl-ref/source/windowmanager-sdl.h": {
           "sha256": "625669d607e78d0289e79b83f86687b5ab867bbae658948055e8e03828f9d587"

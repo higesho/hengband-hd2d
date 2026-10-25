@@ -7,7 +7,7 @@
 
 ## 1. 結論
 
-- **確認**: 原作（日本語版フォーク crawl-ja の `0.34.1-ja2`。2026-10-22 に `0.34.1-ja4` へ上げ、同じ確かめを通した。 4.6）の `.cc` を 1 行も書き換えずに、Windows（MSVC・x64）で
+- **確認**: 原作（日本語版フォーク crawl-ja の `0.34.1-ja2`。2026-10-22 に `0.34.1-ja4`、2026-10-25 に `0.34.1-ja5` へ上げ、同じ確かめを通した。 4.6）の `.cc` を 1 行も書き換えずに、Windows（MSVC・x64）で
   ウェブタイル版（`USE_TILE_WEB`）を組めた。`DcssCore.exe` は 14.2 MB（プログラムのデータベース 96 MB は別）。
 - **確認**: 起こして、起動メニュー → 名前 → 種族 → 職業 → 武器 → ゲームに入る → 数歩歩く → 所持品 → 標準入力を閉じて
   保存・終了、まで通した。出る JSON は UTF-8 で、日本語が入っている（記録は `samples/m0_boot_to_walk.jsonl`）。
@@ -110,7 +110,7 @@ DcssCore.exe -dir <保存先> -rc <保存先>\init.txt -webtiles-socket x -await
 
 | 種類 | 出る場面と中身（確認） |
 | --- | --- |
-| `version` | 起動直後。`{"msg":"version","text":"Dungeon Crawl Stone Soup 0.34.1-ja4"}`（`samples/` の記録は ja2 のときの物） |
+| `version` | 起動直後。`{"msg":"version","text":"Dungeon Crawl Stone Soup 0.34.1-ja5"}`（`samples/` の記録は ja2 のときの物） |
 | `options` / `layout` | 起動直後と、ゲームに入るとき。HP/MP の色の閾値などの設定、メッセージ欄の高さ |
 | `menu` + `txt` | 起動メニュー。`{"msg":"menu","type":"crt",...}` に続いて `{"msg":"txt","id":"menu_txt","lines":{"3":"<span class=\"fg7 bg0\">名前を入力: ..."}}`。行ごとの HTML（色は `fgN bgN`）。入力に応じて変わった行だけが再送される |
 | `ui-push` / `ui-pop` / `ui-state` | キャラクター作成の選択（`"type":"newgame-choice"`）。`main-items.menu_id` が `species-main`・`background-main`・`weapon-main`。`buttons[]` に `hotkey`・`description`・`labels`（日本語）・`tile`（タイル番号）。例: ノール `a`、人間 `j` |

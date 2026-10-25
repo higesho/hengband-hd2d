@@ -209,6 +209,8 @@ void DcssUi::ingest_payload(const std::string &payload)
             (void)this->tabs_.ingest_json(payload); // タブの欄の中身（持ち物・呪文ほか。段 U2）
         } else if (kind == "startup") {
             (void)this->windows_.ingest_startup(m); // 開始メニューの材料（モードの一覧・セーブデータと人形。段 U3）
+        } else if (kind == "name_check") {
+            this->windows_.on_name_check(m.value("name", std::string()), m.value("exists", false)); // 名前の問いの Enter への返事（同じ名前のセーブが在るか）
         } else if (kind == "pad") {
             (void)this->pad_.ingest_table(m); // ゲームパッドの割り当てられるコマンドの表（番号・名前・いまのキー。段 5）
         }

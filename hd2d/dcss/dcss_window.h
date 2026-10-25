@@ -100,6 +100,8 @@ struct DcssWindow {
     int hover_button{ -1 }; //!< 作成の格子の強調（マウスの下）
     int focus_hotkey{ 0 }; //!< 作成の格子のキーボードの強調（`outer_menu_focus`・`ui-state` の `button_focus`）
     int hover_action{ -1 }; //!< 説明の下の操作の文の強調
+    int bar_cursor{ 0 }; //!< 説明の下の操作の行（ja5 の `action_bar`）で、左右キーが動かすカーソルの位置。コアはウェブへ最初の 1 回しか文を送らない（カーソルが動いても `ui-state` が来ない）ので、画面が同じ動きを覚える
+    int bar_count{ 0 }; //!< 操作の行の操作の数（描画が数える。0 は操作の行が無い・読み取れない）
     int crt_pending_focus{ -1 }; //!< 文字画面（開始メニュー）で、マウスの下へ移すために選択を送って、まだコアの返事が来ていない項目の番号
     std::uint32_t crt_pending_at{ 0 }; //!< その送った時刻（ミリ秒）
     int crt_last_focus{ -2 }; //!< 開始メニューで、直前の描画の選択中の項目の番号（変わったら、セーブデータの欄を選択中の項目が見える位置へ捲る）
@@ -190,6 +192,14 @@ public:
      * 出ている間は、打った字・Enter・Esc・`*` が窓の部品に届くよう、1 行入力（`text_input`）を立てる。
      */
     bool name_prompt() const { return this->name_prompt_; }
+    /*!
+     * ja5: 名前の問いで Enter を押した名前に同じ名前のセーブが在り、コアが「本当に上書きしますか？ [Y/n]」を待っている。原作の `_choose_name` はこの確認を自分の窓の字に出すだけで
+     * ウェブへ送らない（名前の問い自体を送らない）ので、画面はコアが待っていることを知らない。Enter を押すとき画面がアダプタへ名前を問い合わせ（`hd2d_name_check`）、
+     * 返事（`name_check`）が「在る」なら立てる。立っている間は、画面が「はい・いいえ」を出し、答え（Y・n）だけをコアへ送る。
+     */
+    bool name_overwrite() const { return this->name_overwrite_; }
+    void on_name_check(const std::string &name, bool exists);
+    void clear_name_overwrite();
     //! 名前の問いの題に出す「種族と職業」（直前の作成の窓の題から取る。取れなければ空）。
     const std::string &name_prompt_job() const { return this->name_job_; }
     //! 「*」（ランダムな名前）を押した。名前はコアが決めるので、画面は字を知らない。
@@ -235,6 +245,11 @@ private:
     bool input_fresh_{ false }; //!< 直前の行が `init_input`（`type` = `messages`）だった
     bool name_prompt_{ false };
     bool name_random_{ false };
+    //! ja5: 名前の問いの最中に、同じ名前のセーブの上書きの確認（`tag` = `prompt` のはい/いいえのメニュー）が出ている。閉じたら名前の問いへ戻る
+    bool name_overwrite_{ false };
+    bool name_resume_{ false };
+    bool name_saved_random_{ false };
+    DcssTextInput name_saved_input_;
     std::string name_job_;
     std::string last_newgame_title_; //!< 直前の作成の窓の題（タグを除いた字）
     std::uint64_t version_{ 0 };

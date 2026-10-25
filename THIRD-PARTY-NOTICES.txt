@@ -493,7 +493,7 @@ toband/lib/file/nethack-license.txt. The score report of the upstream build
 
 ---------------------------------------------------------
 
-Dungeon Crawl Stone Soup 0.34.1, Japanese edition (crawl-ja, tag 0.34.1-ja4) - GNU General Public License v2 or later
+Dungeon Crawl Stone Soup 0.34.1, Japanese edition (crawl-ja, tag 0.34.1-ja5) - GNU General Public License v2 or later
 https://github.com/crawl/crawl (upstream)
 https://github.com/higesho/crawl-ja (Japanese edition)
 
@@ -530,7 +530,7 @@ Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler;
 licenses/Dcss-zlib-README.txt).
 
 Corresponding source: the Japanese edition source at the pinned commit
-486469c29a45a39d4a79494a73e31d2fd88d40ea (tag 0.34.1-ja4) from
+3e2aef5912018a5a3065c3fa104dcfd0fb456485 (tag 0.34.1-ja5) from
 https://github.com/higesho/crawl-ja, together with this project's recipe
 (tools/core_sources/recipes/dcss.json) and adapters (dcss/adapter/, the screen
 parts hd2d/dcss/ and the build scripts), which tools/core_sources/prepare.py

@@ -111,8 +111,28 @@ void DcssWindows::send_key(int keycode)
         this->send_key(27);
         return;
     }
+    if (this->stack_.name_prompt() && this->stack_.name_overwrite()) {
+        // 同じ名前のセーブの上書きの確認（原作 `_choose_name` の `overwrite_prompt`）。コアは「Y」を待っていて、ほかのキーは確認をやめるだけで食う。
+        // 原作の Enter は名前の確定のボタンが先に食い、確認の窓（はい/いいえ）は十字キーでしか出ない。画面は自分の「はい・いいえ」で答えを受け、コアへは Y か n だけを送る。
+        // Y・y = はい。N・n・Esc・Enter = いいえ（Enter が既定。取り消しは名前の問いへ戻るだけ）。ほかのキーは無視する。
+        if ((keycode == 'Y') || (keycode == 'y')) {
+            this->stack_.clear_name_overwrite();
+            this->send_line("{\"msg\":\"key\",\"keycode\":89}");
+        } else if ((keycode == 'N') || (keycode == 'n') || (keycode == 27) || (keycode == 13)) {
+            this->stack_.clear_name_overwrite();
+            this->send_line("{\"msg\":\"key\",\"keycode\":110}");
+        }
+        return;
+    }
     this->send_line("{\"msg\":\"key\",\"keycode\":" + std::to_string(keycode) + "}");
     DcssTextInput &in = this->stack_.text_input();
+    if (this->stack_.name_prompt() && (keycode == 13) && !this->stack_.name_prompt_random() && !in.typed.empty()) {
+        // 名前の確定。同じ名前のセーブが在ればコアは上書きの確認を待つ（画面には届かない）ので、在るかをアダプタへ問い合わせる（返事は `DcssWindowStack::on_name_check`）。
+        json q;
+        q["msg"] = "hd2d_name_check";
+        q["name"] = in.typed;
+        this->send_line(q.dump(-1, ' ', false, json::error_handler_t::replace));
+    }
     if (this->stack_.name_prompt()) {
         // 名前の問い: 「*」はコアがランダムな名前を入れる（字は画面に来ない）。それ以外は打った字を覚える。
         if (keycode == '*') {
@@ -507,7 +527,11 @@ void DcssWindows::menu_click_item(DcssWindow &w, int index, bool left)
             }
         } else if ((menu.flags & kMfMultiSelect) != 0) {
             if (left) {
-                this->send_key(32);
+                // ja5 のネメレクスの Stack Five（札を入れ替える複数選択のメニュー）は、項目の数字のキー（'1'〜'9'）で札を入れ替える。
+                // ウェブ版の動き（空白 = 強調の項目の選択の切り替え）では 2 回押すと 2 枚とも選択済みになるだけで入れ替わらないので、
+                // 数字のキーを持つ項目は、そのキーを送る（強調はすでに項目へ移してある）。
+                const bool digit_key = !item.hotkeys.empty() && (item.hotkeys.front() >= '1') && (item.hotkeys.front() <= '9');
+                this->send_key(digit_key ? item.hotkeys.front() : 32);
             } else {
                 this->send_text("'");
             }
@@ -635,7 +659,23 @@ bool DcssWindows::on_key_down(const SDL_Event &event, bool reserved_key)
         } else if (top->kind == DcssWindow::Kind::Ui) {
             View *v = this->view_of(*top);
             const bool plain = (mod & (KMOD_CTRL | KMOD_SHIFT)) == 0;
-            if ((v != nullptr) && plain && (v->body_total > 0)) {
+            if (plain && ((sym == SDLK_LEFT) || (sym == SDLK_RIGHT))) {
+                // ja5: 左右は説明の窓の下の操作の行のカーソル（品物・地形）か、引用の面の切り替え（説明）。コアも同じ動きをするが、
+                // ウェブへは状態が来ないので画面が同じ動きを覚える（キーはコアへも送る）。怪物・神の画面の面は、コアが `ui-state` の `pane` で送ってくる。
+                const int step = (sym == SDLK_RIGHT) ? 1 : -1;
+                if (((top->type == "describe-item") || (top->type == "describe-feature-wide")) && (top->bar_count > 0)) {
+                    top->bar_cursor = (top->bar_cursor + step + top->bar_count) % top->bar_count;
+                } else if (top->type == "describe-generic") {
+                    const json q = top->data.contains("quote") ? top->data["quote"] : json();
+                    if (q.is_string() && !q.get<std::string>().empty()) {
+                        top->pane = (top->pane == 0) ? 1 : 0;
+                        top->scroll_y = 0;
+                    }
+                }
+            }
+            // 作り始めのおまかせの組み合わせの問い（`newgame-random-combo`）は捲る中身が無く、ja5 から十字キーを「はい・引き直す・やめる」のメニューを開くキーに使う。
+            // 画面で捲らず、そのままコアへ送る。
+            if ((v != nullptr) && plain && (v->body_total > 0) && (top->type != "newgame-random-combo")) {
                 const int page = std::max(v->line_h, ((v->body_viewport.h - 24) / std::max(1, v->line_h)) * v->line_h);
                 switch (sym) {
                 case SDLK_PAGEUP:
@@ -706,8 +746,11 @@ bool DcssWindows::on_text(const SDL_Event &event)
                     }
                 }
                 // 面の切り替え（説明の窓の `!`・`^`）。キーはコアへも送る（神の画面のコアの状態が変わる）。
-                if (((ch == '!') || (ch == '^')) && ((top->type == "describe-generic") || (top->type == "describe-monster") || (top->type == "describe-god"))) {
-                    top->pane = (top->pane + 1) % 4; // 面の数は描画側が丸める
+                if (((ch == '!') || (ch == '^')) && (top->type == "describe-generic")) {
+                    top->pane = (top->pane == 0) ? 1 : 0; // 説明 ⇔ 引用の 2 面（コアも 1 から引いて切り替える）
+                    top->scroll_y = 0;
+                } else if (((ch == '!') || (ch == '^')) && ((top->type == "describe-monster") || (top->type == "describe-god"))) {
+                    top->pane = (top->pane + 1) % 4; // 面の数は描画側が丸める。正しい面はコアが `ui-state` の `pane` で送ってくる
                     top->scroll_y = 0;
                 }
             }

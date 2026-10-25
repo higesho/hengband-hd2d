@@ -309,6 +309,62 @@ int dcss_touch_selftest()
             check(!st.name_prompt(), "a creation window closes the name prompt");
         }
         {
+            // ja5: 名前の問いの最中に十字で出る「同じ名前のセーブを上書きするか」のはい/いいえ（`menu`・`tag` = `prompt`）。いいえで閉じたら名前の問いへ戻る
+            // （打った字もそのまま）。はいでゲームが始まれば戻らない。作成の窓が来たら戻らない。
+            const char *const kYesNo = "{\"msg\":\"menu\",\"ui-centred\":true,\"tag\":\"prompt\",\"flags\":262674,\"title\":{\"text\":\"<white>上書きしますか？\"},\"total_items\":2,\"chunk_start\":0,\"items\":[]}";
+            const char *const kCloseMenu = "{\"msg\":\"close_menu\"}";
+            DcssWindowStack st;
+            st.set_pregame(true);
+            (void)st.ingest_line(kWeaponUi);
+            (void)st.ingest_line("{\"msg\":\"ui-pop\"}");
+            (void)st.ingest_line(kInit);
+            (void)st.ingest_line(kClose);
+            check(st.name_prompt(), "name prompt before the overwrite question");
+            st.text_input().typed = "Zed"; // 打った字は窓の部品が `text_input()` へ入れる
+            (void)st.ingest_line(kYesNo);
+            check(!st.name_prompt() && !st.empty(), "the overwrite yes/no menu replaces the name prompt while it is open");
+            (void)st.ingest_line(kCloseMenu);
+            check(st.name_prompt() && st.text_input().active && (st.text_input().typed == "Zed"), "closing the overwrite menu (No) brings back the name prompt with the typed name");
+            (void)st.ingest_line(kYesNo);
+            (void)st.ingest_line(kCloseMenu);
+            st.set_pregame(false);
+            check(!st.name_prompt(), "the game starting ends the name prompt");
+            DcssWindowStack gt;
+            gt.set_pregame(true);
+            (void)gt.ingest_line(kInit);
+            (void)gt.ingest_line(kClose);
+            (void)gt.ingest_line(kYesNo);
+            (void)gt.ingest_line(kWeaponUi);
+            (void)gt.ingest_line("{\"msg\":\"ui-pop\"}");
+            (void)gt.ingest_line(kCloseMenu);
+            check(!gt.name_prompt(), "a creation window after the question cancels the return to the name prompt");
+        }
+        {
+            // 名前の問いで Enter を押した名前に同じ名前のセーブが在る（アダプタの `name_check` の返事）と、画面が「はい・いいえ」を出す。コアの確認は画面へ来ない。
+            DcssWindowStack st;
+            st.set_pregame(true);
+            (void)st.ingest_line(kWeaponUi);
+            (void)st.ingest_line("{\"msg\":\"ui-pop\"}");
+            (void)st.ingest_line(kInit);
+            (void)st.ingest_line(kClose);
+            st.text_input().typed = "Zed";
+            st.on_name_check("Zed", false);
+            check(!st.name_overwrite(), "a name that does not exist does not ask to overwrite");
+            st.on_name_check("Other", true);
+            check(!st.name_overwrite(), "a reply for another name than the typed one is dropped");
+            st.on_name_check("Zed", true);
+            check(st.name_overwrite() && st.name_prompt(), "an existing name asks to overwrite while the name prompt is up");
+            st.clear_name_overwrite();
+            check(!st.name_overwrite(), "answering clears the question");
+            st.on_name_check("Zed", true);
+            st.set_pregame(false);
+            check(!st.name_overwrite() && !st.name_prompt(), "the game starting clears the question");
+            DcssWindowStack late;
+            late.set_pregame(false);
+            late.on_name_check("Zed", true);
+            check(!late.name_overwrite(), "a late reply after the name prompt is gone is dropped");
+        }
+        {
             // ゲームの中の同じ並び（メニューの絞り込みの読み手など）は問いにしない。
             DcssWindowStack st;
             st.set_pregame(false);

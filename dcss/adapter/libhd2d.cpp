@@ -354,6 +354,12 @@ int dcss_adapter_tab_action_key()
 // 画面の部品（dcss-ui）の地図のマウス操作（足元のクリック・ツールチップ）。recvfrom が `hd2d_` で始まる行を渡してくる（dcss_posix_shim.cpp）。
 std::string dcss_adapter_handle_ui_line(const std::string &line, std::string &reply)
 {
+    // 名前の問いの Enter: 同じ名前のセーブが在るか（上書きの確認は原作の窓の中で待つだけでウェブへ出ないので、画面が出すために読む）。
+    if (line.find("\"hd2d_name_check\"") != std::string::npos)
+    {
+        reply = dcss_ui_startup::name_check_reply(line);
+        return std::string();
+    }
     return dcss_ui_mouse::handle_line(line, reply);
 }
 

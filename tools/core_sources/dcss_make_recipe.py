@@ -1,6 +1,6 @@
 """DCSS（日本語版）の原作の再構成レシピと manifest の項を作る（「原作の再構成と Linux」）。
 
-原作は日本語版のフォーク crawl-ja（タグ 0.34.1-ja4）。固定コミットのリポジトリの根から必要なファイル（`crawl-ref/` の大半と
+原作は日本語版のフォーク crawl-ja（タグ 0.34.1-ja5）。固定コミットのリポジトリの根から必要なファイル（`crawl-ref/` の大半と
 `ja-tools/gen_apt_ja.py`・`LICENSE`）を選び、
 各ファイルを丸ごと 1 回の範囲コピー（copy）で再構成する。**原作の行の書き換えは 0 件。**
 足す物は 2 つだけで、どちらも原作の文ではない（レシピの 'additions'）。
@@ -42,8 +42,8 @@ NAME = 'dcss'
 REPO = 'crawl-ja'
 UPSTREAM_PATH = '.'   # リポジトリの根（crawl-ref/ と ja-tools/ を両方持つため）
 TREE = 'crawl-ref'
-COMMIT = '486469c29a45a39d4a79494a73e31d2fd88d40ea'  # タグ 0.34.1-ja4
-VERSION = '0.34.1-ja4'
+COMMIT = '3e2aef5912018a5a3065c3fa104dcfd0fb456485'  # タグ 0.34.1-ja5
+VERSION = '0.34.1-ja5'
 MAX_FILES = 12000   # 絵（PNG 8,400 個）を含めて 11,000 個を超える。共通の上限 10,000 を、この項だけ引き上げる（manifest の 'max_files'）
 SUBMODULES = ['lua', 'pcre', 'sqlite', 'zlib']
 UPSTREAM = Path(os.environ.get('HENGBAND_UPSTREAM_ROOT', HERE.parent.parent.parent / 'roguelike-cores' / 'upstream'))

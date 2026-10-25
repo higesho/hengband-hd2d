@@ -449,9 +449,18 @@ void DcssWindows::draw_name_prompt(UiPaint &paint, int screen_w, int screen_h)
         int key;
     };
     std::vector<Btn> btns;
-    btns.push_back({ dcss_parse_window_text(ja ? "<brown>Esc - 終了</brown>" : "<brown>Esc - Quit</brown>"), 27 });
-    btns.push_back({ dcss_parse_window_text(ja ? "<brown>* - ランダムな名前</brown>" : "<brown>* - Random name</brown>"), '*' });
-    btns.push_back({ dcss_parse_window_text(ja ? "<brown>Enter - 開始！</brown>" : "<brown>Enter - Begin!</brown>"), 13 });
+    DcssStyledLine overwrite;
+    if (this->stack_.name_overwrite()) {
+        // 同じ名前のセーブが在る。原作は「本当に上書きしますか？ [Y/n]」を自分の窓に出して Y を待つ（ウェブへは来ない）。画面が同じ文とボタンを出す。
+        overwrite = dcss_parse_window_text(ja ? "<lightred>この名前のゲームがすでにあります。本当に上書きしますか？ [Y/n]</lightred>"
+                                              : "<lightred>You have an existing game under this name; really overwrite? [Y/n]</lightred>");
+        btns.push_back({ dcss_parse_window_text(ja ? "<brown>Y - はい（上書きする）</brown>" : "<brown>Y - Yes (overwrite)</brown>"), 'Y' });
+        btns.push_back({ dcss_parse_window_text(ja ? "<brown>N - いいえ（名前を直す）</brown>" : "<brown>N - No (change the name)</brown>"), 'n' });
+    } else {
+        btns.push_back({ dcss_parse_window_text(ja ? "<brown>Esc - 終了</brown>" : "<brown>Esc - Quit</brown>"), 27 });
+        btns.push_back({ dcss_parse_window_text(ja ? "<brown>* - ランダムな名前</brown>" : "<brown>* - Random name</brown>"), '*' });
+        btns.push_back({ dcss_parse_window_text(ja ? "<brown>Enter - 開始！</brown>" : "<brown>Enter - Begin!</brown>"), 13 });
+    }
 
     constexpr int kBtnPadX = 10;
     constexpr int kBtnGap = 12;
@@ -461,9 +470,10 @@ void DcssWindows::draw_name_prompt(UiPaint &paint, int screen_w, int screen_h)
         btns_w += M.cells_width(b.text) + (2 * kBtnPadX);
     }
     btns_w += kBtnGap * (static_cast<int>(btns.size()) - 1);
-    const int content_w = std::max({ M.cells_width(title), M.cells_width(prompt), btns_w, 30 * M.half_w });
+    const int content_w = std::max({ M.cells_width(title), M.cells_width(prompt), M.cells_width(overwrite), btns_w, 30 * M.half_w });
     const int title_h = title.empty() ? 0 : (M.line_h + 10);
-    const int total_h = title_h + M.line_h + 15 + btn_h;
+    const int over_h = overwrite.empty() ? 0 : M.line_h;
+    const int total_h = title_h + M.line_h + over_h + 15 + btn_h;
     const DcssPopupGeometry geo = dcss_popup_place(this->area_, content_w, total_h, true, 0, this->small_layout_);
     const RectPx c = geo.content;
 
@@ -474,7 +484,9 @@ void DcssWindows::draw_name_prompt(UiPaint &paint, int screen_w, int screen_h)
     const int title_y = y;
     y += title_h;
     const int prompt_y = y;
-    y += M.line_h + 15;
+    y += M.line_h;
+    const int over_y = y;
+    y += over_h + 15;
     this->name_hits_.clear();
     int x = c.x;
     const PaintColor edge = dcss_paint_rgb(125, 98, 60);
@@ -493,6 +505,9 @@ void DcssWindows::draw_name_prompt(UiPaint &paint, int screen_w, int screen_h)
         this->draw_styled(c.x, title_y, title);
     }
     this->draw_styled(c.x, prompt_y, prompt);
+    if (!overwrite.empty()) {
+        this->draw_styled(c.x, over_y, overwrite);
+    }
     for (std::size_t i = 0; i < btns.size(); ++i) {
         const RectPx &r = this->name_hits_[i].rect;
         this->draw_styled(r.x + kBtnPadX, r.y + ((r.h - M.line_h) / 2), btns[i].text);
