@@ -80,10 +80,30 @@ class Tree:
                     yield m.group(1), line
 
 
-def pch_list():
-    """共有ヘッダが `#include "…"` で挙げている原作のヘッダ名（stdafx.h を含む）。"""
+def pch_list(tree=None):
+    """共有ヘッダが `#include "…"` で挙げている原作のヘッダ名（stdafx.h を含む）。
+
+    `#if __has_include("…")`・`#if !__has_include("…")` の塊だけは、`tree` でそのヘッダが見えるかで判じ、
+    外れる側の `#include` を数えない（変愚 3.0.2.6 で消えた term/z-form.h を、3.0.2.4 の短愚の木でだけ含める。2026-10-27）。
+    ほかの形の `#if` は従来どおり中の `#include` を全部数える。"""
     text = strip_comments(PCH_HEADER.read_text(encoding='utf-8-sig'))
-    return [m.group(1) for m in re.finditer(r'^[ \t]*#[ \t]*include[ \t]*"([^"]+)"', text, re.M)]
+    names, active = [], [True]
+    for line in text.splitlines():
+        m = re.match(r'^[ \t]*#[ \t]*if[ \t]+(!?)[ \t]*__has_include[ \t]*\([ \t]*"([^"]+)"[ \t]*\)[ \t]*$', line)
+        if m:
+            seen = tree is None or tree.resolve(tree.src / 'x', m.group(2)) is not None
+            active.append(active[-1] and (seen != (m.group(1) == '!')))
+            continue
+        if re.match(r'^[ \t]*#[ \t]*if', line):
+            active.append(active[-1])
+            continue
+        if re.match(r'^[ \t]*#[ \t]*endif', line) and len(active) > 1:
+            active.pop()
+            continue
+        m = re.match(r'^[ \t]*#[ \t]*include[ \t]*"([^"]+)"', line)
+        if m and active[-1]:
+            names.append(m.group(1))
+    return names
 
 
 def has_guard(tree, path):
@@ -166,7 +186,7 @@ def order_problems(tree, members, closure):
 def check_tree(src):
     tree = Tree(src)
     problems = []
-    listed = pch_list()
+    listed = pch_list(tree)
     if not listed or listed[0] != 'stdafx.h':
         problems.append(f'{PCH_HEADER.name}: 最初のインクルードは "stdafx.h" でなければならない')
     members = {}   # 一覧のヘッダ（解決済みの絶対パス）

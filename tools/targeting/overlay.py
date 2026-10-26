@@ -677,8 +677,23 @@ def build(sources, output,ui_only=False):
     manifest['menu_profiles']={'functions':len(menu_audit),'defined_cases':sum(bool(case.get('profile')) for entry in menu_audit for case in entry.get('cases',[]))}
     build_toband(sources, output, manifest, ui_only)
     native_fx_overlay.build(sources, output, manifest)
+    remove_stale_outputs(output, manifest)
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n', encoding='utf8')
     return manifest
+
+def remove_stale_outputs(output, manifest):
+    """前回の一覧（manifest.json）にあって今回は作らなかったファイルを出力先から消す。
+
+    原作の版上げでファイルが消えると、使い回す出力先に古い写しが残り、フォルダごと集める組み立て（CMake の GLOB）が
+    それまで組み、`__has_include` もそれを拾う（変愚 3.0.2.6 の取り込みで `term/z-form.h` などが残った。2026-10-26）。
+    一覧に載っていないファイル（ほかの道具が置いたもの）には触らない。"""
+    previous=output/'manifest.json'
+    if not previous.is_file():return
+    try:old={entry['path'] for entry in json.loads(previous.read_text(encoding='utf8')).get('files',[])}
+    except (ValueError,KeyError,TypeError):return
+    for path in sorted(old-{entry['path'] for entry in manifest['files']}):
+        stale=output/path
+        if stale.is_file():stale.unlink()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

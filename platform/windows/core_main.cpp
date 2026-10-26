@@ -87,7 +87,12 @@
 #include "floor/floor-save.h" //!< clear_saved_floor_files()（緊急保存のあとに階の一時ファイルを消す）
 #include "save/save.h"
 #include "system/angband-system.h"
+#include "bridge/hengband_source_version.h"
+#if HB_HENGBAND_SOURCE_3026
+#include "system/deferred-update-requests.h" //!< 言語切替時の全面描き直し
+#else
 #include "system/redrawing-flags-updater.h" //!< 言語切替時の全面描き直し
+#endif
 #include "util/enum-range.h"
 #include "system/angband-version.h"
 #include "system/floor/floor-info.h"
@@ -658,7 +663,11 @@ void apply_ui_state(presentation::Bridge &bridge)
              * **言語が実際に変わった。**Term に入っている絵は前の言語のままなので、
              * 本線もサブパネルも丸ごと描き直させる（差分描画は「変わっていない」と思っている）。
              */
+#if HB_HENGBAND_SOURCE_3026
+            auto &rfu = DeferredUpdateRequests::get_instance();
+#else
             auto &rfu = RedrawingFlagsUpdater::get_instance();
+#endif
             rfu.fill_up_sub_flags();
             rfu.set_flags(EnumClassFlagGroup<MainWindowRedrawingFlag>(EnumRange(MainWindowRedrawingFlag::TITLE, MainWindowRedrawingFlag::MAX)));
             //! 旗を立てただけではキー待ちの間に消費されない。`apply_pending_language_redraw()` が待ち中に描き直す（修-22）。

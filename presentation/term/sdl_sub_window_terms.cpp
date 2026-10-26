@@ -18,7 +18,12 @@
 #include "io/files-util.h"
 #include "locale/character-encoding.h"
 #include "locale/language-switcher.h"
+#include "bridge/hengband_source_version.h"
+#if HB_HENGBAND_SOURCE_3026
+#include "system/deferred-update-requests.h"
+#else
 #include "system/redrawing-flags-updater.h"
+#endif
 #include "term/gameterm.h"
 #include "term/term-color-types.h"
 #include "term/z-term.h"
@@ -725,7 +730,11 @@ void fill_sub_panels(GameFrame &frame)
     if (need_redraw) {
         // 種類・桁数が変わった＝いま Term に入っている絵は古い。次の handle_stuff で
         // コアに描き直させる（どの種類がどのパネルに移ったか追うより確実）。
+#if HB_HENGBAND_SOURCE_3026
+        DeferredUpdateRequests::get_instance().fill_up_sub_flags();
+#else
         RedrawingFlagsUpdater::get_instance().fill_up_sub_flags();
+#endif
     }
 }
 

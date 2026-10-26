@@ -40,7 +40,7 @@
 
 | ゲーム | 説明 |
 | --- | --- |
-| 変愚蛮怒 | Hengband 3.0.2.5-Beta です |
+| 変愚蛮怒 | Hengband 3.0.2.6-Beta です |
 | 短愚蛮怒 | 変愚蛮怒の短編版です（同じソースを別の設定でビルドしています） |
 | 幻想蛮怒 | 東方 Project をモチーフにした変愚蛮怒の派生版です。町とダンジョンを作り込み、英語版も用意しました |
 | TOband | タクティクスオウガをモチーフにした変愚蛮怒の派生版です |
@@ -89,7 +89,7 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 
 | 名前 | 取得元 | 固定のコミット |
 | --- | --- | --- |
-| `hengband` | <https://github.com/hengband/hengband>（変愚蛮怒 3.0.2.5-Beta） | `18b10d6ea5fd234c119053e0a209c90aede21fa4`。短愚蛮怒のために同じリポジトリの `43106a70d7057dc6c506bac96b0888ecdaddb4b8`（3.0.2.4-Beta）も要ります |
+| `hengband` | <https://github.com/hengband/hengband>（変愚蛮怒 3.0.2.6-Beta） | `4f80ebd7b502041a4dc4853174f685ab1572222c`。短愚蛮怒のために同じリポジトリの `43106a70d7057dc6c506bac96b0888ecdaddb4b8`（3.0.2.4-Beta）も要ります |
 | `gensoband` | <https://github.com/asamayim/gensoband> | `fc4418078a62db9fae2915c8b6ab24a063609093` |
 | `toband` | <https://github.com/rmgames0-eng/Toband2-PR10-fork>（TOband R3。タグ r3-20261016） | `5c298634e8c30c7d91ef0fd0f13fc00692364eaa` |
 | `silq` | <https://github.com/sil-quirk/sil-q> | `d0355bf97e873ba10e6b364aa127bc5ebbbd05f1` |
@@ -291,7 +291,7 @@ The current packages contain the twelve prebuilt cores. The feature that imports
 
 | Game | Description |
 | --- | --- |
-| Hengband | Hengband 3.0.2.5-Beta |
+| Hengband | Hengband 3.0.2.6-Beta |
 | Tangband | A short version of Hengband (the same source built with different settings) |
 | Gensoband | A Touhou Project themed fork of Hengband. Towns and dungeons were redesigned, and an English version was added |
 | TOband | A Tactics Ogre themed fork of Hengband |
@@ -340,7 +340,7 @@ The commits are also in `tools/core_sources/manifest.json`.
 
 | Name | Source | Pinned commit |
 | --- | --- | --- |
-| `hengband` | <https://github.com/hengband/hengband> (Hengband 3.0.2.5-Beta) | `18b10d6ea5fd234c119053e0a209c90aede21fa4`. Tangband also needs `43106a70d7057dc6c506bac96b0888ecdaddb4b8` (3.0.2.4-Beta) of the same repository |
+| `hengband` | <https://github.com/hengband/hengband> (Hengband 3.0.2.6-Beta) | `4f80ebd7b502041a4dc4853174f685ab1572222c`. Tangband also needs `43106a70d7057dc6c506bac96b0888ecdaddb4b8` (3.0.2.4-Beta) of the same repository |
 | `gensoband` | <https://github.com/asamayim/gensoband> | `fc4418078a62db9fae2915c8b6ab24a063609093` |
 | `toband` | <https://github.com/rmgames0-eng/Toband2-PR10-fork> (TOband R3, tag r3-20261016) | `5c298634e8c30c7d91ef0fd0f13fc00692364eaa` |
 | `silq` | <https://github.com/sil-quirk/sil-q> | `d0355bf97e873ba10e6b364aa127bc5ebbbd05f1` |

@@ -49,7 +49,12 @@
 #include "system/monrace/monrace-definition.h"
 #include "system/monster-entity.h"
 #include "system/player-type-definition.h"
+#include "bridge/hengband_source_version.h"
+#if HB_HENGBAND_SOURCE_3026
+#include "system/deferred-update-requests.h"
+#else
 #include "system/redrawing-flags-updater.h"
+#endif
 #include "target/projection-path-calculator.h"
 #include "world/world.h"
 
@@ -357,7 +362,11 @@ bool do_place(PlayerType *player_ptr, const std::vector<std::string> &words, std
     lite_spot(player_ptr, orig);
     lite_spot(player_ptr, dest);
     if (monster.get_monrace().brightness_flags.has_any_of(ld_mask)) {
+#if HB_HENGBAND_SOURCE_3026
+        DeferredUpdateRequests::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+#else
         RedrawingFlagsUpdater::get_instance().set_flag(StatusRecalculatingFlag::MONSTER_LITE);
+#endif
     }
 
     return true;

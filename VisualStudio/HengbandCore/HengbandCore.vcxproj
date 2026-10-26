@@ -218,6 +218,7 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\bot\bot-report.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\bot\bot-screen.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\bot\bot-socket-server.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\bot\bot-subwindow-verifier.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\cmd-action\cmd-attack.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\cmd-action\cmd-move.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\cmd-action\cmd-open-close.cpp" />
@@ -230,15 +231,20 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\external-lib\fmt\format.cc" />
     <ClCompile Include="$(HengTargetingSourceRoot)\headless-term\headless-term.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\definition-hash-data.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\jsonc-document-loader.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\parse-error-messages.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\quest-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\town-definition-list-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\town-map-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\town-preferences-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\wilderness-reader.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\io\condition-expression.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\io\input-context.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\io\macro-configurations-store.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\io\temp-file.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\load\artifact-record-loader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\locale\character-encoding.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\lore\monster-lore-snapshot.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\monster-floor\monster-movement-direction-list.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\mspell\mspell-projection-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\mutation\mutation-roll-table.cpp" />
@@ -256,6 +262,7 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\system\baseitem\baseitem-record.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\baseitem\baseitem-records.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\baseitem\baseitem-service.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\system\deferred-update-requests.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\dungeon\quest-definition.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\dungeon\quest-fixed-map.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\dungeon\quest-list.cpp" />
@@ -326,7 +333,6 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\system\floor\town-list.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\inner-game-data.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\monrace\monrace-list.cpp" />
-    <ClCompile Include="$(HengTargetingSourceRoot)\system\redrawing-flags-updater.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\floor\floor-info.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\system\grid-type-definition.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\main-win\commandline-win.cpp" />
@@ -437,7 +443,6 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\main-win\main-win-tokenizer.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\main\game-data-initializer.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\main\info-initializer.cpp" />
-    <ClCompile Include="$(HengTargetingSourceRoot)\main\init-error-messages-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\main-win\main-win-bg.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\main\scene-table-floor.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\main\scene-table-monster.cpp" />
@@ -635,6 +640,7 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\view\display-map.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\view\display-self-info.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\view\display-scores.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\view\map-info-cache.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\display-sub-windows.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\main-window-left-frame.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\main-window-stat-poster.cpp" />
@@ -957,6 +963,8 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\spell\technic-info-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\combat\aura-counterattack.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\main-window-equipments.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\window\overview-map-cache.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\window\shrunk-overview-map.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\wizard\artifact-analyzer.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\wizard\artifact-bias-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\wizard\cmd-wizard.cpp" />
@@ -1058,7 +1066,6 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\world\world.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\world\world-movement-processor.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\world\world-turn-processor.cpp" />
-    <ClCompile Include="$(HengTargetingSourceRoot)\term\z-form.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\term\z-rand.cpp" />
     <ClCompile Include="..\..\presentation\term\core_term.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

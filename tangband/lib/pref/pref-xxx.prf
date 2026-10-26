@@ -1,0 +1,57 @@
+# File: pref-xxx.prf
+#
+# ANGBAND_SYS が既定の "xxx" のときに読まれる設定ファイル。
+# それは HengbandCore.exe（ボクセル HD2D のコア）である
+#   - src/system/system-variables.cpp:25   ANGBAND_SYS = "xxx"（既定）
+#   - src/main-win.cpp:2676                 上流の Windows 版だけが "win" へ差し替える
+# したがってこのファイルを読むのは HD2D のコアだけで、上流の Hengband.exe は
+# 今までどおり pref-win.prf を読む。
+#
+# 中身はマクロのトリガー表だけである。ここに名前を置いておくと
+#   - マクロの設定画面（@）のトリガー欄が \[Pad_X] のように読める形で出る
+#   - @ →(2) で書き出す .prf も同じ綴りになるので、マクロを持ち歩ける
+# 名前が無いと、どちらも \x1Fx3B\r のような生の escape になる。
+#
+# 走査符号は DirectInput の値（pref-win.prf と同じ流儀）。
+# パッドのぶんは実在のキーボードには無い 0xF0 以降を当ててある
+#   （DirectInput のキーボード走査符号は 0xED までしか使っていない）。
+# **hd2d/ui/game_pad.cpp の pad_input_trigger_scancode() と対で決まっている。**
+# 片方だけ変えると、押しても登録した名前と別の符号が飛ぶ。
+
+# T:<trigger template>:<modifiers>:<modifier name1>:<modifier name2>:....
+# '&' が修飾の位置、'#' が走査符号の位置。
+T:&x#:CSA:control-:shift-:alt-
+
+# T:<trigger name>:<keycode>:<keycode with shiftkey>
+#
+# 符号を 2 つ書いてあるのは、シフト付きの綴り（\[shift-Pad_X]）の**読み込み**が
+# 3 番目の欄を見るため。1 つしか書かないと、書き出しは通るのに読み直せない片道になる
+# （2026-08-14 に実測）。パッドにシフトは無いが、手で書いた prf が通らないのは避ける。
+#
+# --- キーボードのファンクションキー ---
+# presentation/bridge/input_event_adapter.cpp の kPcAtFn と同じ並び。
+T:F1:3B:3B
+T:F2:3C:3C
+T:F3:3D:3D
+T:F4:3E:3E
+T:F5:3F:3F
+T:F6:40:40
+T:F7:41:41
+T:F8:42:42
+T:F9:43:43
+T:F10:44:44
+T:F11:57:57
+T:F12:58:58
+
+# --- コントローラー（バーチャルパッドも同じ） ---
+# 名前は割り当ての画面の綴り（hd2d/ui/game_pad.cpp の pad_input_name）に Pad_ を付けたもの。
+# A・B・Back は選択／取消／機能メニューに固定で使うので、トリガーを持たせていない。
+T:Pad_X:F0:F0
+T:Pad_Y:F1:F1
+T:Pad_LB:F2:F2
+T:Pad_RB:F3:F3
+T:Pad_LT:F4:F4
+T:Pad_RT:F5:F5
+T:Pad_Start:F6:F6
+T:Pad_LS:F7:F7
+T:Pad_RS:F8:F8

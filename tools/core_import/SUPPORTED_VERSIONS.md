@@ -53,12 +53,13 @@
 | 日付 | 外した項目 | 理由 |
 |---|---|---|
 | 2026-10-05 | `hengband`（3.0.2.4-Beta） | アプリの `lib/` を変愚 3.0.2.5 へ上げた（町の定義が `.jsonc` に変わった）ため、3.0.2.4 のコアは組めても起動で止まる。原作ソースの一覧（`manifest.json`）の変愚の項目も 3.0.2.5 へ進み、3.0.2.4 の範囲コピーの定義は残っていない。3.0.2.4 を残すには、原作ソースの写し・組み立ての一覧・3.0.2.4 の `lib/` を別に持つ必要があり、決めたことで外した（「キットは a の方針で」）。代わりに `hengband-3.0.2.5-Beta` を足した。経緯は。短愚の項目 `tangband` が共有ソースとして使う変愚 3.0.2.4 の ZIP はそのまま |
+| 2026-10-26 | `hengband-3.0.2.5-Beta`（3.0.2.5-Beta） | アプリの `lib/` と原作ソースの一覧（`manifest.json`）の変愚の項目を 3.0.2.6 へ上げた。3.0.2.5 の範囲コピーの定義は残っておらず、アプリの `lib/` も 3.0.2.6（`pref-opt.prf` に 3.0.2.5 の知らないオプションがある）なので、3.0.2.5 のコアは起動の保証が無い。決めたことで前回と同じく入れ替えた（「２　入れ替え」）。代わりに `hengband-3.0.2.6-Beta` を足した。経緯は。短愚の項目 `tangband` は変えていない |
 
-## 現在の項目（2026-10-05）
+## 現在の項目（2026-10-26）
 
 | id | 版 | 出力 | 遊ぶ人が選ぶ ZIP |
 |---|---|---|---|
-| hengband-3.0.2.5-Beta | 3.0.2.5-Beta | HengbandCore.exe | hengband の固定コミット（`install_id` は前と同じ `hengband`） |
+| hengband-3.0.2.6-Beta | 3.0.2.6-Beta | HengbandCore.exe | hengband の固定コミット（`install_id` は前と同じ `hengband`） |
 | tangband | 26.0.4 | TangbandCore.exe | tangband ＋ hengband の固定コミット（2026-10-05 に `manifest_source` を `hengband` から短愚専用の `tangband` へ移した。中身は変愚 3.0.2.4 の写しで同じ。変愚の版上げで短愚を変えないため。`id`・`install_id`・版・コミット・共有ソースは変えていない） |
 | gensoband | 2.1.6 | GensobandCore.exe | gensoband の固定コミット |
 | silq | 1.5.1.0-beta2 | SilCore.exe | sil-q の固定コミット |

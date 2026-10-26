@@ -2,14 +2,14 @@
   "schema": 1,
   "targets": [
     {
-      "id": "hengband-3.0.2.5-Beta",
+      "id": "hengband-3.0.2.6-Beta",
       "core": "hengband",
       "install_id": "hengband",
       "name": "Hengband",
-      "version": "3.0.2.5-Beta",
+      "version": "3.0.2.6-Beta",
       "output": "HengbandCore.exe",
       "repo": "hengband",
-      "commit": "18b10d6ea5fd234c119053e0a209c90aede21fa4",
+      "commit": "4f80ebd7b502041a4dc4853174f685ab1572222c",
       "manifest_source": "hengband"
     },
     {

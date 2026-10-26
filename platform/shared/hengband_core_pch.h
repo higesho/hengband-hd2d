@@ -35,7 +35,11 @@
 #include "system/angband-system.h"  // 94.3% (818)
 #include "system/angband-version.h"  // 94.3% (818)
 #include "term/z-rand.h"  // 94.1% (816)
+// Hengband 3.0.2.6 removed term/z-form.h (Tangband keeps 3.0.2.4). Decide by a header that 3.0.2.6 added,
+// not by z-form.h itself: a stale copy may remain in a reused targeting overlay directory.
+#if !__has_include("system/deferred-update-requests.h")
 #include "term/z-form.h"  // 93.8% (813)
+#endif
 #include "term/z-util.h"  // 93.7% (812)
 #include "locale/text-encoding.h"  // 93.7% (812)
 #include "term/term-char.h"  // 93.4% (810)

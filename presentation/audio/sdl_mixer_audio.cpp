@@ -40,7 +40,12 @@
 #include "system/floor/town-list.h"
 #include "system/monrace/monrace-list.h"
 #include "system/player-type-definition.h"
+#include "bridge/hengband_source_version.h"
+#if HB_HENGBAND_SOURCE_3026
+#include <fmt/format.h>
+#else
 #include "term/z-form.h"
+#endif
 #include "term/z-term.h"
 #include "util/enum-converter.h"
 #include "world/world.h"
@@ -126,7 +131,11 @@ tl::optional<std::string> dungeon_key_at(int index)
     if (index >= static_cast<int>(DungeonList::get_instance().size())) {
         return tl::nullopt;
     }
+#if HB_HENGBAND_SOURCE_3026
+    return fmt::format("dungeon{:03}", index);
+#else
     return format("dungeon%03d", index);
+#endif
 }
 
 tl::optional<std::string> quest_key_at(int index)
@@ -139,7 +148,11 @@ tl::optional<std::string> quest_key_at(int index)
     if (index > enum2i(quests.rbegin()->first)) {
         return tl::nullopt;
     }
+#if HB_HENGBAND_SOURCE_3026
+    return fmt::format("quest{:03}", index);
+#else
     return format("quest%03d", index);
+#endif
 }
 
 tl::optional<std::string> town_key_at(int index)
@@ -147,7 +160,11 @@ tl::optional<std::string> town_key_at(int index)
     if (index >= static_cast<int>(TownList::get_instance().size())) {
         return tl::nullopt;
     }
+#if HB_HENGBAND_SOURCE_3026
+    return fmt::format("town{:03}", index);
+#else
     return format("town%03d", index);
+#endif
 }
 
 tl::optional<std::string> monster_key_at(int index)
@@ -155,7 +172,11 @@ tl::optional<std::string> monster_key_at(int index)
     if (index >= static_cast<int>(MonraceList::get_instance().size())) {
         return tl::nullopt;
     }
+#if HB_HENGBAND_SOURCE_3026
+    return fmt::format("monster{:04}", index);
+#else
     return format("monster%04d", index);
+#endif
 }
 
 // ------------------------------------------------------------------ 再生本体

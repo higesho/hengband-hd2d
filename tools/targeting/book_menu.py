@@ -28,13 +28,18 @@ def prepare(raw,core,filename):
         signature=re.search(r'static int get_spell\(([^;{}]*)\)\s*\{',mask)
         if not signature:raise ValueError(core+' native spell chooser missing')
         params=text[signature.start(1):signature.end(1)]
-        arguments=[re.search(r'(\w+)\s*$',arg.strip()).group(1) for arg in params.split(',')]
+        # 変愚 3.0.2.6 から get_spell に既定値つきの引数（bool browse = false）がある。既定値の後ろには
+        # 既定値の無い引数を置けないので、そのときだけ旗を先頭の引数にする（呼ぶ所も先頭に足す）。
+        # 既定値の無い版（短愚・幻想蛮怒・TOband）は従来どおり末尾に足す（出力を変えない）。
+        flag_first='=' in mask[signature.start(1):signature.end(1)]
+        arguments=[re.search(r'(\w+)\s*$',arg.split('=')[0].strip()).group(1) for arg in params.split(',')]
         start=signature.end()-1;depth=1;stop=start+1
         while depth:
             if mask[stop]=='{':depth+=1
             elif mask[stop]=='}':depth-=1
             stop+=1
-        wrapper='\nstatic int get_spell('+params+', int hb_selecting)\n{\n    int hb_scope=hb_target_menu_begin();\n    int hb_result;\n    hb_target_menu_action(hb_selecting);\n    hb_result=hb_native_get_spell('+','.join(arguments)+');\n    hb_target_menu_end(hb_scope);\n    return hb_result;\n}\n'
+        wrapper_params=('int hb_selecting, '+params) if flag_first else (params+', int hb_selecting')
+        wrapper='\nstatic int get_spell('+wrapper_params+')\n{\n    int hb_scope=hb_target_menu_begin();\n    int hb_result;\n    hb_target_menu_action(hb_selecting);\n    hb_result=hb_native_get_spell('+','.join(arguments)+');\n    hb_target_menu_end(hb_scope);\n    return hb_result;\n}\n'
         text=text[:stop]+wrapper+text[stop:]
         text=text[:signature.start()]+text[signature.start():signature.end()].replace('get_spell','hb_native_get_spell',1)+text[signature.end():]
         # Parse the unchanged call sites, retaining both compiled locale paths.
@@ -52,7 +57,8 @@ def prepare(raw,core,filename):
             closing=ends[match.end()-1]
             tail=mask[closing+1:].lstrip()
             if tail.startswith('{'):continue
-            edits.append((closing,', '+('1' if cast_start<match.start()<cast_end else '0')))
+            flag='1' if cast_start<match.start()<cast_end else '0'
+            edits.append((match.end(),flag+', ') if flag_first else (closing,', '+flag))
         if len(edits)<3:raise ValueError(core+' native spell calls changed')
         for at,value in reversed(edits):text=text[:at]+value+text[at:]
         if core=='genso':

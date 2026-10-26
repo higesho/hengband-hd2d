@@ -414,7 +414,9 @@ def main() -> int:
     # 束は 1 つのまま（:quest が共有束を読む流儀に合わせる）なので変愚の電話版にも
     # 数 MB 同梱されるが、TANGBAND ビルド以外は読まない。save 等の実行時ディレクトリは
     # installer が作る（android_asset_installer.cpp の TANGBAND ゲート）。
-    for tang_root in ("tangband/lib/edit", "tangband/lib/help"):
+    # pref は変愚 3.0.2.5 の lib/pref を凍結した写し（短愚は 3.0.2.4 のソースなので、
+    # 変愚の版上げで増えたオプションを読ませない。 ）。
+    for tang_root in ("tangband/lib/edit", "tangband/lib/help", "tangband/lib/pref"):
         tang_files = copy_tree_verbatim(tang_root)
         log(f"{tang_root} から {len(tang_files)} ファイル")
         for dst in tang_files:

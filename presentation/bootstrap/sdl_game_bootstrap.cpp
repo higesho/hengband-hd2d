@@ -33,7 +33,12 @@
 #include "term/term-color-types.h"
 #include "term/z-term.h"
 #include "term/z-util.h"
+#include "bridge/hengband_source_version.h"
+#if HB_HENGBAND_SOURCE_3026
+#include <fmt/format.h>
+#else
 #include "term/z-form.h"
+#endif
 #include "util/angband-files.h"
 #include "util/int-char-converter.h"
 #include "util/string-processor.h"
@@ -149,7 +154,11 @@ void draw_opening_screen(int cursor)
     for (int i = 0; i < static_cast<int>(OpeningChoice::Count); ++i) {
         const auto &entry = kOpeningEntries[i];
         const char mark = (i == cursor) ? '>' : ' ';
+#if HB_HENGBAND_SOURCE_3026
+        const auto line = fmt::format(" {} {}) {}", mark, entry.letter, entry.label);
+#else
         const auto line = format(" %c %c) %s", mark, entry.letter, entry.label);
+#endif
         c_prt((i == cursor) ? TERM_L_BLUE : TERM_WHITE, line, kOpeningTopRow + i, 2);
     }
     term_fresh();
@@ -307,17 +316,28 @@ bool confirm_delete_savefile(const std::filesystem::path &save)
     for (;;) {
         term_clear();
         prt("=== Delete Save ===", 1, 2);
+#if HB_HENGBAND_SOURCE_3026
+        prt(fmt::format("This will delete: {}", save.filename().string()), 3, 2);
+#else
         prt(format("This will delete: %s", save.filename().string().c_str()), 3, 2);
+#endif
         prt("The save and its floor files will be removed. This cannot be undone.", 4, 2);
         /*
          * **印は行の綴りに混ぜて 1 回で書く。**別に `prt` で上書きすると、あちらは
          * 行末まで消してから書くので**選択肢の字が消える**（実際にそうなり、
          * 「> だけが出ている確認画面」になった）。
          */
+#if HB_HENGBAND_SOURCE_3026
+        c_prt((cursor == 0) ? TERM_L_BLUE : TERM_WHITE,
+            fmt::format(" {} No, keep it", (cursor == 0) ? '>' : ' '), 6, 2);
+        c_prt((cursor == 1) ? TERM_L_RED : TERM_WHITE,
+            fmt::format(" {} Yes, delete it", (cursor == 1) ? '>' : ' '), 7, 2);
+#else
         c_prt((cursor == 0) ? TERM_L_BLUE : TERM_WHITE,
             format(" %c No, keep it", (cursor == 0) ? '>' : ' '), 6, 2);
         c_prt((cursor == 1) ? TERM_L_RED : TERM_WHITE,
             format(" %c Yes, delete it", (cursor == 1) ? '>' : ' '), 7, 2);
+#endif
         prt("Up/Down or 8/2  Enter=select  Esc=cancel", 9, 2);
         term_fresh();
 
@@ -394,15 +414,25 @@ bool sdl_pick_savefile()
             }
             if (idx == n) {
                 //! 入口。**赤**にするのは、押した先が取り返しのつかない道だからである。
+#if HB_HENGBAND_SOURCE_3026
+                c_prt((idx == cursor) ? TERM_L_RED : TERM_WHITE,
+                    fmt::format(" {}    * Delete a save file *", (idx == cursor) ? '>' : ' '),
+                    kListTop + row, 2);
+#else
                 c_prt((idx == cursor) ? TERM_L_RED : TERM_WHITE,
                     format(" %c    * Delete a save file *", (idx == cursor) ? '>' : ' '),
                     kListTop + row, 2);
+#endif
                 break;
             }
             const auto name = files[static_cast<size_t>(idx)].filename().string();
             const char mark = (idx == cursor) ? '>' : ' ';
             const char letter = (idx < 26) ? static_cast<char>('a' + idx) : ' ';
+#if HB_HENGBAND_SOURCE_3026
+            const auto line = fmt::format(" {} {}) {}", mark, letter, name);
+#else
             const auto line = format(" %c %c) %s", mark, letter, name.c_str());
+#endif
             const auto colour = (idx == cursor) ? (deleting ? TERM_L_RED : TERM_L_BLUE) : TERM_WHITE;
             c_prt(colour, line, kListTop + row, 2);
         }
@@ -665,10 +695,15 @@ int run_sdl_game(const std::filesystem::path &lib_path, Bridge &bridge, const Ui
 #ifdef TANGBAND
     /*
      * 短愚蛮怒はデータ・記録系だけ tangband/lib/ に分離する（tangband/UPSTREAM.md）。
-     * pref・file・help・xtra 等は変愚側 lib/ を共有する。data/ は edit/ から生成される
+     * file・xtra 等は変愚側 lib/ を共有する。data/ は edit/ から生成される
      * .raw の置き場なので、edit を分けるなら必ず一緒に分けること。
+     *
+     * pref/ も分ける。短愚は変愚 3.0.2.4 のソースで組むので、変愚の版上げで pref が変わると
+     * 知らないオプションの名前を読んで起動のたびにエラーを出す（3.0.2.6 の `defer_map_subwindows`。
+     * ）。tangband/lib/pref/ は変愚 3.0.2.5 の lib/pref/ の写し。
      */
     const auto tang_lib = lib_path.parent_path() / "tangband" / "lib";
+    ANGBAND_DIR_PREF = tang_lib / "pref";
     ANGBAND_DIR_EDIT = tang_lib / "edit";
     ANGBAND_DIR_HELP = tang_lib / "help";
     ANGBAND_DIR_DATA = tang_lib / "data";
