@@ -649,7 +649,7 @@ int run_lineage_check(const std::string &data_path) {
         }
     }
     static constexpr const char *kKnownCores[] = { "rogue36", "rogue54", "rogue2", "umoria", "angband", "sil", "heng",
-        "tang", "toband", "genso", "frox" };
+        "tang", "toband", "genso", "frox", "dcss" };
     for (const auto &node : data.nodes) {
         if (node.status != "core") continue;
         bool known = false;
