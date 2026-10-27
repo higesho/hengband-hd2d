@@ -229,7 +229,7 @@ RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ�
    | --- | --- | --- |
    | Angband 4.2.6 | <https://github.com/angband/angband> | `f3082213b73f3e463e3d0d60bff4b00462beae6e`（タグ 4.2.6） |
    | Umoria 5.7.15 | <https://github.com/dungeons-of-moria/umoria> | `3bf8abc4f76812810e59d738492c7b61fb8f1bb6` |
-   | DCSS 0.34.1 日本語版（上流は <https://github.com/crawl/crawl>） | <https://github.com/higesho/crawl-ja> | `3e2aef5912018a5a3065c3fa104dcfd0fb456485`（タグ 0.34.1-ja5） |
+   | DCSS 0.34.1 日本語版（上流は <https://github.com/crawl/crawl>） | <https://github.com/higesho/crawl-ja> | `190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8`（タグ 0.34.1-ja6） |
 
    コミットは `tools/core_sources/manifest.json` にも書いてあります。
 2. **このリポジトリ**: 原作との差分の定義（`tools/core_sources/recipes/angband.json`
@@ -293,14 +293,14 @@ DCSS は GNU GPL v2、またはそれ以降の版（GPL v2 or later）です。�
 別の許諾の部分の一覧を含む）は配布物の `licenses/Dcss-LICENSE.txt` として入ります。この派生版は DCSS のコア
 （`DcssCore.exe` とその Android／Linux の実行ファイル）を **GPL v2 以降で**配布します。
 
-- 日本語版（<https://github.com/higesho/crawl-ja>、タグ 0.34.1-ja5）は、上流の DCSS
+- 日本語版（<https://github.com/higesho/crawl-ja>、タグ 0.34.1-ja6）は、上流の DCSS
   （<https://github.com/crawl/crawl>）の日本語化の派生で、同じ `LICENSE` に従います。
   著作者の名簿は `licenses/Dcss-CREDITS.txt`（上流の `CREDITS.txt`）にあります。
 - 上流の `LICENSE` が挙げる別の許諾の部分（すべて GPL と両立します）のうち、コアに組み込まれるのは
   CC0／パブリックドメイン（タイルの大半・`perlin.cc`）、MIT（`json.cc`・`worley.cc`）、Apache v2 または MIT（`pcg.cc`）です。
   付属ライブラリは Lua（MIT）・PCRE（BSD）・SQLite（著作権の放棄）・zlib（zlib 使用許諾）で、
   原文を `licenses/Dcss-*` に添えています（`THIRD-PARTY-NOTICES.txt` に一覧があります）。
-- **ソースの入手**: §8 のとおりです。上流の日本語版の固定コミット（`3e2aef5912018a5a3065c3fa104dcfd0fb456485`）と、
+- **ソースの入手**: §8 のとおりです。上流の日本語版の固定コミット（`190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8`）と、
   このリポジトリのレシピ（`tools/core_sources/recipes/dcss.json`）・アダプタ（`dcss/adapter/`）・画面の部品（`hd2d/dcss/`）・
   組み立ての道具（`tools/dcss/`）を組み合わせて、`tools/core_sources/prepare.py` が再構成します。
   原作の行の書き換えは 0 件です。

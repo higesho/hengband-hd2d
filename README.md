@@ -99,7 +99,7 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 | `rogue2` | <https://github.com/suzukiiichiro/Rogue2.Official>（RogueClone2） | `895a468ab632c7ba05d88b706ac1db478dffbbe8` |
 | `rogue36` | usotopr/newrogue3.6（Rogue 3.6.4） | `570c8825d867ee4da1f03f9fd5309bb9c454a26e` |
 | `rogue54` | Davidslv/rogue（Rogue 5.4.4） | `f4653c2a2ee6981a73abe9dfda055134285e1e79` |
-| `crawl-ja` | <https://github.com/higesho/crawl-ja>（Dungeon Crawl Stone Soup 0.34.1 日本語版。タグ 0.34.1-ja5。上流は <https://github.com/crawl/crawl>） | `3e2aef5912018a5a3065c3fa104dcfd0fb456485` |
+| `crawl-ja` | <https://github.com/higesho/crawl-ja>（Dungeon Crawl Stone Soup 0.34.1 日本語版。タグ 0.34.1-ja6。上流は <https://github.com/crawl/crawl>） | `190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8` |
 
 用意したら、次の 2 つを実行します。
 
@@ -350,7 +350,7 @@ The commits are also in `tools/core_sources/manifest.json`.
 | `rogue2` | <https://github.com/suzukiiichiro/Rogue2.Official> (RogueClone2) | `895a468ab632c7ba05d88b706ac1db478dffbbe8` |
 | `rogue36` | usotopr/newrogue3.6 (Rogue 3.6.4) | `570c8825d867ee4da1f03f9fd5309bb9c454a26e` |
 | `rogue54` | Davidslv/rogue (Rogue 5.4.4) | `f4653c2a2ee6981a73abe9dfda055134285e1e79` |
-| `crawl-ja` | <https://github.com/higesho/crawl-ja> (Dungeon Crawl Stone Soup 0.34.1, Japanese edition, tag 0.34.1-ja5; upstream: <https://github.com/crawl/crawl>) | `3e2aef5912018a5a3065c3fa104dcfd0fb456485` |
+| `crawl-ja` | <https://github.com/higesho/crawl-ja> (Dungeon Crawl Stone Soup 0.34.1, Japanese edition, tag 0.34.1-ja6; upstream: <https://github.com/crawl/crawl>) | `190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8` |
 
 Then run these two commands:
 

@@ -62,7 +62,7 @@ int dcss_original_main(int argc, char *argv[]);
 namespace {
 
 constexpr const char *kCoreName = "dcss";
-constexpr const char *kCoreVersion = "0.34.1-ja5";
+constexpr const char *kCoreVersion = "0.34.1-ja6";
 //! 原作（ウェブタイル版）の JSON を加工せずに画面へ渡す経路の名前（features）。コアが hello_ack で申告し、画面が hello の features で挙げたときだけ使う。
 //! 出す: {"t":"webtiles","line":"<原作が出した 1 メッセージの JSON の字（先頭 * はサーバ宛の制御）>"}。
 //! 受ける: {"t":"webtiles_input","line":"<原作の制御メッセージの JSON の字。例 {\"msg\":\"key\",\"keycode\":13}>"}。

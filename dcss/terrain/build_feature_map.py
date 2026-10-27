@@ -453,7 +453,7 @@ COLUMNS = ['DCSSの定義名', '番号', '日本語名', '仕分け', '寄せ先
 HEADER = [
     '# dcss/terrain/feature_map.csv — DCSS の地形 → HD2D の地形番号・プレハブ（設計は dcss/terrain/README.md）',
     '# 生成物: dcss/terrain/build_feature_map.py --write。仕分けの決めはそのスクリプトが正本（手で直したらスクリプトも直す）。',
-    '# 元: roguelike-cores/upstream/crawl-ja（タグ 0.34.1-ja5）の crawl-ref/source の dungeon-feature-type.h・feature-data.h・tilepick.cc・rltiles/dc-*.txt。',
+    '# 元: roguelike-cores/upstream/crawl-ja（タグ 0.34.1-ja6）の crawl-ref/source の dungeon-feature-type.h・feature-data.h・tilepick.cc・rltiles/dc-*.txt。',
     '# 番号: TAG_MAJOR_VERSION==34（tag-version.h の既定）で数えた dungeon_feature_type の値（0〜220。20〜29 は穴）。',
     '# 定義名が正で、番号は照合用（上流が動いたら定義名で引き直す）。派生の行は地形の値を持たない（番号が空）。',
     '# 仕分け: a=変愚の既存の地形へそのまま寄せる / b=既存のプレハブを色・組み合わせで流用 / c=新しいプレハブを作る。',

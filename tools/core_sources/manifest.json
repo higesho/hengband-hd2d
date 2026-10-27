@@ -40040,7 +40040,7 @@
       "output": "dcss",
       "upstream_repo": "crawl-ja",
       "upstream_path": ".",
-      "commit": "3e2aef5912018a5a3065c3fa104dcfd0fb456485",
+      "commit": "190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8",
       "submodules": [
         {
           "path": "crawl-ref/source/contrib/lua",
@@ -40065,7 +40065,7 @@
       ],
       "max_files": 12000,
       "recipe": "recipes/dcss.json",
-      "recipe_sha256": "b9301e7263b302f1c13be9c9ce42a4452de4484a892745e2866cce10e9429a89",
+      "recipe_sha256": "3f2585e443b51645937c365c666fdfc4c24c9f7ae0a9b74384c4744ee9f2c382",
       "files": {
         "LICENSE": {
           "sha256": "6ac5407d2f14c4c0fe30be4a5320653ad9658f04ca5a50b4bac1e82da82729a6"
@@ -41187,7 +41187,7 @@
           "sha256": "d12962587727449a0e10d2bd1f5c6d24b3b6dd102318d26d5b5be5b4eead3c41"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-monsters.txt": {
-          "sha256": "1deec849163b209c8d9b8ffec6204f3bd8e56ea745694f805bdfbb6591105375"
+          "sha256": "86f8eceee5cee2717944a2d431155f76b9f98e40c550b149ed2c140f33df9b32"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-mutations.txt": {
           "sha256": "dca0f0e044210788dd529eddd6d163613753230981e6d082e3ba7bfef55a94ab"
@@ -41199,7 +41199,7 @@
           "sha256": "61fc23e2edf6671488b5cacc767fde7763769fcb30f73a77df91a2085c55eff2"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-spells.txt": {
-          "sha256": "6beb29098e83a51b7e925c29098c427386c722b34fb28b4abea2203597a8b256"
+          "sha256": "21eac94e56cdf5170b8b306754eb1f4fe601da1c382df04196c7b33feb432831"
         },
         "crawl-ref/source/dat/database/ja/jtrans/data-unrands.txt": {
           "sha256": "4f8da8f78ced0b1f16e4dc6832728aa850f7aba0a8412975bf99e069f44e8259"
@@ -42651,7 +42651,7 @@
           "sha256": "4b2a1f2f7395039075929fad56e546b756a3575dde6b210c1c7197506022ecb6"
         },
         "crawl-ref/source/dat/descript/ja/spells.txt": {
-          "sha256": "52ee6b210d1dd03a563d3b3c4845cc80a700cdbc03d57f494843f67a70c14464"
+          "sha256": "fcdae59bf5cc60860825a5b0b1cf975b25acee26912b070920ef160dbe693791"
         },
         "crawl-ref/source/dat/descript/ja/status.txt": {
           "sha256": "ad1c258533e750d241c2ca6231137973d3704d3330def8a41174258989e90967"
@@ -46041,10 +46041,10 @@
           "sha256": "62ff953e8929eaab9be2ef10b1df7dbc60d1388ae88e071174f326b9634d7cf7"
         },
         "crawl-ref/source/fontwrapper-ft.cc": {
-          "sha256": "37032236d18fb6e089485ea8383fa62fcc5e24bd68cd2dbe1f57b37f8b1348ad"
+          "sha256": "a8ac44de5a0273c3d54e2af625ca8cbc1cfb05b5ff3556752a59b17657022674"
         },
         "crawl-ref/source/fontwrapper-ft.h": {
-          "sha256": "4cc6d6d8fdb5f4769506b87b06be5b40afe6680636842e0a6b0eea93fd04d18e"
+          "sha256": "1110ad7c882808809e6601a186d4c48960be0ab50c38ab8cff72ba318fc0e896"
         },
         "crawl-ref/source/format.cc": {
           "sha256": "9721019bc39c75d5b33e50c476ffec73ca7537dba8ff17063ccaac0743c27606"
@@ -46539,7 +46539,7 @@
           "sha256": "0239d6045d8d844255890cd04d7f3f9aad6f9bda7d29255598e0485ff14f5f87"
         },
         "crawl-ref/source/menu.cc": {
-          "sha256": "9ec24a86cf329d1cffd0e953d64b293baf871806bfb7b3e3a0c4d154d5c1c32a"
+          "sha256": "c539416bfe75ef891969f1983117515af7cd134540c42124ba2399c538785f18"
         },
         "crawl-ref/source/menu.h": {
           "sha256": "b63ce4ee8534c802c4d61615376b715f9d3d633d9e6e6f27c84f1416226f8011"
@@ -72690,10 +72690,10 @@
           "sha256": "f440176ca0432e0293b035c5e1c1da27b6f933e20d9b4ea0b061370f2e0534cd"
         },
         "crawl-ref/source/tiletex.cc": {
-          "sha256": "8a7fc94a2fce18bc00450fc7861ffc52940f5292cc470645cdc4baaf2ec8c2c5"
+          "sha256": "faafaceb3baf215083c923373bc1b4683a6b6b19167a195c4529cc431c10fb8e"
         },
         "crawl-ref/source/tiletex.h": {
-          "sha256": "51cb3a5758587a8edcdc66ac1cb827ca0110f2763b626c7c76ede8d8850c26ca"
+          "sha256": "0dc9a17fdf3fdf57d571e0983c9bd957d2bb923a3ac67687a6c7ead0e76e1269"
         },
         "crawl-ref/source/tileview.cc": {
           "sha256": "7f0cf1ae524dfda99aaf68064a99401d1b568609657df4b7dc2f85505d6f0f64"
@@ -73020,7 +73020,7 @@
           "sha256": "9cfe4876998e78b41c964ffacc4ea0a3c30c53e85e118ccc35bfeac5a3f88287"
         },
         "crawl-ref/source/util/release_ver": {
-          "sha256": "cd5b0fb4731599c5ff2076a34e1d1aebaed9c66f5a7c21294a8a34c09f450601"
+          "sha256": "c03efdaa7e8bf59d61a72f2c840ee97aad4c5b4c560cd9c4bd068beaccc5daad"
         },
         "crawl-ref/source/util/remove_unused_headers.pl": {
           "sha256": "51ae8bbc919fb73813d7f78617cca5d4fdb6a81423a1918a212a361b2974b080"

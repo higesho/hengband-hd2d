@@ -2615,9 +2615,9 @@
     "i00373": {
       "archive": "source",
       "path": "crawl-ref/source/dat/database/ja/jtrans/data-monsters.txt",
-      "sha256": "4063cc23fad9a70a2feeeb10652417d747ca8975c64d4ce344e811cd90818a8c",
+      "sha256": "23eacfc4f727d825baa95d4bab3b4fa471ec19c577a1df0ef847eaa88ba68592",
       "transform": "raw",
-      "transformed_sha256": "4063cc23fad9a70a2feeeb10652417d747ca8975c64d4ce344e811cd90818a8c"
+      "transformed_sha256": "23eacfc4f727d825baa95d4bab3b4fa471ec19c577a1df0ef847eaa88ba68592"
     },
     "i00374": {
       "archive": "source",
@@ -2643,9 +2643,9 @@
     "i00377": {
       "archive": "source",
       "path": "crawl-ref/source/dat/database/ja/jtrans/data-spells.txt",
-      "sha256": "90cbcca317c37c02bfcc9f02914b378419b3e7438d14858205ca491ee804f2f9",
+      "sha256": "71857f6590570586a403a2ffe57090aef37d78eefcb30005e1e5d2aea90d7927",
       "transform": "raw",
-      "transformed_sha256": "90cbcca317c37c02bfcc9f02914b378419b3e7438d14858205ca491ee804f2f9"
+      "transformed_sha256": "71857f6590570586a403a2ffe57090aef37d78eefcb30005e1e5d2aea90d7927"
     },
     "i00378": {
       "archive": "source",
@@ -6031,9 +6031,9 @@
     "i00861": {
       "archive": "source",
       "path": "crawl-ref/source/dat/descript/ja/spells.txt",
-      "sha256": "88eb4fb7b42301fe2d7c01bcd4e4235279759f5bcf4b689ef3a3cd887dc5c140",
+      "sha256": "53a6e070c0a30a0720a53f301918028f4075e55a94d9e751113d660138510229",
       "transform": "raw",
-      "transformed_sha256": "88eb4fb7b42301fe2d7c01bcd4e4235279759f5bcf4b689ef3a3cd887dc5c140"
+      "transformed_sha256": "53a6e070c0a30a0720a53f301918028f4075e55a94d9e751113d660138510229"
     },
     "i00862": {
       "archive": "source",
@@ -13941,16 +13941,16 @@
     "i01991": {
       "archive": "source",
       "path": "crawl-ref/source/fontwrapper-ft.cc",
-      "sha256": "d85a73b1bb612524e9762dd710fec38a52d248f396ac9bb0ef9bda9fbf0c300f",
+      "sha256": "fa9664e9a43bbc7bfe0a439c7411aaa8e92c67501760c790ef9576f75d95a26b",
       "transform": "raw",
-      "transformed_sha256": "d85a73b1bb612524e9762dd710fec38a52d248f396ac9bb0ef9bda9fbf0c300f"
+      "transformed_sha256": "fa9664e9a43bbc7bfe0a439c7411aaa8e92c67501760c790ef9576f75d95a26b"
     },
     "i01992": {
       "archive": "source",
       "path": "crawl-ref/source/fontwrapper-ft.h",
-      "sha256": "58f08d2833fe87c9dec18a91c9e73e51d5a0d8bfa0d02d11d83cc5e70ee62137",
+      "sha256": "850f22e2159a2a8985b38a993cef8c3c86444a9cc5150cd338ab4289a0f15887",
       "transform": "raw",
-      "transformed_sha256": "58f08d2833fe87c9dec18a91c9e73e51d5a0d8bfa0d02d11d83cc5e70ee62137"
+      "transformed_sha256": "850f22e2159a2a8985b38a993cef8c3c86444a9cc5150cd338ab4289a0f15887"
     },
     "i01993": {
       "archive": "source",
@@ -15103,9 +15103,9 @@
     "i02157": {
       "archive": "source",
       "path": "crawl-ref/source/menu.cc",
-      "sha256": "7687db9300ff7ed4a3b2bd577e4e0b40dd3d78124afce3983d9f92b9f9245ed2",
+      "sha256": "32ef0658cb7208cc470e975d7d7385e1ff1ce056f8abdea7bcf374563e8518a1",
       "transform": "raw",
-      "transformed_sha256": "7687db9300ff7ed4a3b2bd577e4e0b40dd3d78124afce3983d9f92b9f9245ed2"
+      "transformed_sha256": "32ef0658cb7208cc470e975d7d7385e1ff1ce056f8abdea7bcf374563e8518a1"
     },
     "i02158": {
       "archive": "source",
@@ -76122,16 +76122,16 @@
     "i10874": {
       "archive": "source",
       "path": "crawl-ref/source/tiletex.cc",
-      "sha256": "469626fc574ec99c2c07676302147840ac7e445050663bac64592547d569744e",
+      "sha256": "07219126348a24f786b6a383e7c0792fc146a49cc2ef7d1692c76dfeac3e22c1",
       "transform": "raw",
-      "transformed_sha256": "469626fc574ec99c2c07676302147840ac7e445050663bac64592547d569744e"
+      "transformed_sha256": "07219126348a24f786b6a383e7c0792fc146a49cc2ef7d1692c76dfeac3e22c1"
     },
     "i10875": {
       "archive": "source",
       "path": "crawl-ref/source/tiletex.h",
-      "sha256": "1de522bf0787d378d21aad203f358600e1a9841f575aeead067b31d3275e59bb",
+      "sha256": "916d801c1bb3febde0797cd20ccf91bc0b15493158e9e1574ac0a54a762076ef",
       "transform": "raw",
-      "transformed_sha256": "1de522bf0787d378d21aad203f358600e1a9841f575aeead067b31d3275e59bb"
+      "transformed_sha256": "916d801c1bb3febde0797cd20ccf91bc0b15493158e9e1574ac0a54a762076ef"
     },
     "i10876": {
       "archive": "source",
@@ -77388,9 +77388,9 @@
     }
   },
   "additions": {
-    "cd5b0fb4731599c5ff2076a34e1d1aebaed9c66f5a7c21294a8a34c09f450601": {
+    "c03efdaa7e8bf59d61a72f2c840ee97aad4c5b4c560cd9c4bd068beaccc5daad": {
       "encoding": "utf8",
-      "text": "0.34.1-ja5\n"
+      "text": "0.34.1-ja6\n"
     }
   },
   "files": {
@@ -81872,7 +81872,7 @@
       "newline": "crlf"
     },
     "crawl-ref/source/dat/database/ja/jtrans/data-monsters.txt": {
-      "sha256": "1deec849163b209c8d9b8ffec6204f3bd8e56ea745694f805bdfbb6591105375",
+      "sha256": "86f8eceee5cee2717944a2d431155f76b9f98e40c550b149ed2c140f33df9b32",
       "operations": [
         [
           "copy",
@@ -81920,7 +81920,7 @@
       "newline": "crlf"
     },
     "crawl-ref/source/dat/database/ja/jtrans/data-spells.txt": {
-      "sha256": "6beb29098e83a51b7e925c29098c427386c722b34fb28b4abea2203597a8b256",
+      "sha256": "21eac94e56cdf5170b8b306754eb1f4fe601da1c382df04196c7b33feb432831",
       "operations": [
         [
           "copy",
@@ -87728,7 +87728,7 @@
       "newline": "crlf"
     },
     "crawl-ref/source/dat/descript/ja/spells.txt": {
-      "sha256": "52ee6b210d1dd03a563d3b3c4845cc80a700cdbc03d57f494843f67a70c14464",
+      "sha256": "fcdae59bf5cc60860825a5b0b1cf975b25acee26912b070920ef160dbe693791",
       "operations": [
         [
           "copy",
@@ -101255,25 +101255,25 @@
       "newline": "crlf"
     },
     "crawl-ref/source/fontwrapper-ft.cc": {
-      "sha256": "37032236d18fb6e089485ea8383fa62fcc5e24bd68cd2dbe1f57b37f8b1348ad",
+      "sha256": "a8ac44de5a0273c3d54e2af625ca8cbc1cfb05b5ff3556752a59b17657022674",
       "operations": [
         [
           "copy",
           "i01991",
           0,
-          32731
+          33504
         ]
       ],
       "newline": "crlf"
     },
     "crawl-ref/source/fontwrapper-ft.h": {
-      "sha256": "4cc6d6d8fdb5f4769506b87b06be5b40afe6680636842e0a6b0eea93fd04d18e",
+      "sha256": "1110ad7c882808809e6601a186d4c48960be0ab50c38ab8cff72ba318fc0e896",
       "operations": [
         [
           "copy",
           "i01992",
           0,
-          5747
+          6248
         ]
       ],
       "newline": "crlf"
@@ -103247,13 +103247,13 @@
       "newline": "crlf"
     },
     "crawl-ref/source/menu.cc": {
-      "sha256": "9ec24a86cf329d1cffd0e953d64b293baf871806bfb7b3e3a0c4d154d5c1c32a",
+      "sha256": "c539416bfe75ef891969f1983117515af7cd134540c42124ba2399c538785f18",
       "operations": [
         [
           "copy",
           "i02157",
           0,
-          110723
+          112347
         ]
       ],
       "newline": "crlf"
@@ -199500,25 +199500,25 @@
       "newline": "crlf"
     },
     "crawl-ref/source/tiletex.cc": {
-      "sha256": "8a7fc94a2fce18bc00450fc7861ffc52940f5292cc470645cdc4baaf2ec8c2c5",
+      "sha256": "faafaceb3baf215083c923373bc1b4683a6b6b19167a195c4529cc431c10fb8e",
       "operations": [
         [
           "copy",
           "i10874",
           0,
-          5799
+          5858
         ]
       ],
       "newline": "crlf"
     },
     "crawl-ref/source/tiletex.h": {
-      "sha256": "51cb3a5758587a8edcdc66ac1cb827ca0110f2763b626c7c76ede8d8850c26ca",
+      "sha256": "0dc9a17fdf3fdf57d571e0983c9bd957d2bb923a3ac67687a6c7ead0e76e1269",
       "operations": [
         [
           "copy",
           "i10875",
           0,
-          2548
+          2796
         ]
       ],
       "newline": "crlf"
@@ -200820,11 +200820,11 @@
       "newline": "crlf"
     },
     "crawl-ref/source/util/release_ver": {
-      "sha256": "cd5b0fb4731599c5ff2076a34e1d1aebaed9c66f5a7c21294a8a34c09f450601",
+      "sha256": "c03efdaa7e8bf59d61a72f2c840ee97aad4c5b4c560cd9c4bd068beaccc5daad",
       "operations": [
         [
           "add",
-          "cd5b0fb4731599c5ff2076a34e1d1aebaed9c66f5a7c21294a8a34c09f450601"
+          "c03efdaa7e8bf59d61a72f2c840ee97aad4c5b4c560cd9c4bd068beaccc5daad"
         ]
       ]
     },
