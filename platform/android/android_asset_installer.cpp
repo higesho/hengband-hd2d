@@ -18,6 +18,7 @@
 #include <fstream>
 #include <string>
 #include <system_error>
+#include <unordered_set>
 #include <vector>
 
 namespace platform_android {
@@ -27,6 +28,8 @@ namespace {
 constexpr const char *kTag = "hengband";
 constexpr const char *kManifestName = "assets.manifest";
 constexpr const char *kStampName = ".assets_stamp";
+//! 展開が済んだときの `assets.manifest` の写し。次の更新でこの行と同じファイルは書き直さない。
+constexpr const char *kInstalledName = ".assets_installed";
 
 /*!
  * @brief Activity#getAssets() を JNI で引いて AAssetManager を得る。
@@ -84,22 +87,57 @@ bool read_asset(AAssetManager *mgr, const std::string &name, std::vector<char> &
     return ok;
 }
 
-//! `<相対パス>\t<バイト数>` の行を切り出す（バイト数は健全性の確認にだけ使う）。
-bool parse_entry(const std::string &line, std::string &path, long long &size)
+/*!
+ * @brief `<相対パス>\t<バイト数>\t<内容のハッシュ>` の行を切り出す。
+ * @details ハッシュの無い行も読む（`has_hash` が偽になり、そのファイルは毎回書く）。
+ */
+bool parse_entry(const std::string &line, std::string &path, long long &size, bool &has_hash)
 {
     const auto tab = line.find('\t');
     if (tab == std::string::npos || tab == 0) {
         return false;
     }
     path = line.substr(0, tab);
+    const auto hash_tab = line.find('\t', tab + 1);
+    has_hash = (hash_tab != std::string::npos) && ((hash_tab + 1) < line.size());
     try {
-        size = std::stoll(line.substr(tab + 1));
+        size = std::stoll(line.substr(tab + 1, (hash_tab == std::string::npos) ? std::string::npos : (hash_tab - tab - 1)));
     } catch (...) {
         return false;
     }
     // `..` を含むパスは受け付けない（アセットは自分で作るものだが、
     // 展開先が基準ディレクトリの外へ出る形は原理的に許さない）。
     return path.find("..") == std::string::npos;
+}
+
+//! 前回の展開で書いた行の集まり。記録が無ければ空（全ファイルを書く）。
+std::unordered_set<std::string> read_installed_lines(const std::filesystem::path &path)
+{
+    std::unordered_set<std::string> lines;
+    std::ifstream in(path, std::ios::binary);
+    std::string line;
+    while (std::getline(in, line)) {
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
+        lines.insert(line);
+    }
+    return lines;
+}
+
+/*!
+ * @brief 前回の展開と同じ中身のファイルが残っているか。
+ * @details サイズも見る。同じ行でも、消えたファイルや書きかけのファイルは書き直す。
+ */
+bool already_installed(const std::unordered_set<std::string> &installed, const std::string &line,
+    const std::filesystem::path &dst, long long size, bool has_hash)
+{
+    if (!has_hash || (installed.count(line) == 0)) {
+        return false;
+    }
+    std::error_code ec;
+    const auto actual = std::filesystem::file_size(dst, ec);
+    return !ec && (static_cast<long long>(actual) == size);
 }
 
 std::string read_stamp(const std::filesystem::path &stamp_path)
@@ -154,7 +192,14 @@ bool install_assets_if_needed(std::string &out_error)
     }
     __android_log_print(ANDROID_LOG_INFO, kTag, "installing assets (%s)", version.c_str());
 
+    /*
+     * **変わったファイルだけ書く**（決めたこと 2026-10-31「Androidは直して」）。全部を書くと更新のたびに
+     * 4 万ファイルを書き直し、更新時刻が変わった `lib/edit` のせいで幻想蛮怒の `.raw` の作り直しまで走る。
+     */
+    const auto installed_path = base / kInstalledName;
+    const auto installed_lines = read_installed_lines(installed_path);
     int installed = 0;
+    int skipped = 0;
     std::vector<char> buf;
     while (pos < manifest.size()) {
         const size_t begin = pos + 1;
@@ -176,9 +221,16 @@ bool install_assets_if_needed(std::string &out_error)
 
         std::string rel;
         long long size = 0;
-        if (!parse_entry(line, rel, size)) {
+        bool has_hash = false;
+        if (!parse_entry(line, rel, size, has_hash)) {
             out_error = "assets.manifest に不正な行があります: " + line;
             return false;
+        }
+
+        const auto dst = base / std::filesystem::path(rel);
+        if (already_installed(installed_lines, line, dst, size, has_hash)) {
+            ++skipped;
+            continue;
         }
 
         if (!read_asset(mgr, rel, buf)) {
@@ -190,7 +242,6 @@ bool install_assets_if_needed(std::string &out_error)
             return false;
         }
 
-        const auto dst = base / std::filesystem::path(rel);
         std::error_code ec;
         std::filesystem::create_directories(dst.parent_path(), ec);
         if (ec) {
@@ -242,7 +293,26 @@ bool install_assets_if_needed(std::string &out_error)
         }
     }
 
-    // 版の書き込みは**すべて成功した後**。途中で落ちたら次回もう一度展開させる。
+    /*
+     * 版の書き込みは**すべて成功した後**。途中で落ちたら次回もう一度展開させる。
+     * 展開済みの一覧はその前に置き換える。途中で落ちた回の一覧は古いままなので、変わった行は次回も書き直される。
+     */
+    const auto installed_temp = base / (std::string(kInstalledName) + ".tmp");
+    {
+        std::ofstream list(installed_temp, std::ios::binary | std::ios::trunc);
+        list.write(manifest.data(), static_cast<std::streamsize>(manifest.size()));
+        list.close();
+        if (!list) {
+            out_error = "展開済みの一覧の記録に失敗しました: " + installed_temp.string();
+            return false;
+        }
+    }
+    std::filesystem::rename(installed_temp, installed_path, ec);
+    if (ec) {
+        out_error = "展開済みの一覧の記録に失敗しました: " + installed_path.string();
+        return false;
+    }
+
     std::ofstream stamp(stamp_path, std::ios::binary | std::ios::trunc);
     if (!stamp) {
         out_error = "版の記録に失敗しました: " + stamp_path.string();
@@ -251,7 +321,7 @@ bool install_assets_if_needed(std::string &out_error)
     stamp << version << '\n';
     stamp.close();
 
-    __android_log_print(ANDROID_LOG_INFO, kTag, "assets installed: %d files", installed);
+    __android_log_print(ANDROID_LOG_INFO, kTag, "assets installed: %d files, %d unchanged", installed, skipped);
     return true;
 }
 

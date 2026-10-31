@@ -709,6 +709,7 @@ void apply_ui_state(presentation::Bridge &bridge)
     presentation::set_sound_events_wanted(state.sound_events);
     presentation::set_modern_store_enabled(state.modern_ui);
     presentation::set_modern_store_language(state.lang);
+    presentation::set_entity_tiles_official8(state.entity_tiles_official8); //!< 実体の板の組（公式 8 画素）
     presentation::configure_native_targeting(state.modern_ui&&state.targeting_ui,state.lang);
     if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
     apply_wanted_term_rows();
@@ -1150,6 +1151,11 @@ int hengband_core_protocol_main(presentation::TransportHandle in, presentation::
      * Android なら `sdl_mixer_audio.cpp` が受け持つので、どちらの組でも鳴らせる。
      */
     ack.features.emplace_back("audio");
+    /*
+     * `entity-tiles-official8` は「実体の板を変愚蛮怒の公式の 8 画素のタイルの組へ切り替えられる」の申告。
+     * 画面はこれを見て機能メニューに切り替えを出し、`ui_state.entity_tiles` で選んだ組を知らせてくる。
+     */
+    ack.features.emplace_back("entity-tiles-official8");
     ack.asset_root_graf = resolve_graf_root();
     if (!send_message("hello_ack", presentation::encode_hello_ack(ack))) {
         return 5;

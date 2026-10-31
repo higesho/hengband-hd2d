@@ -27,9 +27,10 @@ namespace platform_android {
  * @brief 必要なら assets を内部ストレージへ展開する。
  * @param out_error 失敗時に理由（UTF-8）
  * @return 成功したら true
- * @details `assets.manifest`（ビルド時に tools/build_android_assets.py が生成）の
+ * @details `assets.manifest`（ビルド時に tools/build_android_hd2d_assets.py が生成）の
  * 版文字列を `<base>/.assets_stamp` と突き合わせ、変わっていなければ何もしない。
- * 版が違えば列挙されたファイルをすべて上書きする。
+ * 版が違えば、前回の展開の記録 `<base>/.assets_installed` と行が違うファイルと、
+ * サイズが合わないファイルだけを上書きする（記録の無い初回は全部書く）。
  * @note **セーブ（`lib/save/`）は manifest に載せない**ので消えない。
  */
 bool install_assets_if_needed(std::string &out_error);

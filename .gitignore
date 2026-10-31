@@ -810,3 +810,17 @@ toband/lib/data-en/
 
 # TOband の原作のデータの写し（tools/core_sources/prepare_original_data.py が固定版から写す）。公開ツリーでは追跡しない。
 /toband/lib/
+# NetHack のコア。実行時のデータ（nethack/data/en・ja）は tools/nethack/build_windows.py が作る。
+/nethack/data/
+/nethack/en/
+/nethack/ja/
+/NetHackCore.exe
+/NetHackJpCore.exe
+# NetHack の地形のプレハブ（原作のタイルから組み立てのときに作る。原作の絵の派生物なので追跡しない。tools/nethack/gen_nethack_terrain.py）
+assets/voxel/nh_*
+# NetHack のコア選択のバナー（英語版・日本語版で共有）と素材。原作のタイルの絵が入るので追跡しない。tools/gen_core_select_banners.py
+/assets/ui/banner_nethack.png
+/tilework/banner/nethack_room.png
+# NetHack の Android 向けの生成物（別のプロセスで動かす実行ファイルと Unix 用の実行時のデータ。tools/nethack/build_android.py。原作の派生物）
+/android/nethack-jni/
+/android/nethack-data/

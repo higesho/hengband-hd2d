@@ -51,6 +51,8 @@
 #include "i18n/lang.h"
 #include "net/core_link.h"
 #include "dcss/dcss_ui.h" //!< DCSS（`dcss-ui` を申告したコアだけ。段 U1）
+#include "dcss/dcss_touch.h" //!< 指の出来事をマウスの出来事に直す決まり（DCSS と NetHack の Android のタッチ）
+#include "nethack/nethack_ui.h" //!< NetHack（`nethack-ui` を申告したコアだけ。段 N0・N1）
 #include "render/billboard_renderer.h"
 #include "render/glyph_atlas.h"
 #include "render/ground_ring.h"
@@ -567,6 +569,49 @@ bool core_is_available(const AppOptions &options, const std::string &path)
 }
 
 /*!
+ * @brief 言語で実行ファイルを選ぶコアの、もう一方の言語の実行ファイルの名前。対になる物が無いコアは空。
+ * @details NetHack は英語版（公式）と日本語版（NetHackJP）を別の原作から組むので、実行ファイルが 2 つある
+ *。一覧と cfg には英語版の名前だけを載せ、起こすときに
+ * `language_core_variant` が画面の言語で選ぶ。
+ */
+std::string language_core_partner(const std::string &path)
+{
+    static const std::pair<const char *, const char *> kPairs[] = {
+        { "NetHackCore.exe", "NetHackJpCore.exe" },
+        { "NetHackCore", "NetHackJpCore" },
+        //! Android（別のプロセスで動かす実行ファイルを lib*.so の名前で同梱する）
+        { "libNetHackCore.so", "libNetHackJpCore.so" },
+    };
+    const std::filesystem::path given(path);
+    const std::string name = given.filename().string();
+    for (const auto &[en, ja] : kPairs) {
+        //! フォルダつきのパス（`--core-path` の絶対パスなど）はフォルダを残して名前だけ替える。
+        if (name == en) return (given.parent_path() / ja).string();
+        if (name == ja) return (given.parent_path() / en).string();
+    }
+    return {};
+}
+
+/*!
+ * @brief 起こす実行ファイルを画面の言語で選ぶ。日本語なら日本語版、それ以外は英語版。在るほうを優先する。
+ * @details 対になる物が無いコアは `path` をそのまま返す。M0 では遊んでいる途中の言語の切り替えには
+ * 対応しない（コアは `lang-restart` を申告しない。設計書 §8.4）。
+ */
+std::string language_core_variant(const AppOptions &options, const std::string &path)
+{
+    const std::string partner = language_core_partner(path);
+    if (partner.empty()) return path;
+    const bool ja = (i18n::current() == "ja");
+    const std::string name = std::filesystem::path(path).filename().string();
+    const bool path_is_ja = (name.find("Jp") != std::string::npos);
+    const std::string &want = (ja == path_is_ja) ? path : partner;
+    const std::string &other = (ja == path_is_ja) ? partner : path;
+    if (core_is_available(options, want)) return want;
+    if (core_is_available(options, other)) return other;
+    return path;
+}
+
+/*!
  * @brief コアの道が同じものを指すか。**Windows は大小文字を区別しない。**
  * @details cfg を手で書いた人が `hengbandcore.exe` と綴っても、自動登録の
  * `HengbandCore.exe` と二重に並ばないようにするため。
@@ -622,7 +667,7 @@ std::vector<CoreEntry> sanitize_cores(const AppOptions &options, const std::vect
             std::fprintf(stderr, "[hd2d] cfg のコアが重複しています（落とします）: %s\n", entry.path.c_str());
             continue;
         }
-        if (!core_is_available(options, entry.path)) {
+        if (!core_is_available(options, entry.path) && !core_is_available(options, language_core_partner(entry.path))) {
             std::fprintf(stderr, "[hd2d] cfg のコアが見つかりません（落とします）: %s\n", entry.path.c_str());
             continue;
         }
@@ -674,9 +719,14 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
         { "Angband", "AngbandCore.exe" },
         //! DCSS（Dungeon Crawl Stone Soup 日本語版）。表示名は固有名詞のまま（Sil-Q・Frox と同じ理由）。
         { "DCSS", "DcssCore.exe" },
+        /*
+         * NetHack。英語版と日本語版が別の実行ファイルなので、一覧には 1 行だけ出し、
+         * 起こすときに画面の言語で選ぶ（`language_core_variant`）。どちらか片方が在れば出す。
+         */
+        { "NetHack", "NetHackCore.exe" },
     };
     for (const Known &known : kKnown) {
-        if (core_is_available(options, known.path)) {
+        if (core_is_available(options, known.path) || core_is_available(options, language_core_partner(known.path))) {
             found.push_back(CoreEntry{ known.name, known.path });
         }
     }
@@ -689,10 +739,13 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
         { "Rogue 3.6", "Rogue36Core" }, { "Rogue 5.4", "Rogue54Core" },
         { "Umoria", "UmoriaCore" },
         { "Angband", "AngbandCore" },
-        { "DCSS", "DcssCore" }
+        { "DCSS", "DcssCore" },
+        { "NetHack", "NetHackCore" }
     };
     for (const Known &known : kKnown) {
-        if (core_is_available(options, known.path)) found.push_back({known.name, known.path});
+        if (core_is_available(options, known.path) || core_is_available(options, language_core_partner(known.path))) {
+            found.push_back({known.name, known.path});
+        }
     }
 
 #else
@@ -722,10 +775,16 @@ std::vector<CoreEntry> discover_cores(const AppOptions &options)
         { "Angband", "libangbandcore.so" },
         //! DCSS（日本語版）。生成物が無いと `.so` が組まれない（tools/core_sources/dcss_android_core.cmake）ので、その間は一覧に出ない。
         { "DCSS", "libdcsscore.so" },
+        /*
+         * NetHack。ほかのコアと違い、画面と別のプロセスで動かす実行ファイル。英語版と日本語版が
+         * 別の実行ファイルなので、一覧には 1 行だけ出し、起こすときに画面の言語で選ぶ（`language_core_variant`。Windows・Linux と同じ）。
+         */
+        { "NetHack", "libNetHackCore.so" },
     };
     //! 並びも exe 版と同じにする（`kKnown` の順がそのまま画面の順になる）。
     for (const Known &known : kKnown) {
-        if (core_is_available(options, known.path)) {
+        const std::string partner = language_core_partner(known.path); //!< 言語の対があるコア（NetHack）は、どちらか片方が在れば出す
+        if (core_is_available(options, known.path) || (!partner.empty() && core_is_available(options, partner))) {
             found.push_back(CoreEntry{ known.name, known.path });
         }
     }
@@ -751,7 +810,8 @@ std::string core_key_for_path(const std::string &path)
     for (char &c : low) {
         c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
     }
-    const char *key = (low.find("dcss") != std::string::npos)        ? "dcss"
+    const char *key = (low.find("nethack") != std::string::npos)     ? "nethack"
+                      : (low.find("dcss") != std::string::npos)      ? "dcss"
                       : (low.find("toband") != std::string::npos)    ? "toband"
                       : (low.find("rogue36") != std::string::npos)   ? "rogue36"
                       : (low.find("rogue54") != std::string::npos) ? "rogue54"
@@ -912,10 +972,10 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
      * - 縦長の窓（幅 <= 高さ）は 2 列（決めたこと 2026-09-23「コアが増えてきたのでバナーを 2 列にして
      *   左に Rogue3.6 / Rogue5.4 / Rogue Clone2、右に 変愚 / 短愚 / 幻想 / Sil-Q / Frox」。Angband は左の列の末尾、
      *   Rogue → Angband の系譜の順）。TOband は右の列の最後尾。
-     * - 横長の窓（幅 > 高さ）は 3 列:
-     *     Rogue3.6     変愚   Sil-Q
-     *     Rogue5.4     短愚
-     *     RogueClone2  幻想
+     * - 横長の窓（幅 > 高さ）は 3 列（右の列は 2026-10-27「右側に Sil-Q / DCSS / Nethack に変えて」）:
+     *     Rogue3.6     変愚    Sil-Q
+     *     Rogue5.4     短愚    DCSS
+     *     RogueClone2  幻想    NetHack
      *     Umoria       Frox
      *     Angband      TOband
      * 表に無いコアは真ん中（縦長では右）の列の末尾。空の列は詰める（Rogue だけ・変愚系だけの配布は 1 列で中央）。
@@ -984,8 +1044,8 @@ int run_core_select(const std::vector<CoreEntry> &cores, int initial, Window &wi
     }, 1);
     const ColumnLayout wide_layout = build_layout({
         { "rogue36", "rogue54", "rogue2", "umoria", "angband" },
-        { "heng", "tang", "genso", "frox", "toband", "dcss" },
-        { "sil" },
+        { "heng", "tang", "genso", "frox", "toband" },
+        { "sil", "dcss", "nethack" },
     }, 1);
     const auto layout_for = [&](int win_w, int win_h) -> const ColumnLayout & {
         return (win_w > win_h) ? wide_layout : tall_layout;
@@ -2691,6 +2751,17 @@ int run(const AppOptions &options)
      * その中のダンジョンの矩形に描く。。
      */
     std::unique_ptr<dcss::DcssUi> dcss_ui;
+    /*!
+     * @brief 原作の画面を持つコア（NetHack）の画面の部品（握手でコアが `nethack-ui` を名乗ったときだけ作る。ほかのコアは空のまま 1 行も通らない）。
+     * @details T1（案 C）。DCSS の `dcss_ui` とは別の経路で、DCSS の分岐は書き換えていない。
+     * 基底クラス `NativeCoreUi`（`app/native_core_ui.h`）の口だけを呼ぶ。
+     */
+    std::unique_ptr<NativeCoreUi> native_ui;
+    /*!
+     * @brief NetHack のタッチ。指の出来事を、DCSS と同じ決まり（`dcss/dcss_touch.h`。短く触ると左クリック・
+     * 長押しで右クリック・2 本指でホイール）でマウスの出来事に直す。NetHack の窓と地図はマウスで操作できる（段 N4）ので、それをそのまま指で使う。
+     */
+    dcss::DcssTouch native_touch;
     //! DCSS（D24）: 実体のあるマスと、実体の後ろへ回す地形のオブジェクト（毎フレーム作り直す）。
     std::unordered_set<std::uint32_t> dcss_occupied;
     LibraryDeferred dcss_deferred;
@@ -2721,9 +2792,9 @@ int run(const AppOptions &options)
         if (GetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", nullptr, 0) == 0) {
             SetEnvironmentVariableW(L"HENGBAND_DATA_ROOT", app_exe_directory().c_str());
         }
-        link_options.core_path = resolve_core_path(core_choice);
+        link_options.core_path = resolve_core_path(language_core_variant(options, core_choice)); // NetHack は言語で実行ファイルを選ぶ
 #elif defined(HENGBAND_DESKTOP_LINUX)
-        link_options.core_path = resolve_core_path(core_choice);
+        link_options.core_path = resolve_core_path(language_core_variant(options, core_choice)); // NetHack は言語で実行ファイルを選ぶ
 #else
         const std::filesystem::path picked(core_choice);
         link_options.core_path = picked.is_absolute() ? picked : (app_exe_directory() / picked);
@@ -2733,7 +2804,8 @@ int run(const AppOptions &options)
     link_options.core_thread_main = options.core_thread_main;
     if (!core_choice.empty() && (options.core_thread_resolve != nullptr)) {
         // 選ばれたコア .so の入口へ差し替える（多コア形）。**ここが本当の「起こす」である。**
-        if (const auto entry = options.core_thread_resolve(core_choice)) {
+        // NetHack は画面の言語で英語版・日本語版を選ぶ（対の無いコアは core_choice のまま。Windows・Linux の枝と同じ）。
+        if (const auto entry = options.core_thread_resolve(language_core_variant(options, core_choice))) {
             link_options.core_thread_main = entry;
         } else {
             /*
@@ -2776,6 +2848,16 @@ int run(const AppOptions &options)
         }
         if (lowered.find("dcss") != std::string::npos) {
             link.set_hello_features({ "dcss-webtiles", "dcss-ui" });
+        }
+        //! NetHack（`nethack-ui`。 T2）。DCSS と同じ理由で起こすコアの名前で決めるが、`--core-path=` のフォルダ名には反応させない。
+        {
+            std::string core_file = std::filesystem::path(core_choice).filename().string();
+            for (char &c : core_file) {
+                c = ((c >= 'A') && (c <= 'Z')) ? static_cast<char>(c - 'A' + 'a') : c;
+            }
+            if (core_file.find("nethack") != std::string::npos) {
+                link.set_hello_features({ "nethack-ui" });
+            }
         }
     }
     diag_mark("link.start 後・握手の前");
@@ -2918,7 +3000,9 @@ int run(const AppOptions &options)
         if (!realtime) {
             std::fprintf(stderr, "[hd2d] core does not declare \"realtime\"; hiding the game-progression page\n");
         }
-        //! 音も同じ（2026-08-21 に決めた）。申告しないコアでは「音」の節が入口から消える。
+        //! 実体の板の組（公式 8 画素）。申告しないコアでは機能メニューに項目を出さない。
+        set_core_supports_official8(std::find(features.begin(), features.end(), "entity-tiles-official8") != features.end());
+        //! 音も同じ。申告しないコアでは「音」の節が入口から消える。
         const bool audio = std::find(features.begin(), features.end(), "audio") != features.end();
         set_core_supports_audio(audio);
         if (!audio) {
@@ -2946,6 +3030,13 @@ int run(const AppOptions &options)
             dcss_ui = std::make_unique<dcss::DcssUi>();
             std::fprintf(stderr, "[hd2d] core declares \"dcss-ui\"; the DCSS tile UI regions are drawn by the screen\n");
             //! D32: HD2D の側で出してよいメニューは機能メニューだけ。コマンドの画面・持ち物一覧は原作の画面（このコア専用の部品）で出す。
+            set_core_hides_commands(true);
+        }
+        //! NetHack の画面の部品（段 N0・N1）。申告したコアだけ。
+        if (std::find(features.begin(), features.end(), "nethack-ui") != features.end()) {
+            native_ui = std::make_unique<nethack::NethackUi>();
+            std::fprintf(stderr, "[hd2d] core declares \"nethack-ui\"; the NetHack window regions are drawn by the screen\n");
+            //! D13: HD2D の側で出してよいメニューは機能メニューだけ。コマンドの画面・持ち物一覧は原作の画面で出す。
             set_core_hides_commands(true);
         }
     }
@@ -3085,6 +3176,8 @@ int run(const AppOptions &options)
             //! **忘れると「覚えているのに効かない」**（tools/check_settings_carry.py が捕まえる）。
             settings.status_col_side = stored.status_col_side;
             settings.entity_glyph_fallback = stored.entity_glyph_fallback;
+            settings.stair_arrows = stored.stair_arrows; //!< 階段の矢印（機能メニューと cfg）
+            settings.entity_tiles_official8 = stored.entity_tiles_official8; //!< 実体の板の組（引数は無く、メニューと cfg だけ）
             /*
              * 画調。**写し忘れると
              * 「cfg に書いたのに効かない」になる**（上のミニマップと同じ穴）。
@@ -3634,6 +3727,55 @@ int run(const AppOptions &options)
         }
     };
     apply_dcss_layout(layout);
+    /*!
+     * @brief 原作の画面を持つコア（NetHack。`nethack-ui`）の配置を重ねる。申告しないコアでは何もしない。
+     * @details 下の案内の帯は従来どおり出し、その高さを窓の下端から先に取る。残りに原作の GUI 版の並び（上にメッセージ・下にステータス・
+     * 残りが地図）を置き、立体の地図の矩形をその地図の区画へ差し替える。左の状態の欄・サブパネル・玉・メッセージの帯は空にし、ミニマップは地図の区画の中に置く
+     * （描く側は「置き場所が無い」と見て何も描かない。DCSS と同じ止め方）。ゲームに入る前は従来の配置のまま。
+     */
+    std::string native_last_description;
+    std::uint64_t native_last_serial = 0;
+    const auto apply_native_layout = [&](UiLayout &l) {
+        if (!native_ui) {
+            return;
+        }
+        const RectPx area = usable_area();
+        const int reserved = l.bottom_bar.empty() ? 0 : std::max(0, (area.y + area.h) - l.bottom_bar.y);
+        std::string native_err;
+        native_ui->set_language(std::string(i18n::current()));
+        if (!native_ui->prepare(area.x, area.y, area.w, area.h, reserved, native_err)) {
+            if (native_last_description != native_err) {
+                native_last_description = native_err;
+                std::fprintf(stderr, "[hd2d] %s\n", native_err.c_str());
+            }
+            return;
+        }
+        if (native_ui->layout_serial() != native_last_serial) {
+            native_last_serial = native_ui->layout_serial();
+            native_last_description = native_ui->describe();
+            std::fprintf(stderr, "[hd2d] %s\n", native_last_description.c_str());
+        }
+        if (!native_ui->in_game()) {
+            return;
+        }
+        l.scene = native_ui->scene_rect();
+        l.status_col = RectPx{};
+        l.hud = RectPx{};
+        l.orb = RectPx{};
+        l.message_bar = RectPx{};
+        l.prompt_bar = RectPx{};
+        //! ミニマップは原作の GUI 版に無いが、決めたこと（2026-10-31）で地図の区画の中に置く。隅・大きさ・縮尺・濃度は機能メニューのまま
+        l.place_minimap_in(l.scene, settings.minimap_corner, settings.minimap_size_pct);
+        l.preview_menu = RectPx{};
+        l.main_panel_design_off = true;
+        for (RectPx &r : l.sub) {
+            r = RectPx{};
+        }
+        for (RectPx &r : l.grip) {
+            r = RectPx{};
+        }
+    };
+    apply_native_layout(layout);
 
     Camera camera;
     camera.pitch = settings.camera_pitch_deg * 0.0174533f;
@@ -3805,6 +3947,12 @@ int run(const AppOptions &options)
                 dcss_ui->ingest_payload(payload);
             }
         }
+        //! NetHack: `nethack_ui` の知らせ（届いた順に全部。同じ列を使うが、DCSS と同時に申告されることはない）。
+        if (native_ui) {
+            for (const std::string &payload : link.take_webtiles_payloads()) {
+                native_ui->ingest_payload(payload);
+            }
+        }
 
         // (a) 入力 → `input_event`（v1 §8.3）。**到着順を崩さない。**
         InputBatch input_batch;
@@ -3916,6 +4064,9 @@ int run(const AppOptions &options)
             case kActionCommandMenu:
                 if (dcss_ui) {
                     return; //!< D32: DCSS には HD2D のコマンドメニューは無い（割り当てを足されても開かない）
+                }
+                if (native_ui) {
+                    return; //!< D13: NetHack にも HD2D のコマンドメニューは無い
                 }
                 if (!top_menu_available()) {
                     return;
@@ -4089,6 +4240,53 @@ int run(const AppOptions &options)
                 }
             };
         }
+        //! NetHack のタッチ（Android）。DCSS と同じ差し込み口・同じ決まり。申告するコアが違うので DCSS と同時には入らない。
+        if (native_ui && !vr_frame_ready && !dcss_touch_fn) {
+            dcss_touch_fn = [&](const SDL_Event &e, bool ignore_down) {
+                std::vector<SDL_Event> synthesized;
+                native_touch.on_finger(e, screen_w, screen_h, SDL_GetTicks(), ignore_down, synthesized);
+                for (SDL_Event &m : synthesized) {
+                    (void)SDL_PushEvent(&m);
+                }
+            };
+        }
+        //! NetHack の窓の部品（段 N1。申告 `nethack-ui` のコアだけ）。`--More--` の応答を、窓がコアへ送る物（`keys`）にして送る。
+        std::function<bool(const SDL_Event &, bool)> native_window_fn;
+        if (native_ui && !vr_frame_ready) {
+            native_window_fn = [&](const SDL_Event &e, bool reserved) -> bool {
+                const bool consumed = native_ui->on_window_event(e, reserved);
+                for (const NativeUiOutgoing &o : native_ui->take_outgoing()) {
+                    (void)link.send_dcss_message(o.type.c_str(), o.payload);
+                }
+                return consumed;
+            };
+        }
+        //! NetHack の窓のパッドの操作（申告 `nethack-ui` のコアだけ）。窓が入力を取っている間、十字・A・B を窓へ渡す（メニューの下のボタンまで動ける）。
+        std::function<bool(NativePad)> native_pad_fn;
+        if (native_ui && !vr_frame_ready) {
+            native_pad_fn = [&](NativePad pad) -> bool {
+                if (!native_ui->windows_capture_keys()) {
+                    return false;
+                }
+                const bool consumed = native_ui->on_pad(pad);
+                for (const NativeUiOutgoing &o : native_ui->take_outgoing()) {
+                    (void)link.send_dcss_message(o.type.c_str(), o.payload);
+                }
+                return consumed;
+            };
+        }
+        //! NetHack の地図のマウス（段 N4。申告 `nethack-ui` のコアだけ）。マスの座標（フレームの `cells` の `gx`・`gy`。NetHack は原作の `x`・`y`）にして渡し、
+        //! コアへ送る物（地図のクリックの返事・マスの説明の問い合わせ）を取り出して送る。
+        std::function<bool(const SDL_Event &, bool, int, int)> native_map_fn;
+        if (native_ui && !vr_frame_ready) {
+            native_map_fn = [&](const SDL_Event &e, bool on_map, int dx, int dy) -> bool {
+                const bool consumed = native_ui->on_map_event(e, on_map, frame.player_gx + dx, frame.player_gy + dy);
+                for (const NativeUiOutgoing &o : native_ui->take_outgoing()) {
+                    (void)link.send_dcss_message(o.type.c_str(), o.payload);
+                }
+                return consumed;
+            };
+        }
         InputPumpContext pump_ctx{
             .screen_w = screen_w,
             .screen_h = screen_h,
@@ -4123,6 +4321,12 @@ int run(const AppOptions &options)
             .dcss_map = dcss_map_fn,
             .dcss_touch = dcss_touch_fn,
         };
+        if (native_window_fn) {
+            pump_ctx.dcss_window = native_window_fn; //!< 窓の部品の差し込み口は DCSS と共用（空なら素通り）。申告するコアが違うので同時には入らない
+        }
+        if (native_map_fn) {
+            pump_ctx.dcss_map = native_map_fn; //!< 地図のマウスの差し込み口も DCSS と共用（同じ理由）
+        }
         pump_sdl_events(pump_ctx);
 #if defined(__ANDROID__)
         if (dcss_ui && dcss_ui->take_keyboard_toggle()) {
@@ -4322,6 +4526,15 @@ int run(const AppOptions &options)
                     return;
                 }
                 /*
+                 * NetHack（申告 `nethack-ui` のコア）: 窓（メニュー・文・はい／いいえ・作成など）は画面の側にあるので、パッドの A・B をコアへ送っても
+                 * 窓に届かない。窓が入力を取っている間だけ、A・B を窓のパッドの操作として渡す（メニューは行に印を付ける・下のボタンを押す。
+                 * ）。窓が無いとき（地図を歩いているとき）は下の今までの道。パッドの割り当て全体は段 N5。
+                 */
+                if (native_pad_fn && (press.mods == 0) && ((pressed == PadInput::A) || (pressed == PadInput::B))
+                    && native_pad_fn((pressed == PadInput::A) ? NativePad::A : NativePad::B)) {
+                    return;
+                }
+                /*
                  * ---- ここから下は遊んでいる最中 ----
                  * **同時押しも単独押しと同じ規則**（2026-08-14 に決めた「同時押しも
                  * 割り当て対象に含められる？」）。割り当てがあればそれ、無ければマクロの
@@ -4483,6 +4696,8 @@ int run(const AppOptions &options)
                         nav = MenuNav::Right;
                     }
                     feature_menu.handle(nav, settings);
+                } else if (native_pad_fn && native_pad_fn((pad_dy < 0) ? NativePad::Up : ((pad_dy > 0) ? NativePad::Down : ((pad_dx < 0) ? NativePad::Left : NativePad::Right)))) {
+                    //! NetHack の窓（申告 `nethack-ui`）: 十字は窓の中を動かす（メニューの行・下のボタン）。窓が無ければ偽が返り、下の今までの道へ
                 } else if (dcss_ui) {
                     /*
                      * DCSS（段 5）: 原作の日本語版のタイル版と同じキー（矢印・斜めは Home・PgUp・End・PgDn。窓の中は縦の成分だけ）。
@@ -5038,6 +5253,28 @@ int run(const AppOptions &options)
 #endif
             hud_state.ui_key_hint = hint;
         }
+        if (native_ui) {
+            /*
+             * NetHack（D13）: 左のコントローラーの案内は HD2D 標準のまま（コアが `pad_commands` を送る）。右側のキーの案内に、このコア専用の案内
+             * （`--More--` の応答など）と、原作が使っていないキーに置いた機能メニューと視点回転を足す。
+             */
+            const bool ja = (i18n::current() != "en");
+            const KeyBindEntry menu_key = settings.key_binds.find(kActionFeatureMenu);
+            const KeyBindEntry turn_left = settings.key_binds.find(kActionTurnLeft);
+            const KeyBindEntry turn_right = settings.key_binds.find(kActionTurnRight);
+            // HD2D の共通のパッドの割り当て（「十字:移動 A:決定 … Start:コマンドメニュー」）は出さない。NetHack は原作の GUI 版に沿った画面で、
+            // コマンドメニューを持たず（D13）、パッドの対応は後の段（N5）なので、書いても効かない案内になる。
+            hud_state.controller_binds.clear();
+            std::string hint = native_ui->key_hint(ja);
+            if (menu_key.keycode != 0) {
+                hint += key_display_name(menu_key.keycode, menu_key.mods) + (ja ? ":機能メニュー  " : ":Feature menu  ");
+            }
+            if ((turn_left.keycode != 0) && (turn_right.keycode != 0)) {
+                hint += key_display_name(turn_left.keycode, turn_left.mods) + "/" + key_display_name(turn_right.keycode, turn_right.mods)
+                    + (ja ? ":視点回転" : ":Turn view");
+            }
+            hud_state.ui_key_hint = hint;
+        }
         //! 上下の視点移動の入／切は設定が持つ（`FpsMode` は毎フレーム受け取るだけ）。
         first_person.vertical_look = settings.fps_vertical_look;
         //! ミニマップの自分を向きのある三角で描くため（一人称のときだけ。決めたこと）。
@@ -5127,7 +5364,7 @@ int run(const AppOptions &options)
          * 十字キーの上下（従来の UI は左右で桁も）で変えられるので、キーボードは要らない。出すと画面の下半分を覆い、
          * 使える高さが縮んで Term の高さまで変わっていた（コアの側は問いの最中に高さを変えないよう直した。141ee3efdf ほか）。
          */
-        const bool want_ime = wants_soft_keyboard(frame) || (dcss_ui && dcss_ui->wants_soft_keyboard()); //!< `input_controller.h`。DCSS は名前の問いも
+        const bool want_ime = wants_soft_keyboard(frame) || (dcss_ui && dcss_ui->wants_soft_keyboard()) || (native_ui && native_ui->wants_soft_keyboard()); //!< `input_controller.h`。DCSS は名前の問いも
         if (want_ime != ime_prompt_open) {
             ime_prompt_open = want_ime;
             ime_dismissed = false;
@@ -5201,6 +5438,7 @@ int run(const AppOptions &options)
             settings.minimap_corner, settings.minimap_size_pct);
         if (!vr_frame_ready) {
             apply_dcss_layout(layout);
+            apply_native_layout(layout);
         }
         if(frame.targeting.preview_only&&hud_state.modern.active()&&!feature_menu.is_open()&&!vr_frame_ready)
             layout_effect_preview(layout,menu_font_scale(settings.modern_font_level));
@@ -6468,7 +6706,9 @@ int run(const AppOptions &options)
             renderer.begin_motion(wind, world_seconds);
             if (library_ptr != nullptr) {
                 //! 剛体の動き（P6 → P10 で世界に出た）。**1 回だけ作り、影と本描画が同じものを読む。**
-                library_ptr->update_motions(world_seconds);
+                //! 機能メニューで切った飾りの部品（階段の矢印）は消す
+                static const std::vector<std::string> kStairArrowsOff{ "stair_arrows" };
+                library_ptr->update_motions(world_seconds, settings.stair_arrows ? std::vector<std::string>{} : kStairArrowsOff);
             }
             /*
              * 覆いの町（岩天井）では直方体を**天井の天面まで**持ち上げる（2026-08-18 その3）。
@@ -6613,6 +6853,9 @@ int run(const AppOptions &options)
                  * 実機で決め直す。
                  */
                 std::vector<Cutaway> cutaways;
+                //! 半径はマスで決まる（`Hd2dSettings::cutaway_radius`）。拡大縮小で世界の中の範囲が変わらないよう、いまの 1 マスの画素に比例させる。一人称はカメラが対象の位置に居てマスの大きさが決まらないので画素のまま
+                const float cutaway_px = first_person.active ? settings.cutaway_radius
+                                                             : (settings.cutaway_radius * (cell_px_of_camera(camera) / kCutawayRefCellPx));
                 if (enable_cutaway) {
                     /*
                      * カットアウェイ（P7 → P10 レビュー 4）。**視線が通っているときは抜かない。**
@@ -6644,10 +6887,10 @@ int run(const AppOptions &options)
                     const bool cutaway_camera_side_only = !first_person.active;
                     cutaways.reserve(VoxelRenderer::kMaxCutaways);
                     if (occluded) {
-                        cutaways.push_back(make_player_cutaway(camera, frame, settings.cutaway_radius, cutaway_camera_side_only));
+                        cutaways.push_back(make_player_cutaway(camera, frame, cutaway_px, cutaway_camera_side_only));
                     }
                     append_entity_cutaways(camera, terrain, entity_view,
-                        settings.cutaway_radius * kEntityCutawayScale, cutaways, cutaway_camera_side_only);
+                        cutaway_px * kEntityCutawayScale, cutaways, cutaway_camera_side_only);
                     /*
                      * **層 2 = 屋根外し**（2026-08-18 に決めた。`make_roof_cutaway` の註記）。
                      *
@@ -6702,11 +6945,14 @@ int run(const AppOptions &options)
                         : ((terrain.covered || manor_inside) ? 3.0f : 0.f);
                     if ((cave_scale > 0.f) && (cutaways.size() < VoxelRenderer::kMaxCutaways)) {
                         cutaways.push_back(make_roof_cutaway(camera, frame,
-                            settings.cutaway_radius * cave_scale,
+                            cutaway_px * cave_scale,
                             terrain.covered ? terrain.cave_min_z : (manor_inside ? 2.3f : 1.f)));
                     }
                 }
                 renderer.begin_cutaways(cutaways.data(), cutaways.size());
+                //! 透過は 2 段（`CutawayPass`）。ここからは残す所だけを描き、抜く所は 3D の描画の最後に半透明で重ねる
+                renderer.set_cutaway_pass(CutawayPass::Solid);
+                ModelRenderer::set_cut_pass(static_cast<int>(CutawayPass::Solid));
                 //! 床の板には掛けない（掛けると手前の地面に穴が開く）。
                 renderer.set_cutaway_scale(0.f);
                 renderer.draw_instanced(floor_gpu, terrain.slabs.data(), terrain.slabs.size());
@@ -7003,6 +7249,59 @@ int run(const AppOptions &options)
                     weather_particles.draw(view_projection, camera.target, lighting.sky_color, world_seconds, weather_view,
                         WeatherParticleParams{}, view.width, view.height);
                 }
+                /*
+                 * 透過の半透明の段（決めたこと 2026-10-31「点描の抜けではなく半透明の透過に」）。すべてを描いた後に、抜く所だけを重ねる。
+                 * 順番のない半透明は面が何枚も重なって汚れるので、先に深度だけ書いて**いちばん手前の面だけ**を 1 枚重ねる
+                 * （隠れた壁の中の面は見えない）。後処理の被写界深度は壁の奥を見てほしいので、深度は元へ戻す。
+                 * 同じ物をもう 2 回流すぶんのコストがあるので、抜く円の外接矩形だけに絞る。
+                 */
+                if (!cutaways.empty()) {
+                    const auto draw_cut_geometry = [&]() {
+                        if (library_ptr != nullptr) {
+                            draw_library_cut(renderer, *library_ptr, terrain);
+                        }
+                        renderer.set_cutaway_scale(1.f);
+                        renderer.draw_instanced(wall_gpu, terrain.boxes.data(), terrain.boxes.size());
+                        optional_render.wall_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                            fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_walls.size(),
+                            cutaways.data(),cutaways.size(),terrain.model_walls.data());
+                        optional_render.wall_model.draw(view_projection,Mat4::identity(),lighting,view.eye,
+                            fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_blocks.size(),
+                            cutaways.data(),cutaways.size(),terrain.model_blocks.data());
+                        const auto rubble = static_cast<std::size_t>(TerrainModelKind::Rubble);
+                        optional_render.terrain_parts[rubble].draw(view_projection,Mat4::identity(),lighting,view.eye,
+                            fit.view_projection,shadow_tex,shadow.side(),nullptr,terrain.model_parts[rubble].size(),
+                            cutaways.data(),cutaways.size(),terrain.model_parts[rubble].data());
+                    };
+                    post.save_scene_depth();
+                    float cut_x0 = 1e9f;
+                    float cut_y0 = 1e9f;
+                    float cut_x1 = -1e9f;
+                    float cut_y1 = -1e9f;
+                    for (const Cutaway &cut : cutaways) {
+                        cut_x0 = std::min(cut_x0, cut.centre_x - cut.radius);
+                        cut_y0 = std::min(cut_y0, cut.centre_y - cut.radius);
+                        cut_x1 = std::max(cut_x1, cut.centre_x + cut.radius);
+                        cut_y1 = std::max(cut_y1, cut.centre_y + cut.radius);
+                    }
+                    glEnable(GL_SCISSOR_TEST);
+                    glScissor(static_cast<GLint>(cut_x0), static_cast<GLint>(cut_y0),
+                        std::max(0, static_cast<GLint>(cut_x1 - cut_x0) + 1), std::max(0, static_cast<GLint>(cut_y1 - cut_y0) + 1));
+                    renderer.set_cutaway_pass(CutawayPass::Blend);
+                    ModelRenderer::set_cut_pass(static_cast<int>(CutawayPass::Blend));
+                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                    draw_cut_geometry();
+                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                    glDepthMask(GL_FALSE);
+                    draw_cut_geometry();
+                    glDepthMask(GL_TRUE);
+                    glDisable(GL_BLEND);
+                    glDisable(GL_SCISSOR_TEST);
+                    post.restore_scene_depth();
+                }
+                renderer.set_cutaway_scale(0.f);
+                renderer.set_cutaway_pass(CutawayPass::Dither);
+                ModelRenderer::set_cut_pass(static_cast<int>(CutawayPass::Dither));
                 //! ここまでが 3D の描画。**段の名前つきで**吸う（gl_core.h の註）。
                 gl::probe_gl_errors("3D の描画");
                 post.end_scene(view.width, view.height, vp_x, vp_y, target_fbo);
@@ -7302,6 +7601,59 @@ int run(const AppOptions &options)
                 dcss_ui->draw(paint, images, screen_w, screen_h);
                 dcss_ui->flush_text();
             }
+            //! NetHack の区画（メッセージ・ステータス）。DCSS と同じく HD2D の部品より先に描いて流す。
+            if (native_ui && native_ui->layout_ok() && native_ui->in_game() && !vr_frame_ready) {
+                native_ui->draw(paint, images, screen_w, screen_h);
+                native_ui->flush_text();
+                // 位置の選択（`;`・`_`・魔法の対象）のカーソルの印。マスの 4 隅を立体のカメラで窓の座標へ写して重ねる（原作の GUI 版は点線の枠）。
+                int cursor_x = 0;
+                int cursor_y = 0;
+                if (native_ui->map_cursor_cell(cursor_x, cursor_y)) {
+                    bool projected = true;
+                    int left = 0;
+                    int top = 0;
+                    int right = 0;
+                    int bottom = 0;
+                    if (settings.main_panel == Hd2dSettings::MainPanel::Ascii) {
+                        const TargetingMapProjection &grid = hud_state.targeting.map_projection;
+                        projected = (grid.cell_w > 0) && (grid.cell_h > 0);
+                        if (projected) {
+                            left = grid.x + ((cursor_x - grid.cam_x + (grid.cols / 2)) * grid.cell_w);
+                            top = grid.y + ((cursor_y - grid.cam_y + (grid.rows / 2)) * grid.cell_h);
+                            right = left + grid.cell_w;
+                            bottom = top + grid.cell_h;
+                        }
+                    } else {
+                        const float corner_x[4] = { 0.f, 1.f, 0.f, 1.f };
+                        const float corner_y[4] = { 0.f, 0.f, 1.f, 1.f };
+                        float min_x = 1e9f;
+                        float min_y = 1e9f;
+                        float max_x = -1e9f;
+                        float max_y = -1e9f;
+                        for (int i = 0; (i < 4) && projected; ++i) {
+                            float sx = 0.f;
+                            float sy = 0.f;
+                            if (!camera.project(Vec3{ static_cast<float>(cursor_x) + corner_x[i], static_cast<float>(cursor_y) + corner_y[i], 0.f }, sx, sy)) {
+                                projected = false;
+                                break;
+                            }
+                            min_x = std::min(min_x, sx);
+                            min_y = std::min(min_y, sy);
+                            max_x = std::max(max_x, sx);
+                            max_y = std::max(max_y, sy);
+                        }
+                        if (projected) {
+                            left = static_cast<int>(std::lround(min_x)) + layout.scene.x;
+                            top = static_cast<int>(std::lround(min_y)) + layout.scene.y;
+                            right = static_cast<int>(std::lround(max_x)) + layout.scene.x;
+                            bottom = static_cast<int>(std::lround(max_y)) + layout.scene.y;
+                        }
+                    }
+                    if (projected && (right > left) && (bottom > top)) {
+                        native_ui->draw_map_cursor(paint, RectPx{ left, top, right - left, bottom - top });
+                    }
+                }
+            }
             const bool menu_in_front = feature_menu.tab_navigation_active() || (hud_state.modern.active() && feature_menu.is_open());
             const bool hud_under_menu = settings.modern_ui && modern_window_keeps_hud(frame);
             if (!menu_in_front || hud_under_menu) {
@@ -7356,6 +7708,17 @@ int run(const AppOptions &options)
                 dcss_ui->draw_windows(paint, images, screen_w, screen_h);
                 for (const std::string &line : dcss_ui->take_window_outgoing()) {
                     (void)link.send_webtiles_input(line);
+                }
+            }
+            //! NetHack の窓の部品（段 N2 以降）。描きながら決まる物と、配置が決めた物（`msgwin`）をここで取り出して送る。
+            if (native_ui && !vr_frame_ready) {
+                if (native_ui->windows_capture_keys()) {
+                    paint.flush(); //!< 窓が開いている間は、下の層（HD2D の部品）の四角・字を先に流す（DCSS と同じ）
+                    text.flush();
+                }
+                native_ui->draw_windows(paint, images, screen_w, screen_h);
+                for (const NativeUiOutgoing &o : native_ui->take_outgoing()) {
+                    (void)link.send_dcss_message(o.type.c_str(), o.payload);
                 }
             }
         }
@@ -8342,6 +8705,9 @@ int run(const AppOptions &options)
     hud_state.modern.shutdown();
     if (dcss_ui) {
         dcss_ui->shutdown();
+    }
+    if (native_ui) {
+        native_ui->shutdown();
     }
     images.shutdown();
     paint.shutdown();

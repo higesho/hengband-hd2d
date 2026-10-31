@@ -467,7 +467,7 @@ struct CoreLink::Impl {
     std::vector<MissileFx> carried_missiles;
     static constexpr std::size_t kCarriedFxMax = 64;
     std::deque<std::string> table_payloads;
-    //! `webtiles`・`dcss_ui`（DCSS。順序を守って捨てない列。ほかのコアは 1 通も来ない）。
+    //! `webtiles`・`dcss_ui`（DCSS）と `nethack_ui`（NetHack）。順序を守って捨てない列。ほかのコアは 1 通も来ない。
     std::deque<std::string> webtiles_payloads;
     std::string fatal_reason;
 
@@ -547,7 +547,7 @@ struct CoreLink::Impl {
             this->table_payloads.push_back(std::move(payload));
             return;
         }
-        if ((type == "webtiles") || (type == "dcss_ui")) {
+        if ((type == "webtiles") || (type == "dcss_ui") || (type == "nethack_ui")) { //!< `nethack_ui`: NetHack（`nethack-ui`）
             std::lock_guard<std::mutex> lock(this->inbox_mutex);
             this->webtiles_payloads.push_back(std::move(payload));
             return;

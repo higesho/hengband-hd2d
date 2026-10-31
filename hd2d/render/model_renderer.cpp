@@ -61,6 +61,7 @@ uniform int u_cut_count;
 uniform vec4 u_cut_circle[12]; // screen xy, radius, depth
 uniform vec4 u_cut_plane[12]; // horizontal normal xy, boundary, minimum height
 uniform float u_cut_power[12];
+uniform int u_cut_pass; // 0 = dither, 1 = solid only, 2 = translucent only (CutawayPass)
 float model_bayer(vec2 pixel) {
     const mat4 m=mat4(0.,8.,2.,10.,12.,4.,14.,6.,3.,11.,1.,9.,15.,7.,13.,5.);
     ivec2 p=ivec2(mod(pixel,4.));
@@ -71,12 +72,15 @@ void main() {
     for(int i=0;i<12;++i) {
         if(i>=u_cut_count) break;
         vec4 c=u_cut_circle[i]; vec4 plane=u_cut_plane[i];
-        if(c.z<=0.0 || gl_FragCoord.z>=c.w-0.00002
+        if(c.z<=0.0 || (plane.z<-1e8 && gl_FragCoord.z>=c.w-0.00002)
             || dot(v_model_origin,plane.xy)<=plane.z || v_world.z<=plane.w) continue;
         float d=length(gl_FragCoord.xy-c.xy)/c.z;
         keep=min(keep,pow(smoothstep(0.15,1.0,d),max(u_cut_power[i],0.05)));
     }
-    if(model_bayer(gl_FragCoord.xy)>=keep) discard;
+    float cut_alpha=1.0;
+    if(u_cut_pass==0) { if(model_bayer(gl_FragCoord.xy)>=keep) discard; }
+    else if(u_cut_pass==1) { if(keep<0.995) discard; }
+    else { if(keep>=0.995 || keep<=0.004) discard; cut_alpha=keep; }
     vec3 n=normalize(v_normal);
     if (u_double_sided!=0 && !gl_FrontFacing) n=-n;
     vec3 linear_base=texture(u_base,v_uv).rgb*u_color.rgb;
@@ -104,7 +108,7 @@ void main() {
     float spec=pow(max(dot(n,h),0.0),exponent)*(exponent+2.0)/8.0;
     vec3 f0=mix(vec3(0.04),base,u_metallic);
     // Initial material approximation; keep HDR output for the shared postprocess.
-    o_color=vec4(base*(lit+direct)*(1.0-u_metallic)+f0*(direct*spec+lit*0.35)+u_emissive,1.0);
+    o_color=vec4(base*(lit+direct)*(1.0-u_metallic)+f0*(direct*spec+lit*0.35)+u_emissive,cut_alpha);
 }
 )";
 const char *depth_fragment=R"(#version 460 core
@@ -246,8 +250,11 @@ void ModelRenderer::draw(const Mat4 &vp,const Mat4 &instance,const SceneLighting
     if(!ready() || count==0 || count>static_cast<std::size_t>(std::numeric_limits<GLsizei>::max()))return;
     if(!offsets && !instances) count=1;
     upload_offsets(offsets,count,instances);
-    DrawState state; glDisable(GL_BLEND); glFrontFace(GL_CW); glCullFace(GL_BACK);
+    DrawState state; glFrontFace(GL_CW); glCullFace(GL_BACK);
+    if(cut_pass_==2) { glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); }
+    else glDisable(GL_BLEND);
     matrices(program_,vp,instance);
+    glUniform1i(glGetUniformLocation(program_,"u_cut_pass"),cut_pass_);
     upload_wear(wear_uniforms_,wear_);
     glUniform1i(glGetUniformLocation(program_,"u_model_material"),static_cast<int>(wear_material_));
     const int cuts=static_cast<int>(cutaways ? std::min(cutaway_count,std::size_t(12)) : 0);

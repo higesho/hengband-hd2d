@@ -371,6 +371,9 @@ bool write_prefab_jsonc(const std::string &path, const Prefab &prefab, std::stri
             }
             node["motion"] = std::move(motion);
             node["wind_k"] = quantized(part.wind_k);
+            if (!part.toggle.empty()) {
+                node["toggle"] = part.toggle;
+            }
             parts.push_back(std::move(node));
         }
         root["parts"] = std::move(parts);

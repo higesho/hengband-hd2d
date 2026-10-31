@@ -13,6 +13,8 @@ public:
     bool init(const ModelAsset &asset, std::string &error);
     void shutdown();
     bool ready() const { return program_ != 0; }
+    //! 透過の描き方（`CutawayPass` の番号。全部のモデルで共通）。2 の間は `draw` がブレンドを有効にする。
+    static void set_cut_pass(int pass) { cut_pass_ = pass; }
     void set_wear(const WearParams &wear,MaterialClass material=MaterialClass::Stone) { wear_=wear;wear_material_=material; }
     // instance must be a rigid transform with an optional positive uniform scale.
     void draw(const Mat4 &view_projection, const Mat4 &instance, const SceneLighting &lighting,
@@ -24,6 +26,7 @@ public:
     void draw_depth(const Mat4 &light_view_projection, const Mat4 &instance,
         const Vec3 *offsets = nullptr, std::size_t count = 1, const ModelInstance *instances = nullptr);
 private:
+    static inline int cut_pass_ = 0;
     struct Mesh { gl::GLuint vao{}, vbo{}; int count{}; ModelMaterial material; };
     std::vector<Mesh> meshes_;
     std::vector<gl::GLuint> textures_;

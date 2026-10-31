@@ -40,6 +40,10 @@ if (-not $WithoutCores) {
     # DCSS は原作の tilegen がホストでしか走らないので、ヘッダとタイルの表・実行時のデータを先に作る（作業フォルダは roguelike-cores/dcss-android）。
     & python tools/dcss/prepare_android_gen.py --refresh
     if ($LASTEXITCODE -ne 0) { throw 'DCSS の生成物の準備に失敗しました（tools/dcss/prepare_android_gen.py）' }
+    # NetHack は別のプロセスで動かす実行ファイル（jniLibs の android/nethack-jni）と、WSL の makedefs で作る Unix 用の実行時のデータ
+    # （android/nethack-data）を先に作る（WSL・NDK が要る）。
+    & python tools/nethack/build_android.py
+    if ($LASTEXITCODE -ne 0) { throw 'NetHack の Android 向けの組み立てに失敗しました（tools/nethack/build_android.py）' }
 }
 
 
@@ -147,8 +151,10 @@ try {
             $libraries += $compilerLibrary
         }
     }
-    if (-not $WithoutCores) { $libraries += $coreLibraries }
-    elseif ($zip.Entries | Where-Object { $_.Name -in $coreLibraries }) { throw 'UI-only APK unexpectedly contains a game core' }
+    # NetHack は CMake で組まず、組み済みの実行ファイルを jniLibs から入れる（同梱コンパイラーと同じ扱い）
+    $processCoreLibraries = @('libNetHackCore.so','libNetHackJpCore.so')
+    if (-not $WithoutCores) { $libraries += $coreLibraries + $processCoreLibraries }
+    elseif ($zip.Entries | Where-Object { $_.Name -in ($coreLibraries + $processCoreLibraries) }) { throw 'UI-only APK unexpectedly contains a game core' }
     $cmakeLibraries = @('libmain.so', 'libopenal.so')
     if (-not $WithoutCores) { $cmakeLibraries += $coreLibraries }
     foreach ($library in $libraries) {

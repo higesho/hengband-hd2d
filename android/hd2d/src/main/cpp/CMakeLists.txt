@@ -224,6 +224,8 @@ set(HB_UI_PLATFORM_SRC
     "${HB_ROOT}/platform/android/android_safe_area.cpp"
     "${HB_ROOT}/platform/android/android_save_migrator.cpp"
     "${HB_ROOT}/platform/android/android_iconv.cpp"
+    # 別のプロセスで動かすコア（NetHack）を起こす代理の入口
+    "${HB_ROOT}/platform/android/process_core.cpp"
 )
 
 # コア .so 側の platform TU（UI と重複する TU があっても RTLD_LOCAL なので衝突しない）

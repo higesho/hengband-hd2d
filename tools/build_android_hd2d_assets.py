@@ -519,6 +519,27 @@ def main() -> int:
         log("DCSS の実行時のデータが無い（python tools/dcss/prepare_android_gen.py を先に走らせる）。DCSS は APK に入らない")
         dcss_extract_ui = False
 
+    # ---- NetHack（英語版・日本語版）
+    # コア（別のプロセスの実行ファイル）が読むのは `<今のフォルダ>/nethack/data/{en,ja,slab}`（nh_main.cpp。Android では今のフォルダ = 展開先）。
+    # 画面はコアが申告した絶対パスからタイルの絵（tiles.png・tiles.json）と板を読むので、どれも実ファイルに展開する。
+    # `tools/nethack/build_android.py` が作る `android/nethack-data`（Unix の改行・Unix の sysconf）を写す。
+    # **開発ツリーの nethack/data は Windows 用（CRLF・Windows の sysconf）なので使わない。**
+    nethack_data = REPO / "android" / "nethack-data"
+    if all((nethack_data / sub).is_dir() for sub in ("en", "ja", "slab")):
+        nethack_count = 0
+        for src in sorted(nethack_data.rglob("*")):
+            if not src.is_file() or src.name.startswith("."):
+                continue
+            dst = OUT / "nethack" / "data" / src.relative_to(nethack_data)
+            copy_if_changed(src, dst)
+            extract_entries.append((dst.relative_to(OUT).as_posix(), dst.stat().st_size))
+            nethack_count += 1
+        log(f"NetHack の実行時のデータ {nethack_count} ファイル（{nethack_data}）")
+        nethack_ready = True
+    else:
+        log("NetHack の実行時のデータが無い（python tools/nethack/build_android.py を先に走らせる）。NetHack は動かない")
+        nethack_ready = False
+
     # ---- assets/ui（そのまま写す。展開しない＝APK の assets から IMG_Load）
     ui_files = copy_tree_verbatim("assets/ui")
     log(f"assets/ui から {len(ui_files)} ファイル（展開しない）")
@@ -568,6 +589,10 @@ def main() -> int:
     if dcss_extract_ui and not args.without_rogue_licenses:
         # DCSS（GPL v2 以降）の使用許諾・著作者名簿・付属ライブラリの通知とタイルの来歴。Windows・Linux の配布物と同じ作り方。
         android_docs += license_docs.copy_dcss(licenses_out)
+    if nethack_ready:
+        # NetHack General Public License の全文（原作の dat/license。英語版のデータに入っている）
+        copy_if_changed(nethack_data / "en" / "license", licenses_out / "NetHack-LICENSE.txt")
+        android_docs.append("NetHack-LICENSE.txt")
     log(f"license documents: {len(android_docs) + 1}")
 
     # 同梱コンパイラーのヘッダー・パッチ・接続 SDK。実行ファイルは jniLibs へ別途配置する。
@@ -592,22 +617,27 @@ def main() -> int:
             forbidden.append(path)
     if forbidden:raise RuntimeError(f"Tile image entered Android assets: {forbidden[0]}")
 
-    # ---- assets.manifest（旧版と同じ形式。installer は同じコード）
+    # ---- assets.manifest（<相対パス>\t<バイト数>\t<内容のハッシュ>）
+    # 端末は前回の一覧と行が同じファイルを書き直さない（android_asset_installer.cpp）。
     digest = hashlib.sha256()
+    manifest_lines: list[str] = []
     for name, size in extract_entries:
-        digest.update(name.encode("utf-8"))
-        digest.update(str(size).encode("ascii"))
-        # 同じサイズの SDK 更新も端末へ反映する。
+        content = hashlib.sha256()
         with (OUT / name).open("rb") as source:
             for block in iter(lambda: source.read(1024 * 1024), b""):
-                digest.update(block)
+                content.update(block)
+        # 同じサイズの SDK 更新も端末へ反映する。
+        content_hash = content.hexdigest()[:32]
+        digest.update(name.encode("utf-8"))
+        digest.update(str(size).encode("ascii"))
+        digest.update(content_hash.encode("ascii"))
+        manifest_lines.append(f"{name}\t{size}\t{content_hash}\n")
     version = digest.hexdigest()[:16]
 
     manifest = OUT / "assets.manifest"
     with manifest.open("w", encoding="utf-8", newline="\n") as handle:
         handle.write(version + "\n")
-        for name, size in extract_entries:
-            handle.write(f"{name}\t{size}\n")
+        handle.writelines(manifest_lines)
 
     total = sum(path.stat().st_size for path in OUT.rglob("*") if path.is_file())
     extract_total = sum(size for _name, size in extract_entries)

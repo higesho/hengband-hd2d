@@ -74,6 +74,9 @@ if ($Rebuild) {
         # DCSS は x64 のコア（ほかは Win32）。生成物 → 組み立て → 実行時のデータ（dcss/lib）を 1 本で行う。
         & python tools/dcss/build_core.py
         if ($LASTEXITCODE -ne 0) { throw 'DCSS の Windows コア組み立てに失敗しました' }
+        # NetHack は x64 のコア 2 本。組み立て → 実行時のデータ → 板とブロックを 1 本で行う。
+        & python tools/nethack/build_windows.py
+        if ($LASTEXITCODE -ne 0) { throw 'NetHack の Windows コア組み立てに失敗しました' }
     }
 }
 
@@ -81,7 +84,7 @@ if ($Rebuild) {
 # 開発用UIの実行ファイルを配布物へコピーしない。
 
 # --- 詰めるもの ---------------------------------------------------------------
-# 画面（x64）と 12 本のコア（DcssCore だけ x64、ほかは Win32）。**コアは単体では動かない**（画面が子として起こす）。
+# 画面（x64）と 13 ゲームのコア（DcssCore と NetHack の 2 本は x64、ほかは Win32）。**コアは単体では動かない**（画面が子として起こす）。
 # 画面。箱の直下に置く（遊ぶときに起動するのはこれ）。
 $executables = @(
     'HengbandHd2d.exe'
@@ -103,7 +106,9 @@ $coreExecutables = @(
     'Rogue54Core.exe',    # Rogue 5.4.4
     'AngbandCore.exe',    # Angband
     'UmoriaCore.exe',     # Umoria 5.7
-    'DcssCore.exe'        # Dungeon Crawl Stone Soup 日本語版
+    'DcssCore.exe',       # Dungeon Crawl Stone Soup 日本語版
+    'NetHackCore.exe',    # NetHack 英語版
+    'NetHackJpCore.exe'   # NetHack 日本語版（画面の言語で選ぶ。x64）
 )
 
 # `dumpbin /dependents` の推移閉包（2026-08-23 実測）。**画面だけが要る。**
@@ -213,7 +218,7 @@ if (-not $WithoutCores) {
 # RogueClone2 は原作の配布条件 (2)「すべてのドキュメントを付属させること」のため、原作の資料を licenses\RogueClone2 に添える
 # （コアを入れるときだけ）。作り方は tools/package/license_docs.py（Linux・Android の配布物と共通）。
 $licenseDocsArgs = @('tools/package/license_docs.py', '--dest', (Join-Path $stage 'licenses'), '--windows-runtime')
-if ($WithoutCores) { $licenseDocsArgs += '--no-rogue2' } else { $licenseDocsArgs += @('--upstream', $rogueUpstream, '--dcss') }
+if ($WithoutCores) { $licenseDocsArgs += '--no-rogue2' } else { $licenseDocsArgs += @('--upstream', $rogueUpstream, '--dcss', '--nethack') }
 & python @licenseDocsArgs
 if ($LASTEXITCODE -ne 0) { throw '使用許諾の文書の作成に失敗しました（tools/package/license_docs.py）' }
 
@@ -315,6 +320,17 @@ if (-not $WithoutCores) {
         New-Item -ItemType Directory -Force (Split-Path -Parent $umoriaDst) | Out-Null
         Copy-Item -Recurse $umoriaDir $umoriaDst
     }
+}
+
+# **NetHack も実行ファイルの隣（`cores\nethack\data`）を読む**（`nh_main.cpp` の `portable::exe_dir()`）。
+# セーブとスコアは `data_dir()` 側（箱の直下の `nethack\<en|ja>`）へコアが作る。
+if (-not $WithoutCores) {
+    foreach ($sub in @('en', 'ja', 'slab')) {
+        if (-not (Test-Path "nethack/data/$sub")) { throw "nethack/data/$sub がありません（python tools/nethack/build_windows.py を先に）" }
+    }
+    $nethackDataDst = Join-Path $coreStage 'nethack/data'
+    New-Item -ItemType Directory -Force (Split-Path -Parent $nethackDataDst) | Out-Null
+    Copy-Item -Recurse 'nethack/data' $nethackDataDst
 }
 
 # **DCSS の実行時データ**。コアは `<データの根>/dcss/lib`（箱の直下の `dcss\lib`）を原作の CRAWL_DIR にする。

@@ -493,6 +493,21 @@ toband/lib/file/nethack-license.txt. The score report of the upstream build
 
 ---------------------------------------------------------
 
+NetHack 5.0 - NetHack General Public License
+https://github.com/NetHack/NetHack (commit 34e91f177c2686426e46f5e34847183b35a440e8)
+NetHackJP (unofficial Japanese translation), tag NetHackJP-5.0.1-20261024
+https://github.com/satokiyon/NetHackJP (commit e140552de54de15f40d92087e3489ba0c46ba895)
+
+Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985; NetHack may be
+freely redistributed. See licenses/NetHack-LICENSE.txt (the upstream dat/license).
+The complete source of the NetHack cores is attached to each release as
+HengbandHD-nethack-core-source-<version>.zip. See LICENSE section 12.
+nethack/data, assets/voxel/nh_* and assets/ui/banner_nethack.png are derived from
+the NetHack tiles and follow the same licence. The cores contain Lua (MIT licence,
+Copyright (C) 1994-2024 Lua.org, PUC-Rio).
+
+---------------------------------------------------------
+
 Dungeon Crawl Stone Soup 0.34.1, Japanese edition (crawl-ja, tag 0.34.1-ja6) - GNU General Public License v2 or later
 https://github.com/crawl/crawl (upstream)
 https://github.com/higesho/crawl-ja (Japanese edition)

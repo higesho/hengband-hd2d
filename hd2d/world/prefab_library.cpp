@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <map>
 #include <set>
 #include <memory> //!< 同上（仕事を持つ）
 #include <mutex> //!< 同上
@@ -278,6 +279,7 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
         present = false;
     }
     this->loaded_ = false;
+    this->skipped_optional_rules_ = 0;
 
     const std::string separator = (voxel_dir.empty() || (voxel_dir.back() == '/') || (voxel_dir.back() == '\\')) ? "" : "/";
     const std::string map_path = voxel_dir + separator + "terrain_prefabs.jsonc";
@@ -293,17 +295,33 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
         return false;
     }
 
-    // --- まず表が参照するプレハブ名を全部集める（重複は 1 回だけ読む）---
-    std::set<std::string> names;
-    auto collect = [&names](const nlohmann::json &node) {
+    /*
+     * **`"optional": true` の行**（`terrains` 系の節の要素だけが持てる）。素材を組み立てのときに作る
+     * コア（NetHack の `nh_*`。原作のタイルから作る派生物なので追跡しない）の行は、素材が無い作業ツリーでも
+     * ほかのコアの画面が起動できるよう、指すプレハブが 1 つでも読めなければ**その行を丸ごと飛ばす**。
+     * 印の無い行は今までどおり、読めなければ全体が失敗する（厳しさは変えない）。
+     */
+    auto is_optional = [](const nlohmann::json &node) -> bool {
+        return node.is_object() && node.contains("optional") && node["optional"].is_boolean() && node["optional"].get<bool>();
+    };
+    //! 規則の行 1 つが指すプレハブ名（`collect` と `skip_unloadable` が同じ欄を見る）。
+    auto for_each_name = [](const nlohmann::json &node, auto &&visit) {
         //! **節を足したらここにも足す**（罠 52・67。`sign` は P10 第 2 期で足した）。
         for (const char *const field : { "ground", "structure", "object", "object_ew", "sign" }) {
             if (node.contains(field)) {
                 for (const auto &name_node : node[field]) {
-                    names.insert(name_node.get<std::string>());
+                    visit(name_node.get<std::string>());
                 }
             }
         }
+    };
+
+    // --- まず表が参照するプレハブ名を全部集める（重複は 1 回だけ読む）---
+    //! `names` = 読めなければ全体が失敗する名前。`optional_names` = 印のある行だけが指す名前（読めなければその行を飛ばす）。
+    std::set<std::string> names;
+    std::set<std::string> optional_names;
+    auto collect = [&](const nlohmann::json &node, bool optional) {
+        for_each_name(node, [&](const std::string &name) { (optional ? optional_names : names).insert(name); });
     };
     /*
      * **上書きの節（`*_surface`）も必ず走査する。**`terrains` と `roles` だけを見ていて、
@@ -315,7 +333,7 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
             continue;
         }
         for (const auto &item : root[section].items()) {
-            collect(item.value());
+            collect(item.value(), false);
         }
     }
     for (const char *const section : { "terrains", "terrains_surface", "terrains_extra" }) {
@@ -323,7 +341,7 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
             continue;
         }
         for (const auto &node : root[section]) {
-            collect(node);
+            collect(node, is_optional(node));
         }
     }
     if (root.contains("extra")) {
@@ -338,11 +356,26 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
         names.insert("__hd2d_break_terrain_map__");
     }
 
-    // --- プレハブを読む（GL 不要。footprint 照合は load_prefab の中）---
+    // 必須の行も指す名前は印のある行の都合で読み飛ばさない（必須が優先）。
     for (const std::string &name : names) {
+        optional_names.erase(name);
+    }
+    //! 印のある行だけが指す名前のうち、読めなかったもの（名前 -> 理由）。
+    std::map<std::string, std::string> unloadable;
+
+    // --- プレハブを読む（GL 不要。footprint 照合は load_prefab の中）---
+    //! 読む順は印の有無によらず名前順のまま（印を付ける前と、索引の並びを変えない）。
+    std::set<std::string> all_names = names;
+    all_names.insert(optional_names.begin(), optional_names.end());
+    for (const std::string &name : all_names) {
+        const bool may_fail = (names.count(name) == 0);
         LibraryEntry entry;
         entry.name = name;
         if (!load_prefab(voxel_dir, name, entry.prefab, err)) {
+            if (may_fail) {
+                unloadable.emplace(name, err);
+                continue;
+            }
             err = "対応表のプレハブ \"" + name + "\" を読めませんでした:\n" + err;
             return false;
         }
@@ -357,10 +390,16 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
             const VoxModel &model = entry.prefab.vox.models[static_cast<std::size_t>(part.model_index)];
             const float part_top = (part.offset[2] + static_cast<float>(model.size[2]))
                 / static_cast<float>(entry.prefab.voxels_per_cell);
-            top = (part_top > top) ? part_top : top;
+            /*
+             * 切り替えの名前を持つ飾りの部品（階段の上の空中で回る矢印）は天面に数えない。数えると、
+             * 床ごと置き換える下り階段が床（`is_ground`）でなくなり、沈み込みの補正（`sz`）も変わる。
+             */
+            if (part.toggle.empty()) {
+                top = (part_top > top) ? part_top : top;
+            }
             entry.has_motion = entry.has_motion || (part.motion.kind == MotionKind::Rotate)
                 || (part.motion.kind == MotionKind::Pendulum) || (part.motion.kind == MotionKind::StateLinked)
-                || (part.motion.kind == MotionKind::Blink);
+                || (part.motion.kind == MotionKind::Blink) || !part.toggle.empty();
 
             const int x0 = static_cast<int>(part.offset[0]);
             const int y0 = static_cast<int>(part.offset[1]);
@@ -437,6 +476,8 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
 
     // --- 地形の細別（`terrains` = どこでも / `terrains_surface` = 地上だけの上書き）---
     bool first = true;
+    std::string first_skipped_key;
+    std::string first_skipped_reason;
     for (const char *const section : { "terrains", "terrains_surface", "terrains_extra" }) {
         if (!root.contains(section)) {
             continue;
@@ -453,6 +494,24 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
             if (!node.contains("key") || !node.contains("id")) {
                 err = std::string("対応表の ") + section + " に key か id の無い行があります";
                 return false;
+            }
+            if (is_optional(node)) {
+                // 指すプレハブが 1 つでも読めなかった行は、ライブラリにも規則にも載せずに飛ばす。
+                std::string missing;
+                for_each_name(node, [&](const std::string &name) {
+                    if (missing.empty() && (this->by_name_.find(name) == this->by_name_.end())) {
+                        missing = name;
+                    }
+                });
+                if (!missing.empty()) {
+                    if (this->skipped_optional_rules_ == 0) {
+                        first_skipped_key = node["key"].get<std::string>();
+                        const auto why = unloadable.find(missing);
+                        first_skipped_reason = missing + ((why != unloadable.end()) ? (": " + why->second) : std::string());
+                    }
+                    ++this->skipped_optional_rules_;
+                    continue;
+                }
             }
             TerrainRule rule;
             if (!this->parse_rule(&node, rule, err)) {
@@ -475,6 +534,18 @@ bool PrefabLibrary::load(const std::string &voxel_dir, std::string &err)
         }
     }
 
+    if (this->skipped_optional_rules_ > 0) {
+        //! 1 回の起動で 1 行だけ（検査が何度も読み直しても繰り返さない）。素材を作る前の作業ツリーでは正常な状態。
+        static bool reported = false;
+        if (!reported) {
+            reported = true;
+            std::fprintf(stderr, "[hd2d] プレハブライブラリ: 素材が無い optional の規則 %d 行を省きました（最初: %s。%s）\n",
+                this->skipped_optional_rules_, first_skipped_key.c_str(), first_skipped_reason.c_str());
+        }
+    }
+    if (!unloadable.empty()) {
+        err.clear(); // 省いた素材の読み込みの失敗の理由を、成功した呼び出しに残さない
+    }
     this->motions_.assign(this->entries_.size(), {});
     this->loaded_ = true;
     return true;
@@ -737,10 +808,11 @@ void PrefabLibrary::release_gpu(VoxelRenderer &renderer)
     }
 }
 
-void PrefabLibrary::update_motions(float time)
+void PrefabLibrary::update_motions(float time, const std::vector<std::string> &off_toggles)
 {
     MotionContext ctx;
     ctx.time = time;
+    ctx.off_toggles = off_toggles;
     for (std::size_t i = 0; i < this->entries_.size(); ++i) {
         if (!this->entries_[i].has_motion) {
             continue;

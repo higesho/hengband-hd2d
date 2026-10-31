@@ -762,6 +762,13 @@ static UiLayout build_layout(LayoutMode mode, int screen_w, int screen_h, int ce
     return layout;
 }
 
+void UiLayout::place_minimap_in(const RectPx &free, MinimapCorner corner, int size_pct)
+{
+    this->minimap = RectPx{};
+    this->minimap_area = RectPx{};
+    place_minimap(*this, free, corner, size_pct, true);
+}
+
 UiLayout UiLayout::compute(LayoutMode mode, int screen_w, int screen_h, int cell_w, int cell_h, bool subs_open,
     const SubSplit &split, int origin_x, int origin_y, bool reserve_pad, bool minimap_bottom,
     MinimapCorner minimap_corner, int minimap_size_pct)

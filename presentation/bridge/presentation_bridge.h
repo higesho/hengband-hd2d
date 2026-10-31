@@ -101,6 +101,13 @@ int run_menu_choice_smoke();
  * （`src/core/asking-player.h`）を登録する。
  * @note UI は `GameFrame::text_input_active` で受け取るので、直接この関数を見なくてよい。
  */
+/*!
+ * @brief 実体（プレイヤー・怪物・アイテム）の板を、変愚蛮怒の公式の 8 画素のタイルの組にするか（`ui_state.entity_tiles`）。
+ * @details 真なら `resolve_tile_index` が、怪物・アイテム・プレイヤーの目録の番号を `official8_tile_table.h` の絵の面の位置
+ * （`kOfficial8IndexBase + 段 * 64 + 列`）にする。表に無い物は 0（描かない）。地形は変えない。
+ */
+void set_entity_tiles_official8(bool on);
+
 void install_text_input_hook();
 
 //! いまコアが自由文字入力の中にいるか（`install_text_input_hook` 済みのとき有効）。

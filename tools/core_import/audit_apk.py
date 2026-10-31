@@ -8,7 +8,7 @@ def audit(path):
     with zipfile.ZipFile(path) as apk:
         manifest=apk.read('assets/assets.manifest').decode('utf-8').splitlines()
         for line in manifest[1:]:
-            name,size=line.rsplit('\t',1)
+            name,size,*_=line.split('\t')
             item=apk.getinfo('assets/'+name)
             if item.file_size!=int(size):raise ValueError('Asset size mismatch: '+name)
         catalog=json.loads(apk.read('assets/core-import/catalog.json'))

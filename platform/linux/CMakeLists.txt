@@ -384,6 +384,158 @@ hb_rogue_legacy(Rogue54Core "${HB_TARGET_GENERATED_ROOT}/rogue54/patched-src" 54
 # Dungeon Crawl Stone Soup (Japanese edition, `DcssCore`). On by default (-DHENGBAND_BUILD_DCSS=OFF skips it); see the file for the build layers.
 include("${HB_ROOT}/tools/core_sources/dcss_core.cmake")
 
+# NetHack (`NetHackCore` English edition, `NetHackJpCore` Japanese edition;  sections 6.5 and 8).
+# Built from the prepared originals "${HB_TARGET_ORIGINAL_ROOT}/nethack" and ".../nethackjp" (never written to) with our own
+# window port and entry point (nethack/adapter: nh_winport.c, nh_unix.c, then the protocol layer in C++), the same way
+# tools/nethack/build_windows.py builds the Windows executables. On by default like DcssCore (-DHENGBAND_BUILD_NETHACK=OFF skips
+# it): packaging otherwise silently drops NetHack, and the only tools needed are the C/C++ compilers and /bin/sh.
+#   - Original C: every src/*.c, sys/unix/unixunix.c (getlock), sys/unix/unixres.c, sys/share/posixregex.c and Lua (nhlua/lua/src
+#     without lua.c and luac.c). NOT sys/unix/unixmain.c and sys/share/unixtty.c: nh_unix.c replaces what they provide
+#     (it must define error(); otherwise glibc's error() is linked silently and crashes when called).
+#   - Definitions follow the original's Linux hints (zlib compression through the external /bin/gzip) plus
+#     SHIM_GRAPHICS (our window port is registered as "shim") and NOTTYGRAPHICS/NOSHELL/NOMAIL.
+#   - Run-time data: bin/nethack/data/<en|ja>. nh_main.cpp reads <portable::exe_dir()>/nethack/data/<en|ja>, and on Linux exe_dir()
+#     is the current directory (legacy_os.cpp), which in the package is its root (cores/ and nethack/ side by side); bin/ here is
+#     that root, so run the cores with bin/ as the current directory (or link bin/nethack/data into the directory they run in).
+#     dat/ is copied to the
+#     build directory, normalised to LF (the English originals are CRLF) and run through makedefs there, so nothing is
+#     written under the originals. sysconf comes from sys/unix/sysconf with the GDBPATH line disabled (the machine that runs
+#     the game may not have gdb; the original's hints do the same after install when gdb is missing).
+#   - Files that must exist in the writable directory (perm, record, logfile, xlogfile, livelog, save/) are created by the
+#     core at start-up (nh_unix_prepare in nethack/adapter/nh_unix.c), not at build time.
+#   - Voxel slabs and terrain blocks made from the original's tile pictures (decisions D19-D25, NETHACK_CORE_DESIGN.md 9.6), by the
+#     NetHackAssets target (tools/nethack/build_assets.py; needs numpy, scipy and Pillow for the Python above):
+#       slabs (monsters, items, the hero, statues): bin/nethack/data/slab, next to bin/nethack/data/<en|ja>. nh_main.cpp reads
+#         <exe_dir>/nethack/data/slab and declares it as hello_ack.asset_roots.slab.
+#       terrain blocks (nh_*.vox/.jsonc): <source tree>/assets/voxel, where the screen reads every terrain prefab from and where the
+#         package copies assets/voxel from. They are derived from the original's pictures and git-ignored (assets/voxel/nh_*), the
+#         same way dcss/lib is made by a script into the source tree.
+#     build_assets.py also checks that the terrain rules (assets/voxel/terrain_prefabs.jsonc) and nethack/adapter/nh_terrain_ids.inc
+#     are up to date; the build stops when they are not (run tools/nethack/gen_nethack_terrain_rules.py to rewrite them).
+option(HENGBAND_BUILD_NETHACK "Build NetHackCore and NetHackJpCore (NetHack 5.0 English / NetHackJP)" ON)
+if(HENGBAND_BUILD_NETHACK)
+    set(HB_NH_ADAPTER "${HB_ROOT}/nethack/adapter")
+    set(HB_NH_DATA_SCRIPT "${CMAKE_BINARY_DIR}/nethack-work/make_data.sh")
+    file(WRITE "${HB_NH_DATA_SCRIPT}" [=[#!/bin/sh
+# usage: make_data.sh <original tree> <work dir> <makedefs> <data dir>
+set -e
+src=$1
+work=$2
+makedefs=$3
+out=$4
+rm -rf "$work/dat" "$work/util" "$out"
+mkdir -p "$work/util" "$out"
+cp -R "$src/dat" "$work/dat"
+# The English originals are CRLF; data files read by the game must be LF on Linux.
+find "$work/dat" -type f -exec sed -i 's/\r$//' {} +
+# makedefs writes into ../dat/ of its working directory.
+( cd "$work/util" && for flag in -d -r -h -1 -2 -3; do "$makedefs" $flag; done )
+cp -R "$work/dat/." "$out/"
+sed -e 's/\r$//' -e 's;^GDBPATH=/usr/bin/gdb;#GDBPATH=/usr/bin/gdb;' -e 's;PANICTRACE_GDB=1;PANICTRACE_GDB=0;' \
+    "$src/sys/unix/sysconf" > "$out/sysconf"
+]=])
+    function(hb_nethack_core target source_name lang_dir is_japanese)
+        set(src "${HB_TARGET_ORIGINAL_ROOT}/${source_name}")
+        if(NOT EXISTS "${src}/src/allmain.c" OR NOT EXISTS "${src}/sys/unix/sysconf")
+            message(FATAL_ERROR "HENGBAND_BUILD_NETHACK: ${src} is not prepared (src/allmain.c, sys/unix/sysconf). Run tools/core_sources/prepare.py, or pass -DHENGBAND_BUILD_NETHACK=OFF")
+        endif()
+        set(game_defs SHIM_GRAPHICS NOTTYGRAPHICS NOSHELL NOMAIL "COMPRESS=\"/bin/gzip\"" "COMPRESS_EXTENSION=\".gz\"" SIG_RET_TYPE=__sighandler_t)
+        # 1. original game C (+ the C parts of our adapter) as an object library: its own include path, no hb_common includes.
+        file(GLOB game_c CONFIGURE_DEPENDS "${src}/src/*.c")
+        list(APPEND game_c "${src}/sys/unix/unixunix.c" "${src}/sys/unix/unixres.c" "${src}/sys/share/posixregex.c")
+        set_source_files_properties(${game_c} PROPERTIES COMPILE_OPTIONS "-w")
+        add_library(${target}_game OBJECT ${game_c} "${HB_NH_ADAPTER}/nh_winport.c" "${HB_NH_ADAPTER}/nh_unix.c")
+        target_include_directories(${target}_game PRIVATE "${src}/include" "${src}/nhlua/lua/src" "${HB_NH_ADAPTER}")
+        # NOCWD_ASSUMPTIONS (the original defines it for Windows in windconf.h) turns on PREFIXES_IN_USE: files are found through
+        # the fqn_prefix table (nh_winport.c set_prefixes) instead of the current directory, so the read-only data
+        # (nethack/data/<lang>) and the writable save directory can be different places.
+        target_compile_definitions(${target}_game PRIVATE ${game_defs} NOCWD_ASSUMPTIONS)
+        target_compile_options(${target}_game PRIVATE -ffunction-sections -fdata-sections)
+        # 2. Lua (C). lua.c and luac.c are stand-alone programs.
+        file(GLOB lua_c CONFIGURE_DEPENDS "${src}/nhlua/lua/src/*.c")
+        list(FILTER lua_c EXCLUDE REGEX "/(lua|luac)\\.c$")
+        add_library(${target}_lua OBJECT ${lua_c})
+        target_include_directories(${target}_lua PRIVATE "${src}/nhlua/lua/src")
+        target_compile_definitions(${target}_lua PRIVATE LUA_USE_LINUX)
+        target_compile_options(${target}_lua PRIVATE -w -ffunction-sections -fdata-sections)
+        # 3. makedefs (the original's Makefile.utl: makedefs.c + monst + objects + date + alloc + panic + hacklib)
+        add_executable(${target}_makedefs
+            "${src}/util/makedefs.c" "${src}/src/monst.c" "${src}/src/objects.c" "${src}/src/date.c"
+            "${src}/src/alloc.c" "${src}/util/panic.c" "${src}/src/hacklib.c")
+        target_include_directories(${target}_makedefs PRIVATE "${src}/include" "${src}/nhlua/lua/src")
+        target_compile_definitions(${target}_makedefs PRIVATE ${game_defs})
+        target_compile_options(${target}_makedefs PRIVATE -w)
+        target_link_libraries(${target}_makedefs PRIVATE m)
+        set_target_properties(${target}_makedefs PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/nethack-work/${lang_dir}")
+        # 4. run-time data
+        set(HB_NH_DATA_ROOT "${CMAKE_BINARY_DIR}/bin/nethack/data")
+        set(data_dir "${HB_NH_DATA_ROOT}/${lang_dir}")
+        set(work_dir "${CMAKE_BINARY_DIR}/nethack-work/${lang_dir}")
+        add_custom_command(
+            OUTPUT "${work_dir}/data.stamp"
+            COMMAND /bin/sh "${HB_NH_DATA_SCRIPT}" "${src}" "${work_dir}" "$<TARGET_FILE:${target}_makedefs>" "${data_dir}"
+            # tiles.png / tiles.json (the dedicated screen's tile picture and glyph -> tile table) next to the makedefs output.
+            # Written to <out>/<lang>/ only; the original's tile sources are read, not written.
+            COMMAND "${Python3_EXECUTABLE}" "${HB_ROOT}/tools/nethack/build_tiles.py" --lang ${lang_dir}
+                    --source-root "${HB_TARGET_ORIGINAL_ROOT}" --out "${HB_NH_DATA_ROOT}"
+            COMMAND "${CMAKE_COMMAND}" -E touch "${work_dir}/data.stamp"
+            DEPENDS ${target}_makedefs "${HB_NH_DATA_SCRIPT}" "${HB_ROOT}/tools/nethack/build_tiles.py"
+                    "${HB_TARGET_ORIGINAL_ROOT}/.prepared.json" "${src}/sys/unix/sysconf"
+            COMMENT "NetHack (${lang_dir}): generating run-time data and tiles"
+            VERBATIM)
+        add_custom_target(${target}_data DEPENDS "${work_dir}/data.stamp")
+        # 5. the core: protocol layer (C++) + the objects above
+        add_executable(${target}
+            "${HB_NH_ADAPTER}/nh_main.cpp"
+            "${HB_NH_ADAPTER}/nh_frame.cpp"
+            "${HB_NH_ADAPTER}/nh_terrain.cpp"
+            "${HB_ROOT}/presentation/frame/frame_codec.cpp"
+            "${HB_ROOT}/presentation/frame/protocol_messages.cpp"
+            "${HB_ROOT}/presentation/frame/protocol_transport.cpp"
+            "${HB_ROOT}/presentation/bridge/input_event_adapter.cpp"
+            "${HB_ROOT}/platform/portable/legacy_os.cpp"
+            $<TARGET_OBJECTS:${target}_game> $<TARGET_OBJECTS:${target}_lua>)
+        hb_common(${target})
+        target_include_directories(${target} PRIVATE "${HB_NH_ADAPTER}")
+        if(is_japanese)
+            target_compile_definitions(${target} PRIVATE NH_LANG_JA)
+        endif()
+        target_link_libraries(${target} PRIVATE m)
+        add_dependencies(${target} ${target}_data)
+        set_target_properties(${target} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/cores")
+    endfunction()
+    hb_nethack_core(NetHackCore nethack en FALSE)
+    hb_nethack_core(NetHackJpCore nethackjp ja TRUE)
+    # Slabs and terrain blocks from the tile pictures (one set for both languages: the pictures are the same). The pictures
+    # (tiles.png, tiles.json) come from the English edition's data step above.
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -c "import numpy, scipy, PIL" RESULT_VARIABLE hb_nh_py_modules OUTPUT_QUIET ERROR_QUIET)
+    if(NOT hb_nh_py_modules EQUAL 0)
+        message(FATAL_ERROR "HENGBAND_BUILD_NETHACK: ${Python3_EXECUTABLE} needs numpy, scipy and Pillow (tools/nethack/build_assets.py). Install them (pip install numpy scipy pillow), or pass -DHENGBAND_BUILD_NETHACK=OFF")
+    endif()
+    # hb_nethack_core() の中の set は関数の中でしか効かないので、ここでも同じ置き場を決める
+    set(HB_NH_DATA_ROOT "${CMAKE_BINARY_DIR}/bin/nethack/data")
+    set(HB_NH_ASSET_STAMP "${CMAKE_BINARY_DIR}/nethack-work/assets.stamp")
+    add_custom_command(
+        OUTPUT "${HB_NH_ASSET_STAMP}"
+        COMMAND "${Python3_EXECUTABLE}" "${HB_ROOT}/tools/nethack/build_assets.py"
+                --tiles "${HB_NH_DATA_ROOT}/en"
+                --slab-out "${HB_NH_DATA_ROOT}/slab"
+                --terrain-out "${HB_ROOT}/assets/voxel"
+                --work "${CMAKE_BINARY_DIR}/nethack-work/assets"
+        COMMAND "${CMAKE_COMMAND}" -E touch "${HB_NH_ASSET_STAMP}"
+        DEPENDS "${CMAKE_BINARY_DIR}/nethack-work/en/data.stamp"
+                "${HB_ROOT}/tools/nethack/build_assets.py" "${HB_ROOT}/tools/nethack/tiles_to_slabs.py"
+                "${HB_ROOT}/tools/nethack/gen_nethack_terrain.py" "${HB_ROOT}/tools/nethack/gen_nethack_terrain_rules.py"
+                "${HB_ROOT}/tools/nethack/nh_tile_common.py" "${HB_ROOT}/nethack/adapter/nh_terrain_ids.inc"
+                "${HB_ROOT}/assets/voxel/terrain_prefabs.jsonc"
+        COMMENT "NetHack: generating voxel slabs and terrain blocks from the tile pictures"
+        VERBATIM)
+    add_custom_target(NetHackAssets DEPENDS "${HB_NH_ASSET_STAMP}")
+    add_dependencies(NetHackAssets NetHackCore_data)
+    add_dependencies(NetHackCore NetHackAssets)
+    add_dependencies(NetHackJpCore NetHackAssets)
+endif()
+
 # Enable the original secure temporary-file implementation where it is compiled.
 set_source_files_properties(
     "${HB_CORE_SOURCE_ROOT}/src/util/angband-files.cpp"

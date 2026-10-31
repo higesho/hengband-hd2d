@@ -25,6 +25,11 @@ DCSS_DATA_DIRS=['dcss/lib/dat','dcss/lib/docs','dcss/lib/settings','dcss/lib/til
 DCSS_USER_DIRS=['dcss/lib/saves','dcss/lib/morgue','dcss/lib/slabs']
 # The DCSS licence texts (GPL v2 or later, CREDITS, CC0, lua/pcre/sqlite/zlib notices) and the tile provenance lists go to licenses/ through
 # license_docs.copy_dcss (shared with the Windows package). The font license (OFL) is assets/fonts/dcss/OFL.txt.
+# NetHack . The cores read <exe_dir>/nethack/data/{en,ja,slab}; exe_dir is the user data directory on Linux,
+# so the package holds the read-only data and links it there. The data comes from the Linux build (<bin>/nethack/data): nethack/data of the
+# development tree is the Windows one. Saves go to <data root>/nethack/<en|ja>, which the core makes.
+NETHACK_DATA_DIR='nethack/data'
+NETHACK_CORES=['NetHackCore','NetHackJpCore']
 LIB_ROOTS=['lib','tangband/lib','gensoband/lib','toband/lib','silq/lib','frox/lib']
 MUTABLE=['save','user','apex','bone','data']
 # angband/adapter/an_main.cpp resolves both of these relative to portable::exe_dir(),
@@ -51,7 +56,7 @@ def dcss_sources(root):
  """The prepared DCSS original tree (tools/core_sources/prepare.py): HENGBAND_CORE_SOURCE_ROOT or ../roguelike-cores/build-sources."""
  base=Path(os.environ['HENGBAND_CORE_SOURCE_ROOT']) if os.environ.get('HENGBAND_CORE_SOURCE_ROOT') else root.parent/'roguelike-cores/build-sources'
  return base/'dcss'
-def assets(root,stage,with_dcss=False,dcss_lib=None):
+def assets(root,stage,with_dcss=False,dcss_lib=None,nethack_data=None):
  files={}
  # (folder in the package, where to read it from). The DCSS data come from dcss_lib (default <root>/dcss/lib), which must match the
  # DcssCore being packed: dat/dlua/tags.lua and docs/FAQ.html etc. are generated, so on Linux make it from the build's mirror:
@@ -63,6 +68,11 @@ def assets(root,stage,with_dcss=False,dcss_lib=None):
    src=lib/folder[len('dcss/lib/'):]
    if not src.is_dir():raise FileNotFoundError(str(src)+' is missing: run tools/dcss/prepare_runtime_data.py (needs dcss/assets/atlas for tiles; see --dcss-lib)')
    data_dirs.append((folder,src))
+ if nethack_data:
+  nethack_data=Path(nethack_data)
+  for sub in ('en','ja','slab'):
+   if not (nethack_data/sub).is_dir():raise FileNotFoundError(str(nethack_data/sub)+' is missing: build NetHackCore with platform/linux/CMakeLists.txt')
+  data_dirs.append((NETHACK_DATA_DIR,nethack_data))
  # Original game data is not in the repository: copy it first (python tools/core_sources/prepare_original_data.py).
  for need in ('angband/lib/gamedata','rogue2/mesg'):
   if not (root/need).exists():raise FileNotFoundError(str(root/need)+' is missing: run tools/core_sources/prepare_original_data.py')
@@ -87,7 +97,7 @@ def assets(root,stage,with_dcss=False,dcss_lib=None):
  r2_mesg=root/'rogue2/mesg'
  if not r2_mesg.is_file():raise FileNotFoundError(r2_mesg)
  r2_dst=stage/'rogue2/mesg';r2_dst.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(r2_mesg,r2_dst);files['rogue2/mesg']=digest(r2_dst)
- links=list(LINKS)+(DCSS_DATA_DIRS if with_dcss else [])
+ links=list(LINKS)+(DCSS_DATA_DIRS if with_dcss else [])+([NETHACK_DATA_DIR] if nethack_data else [])
  for name in ['LICENSE','README.md','readme-hengband.md','THIRD-PARTY-NOTICES.txt','readme_angband']:
   if (root/name).exists():shutil.copy2(root/name,stage/name)
  # Keep the exact upstream license texts beside the package documentation.
@@ -116,6 +126,8 @@ def assets(root,stage,with_dcss=False,dcss_lib=None):
  if with_dcss:
   # DCSS is GPL v2 or later (LICENSE); the bundled lua/sqlite/pcre/zlib notices, CREDITS.txt and the tile provenance lists go with it.
   for name in license_docs.copy_dcss(license_dir,dcss_sources(root)):files['licenses/'+name]=digest(license_dir/name)
+ if nethack_data:
+  for name in license_docs.copy_nethack(license_dir,nethack_data):files['licenses/'+name]=digest(license_dir/name)
  for name in [*license_docs.copy_gpl(license_dir),*license_docs.copy_openal(license_dir),*license_docs.copy_rogue2_docs(license_dir,rogue_upstream)]:
   files['licenses/'+name]=digest(license_dir/name)
  # Reuse the checked-in/generated Japanese font and retain its license.
@@ -168,6 +180,7 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--bin',type=Path);p.add_argument('--out',type=Path,required=True);p.add_argument('--version',default=time.strftime('%Y-%m-%d'));p.add_argument('--assets-only',action='store_true')
  p.add_argument('--dcss-lib',type=Path,help='where the DCSS data (dat, docs, settings, tiles) are read from; default <root>/dcss/lib. On Linux make it with tools/dcss/prepare_runtime_data.py --work <build>/dcss-work --dest <dir>')
  p.add_argument('--dcss',choices=('auto','on','off'),default='on',help='bundle DcssCore and its data: on (default) = required, so a package without it is an error (also with --assets-only); auto = only when --bin/cores/DcssCore exists; off = never')
+ p.add_argument('--nethack',choices=('on','off'),default='on',help='bundle NetHackCore, NetHackJpCore and <bin>/nethack/data: on (default) = required')
  # Staging ~18,000 asset files on /mnt/c (9P under WSL) is slow, so stage on a native filesystem
  # and copy only the finished tar.gz to --out. --keep-stage also copies the unpacked folder.
  p.add_argument('--stage-root',type=Path,help='where to stage (default: a temp dir under ~ when --out is on /mnt under WSL, else --out)')
@@ -183,8 +196,9 @@ def main():
  stage=stage_root/name
  if stage.exists():raise FileExistsError('Choose a fresh staging directory: '+str(stage))
  with_dcss=a.dcss=='on' or (a.dcss=='auto' and a.bin is not None and (a.bin/'cores/DcssCore').is_file())
- core_names=[*CORE_NAMES,*(['DcssCore'] if with_dcss else [])]
- stage.mkdir(parents=True);files=assets(root,stage,with_dcss,a.dcss_lib)
+ with_nethack=a.nethack=='on' and a.bin is not None
+ core_names=[*CORE_NAMES,*(['DcssCore'] if with_dcss else []),*(NETHACK_CORES if with_nethack else [])]
+ stage.mkdir(parents=True);files=assets(root,stage,with_dcss,a.dcss_lib,a.bin/'nethack/data' if with_nethack else None)
  if a.assets_only:print(stage,flush=True);return
  if not a.bin:raise ValueError('--bin is required')
  (stage/'cores').mkdir();binaries=[]
@@ -195,7 +209,9 @@ def main():
   if header[:5]!=b'\x7fELF\x02' or header[18:20]!=b'>\0':raise ValueError('Not x86_64 ELF: '+str(src))
   shutil.copy2(src,dst);dst.chmod(0o755);binaries.append(dst)
  deps=libraries(stage,binaries)
- n_en={11:'eleven',12:'twelve'}[len(core_names)]
+ # NetHack is one game with two executables (English and Japanese); the screen picks one by language.
+ game_count=len(core_names)-(1 if with_nethack else 0)
+ n_en={11:'eleven',12:'twelve',13:'thirteen'}[game_count]
  launcher='''#!/bin/sh
 set -eu
 app_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -230,7 +246,7 @@ THIRD-PARTY-NOTICES.txt, LICENSE and readme_angband. The font license is in asse
 ''',encoding='utf8')
  (stage/'はじめに.txt').write_text('''変愚蛮怒HD — Linux x86_64
 
-このフォルダーの HengbandHd2d.sh を起動してください。'''+str(len(core_names))+'''種類のゲームを選べます。
+このフォルダーの HengbandHd2d.sh を起動してください。'''+str(game_count)+'''種類のゲームを選べます。
 初回は新UIのAになります。保存済みの表示設定は維持されます。
 機能 → 画面 → ウィンドウのデザインでA/B/CまたはオリジナルUIを選べます。
 新UIには現在の射線・範囲表示の改修を含みます。未対応の効果は範囲を推測表示せず、

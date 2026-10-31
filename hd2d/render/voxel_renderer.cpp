@@ -227,6 +227,8 @@ uniform float u_cutaway_min_z[HD2D_MAX_CUTAWAYS];
 uniform float u_cutaway_depth[HD2D_MAX_CUTAWAYS];
 uniform int u_cutaway_count;
 uniform float u_cutaway_scale;
+//! 透過の描き方（`CutawayPass`）。0 = 網目で抜く・1 = 残す所だけ描く・2 = 抜く所だけ半透明で描く
+uniform int u_cutaway_pass;
 /*!
  * 抜きの強さ（P10 レビュー 4。「透過率はもっと上げた方が見やすい」と決めた）。
  * `keep` を累乗する。1 で従来、大きいほど**同じ半径でも網目が粗くなる＝よく抜ける**。
@@ -248,6 +250,7 @@ float hd2d_bayer4(vec2 pixel)
 
 void main()
 {
+    float cut_alpha = 1.0; //!< 半透明の段の不透明度（残す量）
     /*
      * カットアウェイ。**手前にある・近くにある**の 2 つが揃ったときだけ抜く。
      * 縁は円錐状に薄くして、抜けた穴が円形に切り抜かれて見えないようにする。
@@ -258,9 +261,14 @@ void main()
             if (i >= u_cutaway_count) {
                 break;
             }
-            //! **手前にある**ものだけ抜く（隠している側だけ薄くする）。
-            if ((u_cutaway_radius[i] <= 0.0)
-                || (gl_FragCoord.z >= (u_cutaway_depth[i] - 0.00002))) {
+            /*
+             * **手前にある**ものだけ抜く（隠している側だけ薄くする）。半平面の判定があるときはそちらに任せる:
+             * 手前のブロックの足元の点は、対象の腰より深度が奥になることがあり、そこだけ抜けずに残ってしまう。
+             */
+            if (u_cutaway_radius[i] <= 0.0) {
+                continue;
+            }
+            if ((u_cutaway_face[i].z < -1e8) && (gl_FragCoord.z >= (u_cutaway_depth[i] - 0.00002))) {
                 continue;
             }
             /*
@@ -269,7 +277,13 @@ void main()
              * ある場合として変更しよう」）。真横の壁の面はちょうど境に乗るので、
              * 境そのものは「間」に数えない（<=）。
              */
-            if (dot(v_world.xy, u_cutaway_face[i].xy) <= u_cutaway_face[i].z) {
+            /*
+             * 判定は**点が属するマスの中心**で行う（気づいたこと 2026-10-31「奥側のブロック側面の凹凸が透過できてない」）。
+             * 点の位置で判定すると、手前のブロックの奥の面の凹凸が境より奥に数えられ、そこだけ不透明で残る。
+             * 面の上の点がマスの境に乗るので、法線の逆へ少し入れてからマスを求める。
+             */
+            vec2 cut_cell = floor(v_world.xy - (normalize(v_normal).xy * 0.01)) + 0.5;
+            if (dot(cut_cell, u_cutaway_face[i].xy) <= u_cutaway_face[i].z) {
                 continue;
             }
             /*
@@ -300,9 +314,26 @@ void main()
             keep = min(keep, k);
         }
         keep = mix(1.0, keep, u_cutaway_scale);
-        if (hd2d_bayer4(gl_FragCoord.xy) >= keep) {
-            discard;
+        /*
+         * 残す量の扱いは描き方で変わる。Solid と Blend は同じしきい値で分けるので、境目に隙間も二重塗りも出ない。
+         * Blend のアルファは残す量そのもの（網目の密度と同じ濃さになる）。
+         */
+        if (u_cutaway_pass == 0) {
+            if (hd2d_bayer4(gl_FragCoord.xy) >= keep) {
+                discard;
+            }
+        } else if (u_cutaway_pass == 1) {
+            if (keep < 0.995) {
+                discard;
+            }
+        } else {
+            if ((keep >= 0.995) || (keep <= 0.004)) {
+                discard;
+            }
+            cut_alpha = keep;
         }
+    } else if (u_cutaway_pass == 2) {
+        discard; //!< 抜く所が無い描画は半透明の段に出さない
     }
 
     ivec2 texel = ivec2(floor(v_uv));
@@ -366,7 +397,7 @@ void main()
         vec3 tron = hd2d_look_apply(base, lit, v_emissive, line);
         //! 面の真ん中に浮かぶマスの記号（最初に決めたこと。§18.2-4）。**足すだけ**なので線を消さない。
         tron += hd2d_look_face_glyph(v_world, n, lit);
-        o_color = vec4(tron, 1.0);
+        o_color = vec4(tron, cut_alpha);
         return;
     }
 
@@ -374,7 +405,7 @@ void main()
      * **線形の HDR をそのまま書く。**トーンマップは合成の 1 か所（P7。`lighting.cpp` の注記）。
      * 自発光は AO も影も掛けずに足す（自分で光っているものに遮蔽は関係ない）。
      */
-    o_color = vec4((base * total_light) + v_emissive, 1.0);
+    o_color = vec4((base * total_light) + v_emissive, cut_alpha);
 }
 )";
 
@@ -405,6 +436,7 @@ bool VoxelRenderer::init(std::string &err)
     this->loc_cutaway_depth_ = glGetUniformLocation(this->program_, "u_cutaway_depth");
     this->loc_cutaway_count_ = glGetUniformLocation(this->program_, "u_cutaway_count");
     this->loc_cutaway_scale_ = glGetUniformLocation(this->program_, "u_cutaway_scale");
+    this->loc_cutaway_pass_ = glGetUniformLocation(this->program_, "u_cutaway_pass");
     this->loc_cutaway_power_ = glGetUniformLocation(this->program_, "u_cutaway_power");
     this->light_loc_.locate(this->program_);
     this->look_loc_.locate(this->program_);
@@ -774,7 +806,12 @@ void VoxelRenderer::bind_common(const GpuPrefab &prefab)
      * 画面上では表面が**時計回り**になる。
      */
     glFrontFace(GL_CW);
-    glDisable(GL_BLEND);
+    if (this->cutaway_pass_ == CutawayPass::Blend) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+        glDisable(GL_BLEND);
+    }
 
     glUseProgram(this->program_);
     glUniformMatrix4fv(this->loc_view_projection_, 1, GL_FALSE, this->view_projection_.m);
@@ -845,6 +882,7 @@ void VoxelRenderer::bind_common(const GpuPrefab &prefab)
     }
     glUniform1i(this->loc_cutaway_count_, cuts);
     glUniform1f(this->loc_cutaway_scale_, this->cutaway_scale_);
+    glUniform1i(this->loc_cutaway_pass_, static_cast<GLint>(this->cutaway_pass_));
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, prefab.palette);
 }

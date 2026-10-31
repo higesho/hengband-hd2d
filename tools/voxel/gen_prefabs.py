@@ -2374,6 +2374,45 @@ def arch_kido(name):
     return [('main', v, (0, 0, 0))]
 
 
+#! ---- 階段の上の空中で回る矢印（決めたこと 2026-10-28「この矢印はいいね。他のコアにも入れてもいいかも」）----
+#! NetHack の階段（`tools/nethack/gen_nethack_terrain.py` の `_stair_arrow`）と同じ形: 三角の頭と四角い軸の
+#! 平たい矢印（厚み 3）を、床から 1 マス強（34 ボクセル。立っている板の頭より上）に浮かべ、縦の軸で回す。
+#! 接地しない別の部品にし、切り替えの名前 `stair_arrows` を付ける（機能メニューの「階段の矢印」で消せる）。
+#! 色は階段の石畳の色に合わせる（明るい色を頭、地の色を軸）。TOband の階段も同じ関数を使う。
+STAIR_ARROW_LIFT = 34
+STAIR_ARROW_H = 13
+STAIR_ARROW_SPIN = 0.25
+reg_local('stair_arrow_head', (204, 184, 150))    # 石畳の明（pav_l）をさらに明るく
+reg_local('stair_arrow_head_d', (174, 156, 126))  # 頭の付け根の段（少し暗く）
+
+
+def stair_arrow(up, head=None, head_d=None, shaft=None):
+    """平たい矢印の部品の配列（[x, y, z]・高さ STAIR_ARROW_H）。色は索引（既定は石畳の色）。"""
+    head = C['stair_arrow_head'] if head is None else head
+    head_d = C['stair_arrow_head_d'] if head_d is None else head_d
+    shaft = C['pav'] if shaft is None else shaft
+    a = np.zeros((V, V, STAIR_ARROW_H), np.int16)
+    cx = V // 2
+    ys = slice(cx - 1, cx + 2)
+    head_h = 7
+    shaft_h = STAIR_ARROW_H - head_h
+    for k in range(head_h):  # k = 0 が頭の付け根（いちばん広い）
+        half = 7 - k
+        z = shaft_h + k if up else head_h - 1 - k
+        a[cx - half:cx + half, ys, z] = head if k else head_d
+    z0, z1 = (0, shaft_h) if up else (head_h, STAIR_ARROW_H)
+    a[cx - 2:cx + 2, ys, z0:z1] = shaft
+    return a
+
+
+def stair_arrow_parts(z):
+    """矢印の部品の定義（`static_part()` の後ろへ足す）。z は部品の下端の高さ（プレハブ原点から）。"""
+    return [{'name': 'arrow', 'voxels': 'arrow', 'grounded': False,
+             'pivot': [V / 2.0, V / 2.0, z + STAIR_ARROW_H / 2.0],
+             'motion': {'kind': 'rotate', 'axis': 'z', 'speed': STAIR_ARROW_SPIN, 'phase': 0.0},
+             'wind_k': 0.0, 'toggle': 'stair_arrows'}]
+
+
 def stairs_down(name):
     """降り階段。天面から +y へ段を彫り、いちばん奥は暗がりへ落とす。
     地面ごと置き換えるタイルである（origin_z=-8。footprint は空 = 歩ける）。"""
@@ -2389,7 +2428,7 @@ def stairs_down(name):
     v[3:29, 25, 1:2] = C['dark']
     v[0:3, :, 7] = C['pav']  # 左右の親柱（天面の縁）
     v[29:32, :, 7] = C['pav']
-    return [('main', v, (0, 0, -8))]
+    return [('main', v, (0, 0, -8)), ('arrow', stair_arrow(False), (0, 0, STAIR_ARROW_LIFT))]
 
 
 def stairs_up(name):
@@ -2403,7 +2442,7 @@ def stairs_up(name):
     v[28:32, 0:32, 0:6] = C['pav']
     v[0:4, 0:8, 0:29] = C['pav']  # 奥の袖は高く
     v[28:32, 0:8, 0:29] = C['pav']
-    return [('main', v, (0, 0, 0))]
+    return [('main', v, (0, 0, 0)), ('arrow', stair_arrow(True), (0, 0, STAIR_ARROW_LIFT))]
 
 
 # ------------------------------------------------------- 全体マップの目印（P10）
@@ -18366,8 +18405,9 @@ CATALOG.update({
     # ---- 全体マップの目印（2026-08-11 に決めた）----
     'town_marker': (town_marker, static_part(), '全体マップの町。塀・赤い切妻 3 軒・門・旗の櫓'),
     'dungeon_entrance': (dungeon_entrance, static_part(), '全体マップのダンジョンの口。岩に穿った門（階段ではない）'),
-    'stairs_down': (stairs_down, static_part(), '降り階段。地面ごと置き換える（footprint 空）'),
-    'stairs_up': (stairs_up, static_part(), '上り階段。床の上に置く'),
+    'stairs_down': (stairs_down, static_part() + stair_arrow_parts(STAIR_ARROW_LIFT),
+                    '降り階段。地面ごと置き換える（footprint 空）。空中で回る下向きの矢印つき'),
+    'stairs_up': (stairs_up, static_part() + stair_arrow_parts(STAIR_ARROW_LIFT), '上り階段。床の上に置く。空中で回る上向きの矢印つき'),
     'torch_stand': (torch_stand, [{'name': 'pole', 'voxels': 'pole', 'grounded': True,
                                    'motion': {'kind': 'static'}, 'wind_k': 0.0}],
                     '立ち松明の柱。炎は torch_flame（自発光を分けるため別体）'),

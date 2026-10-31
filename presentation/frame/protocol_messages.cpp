@@ -331,6 +331,10 @@ std::string encode_ui_state(const UiStateMessage &message)
     if (!message.lang.empty()) {
         out["lang"] = message.lang;
     }
+    //! 実体の板の組（公式 8 画素）。偽のときは書かない（ほかのコアへの知らせは変わらない）。
+    if (message.entity_tiles_official8) {
+        out["entity_tiles"] = "official8";
+    }
 
     // リアルタイム進行。設定は画面側、時計はコア側にある。
     json realtime = json::object();
@@ -404,6 +408,11 @@ bool decode_ui_state(const std::string &json_text, UiStateMessage &out, std::str
     if (const json *bot = take_object(parsed, "bot_json"); bot != nullptr) {
         take_bool(*bot, "enabled", work.bot_json_enabled);
         take_string(*bot, "path", work.bot_json_path);
+    }
+    {
+        std::string tiles;
+        take_string(parsed, "entity_tiles", tiles);
+        work.entity_tiles_official8 = (tiles == "official8");
     }
     take_string(parsed, "lang", work.lang);
     if (const json *realtime = take_object(parsed, "realtime"); realtime != nullptr) {

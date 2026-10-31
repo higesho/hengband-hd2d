@@ -14,6 +14,7 @@
 #pragma once
 
 #include "bridge/official_tile_table.h"
+#include "bridge/official8_tile_table.h"
 #ifdef TANGBAND
 #include "bridge/official_tile_table_tang.h"
 #endif
@@ -49,6 +50,16 @@ inline AssetManifestMessage build_official_asset_manifest(std::string root)
         message.assets.push_back(std::move(wire));
     }
 #endif
+    // 公式の 8 画素のタイルの板（`official8_tile_table.h`）。種類 G・番号は絵の面の位置（段 * 64 + 列）。板の名前は `H8_<段>_<列>`。
+    // 実体の板を公式 8 画素の組にしたとき、コアはこの番号を送る（`set_entity_tiles_official8`）。
+    for (const uint16_t cell : kOfficial8Cells) {
+        AssetManifestWireEntry wire;
+        wire.index = kOfficial8IndexBase + static_cast<int>(cell);
+        wire.kind = "G";
+        wire.id = static_cast<int>(cell);
+        wire.path = "assets/voxel/slab/H8_" + std::to_string(cell / kOfficial8Cols) + "_" + std::to_string(cell % kOfficial8Cols) + ".png";
+        message.assets.push_back(std::move(wire));
+    }
     message.aliases.reserve(kOfficialTileAliasCount);
     for (const auto &alias : kOfficialTileAliases) {
         AssetManifestAliasWireEntry wire;

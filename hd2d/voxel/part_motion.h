@@ -48,6 +48,8 @@ struct MotionContext {
      * プロトコル §12-10（イベントの縁）が要るので P6 では繋いでいない。
      */
     std::vector<std::pair<std::string, float>> states;
+    //! 切ってある切り替えの名前（`PrefabPart::toggle`）。ここにある名前の部品は描かない。
+    std::vector<std::string> off_toggles;
 
     //! 名前で引く。無ければ 0。
     float state(const std::string &name) const;

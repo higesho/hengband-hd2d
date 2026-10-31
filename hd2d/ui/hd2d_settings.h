@@ -81,6 +81,9 @@ enum class MoveSmoothing : int {
  */
 inline constexpr float kVrRenderScaleDefault = 1.f;
 
+//! 透過の半径（`Hd2dSettings::cutaway_radius`）の基準の 1 マスの画素。カメラの既定（`camera_cell_px`）と同じ値。
+inline constexpr float kCutawayRefCellPx = 65.f;
+
 struct Hd2dSettings {
     /*!
      * @brief 画面の言語（`i18n/lang.h`。BCP 47 風のコード）。
@@ -164,6 +167,11 @@ struct Hd2dSettings {
     //! 窓（真）か全画面（偽）か。Alt+Enter と機能メニューの両方から動く。
     bool windowed{ true };
     PostFlags post{};
+    /*!
+     * @brief 透過の半径。単位は「1 マスが `kCutawayRefCellPx` 画素のときの画素」（既定の 260 は半径 4 マス）。
+     * @details 画面上の半径はいまの 1 マスの画素に比例させる（気づいたこと 2026-10-31「拡大縮小で透過の範囲がかわる」）。
+     * 世界の中の範囲はカメラの拡大縮小で変わらない。機能メニューの表示もマスで出す。cfg の値はそのまま読める。
+     */
     float cutaway_radius{ 260.f };
     /*!
      * @brief 被写界深度の強さ（P10 レビュー 4）。0 = 掛けない 〜 2.4 = 最大。
@@ -470,6 +478,18 @@ struct Hd2dSettings {
      * 変えうる改修だからである。
      */
     bool entity_glyph_fallback{ true };
+    /*!
+     * @brief 階段の上の空中で回る矢印を描くか（既定 入）。
+     * @details 共有の階段・TOband・NetHack の階段の素材の、切り替えの名前 `stair_arrows` の部品（`PrefabPart::toggle`）。
+     */
+    bool stair_arrows{ true };
+    /*!
+     * @brief 実体の板を「公式 8 画素」の組にするか（変愚・短愚蛮怒。決めたこと 2026-10-28）。
+     * @details 真なら、コアが変愚 3.0.2.6 の公式の 8 画素のタイル（multilockon123 氏）の板（`H8_<段>_<列>`）を指す。
+     * 偽（既定）は今までの 64 画素の板。選んだ組に無い実体は描かない（字の板への落ち方は `entity_glyph_fallback` のまま）。
+     * コアが `entity-tiles-official8` を申告したときだけ機能メニューに出す。cfg はコアごと。
+     */
+    bool entity_tiles_official8{ false };
     /*!
      * @brief 2D アスキー地図の**字の高さ**（画素）。**0 = UI の文字と同じマス**。
      *

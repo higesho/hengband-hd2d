@@ -157,11 +157,18 @@ public:
 
     /*!
      * @brief `<voxel_dir>/terrain_prefabs.jsonc` と、そこから参照される全プレハブを読む。
+     * @details 規則の行に `"optional": true` があれば、その行が指すプレハブが 1 つでも読めないとき**その行だけを飛ばす**
+     * （ライブラリにも規則にも載せない）。印の無い行は、読めなければ全体が失敗する。
      * @return 成功したか。**失敗しても致命ではない**（呼び手は仮の箱の見た目へ落とす）。
      */
     bool load(const std::string &voxel_dir, std::string &err);
 
     bool ready() const { return this->loaded_; }
+    /*!
+     * @brief `"optional": true` の行のうち、指すプレハブが読めなくて**省いた行の数**（`load` ごとに数え直す）。
+     * @details 素材を組み立てのときに作るコア（NetHack の `nh_*`）の行が対象。0 なら全行が載っている。
+     */
+    int skipped_optional_rules() const { return this->skipped_optional_rules_; }
     int count() const { return static_cast<int>(this->entries_.size()); }
     const LibraryEntry &entry(int i) const { return this->entries_[static_cast<std::size_t>(i)]; }
     //! 描画は `GpuPrefab` を非 const で要求する（インスタンス VBO を詰め替えるため）。
@@ -216,7 +223,8 @@ public:
      * @brief このフレームの剛体の動き（P6）を作る。**1 フレーム 1 回。**
      * @details 影のパスと本描画は**同じ結果**を読む（§8.2-1。2 回呼ぶと位相がずれる）。
      */
-    void update_motions(float time);
+    //! @param off_toggles 切ってある部品の切り替えの名前（`PrefabPart::toggle`。機能メニューの「階段の矢印」など）
+    void update_motions(float time, const std::vector<std::string> &off_toggles = {});
     //! そのプレハブの動きの行列。持たなければ nullptr（静止）。
     const Mat4 *motions_of(int i) const;
     std::size_t motion_count_of(int i) const;
@@ -257,6 +265,7 @@ private:
     bool role_surface_present_[8]{};
     std::vector<std::vector<Mat4>> motions_;
     bool loaded_{ false };
+    int skipped_optional_rules_{ 0 };
 };
 
 } // namespace hd2d

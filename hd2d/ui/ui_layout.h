@@ -368,6 +368,12 @@ struct UiLayout {
         int origin_x = 0, int origin_y = 0, bool reserve_pad = false, bool minimap_bottom = false,
         MinimapCorner minimap_corner = MinimapCorner::TopRight, int minimap_size_pct = 100);
 
+    /*!
+     * @brief ミニマップの置き場所を `free` の中に取り直す（原作の画面を持つコアが、差し替えた地図の区画へ置くため）。
+     * @param free 置いてよい領域（窓の座標）。隅と大きさは機能メニューの設定のまま
+     */
+    void place_minimap_in(const RectPx &free, MinimapCorner corner, int size_pct);
+
     //! 中の矩形をまとめてずらす（`compute` の最後が使う）。
     void offset_rects(int dx, int dy);
 };

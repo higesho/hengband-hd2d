@@ -71,6 +71,12 @@ struct PrefabPart {
     Motion motion;
     bool grounded{ true };
     float wind_k{ 1.f };
+    /*!
+     * @brief 切り替えの名前（`.jsonc` の `toggle`。空 = いつも描く）。
+     * @details 名前が `MotionContext::off_toggles` にあると、その部品は縮尺 0（描かれず、影も出ない）。
+     * 機能メニューで消せる飾り（階段の上の回る矢印 = `stair_arrows`）に使う。
+     */
+    std::string toggle;
 };
 
 /*!

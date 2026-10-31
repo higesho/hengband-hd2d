@@ -210,6 +210,12 @@ bool create_window(const AppOptions &options, Window &out, std::string &err)
     return true;
 }
 
+float cell_px_of_camera(const Camera &camera)
+{
+    const float view_distance = camera.distance / std::cos(camera.pitch);
+    return static_cast<float>(camera.viewport_w) / (2.f * view_distance * camera.tan_half_x());
+}
+
 //! 表示倍率（§5「1 マス 98〜130 px」）から、カメラまでの水平距離を出す。
 float distance_for_cell_px(const Camera &camera, float cell_px)
 {
@@ -401,6 +407,7 @@ presentation::UiStateMessage build_ui_state(
      * ここで送らないと、メニューの値だけ変わって何も起きない。
      */
     state.realtime_enabled = settings.realtime_enabled;
+    state.entity_tiles_official8 = settings.entity_tiles_official8; //!< 実体の板の組（申告したコアだけが読む）
     state.realtime_speed_index = settings.realtime_speed_index;
     state.realtime_prompt_live = settings.realtime_prompt_live;
     state.realtime_self_span_index = settings.realtime_self_span_index;
@@ -725,6 +732,22 @@ bool library_instance_occupied(const LibraryEntry &entry, const InstanceData &in
 }
 
 } // namespace
+
+void draw_library_cut(VoxelRenderer &renderer, PrefabLibrary &library, const TerrainView &terrain)
+{
+    if (terrain.lib.size() != static_cast<std::size_t>(library.count())) {
+        return;
+    }
+    renderer.set_cutaway_scale(1.f);
+    for (int i = 0; i < library.count(); ++i) {
+        const auto &bucket = terrain.lib[static_cast<std::size_t>(i)];
+        LibraryEntry &entry = library.entry_mut(i);
+        if (bucket.empty() || !entry.gpu_ready || entry.is_ground) {
+            continue;
+        }
+        renderer.draw_instanced(entry.gpu, bucket.data(), bucket.size(), library.motions_of(i), library.motion_count_of(i));
+    }
+}
 
 void draw_library_deferred(VoxelRenderer &renderer, PrefabLibrary &library, const LibraryDeferred &deferred)
 {

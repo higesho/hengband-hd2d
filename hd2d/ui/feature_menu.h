@@ -313,6 +313,7 @@ public:
     {
         if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
         this->pad_commands_ = core_hides_commands() ? std::vector<PadCommand>{} : commands; //! DCSS（D32）: コマンドの一覧は持たない
+        this->bind_commands_ = commands; //!< キー割り当ての一覧はコマンドの画面を隠すコア（NetHack）でも出す
         refresh_command_tabs();
         this->pad_connected_ = connected;
         this->pad_name_ = name;
@@ -329,6 +330,7 @@ public:
     {
         if(showing_command_tabs() && !command_categories_)command_tabs_.remember(cursor_,command_scroll_);
         this->pad_commands_ = core_hides_commands() ? std::vector<PadCommand>{} : commands; //! DCSS（D32）: コマンドの一覧は持たない
+        this->bind_commands_ = commands; //!< キー割り当ての一覧はコマンドの画面を隠すコア（NetHack）でも出す
         refresh_command_tabs();
     }
 
@@ -555,12 +557,14 @@ private:
         EntityStyleItem, //!< 実体の表現（板／アスキー）
         EntitySlabFacing, //!< ボクセル板の向き（ワールド基準／画面に正対）
         EntityGlyphSize, //!< 　└ 実体の字の大きさ。上がアスキーのときだけ効く
+        EntityTilesOfficial8, //!< 実体の板の組（64 画素／公式 8 画素。申告 `entity-tiles-official8` のコアだけ）
         /*!
          * @brief **タイルが無い実体を字で描く**（
          * 決めたこと F5）。板の道で目録に無い実体を `ascii_fallback` の字の板へ落とす。
          * 既定 入。切る手段を残すのは、既存 4 本の絵を変えうる改修だから。
          */
         GlyphFallback,
+        StairArrows, //!< 階段の矢印（階段の上の空中で回る矢印。素材の部品の切り替え `stair_arrows`）
         Backdrops,
         DungeonLight, //!< 空間の明るさ（**環境光の倍率**。決めたこと 2026-08-15）
         EffectsEnter, //!< 効果へ（決定でサブ画面。2026-08-19）
@@ -837,6 +841,7 @@ private:
     int ascii_cols_{ 0 };
     int ascii_rows_{ 0 };
     std::vector<PadCommand> pad_commands_;
+    std::vector<PadCommand> bind_commands_; //!< キー割り当ての画面に並べるコマンド（`bind_rows`）
     bool pad_connected_{ false };
     std::string pad_name_;
 
@@ -977,6 +982,12 @@ bool core_supports_realtime();
  * `realtime` と同じ扱いで、既定は真——コアを起こさない検査（`--ui-check`）は
  * 握手を通らないので、ここが偽だと節ごと検査から消える。
  */
+/*!
+ * @brief コアが `entity-tiles-official8` を申告したか（実体の板を公式の 8 画素のタイルの組へ切り替えられるか。変愚・短愚蛮怒）。
+ * @details 偽なら「見た目」の節に項目を出さない。既定は偽（ほかのコアでは 1 項目も変わらない）。
+ */
+void set_core_supports_official8(bool on);
+bool core_supports_official8();
 void set_core_supports_audio(bool on);
 bool core_supports_audio();
 /*!

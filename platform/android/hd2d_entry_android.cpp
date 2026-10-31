@@ -35,6 +35,7 @@
 #include "android/android_asset_installer.h"
 #include "android/android_log_redirect.h"
 #include "android/android_paths.h"
+#include "android/process_core.h"
 #include "app/hd2d_app.h"
 #include "app/core_import_ui.h"
 
@@ -126,6 +127,18 @@ bool is_packaged_core_name(const std::string &name)
  */
 hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &requested)
 {
+    /*
+     * 別のプロセスで動かすコアは dlopen しない。実行ファイルを起こす代理の入口を返す
+     * （platform/android/process_core.cpp）。置き場は下の dlopen の枝と同じ nativeLibraryDir。
+     */
+    if (platform_android::is_process_core_name(requested)) {
+        const auto native_dir = hd2d::core_import_config().compiler.parent_path();
+        if (!platform_android::process_core_available(native_dir, requested)) {
+            __android_log_print(ANDROID_LOG_WARN, kTag, "process core not available: %s", (native_dir / requested).c_str());
+            return nullptr;
+        }
+        return platform_android::process_core_entry(native_dir, requested);
+    }
     const auto imported = hd2d::imported_core_path(requested);
     const std::string cache_key = imported.empty() ? requested : imported.string();
     static std::map<std::string, void *> handles;
@@ -198,6 +211,10 @@ hd2d::AppOptions::CoreThreadEntry resolve_core_entry(const std::string &requeste
 bool core_so_available(const std::string &so_name)
 {
     if (!hd2d::imported_core_path(so_name).empty()) return true;
+    //! 別のプロセスで動かすコア（NetHack）は実行ファイルを起こすので、展開先に在るかを見る（:quest には入れないので出ない）
+    if (platform_android::is_process_core_name(so_name)) {
+        return platform_android::process_core_available(hd2d::core_import_config().compiler.parent_path(), so_name);
+    }
     /*
      * ここは「APK に組み込むと決めた名前か」だけを見る。ファイル存在確認をしてはいけない。
      * extractNativeLibs/useLegacyPackaging の設定次第では .so は APK 内にだけ存在し、

@@ -49,6 +49,8 @@ bool create_window(const AppOptions &options, Window &out, std::string &err);
 
 /*! @brief 注視点で 1 マスが `cell_px` に見える視線距離を求める。 */
 float distance_for_cell_px(const Camera &camera, float cell_px);
+//! `distance_for_cell_px` の逆。いまのカメラの注視点での 1 マスの画素。
+float cell_px_of_camera(const Camera &camera);
 
 /*! @brief いまのフレームバッファを BMP で保存する（検査の証拠と `--shot`）。 */
 bool save_framebuffer_bmp(const std::string &path, int width, int height);
@@ -193,6 +195,8 @@ void draw_library_color(VoxelRenderer &renderer, PrefabLibrary &library, const T
     const std::unordered_set<std::uint32_t> *occupied = nullptr, LibraryDeferred *deferred = nullptr);
 //! `draw_library_color` が集めた物を、深度を書かずに描く（カットアウェイは立つものと同じ）。
 void draw_library_deferred(VoxelRenderer &renderer, PrefabLibrary &library, const LibraryDeferred &deferred);
+//! 立つもの（床でないプレハブ）を全部流す。透過の半透明の段（`CutawayPass::Blend`）で使う。
+void draw_library_cut(VoxelRenderer &renderer, PrefabLibrary &library, const TerrainView &terrain);
 //! 実体のあるマスの鍵。
 inline std::uint32_t occupied_cell_key(int gx, int gy)
 {

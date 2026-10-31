@@ -21,11 +21,13 @@ additional terms.
 | Angband・Umoria のコアに組み込まれる、この派生版の作者のコード（`angband/adapter/` `umoria/adapter/` と、それらが組み込む `presentation/` `platform/` のファイル） | §1 に加えて GPL v2 以降でも提供 | §7 |
 | Dungeon Crawl Stone Soup（DCSS）日本語版のコアに組み込まれる、この派生版の作者のコード（`dcss/adapter/` と、それが組み込む `presentation/` `platform/` のファイル） | §1 に加えて GPL v2 以降でも提供 | §7 |
 | TOband（`toband/`） | §1 と同じ Moria / Angband 使用許諾＋変愚蛮怒の追加条項。クエスト「ブリュンヒルド強奪」のマップは NetHack General Public License | §1.3 |
+| NetHack のコアに組み込まれる、この派生版の作者のコード（`nethack/adapter/` と、それが組み込む `presentation/` `platform/` のファイル） | §1 に加えて NetHack General Public License でも提供 | §12 |
 | Sil-Q | GPL v2 または Angband 使用許諾 | §2 |
 | Angband 4.2.6 | GPL v2（原作の二重許諾から GPL v2 を選ぶ） | §3 |
 | Umoria 5.7 系 | GPL v3 | §4 |
 | Rogue 3.6 / Rogue 5.4 | BSD 3 条項 | §5 |
 | RogueClone2 | 原作者の条件（営利目的で販売しない・資料を添付する・制限を加えない） | §6 |
+| NetHack 5.0 と NetHackJP（コア 2 本と、原作のタイルから作った絵） | NetHack General Public License | §12 |
 | Dungeon Crawl Stone Soup 0.34.1 日本語版 | GPL v2 以降（タイルの絵の大半は CC0。付属ライブラリ lua・pcre・sqlite・zlib と字は各自の許諾） | §11 |
 
 ---
@@ -180,7 +182,7 @@ RogueClone2（rogueclone2s 系。Tim Stoehr の Rogue Clone の流れをくむ�
 ## 7. 許諾の違うコアが同じ配布物に入ることについて
 
 - 配布物は、画面（`HengbandHd2d.exe`）と、ゲームごとのコアの実行ファイル（`HengbandCore.exe`
-  `AngbandCore.exe` `UmoriaCore.exe` `DcssCore.exe` など 12 本）でできています。それぞれ別の実行ファイルです。
+  `AngbandCore.exe` `UmoriaCore.exe` `DcssCore.exe` `NetHackCore.exe` など 14 本）でできています。それぞれ別の実行ファイルです。
 - 画面はコアを子プロセスとして起動し、パイプで、この派生版のプロトコル（バージョン 1）を使って
   やりとりします。画面とコア、コアどうしは、ライブラリとしてリンクされていません。
 - 画面のソース（`hd2d/`）に、Angband・Umoria・Rogue 系の原作のコードは含まれていません。
@@ -313,3 +315,38 @@ DCSS は GNU GPL v2、またはそれ以降の版（GPL v2 or later）です。�
   上流の一覧・作者の名簿・`LICENSE` のどれにもありません。
 - **字**: 原作の区画の字に BIZ UDGothic Regular（SIL Open Font License 1.1）を使います。全文は配布物の
   `assets/fonts/dcss/OFL.txt` にあります。
+
+---
+
+## 12. NetHack 5.0（`nethack/`）
+
+NetHack は NetHack General Public License（以下、この節では NGPL）です。原文は配布物の
+`licenses/NetHack-LICENSE.txt`（原作の `dat/license`）にあります。
+
+- 配布するコアは 2 本です。英語版（`NetHackCore.exe` とその Android／Linux の実行ファイル）は公式の NetHack
+  （<https://github.com/NetHack/NetHack>、コミット `34e91f177c2686426e46f5e34847183b35a440e8`）から、
+  日本語版（`NetHackJpCore.exe` とその Android／Linux の実行ファイル）は非公式の日本語化 NetHackJP
+  （<https://github.com/satokiyon/NetHackJP>、タグ `NetHackJP-5.0.1-20261024`、
+  コミット `e140552de54de15f40d92087e3489ba0c46ba895`）から組みます。
+- この 2 本の実行ファイルは、全体を NGPL の条件で配布します。
+- **この派生版の作者は、NetHack のコアに組み込まれる自分のコードを、§1 の使用許諾に加えて NGPL でも提供します。**
+  対象は `nethack/adapter/` と、これが組み込む `presentation/frame/frame_codec.cpp` `protocol_messages.cpp`
+  `protocol_transport.cpp` `presentation/bridge/input_event_adapter.cpp` `platform/portable/legacy_os.cpp` と、
+  それらが取り込むヘッダーです。これらは変愚蛮怒の原作のコードを含みません。§1 の営利目的の配布の制限は、
+  この 2 つの実行ファイルには加えません。
+- 画面（`HengbandHd2d.exe`、Android の画面）とほかのコアは別の実行ファイルで、NetHack のコードを含みません。
+  画面と NetHack のコアは、§7 と同じくプロトコルとパイプでやりとりします。Android でも NetHack だけは別のプロセスで動かします。
+- **ソースの入手**: リリースごとに、そのリリースの NetHack のコアを組むのに使ったソース一式を
+  `HengbandHD-nethack-core-source-<版>.zip` として添えています（原作の 2 つの写し、アダプタ、組み込む共通のコード、
+  組み立ての手順）。入手先は <https://github.com/higesho/hengband-hd2d/releases> です。
+  NetHack の原作のファイルは書き換えていません。NetHackJP の変更は原作ファイルの表示のとおり NetHackJP の作者によるものです。
+- **絵**: `nethack/data/`（原作のタイルの絵と、そこから作ったボクセルの板）、`assets/voxel/nh_*`（原作のタイルから作った
+  地形のブロック）、`assets/ui/banner_nethack.png` は NetHack の絵の派生物で、NGPL に従います。
+- 付属の Lua は MIT 型の使用許諾です（`THIRD-PARTY-NOTICES.txt`）。
+
+NetHack is under the NetHack General Public License (NGPL), distributed as `licenses/NetHack-LICENSE.txt`. The two
+NetHack core executables are distributed under the NGPL as a whole. The author of this derivative also licenses
+their own code that is built into those cores (`nethack/adapter/` and the `presentation/` and `platform/` files
+listed above) under the NGPL, in addition to the license in §1. Each release has the complete source used to
+build the NetHack cores attached as `HengbandHD-nethack-core-source-<version>.zip`, available from
+<https://github.com/higesho/hengband-hd2d/releases>. The art derived from the NetHack tiles follows the NGPL.

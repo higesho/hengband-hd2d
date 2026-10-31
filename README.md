@@ -7,7 +7,7 @@
 ## 日本語
 
 変愚蛮怒（Hengband）を 3D 表示にした派生版です。画面部分を新しく作り、
-変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2・Dungeon Crawl Stone Soup の 12 本を
+変愚蛮怒・短愚蛮怒・幻想蛮怒・TOband・Sil-Q・FroxComposband・Angband・Umoria・Rogue 3.6・Rogue 5.4・RogueClone2・Dungeon Crawl Stone Soup・NetHack の 13 本を
 同じ画面で遊べるようにしました。
 
 作者: Higesho
@@ -33,10 +33,10 @@
 - **Linux**: tar.gz を展開して `./HengbandHd2d.sh` を起動してください。OpenGL 4.5 が使える環境が要ります。詳しくは展開した中の `README-linux.txt` を見てください。
 - **Android**: apk をインストールしてください（arm64-v8a）。
 
-現在の配布物は 12 本のコアを組み込み済みで、原作の ZIP を取り込んでコンパイルする機能（`tools/core_import/`）は
+現在の配布物は 13 本のゲームのコアを組み込み済みで、原作の ZIP を取り込んでコンパイルする機能（`tools/core_import/`）は
 ソースにはありますが、配布物には含めていません。
 
-### 12 本のゲーム
+### 13 本のゲーム
 
 | ゲーム | 説明 |
 | --- | --- |
@@ -51,6 +51,7 @@
 | Rogue 3.6 / Rogue 5.4 | 古典の Rogue です。英語表示にも対応しました |
 | RogueClone2 | Rogue のクローン（RogueClone2）です。日本語版をもとにしています |
 | Dungeon Crawl Stone Soup | Dungeon Crawl Stone Soup 0.34.1 の日本語版（crawl-ja）です。原作のタイルの絵をボクセルや板にして立体で表示します |
+| NetHack | NetHack 5.0 です。英語版は公式、日本語版は非公式の日本語化 NetHackJP から組み、画面の言語で選びます。原作の Windows 版に近い画面で遊びます |
 
 それぞれ独立した実行ファイルで、画面とは独自のプロトコルで通信します。
 画面側はゲームごとの固有の知識を持たず、コアが自分の名前と機能を伝え、画面がそれに合わせます。
@@ -100,6 +101,8 @@ Moria/Angband 使用許諾の条件に従い、Hengband 3.0.2.3-Beta からの�
 | `rogue36` | usotopr/newrogue3.6（Rogue 3.6.4） | `570c8825d867ee4da1f03f9fd5309bb9c454a26e` |
 | `rogue54` | Davidslv/rogue（Rogue 5.4.4） | `f4653c2a2ee6981a73abe9dfda055134285e1e79` |
 | `crawl-ja` | <https://github.com/higesho/crawl-ja>（Dungeon Crawl Stone Soup 0.34.1 日本語版。タグ 0.34.1-ja6。上流は <https://github.com/crawl/crawl>） | `190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8` |
+| `nethack` | <https://github.com/NetHack/NetHack>（NetHack 5.0） | `34e91f177c2686426e46f5e34847183b35a440e8` |
+| `nethackjp` | <https://github.com/satokiyon/NetHackJP>（非公式の日本語化。タグ NetHackJP-5.0.1-20261024） | `e140552de54de15f40d92087e3489ba0c46ba895` |
 
 用意したら、次の 2 つを実行します。
 
@@ -146,6 +149,8 @@ Angband・Umoria・Rogue 系の 5 本（`AngbandCore.exe` `UmoriaCore.exe` `Rogu
 Visual Studio の解には入っていません。`tools/angband/build_windows.py` `tools/umoria/build_windows.py`
 `tools/rogue_legacy/build_windows.py` `tools/rogue2/build_windows.py` で組みます。
 同梱コンパイラー（LLVM-MinGW。版と SHA-256 は `tools/core_import/toolchains.json`）を `core-import/toolchain/` に用意してください。
+
+NetHack（`NetHackCore.exe`・`NetHackJpCore.exe`）は Visual Studio の解に入っていません。`python tools/nethack/build_windows.py` で組みます。
 
 Dungeon Crawl Stone Soup（`DcssCore.exe`）も Visual Studio の解には入っていません。`python -u tools/dcss/build_core.py` で、
 原作の複製・組む前の生成物の作成・`VisualStudio/DcssCore/DcssCore.vcxproj` のビルド・実行時のデータ（`dcss/lib/`。追跡しません）の準備を順に行います
@@ -243,6 +248,7 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 - Dungeon Crawl Stone Soup（日本語版）は GPL v2 以降です（タイルの絵の大半は CC0。付属ライブラリ lua・pcre・sqlite・zlib と字は各自の許諾）。原文は配布物の `licenses/Dcss-*` にあります
 - Rogue 3.6 / Rogue 5.4 は BSD 3 条項です
 - RogueClone2 は原作者の条件（営利目的で販売しない・資料を添付する・制限を加えない）に従います
+- NetHack と NetHackJP は NetHack General Public License です。原文は配布物の `licenses/NetHack-LICENSE.txt`、コアのソースは各リリースの `HengbandHD-nethack-core-source-<版>.zip` にあります（[LICENSE](LICENSE) の §12）
 - GPL のコア（Angband・Umoria・Dungeon Crawl Stone Soup）の対応するソースの入手のしかたは [LICENSE](LICENSE) の §8 に書いてあります。
   上流の固定版（上の「原作の用意」の表）と、このリポジトリのレシピ・アダプターから、`tools/core_sources/prepare.py` が再構成します
 - 許諾の違うコアが同じ配布物に入ることについて、事実を [LICENSE](LICENSE) の §7 に書いてあります
@@ -258,8 +264,8 @@ python tools/hd2d_verify/playthrough.py --check  実際にコアを起動して�
 ## English
 
 A fork of Hengband with a 3D display. The screen side was written from scratch,
-and twelve games can be played on it: Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband,
-Angband, Umoria, Rogue 3.6, Rogue 5.4, RogueClone2 and Dungeon Crawl Stone Soup.
+and thirteen games can be played on it: Hengband, Tangband, Gensoband, TOband, Sil-Q, FroxComposband,
+Angband, Umoria, Rogue 3.6, Rogue 5.4, RogueClone2, Dungeon Crawl Stone Soup and NetHack.
 
 Author: Higesho
 
@@ -284,10 +290,10 @@ Project page: <https://higesho.github.io/>
 - **Linux**: unpack the tar.gz and run `./HengbandHd2d.sh`. It needs OpenGL 4.5. See `README-linux.txt` inside the package.
 - **Android**: install the apk (arm64-v8a).
 
-The current packages contain the twelve prebuilt cores. The feature that imports and compiles upstream source ZIPs
+The current packages contain the prebuilt cores of the thirteen games. The feature that imports and compiles upstream source ZIPs
 (`tools/core_import/`) is in the source but is not included in the packages.
 
-### The twelve games
+### The thirteen games
 
 | Game | Description |
 | --- | --- |
@@ -302,6 +308,7 @@ The current packages contain the twelve prebuilt cores. The feature that imports
 | Rogue 3.6 / Rogue 5.4 | The classic Rogue, also with English display |
 | RogueClone2 | A Rogue clone (RogueClone2), based on its Japanese edition |
 | Dungeon Crawl Stone Soup | Dungeon Crawl Stone Soup 0.34.1, Japanese edition (crawl-ja). The original game's tiles are shown in 3D as voxel models and boards |
+| NetHack | NetHack 5.0. The English core is the official one and the Japanese core is the unofficial translation NetHackJP; the screen language picks one. The screen stays close to the original Windows version |
 
 Each game is a separate executable and talks to the screen through a small protocol.
 The screen side has no game-specific knowledge; each core reports its name and features, and the screen adapts.
@@ -351,6 +358,8 @@ The commits are also in `tools/core_sources/manifest.json`.
 | `rogue36` | usotopr/newrogue3.6 (Rogue 3.6.4) | `570c8825d867ee4da1f03f9fd5309bb9c454a26e` |
 | `rogue54` | Davidslv/rogue (Rogue 5.4.4) | `f4653c2a2ee6981a73abe9dfda055134285e1e79` |
 | `crawl-ja` | <https://github.com/higesho/crawl-ja> (Dungeon Crawl Stone Soup 0.34.1, Japanese edition, tag 0.34.1-ja6; upstream: <https://github.com/crawl/crawl>) | `190a5a5e2bc0e7ea1bd6047d2c66656b5d8ad5d8` |
+| `nethack` | <https://github.com/NetHack/NetHack> (NetHack 5.0) | `34e91f177c2686426e46f5e34847183b35a440e8` |
+| `nethackjp` | <https://github.com/satokiyon/NetHackJP> (unofficial Japanese translation, tag NetHackJP-5.0.1-20261024) | `e140552de54de15f40d92087e3489ba0c46ba895` |
 
 Then run these two commands:
 
@@ -396,6 +405,8 @@ The Angband, Umoria and Rogue cores (`AngbandCore.exe`, `UmoriaCore.exe`, `Rogue
 are not in the Visual Studio solution. Build them with `tools/angband/build_windows.py`, `tools/umoria/build_windows.py`,
 `tools/rogue_legacy/build_windows.py` and `tools/rogue2/build_windows.py`. They need the bundled compiler
 (LLVM-MinGW; version and SHA-256 are in `tools/core_import/toolchains.json`) in `core-import/toolchain/`.
+
+The NetHack cores (`NetHackCore.exe`, `NetHackJpCore.exe`) are not in the Visual Studio solution. `python tools/nethack/build_windows.py` builds them.
 
 The Dungeon Crawl Stone Soup core (`DcssCore.exe`) is not in the Visual Studio solution either. `python -u tools/dcss/build_core.py` runs, in order,
 cloning the upstream, generating the files needed before compiling, building `VisualStudio/DcssCore/DcssCore.vcxproj`, and preparing the runtime data
@@ -494,6 +505,7 @@ Different parts are under different licenses. See [LICENSE](LICENSE) and [THIRD-
 - Dungeon Crawl Stone Soup (Japanese edition) is under GPL v2 or later (most tiles are CC0; the bundled Lua, PCRE, SQLite, zlib and the font have their own licenses). The texts are in `licenses/Dcss-*` of the package
 - Rogue 3.6 and Rogue 5.4 are under the BSD 3-clause license
 - RogueClone2 follows its author's conditions (no sale for profit, attach the documents, no further restrictions)
+- NetHack and NetHackJP are under the NetHack General Public License. The text is in `licenses/NetHack-LICENSE.txt` of the package, and the source of the cores is attached to each release as `HengbandHD-nethack-core-source-<version>.zip` (§12 of [LICENSE](LICENSE))
 - How to get the corresponding source of the GPL cores (Angband, Umoria and Dungeon Crawl Stone Soup) is in §8 of [LICENSE](LICENSE):
   the pinned upstream versions (the table in "Original sources") plus this repository's recipes and adapters,
   reconstructed by `tools/core_sources/prepare.py`

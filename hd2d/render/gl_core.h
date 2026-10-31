@@ -85,6 +85,7 @@ inline constexpr GLenum GL_ONE = 1;
 inline constexpr GLenum GL_ZERO = 0;
 
 inline constexpr GLenum GL_CULL_FACE = 0x0B44;
+inline constexpr GLenum GL_SCISSOR_TEST = 0x0C11;
 inline constexpr GLenum GL_CW = 0x0900;
 inline constexpr GLenum GL_CCW = 0x0901;
 inline constexpr GLenum GL_FRONT = 0x0404;
@@ -246,6 +247,7 @@ inline constexpr GLenum GL_DONT_CARE = 0x1100;
     X(void, Clear, (GLbitfield mask))                                                                                               \
     X(void, Enable, (GLenum cap))                                                                                                   \
     X(void, Disable, (GLenum cap))                                                                                                  \
+    X(void, Scissor, (GLint x, GLint y, GLsizei width, GLsizei height))                                                             \
     X(void, BlendFunc, (GLenum sfactor, GLenum dfactor))                                                                            \
     X(void, FrontFace, (GLenum mode))                                                                                               \
     X(void, CullFace, (GLenum mode))                                                                                               \

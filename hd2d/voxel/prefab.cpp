@@ -275,6 +275,7 @@ bool load_prefab(const std::string &dir, const std::string &name, Prefab &out, s
         }
         part.grounded = node.value("grounded", true);
         part.wind_k = node.value("wind_k", 1.f);
+        part.toggle = node.value("toggle", std::string());
         if (node.contains("motion") && node["motion"].is_object()) {
             const auto &motion = node["motion"];
             part.motion.kind = motion_kind_from(motion.value("kind", std::string("static")));

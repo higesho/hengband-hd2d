@@ -55,6 +55,16 @@ float MotionContext::state(const std::string &name) const
 
 Mat4 part_motion_matrix(const PrefabPart &part, int voxels_per_cell, const MotionContext &ctx)
 {
+    if (!part.toggle.empty()) {
+        // 機能メニューで切ってある飾り。縮尺 0 で消す（明滅の「見えない」と同じ。影にも出ない）
+        for (const auto &off : ctx.off_toggles) {
+            if (off == part.toggle) {
+                Mat4 hidden;
+                hidden.m[15] = 1.f;
+                return hidden;
+            }
+        }
+    }
     const MotionKind kind = part.motion.kind;
     if ((kind == MotionKind::Static) || (kind == MotionKind::Wind)) {
         // 風は頂点シェーダの仕事（§8.1）。剛体としては動かさない。

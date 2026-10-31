@@ -65,6 +65,7 @@ const char *const kUnassigned = "—";
 
 //! コアが `realtime` を申告したか（`feature_menu.h` の `set_core_supports_realtime`）。
 bool g_core_supports_realtime = true;
+bool g_core_supports_official8 = false;
 
 //! コアが `audio` を申告したか（`feature_menu.h` の `set_core_supports_audio`）。
 bool g_core_supports_audio = true;
@@ -104,6 +105,16 @@ int sub_split_rest(const SubSplit &split, bool bottom, int at)
 void set_core_supports_realtime(bool on)
 {
     g_core_supports_realtime = on;
+}
+
+void set_core_supports_official8(bool on)
+{
+    g_core_supports_official8 = on;
+}
+
+bool core_supports_official8()
+{
+    return g_core_supports_official8;
 }
 
 bool core_supports_realtime()
@@ -222,8 +233,10 @@ FeatureMenu::Page FeatureMenu::page_of(Item item)
     case Item::LeafDetail:
     case Item::EntityStyleItem:
     case Item::EntitySlabFacing:
+    case Item::EntityTilesOfficial8:
     case Item::EntityGlyphSize:
     case Item::GlyphFallback:
+    case Item::StairArrows:
     case Item::Backdrops:
     case Item::DungeonLight:
     case Item::EffectsEnter:
@@ -417,6 +430,10 @@ bool FeatureMenu::item_is_absent(Item item)
         return true;
     }
 #endif
+    //! 実体の板の組（公式 8 画素）は、申告したコア（変愚・短愚蛮怒）のときだけ並べる。
+    if ((item == Item::EntityTilesOfficial8) && !core_supports_official8()) {
+        return true;
+    }
     (void)item;
     return false;
 }
@@ -501,12 +518,16 @@ const char *FeatureMenu::item_label(Item item)
         return i18n::tr("hd2d.ui.feature-menu.screen-mode");
     case Item::Backdrops:
         return i18n::tr("hd2d.ui.feature-menu.back-art");
+    case Item::StairArrows:
+        return i18n::tr("hd2d.ui.feature-menu.stair-arrows");
     case Item::MoveSmooth:
         return i18n::tr("hd2d.ui.feature-menu.movement-smoothing");
     case Item::EntityStyleItem:
         return i18n::tr("hd2d.ui.feature-menu.entity-style");
     case Item::EntitySlabFacing:
         return i18n::tr("hd2d.ui.feature-menu.voxel-slab-facing");
+    case Item::EntityTilesOfficial8:
+        return i18n::tr("hd2d.ui.feature-menu.entity-tiles");
     case Item::EntityGlyphSize:
         return i18n::tr("hd2d.ui.feature-menu.entity-glyph-size");
     case Item::GlyphFallback:
@@ -687,7 +708,7 @@ int FeatureMenu::vpad_button_index(Item item)
 std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
 {
     std::vector<BindRow> rows;
-    rows.reserve(this->pad_commands_.size() + 16U);
+    rows.reserve(this->bind_commands_.size() + 16U);
 
     const auto heading = [&rows](const char *text) {
         BindRow row;
@@ -773,7 +794,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
      * 並べ替えはしない（コアの `menu_info` の並びが遊ぶ人の記憶と一致している）。
      */
     std::string last_group;
-    for (const auto &command : this->pad_commands_) {
+    for (const auto &command : this->bind_commands_) {
         if (command.group_utf8 != last_group) {
             last_group = command.group_utf8;
             heading(("― " + (last_group.empty() ? std::string(i18n::tr("hd2d.ui.feature-menu.other")) : last_group)).c_str());
@@ -785,7 +806,7 @@ std::vector<FeatureMenu::BindRow> FeatureMenu::bind_rows() const
                                          : command.label_utf8;
         rows.push_back(std::move(row));
     }
-    if (this->pad_commands_.empty() && !g_core_hides_commands) {
+    if (this->bind_commands_.empty() && !g_core_hides_commands) {
         //! 握手の直後はコアの一覧がまだ来ていない。**空の表を黙って出さない。**
         heading(i18n::tr("hd2d.ui.feature-menu.game-controls-the-list-from-the-core"));
     }
@@ -829,7 +850,7 @@ std::string FeatureMenu::bind_cell_value(const BindRow &row, int col, const Hd2d
          * 「未割り当て」とだけ書くと、`拾う` が `g` で出ることを知っている人が
          * 「壊れた」と読む。UI 自身の操作にはコアの既定が無いので `—`。
          */
-        for (const auto &command : this->pad_commands_) {
+        for (const auto &command : this->bind_commands_) {
             if (command.id != row.action) {
                 continue;
             }
@@ -855,6 +876,7 @@ bool Hd2dSettings::*FeatureMenu::toggle_setting(Item item)
 {
     switch (item) {
     case Item::Backdrops: return &Hd2dSettings::backdrops;
+    case Item::StairArrows: return &Hd2dSettings::stair_arrows;
     case Item::SoundEnabled: return &Hd2dSettings::sound_enabled;
     case Item::RealtimeEnabled: return &Hd2dSettings::realtime_enabled;
     case Item::DamageFlash: return &Hd2dSettings::damage_flash;
@@ -1058,6 +1080,12 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         return settings.entity_slab_screen_aligned
             ? i18n::tr("hd2d.ui.feature-menu.screen-aligned")
             : i18n::tr("hd2d.ui.feature-menu.world-oriented");
+    case Item::EntityTilesOfficial8:
+        if (settings.entity_style != Hd2dSettings::EntityStyle::Slab) {
+            return i18n::tr("hd2d.ui.feature-menu.slab-only");
+        }
+        return settings.entity_tiles_official8 ? i18n::tr("hd2d.ui.feature-menu.entity-tiles-official8")
+                                               : i18n::tr("hd2d.ui.feature-menu.entity-tiles-64");
     case Item::EntityGlyphSize:
         /*
          * **板のときは効かないことを言う。**回しても絵が変わらない項目を黙って出すと、
@@ -1311,7 +1339,8 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         if (settings.cutaway_radius <= 0.f) {
             return i18n::tr("hd2d.ui.feature-menu.off");
         }
-        std::snprintf(buf, sizeof(buf), "%.0f px", static_cast<double>(settings.cutaway_radius));
+        std::snprintf(buf, sizeof(buf), "%.1f %s", static_cast<double>(settings.cutaway_radius / kCutawayRefCellPx),
+            i18n::tr("hd2d.ui.feature-menu.cutaway-cells"));
         return buf;
     case Item::VpadShow:
         return on_off(settings.vpad.show);
@@ -1519,6 +1548,9 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
         break;
     case Item::EntitySlabFacing:
         settings.entity_slab_screen_aligned = !settings.entity_slab_screen_aligned;
+        break;
+    case Item::EntityTilesOfficial8:
+        settings.entity_tiles_official8 = !settings.entity_tiles_official8;
         break;
     case Item::EntityGlyphSize:
         settings.entity_glyph_pct = std::clamp(settings.entity_glyph_pct + (delta * 5),

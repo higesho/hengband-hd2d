@@ -13,6 +13,8 @@
   * Dcss-*                     DCSS（GPL v2 以降）の使用許諾・著作者名簿・CC0・付属ライブラリ（lua・pcre・sqlite・zlib）の通知と、
                                タイルの来歴の記録（--dcss で再構成した原作の置き場を渡したとき。 4.8）。
 
+  * NetHack-LICENSE.txt        NetHack の使用許諾（NetHack General Public License。原作の dat/license。--nethack のとき）。
+
 使い方
   python tools/package/license_docs.py --dest <licenses の出力先> [--windows-runtime | --only SDL2 freetype ...] [--no-rogue2] [--dcss <build-sources/dcss>]
 """
@@ -186,6 +188,16 @@ def copy_dcss(dest: Path, sources: Path | None = None) -> list[str]:
     return copied
 
 
+def copy_nethack(dest: Path, data: Path | None = None) -> list[str]:
+    """NetHack General Public License の全文（原作の dat/license。組み立てが nethack/data/en へ写す）。"""
+    src = (data or REPO / 'nethack' / 'data') / 'en' / 'license'
+    if not src.is_file():
+        raise FileNotFoundError('NetHack の使用許諾がありません（python tools/nethack/build_windows.py を先に）: ' + str(src))
+    dest.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(src, dest / 'NetHack-LICENSE.txt')
+    return ['NetHack-LICENSE.txt']
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--dest', type=Path, required=True)
@@ -196,6 +208,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument('--upstream', type=Path)
     ap.add_argument('--dcss', nargs='?', const='', default=None,
                     help='DCSS の使用許諾を入れる。値は再構成した原作の置き場（省略時は ../roguelike-cores/build-sources/dcss）')
+    ap.add_argument('--nethack', nargs='?', const='', default=None,
+                    help='NetHack の使用許諾を入れる。値は実行時のデータの置き場（省略時は nethack/data）')
     args = ap.parse_args(argv)
     done: list[str] = []
     if not args.no_gpl:
@@ -208,6 +222,8 @@ def main(argv: list[str] | None = None) -> int:
         done += copy_rogue2_docs(args.dest, args.upstream)
     if args.dcss is not None:
         done += copy_dcss(args.dest, Path(args.dcss) if args.dcss else None)
+    if args.nethack is not None:
+        done += copy_nethack(args.dest, Path(args.nethack) if args.nethack else None)
     for name in done:
         print(name)
     return 0

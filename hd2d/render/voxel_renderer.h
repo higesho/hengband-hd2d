@@ -287,6 +287,17 @@ struct PrefabMesh {
     }
 };
 
+/*!
+ * @brief 透過（カットアウェイ）の描き方（決めたこと 2026-10-31「点描の抜けではなく半透明の透過に」）。
+ * @details 画面は 2 段で描く。`Solid` で残す所だけを普通に描き、3D の描画の最後に `Blend` で抜く所を半透明で重ねる
+ * （`hd2d_app.cpp`。先に深度だけ書いて、いちばん手前の面だけを 1 枚重ねる）。`Dither` は検査の描画の既定（4×4 の網目で抜く）。
+ */
+enum class CutawayPass {
+    Dither = 0, //!< 網目で抜く
+    Solid = 1,  //!< 少しでも抜く所は描かない（残す所だけ）
+    Blend = 2,  //!< 抜く所だけ描く（アルファ = 残す量）
+};
+
 class VoxelRenderer {
 public:
     bool init(std::string &err);
@@ -378,6 +389,8 @@ public:
      * @details **床の板は 0 にすること。**掛けると手前の地面まで抜けて穴が開く。
      */
     void set_cutaway_scale(float scale);
+    //! 透過の描き方（`CutawayPass`）。`Blend` の間は `draw_instanced` がブレンドを有効にする。
+    void set_cutaway_pass(CutawayPass pass) { this->cutaway_pass_ = pass; }
     /*!
      * @brief 次の描画が影を受けるか（1 = 受ける / 0 = 受けない）。P10 レビュー 10。
      *
@@ -447,6 +460,7 @@ private:
     gl::GLint loc_cutaway_depth_{ -1 };
     gl::GLint loc_cutaway_count_{ -1 };
     gl::GLint loc_cutaway_scale_{ -1 };
+    gl::GLint loc_cutaway_pass_{ -1 };
     gl::GLint loc_cutaway_power_{ -1 };
     LightUniforms light_loc_;
     LookUniforms look_loc_;
@@ -474,6 +488,7 @@ private:
     float time_{ 0.f };
     std::vector<Cutaway> cutaways_;
     float cutaway_scale_{ 0.f };
+    CutawayPass cutaway_pass_{ CutawayPass::Dither };
     //! 影を受ける割合（P10 レビュー 10。抜いた底面だけ 0 にする）。
     float shadow_scale_{ 1.f };
     Mat4 view_projection_{ Mat4::identity() };

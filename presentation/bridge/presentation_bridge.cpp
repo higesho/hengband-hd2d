@@ -13,6 +13,7 @@
 #include "bridge/native_targeting_runtime.h"
 #include "bootstrap/sdl_game_bootstrap.h"
 #include "bridge/official_tile_table.h"
+#include "bridge/official8_tile_table.h" //!< 公式の 8 画素のタイルの板（`set_entity_tiles_official8`）
 #ifdef TANGBAND
 #include "bridge/official_tile_table_tang.h"
 #endif
@@ -108,6 +109,7 @@
 #include <tl/optional.hpp>
 
 #include <algorithm>
+#include <atomic>
 #include <array>
 #include <cstdio>
 #include <cstdlib>
@@ -1341,12 +1343,80 @@ uint16_t translate_feature_flags(const TerrainType &terrain)
     return static_cast<uint16_t>(bits);
 }
 
+namespace {
+
+//! 実体の板を公式の 8 画素のタイルの組にするか（`ui_state.entity_tiles`。受信のスレッドが書き、ゲームのスレッドが読む）。
+std::atomic<bool> g_entity_tiles_official8{ false };
+
+uint16_t official8_index(int row, int col)
+{
+    return static_cast<uint16_t>(presentation::kOfficial8IndexBase + (row * presentation::kOfficial8Cols) + col);
+}
+
+template <std::size_t N>
+const presentation::Official8Entry *official8_find(const presentation::Official8Entry (&table)[N], uint16_t id)
+{
+    const auto *end = table + N;
+    const auto *it = std::lower_bound(table, end, id, [](const presentation::Official8Entry &e, uint16_t v) { return e.id < v; });
+    return ((it != end) && (it->id == id)) ? it : nullptr;
+}
+
+template <std::size_t N>
+bool official8_listed(const uint16_t (&list)[N], uint16_t id)
+{
+    return std::find(list, list + N, id) != (list + N);
+}
+
+//! プレイヤー: 段は職業、列は種族（原作の xtra-xxx.prf と同じ）。種族の列が無ければ 0。
+uint16_t official8_player(const PlayerType &player)
+{
+    const auto race = static_cast<std::size_t>(enum2i(player.prace));
+    const auto cls = static_cast<std::size_t>(enum2i(player.pclass));
+    constexpr auto races = sizeof(presentation::kOfficial8RaceCol) / sizeof(presentation::kOfficial8RaceCol[0]);
+    constexpr auto classes = sizeof(presentation::kOfficial8ClassRow) / sizeof(presentation::kOfficial8ClassRow[0]);
+    if ((race >= races) || (presentation::kOfficial8RaceCol[race] < 0)) {
+        return 0;
+    }
+    const int row = presentation::kOfficial8ClassRow[(cls < classes) ? cls : 0];
+    return official8_index(row, presentation::kOfficial8RaceCol[race]);
+}
+
+uint16_t official8_monster(uint16_t monrace_id)
+{
+#ifdef TANGBAND
+    if (official8_listed(presentation::kOfficial8TangbandSkipMonsters, monrace_id)) {
+        return 0; // 短愚では変愚と別物の番号
+    }
+#endif
+    const auto *e = official8_find(presentation::kOfficial8Monsters, monrace_id);
+    return (e != nullptr) ? official8_index(e->row, e->col) : 0;
+}
+
+//! アイテム: 原作のグラフィックの表示と同じく、見た目（色の付いた水薬など）を持つ物は見た目の絵（`ItemEntity::get_symbol` と同じ）。
+uint16_t official8_item(const ItemEntity &item)
+{
+    const short appearance = item.get_baseitem_record().get_appearance_id();
+    const auto bi_id = static_cast<uint16_t>((appearance != 0) ? appearance : item.bi_id);
+#ifdef TANGBAND
+    if (official8_listed(presentation::kOfficial8TangbandSkipItems, bi_id)) {
+        return 0; // 短愚では変愚と別物の番号
+    }
+#endif
+    const auto *e = official8_find(presentation::kOfficial8Items, bi_id);
+    return (e != nullptr) ? official8_index(e->row, e->col) : 0;
+}
+
+} // namespace
+
 uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Grid &grid,
     int gx, int gy, char ascii, uint8_t fg, uint16_t terrain_id, bool know_feature, bool lit_now)
 {
     // プレイヤセル → P 索引（variant_key = PlayerRaceType）。未登録種族は lookup 側で先頭 P フォールバック。
     if (player != nullptr && gx == player->x && gy == player->y) {
         const auto race_key = static_cast<uint16_t>(enum2i(player->prace));
+        if (g_entity_tiles_official8.load()) {
+            return official8_player(*player); // 公式 8 画素の組。無ければ 0（描かない）
+        }
         if (const uint16_t pt = lookup_player_tile(race_key)) {
             return pt;
         }
@@ -1364,6 +1434,9 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
         const auto &mon = floor->m_list[grid.m_idx];
         if (mon.is_valid() && mon.ml) {
             const auto rid = static_cast<uint16_t>(enum2i(mon.get_monrace_id()));
+            if (g_entity_tiles_official8.load()) {
+                return official8_monster(rid); // 公式 8 画素の組。無ければ 0（描かない）
+            }
             if (const uint16_t mt = lookup_monster_tile(rid)) {
                 return mt;
             }
@@ -1388,6 +1461,9 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
             floor->o_list[static_cast<size_t>(o_idx)]) {
             const auto &item = *floor->o_list[static_cast<size_t>(o_idx)];
             if (item.is_valid()) {
+                if (g_entity_tiles_official8.load()) {
+                    return official8_item(item); // 公式 8 画素の組。無ければ 0（描かない）
+                }
                 if (const uint16_t ot = presentation::resolve_item_tile(item)) {
                     return ot;
                 }
@@ -5875,6 +5951,12 @@ int run_menu_choice_smoke()
     }
     std::fprintf(stderr, "[core] menu-choice-smoke: %d cases checked, %d failed\n", checked_lines, failed);
     return failed;
+}
+
+//! 実体の板を公式の 8 画素のタイルの組にするか（presentation_bridge.h）。無名の名前空間の外で定義する（宣言と同じ名前空間）。
+void set_entity_tiles_official8(bool on)
+{
+    g_entity_tiles_official8.store(on);
 }
 
 } // namespace presentation

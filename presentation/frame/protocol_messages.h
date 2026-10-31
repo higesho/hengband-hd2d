@@ -172,6 +172,13 @@ struct UiStateMessage {
      * 綴りは画面側の `hd2d.cfg` の `lang=` と揃えてある。
      * **追加だけの変更なので版は上げない**（v1 §3.2）。
      */
+    /*!
+     * @brief `entity_tiles`。実体（プレイヤー・怪物・アイテム）の板の組。`"official8"` なら変愚蛮怒の公式の 8 画素のタイルの板
+     * （`presentation/bridge/official8_tile_table.h`）。既定（偽）は今までの 64 画素の板。
+     * @details 申告 `entity-tiles-official8` をしたコア（変愚・短愚蛮怒）だけが読む。**追加だけの変更なので版は上げない**（v1 §3.2）。
+     * 偽のときはキーごと書かない（ほかのコアへ届く知らせは 1 バイトも変わらない）。
+     */
+    bool entity_tiles_official8{ false };
     std::string lang;
     /*!
      * @name `realtime`

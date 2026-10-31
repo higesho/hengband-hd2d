@@ -45,6 +45,11 @@ android {
         main {
             // SDLActivity 群は SDL2 の配布物をそのまま使う（改変しない）
             jniLibs.srcDirs += ["${rootDir}/core-import-jni"]
+            // NetHack のコア（別のプロセスで動かす実行ファイル。tools/nethack/build_android.py が作る）。
+            // :quest には入れない（展開しない構成で起こせないため。決定 D5 で Quest は対象外）。コアを組まない APK（hengbandBuildCores=false）にも入れない
+            if (project.findProperty('hengbandBuildCores') != 'false') {
+                jniLibs.srcDirs += ["${rootDir}/nethack-jni"]
+            }
             java.srcDirs += ["${rootDir}/../third_party/android/SDL2/android-project/app/src/main/java"]
             assets.srcDirs += [generatedAssets]
         }
