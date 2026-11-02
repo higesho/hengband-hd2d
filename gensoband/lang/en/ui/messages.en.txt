@@ -30352,3 +30352,156 @@ E:Special abilities(U/O)
 
 J:\s\s%-40s (%3d階)            - レベル%2d%s\n
 E:\s\s%-40s (Dungeon level: %3d) - level %2d%s\n
+
+# ============================================================ 幻想蛮怒 2.1.7（2026-11-02）
+#
+# 上流 2.1.7 で足された・書き換わった文。数えたのは gb_untranslated.py（e3 18・e5 1・build 14）と
+# gb_tables.py（class_power_* 14・birth_jouhou 1）。report.c の 4 件は WORLD_SCORE を止めているので出ないが、
+# 数える道具を 0 に保つために訳を置く（ダンプファイルの 1 件は gb_dup_en.py の写し間違いも直す）。
+
+J:WARNING:変異治療に失敗した lose_mutation()のバグの可能性
+E:WARNING: failed to cure a mutation; possibly a bug in lose_mutation()
+
+J:あなたは射撃の機会を窺っている...
+E:You watch for a chance to shoot...
+
+J:あなたは武器を構えた。
+E:You ready your weapon.
+
+J:雲山があなたを引っ掴んで緊急離脱した！
+E:Unzan grabbed you and made an emergency escape!
+
+J:どこからか太鼓のような音が聞こえる。
+E:You hear something like drums from somewhere.
+
+J:ドンツクドンツクと賑やかな音が響いてくる...
+E:A lively don-tsuku, don-tsuku comes echoing toward you...
+
+J:それは雑霊ではない。
+E:That is not a lesser spirit.
+
+J:それを飲み込むのは無理そうだ。
+E:You could never swallow that.
+
+J:あなたは%sを引っ掴んで一呑みにした！
+E:You grabbed %s and swallowed it in one gulp!
+
+J:鎖が敵を拘束した！
+E:The chain bound the enemy!
+
+J:羽の欠片をむしって投げた！
+E:You plucked shards from your wings and threw them!
+
+J:射撃武器を装備していない。
+E:You are not wielding a missile weapon.
+
+J:魔法陣を描きながら駆け回った！
+E:You ran around drawing a magic circle!
+
+J:ダンプファイル %s へのアクセスに失敗しました。
+E:Failed to access the dump file %s.
+
+J:CGIサーバが HTTP %lu を返しました。
+E:The CGI server returned HTTP %lu.
+
+J:ERROR:セーブファイルの読み込みが不完全 (%d/%d)
+E:ERROR: the savefile was read incompletely (%d/%d)
+
+J:(project()においてradパラメータが大きすぎる)
+E:(the rad parameter is too large in project())
+
+J:あなたはお祓い棒の先に火をつけて松明代わりにした。
+E:You lit the tip of your purification rod and used it as a torch.
+
+J:スコア・サーバへの接続に失敗しました。
+E:Failed to connect to the score server.
+
+
+# bldg.c - クエスト 76「煉酒の話はどうなった？」（異変石の納品）の記録の文
+J:さっぱり記憶にないことだが、
+E:I have no memory of it at all, but
+
+J:自分は何度も聖域に向かっては用事を忘れて帰っているらしい。
+E:it seems I have set off for the sanctuary many times, only to forget my errand and come home.
+
+J:魔理沙が言うには『異変石』があれば記憶を失わずに済むそうな。
+E:Marisa says that with an 'incident stone' I would not lose my memory.
+
+J:急がば回れ。まずは異変石を探さねばなるまい。
+E:More haste, less speed. First I must find an incident stone.
+
+J:ようやく異変石を発見し、聖域の猿たちと話をつけた。
+E:At last I found an incident stone and settled things with the monkeys of the sanctuary.
+
+J:猿たちも約束のことをすっかり忘れていたようで平謝りされた。
+E:The monkeys too had quite forgotten our promise, it seems, and begged my pardon.
+
+J:詫びの印として高価な呪具をせしめることに成功した。
+E:I managed to wangle a costly cursed tool out of them as a token of apology.
+
+J:つい先程まで何かについて悩んでいたはずだが、
+E:I am sure I was fretting over something only a moment ago,
+
+J:それが何のことだったのか思い出せない。
+E:but I cannot remember what it was.
+
+J:まだまだ若いつもりだったが、ついに痴呆が始まってしまったのか。
+E:I thought I was still young, but has my memory finally begun to go?
+
+J:マミゾウ「お前さんに頼みがあるんじゃが、
+E:Mamizou: "I've a favour to ask of you.
+
+J:件の『異変石』とかいう石を一つ分けてくれんか？
+E:Could you spare me one of those 'incident stones' I've heard about?
+
+J:あれがないと美宵の嬢ちゃんに約束した酒の仕入れができなくての。
+E:Without one I can't lay in the sake I promised young Miyoi.
+
+J:済まんが宜しく頼む。」
+E:Sorry to trouble you, but I'm counting on you."
+
+
+# new_class_power.c - 2.1.7 で足された特技（名前と説明）
+J:霊喰い
+E:Spirit Eating
+
+J:隣接した低レベルな幽霊系モンスター一体を捕食してMPを回復する。
+E:Devours one adjacent low-level ghost monster to recover MP.
+
+J:スターオブヴァニティーズ
+E:Star of Vanities
+
+J:沈没船のアンカー
+E:Anchor of the Sunken Ship
+
+J:近くのモンスター一体に減速属性のダメージを与え、さらに短時間移動禁止状態にする。
+E:Deals slowing damage to one nearby monster and stops it from moving for a short time.
+
+J:フラジャイルウィング
+E:Fragile Wing
+
+J:ターゲットに向けて破片属性のロケットを3～7回放つ。
+E:Fires 3 to 7 shard rockets at the target.
+
+J:ターゲットの位置に無属性の攻撃を発生させる。射程は短い。
+E:Makes an attack of no element at the target's position. The range is short.
+
+J:この行動のあとで射撃を行うと命中率が上昇する。またこの行動は通常の1/2の行動力しか消費しない。
+E:If you shoot after this action, your shot is more accurate. This action takes only half the usual turn.
+
+J:罠設置
+E:Set Trap
+
+J:自分のいるグリッドに罠を仕掛ける。仕掛けられるトラップの種類はトラバサミ・落とし穴・ダーツからランダムに選ばれる。
+E:Sets a trap on the grid you stand on. The kind of trap is chosen at random from a bear trap, a pit and a dart.
+
+J:捕獲用魔法陣
+E:Capturing Magic Circle
+
+J:隣接した敵全てを短時間移動禁止状態にする。
+E:Stops every adjacent enemy from moving for a short time.
+
+
+# birth.c - レンジャーの説明（2.1.7 で書き換わった。初期装備が槍と猟銃になった）
+J:あなたは森や山の奥深くで狩りをして暮らしています。過酷な環境で育ったあなたは白兵戦と射撃の両方に秀でています。また先達から伝えられた自然の力を借りる技術を修めており自然か変容の魔法を行使可能です。成長すると麻痺や毒の耐性を得て、さらにモンスターの詳細な情報を調査する特技を使えるようになります。様々な技能に秀でますが魔道具の扱いはやや不得手です。
+E:You live deep in the woods and mountains, hunting. Raised in hard country, you excel both in melee and at shooting. You have also learnt from your elders the art of borrowing nature's power, and may wield the Nature or the Transform realm. As you grow you gain resistance to paralysis and poison, and a power that examines a monster in detail. You are skilled at many things, but rather poor with magic devices.

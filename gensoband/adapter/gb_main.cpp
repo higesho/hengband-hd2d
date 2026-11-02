@@ -574,6 +574,7 @@ bool apply_ui_state()
     if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
     gb::set_camera_follow_player(state.camera_follow_player);
     gb::set_cursor_mode(state.cursor_mode);
+    gb::set_entity_tiles_tile8(state.entity_tiles_official8); //!< 実体の絵の組（8 画素のタイルセット。申告 `entity-tiles-official8`）
     /*
      * 音の入切と音量（その3 / a）。**持ち主は画面側**（`hd2d.cfg` → `ui_state.audio`。
      * 機能メニュー ＞ 音）。**効果音にも BGM にも効く**が、当て方は別である
@@ -1488,6 +1489,8 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
          * 目録の末尾へ足すだけ（gb_manifest.cpp の add_unaware_representative_tiles() 参照）。
          */
         g_manifest.add_unaware_representative_tiles();
+        // 8 画素のタイルセットの板（gb_tile8_table.h）。実体の絵を 8 画素の組にしたときだけ使われる。
+        g_manifest.add_tile8_cells();
         // 目録の記録は、画面が実際に引く板（.vox）の有無を数える。PNG は HD2D が使わない開発の頃の 2D の絵で、
         // 配布物には無いので「全部無い」と出て、異常のダイアログで原因に見えていた（2026-10-06。slab_presence.h）。
         const auto slabs = presentation::count_slab_presence(g_manifest.message(), { gensoband_slab_dir(), presentation::default_slab_dir() });
@@ -1521,6 +1524,12 @@ int run_protocol(presentation::TransportHandle in, presentation::TransportHandle
      * 効く扱いになるが、edit と raw は読み直せないので言語は変わらない。
      */
     ack.features.emplace_back("lang-restart");
+    /*
+     * `entity-tiles-official8`: 実体の絵を 8 画素のタイルセット（有志の「幻想蛮怒タイルセット」。`gb_tile8_table.h`）へ
+     * 切り替えられる。変愚の公式 8 画素と同じ申告に乗せる——画面は機能メニューに「実体の絵」を出し、
+     * 選んだ組を `ui_state.entity_tiles` で知らせてくる（`set_entity_tiles_tile8`）。
+     */
+    ack.features.emplace_back("entity-tiles-official8");
     ack.asset_root_slab = portable::path_to_utf8(gensoband_slab_dir()); // パスは ANSI で持つ。JSON に載せるときだけ UTF-8 にする（日本語の名前のフォルダで握手が落ちていた。2026-10-06）
     if (!send_message("hello_ack", presentation::encode_hello_ack(ack))) {
         return 5;

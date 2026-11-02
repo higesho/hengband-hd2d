@@ -18,7 +18,10 @@ def generate(spells,cave):
     text=re.sub(r'\blos\(', '_gb_preview_los(',text)
     text=re.sub(r'\bin_disintegration_range\(', '_gb_preview_disintegration_range(',text)
     text=re.sub(r'\bprojectable\(', '_gb_preview_projectable(',text)
+    # 2.1.7 added a wizard-only trace to breath_shape(); the preview must stay silent.
+    text=re.sub(r'\n[ \t]*if\s*\(\s*p_ptr->wizard\s*\)\s*\n[ \t]*msg_format\("dist:%d mdis:%d bdis:%d"[^;]*\);','',text)
     if re.search(r'\bcave\[|\brand\w*\(',text):raise ValueError('Unreviewed mutable geometry dependency')
+    if re.search(r'\bmsg_\w+\(',text):raise ValueError('Unreviewed message in native geometry')
     notices=[]
     for raw in (spells,cave):
         for comment in re.findall(r'/\*.*?\*/',raw.decode('latin1'),re.S):

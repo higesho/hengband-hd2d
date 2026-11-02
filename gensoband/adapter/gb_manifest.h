@@ -47,6 +47,19 @@ public:
     void add_unaware_representative_tiles();
 
     /*!
+     * @brief 8 画素のタイルセットの板（`gb_tile8_table.h` の `kTile8Cells`）を、目録の末尾へ追加登録する。
+     * @details 種類は `G`・id は絵の面の位置（段 * `kTile8Cols` + 列）・パスは `gensoband/assets/slab/G8_<段>_<列>.vox`
+     * （画面は名前だけ使う）。実体の絵を 8 画素の組にしたとき、`gb_frame.cpp` がこの番号を送る。
+     * `load()` が真を返した**あとに**呼ぶこと。
+     */
+    void add_tile8_cells();
+
+    /*!
+     * @brief 8 画素のタイルセットの位置 → `tile_index`。登録が無ければ 0。
+     */
+    std::uint16_t lookup_tile8(int row, int col) const;
+
+    /*!
      * @brief 分類 → 代表タイルの `tile_index`。
      * @return 1..N、または 0（`add_unaware_representative_tiles()` を呼んでいない等）
      */

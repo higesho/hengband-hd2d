@@ -1188,3 +1188,17 @@ This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
+
+---------------------------------------------------------
+
+Gensoband tileset (8x8, 2026-10-31 edition, for Gensoband v2.1.7)
+
+New pixel art by REN@multilockon; based on the tile edition of Gensoband by
+Miyamasa. https://multilockon.web.fc2.com/tile/tile.htm
+
+The voxel boards gensoband/assets/slab/G8_* (used when the entity tiles of
+Gensoband are set to "8 px") are made from this tileset by
+tools/gensoband/gb_tile8_tiles.py. The tileset forbids modification and
+redistribution; the boards are included in this distribution with the
+author's permission. Modifying or redistributing the boards or the tileset
+requires the author's permission.

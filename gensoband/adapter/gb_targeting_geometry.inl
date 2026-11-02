@@ -3,7 +3,7 @@
 static sint _gb_preview_project_path(u16b*,int,int,int,int,int,int);
 static bool _gb_preview_los(int,int,int,int);
 static bool _gb_preview_disintegration_range(int,int,int,int);
-static void _gb_preview_breath_shape(u16b*,int,int*,byte*,byte*,byte*,int*,int,int,int,int,int,int,bool);
+static void _gb_preview_breath_shape(u16b*,int,int*,byte*,byte*,s16b*,int*,int,int,int,int,int,int,bool); /* gm is s16b since 2.1.7 */
 static int _gb_preview_known(int y,int x)
 {
     cave_type *cell;
@@ -252,7 +252,7 @@ static int _gb_preview_effect(const native_target_effect *effect,native_target_c
     count=i;
     if(radial&&(count<=MAX_RANGE||(flags&PROJECT_LONG_RANGE))){
         if((spark||effect->shape==NATIVE_SHAPE_BREATH)&&count){
-            byte gx[65536],gy[65536],gm[1024];int grids=0,gm_rad=0;
+            byte gx[65536],gy[65536];s16b gm[2048];int grids=0,gm_rad=0; /* same as project() in 2.1.7 */
             _gb_preview_breath_shape(path,count,&grids,gx,gy,gm,&gm_rad,radius,py,px,cy,cx,effect->element,spark);
             for(i=0;i<grids;++i)if(in_bounds2(gy[i],gx[i])){
                 hb_target_area_cell(gx[i],gy[i],effect->possible);_gb_preview_impact(gy[i],gx[i],flags);

@@ -337,6 +337,11 @@ I:75
 J:守矢の策動Ⅲ
 N:The Moriya Scheme III
 
+# quest76_t10_deliver_incidentstone.txt
+I:76
+J:煉酒の話はどうなった？
+N:Whatever Happened to the Nerizake?
+
 # ============================================================ q_random.txt（E4）
 # ランダム/エキストラのクエストは同じ名前が 58 行に並ぶ。照合は日本語名なので 2 件で足りる。
 I:40
@@ -1985,3 +1990,27 @@ TE:Sanae: "It is a fearsome enemy...
 TE: There is nothing for it but to seal off that area. Fortunately Lady
 TE: Kanako's friend managed to escape as well, so let us take her in at our
 TE: shrine."
+
+# quest76_t10_deliver_incidentstone.txt
+TJ:マミゾウ「お前さんは『異変石』という奇妙な石を知っておるか？
+TJ:話すと長くなるが、酒を仕入れるのにあれが必要なんじゃ。
+TJ:もし見つけたら儂のところまで持ってきてくれ。礼はするぞい。」
+TE:Mamizou: "Do you know of an odd stone called an 'incident stone'?
+TE:It's a long story, but I need one to lay in some sake.
+TE:If you find one, bring it to me. I'll make it worth your while."
+
+# quest76_t10_deliver_incidentstone.txt
+TJ:マミゾウ「ん？なんじゃその妙な石は……おお！思い出した！
+TJ:助かったぞ。これで聖域の猿たちのところまで行けるわい。
+TJ:これは礼じゃ。いや久々に頭の中の霧が晴れた気がするのう。」
+TE:Mamizou: "Hm? What's that strange stone... Oh! Now I remember!
+TE:You've saved me. Now I can get as far as the monkeys of the sanctuary.
+TE:Here's my thanks. Why, it feels as if the fog in my head has lifted at last."
+
+# quest76_t10_deliver_incidentstone.txt
+TJ:マミゾウ「この森は空気が悪くて参るのう。
+TJ:……うん？そもそも儂はこんな所で何をしておったんじゃ？
+TJ:いかんのう。そこまで呆ける齢じゃないはずなんじゃが。」
+TE:Mamizou: "The air in this forest is dreadful.
+TE:...Hm? What was I doing in a place like this in the first place?
+TE:This won't do. I'm surely not old enough to be going senile."

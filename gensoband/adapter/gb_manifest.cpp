@@ -14,6 +14,7 @@
  */
 
 #include "gb_manifest.h"
+#include "gb_tile8_table.h"
 
 #include <cstdio>
 #include <fstream>
@@ -296,6 +297,43 @@ void TileManifest::add_unaware_representative_tiles()
             ++this->missing_files_;
         }
     }
+}
+
+void TileManifest::add_tile8_cells()
+{
+    int index = static_cast<int>(this->message_.assets.size());
+    for (const std::uint16_t cell : kTile8Cells) {
+        if (index >= 65535) {
+            std::fprintf(stderr, "[gensoband] tile8 cells: index exhausted\n");
+            break;
+        }
+        ++index;
+
+        char path[64]{};
+        std::snprintf(path, sizeof(path), "gensoband/assets/slab/G8_%d_%d.vox", cell / kTile8Cols, cell % kTile8Cols);
+
+        presentation::AssetManifestWireEntry entry;
+        entry.index = index;
+        entry.kind = "G";
+        entry.id = cell;
+        entry.path = path;
+        this->message_.assets.push_back(entry);
+
+        const auto key = (static_cast<std::uint32_t>(static_cast<unsigned char>('G')) << 24) | static_cast<std::uint32_t>(cell);
+        this->index_.emplace(key, static_cast<std::uint16_t>(index));
+
+        if (!file_exists(join_path(this->message_.root, path))) {
+            ++this->missing_files_;
+        }
+    }
+}
+
+std::uint16_t TileManifest::lookup_tile8(int row, int col) const
+{
+    if ((row < 0) || (col < 0) || (col >= kTile8Cols)) {
+        return 0;
+    }
+    return this->lookup('G', (row * kTile8Cols) + col);
 }
 
 std::uint16_t TileManifest::lookup_unaware_representative(presentation::UnawareItemCategory category) const

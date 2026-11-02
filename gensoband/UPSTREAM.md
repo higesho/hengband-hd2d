@@ -15,9 +15,9 @@ origin, and the last section for how to update it.
 | 項目 | 内容 |
 | --- | --- |
 | 取り込み元 | <https://github.com/asamayim/gensoband> |
-| コミット | `fc4418078a62db9fae2915c8b6ab24a063609093`（2026-02-28、v2.1.6） |
-| バージョン | v2.1.6（`src/defines.h` の `H_VER_MAJOR` / `H_VER_MINOR` / `H_VER_PATCH`） |
-| 取り込んだ日 | 2026-08-17 |
+| コミット | `321c23ca3d35e0163b2eeee80feecbdd469b9a14`（2026-10-31、v2.1.7） |
+| バージョン | v2.1.7（`src/defines.h` の `H_VER_MAJOR` / `H_VER_MINOR` / `H_VER_PATCH`） |
+| 取り込んだ日 | 2026-08-17（v2.1.6）。2026-11-02 に v2.1.7 へ上げた（こちらの書き換えを 3-way マージで当て直した） |
 | 文字コード | ソースも `lib/` も Shift_JIS です（元のビルド設定 `WINDOWS;JP;SJIS` に合わせています） |
 
 ## 取り込んだもの

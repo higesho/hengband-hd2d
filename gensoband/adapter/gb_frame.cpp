@@ -20,6 +20,7 @@
 
 #include "gb_lang_c.h"
 #include "gb_manifest.h"
+#include "gb_tile8_table.h"
 #include "gb_shim.h"
 #include "gb_sub_panels.h"
 #include "gb_menu.h"
@@ -47,6 +48,8 @@ int g_view_h = 22;
 constexpr int kMaxView = 200;
 bool g_camera_follow_player = false;
 const TileManifest *g_manifest = nullptr;
+//! 実体の絵を 8 画素のタイルセットの組にするか（`ui_state.entity_tiles`。`set_entity_tiles_tile8`）
+bool g_entity_tiles_tile8 = false;
 
 //! 主 Term の最大寸法。`gb_term_row` の受け皿の大きさを決めるだけの上限。
 constexpr int kMaxCols = 256;
@@ -1085,15 +1088,67 @@ uint16_t align_terrain_id(uint16_t gb_id)
 }
 
 /*!
- * @brief 実体 → 目録索引（設計 §5.1）。優先順は変愚の `resolve_tile_index` と同じ。
- * @details @ ＞ 見えている敵 ＞（未視認なら 0）＞ 照らされた床の物 ＞ 地形。
- * R/K/F は mapping.csv が全数を持っているので、**未登録で 0 に落ちるのは
- * 未視認のマスだけ**である（ASCII 板が受け皿になっている。§5.2-3）。
+ * @brief 8 画素のタイルセットの表を番号で引く（表は番号の順。`gb_tile8_tiles.py` が並べて書く）。
  */
+template <std::size_t N>
+const Tile8Entry *tile8_find(const Tile8Entry (&table)[N], uint16_t id)
+{
+    const Tile8Entry *end = table + N;
+    const Tile8Entry *it = std::lower_bound(table, end, id, [](const Tile8Entry &e, uint16_t v) { return e.id < v; });
+    return ((it != end) && (it->id == id)) ? it : nullptr;
+}
+
+/*!
+ * @brief @ の絵（8 画素の組）。一般の職業は性別で段が替わり、ユニーククラスは人物の絵（`gb_tile8_table.h`）。
+ * @details 原作はプレイヤーを `@` のまま描き、絵は遊ぶ人が選ぶ（タイルセットの説明書）。ここでは職業と性別から決める。
+ */
+uint16_t tile8_player_index()
+{
+    int pclass = -1;
+    int psex = 0;
+    if ((gb_player_kind(&pclass, nullptr) != GB_OK) || (pclass < 0)) {
+        return 0;
+    }
+    (void)gb_player_sex(&psex);
+    for (const Tile8Player &p : kTile8Players) {
+        if (p.class_id == pclass) {
+            return (psex == 1) ? g_manifest->lookup_tile8(p.male_row, p.male_col) : g_manifest->lookup_tile8(p.female_row, p.female_col);
+        }
+    }
+    return 0;
+}
+
+/*!
+ * @brief 実体 → 目録索引（8 画素のタイルセットの組）。優先順は `resolve_tile_index` と同じ。
+ * @details 怪物は番号、アイテムは**見た目の番号**（`gb_object_flavor_kind`。原作のグラフィックの表示と同じで、
+ * 未鑑定でも正体は絵に出ない）で引く。表に無い実体は 0（描かない。変愚の公式 8 画素と同じ決まり）。地形は変えない。
+ */
+uint16_t resolve_tile8_index(const gb_map_cell &cell)
+{
+    if ((cell.feature_flags & GB_FEAT_PLAYER) != 0) {
+        return tile8_player_index();
+    }
+    if (cell.monster_id != 0) {
+        const Tile8Entry *e = tile8_find(kTile8Monsters, cell.monster_id);
+        return (e != nullptr) ? g_manifest->lookup_tile8(e->row, e->col) : 0;
+    }
+    if ((cell.feature_flags & GB_FEAT_KNOWN) == 0) {
+        return 0; // 未視認。真っ暗（地形を漏らさない）
+    }
+    if ((cell.light_level >= 2) && (cell.object_id != 0)) {
+        const Tile8Entry *e = tile8_find(kTile8Items, static_cast<uint16_t>(gb_object_flavor_kind(cell.object_id)));
+        return (e != nullptr) ? g_manifest->lookup_tile8(e->row, e->col) : 0;
+    }
+    return g_manifest->lookup('F', cell.terrain_id);
+}
+
 uint16_t resolve_tile_index(const gb_map_cell &cell)
 {
     if (g_manifest == nullptr) {
         return 0;
+    }
+    if (g_entity_tiles_tile8) {
+        return resolve_tile8_index(cell);
     }
     if ((cell.feature_flags & GB_FEAT_PLAYER) != 0) {
         if (const uint16_t pt = player_tile_index()) {
@@ -1321,6 +1376,11 @@ void apply_cursor_mode()
 void set_tile_manifest(const TileManifest *manifest)
 {
     g_manifest = manifest;
+}
+
+void set_entity_tiles_tile8(bool on)
+{
+    g_entity_tiles_tile8 = on;
 }
 
 //! ゲーム前画面の選択肢（`set_pregame_choices`）。ゲームスレッドだけが触る。

@@ -1413,6 +1413,25 @@ int gb_player_kind(int *pclass, int *prace)
     return GB_OK;
 }
 
+int gb_player_sex(int *psex)
+{
+    if (!character_generated) {
+        return GB_ERR_STATE;
+    }
+    if (psex) {
+        *psex = (int)p_ptr->psex;
+    }
+    return GB_OK;
+}
+
+int gb_object_flavor_kind(int k_idx)
+{
+    if ((k_idx <= 0) || (k_idx >= max_k_idx)) {
+        return 0;
+    }
+    return k_info[k_idx].flavor ? (int)k_info[k_idx].flavor : k_idx;
+}
+
 int gb_player_pos(int *x, int *y)
 {
     if (!character_generated || !character_dungeon) {

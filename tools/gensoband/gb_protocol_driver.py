@@ -57,6 +57,13 @@ SAVE_DIR = REPO / "gensoband" / "lib" / "save"
 EXPECTED_MANIFEST = None  # 実行時に mapping.csv から数える
 
 
+def tile8_cell_count() -> int:
+    """8 画素のタイルセットの板の数（`gensoband/adapter/gb_tile8_table.h` の `kTile8Cells`）。コアが目録の末尾へ足す。"""
+    text = (REPO / "gensoband" / "adapter" / "gb_tile8_table.h").read_text(encoding="utf-8-sig")
+    body = text.split("kTile8Cells[] = {", 1)[1].split("};", 1)[0]
+    return len(re.findall(r"\d+", body))
+
+
 def mapping_row_count() -> int:
     """mapping.csv のデータ行数を数える（コアが送るべき目録の件数）。"""
     path = REPO / "gensoband" / "tilework" / "mapping.csv"
@@ -387,9 +394,10 @@ def cmd_handshake(work: Path):
                f"count={s.counts.get('asset_manifest', 0)}")
         # mapping.csv の全行＋正体の分からないアイテムの代表 8 件（予約 id 9001〜9008。
         # gb_manifest.cpp の add_unaware_representative_tiles）。
-        want = mapping_row_count() + 8
+        # さらに 8 画素のタイルセットの板（種類 G。gb_manifest.cpp の add_tile8_cells()）。
+        want = mapping_row_count() + 8 + tile8_cell_count()
         got = len(s.manifest.get("assets", [])) if s.manifest else 0
-        ck.add(got == want, f"asset_manifest carries every mapping.csv row + 8 representatives ({want})", f"got {got}")
+        ck.add(got == want, f"asset_manifest carries every mapping.csv row + 8 representatives + tile8 cells ({want})", f"got {got}")
         if s.manifest:
             reps = sorted(a.get("id") for a in s.manifest.get("assets", []) if 9001 <= int(a.get("id", 0)) <= 9008)
             ck.add(reps == list(range(9001, 9009)), "asset_manifest carries the 8 representatives (9001-9008)", str(reps))
@@ -517,7 +525,8 @@ def cmd_m0(work: Path):
         ck.add(bool(roots.get("slab")), "hello_ack.asset_roots.slab declared", str(roots.get("slab")))
         s.ui_state(view_w=48, view_h=24)
         s.wait_for(lambda x: x.counts.get("asset_manifest", 0) > 0, timeout=120)
-        want = mapping_row_count()
+        # 握手の検査と同じ数え方: mapping.csv の全行＋代表 8 件＋8 画素のタイルセットの板。
+        want = mapping_row_count() + 8 + tile8_cell_count()
         got = len(s.manifest.get("assets", [])) if s.manifest else 0
         ck.add(got == want, f"asset_manifest has {want} entries", f"got {got}")
 

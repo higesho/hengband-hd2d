@@ -64,6 +64,13 @@ void apply_cursor_mode();
 void set_tile_manifest(const TileManifest *manifest);
 
 /*!
+ * @brief 実体（プレイヤー・怪物・アイテム）の絵を 8 画素のタイルセットの組にするか（`ui_state.entity_tiles`）。
+ * @details 真なら `resolve_tile_index` が `gb_tile8_table.h` の位置の板を送る。表に無い物は 0（描かない）。地形は変えない。
+ * 画面側の申告と設定は変愚の公式 8 画素と同じ（`entity-tiles-official8`・`entity_tiles=official8`）。
+ */
+void set_entity_tiles_tile8(bool on);
+
+/*!
  * @brief ゲーム前画面（タイトル＋セーブ選択。P5）の選択肢を宣言する。
  * @details アダプタが自分で描いた画面の選択肢を、そのまま `frame.menu_choices` に
  * 載せる口。**画面側のカーソル層（矢印・パッド・クリック）がこれを読んで動く**

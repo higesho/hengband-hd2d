@@ -24,7 +24,7 @@ ZIP 内の先頭フォルダー名は任意。改行と UTF-8 BOM の違いは�
 |---|---|---|
 | hengband | 3.0.2.5-Beta | [ZIP](https://github.com/hengband/hengband/archive/18b10d6ea5fd234c119053e0a209c90aede21fa4.zip) |
 | tangband | 26.0.4 | [ZIP](https://github.com/tanguband/tangband/archive/8d8e1f2cd74fe467a153d7dbdb0b2c5ed0ab72e2.zip)（変愚の固定版 [ZIP](https://github.com/hengband/hengband/archive/43106a70d7057dc6c506bac96b0888ecdaddb4b8.zip) も使う） |
-| gensoband | 2.1.6 | [ZIP](https://github.com/asamayim/gensoband/archive/fc4418078a62db9fae2915c8b6ab24a063609093.zip) |
+| gensoband | 2.1.7 | [ZIP](https://github.com/asamayim/gensoband/archive/321c23ca3d35e0163b2eeee80feecbdd469b9a14.zip) |
 | silq | 1.5.1.0-beta2 | [ZIP](https://github.com/sil-quirk/sil-q/archive/d0355bf97e873ba10e6b364aa127bc5ebbbd05f1.zip) |
 | frox | 7.3.pipari.2 | [ZIP](https://github.com/Gliktch/froxcomposband/archive/c7641efca8caf6069aa9a71a4b5c8547a64013be.zip) |
 | angband | 4.2.6 | [ZIP](https://github.com/angband/angband/archive/f3082213b73f3e463e3d0d60bff4b00462beae6e.zip) |

@@ -288,6 +288,20 @@ int gb_locate_panel_center(int *cx, int *cy);
  */
 int gb_player_kind(int *pclass, int *prace);
 
+/*!
+ * @brief @ の**性別**（`p_ptr->psex`。`SEX_FEMALE` = 0・`SEX_MALE` = 1）。
+ * @return GB_OK / GB_ERR_STATE（誕生前）
+ * @details 8 画素のタイルセットは一般の職業の絵が女性と男性で別（`gb_tile8_table.h`）。
+ */
+int gb_player_sex(int *psex);
+
+/*!
+ * @brief アイテムの種類の**見た目の番号**（`k_info[k_idx].flavor`。見た目を持たない物は `k_idx` のまま）。
+ * @details 原作のグラフィックの表示（`defines.h` の `object_attr` / `object_char`）と同じく、見た目の番号で絵を引く。
+ * 未鑑定でも正体は絵に出ない。範囲の外は 0。
+ */
+int gb_object_flavor_kind(int k_idx);
+
 /*! @brief Character-creation race score multiplier (percent), or -1. */
 int gb_birth_race_score_mult(int race_index);
 const char *gb_birth_race_title(int race_index);
