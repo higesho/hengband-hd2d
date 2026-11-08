@@ -334,6 +334,8 @@ std::string encode_ui_state(const UiStateMessage &message)
     //! 実体の板の組（公式 8 画素）。偽のときは書かない（ほかのコアへの知らせは変わらない）。
     if (message.entity_tiles_official8) {
         out["entity_tiles"] = "official8";
+    } else if (message.entity_tiles_original32) {
+        out["entity_tiles"] = "original32"; //!< 公式 32 画素（Original32）
     }
 
     // リアルタイム進行。設定は画面側、時計はコア側にある。
@@ -413,6 +415,7 @@ bool decode_ui_state(const std::string &json_text, UiStateMessage &out, std::str
         std::string tiles;
         take_string(parsed, "entity_tiles", tiles);
         work.entity_tiles_official8 = (tiles == "official8");
+        work.entity_tiles_original32 = (tiles == "original32");
     }
     take_string(parsed, "lang", work.lang);
     if (const json *realtime = take_object(parsed, "realtime"); realtime != nullptr) {

@@ -272,6 +272,8 @@ DCSS は、原作のファイルを 1 行も書き換えずにそのまま範囲
   （新規ドット絵 REN@multilockon 氏・元のタイル版 みやまさ氏。2026-10-31 版）から `tools/gensoband/gb_tile8_tiles.py` で作ったものです。
   タイルセットは改変と再配布を禁じていますが、作者の許可を得て、作った板を配布物に含めています。
   この板とタイルセットの改変・再配布には作者の許可が要ります
+- 変愚・短愚の実体の絵を「32 画素」（既定）にしたときの板（`assets/voxel/slab/H32_*`）は、変愚蛮怒の公式の 32 画素の
+  タイル Original32（dis- 氏。hengband.xtra の `graf/original32.png`。CC0 1.0）から `tools/voxel/original32_tiles.py` で作ったものです
 - タイル画像は画像生成 AI（ComfyUI / Stable Diffusion）で生成したものです（配布していません）。
   生成に使ったワークフローは含めていません
 

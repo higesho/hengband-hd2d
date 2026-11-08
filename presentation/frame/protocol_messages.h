@@ -179,6 +179,12 @@ struct UiStateMessage {
      * 偽のときはキーごと書かない（ほかのコアへ届く知らせは 1 バイトも変わらない）。
      */
     bool entity_tiles_official8{ false };
+    /*!
+     * @brief `entity_tiles` が `"original32"`。変愚蛮怒の公式の 32 画素のタイル（Original32）の板
+     * （`presentation/bridge/original32_tile_table.h`）。申告 `entity-tiles-original32` をしたコア（変愚・短愚蛮怒）だけが読む。
+     * @details `entity_tiles_official8` と同時に真にはしない（画面側が 1 つだけ選ぶ）。偽のときはキーを書かない。
+     */
+    bool entity_tiles_original32{ false };
     std::string lang;
     /*!
      * @name `realtime`

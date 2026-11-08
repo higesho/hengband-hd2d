@@ -66,6 +66,7 @@ const char *const kUnassigned = "—";
 //! コアが `realtime` を申告したか（`feature_menu.h` の `set_core_supports_realtime`）。
 bool g_core_supports_realtime = true;
 bool g_core_supports_official8 = false;
+bool g_core_supports_original32 = false; //!< `entity-tiles-original32`（`set_core_supports_original32`）
 
 //! コアが `audio` を申告したか（`feature_menu.h` の `set_core_supports_audio`）。
 bool g_core_supports_audio = true;
@@ -115,6 +116,33 @@ void set_core_supports_official8(bool on)
 bool core_supports_official8()
 {
     return g_core_supports_official8;
+}
+
+void set_core_supports_original32(bool on)
+{
+    g_core_supports_original32 = on;
+}
+
+bool core_supports_original32()
+{
+    return g_core_supports_original32;
+}
+
+Hd2dSettings::EntityTiles effective_entity_tiles(const Hd2dSettings &settings)
+{
+    using Tiles = Hd2dSettings::EntityTiles;
+    switch (settings.entity_tiles) {
+    case Tiles::Official8:
+        return core_supports_official8() ? Tiles::Official8 : Tiles::Tiles64;
+    case Tiles::Original32:
+        return core_supports_original32() ? Tiles::Original32 : Tiles::Tiles64;
+    case Tiles::Tiles64:
+        return Tiles::Tiles64;
+    case Tiles::Default:
+        break;
+    }
+    //! 既定: 32 画素を出せるコアなら 32 画素（決めたこと 2026-11-08「今回のリリースでは32pxの板をデフォルトに」）
+    return core_supports_original32() ? Tiles::Original32 : Tiles::Tiles64;
 }
 
 bool core_supports_realtime()
@@ -430,8 +458,8 @@ bool FeatureMenu::item_is_absent(Item item)
         return true;
     }
 #endif
-    //! 実体の板の組（公式 8 画素）は、申告したコア（変愚・短愚蛮怒）のときだけ並べる。
-    if ((item == Item::EntityTilesOfficial8) && !core_supports_official8()) {
+    //! 実体の板の組（公式 8 画素・公式 32 画素）は、どちらかを申告したコア（変愚・短愚蛮怒・幻想蛮怒）のときだけ並べる。
+    if ((item == Item::EntityTilesOfficial8) && !core_supports_official8() && !core_supports_original32()) {
         return true;
     }
     (void)item;
@@ -1084,8 +1112,14 @@ std::string FeatureMenu::item_value(Item item, const Hd2dSettings &settings) con
         if (settings.entity_style != Hd2dSettings::EntityStyle::Slab) {
             return i18n::tr("hd2d.ui.feature-menu.slab-only");
         }
-        return settings.entity_tiles_official8 ? i18n::tr("hd2d.ui.feature-menu.entity-tiles-official8")
-                                               : i18n::tr("hd2d.ui.feature-menu.entity-tiles-64");
+        switch (effective_entity_tiles(settings)) {
+        case Hd2dSettings::EntityTiles::Official8:
+            return i18n::tr("hd2d.ui.feature-menu.entity-tiles-official8");
+        case Hd2dSettings::EntityTiles::Original32:
+            return i18n::tr("hd2d.ui.feature-menu.entity-tiles-original32");
+        default:
+            return i18n::tr("hd2d.ui.feature-menu.entity-tiles-64");
+        }
     case Item::EntityGlyphSize:
         /*
          * **板のときは効かないことを言う。**回しても絵が変わらない項目を黙って出すと、
@@ -1549,9 +1583,24 @@ void FeatureMenu::adjust(Item item, int delta, Hd2dSettings &settings) const
     case Item::EntitySlabFacing:
         settings.entity_slab_screen_aligned = !settings.entity_slab_screen_aligned;
         break;
-    case Item::EntityTilesOfficial8:
-        settings.entity_tiles_official8 = !settings.entity_tiles_official8;
+    case Item::EntityTilesOfficial8: {
+        //! コアが出せる組だけを 64 → 8 → 32 の順に回す（左右で逆回り）。選んだら cfg に書く値になる（既定ではなくなる）。
+        using Tiles = Hd2dSettings::EntityTiles;
+        std::vector<Tiles> choices{ Tiles::Tiles64 };
+        if (core_supports_official8()) {
+            choices.push_back(Tiles::Official8);
+        }
+        if (core_supports_original32()) {
+            choices.push_back(Tiles::Original32);
+        }
+        const auto now = effective_entity_tiles(settings);
+        const auto it = std::find(choices.begin(), choices.end(), now);
+        const auto size = static_cast<int>(choices.size());
+        const auto at = (it == choices.end()) ? 0 : static_cast<int>(it - choices.begin());
+        const auto step = (delta < 0) ? -1 : 1;
+        settings.entity_tiles = choices[static_cast<std::size_t>(((at + step) % size + size) % size)];
         break;
+    }
     case Item::EntityGlyphSize:
         settings.entity_glyph_pct = std::clamp(settings.entity_glyph_pct + (delta * 5),
             Hd2dSettings::kEntityGlyphPctMin, Hd2dSettings::kEntityGlyphPctMax);

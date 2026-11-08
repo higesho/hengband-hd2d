@@ -229,6 +229,12 @@ bool status_icon_known(std::string_view key);
 
 //! 名前（アイコンの下）・効果量（アイコンの上）の字を、アイコンの幅へ縮める下限（普通の字の倍率）。
 constexpr float kStatusTextMinScale = 0.55f;
+/*!
+ * @brief 名前・効果量の基準の字の上限（普通の字の倍率）。
+ * @details 2026-11-08 に決めたこと「バフ・デバフのアイコン 1.5 倍は文字も1.5倍にして」で、普通の字（1.0）から 1.5 倍にした
+ * （アイコンの一辺を 1.5 倍にしたのと合わせる）。効果量の帯の高さもこの字の 1 行（`status_name_line_height`）。
+ */
+constexpr float kStatusTextMaxScale = 1.5f;
 //! 基準の字の大きさを決めるときに測る文字列（全角 4 文字）。
 constexpr const char *kStatusTextReferenceString = "ああああ";
 //! 基準の大きさのまま描く名前の長さの上限（表示上の幅。全角 1 文字 = 半角 2 文字 = 2）。
@@ -378,7 +384,14 @@ struct StatusIconLayout {
     int dropped{ 0 };
 };
 
-//! アイコンの一辺（玉の高さ × 0.24。下限 24・上限 64）。
+/*!
+ * @brief 玉の横のアイコン（バフ・デバフ）の一辺 = 玉の高さ × `kStatusIconOrbRatio`（下限 `kStatusIconMinPx`・上限 `kStatusIconMaxPx`）。
+ * @details 2026-11-08 に決めたこと「小さくて識別できないので今の1.5倍に大きくして」で、0.24・24〜64 から 1.5 倍にした。
+ * 常時の列のアイコンはこの `kPermanentIconRatio` 倍なので、いっしょに大きくなる。
+ */
+constexpr double kStatusIconOrbRatio = 0.36;
+constexpr int kStatusIconMinPx = 36;
+constexpr int kStatusIconMaxPx = 96;
 int status_icon_size(const RectPx &orb);
 
 /*!

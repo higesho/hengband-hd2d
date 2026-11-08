@@ -69,6 +69,7 @@
 
 #include "bootstrap/sdl_game_bootstrap.h"
 #include "bridge/asset_manifest_builder.h"
+#include "bridge/original32_tile_table.h" //!< 公式の 32 画素の板を目録へ足す（build_asset_manifest_payload）
 #include "bridge/input_event_adapter.h"
 #include "bridge/modern_store.h"
 #include <variant>
@@ -493,7 +494,11 @@ std::atomic<bool> g_panic_saving{ false };
     p_ptr->died_from = requested?_("(セーブ)","(saved)"):_("(緊急セーブ)", "(panic save)");
     signals_ignore_tstp();
 
+#if HB_HENGBAND_SOURCE_3027
+    const bool saved = save_player(p_ptr); // 3.0.2.7 で保存の種類の引数が無くなった（前の CLOSE_GAME と同じ振る舞い）
+#else
     const bool saved = save_player(p_ptr, SaveType::CLOSE_GAME);
+#endif
     std::fprintf(stderr, "[core] shutdown save %s\n", saved ? "succeeded" : "FAILED");
     // 階の一時ファイル（<セーブ>.Fnn）を消す。原作の普通の終了（core/game-closer.cpp）は保存のあとに
     // これを呼ぶが、ここはそこを通らないので、ダンジョンの中で畳むと残り、次の起動で
@@ -710,6 +715,7 @@ void apply_ui_state(presentation::Bridge &bridge)
     presentation::set_modern_store_enabled(state.modern_ui);
     presentation::set_modern_store_language(state.lang);
     presentation::set_entity_tiles_official8(state.entity_tiles_official8); //!< 実体の板の組（公式 8 画素）
+    presentation::set_entity_tiles_original32(state.entity_tiles_original32); //!< 実体の板の組（公式 32 画素）
     presentation::configure_native_targeting(state.modern_ui&&state.targeting_ui,state.lang);
     if(state.main_term_rows>0)g_wanted_term_rows=std::clamp(state.main_term_rows,24,80);
     apply_wanted_term_rows();
@@ -857,8 +863,21 @@ std::filesystem::path resolve_base_dir()
  */
 std::string build_asset_manifest_payload()
 {
-    return presentation::encode_asset_manifest(
-        presentation::build_official_asset_manifest(resolve_base_dir().string()));
+    auto message = presentation::build_official_asset_manifest(resolve_base_dir().string());
+    /*
+     * 公式の 32 画素のタイル（Original32。`original32_tile_table.h`）の板。種類 G・番号は絵の面の枠（左上から 16 列で数える）。
+     * 板の名前は `H32_<枠>`。実体の板を公式 32 画素の組にしたとき、コアはこの番号を送る（`set_entity_tiles_original32`）。
+     * 目録を組む共通の所（`asset_manifest_builder.h`）は Rogue 系なども読むので、変愚・短愚だけが通るここで足す（3,752 行）。
+     */
+    for (const uint16_t frame : presentation::kOriginal32Frames) {
+        presentation::AssetManifestWireEntry wire;
+        wire.index = presentation::kOriginal32IndexBase + static_cast<int>(frame);
+        wire.kind = "G";
+        wire.id = static_cast<int>(frame);
+        wire.path = "assets/voxel/slab/H32_" + std::to_string(frame) + ".png";
+        message.assets.push_back(std::move(wire));
+    }
+    return presentation::encode_asset_manifest(message);
 }
 
 /*!
@@ -1156,6 +1175,12 @@ int hengband_core_protocol_main(presentation::TransportHandle in, presentation::
      * 画面はこれを見て機能メニューに切り替えを出し、`ui_state.entity_tiles` で選んだ組を知らせてくる。
      */
     ack.features.emplace_back("entity-tiles-official8");
+    /*
+     * `entity-tiles-original32` は「実体の板を変愚蛮怒の公式の 32 画素のタイル（Original32）の組へ切り替えられる」の申告
+     *。画面はこの申告があれば、cfg に選んだ組が無いときの既定を 32 画素にする
+     * （「今回のリリースでは32pxの板をデフォルトに」。cfg に書いてある人は今のまま）。
+     */
+    ack.features.emplace_back("entity-tiles-original32");
     ack.asset_root_graf = resolve_graf_root();
     if (!send_message("hello_ack", presentation::encode_hello_ack(ack))) {
         return 5;

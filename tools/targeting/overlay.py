@@ -495,7 +495,8 @@ def build_heng(root,out_root,prefix,ui_only,helpers,menu_audit,manifest,tangband
     heng_profiles=[]
     targets={'target-getter.cpp':'getter','target-setter.cpp':'setter','grid-selector.cpp':'point'}
     for source in sorted((root/'src').rglob('*')):
-        if not source.is_file() or source.suffix not in ('.h','.hpp','.inl','.cc'):continue
+        # .inc は変愚 3.0.2.7 から（view/original-*.inc。公式 32 画素の対応表を .cpp が #include する）。写さないと Linux・Android で組めない
+        if not source.is_file() or source.suffix not in ('.h','.hpp','.inl','.inc','.cc'):continue
         relative=source.relative_to(root).as_posix();before=source.read_bytes();destination=out_root/relative
         destination.parent.mkdir(parents=True,exist_ok=True)
         after=internal_codepage_for_wide_conversion(before) if relative=='src/main-win/main-win-utils.h' else before

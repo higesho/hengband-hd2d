@@ -281,7 +281,7 @@ bool Hd2dSettings::differs_from(const Hd2dSettings &other) const
         || (this->status_col_side != other.status_col_side)
         || (this->entity_glyph_fallback != other.entity_glyph_fallback)
         || (this->stair_arrows != other.stair_arrows)
-        || (this->entity_tiles_official8 != other.entity_tiles_official8)
+        || (this->entity_tiles != other.entity_tiles)
         || (this->ascii_panel_px != other.ascii_panel_px)
         || (this->entity_style != other.entity_style)
         || (this->entity_slab_screen_aligned != other.entity_slab_screen_aligned)
@@ -551,7 +551,11 @@ bool load_settings(const std::string &path, Hd2dSettings &out)
         } else if (key == "stair_arrows") {
             out.stair_arrows = (std::atoi(value.c_str()) != 0);
         } else if (key == "entity_tiles") {
-            out.entity_tiles_official8 = (value == "official8");
+            //! 知らない綴りは既定（コアの申告で決める）へ。
+            out.entity_tiles = (value == "64")       ? Hd2dSettings::EntityTiles::Tiles64
+                : (value == "official8")             ? Hd2dSettings::EntityTiles::Official8
+                : (value == "original32")            ? Hd2dSettings::EntityTiles::Original32
+                                                     : Hd2dSettings::EntityTiles::Default;
         } else if (key == "entity_style") {
             //! 綴りで書く（数字だと cfg を読んだ人に意味が分からない）。
             out.entity_style = (value == "ascii") ? Hd2dSettings::EntityStyle::Ascii
@@ -843,8 +847,21 @@ bool save_settings(const std::string &path, const Hd2dSettings &settings)
     file << "entity_glyph_fallback=" << (settings.entity_glyph_fallback ? 1 : 0) << '\n';
     file << "# 階段の上の空中で回る矢印を描くか（1 = 描く・既定）。\n";
     file << "stair_arrows=" << (settings.stair_arrows ? 1 : 0) << '\n';
-    file << "# 実体の板の組（変愚・短愚蛮怒）。64 = 今までの 64 画素の板（既定）・official8 = 公式の 8 画素のタイルの板。\n";
-    file << "entity_tiles=" << (settings.entity_tiles_official8 ? "official8" : "64") << '\n';
+    file << "# 実体の板の組（変愚・短愚蛮怒・幻想蛮怒）。64 = 64 画素の板・official8 = 公式の 8 画素のタイルの板・\n";
+    file << "# original32 = 公式の 32 画素のタイルの板。書いていなければ既定（32 画素を出せるコアは 32 画素、ほかは 64 画素）。\n";
+    switch (settings.entity_tiles) {
+    case Hd2dSettings::EntityTiles::Tiles64:
+        file << "entity_tiles=64\n";
+        break;
+    case Hd2dSettings::EntityTiles::Official8:
+        file << "entity_tiles=official8\n";
+        break;
+    case Hd2dSettings::EntityTiles::Original32:
+        file << "entity_tiles=original32\n";
+        break;
+    case Hd2dSettings::EntityTiles::Default:
+        break; //!< 書かない（次の起動も既定のまま。機能メニューで選んだときだけ書く）
+    }
     //! 実体の表現。**読む側の綴りと 1 対 1。**
     file << "entity_style=" << ((settings.entity_style == Hd2dSettings::EntityStyle::Ascii) ? "ascii" : "slab")
          << '\n';

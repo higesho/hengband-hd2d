@@ -108,6 +108,14 @@ int run_menu_choice_smoke();
  */
 void set_entity_tiles_official8(bool on);
 
+/*!
+ * @brief 実体の板を、変愚蛮怒の公式の 32 画素のタイル（Original32）の組にするか（`ui_state.entity_tiles` が `"original32"`）。
+ * @details 真なら `resolve_tile_index` が、本体の 2D 表示と同じ引き方（見かけの種族・見た目の番号・鑑定済みの固定アーティファクト・
+ * いまの表示色）で絵の面の枠を決め、目録の番号 `kOriginal32IndexBase + 枠`（`original32_tile_table.h`）にする。
+ * 表に無い物は 0（描かない）。地形は変えない。`set_entity_tiles_official8` と同時に真にはしない（画面側が 1 つだけ選ぶ）。
+ */
+void set_entity_tiles_original32(bool on);
+
 void install_text_input_hook();
 
 //! いまコアが自由文字入力の中にいるか（`install_text_input_hook` 済みのとき有効）。

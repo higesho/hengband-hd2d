@@ -1202,3 +1202,19 @@ tools/gensoband/gb_tile8_tiles.py. The tileset forbids modification and
 redistribution; the boards are included in this distribution with the
 author's permission. Modifying or redistributing the boards or the tileset
 requires the author's permission.
+
+---------------------------------------------------------
+
+Original32 tileset for Hengband (32x32), contributed by dis-, 2026
+
+Source: hengband.xtra (https://github.com/hengband/hengband.xtra),
+graf/original32.png (commit 3a00142), with original32.README.txt and
+original32.LICENSE.txt. Dedicated to the public domain under CC0 1.0
+Universal by the contributor (SPDX-License-Identifier: CC0-1.0).
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The voxel boards assets/voxel/slab/H32_* (used when the entity tiles of
+Hengband / Tangband are set to "32 px", the default) are made from this
+tileset by tools/voxel/original32_tiles.py. The CC0 dedication applies only
+to the Original32 files and does not apply to other graphics, sounds, music
+or the Hengband program.

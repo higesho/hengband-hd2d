@@ -847,7 +847,7 @@ bool status_icon_known(std::string_view key)
 
 int status_icon_size(const RectPx &orb)
 {
-    return std::clamp(static_cast<int>(std::lround(static_cast<double>(orb.h) * 0.24)), 24, 64);
+    return std::clamp(static_cast<int>(std::lround(static_cast<double>(orb.h) * kStatusIconOrbRatio)), kStatusIconMinPx, kStatusIconMaxPx);
 }
 
 namespace {
@@ -1096,7 +1096,8 @@ int status_text_reference_px(TextOverlay &text, int icon_px)
         return base;
     }
     const int lowest = text.sized_px(0.3f);
-    for (int px = base; px > lowest; --px) {
+    const int highest = std::max(base, static_cast<int>(std::lround(static_cast<double>(base) * kStatusTextMaxScale)));
+    for (int px = highest; px > lowest; --px) {
         if (text.measure_sized(kStatusTextReferenceString, scale_of_px(text, px)) <= icon_px) {
             return px;
         }
@@ -1221,13 +1222,14 @@ PermanentIconLayout layout_permanent_icons(TextOverlay &text, const UiLayout &la
     int bottom = scene.y + scene.h;
     {
         const int row0_icon_y = orb.y + static_cast<int>(std::lround(static_cast<double>(orb.h) * 0.42));
-        bottom = std::min(bottom, row0_icon_y - ch - gap); //!< 玉の横のアイコンの 1 段目（効果量の帯）の上
-        //! 左の段がメッセージの帯・名前の行の上へ逃げているときは、その段の上で止める（2026-10-09）。
         const int temp_icon_px = status_icon_size(orb);
+        const int temp_ch = status_name_line_height(text, temp_icon_px); //!< 玉の横の段の効果量の帯の高さ（名前と同じ字の 1 行）
+        bottom = std::min(bottom, row0_icon_y - temp_ch - gap); //!< 玉の横のアイコンの 1 段目（効果量の帯）の上
+        //! 左の段がメッセージの帯・名前の行の上へ逃げているときは、その段の上で止める（2026-10-09）。
         const int temp_gap = std::max(4, temp_icon_px / 8);
-        const int temp_cell_h = ch + temp_icon_px + (2 * status_name_line_height(text, temp_icon_px));
-        const int left_icon_y = left_row_icon_y(layout, row0_icon_y, ch, temp_cell_h, temp_gap, status_row_left_limit(layout));
-        bottom = std::min(bottom, left_icon_y - ch - gap);
+        const int temp_cell_h = temp_ch + temp_icon_px + (2 * temp_ch);
+        const int left_icon_y = left_row_icon_y(layout, row0_icon_y, temp_ch, temp_cell_h, temp_gap, status_row_left_limit(layout));
+        bottom = std::min(bottom, left_icon_y - temp_ch - gap);
         for (const RectPx *rect : { &layout.message_bar, &layout.bottom_bar, &layout.prompt_bar }) {
             if (!rect->empty()) {
                 bottom = std::min(bottom, rect->y - gap);
@@ -1413,7 +1415,8 @@ StatusIconLayout layout_status_icons(TextOverlay &text, const UiLayout &layout, 
     }
     out.icon_px = status_icon_size(orb);
     const int icon_px = out.icon_px;
-    const int ch = text.cell_h();
+    //! 効果量の帯（アイコンの上）の高さ。名前と同じ字の大きさの 1 行（2026-11-08 に字を 1.5 倍にしたとき、普通の字の 1 行から変えた）
+    const int ch = status_name_line_height(text, icon_px);
     const int gap = std::max(4, icon_px / 8);
     //! 名前の場所は常に 2 行ぶん（1 行の名前と 2 行の名前が混ざっても、段の高さは変わらない）。
     const int name_line_h = status_name_line_height(text, icon_px);

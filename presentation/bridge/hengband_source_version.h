@@ -28,3 +28,11 @@
 #else
 #define HB_HENGBAND_SOURCE_3026 0
 #endif
+
+//! 3.0.2.7 以降。`save_player()` から保存の種類（`SaveType`）の引数が無くなった（前の `CLOSE_GAME` と同じ振る舞い）。
+//! 印は 3.0.2.7 で足された `term/tile-layout.h`（Original32 の 2 倍表示）。 
+#if __has_include("term/tile-layout.h")
+#define HB_HENGBAND_SOURCE_3027 1
+#else
+#define HB_HENGBAND_SOURCE_3027 0
+#endif

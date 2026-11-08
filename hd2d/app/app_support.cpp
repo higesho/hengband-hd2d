@@ -11,6 +11,7 @@
 #include "render/camera.h"
 #include "render/term_colors.h" //!< `term_color_to_rgb()`
 #include "render/gl_core.h"
+#include "ui/feature_menu.h" //!< `effective_entity_tiles()`（実体の板の組の既定はコアの申告で決める）
 #include "ui/menu_frame.h"
 #include "ui/menu_scale.h"
 #include "world/prefab_library.h"
@@ -407,7 +408,12 @@ presentation::UiStateMessage build_ui_state(
      * ここで送らないと、メニューの値だけ変わって何も起きない。
      */
     state.realtime_enabled = settings.realtime_enabled;
-    state.entity_tiles_official8 = settings.entity_tiles_official8; //!< 実体の板の組（申告したコアだけが読む）
+    {
+        //! 実体の板の組（申告したコアだけが読む）。既定はコアの申告で決める（effective_entity_tiles）。
+        const auto tiles = effective_entity_tiles(settings);
+        state.entity_tiles_official8 = (tiles == Hd2dSettings::EntityTiles::Official8);
+        state.entity_tiles_original32 = (tiles == Hd2dSettings::EntityTiles::Original32);
+    }
     state.realtime_speed_index = settings.realtime_speed_index;
     state.realtime_prompt_live = settings.realtime_prompt_live;
     state.realtime_self_span_index = settings.realtime_self_span_index;

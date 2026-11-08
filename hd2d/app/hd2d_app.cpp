@@ -3002,6 +3002,8 @@ int run(const AppOptions &options)
         }
         //! 実体の板の組（公式 8 画素）。申告しないコアでは機能メニューに項目を出さない。
         set_core_supports_official8(std::find(features.begin(), features.end(), "entity-tiles-official8") != features.end());
+        //! 公式 32 画素（Original32）。申告したコアでは、cfg に組が書いていないときの既定が 32 画素になる。
+        set_core_supports_original32(std::find(features.begin(), features.end(), "entity-tiles-original32") != features.end());
         //! 音も同じ。申告しないコアでは「音」の節が入口から消える。
         const bool audio = std::find(features.begin(), features.end(), "audio") != features.end();
         set_core_supports_audio(audio);
@@ -3177,7 +3179,7 @@ int run(const AppOptions &options)
             settings.status_col_side = stored.status_col_side;
             settings.entity_glyph_fallback = stored.entity_glyph_fallback;
             settings.stair_arrows = stored.stair_arrows; //!< 階段の矢印（機能メニューと cfg）
-            settings.entity_tiles_official8 = stored.entity_tiles_official8; //!< 実体の板の組（引数は無く、メニューと cfg だけ）
+            settings.entity_tiles = stored.entity_tiles; //!< 実体の板の組（引数は無く、メニューと cfg だけ）
             /*
              * 画調。**写し忘れると
              * 「cfg に書いたのに効かない」になる**（上のミニマップと同じ穴）。

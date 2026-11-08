@@ -484,12 +484,23 @@ struct Hd2dSettings {
      */
     bool stair_arrows{ true };
     /*!
-     * @brief 実体の板を「公式 8 画素」の組にするか（変愚・短愚蛮怒。決めたこと 2026-10-28）。
-     * @details 真なら、コアが変愚 3.0.2.6 の公式の 8 画素のタイル（multilockon123 氏）の板（`H8_<段>_<列>`）を指す。
-     * 偽（既定）は今までの 64 画素の板。選んだ組に無い実体は描かない（字の板への落ち方は `entity_glyph_fallback` のまま）。
-     * コアが `entity-tiles-official8` を申告したときだけ機能メニューに出す。cfg はコアごと。
+     * @brief 実体（プレイヤー・怪物・アイテム）の板の組（変愚・短愚蛮怒・幻想蛮怒）。
+     * @details
+     * - `Tiles64`: 今までの 64 画素の板。
+     * - `Official8`: 公式の 8 画素のタイルの板（`H8_<段>_<列>`。決めたこと 2026-10-28。幻想蛮怒はタイルセットの 8 画素の板）。
+     * - `Original32`: 公式の 32 画素のタイル（Original32。dis- 氏）の板（`H32_<枠>`。決めたこと 2026-11-08）。
+     * - `Default`: cfg に書いていない。コアが `entity-tiles-original32` を申告していれば 32 画素、ほかは 64 画素
+     *   （「今回のリリースでは32pxの板をデフォルトに」。cfg に 64 と書いてある今の遊ぶ人はそのまま、と遊ぶ人が決めた）。
+     *   実際の組は `effective_entity_tiles()`（feature_menu.h）で決める。cfg には書かない（次の起動も既定のまま）。
+     * 選んだ組に無い実体は描かない（字の板への落ち方は `entity_glyph_fallback` のまま）。cfg はコアごと。
      */
-    bool entity_tiles_official8{ false };
+    enum class EntityTiles {
+        Default,
+        Tiles64,
+        Official8,
+        Original32,
+    };
+    EntityTiles entity_tiles{ EntityTiles::Default };
     /*!
      * @brief 2D アスキー地図の**字の高さ**（画素）。**0 = UI の文字と同じマス**。
      *

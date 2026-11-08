@@ -14,6 +14,7 @@
 #include "bootstrap/sdl_game_bootstrap.h"
 #include "bridge/official_tile_table.h"
 #include "bridge/official8_tile_table.h" //!< 公式の 8 画素のタイルの板（`set_entity_tiles_official8`）
+#include "bridge/original32_tile_table.h" //!< 公式の 32 画素のタイル（Original32）の板（`set_entity_tiles_original32`）
 #ifdef TANGBAND
 #include "bridge/official_tile_table_tang.h"
 #endif
@@ -1406,6 +1407,91 @@ uint16_t official8_item(const ItemEntity &item)
     return (e != nullptr) ? official8_index(e->row, e->col) : 0;
 }
 
+/*
+ * 公式の 32 画素のタイル（Original32。`original32_tile_table.h`）。引き方は本体の 2D 表示と同じ
+ * （変愚 3.0.2.7 の `view/original-monster-tiles.cpp`・`original-item-tiles.cpp`・`original-player-tiles.cpp`）。
+ * 色違いの枠は**いまの表示色**（`fg`。本体の 2D 表示が受け取る記号の色と同じ）で選ぶ。板にしていない枠は表の色（白）の枠へ落とす。
+ */
+
+//! 実体の板を公式の 32 画素のタイルの組にするか（`ui_state.entity_tiles`。受信のスレッドが書き、ゲームのスレッドが読む）。
+std::atomic<bool> g_entity_tiles_original32{ false };
+
+bool original32_baked(int frame)
+{
+    const auto *end = std::end(presentation::kOriginal32Frames);
+    const auto *it = std::lower_bound(std::begin(presentation::kOriginal32Frames), end, frame);
+    return (it != end) && (static_cast<int>(*it) == frame);
+}
+
+uint16_t original32_index(int frame)
+{
+    return static_cast<uint16_t>(presentation::kOriginal32IndexBase + frame);
+}
+
+//! プレイヤー: 職業 × 2 ＋ 性別の白の枠（本体の player_tile_index）。表に無い職業は 0（描かない）。
+uint16_t original32_player(const PlayerType &player)
+{
+    const auto icon = (enum2i(player.pclass) * 2) + static_cast<int>(player.psex);
+    if ((icon < 0) || (icon >= presentation::kOriginal32PlayerIcons)) {
+        return 0;
+    }
+    return original32_index(presentation::kOriginal32PlayerFrame + icon);
+}
+
+//! 怪物: 見かけの種族（`ap_r_idx`。本体の monster_catalog_symbol と同じ）。表の色と違う表示色なら色違いの枠。
+uint16_t original32_monster(uint16_t apparent_id, uint8_t fg)
+{
+#ifdef TANGBAND
+    if (official8_listed(presentation::kOfficial8TangbandSkipMonsters, apparent_id)) {
+        return 0; // 短愚では変愚と別物の番号（公式 8 画素の表と同じ）
+    }
+#endif
+    if (apparent_id >= std::size(presentation::kOriginal32Monsters)) {
+        return 0;
+    }
+    const auto &entry = presentation::kOriginal32Monsters[apparent_id];
+    const int color = fg & 0x0f;
+    const int extra = (color < entry.color) ? color : (color - 1);
+    const int payload = ((entry.color_start < 0) || (color == entry.color)) ? entry.base_frame : (entry.color_start + extra);
+    const int frame = presentation::kOriginal32MonsterBaseFrame + payload;
+    return original32_index(original32_baked(frame) ? frame : (presentation::kOriginal32MonsterBaseFrame + entry.base_frame));
+}
+
+template <std::size_t N>
+int original32_icon(const presentation::Original32Pair (&table)[N], int id)
+{
+    const auto *end = table + N;
+    const auto *it = std::lower_bound(table, end, id, [](const presentation::Original32Pair &e, int v) { return e.id < v; });
+    return ((it != end) && (it->id == id)) ? static_cast<int>(it->icon) : -1;
+}
+
+//! アイテム: 鑑定済みの固定アーティファクトは専用の絵、ほかは見た目の番号（本体の item_symbol・catalog_visible_index と同じ）。
+uint16_t original32_item(const ItemEntity &item, uint8_t fg)
+{
+    const short appearance = item.get_baseitem_record().get_appearance_id();
+    const auto visible_id = static_cast<int>((appearance > 0) ? appearance : item.bi_id);
+#ifdef TANGBAND
+    if (official8_listed(presentation::kOfficial8TangbandSkipItems, static_cast<uint16_t>(visible_id))) {
+        return 0; // 短愚では変愚と別物の番号
+    }
+#endif
+    auto icon = -1;
+    if (item.is_known() && item.is_fixed_artifact()) {
+        icon = original32_icon(presentation::kOriginal32Artifacts, enum2i(item.fa_id));
+    }
+    if (icon < 0) {
+        icon = original32_icon(presentation::kOriginal32Baseitems, visible_id);
+    }
+    if ((icon < 0) || (icon >= static_cast<int>(std::size(presentation::kOriginal32ItemColorStarts)))) {
+        return 0;
+    }
+    const int color = fg & 0x0f;
+    const int start = presentation::kOriginal32ItemColorStarts[icon];
+    const int payload = ((start >= 0) && (color != 1)) ? (start + ((color == 0) ? 0 : (color - 1))) : icon;
+    const int frame = presentation::kOriginal32ItemBaseFrame + payload;
+    return original32_index(original32_baked(frame) ? frame : (presentation::kOriginal32ItemBaseFrame + icon));
+}
+
 } // namespace
 
 uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Grid &grid,
@@ -1416,6 +1502,9 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
         const auto race_key = static_cast<uint16_t>(enum2i(player->prace));
         if (g_entity_tiles_official8.load()) {
             return official8_player(*player); // 公式 8 画素の組。無ければ 0（描かない）
+        }
+        if (g_entity_tiles_original32.load()) {
+            return original32_player(*player); // 公式 32 画素の組。無ければ 0（描かない）
         }
         if (const uint16_t pt = lookup_player_tile(race_key)) {
             return pt;
@@ -1436,6 +1525,10 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
             const auto rid = static_cast<uint16_t>(enum2i(mon.get_monrace_id()));
             if (g_entity_tiles_official8.load()) {
                 return official8_monster(rid); // 公式 8 画素の組。無ければ 0（描かない）
+            }
+            if (g_entity_tiles_original32.load()) {
+                // 本体の 2D 表示と同じく見かけの種族（あやしい影など）といまの表示色で引く。無ければ 0（描かない）
+                return original32_monster(static_cast<uint16_t>(enum2i(mon.ap_r_idx)), fg);
             }
             if (const uint16_t mt = lookup_monster_tile(rid)) {
                 return mt;
@@ -1463,6 +1556,9 @@ uint16_t resolve_tile_index(PlayerType *player, const FloorType *floor, const Gr
             if (item.is_valid()) {
                 if (g_entity_tiles_official8.load()) {
                     return official8_item(item); // 公式 8 画素の組。無ければ 0（描かない）
+                }
+                if (g_entity_tiles_original32.load()) {
+                    return original32_item(item, fg); // 公式 32 画素の組。無ければ 0（描かない）
                 }
                 if (const uint16_t ot = presentation::resolve_item_tile(item)) {
                     return ot;
@@ -5957,6 +6053,12 @@ int run_menu_choice_smoke()
 void set_entity_tiles_official8(bool on)
 {
     g_entity_tiles_official8.store(on);
+}
+
+//! 実体の板を公式の 32 画素のタイル（Original32）の組にするか（presentation_bridge.h）。
+void set_entity_tiles_original32(bool on)
+{
+    g_entity_tiles_original32.store(on);
 }
 
 } // namespace presentation

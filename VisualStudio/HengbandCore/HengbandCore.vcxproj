@@ -230,10 +230,18 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\core\score-util.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\external-lib\fmt\format.cc" />
     <ClCompile Include="$(HengTargetingSourceRoot)\headless-term\headless-term.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\activation-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\definition-hash-data.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\definition-id-checker.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\item-flag-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\jsonc-document-loader.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\legend-ego-validator.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\legend-object-trap-validator.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\magic-info-tokens-table.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\monster-flag-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\parse-error-messages.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\quest-reader.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\record-diagnostic.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\town-definition-list-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\town-map-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\town-preferences-reader.cpp" />
@@ -249,6 +257,7 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\mspell\mspell-projection-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\mutation\mutation-roll-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\player-info\bluemage-data.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\player\player-known-flags.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\rumor\rumor-definition.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\rumor\rumor-list.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\rumor\rumor-service.cpp" />
@@ -413,7 +422,6 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\ego-reader.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\feature-info-tokens-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\general-parser.cpp" />
-    <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\info-reader-util.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\json-reader-util.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\baseitem-tokens-table.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\info-reader\baseitem-reader.cpp" />
@@ -641,6 +649,10 @@ copy /Y "$(HengbandCurlBinRelease)\libcurl.dll" "$(OutDir)"
     <ClCompile Include="$(HengTargetingSourceRoot)\view\display-self-info.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\view\display-scores.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\view\map-info-cache.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\view\original-item-tiles.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\view\original-monster-tiles.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\view\original-player-tiles.cpp" />
+    <ClCompile Include="$(HengTargetingSourceRoot)\view\original-tiles.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\display-sub-windows.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\main-window-left-frame.cpp" />
     <ClCompile Include="$(HengTargetingSourceRoot)\window\main-window-stat-poster.cpp" />

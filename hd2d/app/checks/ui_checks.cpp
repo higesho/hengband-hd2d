@@ -4182,7 +4182,8 @@ void release_status_hud_target(StatusHudTarget &t)
     t = StatusHudTarget{};
 }
 
-//! 合成のバフ・デバフ（玉の横: 良い 8・悪い 3・知らない名前 1 ／ 常時の列: 良い 14・呪い 3）。
+//! 合成のバフ・デバフ（玉の横: 良い 5〔うち知らない名前 1〕・待っている 1・悪い 3 ／ 常時の列: 良い 14・呪い 3）。
+//! 玉の横の左は 6 個。2560x1080 で全部入りきる数（2026-11-08 にアイコンを 1.5 倍にしたので、9 個から火炎耐性・冷気耐性・テレパシーを外した）。
 void fill_status_hud_frame(GameFrame &frame)
 {
     frame.hud.name = "検査用のキャラクター";
@@ -4204,9 +4205,6 @@ void fill_status_hud_frame(GameFrame &frame)
     add("haste", "加速", "+10", StatusEffectKind::Good);
     add("hero", "ヒーロー", "", StatusEffectKind::Good);
     add("blessed", "祝福", "", StatusEffectKind::Good);
-    add("res_fire", "火炎耐性", "", StatusEffectKind::Good);
-    add("res_cold", "冷気耐性", "", StatusEffectKind::Good);
-    add("telepathy", "テレパシー", "", StatusEffectKind::Good);
     add("sh_fire", "火のオーラ", "", StatusEffectKind::Good); //!< 5 文字: 「火の／オーラ」に折れる
     add("recall", "帰還待ち", "", StatusEffectKind::Waiting);
     add("poisoned", "毒", "", StatusEffectKind::Bad);
@@ -4476,8 +4474,8 @@ int run_status_hud_check(const AppOptions &options)
                               || (effect.kind == StatusEffectKind::Special)) ? 1 : 0;
             right_total += (effect.kind == StatusEffectKind::Bad) ? 1 : 0;
         }
-        check(placed.icon_px == std::clamp(static_cast<int>(std::lround(orb.h * 0.24)), 24, 64),
-            tag + ": アイコンの大きさ = 玉の高さ x 0.24（" + std::to_string(placed.icon_px) + "）");
+        check(placed.icon_px == std::clamp(static_cast<int>(std::lround(orb.h * kStatusIconOrbRatio)), kStatusIconMinPx, kStatusIconMaxPx),
+            tag + ": アイコンの大きさ = 玉の高さ x 0.36（" + std::to_string(placed.icon_px) + "）");
         int left_limit = layout.scene.x + layout.cell_w;
         if (!layout.status_col.empty() && (layout.status_col.x <= layout.scene.x)) {
             left_limit = std::max(left_limit, layout.status_col.x + layout.status_col.w + layout.cell_w);
@@ -4582,7 +4580,7 @@ int run_status_hud_check(const AppOptions &options)
                 + std::to_string(left_count) + "/" + std::to_string(left_total) + (placed.ring_left.rotating ? " 巡回" : " 静止")
                 + " / 右 " + std::to_string(right_count) + "/" + std::to_string(right_total)
                 + (placed.ring_right.rotating ? " 巡回" : " 静止") + "）");
-        //! 入りきる 2560 では回さず、狭い 1280 の左は回る（この合成フレームの左は 9 個）
+        //! 入りきる 2560 では回さず、狭い 1280 の左は回る（この合成フレームの左は 6 個）
         check(placed.ring_left.rotating == (w < 2000), tag + ": 巡回は入りきらないときだけ（左は " + (placed.ring_left.rotating ? "巡回" : "静止") + "）");
         check(kinds_ok, tag + ": 良い・待っている・特殊は左、悪いは右");
         check(sides_ok, tag + ": 左のアイコンは玉の左、右は玉の右（端は地図の左右 1 マス内）");
@@ -4751,9 +4749,10 @@ int run_status_hud_check(const AppOptions &options)
             }
             const int ref = status_text_reference_px(text, icon_px);
             const int shown_px = text.sized_px(fit.scale);
-            const bool ref_is_biggest = (ref == text.base_px()) || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref + 1) / static_cast<float>(text.base_px())) > icon_px);
+            const int top_px = std::max(text.base_px(), static_cast<int>(std::lround(static_cast<double>(text.base_px()) * kStatusTextMaxScale))); //!< 基準の字の上限（普通の字の kStatusTextMaxScale 倍）
+            const bool ref_is_biggest = (ref == top_px) || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref + 1) / static_cast<float>(text.base_px())) > icon_px);
             if (!ref_is_biggest || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref) / static_cast<float>(text.base_px())) > icon_px)
-                || (ref > text.base_px())) {
+                || (ref > top_px)) {
                 return false;
             }
             if (shown_px > ref) {
@@ -5103,7 +5102,8 @@ int run_status_hud_check(const AppOptions &options)
             const FittedText fits = fit_status_text(text, "ヒーロー", 200);
             const FittedText shrinks = fit_status_text(text, "ドラゴン感知", text.measure("ドラゴン感知") - 8);
             const FittedText floor_case = fit_status_text(text, "ドラゴン感知", 10);
-            check((fits.scale == 1.f) && !fits.overflow, "字の縮め: 収まるときは普通の大きさ");
+            //! 収まる名前は基準の字（全角 4 文字がアイコンの幅に収まる大きさ。上限は普通の字の kStatusTextMaxScale 倍）
+            check((text.sized_px(fits.scale) == status_text_reference_px(text, 200)) && !fits.overflow, "字の縮め: 収まるときは基準の大きさ");
             check((shrinks.scale < 1.f) && !shrinks.overflow && (shrinks.width <= (text.measure("ドラゴン感知") - 8)),
                 "字の縮め: 少し足りないときは縮めて収める（" + std::to_string(text.sized_px(shrinks.scale)) + "px）");
             const int floor_ref = status_text_reference_px(text, 10);
@@ -5339,12 +5339,13 @@ int run_status_hud_check(const AppOptions &options)
             for (const int icon : { 64, 43, 34, 24, 200 }) {
                 const int ref = status_text_reference_px(text, icon);
                 const bool fits_ref = text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref) / static_cast<float>(text.base_px())) <= icon;
-                const bool one_bigger_fails = (ref == text.base_px())
+                const int top_px = std::max(text.base_px(), static_cast<int>(std::lround(static_cast<double>(text.base_px()) * kStatusTextMaxScale))); //!< 基準の字の上限（普通の字の kStatusTextMaxScale 倍）
+                const bool one_bigger_fails = (ref == top_px)
                     || (text.measure_sized(kStatusTextReferenceString, static_cast<float>(ref + 1) / static_cast<float>(text.base_px())) > icon);
                 const bool floor_case = ref == text.sized_px(0.3f); //!< 極端に狭いとき。収まらなくても下限
-                check((fits_ref || floor_case) && one_bigger_fails && (ref <= text.base_px()),
+                check((fits_ref || floor_case) && one_bigger_fails && (ref <= top_px),
                     "基準の字: アイコン " + std::to_string(icon) + "px では全角 4 文字が収まるいちばん大きい字 = " + std::to_string(ref)
-                        + "px（普通の字 " + std::to_string(text.base_px()) + "px を超えない）");
+                        + "px（上限 " + std::to_string(top_px) + "px＝普通の字の 1.5 倍を超えない）");
             }
             for (const int icon : { 64, 43, 34 }) {
                 const int ref = status_text_reference_px(text, icon);
@@ -5438,6 +5439,8 @@ int run_status_hud_check(const AppOptions &options)
             { "protevil", "邪悪防御" }, { "res_acid", "酸耐性" }, { "res_elec", "電撃耐性" }, { "res_pois", "毒耐性" },
             { "reflect", "反射" }, { "levitate", "浮遊" }, { "stealth", "隠密" }, { "infravision", "赤外線視力" },
             { "nightsight", "暗視" }, { "esp_evil", "邪悪感知" }, { "cure", "治癒" },
+            //! 合成の場面から外した 3 個（アイコンを 1.5 倍にしたとき。左を 24 個に保つ）
+            { "res_fire", "火炎耐性" }, { "res_cold", "冷気耐性" }, { "telepathy", "テレパシー" },
         };
         const char *const right_extra[][2] = {
             { "blind", "盲目" }, { "paralyzed", "麻痺" }, { "afraid", "恐怖" }, { "slow", "減速" }, { "stun", "朦朧" },
@@ -5512,7 +5515,8 @@ int run_status_hud_check(const AppOptions &options)
                  *。左右の両方の枠が同じ高さにあることで見る。
                  */
                 const int orb_row_y = orb.y + static_cast<int>(std::lround(orb.h * 0.42));
-                const int row0_y = t0.ring_left.window.y + text.cell_h();
+                //! 効果量の帯の高さは名前と同じ字の 1 行（`name_line_h`。2026-11-08 に字を 1.5 倍にしたとき、普通の字の 1 行から変えた）
+                const int row0_y = t0.ring_left.window.y + t0.name_line_h;
                 check((row0_y <= orb_row_y) && (t0.ring_left.window.y == t0.ring_right.window.y), side + ": 段の高さは左右で同じで、玉の横の高さか、それより上");
 
                 // 枠は玉の横・地図の中・1 行ぶんの高さ
@@ -5521,8 +5525,8 @@ int run_status_hud_check(const AppOptions &options)
                     const bool near_ok = left ? ((win.x + win.w) == edge_near) : (win.x == edge_near);
                     const bool inside = (rect_overlap_area(win, layout.scene) == (static_cast<long long>(win.w) * win.h))
                         && (rect_overlap_area(win, window_rect) == (static_cast<long long>(win.w) * win.h))
-                        && (win.w == (ring.capacity * ring.pitch)) && (win.h == (text.cell_h() + icon_px + (2 * t0.name_line_h)))
-                        && (win.y + text.cell_h() == row0_y);
+                        && (win.w == (ring.capacity * ring.pitch)) && (win.h == (t0.name_line_h + icon_px + (2 * t0.name_line_h)))
+                        && (win.y + t0.name_line_h == row0_y);
                     check(near_ok && inside, side + ": 見えている枠は玉の縁から外へ、1 行ぶんの高さ（" + std::to_string(win.w) + "x" + std::to_string(win.h) + "）");
                 }
 
@@ -5861,7 +5865,7 @@ int run_status_hud_check(const AppOptions &options)
                             + std::to_string(one_items) + " 個の下の行は空）");
                 }
                 check(bad_red && (bad_n == 3), tag + ": 悪い効果（kind 1）の名前の下敷きは赤（" + std::to_string(bad_n) + " 個）");
-                check(good_dark && (good_n >= 9), tag + ": 良い効果の名前・効果量の下敷きは黒のまま（" + std::to_string(good_n) + " 個）");
+                check(good_dark && (good_n >= 6), tag + ": 良い効果の名前・効果量の下敷きは黒のまま（" + std::to_string(good_n) + " 個）");
                 check(perm_bad_red && !perm.items.empty(), tag + ": 常時の悪い効果（kind 5）の名前の下敷きも赤");
                 check(perm_good_dark, tag + ": 常時の良い効果（kind 4）の名前の下敷きは黒のまま");
             }

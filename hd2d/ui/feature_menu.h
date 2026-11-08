@@ -557,7 +557,7 @@ private:
         EntityStyleItem, //!< 実体の表現（板／アスキー）
         EntitySlabFacing, //!< ボクセル板の向き（ワールド基準／画面に正対）
         EntityGlyphSize, //!< 　└ 実体の字の大きさ。上がアスキーのときだけ効く
-        EntityTilesOfficial8, //!< 実体の板の組（64 画素／公式 8 画素。申告 `entity-tiles-official8` のコアだけ）
+        EntityTilesOfficial8, //!< 実体の板の組（64 画素／8 画素／32 画素。申告 `entity-tiles-official8`・`entity-tiles-original32` のコアだけ。名前は 8 画素だけだった頃のまま）
         /*!
          * @brief **タイルが無い実体を字で描く**（
          * 決めたこと F5）。板の道で目録に無い実体を `ascii_fallback` の字の板へ落とす。
@@ -988,6 +988,17 @@ bool core_supports_realtime();
  */
 void set_core_supports_official8(bool on);
 bool core_supports_official8();
+/*!
+ * @brief コアが `entity-tiles-original32` を申告したか（実体の板を公式の 32 画素のタイル〔Original32〕の組へ切り替えられるか。変愚・短愚蛮怒）。
+ * @details 真なら、cfg に組が書いていないときの既定が 32 画素になる。既定は偽。
+ */
+void set_core_supports_original32(bool on);
+bool core_supports_original32();
+/*!
+ * @brief いま使う実体の板の組。`Default`（cfg に書いていない）をコアの申告で決め、申告していない組は 64 画素にする。
+ * @details 既定は「32 画素を出せるコアなら 32 画素、ほかは 64 画素」（「今回のリリースでは32pxの板をデフォルトに」）。
+ */
+Hd2dSettings::EntityTiles effective_entity_tiles(const Hd2dSettings &settings);
 void set_core_supports_audio(bool on);
 bool core_supports_audio();
 /*!
